@@ -41,7 +41,6 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 	QToolBar* f = addToolBar(tr("&Search"));
 	
-	
 	QWidgetAction* showModuleLabel = new QWidgetAction(this);
 	showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
 	showModuleLabel->setVisible(true);
@@ -50,7 +49,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 	f->addAction(moduleSearchAction);
 	
 	QToolBar* executeBar = addToolBar(tr("&Execute"));
-	executeBar->addAction(actionExecute_All);
+	executeBar->addAction(actionExecute_All_);
 	
 	QWidgetAction* globalProgress = new QWidgetAction(this);
 	globalProgress->setDefaultWidget(new QProgressBar(this));
@@ -62,7 +61,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 	moduleCounter->setVisible(true);
 	executeBar->addAction(moduleCounter);
 	
-	scrollAreaWidgetContents->addAction(actionExecute_All);
-	scrollAreaWidgetContents->setContextMenuPolicy(Qt::ActionsContextMenu);
-	
+	scrollAreaWidgetContents_->addAction(actionExecute_All_);
+	scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
+	scrollArea_->viewport()->setAutoFillBackground(true);	
 }

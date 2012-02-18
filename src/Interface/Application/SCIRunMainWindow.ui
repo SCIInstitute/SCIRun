@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>954</width>
-    <height>759</height>
+    <width>1037</width>
+    <height>998</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,35 +17,199 @@
    <iconset>
     <normaloff>scirun-icon-small.ico</normaloff>scirun-icon-small.ico</iconset>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <widget class="QSplitter" name="splitter">
+  <widget class="QWidget" name="centralWidget_">
+   <widget class="QScrollArea" name="scrollArea_">
     <property name="geometry">
      <rect>
-      <x>21</x>
-      <y>11</y>
-      <width>901</width>
-      <height>681</height>
+      <x>10</x>
+      <y>10</y>
+      <width>821</width>
+      <height>651</height>
      </rect>
     </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
+    <property name="widgetResizable">
+     <bool>true</bool>
     </property>
-    <widget class="QScrollArea" name="scrollArea">
-     <property name="widgetResizable">
-      <bool>true</bool>
+    <widget class="QWidget" name="scrollAreaWidgetContents_">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>819</width>
+       <height>649</height>
+      </rect>
      </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>899</width>
-        <height>474</height>
-       </rect>
-      </property>
-     </widget>
     </widget>
-    <widget class="QTabWidget" name="tabWidget">
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar_">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1037</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile_">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionLoad_"/>
+    <addaction name="actionInsert_"/>
+    <addaction name="actionSave_"/>
+    <addaction name="actionSave_As_"/>
+    <addaction name="separator"/>
+    <addaction name="actionClear_Network_"/>
+    <addaction name="actionSelect_All_"/>
+    <addaction name="actionExecute_All_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCreate_Module_Skeleton_"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit_"/>
+   </widget>
+   <widget class="QMenu" name="menuModules_">
+    <property name="title">
+     <string>&amp;Modules</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuSubnets_">
+    <property name="title">
+     <string>&amp;Subnets</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuToolkits_">
+    <property name="title">
+     <string>&amp;Toolkits</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuHelp_">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionShow_Tooltips_"/>
+    <addaction name="actionAbout_"/>
+    <addaction name="actionCredits_"/>
+    <addaction name="actionLicense_"/>
+   </widget>
+   <addaction name="menuFile_"/>
+   <addaction name="menuModules_"/>
+   <addaction name="menuSubnets_"/>
+   <addaction name="menuToolkits_"/>
+   <addaction name="menuHelp_"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar_"/>
+  <widget class="QDockWidget" name="leftDockWidget_">
+   <property name="features">
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
+   <property name="windowTitle">
+    <string>Module Selector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>181</width>
+       <height>651</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="moduleSelectorVerticalLayout_">
+      <item>
+       <layout class="QHBoxLayout" name="moduleFilterHorizontalLayout_">
+        <item>
+         <widget class="QLabel" name="moduleFilterLabel_">
+          <property name="text">
+           <string>Filter:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="moduleFilterLineEdit_"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>100</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="dragDropMode">
+         <enum>QAbstractItemView::DragOnly</enum>
+        </property>
+        <property name="animated">
+         <bool>true</bool>
+        </property>
+        <column>
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Description</string>
+         </property>
+        </column>
+        <item>
+         <property name="text">
+          <string>SCIRun</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>ReadMatrix</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>WriteMatrix</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ComputeSVD</string>
+          </property>
+         </item>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="windowTitle">
+    <string>Configuration</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_4">
+    <widget class="QTabWidget" name="optionsTabWidget_">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>0</y>
+       <width>921</width>
+       <height>231</height>
+      </rect>
+     </property>
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -61,11 +225,11 @@
      <property name="currentIndex">
       <number>2</number>
      </property>
-     <widget class="QWidget" name="networkEditorTab">
+     <widget class="QWidget" name="networkEditorTab_">
       <attribute name="title">
        <string>Network Editor</string>
       </attribute>
-      <widget class="QGroupBox" name="groupBox">
+      <widget class="QGroupBox" name="layoutOptionsGroupBox_">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -80,7 +244,7 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>20</x>
@@ -91,51 +255,63 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QHBoxLayout" name="moduleSizeHorizontalLayout_">
            <item>
-            <widget class="QLabel" name="label">
+            <widget class="QLabel" name="moduleSizeLabel_">
              <property name="text">
               <string>Module Size:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton">
+            <widget class="QRadioButton" name="largeModuleSizeRadioButton_">
              <property name="text">
               <string>Large</string>
              </property>
+             <attribute name="buttonGroup">
+              <string>moduleSizeButtonGroup_</string>
+             </attribute>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_2">
+            <widget class="QRadioButton" name="smallModuleSizeRadioButton_">
              <property name="text">
               <string>Small</string>
              </property>
+             <attribute name="buttonGroup">
+              <string>moduleSizeButtonGroup_</string>
+             </attribute>
             </widget>
            </item>
           </layout>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_">
            <item>
-            <widget class="QLabel" name="label_2">
+            <widget class="QLabel" name="pipelinesLabel_">
              <property name="text">
               <string>Dataflow Pipelines:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_3">
+            <widget class="QRadioButton" name="straightPipelinesRadioButton_">
              <property name="text">
               <string>Straight</string>
              </property>
+             <attribute name="buttonGroup">
+              <string>pipelinesButtonGroup_</string>
+             </attribute>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_4">
+            <widget class="QRadioButton" name="jaggedPipelinesRadioButton_">
              <property name="text">
               <string>Jagged</string>
              </property>
+             <attribute name="buttonGroup">
+              <string>pipelinesButtonGroup_</string>
+             </attribute>
             </widget>
            </item>
           </layout>
@@ -144,11 +320,11 @@
        </widget>
       </widget>
      </widget>
-     <widget class="QWidget" name="optionsTab">
+     <widget class="QWidget" name="optionsTab_">
       <attribute name="title">
        <string>Options*</string>
       </attribute>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>30</x>
@@ -157,16 +333,16 @@
          <height>151</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <layout class="QHBoxLayout" name="optionsTabHorizontalLayout_">
         <item>
-         <widget class="QGroupBox" name="groupBox_2">
+         <widget class="QGroupBox" name="pathSettingsGroupBox_">
           <property name="title">
            <string>SCIRun Path Settings*</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>10</x>
@@ -175,53 +351,53 @@
              <height>111</height>
             </rect>
            </property>
-           <layout class="QGridLayout" name="gridLayout">
+           <layout class="QGridLayout" name="pathSettingsGridLayout_">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="scirunDataLabel_">
               <property name="text">
                <string>SCIRun Data</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="scirunDataLineEdit_"/>
             </item>
             <item row="0" column="2">
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="scirunDataPushButton_">
               <property name="text">
                <string>Set</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
+             <widget class="QLabel" name="scirunNetsLabel_">
               <property name="text">
                <string>SCIRun Nets</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="scirunNetsLineEdit_"/>
             </item>
             <item row="1" column="2">
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="scirunNetsPushButton_">
               <property name="text">
                <string>Set</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_5">
+             <widget class="QLabel" name="userDataLabel_">
               <property name="text">
                <string>User Data</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_3"/>
+             <widget class="QLineEdit" name="userDataLineEdit_"/>
             </item>
             <item row="2" column="2">
-             <widget class="QPushButton" name="pushButton_3">
+             <widget class="QPushButton" name="userDataPushButton_">
               <property name="text">
                <string>Set</string>
               </property>
@@ -232,14 +408,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_4">
+         <widget class="QGroupBox" name="dataSetGroupBox_">
           <property name="title">
            <string>SCIRun Data Set*</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>20</x>
@@ -248,19 +424,19 @@
              <height>25</height>
             </rect>
            </property>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <layout class="QHBoxLayout" name="dataSetHorizontalLayout_">
             <item>
-             <widget class="QLabel" name="label_6">
+             <widget class="QLabel" name="dataSetLabel_">
               <property name="text">
                <string>Data Set</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="lineEdit_4"/>
+             <widget class="QLineEdit" name="dataSetLineEdit_"/>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_4">
+             <widget class="QPushButton" name="dataSetPushButton_">
               <property name="text">
                <string>Set</string>
               </property>
@@ -271,7 +447,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_3">
+         <widget class="QGroupBox" name="optionsGroupBox_">
           <property name="title">
            <string>SCIRun Options</string>
           </property>
@@ -287,13 +463,13 @@
       <attribute name="title">
        <string>Log</string>
       </attribute>
-      <widget class="QTextBrowser" name="textBrowser">
+      <widget class="QTextBrowser" name="logTextBrowser_">
        <property name="geometry">
         <rect>
-         <x>15</x>
-         <y>12</y>
-         <width>851</width>
-         <height>201</height>
+         <x>9</x>
+         <y>9</y>
+         <width>256</width>
+         <height>192</height>
         </rect>
        </property>
        <property name="minimumSize">
@@ -306,118 +482,53 @@
      </widget>
     </widget>
    </widget>
-   <zorder>tabWidget</zorder>
-   <zorder>scrollArea</zorder>
-   <zorder>tabWidget</zorder>
-   <zorder>scrollArea</zorder>
-   <zorder>tabWidget</zorder>
-   <zorder>scrollArea</zorder>
-   <zorder>tabWidget</zorder>
-   <zorder>scrollArea</zorder>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>954</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuFILE">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="actionLoad"/>
-    <addaction name="actionInsert"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionSave_As"/>
-    <addaction name="separator"/>
-    <addaction name="actionClear_Network"/>
-    <addaction name="actionSelect_All"/>
-    <addaction name="actionExecute_All"/>
-    <addaction name="separator"/>
-    <addaction name="actionCreate_Module_Skeleton"/>
-    <addaction name="separator"/>
-    <addaction name="actionQuit"/>
-   </widget>
-   <widget class="QMenu" name="menuModules">
-    <property name="title">
-     <string>&amp;Modules</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuSubnets">
-    <property name="title">
-     <string>&amp;Subnets</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuToolkits">
-    <property name="title">
-     <string>&amp;Toolkits</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuHelp">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="actionShow_Tooltips"/>
-    <addaction name="actionAbout"/>
-    <addaction name="actionCredits"/>
-    <addaction name="actionLicense"/>
-   </widget>
-   <addaction name="menuFILE"/>
-   <addaction name="menuModules"/>
-   <addaction name="menuSubnets"/>
-   <addaction name="menuToolkits"/>
-   <addaction name="menuHelp"/>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionLoad">
+  <action name="actionLoad_">
    <property name="text">
     <string>Load...</string>
    </property>
   </action>
-  <action name="actionInsert">
+  <action name="actionInsert_">
    <property name="text">
     <string>Insert...</string>
    </property>
   </action>
-  <action name="actionSave">
+  <action name="actionSave_">
    <property name="text">
     <string>Save</string>
    </property>
   </action>
-  <action name="actionSave_As">
+  <action name="actionSave_As_">
    <property name="text">
     <string>Save As...</string>
    </property>
   </action>
-  <action name="actionClear_Network">
+  <action name="actionClear_Network_">
    <property name="text">
     <string>Clear Network</string>
    </property>
   </action>
-  <action name="actionSelect_All">
+  <action name="actionSelect_All_">
    <property name="text">
     <string>Select All</string>
    </property>
   </action>
-  <action name="actionExecute_All">
+  <action name="actionExecute_All_">
    <property name="text">
     <string>Execute All</string>
    </property>
   </action>
-  <action name="actionCreate_Module_Skeleton">
+  <action name="actionCreate_Module_Skeleton_">
    <property name="text">
     <string>Create Module Skeleton...</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="actionQuit_">
    <property name="text">
     <string>Quit</string>
    </property>
   </action>
-  <action name="actionShow_Tooltips">
+  <action name="actionShow_Tooltips_">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -428,17 +539,17 @@
     <string>Show Tooltips</string>
    </property>
   </action>
-  <action name="actionAbout">
+  <action name="actionAbout_">
    <property name="text">
     <string>About...</string>
    </property>
   </action>
-  <action name="actionCredits">
+  <action name="actionCredits_">
    <property name="text">
     <string>Credits...</string>
    </property>
   </action>
-  <action name="actionLicense">
+  <action name="actionLicense_">
    <property name="text">
     <string>License...</string>
    </property>
@@ -446,4 +557,8 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="moduleSizeButtonGroup_"/>
+  <buttongroup name="pipelinesButtonGroup_"/>
+ </buttongroups>
 </ui>
