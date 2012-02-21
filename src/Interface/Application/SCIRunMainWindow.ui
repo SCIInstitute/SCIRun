@@ -27,6 +27,12 @@
       <height>651</height>
      </rect>
     </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>1</horstretch>
+      <verstretch>1</verstretch>
+     </sizepolicy>
+    </property>
     <property name="widgetResizable">
      <bool>true</bool>
     </property>
@@ -92,14 +98,34 @@
     <addaction name="actionCredits_"/>
     <addaction name="actionLicense_"/>
    </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionConfiguration_"/>
+    <addaction name="actionModule_Selector"/>
+   </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
+   <addaction name="menuWindow"/>
    <addaction name="menuHelp_"/>
   </widget>
   <widget class="QStatusBar" name="statusbar_"/>
-  <widget class="QDockWidget" name="leftDockWidget_">
+  <widget class="QDockWidget" name="moduleSelectorDockWidget_">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>220</width>
+     <height>200</height>
+    </size>
+   </property>
    <property name="features">
     <set>QDockWidget::AllDockWidgetFeatures</set>
    </property>
@@ -110,90 +136,80 @@
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
-    <widget class="QWidget" name="">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>181</width>
-       <height>651</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" name="moduleSelectorVerticalLayout_">
-      <item>
-       <layout class="QHBoxLayout" name="moduleFilterHorizontalLayout_">
-        <item>
-         <widget class="QLabel" name="moduleFilterLabel_">
-          <property name="text">
-           <string>Filter:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="moduleFilterLineEdit_"/>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>100</height>
-         </size>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="dragDropMode">
-         <enum>QAbstractItemView::DragOnly</enum>
-        </property>
-        <property name="animated">
-         <bool>true</bool>
-        </property>
-        <column>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="moduleFilterLabel_">
          <property name="text">
-          <string>Name</string>
+          <string>Filter:</string>
          </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Description</string>
-         </property>
-        </column>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="moduleFilterLineEdit_"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
+        <bool>false</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragOnly</enum>
+       </property>
+       <property name="animated">
+        <bool>true</bool>
+       </property>
+       <column>
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Description</string>
+        </property>
+       </column>
+       <item>
+        <property name="text">
+         <string>SCIRun</string>
+        </property>
         <item>
          <property name="text">
-          <string>SCIRun</string>
+          <string>ReadMatrix</string>
          </property>
-         <item>
-          <property name="text">
-           <string>ReadMatrix</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>WriteMatrix</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ComputeSVD</string>
-          </property>
-         </item>
         </item>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+        <item>
+         <property name="text">
+          <string>WriteMatrix</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>ComputeSVD</string>
+         </property>
+        </item>
+       </item>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockWidget">
+  <widget class="QDockWidget" name="configurationDockWidget_">
    <property name="windowTitle">
     <string>Configuration</string>
    </property>
@@ -201,286 +217,282 @@
     <number>8</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_4">
-    <widget class="QTabWidget" name="optionsTabWidget_">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>0</y>
-       <width>921</width>
-       <height>231</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>200</height>
-      </size>
-     </property>
-     <property name="tabPosition">
-      <enum>QTabWidget::North</enum>
-     </property>
-     <property name="tabShape">
-      <enum>QTabWidget::Triangular</enum>
-     </property>
-     <property name="currentIndex">
-      <number>2</number>
-     </property>
-     <widget class="QWidget" name="networkEditorTab_">
-      <attribute name="title">
-       <string>Network Editor</string>
-      </attribute>
-      <widget class="QGroupBox" name="layoutOptionsGroupBox_">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>10</y>
-         <width>261</width>
-         <height>161</height>
-        </rect>
-       </property>
-       <property name="title">
-        <string>Layout Options</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-       <widget class="QWidget" name="layoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>20</x>
-          <y>20</y>
-          <width>226</width>
-          <height>46</height>
-         </rect>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <layout class="QHBoxLayout" name="moduleSizeHorizontalLayout_">
-           <item>
-            <widget class="QLabel" name="moduleSizeLabel_">
-             <property name="text">
-              <string>Module Size:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="largeModuleSizeRadioButton_">
-             <property name="text">
-              <string>Large</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string>moduleSizeButtonGroup_</string>
-             </attribute>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="smallModuleSizeRadioButton_">
-             <property name="text">
-              <string>Small</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string>moduleSizeButtonGroup_</string>
-             </attribute>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_">
-           <item>
-            <widget class="QLabel" name="pipelinesLabel_">
-             <property name="text">
-              <string>Dataflow Pipelines:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="straightPipelinesRadioButton_">
-             <property name="text">
-              <string>Straight</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string>pipelinesButtonGroup_</string>
-             </attribute>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="jaggedPipelinesRadioButton_">
-             <property name="text">
-              <string>Jagged</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string>pipelinesButtonGroup_</string>
-             </attribute>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="optionsTab_">
-      <attribute name="title">
-       <string>Options*</string>
-      </attribute>
-      <widget class="QWidget" name="layoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>30</x>
-         <y>10</y>
-         <width>851</width>
-         <height>151</height>
-        </rect>
-       </property>
-       <layout class="QHBoxLayout" name="optionsTabHorizontalLayout_">
-        <item>
-         <widget class="QGroupBox" name="pathSettingsGroupBox_">
-          <property name="title">
-           <string>SCIRun Path Settings*</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <widget class="QWidget" name="layoutWidget">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>30</y>
-             <width>261</width>
-             <height>111</height>
-            </rect>
-           </property>
-           <layout class="QGridLayout" name="pathSettingsGridLayout_">
-            <item row="0" column="0">
-             <widget class="QLabel" name="scirunDataLabel_">
-              <property name="text">
-               <string>SCIRun Data</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="scirunDataLineEdit_"/>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="scirunDataPushButton_">
-              <property name="text">
-               <string>Set</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="scirunNetsLabel_">
-              <property name="text">
-               <string>SCIRun Nets</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QLineEdit" name="scirunNetsLineEdit_"/>
-            </item>
-            <item row="1" column="2">
-             <widget class="QPushButton" name="scirunNetsPushButton_">
-              <property name="text">
-               <string>Set</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="userDataLabel_">
-              <property name="text">
-               <string>User Data</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QLineEdit" name="userDataLineEdit_"/>
-            </item>
-            <item row="2" column="2">
-             <widget class="QPushButton" name="userDataPushButton_">
-              <property name="text">
-               <string>Set</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="dataSetGroupBox_">
-          <property name="title">
-           <string>SCIRun Data Set*</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <widget class="QWidget" name="layoutWidget">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>30</y>
-             <width>241</width>
-             <height>25</height>
-            </rect>
-           </property>
-           <layout class="QHBoxLayout" name="dataSetHorizontalLayout_">
-            <item>
-             <widget class="QLabel" name="dataSetLabel_">
-              <property name="text">
-               <string>Data Set</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="dataSetLineEdit_"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="dataSetPushButton_">
-              <property name="text">
-               <string>Set</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="optionsGroupBox_">
-          <property name="title">
-           <string>SCIRun Options</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-     <widget class="QWidget" name="logTab">
-      <attribute name="title">
-       <string>Log</string>
-      </attribute>
-      <widget class="QTextBrowser" name="logTextBrowser_">
-       <property name="geometry">
-        <rect>
-         <x>9</x>
-         <y>9</y>
-         <width>256</width>
-         <height>192</height>
-        </rect>
-       </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QTabWidget" name="optionsTabWidget_">
        <property name="minimumSize">
         <size>
          <width>0</width>
-         <height>192</height>
+         <height>200</height>
         </size>
        </property>
+       <property name="tabPosition">
+        <enum>QTabWidget::North</enum>
+       </property>
+       <property name="tabShape">
+        <enum>QTabWidget::Triangular</enum>
+       </property>
+       <property name="currentIndex">
+        <number>2</number>
+       </property>
+       <widget class="QWidget" name="networkEditorTab_">
+        <attribute name="title">
+         <string>Network Editor</string>
+        </attribute>
+        <widget class="QGroupBox" name="layoutOptionsGroupBox_">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>261</width>
+           <height>161</height>
+          </rect>
+         </property>
+         <property name="title">
+          <string>Layout Options</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>226</width>
+            <height>46</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QHBoxLayout" name="moduleSizeHorizontalLayout_">
+             <item>
+              <widget class="QLabel" name="moduleSizeLabel_">
+               <property name="text">
+                <string>Module Size:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="largeModuleSizeRadioButton_">
+               <property name="text">
+                <string>Large</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string>moduleSizeButtonGroup_</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="smallModuleSizeRadioButton_">
+               <property name="text">
+                <string>Small</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string>moduleSizeButtonGroup_</string>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="dataflowPipelinesHorizontalLayout_">
+             <item>
+              <widget class="QLabel" name="pipelinesLabel_">
+               <property name="text">
+                <string>Dataflow Pipelines:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="straightPipelinesRadioButton_">
+               <property name="text">
+                <string>Straight</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string>pipelinesButtonGroup_</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="jaggedPipelinesRadioButton_">
+               <property name="text">
+                <string>Jagged</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string>pipelinesButtonGroup_</string>
+               </attribute>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="optionsTab_">
+        <attribute name="title">
+         <string>Options*</string>
+        </attribute>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>10</y>
+           <width>851</width>
+           <height>151</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="optionsTabHorizontalLayout_">
+          <item>
+           <widget class="QGroupBox" name="pathSettingsGroupBox_">
+            <property name="title">
+             <string>SCIRun Path Settings*</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <widget class="QWidget" name="layoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>10</x>
+               <y>30</y>
+               <width>261</width>
+               <height>111</height>
+              </rect>
+             </property>
+             <layout class="QGridLayout" name="pathSettingsGridLayout_">
+              <item row="0" column="0">
+               <widget class="QLabel" name="scirunDataLabel_">
+                <property name="text">
+                 <string>SCIRun Data</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="scirunDataLineEdit_"/>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="scirunDataPushButton_">
+                <property name="text">
+                 <string>Set</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="scirunNetsLabel_">
+                <property name="text">
+                 <string>SCIRun Nets</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="scirunNetsLineEdit_"/>
+              </item>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="scirunNetsPushButton_">
+                <property name="text">
+                 <string>Set</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="userDataLabel_">
+                <property name="text">
+                 <string>User Data</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="userDataLineEdit_"/>
+              </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="userDataPushButton_">
+                <property name="text">
+                 <string>Set</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="dataSetGroupBox_">
+            <property name="title">
+             <string>SCIRun Data Set*</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <widget class="QWidget" name="layoutWidget">
+             <property name="geometry">
+              <rect>
+               <x>20</x>
+               <y>30</y>
+               <width>241</width>
+               <height>25</height>
+              </rect>
+             </property>
+             <layout class="QHBoxLayout" name="dataSetHorizontalLayout_">
+              <item>
+               <widget class="QLabel" name="dataSetLabel_">
+                <property name="text">
+                 <string>Data Set</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="dataSetLineEdit_"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="dataSetPushButton_">
+                <property name="text">
+                 <string>Set</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="optionsGroupBox_">
+            <property name="title">
+             <string>SCIRun Options</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+       <widget class="QWidget" name="logTab">
+        <attribute name="title">
+         <string>Log</string>
+        </attribute>
+        <widget class="QTextBrowser" name="logTextBrowser_">
+         <property name="geometry">
+          <rect>
+           <x>9</x>
+           <y>9</y>
+           <width>256</width>
+           <height>192</height>
+          </rect>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>192</height>
+          </size>
+         </property>
+        </widget>
+       </widget>
       </widget>
-     </widget>
-    </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <action name="actionLoad_">
@@ -554,9 +566,64 @@
     <string>License...</string>
    </property>
   </action>
+  <action name="actionConfiguration_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Configuration</string>
+   </property>
+  </action>
+  <action name="actionModule_Selector">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Module Selector</string>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionModule_Selector</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>moduleSelectorDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>97</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionConfiguration_</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>configurationDockWidget_</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>518</x>
+     <y>847</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <buttongroups>
   <buttongroup name="moduleSizeButtonGroup_"/>
   <buttongroup name="pipelinesButtonGroup_"/>
