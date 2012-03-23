@@ -61,7 +61,12 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
 
-  networkEditor_ = new NetworkEditor(graphicsView_);
+  networkEditor_ = new NetworkEditor(scrollAreaWidgetContents_);
+  networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
+  networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+  gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
+
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
 	moduleSearchAction->setDefaultWidget(new QLineEdit(this));

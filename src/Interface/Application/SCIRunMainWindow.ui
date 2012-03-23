@@ -18,6 +18,9 @@
     <normaloff>scirun-icon-small.ico</normaloff>scirun-icon-small.ico</iconset>
   </property>
   <widget class="QWidget" name="centralWidget_">
+   <property name="acceptDrops">
+    <bool>true</bool>
+   </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <widget class="QScrollArea" name="scrollArea_">
@@ -26,6 +29,9 @@
         <horstretch>1</horstretch>
         <verstretch>1</verstretch>
        </sizepolicy>
+      </property>
+      <property name="acceptDrops">
+       <bool>true</bool>
       </property>
       <property name="widgetResizable">
        <bool>true</bool>
@@ -39,15 +45,10 @@
          <height>662</height>
         </rect>
        </property>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QGraphicsView" name="graphicsView_">
-          <property name="contextMenuPolicy">
-           <enum>Qt::ActionsContextMenu</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5"/>
       </widget>
      </widget>
     </item>

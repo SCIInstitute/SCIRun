@@ -1,7 +1,7 @@
 #ifndef DIAGRAMWINDOW_H
 #define DIAGRAMWINDOW_H
 
-#include <QMainWindow>
+#include <QGraphicsView>
 
 class Node;
 class Link;
@@ -9,18 +9,20 @@ class QMenu;
 class QToolBar;
 class QAction;
 class QGraphicsScene;
-class QGraphicsView;
 
 namespace SCIRun
 {
 
-class NetworkEditor : public QObject
+class NetworkEditor : public QGraphicsView
 {
 	Q_OBJECT
 	
 public:
-  explicit NetworkEditor(QGraphicsView* view);
+  explicit NetworkEditor(QWidget* parent = 0);
   void addActions(QWidget* widget);
+protected:
+  virtual void dropEvent(QDropEvent* event);
+  virtual void dragMoveEvent(QDragMoveEvent* event);
 private slots:
   void addNode();
   void addLink();
@@ -59,7 +61,6 @@ private:
   QAction* propertiesAction_;
 
   QGraphicsScene* scene_;
-  QGraphicsView* view_;
   
   int minZ_;
   int maxZ_;

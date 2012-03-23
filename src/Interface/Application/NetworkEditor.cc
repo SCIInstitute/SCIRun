@@ -1,4 +1,5 @@
 #include <QtGui>
+#include <iostream>
 #include "NetworkEditor.h"
 #include "Node.h"
 #include "Connection.h"
@@ -6,15 +7,14 @@
 
 using namespace SCIRun;
 
-NetworkEditor::NetworkEditor(QGraphicsView* view)
+NetworkEditor::NetworkEditor(QWidget* parent) : QGraphicsView(parent)
 {
   scene_ = new QGraphicsScene(0, 0, 600, 500);
 
-  view_ = view;
-  view_->setScene(scene_);
-  view_->setDragMode(QGraphicsView::RubberBandDrag);
-  view_->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-  view_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  setScene(scene_);
+  setDragMode(QGraphicsView::RubberBandDrag);
+  setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
+  setContextMenuPolicy(Qt::ActionsContextMenu);
   //setCentralWidget(view_);
 
   minZ_ = 0;
@@ -36,6 +36,7 @@ void NetworkEditor::addNode()
   Node* node = new Node;
   node->setText(tr("Module %1").arg(seqNumber_ + 1));
   setupNode(node);
+  std::cout << "Node added." << std::endl;
 }
 
 void NetworkEditor::setupNode(Node* node)
@@ -195,8 +196,8 @@ void NetworkEditor::updateActions()
   sendToBackAction_->setEnabled(isNode);
   propertiesAction_->setEnabled(isNode || isLink);
 
-  foreach (QAction* action, view_->actions())
-    view_->removeAction(action);
+  foreach (QAction* action, actions())
+    removeAction(action);
 
   //foreach (QAction* action, editToolBar_->actions())
   //{
@@ -264,6 +265,18 @@ void NetworkEditor::addActions(QWidget* widget)
   widget->addAction(copyAction_);
   widget->addAction(pasteAction_);
   widget->addAction(deleteAction_);
+}
+
+void NetworkEditor::dropEvent(QDropEvent* event)
+{
+  static int count = 1;
+  std::cout << "drop event " << count++ << std::endl;
+}
+
+void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
+{
+  static int count = 1;
+  std::cout << "dragMoveEvent event " << count++ << std::endl;
 }
 
 /*
