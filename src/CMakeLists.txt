@@ -28,15 +28,23 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
-PROJECT(QtExampleSpreadsheet)
+PROJECT(SCIRun5Prototype)
 FIND_PACKAGE(Qt4 REQUIRED)
 
 SET(SCIRunGUIPrototype_SOURCES 
 Interface/Application/scirunMain.cc 
-Interface/Application/SCIRunMainWindow.cc)
+Interface/Application/SCIRunMainWindow.cc
+Interface/Application/Node.cc
+Interface/Application/Connection.cc
+Interface/Application/NetworkEditor.cc
+)
 
 SET(SCIRunGUIPrototype_HEADERS
-Interface/Application/SCIRunMainWindow.h)
+Interface/Application/SCIRunMainWindow.h
+Interface/Application/Node.h
+Interface/Application/Connection.h
+Interface/Application/NetworkEditor.h
+)
 
 SET(SCIRunGUIPrototype_FORMS
 Interface/Application/SCIRunMainWindow.ui

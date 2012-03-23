@@ -27,13 +27,41 @@
 */
 
 #include <QtGui>
+#include <algorithm>
+#include <functional>
 #include "SCIRunMainWindow.h"
+#include "NetworkEditor.h"
 
 using namespace SCIRun;
+
+void visitTree(QStringList& list, QTreeWidgetItem* item){
+  list << item->text(0);
+  for (int i = 0; i < item->childCount(); ++i)
+    visitTree(list, item->child(i));
+}
+
+QStringList visitTree(QTreeWidget* tree) {
+  QStringList list;
+  for (int i = 0; i < tree->topLevelItemCount(); ++i)
+    visitTree(list, tree->topLevelItem(i));
+  return list;
+}
+
+struct LogAppender
+{
+  explicit LogAppender(QTextEdit* text) : text_(text) {}
+  void operator()(const QString& str) const
+  {
+    text_->append(str);
+  }
+  QTextEdit* text_;
+};
 
 SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
+
+  networkEditor_ = new NetworkEditor(graphicsView_);
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
 	moduleSearchAction->setDefaultWidget(new QLineEdit(this));
@@ -65,4 +93,11 @@ SCIRunMainWindow::SCIRunMainWindow()
 	scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
 	scrollArea_->viewport()->setAutoFillBackground(true);	
+  networkEditor_->addActions(scrollAreaWidgetContents_);
+
+	logTextBrowser_->setText("Hello!");
+
+  QStringList result = visitTree(moduleSelectorTreeWidget_);
+  std::for_each(result.begin(), result.end(), LogAppender(logTextBrowser_));
+
 }

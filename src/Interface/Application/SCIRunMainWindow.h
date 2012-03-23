@@ -34,11 +34,15 @@
 
 namespace SCIRun {
 
+class NetworkEditor;
+
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT
 public:
 	SCIRunMainWindow();
+private:
+  NetworkEditor* networkEditor_;
 };
 
 }
