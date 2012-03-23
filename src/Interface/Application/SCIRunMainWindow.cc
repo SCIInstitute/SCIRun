@@ -57,11 +57,28 @@ struct LogAppender
   QTextEdit* text_;
 };
 
+class TreeViewModuleGetter : public CurrentModuleSelection
+{
+public:
+  explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
+  virtual std::string text() const
+  {
+    return tree_.currentItem()->text(0).toStdString();
+  }
+  virtual bool isModule() const
+  {
+    return tree_.currentItem()->childCount() == 0;
+  }
+private:
+  QTreeWidget& tree_;
+};
+
 SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
 
-  networkEditor_ = new NetworkEditor(scrollAreaWidgetContents_);
+  TreeViewModuleGetter* getter = new TreeViewModuleGetter(*moduleSelectorTreeWidget_);
+  networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
 

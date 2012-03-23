@@ -13,18 +13,30 @@ class QGraphicsScene;
 namespace SCIRun
 {
 
+//TODO: replace with boost::function
+  class CurrentModuleSelection
+  {
+  public:
+    virtual ~CurrentModuleSelection() {}
+    virtual std::string text() const = 0;
+    virtual bool isModule() const = 0;
+  };
+
 class NetworkEditor : public QGraphicsView
 {
 	Q_OBJECT
 	
 public:
-  explicit NetworkEditor(QWidget* parent = 0);
+  //TODO change to boost::shared_ptr
+  explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent = 0);
   void addActions(QWidget* widget);
 protected:
   virtual void dropEvent(QDropEvent* event);
+  virtual void dragEnterEvent(QDragEnterEvent* event);
   virtual void dragMoveEvent(QDragMoveEvent* event);
 private slots:
   void addNode();
+  void addNode(const QString& text);
   void addLink();
   void del();
   void cut();
@@ -65,6 +77,8 @@ private:
   int minZ_;
   int maxZ_;
   int seqNumber_;
+
+  std::auto_ptr<CurrentModuleSelection> moduleSelectionGetter_;
 };
 
 }

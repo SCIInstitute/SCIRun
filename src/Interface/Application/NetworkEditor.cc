@@ -7,7 +7,8 @@
 
 using namespace SCIRun;
 
-NetworkEditor::NetworkEditor(QWidget* parent) : QGraphicsView(parent)
+NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
+  moduleSelectionGetter_(moduleSelectionGetter)
 {
   scene_ = new QGraphicsScene(0, 0, 600, 500);
 
@@ -33,8 +34,13 @@ NetworkEditor::NetworkEditor(QWidget* parent) : QGraphicsView(parent)
 
 void NetworkEditor::addNode()
 {
+  addNode(tr("Module %1").arg(seqNumber_ + 1));
+}
+
+void NetworkEditor::addNode(const QString& text)
+{
   Node* node = new Node;
-  node->setText(tr("Module %1").arg(seqNumber_ + 1));
+  node->setText(text);
   setupNode(node);
   std::cout << "Node added." << std::endl;
 }
@@ -269,14 +275,26 @@ void NetworkEditor::addActions(QWidget* widget)
 
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
-  static int count = 1;
-  std::cout << "drop event " << count++ << std::endl;
+  //static int count = 1;
+  //std::cout << "drop event " << count++ << std::endl;
+  //std::cout << "Currently selected module: " << (*moduleSelectionGetter_)() << std::endl;
+  //TODO: mime check here to ensure this only gets called for drags from treewidget
+  if (moduleSelectionGetter_->isModule())
+    addNode(moduleSelectionGetter_->text().c_str());
+}
+
+void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
+{
+  //static int count = 1;
+  //std::cout << "dragEnterEvent event " << count++ << std::endl;
+  //if (event->mimeData()->hasFormat(""))
+    event->acceptProposedAction();
 }
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
-  static int count = 1;
-  std::cout << "dragMoveEvent event " << count++ << std::endl;
+  //static int count = 1;
+  //std::cout << "dragMoveEvent event " << count++ << std::endl;
 }
 
 /*
