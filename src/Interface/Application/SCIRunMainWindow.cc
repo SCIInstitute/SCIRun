@@ -35,7 +35,9 @@
 using namespace SCIRun;
 
 void visitTree(QStringList& list, QTreeWidgetItem* item){
-  list << item->text(0);
+  list << item->text(0) + "," + QString::number(item->childCount());
+  if (item->childCount() != 0)
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
   for (int i = 0; i < item->childCount(); ++i)
     visitTree(list, item->child(i));
 }
@@ -47,12 +49,16 @@ QStringList visitTree(QTreeWidget* tree) {
   return list;
 }
 
-struct LogAppender
+struct LogAppender : public Logger
 {
   explicit LogAppender(QTextEdit* text) : text_(text) {}
   void operator()(const QString& str) const
   {
     text_->append(str);
+  }
+  void log(const std::string& message) const 
+  {
+    operator()(QString(message.c_str()));
   }
   QTextEdit* text_;
 };
@@ -78,12 +84,14 @@ SCIRunMainWindow::SCIRunMainWindow()
 	setupUi(this);
 
   TreeViewModuleGetter* getter = new TreeViewModuleGetter(*moduleSelectorTreeWidget_);
-  networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
+  LogAppender* logger = new LogAppender(logTextBrowser_);
+  networkEditor_ = new NetworkEditor(getter, logger, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+  networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
-
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
 	moduleSearchAction->setDefaultWidget(new QLineEdit(this));
@@ -120,6 +128,6 @@ SCIRunMainWindow::SCIRunMainWindow()
 	logTextBrowser_->setText("Hello!");
 
   QStringList result = visitTree(moduleSelectorTreeWidget_);
-  std::for_each(result.begin(), result.end(), LogAppender(logTextBrowser_));
+  std::for_each(result.begin(), result.end(), *logger);
 
 }

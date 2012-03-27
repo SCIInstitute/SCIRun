@@ -1,14 +1,25 @@
+#include <sstream>
 #include <QtGui>
 #include <iostream>
 #include "NetworkEditor.h"
 #include "Node.h"
 #include "Connection.h"
-//#include "propertiesdialog.h"
+#include "Module.h"
 
 using namespace SCIRun;
+using namespace SCIRun::Gui;
 
-NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
-  moduleSelectionGetter_(moduleSelectionGetter)
+template <class Point>
+std::string to_string(const Point& p)
+{
+  std::ostringstream ostr;
+  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
+  return ostr.str();
+}
+
+NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent) : QGraphicsView(parent),
+  moduleSelectionGetter_(moduleSelectionGetter),
+  logger_(logger)
 {
   scene_ = new QGraphicsScene(0, 0, 600, 500);
 
@@ -34,20 +45,31 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWid
 
 void NetworkEditor::addNode()
 {
-  addNode(tr("Module %1").arg(seqNumber_ + 1));
+  addNode(tr("Module %1").arg(seqNumber_ + 1), QPoint());
 }
 
-void NetworkEditor::addNode(const QString& text)
+void NetworkEditor::addNode(const QString& text, const QPoint& pos)
 {
-  Node* node = new Node;
-  node->setText(text);
-  setupNode(node);
-  std::cout << "Node added." << std::endl;
+  //Node* node = new Node;
+  //node->setText(text);
+  //setupNode(node, pos);
+  logger_->log("Node added.");
+
+  auto proxy = scene_->addWidget(new Module("<b><h2>" + text + "</h2></b>"));
+  proxy->setZValue(maxZ_);
+  proxy->setVisible(true);
+  proxy->setSelected(true);
+  proxy->setPos(pos - QPoint(80,50));
+  proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
+  logger_->log("Module Frame: " + to_string(proxy->pos()));
 }
 
-void NetworkEditor::setupNode(Node* node)
+void NetworkEditor::setupNode(Node* node, const QPoint& pos)
 {
-  node->setPos(QPoint(80 + (100 * (seqNumber_ % 5)), 80 + (50 * ((seqNumber_ / 5) % 7))));
+  if (pos.isNull())
+    node->setPos(QPoint(80 + (100 * (seqNumber_ % 5)), 80 + (50 * ((seqNumber_ / 5) % 7))));
+  else
+    node->setPos(pos - QPoint(64,41));
   scene_->addItem(node);
   ++seqNumber_;
 
@@ -280,7 +302,10 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //std::cout << "Currently selected module: " << (*moduleSelectionGetter_)() << std::endl;
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
-    addNode(moduleSelectionGetter_->text().c_str());
+  {
+    logger_->log(to_string(event->pos()));
+    addNode(moduleSelectionGetter_->text().c_str(), event->pos());
+  }
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
@@ -289,12 +314,14 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
   //std::cout << "dragEnterEvent event " << count++ << std::endl;
   //if (event->mimeData()->hasFormat(""))
     event->acceptProposedAction();
+    logger_->log(to_string(event->pos()));
 }
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
   //static int count = 1;
   //std::cout << "dragMoveEvent event " << count++ << std::endl;
+  logger_->log(to_string(event->pos()));
 }
 
 /*

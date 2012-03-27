@@ -13,7 +13,6 @@ class QGraphicsScene;
 namespace SCIRun
 {
 
-//TODO: replace with boost::function
   class CurrentModuleSelection
   {
   public:
@@ -22,13 +21,20 @@ namespace SCIRun
     virtual bool isModule() const = 0;
   };
 
+  class Logger
+  {
+  public:
+    virtual ~Logger() {}
+    virtual void log(const std::string& message) const = 0;
+  };
+
 class NetworkEditor : public QGraphicsView
 {
 	Q_OBJECT
 	
 public:
   //TODO change to boost::shared_ptr
-  explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent = 0);
+  explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent = 0);
   void addActions(QWidget* widget);
 protected:
   virtual void dropEvent(QDropEvent* event);
@@ -36,7 +42,7 @@ protected:
   virtual void dragMoveEvent(QDragMoveEvent* event);
 private slots:
   void addNode();
-  void addNode(const QString& text);
+  void addNode(const QString& text, const QPoint& pos);
   void addLink();
   void del();
   void cut();
@@ -53,7 +59,7 @@ private:
   //void createMenus();
   //void createToolBars();
   void setZValue(int z);
-  void setupNode(Node* node);
+  void setupNode(Node* node, const QPoint& pos = QPoint());
   Node* selectedNode() const;
   Link* selectedLink() const;
   NodePair selectedNodePair() const;
@@ -78,7 +84,9 @@ private:
   int maxZ_;
   int seqNumber_;
 
-  std::auto_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+  //TODO change to boost::shared_ptr
+  CurrentModuleSelection* moduleSelectionGetter_;
+  Logger* logger_;
 };
 
 }
