@@ -5,12 +5,26 @@
 
 using namespace SCIRun::Gui;
 
+class ModuleProxyWidgetPosition : public PositionProvider
+{
+public:
+  explicit ModuleProxyWidgetPosition(ModuleProxyWidget* widget) : widget_(widget) {}
+  virtual QPointF currentPosition() const
+  {
+    return widget_->pos();
+  }
+private:
+  ModuleProxyWidget* widget_;
+};
+
 ModuleProxyWidget::ModuleProxyWidget(Module* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
   module_(module),
   grabbedByWidget_(false)
 {
   setWidget(module);
+  setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
+  module_->setPositionObject(new ModuleProxyWidgetPosition(this));
   //module_->setStyleSheet("background-color: lightgray;");
 }
 
@@ -60,4 +74,15 @@ void ModuleProxyWidget::highlightIfSelected()
     module_->setStyleSheet("background-color: cyan;");
   else
     module_->setStyleSheet("background-color: lightgray;");
+}
+
+QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+  if (change == ItemPositionHasChanged)
+  {
+    module_->trackConnections();
+    //foreach (Link* link, links_)
+    //  link->trackNodes();
+  }
+  return QGraphicsItem::itemChange(change, value);
 }

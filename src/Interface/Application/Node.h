@@ -3,7 +3,7 @@
 
 #include <QGraphicsItem>
 
-class Link;
+//class Link;
 
 class Node : public QGraphicsItem
 {
@@ -21,8 +21,8 @@ public:
   void setBackgroundColor(const QColor& color);
   QColor backgroundColor() const;
 
-  void addLink(Link* link);
-  void removeLink(Link* link);
+  //void addLink(Link* link);
+  //void removeLink(Link* link);
 
   QRectF boundingRect() const;
   QPainterPath shape() const;
@@ -36,7 +36,7 @@ private:
   QRectF outlineRect() const;
   int roundness(double size) const;
 
-  QSet<Link*> links_;
+  //QSet<Link*> links_;
   QString text_;
   QColor textColor_;
   QColor backgroundColor_;

@@ -1,18 +1,21 @@
-#ifndef DIAGRAM_LINK_H
-#define DIAGRAM_LINK_H
+#ifndef CONNECTION_H
+#define CONNECTION_H
 
 #include <QGraphicsLineItem>
 
-class Node;
+namespace SCIRun {
+namespace Gui {
 
-class Link : public QGraphicsLineItem
+class Module;
+
+class Connection : public QGraphicsLineItem
 {
 public:
-	Link(Node* fromNode, Node* toNode);
-  ~Link();
+	Connection(Module* fromNode, Module* toNode);
+  ~Connection();
 
-  Node* fromNode() const;
-  Node* toNode() const;
+  Module* fromModule() const;
+  Module* toModule() const;
 
   void setColor(const QColor& color);
   QColor color() const;
@@ -20,8 +23,10 @@ public:
   void trackNodes();
 
 private:
-  Node* myFromNode_;
-  Node* myToNode_;
+  Module* fromModule_;
+  Module* toModule_;
 };
 
+}
+}
 #endif

@@ -1,14 +1,16 @@
+#include <iostream>
 #include <QtGui>
 #include "Connection.h"
-#include "Node.h"
+#include "Module.h"
+#include "Utility.h"
 
-Link::Link(Node* fromNode, Node* toNode)
+using namespace SCIRun::Gui;
+
+Connection::Connection(Module* fromModule, Module* toModule)
+  : fromModule_(fromModule), toModule_(toModule)
 {
-  myFromNode_ = fromNode;
-  myToNode_ = toNode;
-
-  myFromNode_->addLink(this);
-  myToNode_->addLink(this);
+  fromModule_->addConnection(this);
+  toModule_->addConnection(this);
 
   setFlags(QGraphicsItem::ItemIsSelectable);
   setZValue(-1);
@@ -17,23 +19,24 @@ Link::Link(Node* fromNode, Node* toNode)
   trackNodes();
 }
 
-Link::~Link()
+Connection::~Connection()
 {
-  myFromNode_->removeLink(this);
-  myToNode_->removeLink(this);
+  fromModule_->removeConnection(this);
+  toModule_->removeConnection(this);
 }
 
-void Link::setColor(const QColor& color)
+void Connection::setColor(const QColor& color)
 {
   setPen(QPen(color, 5.0));
 }
 
-QColor Link::color() const
+QColor Connection::color() const
 {
   return pen().color();
 }
 
-void Link::trackNodes()
+void Connection::trackNodes()
 {
-  setLine(QLineF(myFromNode_->pos(), myToNode_->pos()));
+  std::cout << to_string(fromModule_->pos()) << std::endl;
+  setLine(QLineF(fromModule_->position(), toModule_->position()));
 }

@@ -6,17 +6,10 @@
 #include "Connection.h"
 #include "Module.h"
 #include "ModuleProxyWidget.h"
+#include "Utility.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
-
-template <class Point>
-std::string to_string(const Point& p)
-{
-  std::ostringstream ostr;
-  ostr << "QPoint(" << p.x() << "," << p.y() << ")";
-  return ostr.str();
-}
 
 NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
@@ -42,40 +35,44 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
   updateActions();
 }
 
-void NetworkEditor::addNode()
+void NetworkEditor::addModule()
 {
-  addNode(tr("Module %1").arg(seqNumber_ + 1), QPoint());
+  addModule(tr("Module %1").arg(seqNumber_ + 1), QPoint());
 }
 
-void NetworkEditor::addNode(const QString& text, const QPoint& pos)
+void NetworkEditor::addModule(const QString& text, const QPoint& pos)
 {
   //Node* node = new Node;
   //node->setText(text);
   //setupNode(node, pos);
-  logger_->log("Node added.");
+  logger_->log("Module added.");
 
-  auto proxy = new ModuleProxyWidget(new Module("<b><h2>" + text + "</h2></b>"));
-  scene_->addItem(proxy);
+  Module* module = new Module("<b><h2>" + text + "</h2></b>");
+  setupModule(module, pos);
+  //logger_->log("Module Frame: " + to_string(proxy->pos()));
+}
+
+void NetworkEditor::setupModule(Module* module, const QPoint& pos)
+{
+  ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);
   proxy->setPos(pos - QPoint(80,50));
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
-  logger_->log("Module Frame: " + to_string(proxy->pos()));
-}
 
-void NetworkEditor::setupNode(Node* node, const QPoint& pos)
-{
-  if (pos.isNull())
-    node->setPos(QPoint(80 + (100 * (seqNumber_ % 5)), 80 + (50 * ((seqNumber_ / 5) % 7))));
-  else
-    node->setPos(pos - QPoint(64,41));
-  scene_->addItem(node);
+
+  //if (pos.isNull())
+  //  node->setPos(QPoint(80 + (100 * (seqNumber_ % 5)), 80 + (50 * ((seqNumber_ / 5) % 7))));
+  //else
+  //  node->setPos(pos - QPoint(64,41));
+
+  scene_->addItem(proxy);
   ++seqNumber_;
 
   scene_->clearSelection();
-  node->setSelected(true);
+  proxy->setSelected(true);
   bringToFront();
 }
 
@@ -93,48 +90,74 @@ void NetworkEditor::sendToBack()
 
 void NetworkEditor::setZValue(int z)
 {
-  Node* node = selectedNode();
+  ModuleProxyWidget* node = selectedModuleProxy();
   if (node)
     node->setZValue(z);
 }
 
-Node* NetworkEditor::selectedNode() const
+ModuleProxyWidget* getModuleProxy(QGraphicsItem* item)
 {
-  QList<QGraphicsItem*> items = scene_->selectedItems();
-  if (items.count() == 1)
-    return dynamic_cast<Node*>(items.first());
+  return dynamic_cast<ModuleProxyWidget*>(item);
+}
+
+Module* getModule(QGraphicsItem* item)
+{
+  ModuleProxyWidget* proxy = getModuleProxy(item);
+  if (proxy)
+    return static_cast<Module*>(proxy->widget());
   return 0;
 }
 
-Link* NetworkEditor::selectedLink() const
+//TODO copy/paste
+Module* NetworkEditor::selectedModule() const
 {
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 1)
-    return dynamic_cast<Link*>(items.first());
+  {
+    return getModule(items.first());
+  }
+  return 0;
+}
+
+ModuleProxyWidget* NetworkEditor::selectedModuleProxy() const
+{
+  QList<QGraphicsItem*> items = scene_->selectedItems();
+  if (items.count() == 1)
+  {
+    return getModuleProxy(items.first());
+  }
+  return 0;
+}
+
+Connection* NetworkEditor::selectedLink() const
+{
+  QList<QGraphicsItem*> items = scene_->selectedItems();
+  if (items.count() == 1)
+    return dynamic_cast<Connection*>(items.first());
   return 0;
 }
 
 void NetworkEditor::addLink()
 {
-  NodePair nodes = selectedNodePair();
-  if (nodes == NodePair())
+  ModulePair nodes = selectedModulePair();
+  if (nodes == ModulePair())
     return;
 
-  Link* link = new Link(nodes.first, nodes.second);
+  Connection* link = new Connection(nodes.first, nodes.second);
   scene_->addItem(link);
 }
 
-NetworkEditor::NodePair NetworkEditor::selectedNodePair() const
+NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
 {
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 2)
   {
-    Node* first = dynamic_cast<Node*>(items.first());
-    Node* second = dynamic_cast<Node*>(items.last());
+    Module* first = getModule(items.first());
+    Module* second = getModule(items.last());
     if (first && second)
-      return NodePair(first, second);
+      return ModulePair(first, second);
   }
-  return NodePair();
+  return ModulePair();
 }
 
 void NetworkEditor::del()
@@ -143,7 +166,7 @@ void NetworkEditor::del()
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
   {
-    Link* link = dynamic_cast<Link*>(i.next());
+    Connection* link = dynamic_cast<Connection*>(i.next());
     if (link)
     {
       delete link;
@@ -155,8 +178,8 @@ void NetworkEditor::del()
 
 void NetworkEditor::properties()
 {
-  Node* node = selectedNode();
-  Link* link = selectedLink();
+  Module* node = selectedModule();
+  Connection* link = selectedLink();
 
   if (node)
   {
@@ -173,49 +196,49 @@ void NetworkEditor::properties()
 
 void NetworkEditor::cut()
 {
-  Node* node = selectedNode();
-  if (!node)
-    return;
+  //Module* node = selectedModule();
+  //if (!node)
+  //  return;
 
-  copy();
-  delete node;
+  //copy();
+  //delete node;
 }
 
 void NetworkEditor::copy()
 {
-  Node* node = selectedNode();
-  if (!node)
-    return;
+  //Module* node = selectedModule();
+  //if (!node)
+  //  return;
 
-  QString str = QString("Node %1 %2 %3 %4")
-                .arg(node->textColor().name())
-                .arg(node->outlineColor().name())
-                .arg(node->backgroundColor().name())
-                .arg(node->text());
-  QApplication::clipboard()->setText(str);
+  //QString str = QString("Module %1 %2 %3 %4")
+  //              .arg(node->textColor().name())
+  //              .arg(node->outlineColor().name())
+  //              .arg(node->backgroundColor().name())
+  //              .arg(node->text());
+  //QApplication::clipboard()->setText(str);
 }
 
 void NetworkEditor::paste()
 {
-  QString str = QApplication::clipboard()->text();
-  QStringList parts = str.split(" ");
-  if (parts.count() >= 5 && parts.first() == "Node")
-  {
-    Node* node = new Node;
-    node->setText(QStringList(parts.mid(4)).join(" "));
-    node->setTextColor(QColor(parts[1]));
-    node->setOutlineColor(QColor(parts[2]));
-    node->setBackgroundColor(QColor(parts[3]));
-    setupNode(node);
-  }
+  //QString str = QApplication::clipboard()->text();
+  //QStringList parts = str.split(" ");
+  //if (parts.count() >= 5 && parts.first() == "Node")
+  //{
+  //  Module* node = new Module;
+  //  node->setText(QStringList(parts.mid(4)).join(" "));
+  //  node->setTextColor(QColor(parts[1]));
+  //  node->setOutlineColor(QColor(parts[2]));
+  //  node->setBackgroundColor(QColor(parts[3]));
+  //  setupNode(node);
+  //}
 }
 
 void NetworkEditor::updateActions()
 {
   const bool hasSelection = !scene_->selectedItems().isEmpty();
-  const bool isNode = (selectedNode() != 0);
+  const bool isNode = (selectedModule() != 0);
   const bool isLink = (selectedLink() != 0);
-  const bool isNodePair = (selectedNodePair() != NodePair());
+  const bool isNodePair = (selectedModulePair() != ModulePair());
 
   //cutAction_->setEnabled(isNode);
   //copyAction_->setEnabled(isNode);
@@ -241,12 +264,12 @@ void NetworkEditor::createActions()
   //exitAction_->setShortcut(tr("Ctrl+Q"));
   //connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
 
-  addNodeAction_ = new QAction(tr("Add &Node"), this);
+  addNodeAction_ = new QAction(tr("Add &Module"), this);
   addNodeAction_->setIcon(QIcon(":/images/node.png"));
   addNodeAction_->setShortcut(tr("Ctrl+N"));
-  connect(addNodeAction_, SIGNAL(triggered()), this, SLOT(addNode()));
+  connect(addNodeAction_, SIGNAL(triggered()), this, SLOT(addModule()));
 
-  addLinkAction_ = new QAction(tr("Add &Link"), this);
+  addLinkAction_ = new QAction(tr("Add &Connection"), this);
   addLinkAction_->setIcon(QIcon(":/images/link.png"));
   addLinkAction_->setShortcut(tr("Ctrl+L"));
   connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
@@ -290,6 +313,8 @@ void NetworkEditor::addActions(QWidget* widget)
 {
   widget->addAction(addNodeAction_);
   widget->addAction(addLinkAction_);
+  widget->addAction(bringToFrontAction_);
+  widget->addAction(sendToBackAction_);
   //widget->addAction(cutAction_);
   //widget->addAction(copyAction_);
   //widget->addAction(pasteAction_);
@@ -305,7 +330,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   if (moduleSelectionGetter_->isModule())
   {
     logger_->log(to_string(event->pos()));
-    addNode(moduleSelectionGetter_->text().c_str(), event->pos());
+    addModule(moduleSelectionGetter_->text().c_str(), event->pos());
   }
 }
 

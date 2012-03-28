@@ -3,19 +3,19 @@
 
 #include "ui_Module.h"
 #include <QFrame>
+#include <set>
 
-class Node;
-class Link;
-class QMenu;
-class QToolBar;
-class QAction;
-class QGraphicsScene;
+namespace SCIRun {
+namespace Gui {
 
-namespace SCIRun
+class Connection;
+
+class PositionProvider
 {
-  namespace Gui
-  {
-
+public:
+  virtual ~PositionProvider() {}
+  virtual QPointF currentPosition() const = 0;
+};
 
 class Module : public QFrame, public Ui::Module
 {
@@ -23,59 +23,22 @@ class Module : public QFrame, public Ui::Module
 	
 public:
   explicit Module(const QString& name, QWidget* parent = 0);
-  //void addActions(QWidget* widget);
-//protected:
-//  virtual void dropEvent(QDropEvent* event);
-//  virtual void dragEnterEvent(QDragEnterEvent* event);
-//  virtual void dragMoveEvent(QDragMoveEvent* event);
-//private slots:
-//  void addNode();
-//  void addNode(const QString& text);
-//  void addLink();
-//  void del();
-//  void cut();
-//  void copy();
-//  void paste();
-//  void bringToFront();
-//  void sendToBack();
-//  void properties();
-//  void updateActions();
-//
-//private:
-//  typedef QPair<Node*, Node*> NodePair;
-//  void createActions();
-//  //void createMenus();
-//  //void createToolBars();
-//  void setZValue(int z);
-//  void setupNode(Node* node);
-//  Node* selectedNode() const;
-//  Link* selectedLink() const;
-//  NodePair selectedNodePair() const;
-//
-//  //QMenu* fileMenu_;
-//  //QMenu* editMenu_;
-//  //QToolBar* editToolBar_;
-//  QAction* exitAction_;
-//  QAction* cutAction_;
-//  QAction* copyAction_;
-//  QAction* pasteAction_;
-//  QAction* deleteAction_;
-//  QAction* addLinkAction_;
-//  QAction* addNodeAction_;
-//  QAction* bringToFrontAction_;
-//  QAction* sendToBackAction_;
-//  QAction* propertiesAction_;
-//
-//  QGraphicsScene* scene_;
-//  
-//  int minZ_;
-//  int maxZ_;
-//  int seqNumber_;
+  ~Module();
+  void addConnection(Connection* c);
+  void removeConnection(Connection* c);
 
-  //TODO change to boost::shared_ptr
-  //std::auto_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+  void trackConnections();
+
+  void setPositionObject(PositionProvider* provider) { positionProvider_ = provider; }
+
+  QPointF position() const;
+private:
+  //TODO distinguish input/output
+  std::set<Connection*> connections_;
+  PositionProvider* positionProvider_;
 };
-  }
+
+}
 }
 
 #endif

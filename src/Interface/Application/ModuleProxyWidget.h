@@ -22,6 +22,7 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *event);
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
   void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+  QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 private:
   bool isSubwidget(QWidget* alienWidget) const;
   Module* module_;

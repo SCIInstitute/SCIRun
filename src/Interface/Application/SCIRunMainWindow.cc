@@ -33,6 +33,7 @@
 #include "NetworkEditor.h"
 
 using namespace SCIRun;
+using namespace SCIRun::Gui;
 
 void visitTree(QStringList& list, QTreeWidgetItem* item){
   list << item->text(0) + "," + QString::number(item->childCount());

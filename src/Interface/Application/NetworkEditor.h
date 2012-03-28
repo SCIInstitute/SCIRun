@@ -1,17 +1,15 @@
-#ifndef DIAGRAMWINDOW_H
-#define DIAGRAMWINDOW_H
+#ifndef NETWORKEDITOR_H
+#define NETWORKEDITOR_H
 
 #include <QGraphicsView>
 
-class Node;
-class Link;
 class QMenu;
 class QToolBar;
 class QAction;
 class QGraphicsScene;
 
-namespace SCIRun
-{
+namespace SCIRun {
+namespace Gui {
 
   class CurrentModuleSelection
   {
@@ -28,6 +26,10 @@ namespace SCIRun
     virtual void log(const std::string& message) const = 0;
   };
 
+  class Connection;
+  class Module;
+  class ModuleProxyWidget;
+
 class NetworkEditor : public QGraphicsView
 {
 	Q_OBJECT
@@ -41,8 +43,8 @@ protected:
   virtual void dragEnterEvent(QDragEnterEvent* event);
   virtual void dragMoveEvent(QDragMoveEvent* event);
 private slots:
-  void addNode();
-  void addNode(const QString& text, const QPoint& pos);
+  void addModule();
+  void addModule(const QString& text, const QPoint& pos);
   void addLink();
   void del();
   void cut();
@@ -54,15 +56,16 @@ private slots:
   void updateActions();
 
 private:
-  typedef QPair<Node*, Node*> NodePair;
+  typedef QPair<Module*, Module*> ModulePair;
   void createActions();
   //void createMenus();
   //void createToolBars();
   void setZValue(int z);
-  void setupNode(Node* node, const QPoint& pos = QPoint());
-  Node* selectedNode() const;
-  Link* selectedLink() const;
-  NodePair selectedNodePair() const;
+  void setupModule(Module* node, const QPoint& pos = QPoint());
+  Module* selectedModule() const;
+  ModuleProxyWidget* selectedModuleProxy() const;
+  Connection* selectedLink() const;
+  ModulePair selectedModulePair() const;
 
   //QMenu* fileMenu_;
   //QMenu* editMenu_;
@@ -89,6 +92,7 @@ private:
   Logger* logger_;
 };
 
+}
 }
 
 #endif

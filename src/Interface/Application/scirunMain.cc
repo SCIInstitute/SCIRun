@@ -32,7 +32,7 @@
 int main(int argc, char* argv[])
 {
 	QApplication app(argc, argv);
-	SCIRun::SCIRunMainWindow* mainWin = new SCIRun::SCIRunMainWindow;
+	SCIRun::Gui::SCIRunMainWindow* mainWin = new SCIRun::Gui::SCIRunMainWindow;
 	mainWin->show();
 	return app.exec();
 }

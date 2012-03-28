@@ -13,8 +13,8 @@ Node::Node()
 
 Node::~Node()
 {
-  foreach (Link* link, links_)
-    delete link;
+  //foreach (Link* link, links_)
+  //  delete link;
 }
 
 void Node::setText(const QString& text)
@@ -62,15 +62,15 @@ QColor Node::backgroundColor() const
   return backgroundColor_;
 }
 
-void Node::addLink(Link* link)
-{
-  links_.insert(link);
-}
-
-void Node::removeLink(Link* link)
-{
-  links_.remove(link);
-}
+//void Node::addLink(Link* link)
+//{
+//  links_.insert(link);
+//}
+//
+//void Node::removeLink(Link* link)
+//{
+//  links_.remove(link);
+//}
 
 QRectF Node::outlineRect() const
 {
@@ -117,8 +117,8 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant& value)
 {
   if (change == ItemPositionHasChanged)
   {
-    foreach (Link* link, links_)
-      link->trackNodes();
+    //foreach (Link* link, links_)
+    //  link->trackNodes();
   }
   return QGraphicsItem::itemChange(change, value);
 }

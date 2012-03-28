@@ -33,6 +33,7 @@
 #include "ui_SCIRunMainWindow.h"
 
 namespace SCIRun {
+namespace Gui {
 
 class NetworkEditor;
 
@@ -45,5 +46,6 @@ private:
   NetworkEditor* networkEditor_;
 };
 
+}
 }
 #endif
