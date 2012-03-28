@@ -22,7 +22,6 @@ class Module : public QFrame, public Ui::Module
 	Q_OBJECT
 	
 public:
-  //TODO change to boost::shared_ptr
   explicit Module(const QString& name, QWidget* parent = 0);
   //void addActions(QWidget* widget);
 //protected:

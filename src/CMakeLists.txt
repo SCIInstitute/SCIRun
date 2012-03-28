@@ -33,6 +33,7 @@ FIND_PACKAGE(Qt4 REQUIRED)
 
 SET(SCIRunGUIPrototype_SOURCES 
 Interface/Application/Module.cc
+Interface/Application/ModuleProxyWidget.cc
 Interface/Application/scirunMain.cc 
 Interface/Application/SCIRunMainWindow.cc
 Interface/Application/Node.cc
@@ -42,6 +43,7 @@ Interface/Application/NetworkEditor.cc
 
 SET(SCIRunGUIPrototype_HEADERS
 Interface/Application/Module.h
+Interface/Application/ModuleProxyWidget.h
 Interface/Application/SCIRunMainWindow.h
 Interface/Application/Node.h
 Interface/Application/Connection.h

@@ -67,11 +67,11 @@ private:
   //QMenu* fileMenu_;
   //QMenu* editMenu_;
   //QToolBar* editToolBar_;
-  QAction* exitAction_;
-  QAction* cutAction_;
-  QAction* copyAction_;
-  QAction* pasteAction_;
-  QAction* deleteAction_;
+  //QAction* exitAction_;
+  //QAction* cutAction_;
+  //QAction* copyAction_;
+  //QAction* pasteAction_;
+  //QAction* deleteAction_;
   QAction* addLinkAction_;
   QAction* addNodeAction_;
   QAction* bringToFrontAction_;

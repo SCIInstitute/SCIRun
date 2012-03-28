@@ -5,6 +5,7 @@
 #include "Node.h"
 #include "Connection.h"
 #include "Module.h"
+#include "ModuleProxyWidget.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -27,7 +28,6 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
   setDragMode(QGraphicsView::RubberBandDrag);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   setContextMenuPolicy(Qt::ActionsContextMenu);
-  //setCentralWidget(view_);
 
   minZ_ = 0;
   maxZ_ = 0;
@@ -39,7 +39,6 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
 
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
-  //setWindowTitle(tr("Diagram"));
   updateActions();
 }
 
@@ -55,12 +54,14 @@ void NetworkEditor::addNode(const QString& text, const QPoint& pos)
   //setupNode(node, pos);
   logger_->log("Node added.");
 
-  auto proxy = scene_->addWidget(new Module("<b><h2>" + text + "</h2></b>"));
+  auto proxy = new ModuleProxyWidget(new Module("<b><h2>" + text + "</h2></b>"));
+  scene_->addItem(proxy);
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);
   proxy->setPos(pos - QPoint(80,50));
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
+  connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   logger_->log("Module Frame: " + to_string(proxy->pos()));
 }
 
@@ -216,10 +217,10 @@ void NetworkEditor::updateActions()
   const bool isLink = (selectedLink() != 0);
   const bool isNodePair = (selectedNodePair() != NodePair());
 
-  cutAction_->setEnabled(isNode);
-  copyAction_->setEnabled(isNode);
+  //cutAction_->setEnabled(isNode);
+  //copyAction_->setEnabled(isNode);
   addLinkAction_->setEnabled(isNodePair);
-  deleteAction_->setEnabled(hasSelection);
+  //deleteAction_->setEnabled(hasSelection);
   bringToFrontAction_->setEnabled(isNode);
   sendToBackAction_->setEnabled(isNode);
   propertiesAction_->setEnabled(isNode || isLink);
@@ -236,9 +237,9 @@ void NetworkEditor::updateActions()
 
 void NetworkEditor::createActions()
 {
-  exitAction_ = new QAction(tr("E&xit"), this);
-  exitAction_->setShortcut(tr("Ctrl+Q"));
-  connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
+  //exitAction_ = new QAction(tr("E&xit"), this);
+  //exitAction_->setShortcut(tr("Ctrl+Q"));
+  //connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
 
   addNodeAction_ = new QAction(tr("Add &Node"), this);
   addNodeAction_->setIcon(QIcon(":/images/node.png"));
@@ -250,25 +251,25 @@ void NetworkEditor::createActions()
   addLinkAction_->setShortcut(tr("Ctrl+L"));
   connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
 
-  deleteAction_ = new QAction(tr("&Delete"), this);
-  deleteAction_->setIcon(QIcon(":/images/delete.png"));
-  deleteAction_->setShortcut(tr("Del"));
-  connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
+  //deleteAction_ = new QAction(tr("&Delete"), this);
+  //deleteAction_->setIcon(QIcon(":/images/delete.png"));
+  //deleteAction_->setShortcut(tr("Del"));
+  //connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
 
-  cutAction_ = new QAction(tr("Cu&t"), this);
-  cutAction_->setIcon(QIcon(":/images/cut.png"));
-  cutAction_->setShortcut(tr("Ctrl+X"));
-  connect(cutAction_, SIGNAL(triggered()), this, SLOT(cut()));
+  //cutAction_ = new QAction(tr("Cu&t"), this);
+  //cutAction_->setIcon(QIcon(":/images/cut.png"));
+  //cutAction_->setShortcut(tr("Ctrl+X"));
+  //connect(cutAction_, SIGNAL(triggered()), this, SLOT(cut()));
 
-  copyAction_ = new QAction(tr("&Copy"), this);
-  copyAction_->setIcon(QIcon(":/images/copy.png"));
-  copyAction_->setShortcut(tr("Ctrl+C"));
-  connect(copyAction_, SIGNAL(triggered()), this, SLOT(copy()));
+  //copyAction_ = new QAction(tr("&Copy"), this);
+  //copyAction_->setIcon(QIcon(":/images/copy.png"));
+  //copyAction_->setShortcut(tr("Ctrl+C"));
+  //connect(copyAction_, SIGNAL(triggered()), this, SLOT(copy()));
 
-  pasteAction_ = new QAction(tr("&Paste"), this);
-  pasteAction_->setIcon(QIcon(":/images/paste.png"));
-  pasteAction_->setShortcut(tr("Ctrl+V"));
-  connect(pasteAction_, SIGNAL(triggered()), this, SLOT(paste()));
+  //pasteAction_ = new QAction(tr("&Paste"), this);
+  //pasteAction_->setIcon(QIcon(":/images/paste.png"));
+  //pasteAction_->setShortcut(tr("Ctrl+V"));
+  //connect(pasteAction_, SIGNAL(triggered()), this, SLOT(paste()));
 
   bringToFrontAction_ = new QAction(tr("Bring to &Front"), this);
   bringToFrontAction_->setIcon(QIcon(":/images/bringtofront.png"));
@@ -289,10 +290,10 @@ void NetworkEditor::addActions(QWidget* widget)
 {
   widget->addAction(addNodeAction_);
   widget->addAction(addLinkAction_);
-  widget->addAction(cutAction_);
-  widget->addAction(copyAction_);
-  widget->addAction(pasteAction_);
-  widget->addAction(deleteAction_);
+  //widget->addAction(cutAction_);
+  //widget->addAction(copyAction_);
+  //widget->addAction(pasteAction_);
+  //widget->addAction(deleteAction_);
 }
 
 void NetworkEditor::dropEvent(QDropEvent* event)
