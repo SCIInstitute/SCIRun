@@ -65,6 +65,5 @@ QColor Connection::color() const
 
 void Connection::trackNodes()
 {
-  std::cout << to_string(fromModule_->pos()) << std::endl;
-  setLine(QLineF(fromModule_->position(), toModule_->position()));
+  setLine(QLineF(fromModule_->outputPortPosition(), toModule_->inputPortPosition()));
 }

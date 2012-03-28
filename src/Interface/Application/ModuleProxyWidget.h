@@ -46,6 +46,8 @@ public:
   explicit ModuleProxyWidget(Module* module, QGraphicsItem* parent = 0);
 public slots:
   void highlightIfSelected();
+signals:
+  void selected();
 protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *event);
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -55,6 +57,7 @@ private:
   bool isSubwidget(QWidget* alienWidget) const;
   Module* module_;
   bool grabbedByWidget_;
+  //int backupZ_;
 };
 
   }

@@ -202,18 +202,28 @@
         </property>
         <item>
          <property name="text">
-          <string>ReadMatrix</string>
+          <string>Math</string>
          </property>
+         <item>
+          <property name="text">
+           <string>ComputeSVD</string>
+          </property>
+         </item>
         </item>
         <item>
          <property name="text">
-          <string>WriteMatrix</string>
+          <string>DataIO</string>
          </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>ComputeSVD</string>
-         </property>
+         <item>
+          <property name="text">
+           <string>ReadMatrix</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>WriteMatrix</string>
+          </property>
+         </item>
         </item>
        </item>
       </widget>

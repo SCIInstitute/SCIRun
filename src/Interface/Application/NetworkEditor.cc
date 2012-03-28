@@ -43,7 +43,8 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
   moduleSelectionGetter_(moduleSelectionGetter),
   logger_(logger)
 {
-  scene_ = new QGraphicsScene(0, 0, 600, 500);
+  scene_ = new QGraphicsScene(0, 0, 1000, 1000);
+  scene_->setBackgroundBrush(QBrush(QColor(Qt::darkBlue)));
 
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);
@@ -89,6 +90,7 @@ void NetworkEditor::setupModule(Module* module, const QPoint& pos)
   proxy->setPos(pos - QPoint(80,50));
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
+  connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
 
 
   //if (pos.isNull())
@@ -357,7 +359,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    logger_->log(to_string(event->pos()));
+    //logger_->log(to_string(event->pos()));
     addModule(moduleSelectionGetter_->text().c_str(), event->pos());
   }
 }
@@ -368,14 +370,14 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
   //std::cout << "dragEnterEvent event " << count++ << std::endl;
   //if (event->mimeData()->hasFormat(""))
     event->acceptProposedAction();
-    logger_->log(to_string(event->pos()));
+    //logger_->log(to_string(event->pos()));
 }
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
   //static int count = 1;
   //std::cout << "dragMoveEvent event " << count++ << std::endl;
-  logger_->log(to_string(event->pos()));
+  //logger_->log(to_string(event->pos()));
 }
 
 /*

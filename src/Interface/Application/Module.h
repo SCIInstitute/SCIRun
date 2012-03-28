@@ -59,7 +59,8 @@ public:
 
   void setPositionObject(PositionProvider* provider) { positionProvider_ = provider; }
 
-  QPointF position() const;
+  QPointF inputPortPosition() const;
+  QPointF outputPortPosition() const;
 private:
   //TODO distinguish input/output
   std::set<Connection*> connections_;

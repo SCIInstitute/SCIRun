@@ -61,9 +61,16 @@ void Module::trackConnections()
     c->trackNodes();
 }
 
-QPointF Module::position() const 
+QPointF Module::inputPortPosition() const 
 {
   if (positionProvider_)
-    return positionProvider_->currentPosition();
+    return positionProvider_->currentPosition() + QPointF(20,10);
+  return pos();
+}
+
+QPointF Module::outputPortPosition() const 
+{
+  if (positionProvider_)
+    return positionProvider_->currentPosition() + QPointF(20, height() - 10);
   return pos();
 }

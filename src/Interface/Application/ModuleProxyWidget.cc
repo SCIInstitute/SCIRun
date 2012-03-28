@@ -49,11 +49,12 @@ ModuleProxyWidget::ModuleProxyWidget(Module* module, QGraphicsItem* parent/* = 0
   : QGraphicsProxyWidget(parent),
   module_(module),
   grabbedByWidget_(false)
+  //,
+  //backupZ_(zValue())
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   module_->setPositionObject(new ModuleProxyWidgetPosition(this));
-  //module_->setStyleSheet("background-color: lightgray;");
 }
 
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -68,9 +69,8 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   else
   {
     QGraphicsItem::mousePressEvent(event);
-    //std::cout << module_->styleSheet().toStdString() << std::endl;
-    //module_->setStyleSheet("background-color: cyan;");
     grabbedByWidget_ = false;
+    emit selected();
   }
 }
 
@@ -79,8 +79,10 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   if (grabbedByWidget_)
     QGraphicsProxyWidget::mouseReleaseEvent(event);
   else
+  {
     QGraphicsItem::mouseReleaseEvent(event);
-  //module_->setStyleSheet("background-color: lightgray;");
+    //setZValue(backupZ_);
+  }
   grabbedByWidget_ = false;
 }
 
@@ -109,8 +111,6 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   if (change == ItemPositionHasChanged)
   {
     module_->trackConnections();
-    //foreach (Link* link, links_)
-    //  link->trackNodes();
   }
   return QGraphicsItem::itemChange(change, value);
 }
