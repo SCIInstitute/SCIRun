@@ -92,6 +92,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setExecuteAction(actionExecute_All_);
+  networkEditor_->verticalScrollBar()->setValue(0);
+  networkEditor_->horizontalScrollBar()->setValue(0);
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	

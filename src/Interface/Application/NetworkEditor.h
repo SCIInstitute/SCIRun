@@ -73,7 +73,7 @@ protected:
   virtual void dragMoveEvent(QDragMoveEvent* event);
 private slots:
   void addModule();
-  void addModule(const QString& text, const QPoint& pos);
+  void addModule(const QString& text, const QPointF& pos);
   void addLink();
   void del();
   void cut();
@@ -90,7 +90,7 @@ private:
   //void createMenus();
   //void createToolBars();
   void setZValue(int z);
-  void setupModule(Module* node, const QPoint& pos = QPoint());
+  void setupModule(Module* node, const QPointF& pos = QPointF());
   Module* selectedModule() const;
   ModuleProxyWidget* selectedModuleProxy() const;
   Connection* selectedLink() const;

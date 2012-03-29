@@ -35,6 +35,7 @@
 #include "Module.h"
 #include "ModuleProxyWidget.h"
 #include "Utility.h"
+#include "Port.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -45,7 +46,8 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
   executeAction_(0)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
-  scene_->setBackgroundBrush(QBrush(QColor(Qt::darkBlue)));
+  scene_->setBackgroundBrush(Qt::darkBlue);
+  Port::TheScene = scene_;
 
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);
@@ -63,18 +65,17 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
   updateActions();
+
+  
 }
 
 void NetworkEditor::addModule()
 {
-  addModule(tr("Module %1").arg(seqNumber_ + 1), QPoint());
+  addModule(tr("Module %1").arg(seqNumber_ + 1), QPointF());
 }
 
-void NetworkEditor::addModule(const QString& text, const QPoint& pos)
+void NetworkEditor::addModule(const QString& text, const QPointF& pos)
 {
-  //Node* node = new Node;
-  //node->setText(text);
-  //setupNode(node, pos);
   logger_->log("Module added.");
 
   Module* module = new Module("<b><h2>" + text + "</h2></b>");
@@ -82,23 +83,17 @@ void NetworkEditor::addModule(const QString& text, const QPoint& pos)
   //logger_->log("Module Frame: " + to_string(proxy->pos()));
 }
 
-void NetworkEditor::setupModule(Module* module, const QPoint& pos)
+void NetworkEditor::setupModule(Module* module, const QPointF& pos)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);
-  proxy->setPos(pos - QPoint(80,50));
+  proxy->setPos(pos/* - QPoint(80,50)*/);
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
-
-
-  //if (pos.isNull())
-  //  node->setPos(QPoint(80 + (100 * (seqNumber_ % 5)), 80 + (50 * ((seqNumber_ / 5) % 7))));
-  //else
-  //  node->setPos(pos - QPoint(64,41));
 
   scene_->addItem(proxy);
   ++seqNumber_;
@@ -106,6 +101,18 @@ void NetworkEditor::setupModule(Module* module, const QPoint& pos)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
+
+
+  //temp port test
+  Port* p1 = new InputPort("port1", Qt::green);
+  QGraphicsProxyWidget* portProxy = scene_->addWidget(p1);
+  portProxy->setPos(30,30);
+  p1->setPositionObject(new ProxyWidgetPosition(portProxy));
+
+  Port* p2 = new OutputPort("port2", Qt::yellow);
+  portProxy = scene_->addWidget(p2);
+  portProxy->setPos(60,60);
+  p2->setPositionObject(new ProxyWidgetPosition(portProxy));
 }
 
 void NetworkEditor::bringToFront()
@@ -177,6 +184,7 @@ void NetworkEditor::addLink()
 
   Connection* link = new Connection(nodes.first, nodes.second);
   scene_->addItem(link);
+  
 }
 
 NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
@@ -362,7 +370,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   if (moduleSelectionGetter_->isModule())
   {
     //logger_->log(to_string(event->pos()));
-    addModule(moduleSelectionGetter_->text().c_str(), event->pos());
+    addModule(moduleSelectionGetter_->text().c_str(), mapToScene(event->pos()));
   }
 }
 

@@ -33,28 +33,14 @@
 
 using namespace SCIRun::Gui;
 
-class ModuleProxyWidgetPosition : public PositionProvider
-{
-public:
-  explicit ModuleProxyWidgetPosition(ModuleProxyWidget* widget) : widget_(widget) {}
-  virtual QPointF currentPosition() const
-  {
-    return widget_->pos();
-  }
-private:
-  ModuleProxyWidget* widget_;
-};
-
 ModuleProxyWidget::ModuleProxyWidget(Module* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
   module_(module),
   grabbedByWidget_(false)
-  //,
-  //backupZ_(zValue())
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
-  module_->setPositionObject(new ModuleProxyWidgetPosition(this));
+  module_->setPositionObject(new ProxyWidgetPosition(this));
 }
 
 void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -81,7 +67,6 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   else
   {
     QGraphicsItem::mouseReleaseEvent(event);
-    //setZValue(backupZ_);
   }
   grabbedByWidget_ = false;
 }
@@ -101,7 +86,7 @@ bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 void ModuleProxyWidget::highlightIfSelected()
 {
   if (isSelected())
-    module_->setStyleSheet("background-color: cyan;");
+    module_->setStyleSheet("background-color: lightblue;");
   else
     module_->setStyleSheet("background-color: lightgray;");
 }

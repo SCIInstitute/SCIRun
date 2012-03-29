@@ -35,11 +35,15 @@ namespace SCIRun {
 namespace Gui {
 
 class Module;
+class Port;
+class OutputPort;
+class InputPort;
 
 class Connection : public QGraphicsLineItem
 {
 public:
 	Connection(Module* fromNode, Module* toNode);
+  Connection(Port* fromPort, Port* toPort);
   ~Connection();
 
   Module* fromModule() const;
@@ -53,6 +57,23 @@ public:
 private:
   Module* fromModule_;
   Module* toModule_;
+
+  OutputPort* fromPort_;
+  InputPort* toPort_;
+};
+
+class ConnectionInProgress : public QGraphicsLineItem
+{
+public:
+  explicit ConnectionInProgress(Port* port);
+
+  void setColor(const QColor& color);
+  QColor color() const;
+
+  void update(const QPoint& end);
+
+private:
+  Port* fromPort_;
 };
 
 }

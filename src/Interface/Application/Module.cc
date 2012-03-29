@@ -32,6 +32,11 @@
 
 using namespace SCIRun::Gui;
 
+QPointF ProxyWidgetPosition::currentPosition() const
+{
+  return widget_->pos();
+}
+
 Module::Module(const QString& name, QWidget* parent /* = 0 */)
   : QFrame(parent), positionProvider_(0)
 {

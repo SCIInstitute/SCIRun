@@ -26,63 +26,88 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULE_H
-#define MODULE_H
+#ifndef PORT_H
+#define PORT_H
 
-#include "ui_Module.h"
-#include <QFrame>
+#include <QWidget>
+#include <QColor>
 #include <set>
 
-class QGraphicsProxyWidget;
+class QGraphicsScene;
 
 namespace SCIRun {
 namespace Gui {
 
 class Connection;
+class ConnectionInProgress;
+class PositionProvider;
 
-class PositionProvider
+class Port : public QWidget
 {
+  Q_OBJECT
 public:
-  virtual ~PositionProvider() {}
-  virtual QPointF currentPosition() const = 0;
-};
+  Port(const QString& name, const QColor& color, bool isInput, QWidget* parent = 0);
 
-class ProxyWidgetPosition : public PositionProvider
-{
-public:
-  explicit ProxyWidgetPosition(QGraphicsProxyWidget* widget) : widget_(widget) {}
-  virtual QPointF currentPosition() const;
-private:
-  QGraphicsProxyWidget* widget_;
-};
+  QString name() const { return name_; }
+  QColor color() const { return color_; }
+  bool isInput() const { return isInput_; }
+  bool isConnected() const { return isConnected_; }
+  void setConnected(bool connected);
 
-class Module : public QFrame, public Ui::Module
-{
-	Q_OBJECT
-	
-public:
-  explicit Module(const QString& name, QWidget* parent = 0);
-  ~Module();
+  void toggleLight();
+  bool isLightOn() const { return lightOn_; }
+
+  QSize sizeHint() const;
+
   void addConnection(Connection* c);
   void removeConnection(Connection* c);
 
   void trackConnections();
 
   void setPositionObject(PositionProvider* provider) { positionProvider_ = provider; }
+  QPointF position() const;
 
-  QPointF inputPortPosition() const;
-  QPointF outputPortPosition() const;
+  //TODO: yuck
+  static QGraphicsScene* TheScene;
 
-  double percentComplete() const;
-  void setPercentComplete(double p);
+protected:
+  void mousePressEvent(QMouseEvent* event);
+  void mouseReleaseEvent(QMouseEvent* event);
+  void mouseMoveEvent(QMouseEvent* event);
+  
+  void paintEvent(QPaintEvent* event);
 
-  //for testing signal/slot of Execute
-public slots:
-  void incrementProgressFake();
+  void dragEnterEvent(QDragEnterEvent* event);
+  void dragMoveEvent(QDragMoveEvent* event);
+  void dropEvent(QDropEvent* event);
+
 private:
-  //TODO distinguish input/output
+  void performDrag(const QPoint& endPos);
+
+  const QString name_;
+  const QColor color_;
+  const bool isInput_;
+  bool isConnected_;
+  bool lightOn_;
+  QPoint startPos_;
+
+  ConnectionInProgress* currentConnection_;
+
   std::set<Connection*> connections_;
+
   PositionProvider* positionProvider_;
+};
+
+class InputPort : public Port 
+{
+public:
+  InputPort(const QString& name, const QColor& color, QWidget* parent = 0);
+};
+
+class OutputPort : public Port 
+{
+public:
+  OutputPort(const QString& name, const QColor& color, QWidget* parent = 0);
 };
 
 }

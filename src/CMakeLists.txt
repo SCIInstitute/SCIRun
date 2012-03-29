@@ -37,6 +37,7 @@ Interface/Application/ModuleProxyWidget.cc
 Interface/Application/scirunMain.cc 
 Interface/Application/SCIRunMainWindow.cc
 Interface/Application/Node.cc
+Interface/Application/Port.cc
 Interface/Application/Connection.cc
 Interface/Application/NetworkEditor.cc
 )
@@ -47,6 +48,7 @@ Interface/Application/ModuleProxyWidget.h
 Interface/Application/SCIRunMainWindow.h
 Interface/Application/Node.h
 Interface/Application/Connection.h
+Interface/Application/Port.h
 Interface/Application/NetworkEditor.h
 )
 
