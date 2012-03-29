@@ -31,6 +31,7 @@
 #include "Port.h"
 #include "Connection.h"
 #include "Module.h" //for PositionProvider, please move
+#include "Utility.h"
 
 using namespace SCIRun::Gui;
 
@@ -96,6 +97,17 @@ void Port::mouseReleaseEvent(QMouseEvent* event)
   {
     toggleLight();
     update();
+
+    if (currentConnection_)
+    {
+      /*
+      QPointF pos = event->pos();
+      QWidget* alienWidget = widget()->childAt(pos.toPoint());
+      if (isSubwidget(alienWidget))
+      */
+      std::cout << to_string(event->pos()) << std::endl;
+      //std::cout << TheScene-> << std::endl;
+    }
   }
   std::cout << "Port mouseReleaseEvent" << std::endl;
 }
@@ -119,7 +131,17 @@ void Port::performDrag(const QPoint& endPos)
 
 void Port::dragEnterEvent(QDragEnterEvent* event)
 {
-  std::cout << "Port dragEnterEvent" << std::endl;
+  if (currentConnection_)
+    {
+      /*
+      QPointF pos = event->pos();
+      QWidget* alienWidget = widget()->childAt(pos.toPoint());
+      if (isSubwidget(alienWidget))
+      */
+      std::cout << to_string(event->pos()) << std::endl;
+      //std::cout << TheScene-> << std::endl;
+    }
+  std::cout << "@@@@@@@@@Port dragEnterEvent" << std::endl;
 }
 
 void Port::dragMoveEvent(QDragMoveEvent* event)
