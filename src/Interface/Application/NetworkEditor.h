@@ -102,7 +102,7 @@ private:
   //QAction* cutAction_;
   //QAction* copyAction_;
   //QAction* pasteAction_;
-  //QAction* deleteAction_;
+  QAction* deleteAction_;
   QAction* addLinkAction_;
   QAction* addNodeAction_;
   QAction* bringToFrontAction_;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>188</width>
+    <width>206</width>
     <height>76</height>
    </rect>
   </property>
@@ -39,7 +39,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>170</width>
+     <width>186</width>
      <height>55</height>
     </rect>
    </property>
@@ -92,6 +92,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="logButton_">
+        <property name="font">
+         <font>
+          <family>Courier</family>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>i</string>
         </property>

@@ -273,7 +273,7 @@ void NetworkEditor::updateActions()
   //cutAction_->setEnabled(isNode);
   //copyAction_->setEnabled(isNode);
   addLinkAction_->setEnabled(isNodePair);
-  //deleteAction_->setEnabled(hasSelection);
+  deleteAction_->setEnabled(hasSelection);
   bringToFrontAction_->setEnabled(isNode);
   sendToBackAction_->setEnabled(isNode);
   propertiesAction_->setEnabled(isNode || isLink);
@@ -304,10 +304,10 @@ void NetworkEditor::createActions()
   addLinkAction_->setShortcut(tr("Ctrl+L"));
   connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
 
-  //deleteAction_ = new QAction(tr("&Delete"), this);
-  //deleteAction_->setIcon(QIcon(":/images/delete.png"));
-  //deleteAction_->setShortcut(tr("Del"));
-  //connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
+  deleteAction_ = new QAction(tr("&Delete"), this);
+  deleteAction_->setIcon(QIcon(":/images/delete.png"));
+  deleteAction_->setShortcut(tr("Del"));
+  connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
 
   //cutAction_ = new QAction(tr("Cu&t"), this);
   //cutAction_->setIcon(QIcon(":/images/cut.png"));
@@ -348,7 +348,7 @@ void NetworkEditor::addActions(QWidget* widget)
   //widget->addAction(cutAction_);
   //widget->addAction(copyAction_);
   //widget->addAction(pasteAction_);
-  //widget->addAction(deleteAction_);
+  widget->addAction(deleteAction_);
 }
 
 void NetworkEditor::dropEvent(QDropEvent* event)
