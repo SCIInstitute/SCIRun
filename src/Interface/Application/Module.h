@@ -61,6 +61,13 @@ public:
 
   QPointF inputPortPosition() const;
   QPointF outputPortPosition() const;
+
+  double percentComplete() const;
+  void setPercentComplete(double p);
+
+  //for testing signal/slot of Execute
+public slots:
+  void incrementProgressFake();
 private:
   //TODO distinguish input/output
   std::set<Connection*> connections_;

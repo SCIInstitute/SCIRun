@@ -41,7 +41,8 @@ using namespace SCIRun::Gui;
 
 NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
-  logger_(logger)
+  logger_(logger),
+  executeAction_(0)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
   scene_->setBackgroundBrush(QBrush(QColor(Qt::darkBlue)));
@@ -84,6 +85,7 @@ void NetworkEditor::addModule(const QString& text, const QPoint& pos)
 void NetworkEditor::setupModule(Module* module, const QPoint& pos)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
+  connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);

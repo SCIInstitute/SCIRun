@@ -23,7 +23,7 @@
    <bool>false</bool>
   </property>
   <property name="frameShape">
-   <enum>QFrame::StyledPanel</enum>
+   <enum>QFrame::WinPanel</enum>
   </property>
   <property name="frameShadow">
    <enum>QFrame::Raised</enum>
@@ -94,7 +94,7 @@
        <widget class="QToolButton" name="logButton_">
         <property name="font">
          <font>
-          <family>Courier</family>
+          <family>MS Shell Dlg 2</family>
           <pointsize>8</pointsize>
          </font>
         </property>

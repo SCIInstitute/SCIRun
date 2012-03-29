@@ -37,6 +37,9 @@ Module::Module(const QString& name, QWidget* parent /* = 0 */)
 {
   setupUi(this);
   titleLabel_->setText(name);
+  progressBar_->setMaximum(100);
+  progressBar_->setMinimum(0);
+  progressBar_->setValue(0);
 }
 
 Module::~Module()
@@ -73,4 +76,22 @@ QPointF Module::outputPortPosition() const
   if (positionProvider_)
     return positionProvider_->currentPosition() + QPointF(20, height() - 10);
   return pos();
+}
+
+double Module::percentComplete() const
+{
+  return progressBar_->value() / 100.0;
+}
+
+void Module::setPercentComplete(double p)
+{
+  if (0 <= p && p <= 1)
+  {
+    progressBar_->setValue(100 * p);
+  }
+}
+
+void Module::incrementProgressFake()
+{
+  setPercentComplete(percentComplete() + 0.1);
 }

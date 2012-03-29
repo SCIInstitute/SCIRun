@@ -66,6 +66,7 @@ public:
   //TODO change to boost::shared_ptr
   explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent = 0);
   void addActions(QWidget* widget);
+  void setExecuteAction(QAction* action) { executeAction_ = action; }
 protected:
   virtual void dropEvent(QDropEvent* event);
   virtual void dragEnterEvent(QDragEnterEvent* event);
@@ -94,7 +95,6 @@ private:
   ModuleProxyWidget* selectedModuleProxy() const;
   Connection* selectedLink() const;
   ModulePair selectedModulePair() const;
-
   //QMenu* fileMenu_;
   //QMenu* editMenu_;
   //QToolBar* editToolBar_;
@@ -118,6 +118,7 @@ private:
   //TODO change to boost::shared_ptr
   CurrentModuleSelection* moduleSelectionGetter_;
   Logger* logger_;
+  QAction* executeAction_;
 };
 
 }
