@@ -33,6 +33,8 @@
 #include "Utility.h"
 #include "Port.h"
 
+#include <stdexcept>
+
 using namespace SCIRun::Gui;
 
 Connection::Connection(Module* fromModule, Module* toModule)
