@@ -66,7 +66,17 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logg
 
   updateActions();
 
-  
+
+  //temp port test
+  Port* p1 = new InputPort("port1", Qt::green);
+  QGraphicsProxyWidget* portProxy = scene_->addWidget(p1);
+  portProxy->setPos(30,30);
+  p1->setPositionObject(new ProxyWidgetPosition(portProxy));
+
+  Port* p2 = new OutputPort("port2", Qt::yellow);
+  portProxy = scene_->addWidget(p2);
+  portProxy->setPos(60,60);
+  p2->setPositionObject(new ProxyWidgetPosition(portProxy));
 }
 
 void NetworkEditor::addModule()
@@ -101,18 +111,6 @@ void NetworkEditor::setupModule(Module* module, const QPointF& pos)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
-
-
-  //temp port test
-  Port* p1 = new InputPort("port1", Qt::green);
-  QGraphicsProxyWidget* portProxy = scene_->addWidget(p1);
-  portProxy->setPos(30,30);
-  p1->setPositionObject(new ProxyWidgetPosition(portProxy));
-
-  Port* p2 = new OutputPort("port2", Qt::yellow);
-  portProxy = scene_->addWidget(p2);
-  portProxy->setPos(60,60);
-  p2->setPositionObject(new ProxyWidgetPosition(portProxy));
 }
 
 void NetworkEditor::bringToFront()

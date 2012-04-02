@@ -27,13 +27,12 @@
 */
 
 #include <iostream>
+#include <stdexcept>
 #include <QtGui>
 #include "Connection.h"
 #include "Module.h"
 #include "Utility.h"
 #include "Port.h"
-
-#include <stdexcept>
 
 using namespace SCIRun::Gui;
 
@@ -145,5 +144,6 @@ QColor ConnectionInProgress::color() const
 
 void ConnectionInProgress::update(const QPoint& end)
 {
-  setLine(QLineF(fromPort_->position(), mapToScene(end)));
+  //std::cout << "Drawing line from " << to_string(fromPort_->position()) << " to " << to_string(mapToScene(end) + fromPort_->position()) << std::endl;
+  setLine(QLineF(fromPort_->position() + QPointF(5,0), mapToScene(end) + fromPort_->position()));
 }

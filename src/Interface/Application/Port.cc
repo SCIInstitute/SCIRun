@@ -43,6 +43,7 @@ Port::Port(const QString& name, const QColor& color, bool isInput, QWidget* pare
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
+  
 }
 
 QSize Port::sizeHint() const
@@ -76,7 +77,7 @@ void Port::mousePressEvent(QMouseEvent* event)
     startPos_ = event->pos();
     update();
   }
-  std::cout << "Port mousePressEvent" << std::endl;
+  //std::cout << "Port mousePressEvent" << std::endl;
 }
 
 void Port::mouseMoveEvent(QMouseEvent* event)
@@ -88,7 +89,7 @@ void Port::mouseMoveEvent(QMouseEvent* event)
       performDrag(event->pos());
   }
 
-  std::cout << "Port mouseMoveEvent" << std::endl;
+  //std::cout << "Port mouseMoveEvent" << std::endl;
 }
 
 void Port::mouseReleaseEvent(QMouseEvent* event)
@@ -105,8 +106,12 @@ void Port::mouseReleaseEvent(QMouseEvent* event)
       QWidget* alienWidget = widget()->childAt(pos.toPoint());
       if (isSubwidget(alienWidget))
       */
+      std::cout << "Released mouse with active current connection" << std::endl;
       std::cout << to_string(event->pos()) << std::endl;
       //std::cout << TheScene-> << std::endl;
+      
+      delete currentConnection_;
+      currentConnection_ = 0;
     }
   }
   std::cout << "Port mouseReleaseEvent" << std::endl;
@@ -126,13 +131,16 @@ void Port::performDrag(const QPoint& endPos)
   if (TheScene)
     currentConnection_->update(endPos);
 
-  std::cout << "Port: performing drag" << std::endl;
+  //std::cout << "Port: performing drag" << std::endl;
 }
+
+//#error these overrides need to be on the proxy again!!!.  take break to work on Domain layer.
 
 void Port::dragEnterEvent(QDragEnterEvent* event)
 {
   if (currentConnection_)
     {
+       event->accept();
       /*
       QPointF pos = event->pos();
       QWidget* alienWidget = widget()->childAt(pos.toPoint());
@@ -141,17 +149,20 @@ void Port::dragEnterEvent(QDragEnterEvent* event)
       std::cout << to_string(event->pos()) << std::endl;
       //std::cout << TheScene-> << std::endl;
     }
+ 
   std::cout << "@@@@@@@@@Port dragEnterEvent" << std::endl;
 }
 
 void Port::dragMoveEvent(QDragMoveEvent* event)
 {
-  std::cout << "Port dragMoveEvent" << std::endl;
+  event->accept();
+  std::cout << "@@@@@@@@@Port dragMoveEvent" << std::endl;
 }
 
 void Port::dropEvent(QDropEvent* event)
 {
-  std::cout << "Port dropEvent" << std::endl;
+  event->accept();
+  std::cout << "@@@@@@@@@Port dropEvent" << std::endl;
 }
 
 void Port::addConnection(Connection* c)

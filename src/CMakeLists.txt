@@ -71,6 +71,19 @@ INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_SUBDIRECTORY(Interface)
+ADD_SUBDIRECTORY(Core)
+ADD_SUBDIRECTORY(Externals)
+
+#SET(SCIRUN_INCLUDE_DIRS_SYSTEM 
+#  ${SCIRUN_CORE_SOURCE_DIR}/
+#)
+
+
+set(Boost_ADDITIONAL_VERSIONS "1.49" "1.49.0")
+find_package( Boost 1.49.0 )
+  if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+endif()
 
 ADD_EXECUTABLE(SCIRunGUIPrototype
 ${SCIRunGUIPrototype_SOURCES}
