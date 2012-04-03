@@ -30,9 +30,7 @@
 #ifndef CORE_DATAFLOW_NETWORK_PORTMANAGER_H
 #define CORE_DATAFLOW_NETWORK_PORTMANAGER_H 
 
-#include <typeinfo>
-
-#include "Core/Dataflow/Network/Port.h"
+#include <Core/Dataflow/Network/Port.h>
 
 #include <string>
 #include <vector>
@@ -113,6 +111,6 @@ PortManager<T>::operator[](int item)
   return (t);
 }
 
-}
+}}}
 
 #endif

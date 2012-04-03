@@ -30,11 +30,13 @@
 #ifndef CORE_DATAFLOW_NETWORK_MODULE_H
 #define CORE_DATAFLOW_NETWORK_MODULE_H 
 
-#include <Core/Dataflow/Network/Port.h>
-#include "Core/Dataflow/Network/NetworkFwd.h"
+#include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
 #include <map>
+
+#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/PortManager.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -60,11 +62,6 @@ protected:
   void set_modulename(const std::string& name)   { module_name_ = name; }
   void set_categoryname(const std::string& name) { category_name_ = name; }
   void set_packagename(const std::string& name)  { package_name_ = name; }
-  void set_old_modulename(const std::string& name)   { old_module_name_ = name; }
-  void set_old_categoryname(const std::string& name) { old_category_name_ = name; }
-  void set_old_packagename(const std::string& name)  { old_package_name_ = name; }
-  void set_old_version(const std::string& name)      { old_version_ = name; }
-
 
   std::string            module_name_;
   std::string            package_name_;
@@ -83,8 +80,8 @@ private:
   void add_iport(InputPortHandle);
   void add_oport(OutputPortHandle);
 
-  PortManager<OutputPortHandle> oports_;
-  PortManager<InputPortHandle> iports_;
+  PortManager<boost::shared_ptr<OutputPort> > oports_;
+  PortManager<boost::shared_ptr<OutputPort> > iports_;
   std::string lastportname_;
 };
 

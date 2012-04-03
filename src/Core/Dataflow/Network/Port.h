@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 #include <boost/noncopyable.hpp>
-#include "Core/Dataflow/Network/NetworkFwd.h"
+#include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -84,11 +84,6 @@ public:
   virtual ~OutputPort();
 };
 
-typedef boost::shared_ptr<InputPort> InputPortHandle;
-typedef boost::shared_ptr<OutputPort> OutputPortHandle;
-
-}
-}
-}
+}}}
 
 #endif

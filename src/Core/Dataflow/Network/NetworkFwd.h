@@ -40,7 +40,6 @@ class Network;
 class Module;
 class Port;
 class Connection;
-class PortManager;
 class InputPort;
 class OutputPort;
 
@@ -48,7 +47,6 @@ typedef boost::shared_ptr<Network> NetworkHandle;
 typedef boost::shared_ptr<Module> ModuleHandle;
 typedef boost::shared_ptr<Port> PortHandle;
 typedef boost::shared_ptr<Connection> ConnectionHandle;
-typedef boost::shared_ptr<PortManager> PortManagerHandle;
 typedef boost::shared_ptr<InputPort> InputPortHandle;
 typedef boost::shared_ptr<OutputPort> OutputPortHandle;
   

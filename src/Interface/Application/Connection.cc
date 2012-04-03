@@ -99,22 +99,22 @@ void Connection::trackNodes()
 {
   if (fromModule_ && toModule_)
   {
-    std::cout << "Drawing line from " << to_string(fromModule_->outputPortPosition()) << " to " << to_string(toModule_->inputPortPosition()) << std::endl;
+    //std::cout << "Drawing line from " << to_string(fromModule_->outputPortPosition()) << " to " << to_string(toModule_->inputPortPosition()) << std::endl;
     setLine(QLineF(fromModule_->outputPortPosition(), toModule_->inputPortPosition()));
   }
   else if (fromPort_ && toPort_)
   {
-    std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(toPort_->pos()) << std::endl;
+    //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(toPort_->pos()) << std::endl;
     setLine(QLineF(fromPort_->position(), toPort_->position()));
   }
   else if (fromPort_)
   {
-    std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(pos()) << std::endl;
+    //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(pos()) << std::endl;
     setLine(QLineF(fromPort_->position(), pos()));
   }
   else if (toPort_)
   {
-    std::cout << "Drawing line from " << to_string(pos()) << " to " << to_string(toPort_->pos()) << std::endl;
+    //std::cout << "Drawing line from " << to_string(pos()) << " to " << to_string(toPort_->pos()) << std::endl;
     setLine(QLineF(pos(), toPort_->position()));
   }
   else

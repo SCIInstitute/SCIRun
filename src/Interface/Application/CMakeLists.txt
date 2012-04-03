@@ -30,3 +30,51 @@
 ##################################################
 # Set sources
 ##################################################
+
+
+SET(SCIRunGUIPrototype_SOURCES 
+Module.cc
+ModuleProxyWidget.cc
+scirunMain.cc 
+SCIRunMainWindow.cc
+Node.cc
+Port.cc
+Connection.cc
+NetworkEditor.cc
+)
+
+SET(SCIRunGUIPrototype_HEADERS
+Module.h
+ModuleProxyWidget.h
+SCIRunMainWindow.h
+Node.h
+Connection.h
+Port.h
+NetworkEditor.h
+)
+
+SET(SCIRunGUIPrototype_FORMS
+Module.ui
+SCIRunMainWindow.ui
+)
+
+SET(SCIRunGUIPrototype_RESOURCES
+#Interface/Application/scirun-icon-small.ico
+#Interface/Application/scirun-icon-large.ico
+#Interface/Application/lin_agt_wrench-32.png
+)
+
+QT4_WRAP_CPP(SCIRunGUIPrototype_HEADERS_MOC ${SCIRunGUIPrototype_HEADERS})
+QT4_WRAP_UI(SCIRunGUIPrototype_FORMS_HEADERS ${SCIRunGUIPrototype_FORMS})
+QT4_ADD_RESOURCES(SCIRunGUIPrototype_RESOURCES_RCC ${SCIRunGUIPrototype_RESOURCES})
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+ADD_EXECUTABLE(SCIRunGUIPrototype
+${SCIRunGUIPrototype_SOURCES}
+${SCIRunGUIPrototype_HEADERS_MOC}
+${SCIRunGUIPrototype_FORMS_HEADERS}
+${SCIRunGUIPrototype_RESOURCES_RCC})
+
+TARGET_LINK_LIBRARIES(SCIRunGUIPrototype ${QT_LIBRARIES})

@@ -33,7 +33,6 @@ SET(Core_Dataflow_Network_Tests_SRCS
   PortTests.cc
 )
 
-INCLUDE_DIRECTORIES(${Core_Dataflow_Network_HEADERS})
 ADD_LIBRARY(Core_Dataflow_Network_Tests ${Core_Dataflow_Network_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network_Tests

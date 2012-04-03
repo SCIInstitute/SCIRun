@@ -31,51 +31,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(SCIRun5Prototype)
 FIND_PACKAGE(Qt4 REQUIRED)
 
-SET(SCIRunGUIPrototype_SOURCES 
-Interface/Application/Module.cc
-Interface/Application/ModuleProxyWidget.cc
-Interface/Application/scirunMain.cc 
-Interface/Application/SCIRunMainWindow.cc
-Interface/Application/Node.cc
-Interface/Application/Port.cc
-Interface/Application/Connection.cc
-Interface/Application/NetworkEditor.cc
-)
-
-SET(SCIRunGUIPrototype_HEADERS
-Interface/Application/Module.h
-Interface/Application/ModuleProxyWidget.h
-Interface/Application/SCIRunMainWindow.h
-Interface/Application/Node.h
-Interface/Application/Connection.h
-Interface/Application/Port.h
-Interface/Application/NetworkEditor.h
-)
-
-SET(SCIRunGUIPrototype_FORMS
-Interface/Application/Module.ui
-Interface/Application/SCIRunMainWindow.ui
-)
-
-SET(SCIRunGUIPrototype_RESOURCES
-#Interface/Application/scirun-icon-small.ico
-#Interface/Application/scirun-icon-large.ico
-#Interface/Application/lin_agt_wrench-32.png
-)
-
-QT4_WRAP_CPP(SCIRunGUIPrototype_HEADERS_MOC ${SCIRunGUIPrototype_HEADERS})
-QT4_WRAP_UI(SCIRunGUIPrototype_FORMS_HEADERS ${SCIRunGUIPrototype_FORMS})
-QT4_ADD_RESOURCES(SCIRunGUIPrototype_RESOURCES_RCC ${SCIRunGUIPrototype_RESOURCES})
-
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
-ADD_SUBDIRECTORY(Interface)
-ADD_SUBDIRECTORY(Core)
-ADD_SUBDIRECTORY(Externals)
-
-#SET(SCIRUN_INCLUDE_DIRS_SYSTEM 
-#  ${SCIRUN_CORE_SOURCE_DIR}/
+#SET(SCIRUN5_INCLUDE_DIRS_SYSTEM 
+#  ${SCIRun5Prototype_SOURCE_DIR}/
 #)
 
 
@@ -83,13 +40,22 @@ set(Boost_ADDITIONAL_VERSIONS "1.49" "1.49.0")
 find_package( Boost 1.49.0 )
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
+	MESSAGE(STATUS "Boost")
+	MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
+	set(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
 endif()
 
-ADD_EXECUTABLE(SCIRunGUIPrototype
-${SCIRunGUIPrototype_SOURCES}
-${SCIRunGUIPrototype_HEADERS_MOC}
-${SCIRunGUIPrototype_FORMS_HEADERS}
-${SCIRunGUIPrototype_RESOURCES_RCC})
+MESSAGE(STATUS ${SCIRun5Prototype_SOURCE_DIR}/)
+MESSAGE(STATUS "${SCIRun5Prototype_SOURCE_DIR}")
+MESSAGE(STATUS ${Boost_INCLUDE_DIRS}/)
+MESSAGE(STATUS "${Boost_INCLUDE_DIRS}")
 
-TARGET_LINK_LIBRARIES(SCIRunGUIPrototype ${QT_LIBRARIES})
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(
+${SCIRun5Prototype_SOURCE_DIR}/
+${SCIRun5Prototype_BINARY_DIR}/
+${SCIRUN5_BOOST_INCLUDE_DIRS}
+)
+
+ADD_SUBDIRECTORY(Interface)
+ADD_SUBDIRECTORY(Core)
+ADD_SUBDIRECTORY(Externals)

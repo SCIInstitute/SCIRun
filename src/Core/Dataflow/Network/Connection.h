@@ -30,7 +30,7 @@
 #define CORE_DATAFLOW_NETWORK_CONNECTION_H 
 
 #include <string>
-#include "Core/Dataflow/Network/NetworkFwd.h"
+#include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
   namespace Domain {
