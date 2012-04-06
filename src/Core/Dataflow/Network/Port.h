@@ -39,7 +39,23 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-class Port : boost::noncopyable
+  class PortInterface
+  {
+  public:
+    virtual ~PortInterface() {}
+    virtual void attach(Connection* conn) = 0;
+    virtual void detach(Connection* conn/*, bool blocked*/) = 0;
+  };
+  
+  class InputPortInterface : public PortInterface
+  {
+  };
+  
+  class OutputPortInterface : public PortInterface
+  {
+  };
+
+class Port : public PortInterface, boost::noncopyable
 {
 public:
   Port(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
@@ -52,6 +68,9 @@ public:
   std::string get_colorname() const;
   std::string get_portname() const;
 
+  virtual void attach(Connection* conn);
+  virtual void detach(Connection* conn/*, bool blocked*/);
+
 protected:
   ModuleInterface* module;
   std::vector<ConnectionHandle> connections;
@@ -63,7 +82,7 @@ private:
 };
 
 
-class InputPort : public Port 
+class InputPort : public Port, public InputPortInterface
 {
 public:
   InputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
@@ -77,7 +96,7 @@ private:
 };
 
 
-class OutputPort : public Port 
+class OutputPort : public Port, public OutputPortInterface
 {
 public:
   OutputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);

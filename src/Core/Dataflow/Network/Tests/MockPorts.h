@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MOCK_MODULE_H
-#define MOCK_MODULE_H
+#ifndef MOCK_PORTS_H
+#define MOCK_PORTS_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Core/Dataflow/Network/Port.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {
@@ -37,15 +37,23 @@ namespace SCIRun {
     namespace Networks {
       namespace Mocks
       {
-        class MockModule : public ModuleInterface
+        class MockInputPort : public InputPortInterface  
         {
         public:
-          MOCK_METHOD0(execute, void());
-          MOCK_CONST_METHOD1(get_oport, OutputPortHandle(int));
-          MOCK_CONST_METHOD1(get_iport, InputPortHandle(int));
+          MOCK_METHOD1(attach, void(Connection*));
+          MOCK_METHOD1(detach, void(Connection*));
         };
 
-        typedef boost::shared_ptr<MockModule> MockModulePtr;
+        typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
+
+        class MockOutputPort : public OutputPortInterface  
+        {
+        public:
+          MOCK_METHOD1(attach, void(Connection*));
+          MOCK_METHOD1(detach, void(Connection*));
+        };
+
+        typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
       }
     }
   }

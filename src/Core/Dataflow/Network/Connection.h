@@ -39,7 +39,7 @@ namespace SCIRun {
 class Connection 
 {
 public:
-  Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int imodno, const std::string &id);
+  Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int iportno, const std::string &id);
   ~Connection();
 
   OutputPortHandle oport_;

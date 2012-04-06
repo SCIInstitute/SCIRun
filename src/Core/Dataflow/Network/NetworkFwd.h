@@ -38,17 +38,17 @@ namespace Networks {
 
 class Network;
 class ModuleInterface;
-class Port;
+class PortInterface;
 class Connection;
-class InputPort;
-class OutputPort;
+class InputPortInterface;
+class OutputPortInterface;
 
 typedef boost::shared_ptr<Network> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
-typedef boost::shared_ptr<Port> PortHandle;
+typedef boost::shared_ptr<PortInterface> PortHandle;
 typedef boost::shared_ptr<Connection> ConnectionHandle;
-typedef boost::shared_ptr<InputPort> InputPortHandle;
-typedef boost::shared_ptr<OutputPort> OutputPortHandle;
+typedef boost::shared_ptr<InputPortInterface> InputPortHandle;
+typedef boost::shared_ptr<OutputPortInterface> OutputPortHandle;
   
 }}}
 

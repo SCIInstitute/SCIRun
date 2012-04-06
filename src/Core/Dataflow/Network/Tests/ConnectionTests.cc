@@ -28,16 +28,83 @@
 
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Tests/MockModule.h>
+#include <Core/Dataflow/Network/Tests/MockPorts.h>
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using ::testing::Return;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::_;
 
-TEST(ConnectionTests, CtorThrowsWithNullModules)
+class ConnectionTests : public ::testing::Test
+{
+protected:
+  virtual void SetUp()
+  {
+    DefaultValue<InputPortHandle>::Set(InputPortHandle());
+    DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
+
+    dummyInputPort.reset(new NiceMock<MockInputPort>);
+    dummyOutputPort.reset(new NiceMock<MockOutputPort>);
+    inputModule.reset(new NiceMock<MockModule>);
+    outputModule.reset(new NiceMock<MockModule>);
+  }
+
+  void setModuleExpectations()
+  {
+    EXPECT_CALL(*inputModule, get_iport(2)).WillOnce(Return(dummyInputPort));
+    EXPECT_CALL(*outputModule, get_oport(1)).WillOnce(Return(dummyOutputPort));
+  }
+
+  MockInputPortPtr dummyInputPort;
+  MockOutputPortPtr dummyOutputPort;
+  MockModulePtr inputModule;
+  MockModulePtr outputModule;
+};
+
+TEST_F(ConnectionTests, CtorThrowsWithNullModules)
 {
   ASSERT_THROW(Connection(ModuleHandle(), 1, ModuleHandle(), 2, "fake"), std::invalid_argument);
   ModuleHandle dummy(new MockModule);
   ASSERT_THROW(Connection(dummy, 1, ModuleHandle(), 2, "fake"), std::invalid_argument);
   ASSERT_THROW(Connection(ModuleHandle(), 1, dummy, 2, "fake"), std::invalid_argument);
-  ASSERT_TRUE(false);
+}
+
+TEST_F(ConnectionTests, CtorThrowsWhenPortsDontExistOnModules)
+{
+  ASSERT_THROW(Connection(outputModule, 1, inputModule, 2, "test"), std::invalid_argument);
+}
+
+TEST_F(ConnectionTests, CtorSetsPortsViaModules)
+{
+  setModuleExpectations();
+  Connection c(outputModule, 1, inputModule, 2, "test");
+  ASSERT_TRUE(c.imod_);
+  ASSERT_TRUE(c.omod_);
+  ASSERT_TRUE(c.iport_);
+  ASSERT_TRUE(c.oport_);
+  ASSERT_EQ(c.imod_, inputModule);
+  ASSERT_EQ(c.omod_, outputModule);
+  ASSERT_EQ(c.oport_, dummyOutputPort);
+  ASSERT_EQ(c.iport_, dummyInputPort);
+  ASSERT_EQ("test", c.id_);
+}
+
+TEST_F(ConnectionTests, CtorConnectsSelfToPorts)
+{
+  setModuleExpectations();
+  EXPECT_CALL(*dummyInputPort, attach(_));
+  EXPECT_CALL(*dummyOutputPort, attach(_));
+  Connection c(outputModule, 1, inputModule, 2, "test");
+}
+
+TEST_F(ConnectionTests, DtorDisconnectsSelfFromPorts)
+{
+  setModuleExpectations();
+  Connection c(outputModule, 1, inputModule, 2, "test");
+  EXPECT_CALL(*dummyInputPort, detach(&c));
+  EXPECT_CALL(*dummyOutputPort, detach(&c));
 }

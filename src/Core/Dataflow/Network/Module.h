@@ -47,6 +47,8 @@ namespace Networks {
   public:
     virtual ~ModuleInterface() {}
     virtual void execute() = 0;
+    virtual OutputPortHandle get_oport(int idx) const = 0;
+    virtual InputPortHandle get_iport(int idx) const = 0;
   };
 
 class Module : public ModuleInterface, boost::noncopyable
@@ -78,15 +80,15 @@ protected:
   bool                   lastportdynamic_;
   std::string            id_;
 
+public:
+  InputPortHandle get_iport(const std::string &name) const;
+  OutputPortHandle get_oport(const std::string &name) const;
+  OutputPortHandle get_oport(int idx) const;
+  InputPortHandle get_iport(int idx) const;
 private:
-  InputPortHandle get_iport(const std::string &name);
-  OutputPortHandle get_oport(const std::string &name);
-  OutputPortHandle get_oport(int idx);
-  InputPortHandle get_iport(int idx);
-
   void add_iport(InputPortHandle);
   void add_oport(OutputPortHandle);
-
+private:
   PortManager<boost::shared_ptr<OutputPort> > oports_;
   PortManager<boost::shared_ptr<OutputPort> > iports_;
   std::string lastportname_;
