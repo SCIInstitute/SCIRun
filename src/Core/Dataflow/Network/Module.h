@@ -42,7 +42,14 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-class Module : boost::noncopyable
+  class ModuleInterface
+  {
+  public:
+    virtual ~ModuleInterface() {}
+    virtual void execute() = 0;
+  };
+
+class Module : public ModuleInterface, boost::noncopyable
 {
 public:
   Module(const std::string& name, const std::string& cat="unknown", const std::string& pack="unknown", 

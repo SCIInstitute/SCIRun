@@ -33,10 +33,12 @@ SET(Core_Dataflow_Network_Tests_SRCS
   PortTests.cc
 )
 
-ADD_LIBRARY(Core_Dataflow_Network_Tests ${Core_Dataflow_Network_Tests_SRCS})
+ADD_EXECUTABLE(Core_Dataflow_Network_Tests ${Core_Dataflow_Network_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network_Tests
 Core_Dataflow_Network
-${gmock_main}
+gtest_main
+gtest
+gmock
 )
 

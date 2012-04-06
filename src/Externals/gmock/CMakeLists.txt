@@ -13,7 +13,9 @@ option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
 # working in a DLL.
 # TODO(vladl@google.com): Implement building gMock as a DLL.
 set(BUILD_SHARED_LIBS OFF)
-
+set(
+  gtest_force_shared_crt
+  ON)
 option(gmock_build_tests "Build all of Google Mock's own tests." OFF)
 
 # A directory to find Google Test sources.
@@ -76,6 +78,7 @@ include_directories("${gmock_SOURCE_DIR}/include"
 # Google Mock libraries.  We build them using more strict warnings than what
 # are used for other targets, to ensure that Google Mock can be compiled by
 # a user aggressive about warnings.
+
 cxx_library(gmock "${cxx_strict}" src/gmock-all.cc)
 target_link_libraries(gmock gtest)
 

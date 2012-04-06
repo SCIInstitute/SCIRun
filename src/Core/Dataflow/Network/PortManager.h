@@ -45,7 +45,7 @@ class PortManager : boost::noncopyable
 {
 private:
   std::vector<T>   ports_;
-  Module*          module_;
+  ModuleInterface*          module_;
   std::string      lastportname_;
   
 public:
@@ -55,7 +55,7 @@ public:
   void remove(int item);
   T operator[](int);
   T get_port(int);
-  void set_module(Module* mod) { module_ = mod; }
+  void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
 };
 

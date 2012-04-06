@@ -42,7 +42,7 @@ namespace Networks {
 class Port : boost::noncopyable
 {
 public:
-  Port(Module* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
+  Port(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
   virtual ~Port();
 
   int nconnections();
@@ -53,7 +53,7 @@ public:
   std::string get_portname() const;
 
 protected:
-  Module* module;
+  ModuleInterface* module;
   std::vector<ConnectionHandle> connections;
 
 private:
@@ -66,7 +66,7 @@ private:
 class InputPort : public Port 
 {
 public:
-  InputPort(Module* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
+  InputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
   virtual ~InputPort();
   
 private:
@@ -80,7 +80,7 @@ private:
 class OutputPort : public Port 
 {
 public:
-  OutputPort(Module* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
+  OutputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
   virtual ~OutputPort();
 };
 

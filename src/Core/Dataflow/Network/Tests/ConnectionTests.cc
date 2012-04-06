@@ -27,5 +27,17 @@
 */
 
 #include <Core/Dataflow/Network/Connection.h>
+#include <Core/Dataflow/Network/Tests/MockModule.h>
+#include <gtest/gtest.h>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::Networks::Mocks;
+
+TEST(ConnectionTests, CtorThrowsWithNullModules)
+{
+  ASSERT_THROW(Connection(ModuleHandle(), 1, ModuleHandle(), 2, "fake"), std::invalid_argument);
+  ModuleHandle dummy(new MockModule);
+  ASSERT_THROW(Connection(dummy, 1, ModuleHandle(), 2, "fake"), std::invalid_argument);
+  ASSERT_THROW(Connection(ModuleHandle(), 1, dummy, 2, "fake"), std::invalid_argument);
+  ASSERT_TRUE(false);
+}

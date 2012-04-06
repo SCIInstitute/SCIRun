@@ -30,3 +30,12 @@
 
 using namespace SCIRun::Domain::Networks;
 
+Connection::Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int imodno, const std::string &id)
+{
+
+}
+
+Connection::~Connection()
+{
+
+}

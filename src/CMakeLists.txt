@@ -31,11 +31,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(SCIRun5Prototype)
 FIND_PACKAGE(Qt4 REQUIRED)
 
-#SET(SCIRUN5_INCLUDE_DIRS_SYSTEM 
-#  ${SCIRun5Prototype_SOURCE_DIR}/
-#)
-
-
 set(Boost_ADDITIONAL_VERSIONS "1.49" "1.49.0")
 find_package( Boost 1.49.0 )
   if(Boost_FOUND)
@@ -45,16 +40,25 @@ find_package( Boost 1.49.0 )
 	set(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
 endif()
 
-MESSAGE(STATUS ${SCIRun5Prototype_SOURCE_DIR}/)
-MESSAGE(STATUS "${SCIRun5Prototype_SOURCE_DIR}")
-MESSAGE(STATUS ${Boost_INCLUDE_DIRS}/)
-MESSAGE(STATUS "${Boost_INCLUDE_DIRS}")
-
 INCLUDE_DIRECTORIES(
 ${SCIRun5Prototype_SOURCE_DIR}/
+${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
+${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
 ${SCIRun5Prototype_BINARY_DIR}/
 ${SCIRUN5_BOOST_INCLUDE_DIRS}
 )
+
+
+SET(SCIRUN_CORE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+########################################################################
+# Output directories.
+
+SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for building all libraries.")
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR} CACHE INTERNAL "Single output directory for building all executables.")
+MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+
+SET(BUILD_FROM_TOP_LEVEL 1)
 
 ADD_SUBDIRECTORY(Interface)
 ADD_SUBDIRECTORY(Core)

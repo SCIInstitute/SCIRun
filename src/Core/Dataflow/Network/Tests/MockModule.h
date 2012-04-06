@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,31 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MOCK_MODULE_H
+#define MOCK_MODULE_H
 
-#ifndef CORE_DATAFLOW_NETWORK_NETWORK_FWD_H
-#define CORE_DATAFLOW_NETWORK_NETWORK_FWD_H 
-
-#include <boost/shared_ptr.hpp>
+#include <Core/Dataflow/Network/Module.h>
+#include <gmock/gmock.h>
 
 namespace SCIRun {
-namespace Domain {
-namespace Networks {
+  namespace Domain {
+    namespace Networks {
+      namespace Mocks
+      {
+        class MockModule : public ModuleInterface
+        {
+        public:
+          MOCK_METHOD0(execute, void());
+        };
 
-class Network;
-class ModuleInterface;
-class Port;
-class Connection;
-class InputPort;
-class OutputPort;
-
-typedef boost::shared_ptr<Network> NetworkHandle;
-typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
-typedef boost::shared_ptr<Port> PortHandle;
-typedef boost::shared_ptr<Connection> ConnectionHandle;
-typedef boost::shared_ptr<InputPort> InputPortHandle;
-typedef boost::shared_ptr<OutputPort> OutputPortHandle;
-  
-}}}
-
+      }
+    }
+  }
+}
 
 #endif
