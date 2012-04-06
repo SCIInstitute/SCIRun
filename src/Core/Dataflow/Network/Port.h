@@ -44,43 +44,47 @@ namespace Networks {
   public:
     virtual ~PortInterface() {}
     virtual void attach(Connection* conn) = 0;
-    virtual void detach(Connection* conn/*, bool blocked*/) = 0;
+    virtual void detach(Connection* conn) = 0;
+    virtual size_t nconnections() const = 0;
+    virtual const Connection* connection(size_t) const = 0;
   };
   
-  class InputPortInterface : public PortInterface
+  class InputPortInterface : virtual public PortInterface
   {
   };
   
-  class OutputPortInterface : public PortInterface
+  class OutputPortInterface : virtual public PortInterface
   {
   };
 
-class Port : public PortInterface, boost::noncopyable
+class Port : virtual public PortInterface, boost::noncopyable
 {
 public:
   Port(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
   virtual ~Port();
 
-  int nconnections();
-  ConnectionHandle connection(int);
+  size_t nconnections() const;
+  const Connection* connection(size_t) const;
 
-  std::string get_typename() const;
-  std::string get_colorname() const;
-  std::string get_portname() const;
+  std::string get_typename() const { return typeName_; }
+  std::string get_colorname() const { return colorName_; }
+  std::string get_portname() const {return portName_; }
 
   virtual void attach(Connection* conn);
-  virtual void detach(Connection* conn/*, bool blocked*/);
+  virtual void detach(Connection* conn);
 
 protected:
-  ModuleInterface* module;
-  std::vector<ConnectionHandle> connections;
+  ModuleInterface* module_;
+  std::vector<Connection*> connections_;
 
 private:
-  std::string type_name;
-  std::string port_name;
-  std::string color_name;
+  std::string typeName_;
+  std::string portName_;
+  std::string colorName_;
 };
 
+#pragma warning (push)
+#pragma warning (disable : 4250)
 
 class InputPort : public Port, public InputPortInterface
 {
@@ -89,10 +93,7 @@ public:
   virtual ~InputPort();
   
 private:
-  InputPort(const InputPort&);
-  InputPort& operator=(const InputPort&);
-
-  virtual void update_light();
+  //virtual void update_light();
 };
 
 
@@ -102,6 +103,8 @@ public:
   OutputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
   virtual ~OutputPort();
 };
+
+#pragma warning (pop)
 
 }}}
 

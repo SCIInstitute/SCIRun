@@ -26,6 +26,68 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <Core/Dataflow/Network/Port.h>
 
 using namespace SCIRun::Domain::Networks;
+
+Port::Port(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name)
+  : module_(module), typeName_(type_name), portName_(port_name), colorName_(color_name)
+{
+  if (!module_)
+    throw std::invalid_argument("port cannot have null module");
+  if (typeName_.empty() || portName_.empty() || colorName_.empty())
+    throw std::invalid_argument("port has empty metadata");
+}
+
+Port::~Port()
+{
+
+}
+
+void Port::attach(Connection* conn)
+{
+  connections_.push_back(conn);
+}
+
+void Port::detach(Connection* conn)
+{
+  std::vector<Connection*>::iterator pos = std::find(connections_.begin(), connections_.end(), conn);
+  if (pos == connections_.end())
+  {
+    std::cerr << "Port::detach: Connection not found";
+  }
+  connections_.erase(pos);
+}
+
+const Connection* Port::connection(size_t i) const
+{
+  return connections_[i];
+}
+
+size_t Port::nconnections() const
+{
+  return connections_.size();
+}
+
+InputPort::InputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name)
+  : Port(module, type_name, port_name, color_name)
+{
+
+}
+
+InputPort::~InputPort()
+{
+
+}
+
+OutputPort::OutputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name)
+  : Port(module, type_name, port_name, color_name)
+{
+
+}
+
+OutputPort::~OutputPort()
+{
+
+}

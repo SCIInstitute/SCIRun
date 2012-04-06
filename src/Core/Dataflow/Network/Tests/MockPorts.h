@@ -42,6 +42,8 @@ namespace SCIRun {
         public:
           MOCK_METHOD1(attach, void(Connection*));
           MOCK_METHOD1(detach, void(Connection*));
+          MOCK_CONST_METHOD0(nconnections, size_t());
+          MOCK_CONST_METHOD1(connection, const Connection*(size_t));
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -51,6 +53,8 @@ namespace SCIRun {
         public:
           MOCK_METHOD1(attach, void(Connection*));
           MOCK_METHOD1(detach, void(Connection*));
+          MOCK_CONST_METHOD0(nconnections, size_t());
+          MOCK_CONST_METHOD1(connection, const Connection*(size_t));
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
