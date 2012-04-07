@@ -27,8 +27,8 @@
 */
 
 #include <QtGui>
-#include "Module.h"
-#include "Connection.h"
+#include <Interface/Application/Module.h>
+#include <Interface/Application/Connection.h>
 
 using namespace SCIRun::Gui;
 
