@@ -47,6 +47,8 @@ namespace Networks {
     virtual void detach(Connection* conn) = 0;
     virtual size_t nconnections() const = 0;
     virtual const Connection* connection(size_t) const = 0;
+    virtual std::string get_colorname() const = 0;
+    virtual std::string get_portname() const = 0;
   };
   
   class InputPortInterface : virtual public PortInterface
@@ -60,7 +62,13 @@ namespace Networks {
 class Port : virtual public PortInterface, boost::noncopyable
 {
 public:
-  Port(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
+  struct ConstructionParams
+  {
+    std::string type_name, port_name, color_name;
+    ConstructionParams(const std::string& t, const std::string& p, const std::string& c)
+      : type_name(t), port_name(p), color_name(c) {}
+  };
+  Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();
 
   size_t nconnections() const;
@@ -83,24 +91,22 @@ private:
   std::string colorName_;
 };
 
+//TODO: discuss this interface design
 #pragma warning (push)
 #pragma warning (disable : 4250)
 
 class InputPort : public Port, public InputPortInterface
 {
 public:
-  InputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
+  InputPort(ModuleInterface* module, const ConstructionParams& params);
   virtual ~InputPort();
-  
-private:
-  //virtual void update_light();
 };
 
 
 class OutputPort : public Port, public OutputPortInterface
 {
 public:
-  OutputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name);
+  OutputPort(ModuleInterface* module, const ConstructionParams& params);
   virtual ~OutputPort();
 };
 

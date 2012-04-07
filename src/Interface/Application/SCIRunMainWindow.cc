@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <algorithm>
 #include <functional>
+#include <boost/bind.hpp>
 #include "SCIRunMainWindow.h"
 #include "NetworkEditor.h"
 
@@ -53,13 +54,9 @@ QStringList visitTree(QTreeWidget* tree) {
 struct LogAppender : public Logger
 {
   explicit LogAppender(QTextEdit* text) : text_(text) {}
-  void operator()(const QString& str) const
+  void log(const QString& message) const 
   {
-    text_->append(str);
-  }
-  void log(const std::string& message) const 
-  {
-    operator()(QString(message.c_str()));
+    text_->append(message);
   }
   QTextEdit* text_;
 };
@@ -85,8 +82,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 	setupUi(this);
 
   TreeViewModuleGetter* getter = new TreeViewModuleGetter(*moduleSelectorTreeWidget_);
-  LogAppender* logger = new LogAppender(logTextBrowser_);
-  networkEditor_ = new NetworkEditor(getter, logger, scrollAreaWidgetContents_);
+  Logger::Instance.reset(new LogAppender(logTextBrowser_));
+  networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -129,9 +126,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 	scrollArea_->viewport()->setAutoFillBackground(true);	
   networkEditor_->addActions(scrollAreaWidgetContents_);
 
-	logTextBrowser_->setText("Hello!");
+	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 
   QStringList result = visitTree(moduleSelectorTreeWidget_);
-  std::for_each(result.begin(), result.end(), *logger);
+  std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance), _1));
 
 }

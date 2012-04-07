@@ -30,16 +30,27 @@
 #ifndef CORE_DATAFLOW_NETWORK_NETWORK_H
 #define CORE_DATAFLOW_NETWORK_NETWORK_H 
 
+#include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
-#include <map>
-#include "Core/Dataflow/Network/NetworkFwd.h"
+#include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-class Network 
+  class NetworkInterface
+  {
+  public:
+    virtual ~NetworkInterface() {}
+    size_t nmodules() const;
+    ModuleHandle module(size_t i) const;
+
+    ConnectionId connect(ModuleHandle, int, ModuleHandle, int);
+    int disconnect(const ConnectionId&);
+  };
+
+class Network : public NetworkInterface, boost::noncopyable
 {
   private:
     std::vector<ConnectionHandle> connections;
@@ -48,11 +59,11 @@ class Network
     Network();
     ~Network();
 
-    int nmodules();
-    ModuleHandle module(int i);
+    size_t nmodules() const;
+    ModuleHandle module(size_t i) const;
     
     std::string connect(ModuleHandle, int, ModuleHandle, int);
-    int disconnect(const std::string&);
+    bool disconnect(const std::string&);
     void disable_connection(const std::string&);
 };
 

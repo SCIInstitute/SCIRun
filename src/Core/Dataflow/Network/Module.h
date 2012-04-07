@@ -47,8 +47,11 @@ namespace Networks {
   public:
     virtual ~ModuleInterface() {}
     virtual void execute() = 0;
-    virtual OutputPortHandle get_oport(int idx) const = 0;
-    virtual InputPortHandle get_iport(int idx) const = 0;
+    virtual std::string get_modulename() const = 0;
+    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
+    virtual InputPortHandle get_input_port(size_t idx) const = 0;
+    virtual size_t num_input_ports() const = 0;
+    virtual size_t num_output_ports() const = 0;
   };
 
 class Module : public ModuleInterface, boost::noncopyable
@@ -63,8 +66,27 @@ public:
   std::string get_packagename() const { return package_name_; }
   std::string get_id() const { return id_; }
 
-  int num_input_ports() const;
-  int num_output_ports() const;
+  size_t num_input_ports() const;
+  size_t num_output_ports() const;
+  
+  InputPortHandle get_input_port(const std::string &name) const;
+  OutputPortHandle get_output_port(const std::string &name) const;
+  OutputPortHandle get_output_port(size_t idx) const;
+  InputPortHandle get_input_port(size_t idx) const;
+
+  void execute();
+
+  class Builder : boost::noncopyable
+  {
+  public:
+    Builder();
+    Builder& with_name(const std::string& name);
+    Builder& add_input_port(const Port::ConstructionParams& params);
+    Builder& add_output_port(const Port::ConstructionParams& params);
+    ModuleHandle build();
+  private:
+    boost::shared_ptr<Module> module_;
+  };
 
 protected:
   
@@ -72,26 +94,19 @@ protected:
   void set_categoryname(const std::string& name) { category_name_ = name; }
   void set_packagename(const std::string& name)  { package_name_ = name; }
 
-  std::string            module_name_;
-  std::string            package_name_;
-  std::string            category_name_;
-  std::string            version_;
+  std::string module_name_;
+  std::string package_name_;
+  std::string category_name_;
 
-  bool                   lastportdynamic_;
-  std::string            id_;
+  std::string id_;
 
-public:
-  InputPortHandle get_iport(const std::string &name) const;
-  OutputPortHandle get_oport(const std::string &name) const;
-  OutputPortHandle get_oport(int idx) const;
-  InputPortHandle get_iport(int idx) const;
 private:
-  void add_iport(InputPortHandle);
-  void add_oport(OutputPortHandle);
-private:
-  PortManager<boost::shared_ptr<OutputPort> > oports_;
-  PortManager<boost::shared_ptr<OutputPort> > iports_;
-  std::string lastportname_;
+  friend class Builder;
+  void add_input_port(InputPortHandle);
+  void add_output_port(OutputPortHandle);
+
+  PortManager<OutputPortHandle> oports_;
+  PortManager<InputPortHandle> iports_;
 };
 
 }}}

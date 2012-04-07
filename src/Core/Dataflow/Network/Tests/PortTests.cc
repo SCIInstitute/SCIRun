@@ -38,7 +38,6 @@ using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::Return;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
-using ::testing::_;
 
 class PortTests : public ::testing::Test
 {
@@ -58,18 +57,19 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(Port(0,                  "Matrix",   "ForwardMatrix",  "dodgerblue"),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  "",         "ForwardMatrix",  "dodgerblue"),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  "Matrix",   "",               "dodgerblue"),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  "Matrix",   "ForwardMatrix",  ""),            std::invalid_argument);
+  ASSERT_THROW(Port(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue")),  std::invalid_argument);
+  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue")),  std::invalid_argument);
+  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue")),  std::invalid_argument);
+  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "")),            std::invalid_argument);
 }
 
 TEST_F(PortTests, AggregatesConnections)
 {
-  InputPortHandle inputPort(new InputPort(inputModule.get(), "Matrix", "ForwardMatrix", "dodgerblue"));
-  OutputPortHandle outputPort(new OutputPort(outputModule.get(), "Matrix", "ForwardMatrix", "dodgerblue"));
-  EXPECT_CALL(*inputModule, get_iport(2)).WillOnce(Return(inputPort));
-  EXPECT_CALL(*outputModule, get_oport(1)).WillOnce(Return(outputPort));
+  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp));
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp));
+  EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
+  EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
 
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());

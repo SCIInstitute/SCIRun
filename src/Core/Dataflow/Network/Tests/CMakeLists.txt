@@ -31,6 +31,7 @@ SET(Core_Dataflow_Network_Tests_SRCS
   ModuleTests.cc
   NetworkTests.cc
   PortTests.cc
+  PortManagerTests.cc
 )
 
 ADD_EXECUTABLE(Core_Dataflow_Network_Tests ${Core_Dataflow_Network_Tests_SRCS})

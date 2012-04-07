@@ -29,6 +29,7 @@
 #ifndef NETWORKEDITOR_H
 #define NETWORKEDITOR_H
 
+#include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
 
 class QMenu;
@@ -51,7 +52,8 @@ namespace Gui {
   {
   public:
     virtual ~Logger() {}
-    virtual void log(const std::string& message) const = 0;
+    virtual void log(const QString& message) const = 0;
+    static boost::shared_ptr<Logger> Instance;
   };
 
   class Connection;
@@ -64,7 +66,7 @@ class NetworkEditor : public QGraphicsView
 	
 public:
   //TODO change to boost::shared_ptr
-  explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent = 0);
+  explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent = 0);
   void addActions(QWidget* widget);
   void setExecuteAction(QAction* action) { executeAction_ = action; }
 protected:
@@ -117,7 +119,6 @@ private:
 
   //TODO change to boost::shared_ptr
   CurrentModuleSelection* moduleSelectionGetter_;
-  Logger* logger_;
   QAction* executeAction_;
 };
 

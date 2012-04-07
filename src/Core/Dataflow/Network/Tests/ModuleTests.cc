@@ -27,5 +27,25 @@
 */
 
 #include <Core/Dataflow/Network/Module.h>
+#include <gtest/gtest.h>
 
 using namespace SCIRun::Domain::Networks;
+
+TEST(ModuleTests, CanConstructEmptyModuleWithName)
+{
+  std::string name = "CreateMatrix";
+  Module m(name);
+  ASSERT_EQ(m.get_modulename(), name);
+}
+
+TEST(ModuleTests, CanBuildWithPorts)
+{
+  ModuleHandle module = Module::Builder().with_name("SolveLinearSystem")
+    .add_input_port(Port::ConstructionParams("Matrix", "ForwardMatrix", "blue"))
+    .add_input_port(Port::ConstructionParams("Matrix", "RHS", "blue"))
+    .add_output_port(Port::ConstructionParams("Matrix", "Solution", "blue"))
+    .build();
+  ASSERT_EQ(2, module->num_input_ports());
+  ASSERT_EQ(1, module->num_output_ports());
+  ASSERT_EQ("SolveLinearSystem", module->get_modulename());
+}

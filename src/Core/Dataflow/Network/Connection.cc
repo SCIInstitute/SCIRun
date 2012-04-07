@@ -38,10 +38,10 @@ Connection::Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int ip
     throw std::invalid_argument("output module is null");
   if (!imod)
     throw std::invalid_argument("input module is null");
-  oport_ = omod_->get_oport(oportno);
+  oport_ = omod_->get_output_port(oportno);
   if (!oport_)
     throw std::invalid_argument("output port is null");
-  iport_ = imod_->get_iport(iportno);
+  iport_ = imod_->get_input_port(iportno);
   if (!iport_)
     throw std::invalid_argument("input port is null");
 

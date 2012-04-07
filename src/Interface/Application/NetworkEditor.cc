@@ -40,9 +40,10 @@
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 
-NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, Logger* logger, QWidget* parent) : QGraphicsView(parent),
+boost::shared_ptr<Logger> Logger::Instance;
+
+NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
-  logger_(logger),
   executeAction_(0)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
@@ -86,7 +87,7 @@ void NetworkEditor::addModule()
 
 void NetworkEditor::addModule(const QString& text, const QPointF& pos)
 {
-  logger_->log("Module added.");
+  Logger::Instance->log("Module added.");
 
   Module* module = new Module("<b><h2>" + text + "</h2></b>");
   setupModule(module, pos);

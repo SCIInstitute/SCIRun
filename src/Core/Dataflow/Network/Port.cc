@@ -31,8 +31,8 @@
 
 using namespace SCIRun::Domain::Networks;
 
-Port::Port(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name)
-  : module_(module), typeName_(type_name), portName_(port_name), colorName_(color_name)
+Port::Port(ModuleInterface* module, const ConstructionParams& params)
+  : module_(module), typeName_(params.type_name), portName_(params.port_name), colorName_(params.color_name)
 {
   if (!module_)
     throw std::invalid_argument("port cannot have null module");
@@ -70,8 +70,8 @@ size_t Port::nconnections() const
   return connections_.size();
 }
 
-InputPort::InputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name)
-  : Port(module, type_name, port_name, color_name)
+InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params)
+  : Port(module, params)
 {
 
 }
@@ -81,8 +81,8 @@ InputPort::~InputPort()
 
 }
 
-OutputPort::OutputPort(ModuleInterface* module, const std::string& type_name, const std::string& port_name, const std::string& color_name)
-  : Port(module, type_name, port_name, color_name)
+OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params)
+  : Port(module, params)
 {
 
 }

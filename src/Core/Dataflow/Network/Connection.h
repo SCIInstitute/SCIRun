@@ -36,6 +36,12 @@ namespace SCIRun {
   namespace Domain {
     namespace Networks {
 
+      struct ConnectionId
+      {
+        explicit ConnectionId(const std::string& s) : id_(s) {}
+        std::string id_;
+      };
+
 class Connection 
 {
 public:
@@ -47,7 +53,7 @@ public:
   ModuleHandle omod_;
   ModuleHandle imod_;
   
-  std::string id_;
+  ConnectionId id_;
   bool disabled_;
 };
 

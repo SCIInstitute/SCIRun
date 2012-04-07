@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Dataflow/Network/PortManager.h>
 
-#ifndef CORE_DATAFLOW_NETWORK_NETWORK_FWD_H
-#define CORE_DATAFLOW_NETWORK_NETWORK_FWD_H 
+using namespace SCIRun::Domain::Networks;
 
-#include <boost/shared_ptr.hpp>
-
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-class NetworkInterface;
-class ModuleInterface;
-class PortInterface;
-class Connection;
-class InputPortInterface;
-class OutputPortInterface;
-struct ConnectionId;
-
-typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
-typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
-typedef boost::shared_ptr<PortInterface> PortHandle;
-typedef boost::shared_ptr<Connection> ConnectionHandle;
-typedef boost::shared_ptr<InputPortInterface> InputPortHandle;
-typedef boost::shared_ptr<OutputPortInterface> OutputPortHandle;
-  
-}}}
-
-
-#endif
+//TODO: test this easy class

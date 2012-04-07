@@ -44,17 +44,17 @@ template<class T>
 class PortManager : boost::noncopyable
 {
 private:
-  std::vector<T>   ports_;
-  ModuleInterface*          module_;
-  std::string      lastportname_;
+  std::vector<T> ports_;
+  ModuleInterface* module_;
+  std::string lastportname_;
   
 public:
   PortManager();
-  int size();
-  void add(const T &item);
+  size_t size() const;
+  void add(const T& item);
   void remove(int item);
-  T operator[](int);
-  T get_port(int);
+  T operator[](size_t) const;
+  //T get_port(int);
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
 };
@@ -66,23 +66,10 @@ PortManager<T>::PortManager() :
 }
 
 template<class T>
-int
-PortManager<T>::size()
+size_t
+PortManager<T>::size() const
 { 
-  size_t s = ports_.size();
-  return (static_cast<int>(s)); 
-}
-
-template<class T>
-T
-PortManager<T>::get_port(int item)
-{
-  T handle(0);
-  if (item < static_cast<int>(ports_.size())) 
-  {
-    handle = ports_[item];
-  }
-  return(handle);
+  return ports_.size();
 }
 
 template<class T>
@@ -105,10 +92,9 @@ PortManager<T>::remove(int item)
 
 template<class T>
 T
-PortManager<T>::operator[](int item)
+PortManager<T>::operator[](size_t item) const
 {
-  T t = ports_[item];
-  return (t);
+  return ports_[item];
 }
 
 }}}

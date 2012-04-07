@@ -55,8 +55,8 @@ protected:
 
   void setModuleExpectations()
   {
-    EXPECT_CALL(*inputModule, get_iport(2)).WillOnce(Return(dummyInputPort));
-    EXPECT_CALL(*outputModule, get_oport(1)).WillOnce(Return(dummyOutputPort));
+    EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(dummyInputPort));
+    EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(dummyOutputPort));
   }
 
   MockInputPortPtr dummyInputPort;
@@ -90,7 +90,7 @@ TEST_F(ConnectionTests, CtorSetsPortsViaModules)
   ASSERT_EQ(c.omod_, outputModule);
   ASSERT_EQ(c.oport_, dummyOutputPort);
   ASSERT_EQ(c.iport_, dummyInputPort);
-  ASSERT_EQ("test", c.id_);
+  ASSERT_EQ("test", c.id_.id_);
 }
 
 TEST_F(ConnectionTests, CtorConnectsSelfToPorts)

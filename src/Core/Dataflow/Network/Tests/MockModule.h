@@ -41,8 +41,11 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD0(execute, void());
-          MOCK_CONST_METHOD1(get_oport, OutputPortHandle(int));
-          MOCK_CONST_METHOD1(get_iport, InputPortHandle(int));
+          MOCK_CONST_METHOD0(get_modulename, std::string());
+          MOCK_CONST_METHOD1(get_output_port, OutputPortHandle(size_t));
+          MOCK_CONST_METHOD1(get_input_port, InputPortHandle(size_t));
+          MOCK_CONST_METHOD0(num_input_ports, size_t());
+          MOCK_CONST_METHOD0(num_output_ports, size_t());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;
