@@ -124,17 +124,14 @@ void Connection::trackNodes()
 ConnectionInProgress::ConnectionInProgress(Port* port)
   : fromPort_(port)
 {
-  //if (fromPort_)
-  //  fromPort_->addConnection(this);
+  setZValue(1000);
 
-  setZValue(-1);
-
-  setColor(Qt::red);
+  setColor(port->color());
 }
 
 void ConnectionInProgress::setColor(const QColor& color)
 {
-  setPen(QPen(color, 5.0));
+  setPen(QPen(color, 5.0, Qt::DashLine));
 }
 
 QColor ConnectionInProgress::color() const
@@ -145,5 +142,5 @@ QColor ConnectionInProgress::color() const
 void ConnectionInProgress::update(const QPointF& end)
 {
   //std::cout << "Drawing line from " << to_string(fromPort_->position()) << " to " << to_string(mapToScene(end) + fromPort_->position()) << std::endl;
-  setLine(QLineF(fromPort_->position() + QPointF(5,0), end + fromPort_->position()));
+  setLine(QLineF(fromPort_->position(), end));
 }

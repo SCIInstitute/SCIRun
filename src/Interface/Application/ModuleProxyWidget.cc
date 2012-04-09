@@ -31,6 +31,7 @@
 #include "ModuleProxyWidget.h"
 #include "Module.h"
 #include "Port.h"
+#include "Utility.h"
 
 using namespace SCIRun::Gui;
 
@@ -43,15 +44,7 @@ ModuleProxyWidget::ModuleProxyWidget(Module* module, QGraphicsItem* parent/* = 0
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   module_->setPositionObject(new ProxyWidgetPosition(this));
-  addPort();
   setAcceptDrops(true);
-}
-
-void ModuleProxyWidget::addPort()
-{
-  //Port* p = new InputPort("Input", Qt::red);
-
-  //addItem(p);
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -65,20 +58,22 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
   {
-    std::cout << "! ! ! mousePressEvent for Port" << std::endl;
+    //std::cout << "! ! ! mousePressEvent for Port" << std::endl;
+    //std::cout << "mousePressEvent for ModuleProxyWidget/Port: pos = " << to_string(event->pos()) << std::endl;
+    //std::cout << "\t\t\t and mapToScene(pos) = " << to_string(mapToScene(event->pos())) << std::endl;
     p->doMousePress(event->button(), mapToScene(event->pos()));
     return;
   }
 
   if (isSubwidget(pressedSubWidget_))
   {
-    std::cout << "QGraphicsProxyWidget::mousePressEvent" << std::endl;
+    //std::cout << "QGraphicsProxyWidget::mousePressEvent" << std::endl;
     QGraphicsProxyWidget::mousePressEvent(event);
     grabbedByWidget_ = true;
   }
   else
   {
-    std::cout << "QGraphicsItem::mousePressEvent" << std::endl;
+    //std::cout << "QGraphicsItem::mousePressEvent" << std::endl;
     QGraphicsItem::mousePressEvent(event);
     grabbedByWidget_ = false;
     emit selected();
@@ -91,6 +86,8 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
   {
     //std::cout << "! ! ! mouseReleaseEvent for Port" << std::endl;
+    //std::cout << "mouseReleaseEvent for ModuleProxyWidget/Port: pos = " << to_string(event->pos()) << std::endl;
+    //std::cout << "\t\t\t and mapToScene(pos) = " << to_string(mapToScene(event->pos())) << std::endl;
     p->doMouseRelease(event->button(), mapToScene(event->pos()));
     return;
   }
@@ -112,50 +109,25 @@ void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
   //updatePressedSubWidget(event);
   if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
   {
-    std::cout << "! ! ! mouseMoveEvent for Port" << std::endl;
+    //std::cout << "mouseMoveEvent for ModuleProxyWidget/Port: pos = " << to_string(event->pos()) << std::endl;
+    //std::cout << "\t\t\t and mapToScene(pos) = " << to_string(mapToScene(event->pos())) << std::endl;
     p->doMouseMove(event->buttons(), mapToScene(event->pos()));
     return;
   }
   if (grabbedByWidget_)
   {
-    std::cout << "Returning from mouseMoveEvent since grabbedByWidget is true" << std::endl;
+    //std::cout << "Returning from mouseMoveEvent since grabbedByWidget is true" << std::endl;
     return;
   }
-  std::cout << "QGraphicsItem::mouseMoveEvent" << std::endl;
+  //std::cout << "QGraphicsItem::mouseMoveEvent" << std::endl;
   QGraphicsItem::mouseMoveEvent(event);
-}
-
-void ModuleProxyWidget::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
-{
-  std::cout << "ModuleProxyWidget::dragEnterEvent" << std::endl;
-  QGraphicsProxyWidget::dragEnterEvent(event);
-}
-
-void ModuleProxyWidget::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
-{
-  std::cout << "ModuleProxyWidget::dragLeaveEvent" << std::endl;
-  QGraphicsProxyWidget::dragLeaveEvent(event);
-}
-
-void ModuleProxyWidget::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
-{
-  std::cout << "ModuleProxyWidget::dragMoveEvent" << std::endl;
-  QGraphicsProxyWidget::dragMoveEvent(event);
-}
-
-void ModuleProxyWidget::dropEvent(QGraphicsSceneDragDropEvent *event)
-{
-  std::cout << "ModuleProxyWidget::dropEvent" << std::endl;
-  QGraphicsProxyWidget::dropEvent(event);
 }
 
 bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 {
   return qobject_cast<QPushButton*>(alienWidget) || 
     qobject_cast<QToolButton*>(alienWidget) || 
-    qobject_cast<QProgressBar*>(alienWidget) 
-    //||    qobject_cast<Port*>(alienWidget)
-    ;
+    qobject_cast<QProgressBar*>(alienWidget);
 }
 
 void ModuleProxyWidget::highlightIfSelected()
@@ -173,4 +145,13 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
     module_->trackConnections();
   }
   return QGraphicsItem::itemChange(change, value);
+}
+
+void ModuleProxyWidget::createPortPositionProviders()
+{
+  foreach(Port* p, module_->ports_)
+  {
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(15,15)));
+    p->setPositionObject(pp);
+  }
 }

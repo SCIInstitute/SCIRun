@@ -39,6 +39,7 @@ namespace SCIRun {
 namespace Gui {
 
 class Connection;
+class Port;
 
 class PositionProvider
 {
@@ -50,10 +51,11 @@ public:
 class ProxyWidgetPosition : public PositionProvider
 {
 public:
-  explicit ProxyWidgetPosition(QGraphicsProxyWidget* widget) : widget_(widget) {}
+  explicit ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset = QPointF()) : widget_(widget), offset_(offset) {}
   virtual QPointF currentPosition() const;
 private:
   QGraphicsProxyWidget* widget_;
+  QPointF offset_;
 };
 
 class Module : public QFrame, public Ui::Module
@@ -83,8 +85,12 @@ private:
   //TODO distinguish input/output
   std::set<Connection*> connections_;
   PositionProvider* positionProvider_;
-
-  void addPort();
+public:
+  std::vector<Port*> ports_;
+private:
+  void addPorts();
+  QHBoxLayout* outputPortLayout_;
+  QHBoxLayout* inputPortLayout_;
 };
 
 }

@@ -122,6 +122,7 @@ void NetworkEditor::setupModule(Module* module, const QPointF& pos)
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
+  proxy->createPortPositionProviders();
 
   scene_->addItem(proxy);
   ++seqNumber_;

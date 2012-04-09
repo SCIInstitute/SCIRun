@@ -35,7 +35,7 @@ using namespace SCIRun::Gui;
 
 QPointF ProxyWidgetPosition::currentPosition() const
 {
-  return widget_->pos();
+  return widget_->pos() + offset_;
 }
 
 Module::Module(const QString& name, QWidget* parent /* = 0 */)
@@ -46,15 +46,40 @@ Module::Module(const QString& name, QWidget* parent /* = 0 */)
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
-  addPort();
+  
+  addPorts();
 }
 
-void Module::addPort()
+void Module::addPorts()
 {
-  
-  Port* p = new InputPort("Input", Qt::red);
+  outputPortLayout_ = new QHBoxLayout;
+  outputPortLayout_->setSpacing(3);
+  QHBoxLayout* outputRowLayout = new QHBoxLayout;
+  outputRowLayout->setAlignment(Qt::AlignLeft);
+  outputRowLayout->addLayout(outputPortLayout_);
+  verticalLayout_2->insertLayout(-1, outputRowLayout);
 
-  verticalLayout->addWidget(p);
+  Port* p = new OutputPort("Output1", Qt::red, this);
+  outputPortLayout_->addWidget(p);
+  ports_.push_back(p);
+
+  p = new OutputPort("Output2", Qt::green, this);
+  outputPortLayout_->addWidget(p);
+  ports_.push_back(p);
+
+  p = new OutputPort("Output2", Qt::yellow, this);
+  outputPortLayout_->addWidget(p);
+  ports_.push_back(p);
+
+  p = new InputPort("Input1", Qt::blue, this);
+  inputPortLayout_ = new QHBoxLayout;
+  inputPortLayout_->setSpacing(3);
+  QHBoxLayout* inputRowLayout = new QHBoxLayout;
+  inputRowLayout->setAlignment(Qt::AlignLeft);
+  inputRowLayout->addLayout(inputPortLayout_);
+  verticalLayout_2->insertLayout(0, inputRowLayout);
+  inputPortLayout_->addWidget(p);
+  ports_.push_back(p);
 }
 
 Module::~Module()

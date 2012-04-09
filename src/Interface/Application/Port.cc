@@ -143,6 +143,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
 void Port::performDrag(const QPointF& endPos)
 {
+  //std::cout << "Port: performing drag: endPos = " << to_string(endPos) << std::endl;
   //QDrag* drag = new QDrag(this);
   if (!currentConnection_)
   {
@@ -155,7 +156,7 @@ void Port::performDrag(const QPointF& endPos)
   if (TheScene)
     currentConnection_->update(endPos);
 
-  std::cout << "Port: performing drag" << std::endl;
+  
 }
 
 //#error these overrides need to be on the proxy again!!!.  take break to work on Domain layer.
@@ -197,14 +198,6 @@ void Port::dropEvent(
   event->accept();
   std::cout << "@@@@@@@@@Port dropEvent" << std::endl;
 }
-
-#ifndef IS_NORMAL_WIDGET
-void Port::dragLeaveEvent(QGraphicsSceneDragDropEvent* event)
-{
-  event->accept();
-  std::cout << "@@@@@@@@@Port dragLeaveEvent" << std::endl;
-}
-#endif
 
 void Port::addConnection(Connection* c)
 {
