@@ -45,6 +45,7 @@ class ModuleProxyWidget : public QGraphicsProxyWidget
 public:
   explicit ModuleProxyWidget(Module* module, QGraphicsItem* parent = 0);
   void createPortPositionProviders();
+  Module* getModule();
 public slots:
   void highlightIfSelected();
 signals:

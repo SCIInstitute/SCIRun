@@ -66,35 +66,6 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWid
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
   updateActions();
-
-#ifdef IS_NORMAL_WIDGET
-  ////temp port test
-  //Port* p1 = new InputPort("port1", Qt::green);
-  //QGraphicsProxyWidget* portProxy = scene_->addWidget(p1);
-  //portProxy->setPos(30,30);
-  //boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(portProxy));
-  //p1->setPositionObject(pp);
-
-  //Port* p2 = new OutputPort("port2", Qt::yellow);
-  //portProxy = scene_->addWidget(p2);
-  //portProxy->setPos(60,60);
-  //pp.reset(new ProxyWidgetPosition(portProxy));
-  //p2->setPositionObject(pp);
-#else
- //temp port test
-  Port* p1 = new InputPort("port1", Qt::green);
-  //QGraphicsProxyWidget* portProxy = 
-    scene_->addItem(p1);
-  p1->setPos(30,30);
-  //p1->setPositionObject(new ProxyWidgetPosition(portProxy));
-
-  Port* p2 = new OutputPort("port2", Qt::yellow);
-  //portProxy = 
-    scene_->addItem(p2);
-  p2->setPos(60,60);
-  //p2->setPositionObject(new ProxyWidgetPosition(portProxy));
-#endif
- 
 }
 
 void NetworkEditor::addModule()
@@ -118,7 +89,7 @@ void NetworkEditor::setupModule(Module* module, const QPointF& pos)
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);
-  proxy->setPos(pos/* - QPoint(80,50)*/);
+  proxy->setPos(pos);
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));

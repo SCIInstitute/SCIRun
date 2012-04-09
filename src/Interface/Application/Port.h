@@ -45,21 +45,11 @@ class ConnectionInProgress;
 class PositionProvider;
 
 
-#define IS_NORMAL_WIDGET
-
-#ifdef IS_NORMAL_WIDGET
-#define PORT_BASE QWidget
-#define PORT_PARENT QWidget
-#else
-#define PORT_BASE QGraphicsWidget
-#define PORT_PARENT QGraphicsItem
-#endif
-
-class Port : public PORT_BASE
+class Port : public QWidget
 {
   Q_OBJECT
 public:
-  Port(const QString& name, const QColor& color, bool isInput, PORT_PARENT* parent = 0);
+  Port(const QString& name, const QColor& color, bool isInput, QWidget* parent = 0);
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
@@ -90,16 +80,14 @@ protected:
   void mouseMoveEvent(QMouseEvent* event);
   
   void paintEvent(QPaintEvent* event);
-  //void dragEnterEvent(QDragEnterEvent* event);
-  //void dragMoveEvent(QDragMoveEvent* event);
-  //void dropEvent(QDropEvent* event);
-
+ 
 public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
 private:
   void performDrag(const QPointF& endPos);
+  bool canBeConnected(Port* other) const;
 
   const QString name_;
   const QColor color_;
@@ -107,6 +95,7 @@ private:
   bool isConnected_;
   bool lightOn_;
   QPointF startPos_;
+  QWidget* moduleParent_;
 
   ConnectionInProgress* currentConnection_;
 
@@ -118,13 +107,13 @@ private:
 class InputPort : public Port 
 {
 public:
-  InputPort(const QString& name, const QColor& color, PORT_PARENT* parent = 0);
+  InputPort(const QString& name, const QColor& color, QWidget* parent = 0);
 };
 
 class OutputPort : public Port 
 {
 public:
-  OutputPort(const QString& name, const QColor& color, PORT_PARENT* parent = 0);
+  OutputPort(const QString& name, const QColor& color, QWidget* parent = 0);
 };
 
 }
