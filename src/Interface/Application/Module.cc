@@ -47,10 +47,10 @@ Module::Module(const QString& name, QWidget* parent /* = 0 */)
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
   
-  addPorts();
+  addAllHardCodedPorts(name);
 }
 
-void Module::addPorts()
+void Module::addAllHardCodedPorts(const QString& name)
 {
   outputPortLayout_ = new QHBoxLayout;
   outputPortLayout_->setSpacing(3);
@@ -59,27 +59,41 @@ void Module::addPorts()
   outputRowLayout->addLayout(outputPortLayout_);
   verticalLayout_2->insertLayout(-1, outputRowLayout);
 
-  Port* p = new OutputPort("Output1", Qt::red, this);
-  outputPortLayout_->addWidget(p);
-  ports_.push_back(p);
-
-  p = new OutputPort("Output2", Qt::green, this);
-  outputPortLayout_->addWidget(p);
-  ports_.push_back(p);
-
-  p = new OutputPort("Output2", Qt::yellow, this);
-  outputPortLayout_->addWidget(p);
-  ports_.push_back(p);
-
-  p = new InputPort("Input1", Qt::blue, this);
   inputPortLayout_ = new QHBoxLayout;
   inputPortLayout_->setSpacing(3);
   QHBoxLayout* inputRowLayout = new QHBoxLayout;
   inputRowLayout->setAlignment(Qt::AlignLeft);
   inputRowLayout->addLayout(inputPortLayout_);
   verticalLayout_2->insertLayout(0, inputRowLayout);
-  inputPortLayout_->addWidget(p);
-  ports_.push_back(p);
+
+  //TODO: duh...
+  if (name.contains("ComputeSVD"))
+  {
+    addPort(new OutputPort("Output1", Qt::red, this));
+    addPort(new OutputPort("Output2", Qt::green, this));
+    addPort(new OutputPort("Output2", Qt::yellow, this));
+    addPort(new InputPort("Input1", Qt::blue, this));
+  }
+  else if (name.contains("ReadMatrix"))
+  {
+    addPort(new OutputPort("Output1", Qt::blue, this));
+  }
+  else if (name.contains("WriteMatrix"))
+  {
+    addPort(new InputPort("Input1", Qt::blue, this));
+  }
+}
+
+void Module::addPort(OutputPort* port)
+{
+  outputPortLayout_->addWidget(port);
+  ports_.push_back(port);
+}
+
+void Module::addPort(InputPort* port)
+{
+  inputPortLayout_->addWidget(port);
+  ports_.push_back(port);
 }
 
 Module::~Module()

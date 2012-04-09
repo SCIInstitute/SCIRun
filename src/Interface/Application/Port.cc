@@ -59,7 +59,6 @@ void Port::toggleLight()
   lightOn_ = !lightOn_;
 }
 
-//void Port::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 void Port::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
@@ -70,13 +69,10 @@ void Port::paintEvent(QPaintEvent* event)
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
 }
 
-void Port::mousePressEvent(
-  //QGraphicsSceneMouseEvent* 
-  QMouseEvent* 
-  event)
+void Port::mousePressEvent(QMouseEvent* event)
 {
   doMousePress(event->button(), event->pos());
-  std::cout << "Port mousePressEvent" << std::endl;
+  //std::cout << "Port mousePressEvent" << std::endl;
 }
 
 void Port::doMousePress(Qt::MouseButton button, const QPointF& pos)
@@ -89,13 +85,10 @@ void Port::doMousePress(Qt::MouseButton button, const QPointF& pos)
   }
 }
 
-void Port::mouseMoveEvent(
-  //QGraphicsSceneMouseEvent* 
-  QMouseEvent* 
-  event)
+void Port::mouseMoveEvent(QMouseEvent* event)
 {
   doMouseMove(event->buttons(), event->pos());
-  std::cout << "Port mouseMoveEvent" << std::endl;
+  //std::cout << "Port mouseMoveEvent" << std::endl;
 }
 
 void Port::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
@@ -108,13 +101,10 @@ void Port::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
   }
 }
 
-void Port::mouseReleaseEvent(
-  //QGraphicsSceneMouseEvent* 
-  QMouseEvent* 
-  event)
+void Port::mouseReleaseEvent(QMouseEvent* event)
 {
   doMouseRelease(event->button(), event->pos());
-  std::cout << "Port mouseReleaseEvent" << std::endl;
+  //std::cout << "Port mouseReleaseEvent" << std::endl;
 }
 
 void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
@@ -131,10 +121,13 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
       QWidget* alienWidget = widget()->childAt(pos.toPoint());
       if (isSubwidget(alienWidget))
       */
+
+
       std::cout << "Released mouse with active current connection" << std::endl;
       std::cout << to_string(pos) << std::endl;
       //std::cout << TheScene-> << std::endl;
       
+
       delete currentConnection_;
       currentConnection_ = 0;
     }
@@ -143,8 +136,6 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
 void Port::performDrag(const QPointF& endPos)
 {
-  //std::cout << "Port: performing drag: endPos = " << to_string(endPos) << std::endl;
-  //QDrag* drag = new QDrag(this);
   if (!currentConnection_)
   {
     //TODO: move into factory
@@ -158,46 +149,41 @@ void Port::performDrag(const QPointF& endPos)
 
   
 }
-
-//#error these overrides need to be on the proxy again!!!.  take break to work on Domain layer.
-
-void Port::dragEnterEvent(
-  //QGraphicsSceneDragDropEvent* event
-  QDragEnterEvent* event
-  )
-{
-  if (currentConnection_)
-    {
-       event->accept();
-      /*
-      QPointF pos = event->pos();
-      QWidget* alienWidget = widget()->childAt(pos.toPoint());
-      if (isSubwidget(alienWidget))
-      */
-      std::cout << to_string(event->pos()) << std::endl;
-      //std::cout << TheScene-> << std::endl;
-    }
- 
-  std::cout << "@@@@@@@@@Port dragEnterEvent" << std::endl;
-}
-
-void Port::dragMoveEvent(
-  //QGraphicsSceneDragDropEvent* event
-  QDragMoveEvent* event
-  )
-{
-  event->accept();
-  std::cout << "@@@@@@@@@Port dragMoveEvent" << std::endl;
-}
-
-void Port::dropEvent(
-  //QGraphicsSceneDragDropEvent* event
-  QDropEvent* event
-  )
-{
-  event->accept();
-  std::cout << "@@@@@@@@@Port dropEvent" << std::endl;
-}
+//
+//void Port::dragEnterEvent(QDragEnterEvent* event)
+//{
+//  if (currentConnection_)
+//    {
+//       event->accept();
+//      /*
+//      QPointF pos = event->pos();
+//      QWidget* alienWidget = widget()->childAt(pos.toPoint());
+//      if (isSubwidget(alienWidget))
+//      */
+//      std::cout << to_string(event->pos()) << std::endl;
+//      //std::cout << TheScene-> << std::endl;
+//    }
+// 
+//  std::cout << "@@@@@@@@@Port dragEnterEvent" << std::endl;
+//}
+//
+//void Port::dragMoveEvent(
+//  //QGraphicsSceneDragDropEvent* event
+//  QDragMoveEvent* event
+//  )
+//{
+//  event->accept();
+//  std::cout << "@@@@@@@@@Port dragMoveEvent" << std::endl;
+//}
+//
+//void Port::dropEvent(
+//  //QGraphicsSceneDragDropEvent* event
+//  QDropEvent* event
+//  )
+//{
+//  event->accept();
+//  std::cout << "@@@@@@@@@Port dropEvent" << std::endl;
+//}
 
 void Port::addConnection(Connection* c)
 {

@@ -85,25 +85,14 @@ public:
 
 protected:
 
-#ifdef IS_NORMAL_WIDGET
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
   void mouseMoveEvent(QMouseEvent* event);
   
   void paintEvent(QPaintEvent* event);
-  void dragEnterEvent(QDragEnterEvent* event);
-  void dragMoveEvent(QDragMoveEvent* event);
-  void dropEvent(QDropEvent* event);
-#else
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-  void mousePressEvent(QGraphicsSceneMouseEvent *event);
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-  void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-  void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
-  void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
-  void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
-  void dropEvent(QGraphicsSceneDragDropEvent *event);
-#endif
+  //void dragEnterEvent(QDragEnterEvent* event);
+  //void dragMoveEvent(QDragMoveEvent* event);
+  //void dropEvent(QDropEvent* event);
 
 public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);

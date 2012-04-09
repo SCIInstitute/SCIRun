@@ -40,6 +40,8 @@ namespace Gui {
 
 class Connection;
 class Port;
+class InputPort;
+class OutputPort;
 
 class PositionProvider
 {
@@ -88,7 +90,9 @@ private:
 public:
   std::vector<Port*> ports_;
 private:
-  void addPorts();
+  void addAllHardCodedPorts(const QString& name);
+  void addPort(InputPort* port);
+  void addPort(OutputPort* port);
   QHBoxLayout* outputPortLayout_;
   QHBoxLayout* inputPortLayout_;
 };
