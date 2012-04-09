@@ -52,11 +52,22 @@ protected:
   void mousePressEvent(QGraphicsSceneMouseEvent *event);
   void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
   void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+
+
+  void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
+  void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
+  void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+  void dropEvent(QGraphicsSceneDragDropEvent *event);
+
+
   QVariant itemChange(GraphicsItemChange change, const QVariant& value);
 private:
   bool isSubwidget(QWidget* alienWidget) const;
+  void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
+  void addPort();
   Module* module_;
   bool grabbedByWidget_;
+  QWidget* pressedSubWidget_;
   //int backupZ_;
 };
 

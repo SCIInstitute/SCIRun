@@ -142,8 +142,8 @@ QColor ConnectionInProgress::color() const
   return pen().color();
 }
 
-void ConnectionInProgress::update(const QPoint& end)
+void ConnectionInProgress::update(const QPointF& end)
 {
   //std::cout << "Drawing line from " << to_string(fromPort_->position()) << " to " << to_string(mapToScene(end) + fromPort_->position()) << std::endl;
-  setLine(QLineF(fromPort_->position() + QPointF(5,0), mapToScene(end) + fromPort_->position()));
+  setLine(QLineF(fromPort_->position() + QPointF(5,0), end + fromPort_->position()));
 }

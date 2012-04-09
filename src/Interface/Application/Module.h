@@ -83,6 +83,8 @@ private:
   //TODO distinguish input/output
   std::set<Connection*> connections_;
   PositionProvider* positionProvider_;
+
+  void addPort();
 };
 
 }

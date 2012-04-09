@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <Interface/Application/Module.h>
 #include <Interface/Application/Connection.h>
+#include <Interface/Application/Port.h>
 
 using namespace SCIRun::Gui;
 
@@ -45,6 +46,15 @@ Module::Module(const QString& name, QWidget* parent /* = 0 */)
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
+  addPort();
+}
+
+void Module::addPort()
+{
+  
+  Port* p = new InputPort("Input", Qt::red);
+
+  verticalLayout->addWidget(p);
 }
 
 Module::~Module()

@@ -29,6 +29,8 @@
 #ifndef PORT_H
 #define PORT_H
 
+#include <boost/shared_ptr.hpp>
+#include <QGraphicsWidget>
 #include <QWidget>
 #include <QColor>
 #include <set>
@@ -42,11 +44,22 @@ class Connection;
 class ConnectionInProgress;
 class PositionProvider;
 
-class Port : public QWidget
+
+#define IS_NORMAL_WIDGET
+
+#ifdef IS_NORMAL_WIDGET
+#define PORT_BASE QWidget
+#define PORT_PARENT QWidget
+#else
+#define PORT_BASE QGraphicsWidget
+#define PORT_PARENT QGraphicsItem
+#endif
+
+class Port : public PORT_BASE
 {
   Q_OBJECT
 public:
-  Port(const QString& name, const QColor& color, bool isInput, QWidget* parent = 0);
+  Port(const QString& name, const QColor& color, bool isInput, PORT_PARENT* parent = 0);
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
@@ -64,50 +77,65 @@ public:
 
   void trackConnections();
 
-  void setPositionObject(PositionProvider* provider) { positionProvider_ = provider; }
+  void setPositionObject(boost::shared_ptr<PositionProvider> provider) { positionProvider_ = provider; }
   QPointF position() const;
 
   //TODO: yuck
   static QGraphicsScene* TheScene;
 
 protected:
+
+#ifdef IS_NORMAL_WIDGET
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
   void mouseMoveEvent(QMouseEvent* event);
   
   void paintEvent(QPaintEvent* event);
-
   void dragEnterEvent(QDragEnterEvent* event);
   void dragMoveEvent(QDragMoveEvent* event);
   void dropEvent(QDropEvent* event);
+#else
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+  void mousePressEvent(QGraphicsSceneMouseEvent *event);
+  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+  void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+  void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
+  void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
+  void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
+  void dropEvent(QGraphicsSceneDragDropEvent *event);
+#endif
 
+public:
+  void doMousePress(Qt::MouseButton button, const QPointF& pos);
+  void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
+  void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
 private:
-  void performDrag(const QPoint& endPos);
+  void performDrag(const QPointF& endPos);
 
   const QString name_;
   const QColor color_;
   const bool isInput_;
   bool isConnected_;
   bool lightOn_;
-  QPoint startPos_;
+  QPointF startPos_;
 
   ConnectionInProgress* currentConnection_;
 
   std::set<Connection*> connections_;
 
-  PositionProvider* positionProvider_;
+  boost::shared_ptr<PositionProvider> positionProvider_;
 };
 
 class InputPort : public Port 
 {
 public:
-  InputPort(const QString& name, const QColor& color, QWidget* parent = 0);
+  InputPort(const QString& name, const QColor& color, PORT_PARENT* parent = 0);
 };
 
 class OutputPort : public Port 
 {
 public:
-  OutputPort(const QString& name, const QColor& color, QWidget* parent = 0);
+  OutputPort(const QString& name, const QColor& color, PORT_PARENT* parent = 0);
 };
 
 }

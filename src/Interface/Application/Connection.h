@@ -70,7 +70,7 @@ public:
   void setColor(const QColor& color);
   QColor color() const;
 
-  void update(const QPoint& end);
+  void update(const QPointF& end);
 
 private:
   Port* fromPort_;

@@ -67,17 +67,34 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWid
 
   updateActions();
 
+#ifdef IS_NORMAL_WIDGET
+  ////temp port test
+  //Port* p1 = new InputPort("port1", Qt::green);
+  //QGraphicsProxyWidget* portProxy = scene_->addWidget(p1);
+  //portProxy->setPos(30,30);
+  //boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(portProxy));
+  //p1->setPositionObject(pp);
 
-  //temp port test
+  //Port* p2 = new OutputPort("port2", Qt::yellow);
+  //portProxy = scene_->addWidget(p2);
+  //portProxy->setPos(60,60);
+  //pp.reset(new ProxyWidgetPosition(portProxy));
+  //p2->setPositionObject(pp);
+#else
+ //temp port test
   Port* p1 = new InputPort("port1", Qt::green);
-  QGraphicsProxyWidget* portProxy = scene_->addWidget(p1);
-  portProxy->setPos(30,30);
-  p1->setPositionObject(new ProxyWidgetPosition(portProxy));
+  //QGraphicsProxyWidget* portProxy = 
+    scene_->addItem(p1);
+  p1->setPos(30,30);
+  //p1->setPositionObject(new ProxyWidgetPosition(portProxy));
 
   Port* p2 = new OutputPort("port2", Qt::yellow);
-  portProxy = scene_->addWidget(p2);
-  portProxy->setPos(60,60);
-  p2->setPositionObject(new ProxyWidgetPosition(portProxy));
+  //portProxy = 
+    scene_->addItem(p2);
+  p2->setPos(60,60);
+  //p2->setPositionObject(new ProxyWidgetPosition(portProxy));
+#endif
+ 
 }
 
 void NetworkEditor::addModule()
