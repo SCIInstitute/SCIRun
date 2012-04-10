@@ -31,6 +31,7 @@
 #include "Port.h"
 #include "Connection.h"
 #include "Module.h" //for PositionProvider, please move
+#include "NetworkEditor.h"  //for Logger, move
 #include "Utility.h"
 #include "ModuleProxyWidget.h"
 
@@ -58,6 +59,16 @@ QSize Port::sizeHint() const
 void Port::toggleLight()
 {
   lightOn_ = !lightOn_;
+}
+
+void Port::turn_off_light()
+{
+  lightOn_ = false;
+}
+
+void Port::turn_on_light()
+{
+  lightOn_ = true;
 }
 
 void Port::paintEvent(QPaintEvent* event)
@@ -105,6 +116,11 @@ void Port::mouseReleaseEvent(QMouseEvent* event)
   doMouseRelease(event->button(), event->pos());
 }
 
+namespace
+{
+  const int PORT_CONNECTION_THRESHOLD = 12;
+}
+
 void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 {
   if (button == Qt::LeftButton && !isConnected())
@@ -142,18 +158,20 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
                 //std::cout << "\t Port position = " << to_string(port->position()) << std::endl;
                 int distance = (pos - port->position()).manhattanLength();
                 //std::cout << "\t\t distance from mouse to port: " << distance << std::endl;
-                if (distance <= 12)
+                if (distance <= PORT_CONNECTION_THRESHOLD)
                 {
                   if (canBeConnected(port))
                   {
-                    std::cout << "!!! CONNECTION CAN BE MADE!!!" << std::endl;
+                    Logger::Instance->log("Connection made.");
+                    //std::cout << "!!! CONNECTION CAN BE MADE!!!" << std::endl;
 
-
+                    Connection* c = new Connection(this, port);
+                    TheScene->addItem(c);
 
 
                   }
                   else
-                    std::cout << "ports are the same i/o type, should not be connected" << std::endl;
+                    std::cout << "ports are diffent datatype or same i/o type, should not be connected" << std::endl;
                 }
               }
             }
@@ -201,6 +219,13 @@ void Port::addConnection(Connection* c)
 void Port::removeConnection(Connection* c)
 {
   connections_.erase(c);
+}
+
+void Port::deleteConnections()
+{
+  foreach (Connection* c, connections_)
+    delete c;
+  connections_.clear();
 }
 
 void Port::trackConnections()

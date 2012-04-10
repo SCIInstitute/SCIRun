@@ -58,6 +58,8 @@ public:
   void setConnected(bool connected);
 
   void toggleLight();
+  void turn_on_light();
+  void turn_off_light();
   bool isLightOn() const { return lightOn_; }
 
   QSize sizeHint() const;
@@ -66,6 +68,7 @@ public:
   void removeConnection(Connection* c);
 
   void trackConnections();
+  void deleteConnections();
 
   void setPositionObject(boost::shared_ptr<PositionProvider> provider) { positionProvider_ = provider; }
   QPointF position() const;

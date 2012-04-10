@@ -30,6 +30,7 @@
 #include <Interface/Application/Module.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/NetworkEditor.h>
 
 using namespace SCIRun::Gui;
 
@@ -69,9 +70,11 @@ void Module::addAllHardCodedPorts(const QString& name)
   //TODO: duh...
   if (name.contains("ComputeSVD"))
   {
+    addPort(new OutputPort("Output1", Qt::blue, this));
+    addPort(new OutputPort("Output2", Qt::blue, this));
+    addPort(new OutputPort("Output2", Qt::blue, this));
     addPort(new OutputPort("Output1", Qt::red, this));
     addPort(new OutputPort("Output2", Qt::green, this));
-    addPort(new OutputPort("Output2", Qt::yellow, this));
     addPort(new InputPort("Input1", Qt::blue, this));
   }
   else if (name.contains("ReadMatrix"))
@@ -98,24 +101,30 @@ void Module::addPort(InputPort* port)
 
 Module::~Module()
 {
-  foreach (Connection* c, connections_)
-    delete c;
+  //foreach (Connection* c, connections_)
+  //  delete c;
+  foreach (Port* p, ports_)
+    p->deleteConnections();
+  Logger::Instance->log("Module deleted.");
 }
 
-void Module::addConnection(Connection* c)
-{
-  connections_.insert(c);
-}
-
-void Module::removeConnection(Connection* c)
-{
-  connections_.erase(c);
-}
+//void Module::addConnection(Connection* c)
+//{
+//  connections_.insert(c);
+//}
+//
+//void Module::removeConnection(Connection* c)
+//{
+//  connections_.erase(c);
+//}
 
 void Module::trackConnections()
 {
-  foreach (Connection* c, connections_)
-    c->trackNodes();
+  //foreach (Connection* c, connections_)
+  //  c->trackNodes();
+
+  foreach (Port* p, ports_)
+    p->trackConnections();
 }
 
 QPointF Module::inputPortPosition() const 

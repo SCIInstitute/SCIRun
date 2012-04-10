@@ -47,7 +47,7 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWid
   executeAction_(0)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
-  scene_->setBackgroundBrush(Qt::darkBlue);
+  scene_->setBackgroundBrush(Qt::darkGray);
   Port::TheScene = scene_;
 
   setScene(scene_);
@@ -164,16 +164,16 @@ Connection* NetworkEditor::selectedLink() const
   return 0;
 }
 
-void NetworkEditor::addLink()
-{
-  ModulePair nodes = selectedModulePair();
-  if (nodes == ModulePair())
-    return;
-
-  Connection* link = new Connection(nodes.first, nodes.second);
-  scene_->addItem(link);
-  
-}
+//void NetworkEditor::addLink()
+//{
+//  ModulePair nodes = selectedModulePair();
+//  if (nodes == ModulePair())
+//    return;
+//
+//  Connection* link = new Connection(nodes.first, nodes.second);
+//  scene_->addItem(link);
+//  
+//}
 
 NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
 {
@@ -270,7 +270,7 @@ void NetworkEditor::updateActions()
 
   //cutAction_->setEnabled(isNode);
   //copyAction_->setEnabled(isNode);
-  addLinkAction_->setEnabled(isNodePair);
+  //addLinkAction_->setEnabled(isNodePair);
   deleteAction_->setEnabled(hasSelection);
   bringToFrontAction_->setEnabled(isNode);
   sendToBackAction_->setEnabled(isNode);
@@ -297,10 +297,10 @@ void NetworkEditor::createActions()
   addNodeAction_->setShortcut(tr("Ctrl+N"));
   connect(addNodeAction_, SIGNAL(triggered()), this, SLOT(addModule()));
 
-  addLinkAction_ = new QAction(tr("Add &Connection"), this);
-  addLinkAction_->setIcon(QIcon(":/images/link.png"));
-  addLinkAction_->setShortcut(tr("Ctrl+L"));
-  connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
+  //addLinkAction_ = new QAction(tr("Add &Connection"), this);
+  //addLinkAction_->setIcon(QIcon(":/images/link.png"));
+  //addLinkAction_->setShortcut(tr("Ctrl+L"));
+  //connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
 
   deleteAction_ = new QAction(tr("&Delete"), this);
   deleteAction_->setIcon(QIcon(":/images/delete.png"));
@@ -340,7 +340,7 @@ void NetworkEditor::createActions()
 void NetworkEditor::addActions(QWidget* widget)
 {
   widget->addAction(addNodeAction_);
-  widget->addAction(addLinkAction_);
+  //widget->addAction(addLinkAction_);
   widget->addAction(bringToFrontAction_);
   widget->addAction(sendToBackAction_);
   //widget->addAction(cutAction_);

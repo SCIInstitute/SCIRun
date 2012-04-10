@@ -30,59 +30,62 @@
 #include <stdexcept>
 #include <QtGui>
 #include "Connection.h"
-#include "Module.h"
+//#include "Module.h"
 #include "Utility.h"
 #include "Port.h"
+#include "NetworkEditor.h"  //for Logger, move
 
 using namespace SCIRun::Gui;
 
-Connection::Connection(Module* fromModule, Module* toModule)
-  : fromModule_(fromModule), toModule_(toModule),
-  fromPort_(0), toPort_(0)
-{
-  fromModule_->addConnection(this);
-  toModule_->addConnection(this);
-
-  setFlags(QGraphicsItem::ItemIsSelectable);
-  setZValue(-1);
-
-  setColor(Qt::darkRed);
-  trackNodes();
-}
+//Connection::Connection(Module* fromModule, Module* toModule)
+//  : fromModule_(fromModule), toModule_(toModule),
+//  fromPort_(0), toPort_(0)
+//{
+//  fromModule_->addConnection(this);
+//  toModule_->addConnection(this);
+//
+//  setFlags(QGraphicsItem::ItemIsSelectable);
+//  setZValue(-1);
+//
+//  setColor(Qt::darkRed);
+//  trackNodes();
+//}
 
 Connection::Connection(Port* fromPort, Port* toPort)
   //TODO: yuck, replace with sensible factory
-  : fromPort_(dynamic_cast<OutputPort*>(fromPort)), toPort_(dynamic_cast<InputPort*>(toPort)),
-  fromModule_(0), toModule_(0)
+  : fromPort_(fromPort), 
+  toPort_(toPort)
 {
   if (fromPort_)
+  {
     fromPort_->addConnection(this);
+    fromPort_->turn_on_light();
+  }
   if (toPort_)
+  {
     toPort_->addConnection(this);
+    toPort_->turn_on_light();
+  }
 
   setFlags(QGraphicsItem::ItemIsSelectable);
-  setZValue(-1);
+  setZValue(100);
 
   if (fromPort_ && toPort_)
-    setColor(Qt::darkRed);
-  else // "in-progress" pipe
-    setColor(Qt::red);
-
+    setColor(fromPort_->color());
+  
   trackNodes();
 }
 
 Connection::~Connection()
 {
-  if (fromModule_ && toModule_)
-  {
-    fromModule_->removeConnection(this);
-    toModule_->removeConnection(this);
-  }
-  else if (fromPort_ && toPort_)
+  if (fromPort_ && toPort_)
   {
     fromPort_->removeConnection(this);
+    fromPort_->turn_off_light();
     toPort_->removeConnection(this);
+    toPort_->turn_off_light();
   }
+  Logger::Instance->log("Connection deleted.");
 }
 
 void Connection::setColor(const QColor& color)
@@ -97,26 +100,27 @@ QColor Connection::color() const
 
 void Connection::trackNodes()
 {
-  if (fromModule_ && toModule_)
-  {
-    //std::cout << "Drawing line from " << to_string(fromModule_->outputPortPosition()) << " to " << to_string(toModule_->inputPortPosition()) << std::endl;
-    setLine(QLineF(fromModule_->outputPortPosition(), toModule_->inputPortPosition()));
-  }
-  else if (fromPort_ && toPort_)
+  //if (fromModule_ && toModule_)
+  //{
+  //  //std::cout << "Drawing line from " << to_string(fromModule_->outputPortPosition()) << " to " << to_string(toModule_->inputPortPosition()) << std::endl;
+  //  setLine(QLineF(fromModule_->outputPortPosition(), toModule_->inputPortPosition()));
+  //}
+  //else 
+  if (fromPort_ && toPort_)
   {
     //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(toPort_->pos()) << std::endl;
     setLine(QLineF(fromPort_->position(), toPort_->position()));
   }
-  else if (fromPort_)
-  {
-    //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(pos()) << std::endl;
-    setLine(QLineF(fromPort_->position(), pos()));
-  }
-  else if (toPort_)
-  {
-    //std::cout << "Drawing line from " << to_string(pos()) << " to " << to_string(toPort_->pos()) << std::endl;
-    setLine(QLineF(pos(), toPort_->position()));
-  }
+  //else if (fromPort_)
+  //{
+  //  //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(pos()) << std::endl;
+  //  setLine(QLineF(fromPort_->position(), pos()));
+  //}
+  //else if (toPort_)
+  //{
+  //  //std::cout << "Drawing line from " << to_string(pos()) << " to " << to_string(toPort_->pos()) << std::endl;
+  //  setLine(QLineF(pos(), toPort_->position()));
+  //}
   else
     throw std::logic_error("no from/to set for Connection");
 }

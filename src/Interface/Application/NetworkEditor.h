@@ -76,7 +76,7 @@ protected:
 private slots:
   void addModule();
   void addModule(const QString& text, const QPointF& pos);
-  void addLink();
+  //void addLink();
   void del();
   void cut();
   void copy();
@@ -105,7 +105,7 @@ private:
   //QAction* copyAction_;
   //QAction* pasteAction_;
   QAction* deleteAction_;
-  QAction* addLinkAction_;
+  //QAction* addLinkAction_;
   QAction* addNodeAction_;
   QAction* bringToFrontAction_;
   QAction* sendToBackAction_;

@@ -38,7 +38,7 @@ class QGraphicsProxyWidget;
 namespace SCIRun {
 namespace Gui {
 
-class Connection;
+//class Connection;
 class Port;
 class InputPort;
 class OutputPort;
@@ -67,8 +67,6 @@ class Module : public QFrame, public Ui::Module
 public:
   explicit Module(const QString& name, QWidget* parent = 0);
   ~Module();
-  void addConnection(Connection* c);
-  void removeConnection(Connection* c);
 
   void trackConnections();
 
@@ -85,7 +83,6 @@ public slots:
   void incrementProgressFake();
 private:
   //TODO distinguish input/output
-  std::set<Connection*> connections_;
   PositionProvider* positionProvider_;
 public:
   std::vector<Port*> ports_;
