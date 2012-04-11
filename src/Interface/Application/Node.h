@@ -1,6 +1,13 @@
 //#ifndef DIAGRAMNODE_H
 //#define DIAGRAMNODE_H
 //
+
+/***********************************************************************
+Note: This class will become "Note"
+**********************************************************************/
+
+
+
 //#include <QGraphicsItem>
 //
 ////class Link;

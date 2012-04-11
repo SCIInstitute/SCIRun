@@ -1,3 +1,5 @@
+//TODO: this class will be reborn as "Note"
+
 //#include <QtGui>
 //
 //Node::Node()

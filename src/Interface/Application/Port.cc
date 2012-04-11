@@ -122,6 +122,21 @@ namespace
   const int PORT_CONNECTION_THRESHOLD = 12;
 }
 
+namespace SCIRun {
+  namespace Gui {
+    struct DeleteCurrentConnectionAtEndOfBlock
+    {
+      explicit DeleteCurrentConnectionAtEndOfBlock(Port* p) : p_(p) {}
+      ~DeleteCurrentConnectionAtEndOfBlock()
+      {
+        delete p_->currentConnection_;
+        p_->currentConnection_ = 0;
+      }
+      Port* p_;
+    };
+  }
+}
+
 void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 {
   if (button == Qt::LeftButton && !isConnected())
@@ -131,6 +146,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
     if (currentConnection_)
     {
+      DeleteCurrentConnectionAtEndOfBlock deleter(this);
       QList<QGraphicsItem*> items = TheScene->items(pos);
       foreach (QGraphicsItem* item, items)
       {
@@ -152,6 +168,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
                     Connection* c = new Connection(this, port);
                     TheScene->addItem(c);
+                    return;
                   }
                   else
                     std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
@@ -160,14 +177,11 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
             }
             else
             {
-              std::cout << "### it's the same, let's not allow circular connections yet." << std::endl;
+              std::cout << "trying to connect a module with itself, let's not allow circular connections yet." << std::endl;
             }
           }
         }
       }
-
-      delete currentConnection_;
-      currentConnection_ = 0;
     }
   }
 }

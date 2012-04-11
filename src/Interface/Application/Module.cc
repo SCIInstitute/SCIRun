@@ -71,7 +71,7 @@ void Module::addAllHardCodedPorts(const QString& name)
   inputRowLayout->addLayout(inputPortLayout_);
   verticalLayout_2->insertLayout(0, inputRowLayout);
 
-  //TODO: duh...
+  //TODO: extract into factory
   if (name.contains("ComputeSVD"))
   {
     addPort(new OutputPort("Output1", Qt::blue, this));

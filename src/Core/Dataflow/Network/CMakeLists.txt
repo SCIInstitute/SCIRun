@@ -42,7 +42,9 @@ SET(Core_Dataflow_Network_HEADERS
   PortManager.h
 )
 
-ADD_LIBRARY(Core_Dataflow_Network ${Core_Dataflow_Network_SRCS})
+ADD_LIBRARY(Core_Dataflow_Network 
+${Core_Dataflow_Network_HEADERS}
+${Core_Dataflow_Network_SRCS})
 
 ADD_SUBDIRECTORY(Tests)
 

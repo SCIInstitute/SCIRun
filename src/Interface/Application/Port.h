@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef PORTWIDGET_H
-#define PORTWIDGET_H
+#ifndef INTERFACE_APPLICATION_PORTWIDGET_H
+#define INTERFACE_APPLICATION_PORTWIDGET_H
 
 #include <boost/shared_ptr.hpp>
 #include <QGraphicsWidget>
@@ -86,6 +86,7 @@ private:
   void performDrag(const QPointF& endPos);
   bool canBeConnected(Port* other) const;
 
+
   const QString name_;
   const QColor color_;
   const bool isInput_;
@@ -94,6 +95,7 @@ private:
   QPointF startPos_;
   QWidget* moduleParent_;
   ConnectionInProgress* currentConnection_;
+  friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<Connection*> connections_;
 };
 

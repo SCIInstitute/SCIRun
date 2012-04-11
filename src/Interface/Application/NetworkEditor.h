@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef NETWORKEDITOR_H
-#define NETWORKEDITOR_H
+#ifndef INTERFACE_APPLICATION_NETWORKEDITOR_H
+#define INTERFACE_APPLICATION_NETWORKEDITOR_H
 
 #include <boost/shared_ptr.hpp>
 #include <QGraphicsView>

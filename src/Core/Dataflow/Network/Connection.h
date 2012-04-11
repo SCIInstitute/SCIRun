@@ -42,20 +42,20 @@ namespace SCIRun {
         std::string id_;
       };
 
-class Connection 
-{
-public:
-  Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int iportno, const std::string &id);
-  ~Connection();
+      class Connection 
+      {
+      public:
+        Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int iportno, const std::string &id);
+        ~Connection();
 
-  OutputPortHandle oport_;
-  InputPortHandle iport_;
-  ModuleHandle omod_;
-  ModuleHandle imod_;
-  
-  ConnectionId id_;
-  bool disabled_;
-};
+        OutputPortHandle oport_;
+        InputPortHandle iport_;
+        ModuleHandle omod_;
+        ModuleHandle imod_;
+
+        ConnectionId id_;
+        bool disabled_;
+      };
 
 }}}
 

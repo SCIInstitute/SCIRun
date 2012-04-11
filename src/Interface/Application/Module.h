@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULEWIDGET_H
-#define MODULEWIDGET_H
+#ifndef INTERFACE_APPLICATION_MODULEWIDGET_H
+#define INTERFACE_APPLICATION_MODULEWIDGET_H
 
 #include "ui_Module.h"
 #include <boost/shared_ptr.hpp>
