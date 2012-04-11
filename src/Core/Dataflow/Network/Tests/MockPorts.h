@@ -29,7 +29,7 @@
 #ifndef MOCK_PORTS_H
 #define MOCK_PORTS_H
 
-#include <Core/Dataflow/Network/Port.h>
+#include <Core/Dataflow/Network/PortInterface.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {

@@ -33,32 +33,12 @@
 #include <string>
 #include <vector>
 #include <boost/noncopyable.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/PortInterface.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
-
-  class PortInterface
-  {
-  public:
-    virtual ~PortInterface() {}
-    virtual void attach(Connection* conn) = 0;
-    virtual void detach(Connection* conn) = 0;
-    virtual size_t nconnections() const = 0;
-    virtual const Connection* connection(size_t) const = 0;
-    virtual std::string get_colorname() const = 0;
-    virtual std::string get_portname() const = 0;
-  };
   
-  class InputPortInterface : virtual public PortInterface
-  {
-  };
-  
-  class OutputPortInterface : virtual public PortInterface
-  {
-  };
-
 class Port : virtual public PortInterface, boost::noncopyable
 {
 public:

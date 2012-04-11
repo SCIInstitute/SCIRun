@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,36 +27,27 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_NETWORK_H
-#define CORE_DATAFLOW_NETWORK_NETWORK_H 
+#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
+#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
 
-#include <boost/noncopyable.hpp>
 #include <string>
-#include <vector>
-#include <Core/Dataflow/Network/NetworkInterface.h>
+#include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class Network : public NetworkInterface, boost::noncopyable
+  class ModuleInterface
   {
-  private:
-    std::vector<ConnectionHandle> connections;
-    std::vector<ModuleHandle> modules;
   public:
-    Network();
-    ~Network();
-
-    size_t nmodules() const;
-    ModuleHandle module(size_t i) const;
-
-    ConnectionId connect(ModuleHandle, int, ModuleHandle, int);
-    bool disconnect(const ConnectionId&);
-    void disable_connection(const ConnectionId&);
+    virtual ~ModuleInterface() {}
+    virtual void execute() = 0;
+    virtual std::string get_modulename() const = 0;
+    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
+    virtual InputPortHandle get_input_port(size_t idx) const = 0;
+    virtual size_t num_input_ports() const = 0;
+    virtual size_t num_output_ports() const = 0;
   };
-
 }}}
-
 
 #endif

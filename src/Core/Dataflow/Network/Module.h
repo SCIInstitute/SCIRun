@@ -36,24 +36,13 @@
 #include <map>
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/PortManager.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
-
-  class ModuleInterface
-  {
-  public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_modulename() const = 0;
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-  };
-
+  
   class Module : public ModuleInterface, boost::noncopyable
   {
   public:

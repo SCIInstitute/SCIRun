@@ -36,9 +36,12 @@ SET(Core_Dataflow_Network_SRCS
 SET(Core_Dataflow_Network_HEADERS
   Connection.h
   Module.h
+  ModuleInterface.h
   Network.h
   NetworkFwd.h
+  NetworkInterface.h
   Port.h
+  PortInterface.h
   PortManager.h
 )
 

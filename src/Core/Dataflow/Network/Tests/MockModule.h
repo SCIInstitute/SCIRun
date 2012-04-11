@@ -29,7 +29,7 @@
 #ifndef MOCK_MODULE_H
 #define MOCK_MODULE_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Core/Dataflow/Network/ModuleInterface.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {

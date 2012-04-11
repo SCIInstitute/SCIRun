@@ -34,7 +34,14 @@ SET(Core_Dataflow_Network_Tests_SRCS
   PortManagerTests.cc
 )
 
-ADD_EXECUTABLE(Core_Dataflow_Network_Tests ${Core_Dataflow_Network_Tests_SRCS})
+SET(Core_Dataflow_Network_Tests_HEADERS
+  MockModule.h
+  MockPorts.h
+)
+
+ADD_EXECUTABLE(Core_Dataflow_Network_Tests 
+${Core_Dataflow_Network_Tests_HEADERS}
+${Core_Dataflow_Network_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network_Tests
 Core_Dataflow_Network
