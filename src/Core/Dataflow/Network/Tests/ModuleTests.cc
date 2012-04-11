@@ -35,7 +35,7 @@ TEST(ModuleTests, CanConstructEmptyModuleWithName)
 {
   std::string name = "CreateMatrix";
   Module m(name);
-  ASSERT_EQ(m.get_modulename(), name);
+  ASSERT_EQ(m.get_module_name(), name);
 }
 
 TEST(ModuleTests, CanBuildWithPorts)
@@ -47,5 +47,5 @@ TEST(ModuleTests, CanBuildWithPorts)
     .build();
   ASSERT_EQ(2, module->num_input_ports());
   ASSERT_EQ(1, module->num_output_ports());
-  ASSERT_EQ("SolveLinearSystem", module->get_modulename());
+  ASSERT_EQ("SolveLinearSystem", module->get_module_name());
 }

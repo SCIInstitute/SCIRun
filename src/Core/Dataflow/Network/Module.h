@@ -50,7 +50,7 @@ namespace Networks {
       const std::string& version="1.0");
     virtual ~Module();
 
-    std::string get_modulename() const { return module_name_; }
+    std::string get_module_name() const { return module_name_; }
     std::string get_categoryname() const { return category_name_; }
     std::string get_packagename() const { return package_name_; }
     std::string get_id() const { return id_; }

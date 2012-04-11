@@ -41,19 +41,26 @@ namespace Networks {
 
   class Network : public NetworkInterface, boost::noncopyable
   {
-  private:
-    std::vector<ConnectionHandle> connections;
-    std::vector<ModuleHandle> modules;
   public:
-    Network();
+    explicit Network(ModuleFactoryHandle moduleFactory);
     ~Network();
 
-    size_t nmodules() const;
-    ModuleHandle module(size_t i) const;
+    virtual ModuleHandle add_module(const ModuleDescription& info);
+    virtual bool remove_module(const std::string& id);
+    virtual size_t nmodules() const;
+    virtual ModuleHandle module(size_t i) const;
 
-    ConnectionId connect(ModuleHandle, int, ModuleHandle, int);
-    bool disconnect(const ConnectionId&);
-    void disable_connection(const ConnectionId&);
+    virtual ConnectionId connect(ModuleHandle, int, ModuleHandle, int);
+    virtual bool disconnect(const ConnectionId&);
+    virtual size_t nconnections() const;
+    virtual void disable_connection(const ConnectionId&);
+  private:
+    ModuleFactoryHandle moduleFactory_;
+
+    typedef std::vector<ConnectionHandle> Connections;
+    Connections connections_;
+    typedef std::vector<ModuleHandle> Modules;
+    Modules modules_;
   };
 
 }}}

@@ -26,29 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Dataflow/Network/Tests/MockModule.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
+using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::Networks::Mocks;
+using ::testing::Return;
+using ::testing::NiceMock;
 
-#include <string>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
+{
+  MockModulePtr module(new NiceMock<MockModule>);
 
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
+  EXPECT_CALL(*module, get_module_name()).WillRepeatedly(Return(info.module_name_));
+  //EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(dummyOutputPort));
+  return module;
+}
 
-  class ModuleInterface
-  {
-  public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual std::string get_id() const = 0;
-  };
-}}}
-
-#endif

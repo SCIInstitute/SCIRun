@@ -25,30 +25,34 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
-
-#include <string>
-#include <Core/Dataflow/Network/NetworkFwd.h>
-
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  class ModuleInterface
-  {
-  public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual std::string get_id() const = 0;
-  };
-}}}
-
-#endif
+//
+//#ifndef MOCK_MODULE_H
+//#define MOCK_MODULE_H
+//
+//#include <Core/Dataflow/Network/ModuleInterface.h>
+//#include <gmock/gmock.h>
+//
+//namespace SCIRun {
+//  namespace Domain {
+//    namespace Networks {
+//      namespace Mocks
+//      {
+//        class MockModule : public ModuleInterface
+//        {
+//        public:
+//          MOCK_METHOD0(execute, void());
+//          MOCK_CONST_METHOD0(get_modulename, std::string());
+//          MOCK_CONST_METHOD1(get_output_port, OutputPortHandle(size_t));
+//          MOCK_CONST_METHOD1(get_input_port, InputPortHandle(size_t));
+//          MOCK_CONST_METHOD0(num_input_ports, size_t());
+//          MOCK_CONST_METHOD0(num_output_ports, size_t());
+//          MOCK_CONST_METHOD0(get_id, std::string());
+//        };
+//
+//        typedef boost::shared_ptr<MockModule> MockModulePtr;
+//      }
+//    }
+//  }
+//}
+//
+//#endif

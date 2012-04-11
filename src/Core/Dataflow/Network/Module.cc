@@ -65,7 +65,7 @@ size_t Module::num_output_ports() const
 
 void Module::execute()
 {
-  std::cout << "Module " << get_modulename() << " executing..." << std::endl;
+  std::cout << "Module " << get_module_name() << " executing..." << std::endl;
 }
 
 void Module::add_input_port(InputPortHandle h)

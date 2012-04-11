@@ -43,6 +43,8 @@ class Connection;
 class InputPortInterface;
 class OutputPortInterface;
 struct ConnectionId;
+struct ModuleDescription;
+class ModuleFactory;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
@@ -50,6 +52,7 @@ typedef boost::shared_ptr<PortInterface> PortHandle;
 typedef boost::shared_ptr<Connection> ConnectionHandle;
 typedef boost::shared_ptr<InputPortInterface> InputPortHandle;
 typedef boost::shared_ptr<OutputPortInterface> OutputPortHandle;
+typedef boost::shared_ptr<ModuleFactory> ModuleFactoryHandle;
   
 }}}
 

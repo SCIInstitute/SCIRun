@@ -40,10 +40,14 @@ namespace Networks {
   {
   public:
     virtual ~NetworkInterface() {}
+    virtual ModuleHandle add_module(const ModuleDescription& info) = 0;
+    virtual bool remove_module(const std::string& id) = 0;
     virtual size_t nmodules() const = 0;
     virtual ModuleHandle module(size_t i) const = 0;
     virtual ConnectionId connect(ModuleHandle, int, ModuleHandle, int) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
+    virtual size_t nconnections() const = 0;
+    virtual void disable_connection(const ConnectionId&) = 0;
   };
 }}}
 

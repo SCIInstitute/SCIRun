@@ -27,27 +27,20 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
+#ifndef CORE_DATAFLOW_NETWORK_MODULE_FACTORY_H
+#define CORE_DATAFLOW_NETWORK_MODULE_FACTORY_H 
 
-#include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class ModuleInterface
+  class ModuleFactory
   {
   public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual std::string get_id() const = 0;
+    virtual ~ModuleFactory() {}
+    virtual ModuleHandle create(const ModuleDescription& info) = 0;
   };
 }}}
 

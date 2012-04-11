@@ -27,27 +27,48 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
+#ifndef CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
+#define CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
 
-#include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class ModuleInterface
+  struct InputPortDescription
+  {
+    std::string name;
+    std::string datatype;
+    std::string color;
+    //iport_maker maker;
+  };
+
+  struct OutputPortDescription
+  {
+    std::string name;
+    std::string datatype;
+    std::string color;
+    //oport_maker maker;
+  };
+
+  struct ModuleDescription
   {
   public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual std::string get_id() const = 0;
+    std::string package_name_;
+    std::string category_name_;
+    std::string module_name_;
+    std::string module_version_;
+    std::vector<InputPortDescription> input_ports_;
+    std::vector<OutputPortDescription> output_ports_;
+    //bool                              optional_;
+    //bool                              hide_;
+    //bool                              dynamic_;
+    //std::vector<std::string>          authors_;
+    //std::string                       summary_;
+    //ModuleMaker                       maker_;
+    //bool last_port_dynamic_;
+    //bool                              has_gui_node_;
   };
 }}}
 

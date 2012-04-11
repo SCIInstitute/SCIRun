@@ -26,8 +26,55 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <gtest/gtest.h>
 #include <Core/Dataflow/Network/Network.h>
+#include <Core/Dataflow/Network/Connection.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
+#include <Core/Dataflow/Network/Tests/MockModule.h>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::Networks::Mocks;
 
-//TODO
+TEST(NetworkTests, CanAddAndRemoveModules)
+{
+  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
+  Network network(moduleFactory);
+ 
+  EXPECT_EQ(0, network.nmodules());
+
+  ModuleDescription md;
+  md.module_name_ = "Module1";
+  ModuleHandle m = network.add_module(md);
+  EXPECT_EQ(md.module_name_, m->get_module_name());
+
+  EXPECT_EQ(1, network.nmodules());
+
+  EXPECT_TRUE(network.remove_module(m->get_id()));
+  EXPECT_EQ(0, network.nmodules());
+
+  EXPECT_FALSE(network.remove_module("not in the network"));
+}
+
+TEST(NetworkTests, CanAddAndRemoveConnections)
+{
+  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
+  Network network(moduleFactory);
+
+  ModuleDescription md1;
+  md1.module_name_ = "Module1";
+  ModuleHandle m1 = network.add_module(md1);
+  ModuleDescription md2;
+  md2.module_name_ = "Module2";
+  ModuleHandle m2 = network.add_module(md2);
+
+  EXPECT_EQ(2, network.nmodules());
+
+  ConnectionId connId = network.connect(m1, 1, m2, 2);
+  EXPECT_EQ(1, network.nconnections());
+  std::cout << connId.id_ << std::endl;
+
+  EXPECT_TRUE(network.disconnect(connId));
+  EXPECT_EQ(0, network.nconnections());
+
+  ASSERT_TRUE(false);
+}
