@@ -29,32 +29,15 @@
 #include <iostream>
 #include <stdexcept>
 #include <QtGui>
-#include "Connection.h"
-//#include "Module.h"
-#include "Utility.h"
-#include "Port.h"
-#include "NetworkEditor.h"  //for Logger, move
+#include <Interface/Application/Connection.h>
+#include <Interface/Application/Utility.h>
+#include <Interface/Application/Port.h>
+#include <Interface/Application/Logger.h>
 
 using namespace SCIRun::Gui;
 
-//Connection::Connection(Module* fromModule, Module* toModule)
-//  : fromModule_(fromModule), toModule_(toModule),
-//  fromPort_(0), toPort_(0)
-//{
-//  fromModule_->addConnection(this);
-//  toModule_->addConnection(this);
-//
-//  setFlags(QGraphicsItem::ItemIsSelectable);
-//  setZValue(-1);
-//
-//  setColor(Qt::darkRed);
-//  trackNodes();
-//}
-
 Connection::Connection(Port* fromPort, Port* toPort)
-  //TODO: yuck, replace with sensible factory
-  : fromPort_(fromPort), 
-  toPort_(toPort)
+  : fromPort_(fromPort), toPort_(toPort)
 {
   if (fromPort_)
   {
@@ -100,27 +83,10 @@ QColor Connection::color() const
 
 void Connection::trackNodes()
 {
-  //if (fromModule_ && toModule_)
-  //{
-  //  //std::cout << "Drawing line from " << to_string(fromModule_->outputPortPosition()) << " to " << to_string(toModule_->inputPortPosition()) << std::endl;
-  //  setLine(QLineF(fromModule_->outputPortPosition(), toModule_->inputPortPosition()));
-  //}
-  //else 
   if (fromPort_ && toPort_)
   {
-    //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(toPort_->pos()) << std::endl;
     setLine(QLineF(fromPort_->position(), toPort_->position()));
   }
-  //else if (fromPort_)
-  //{
-  //  //std::cout << "Drawing line from " << to_string(fromPort_->pos()) << " to " << to_string(pos()) << std::endl;
-  //  setLine(QLineF(fromPort_->position(), pos()));
-  //}
-  //else if (toPort_)
-  //{
-  //  //std::cout << "Drawing line from " << to_string(pos()) << " to " << to_string(toPort_->pos()) << std::endl;
-  //  setLine(QLineF(pos(), toPort_->position()));
-  //}
   else
     throw std::logic_error("no from/to set for Connection");
 }
@@ -145,6 +111,5 @@ QColor ConnectionInProgress::color() const
 
 void ConnectionInProgress::update(const QPointF& end)
 {
-  //std::cout << "Drawing line from " << to_string(fromPort_->position()) << " to " << to_string(mapToScene(end) + fromPort_->position()) << std::endl;
   setLine(QLineF(fromPort_->position(), end));
 }

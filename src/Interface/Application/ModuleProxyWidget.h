@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULEPROXY_H
-#define MODULEPROXY_H
+#ifndef MODULEPROXYWIDGET_H
+#define MODULEPROXYWIDGET_H
 
 #include <QGraphicsProxyWidget>
 
@@ -35,44 +35,34 @@ namespace SCIRun
 {
   namespace Gui
   {
-
     class Module;
 
-class ModuleProxyWidget : public QGraphicsProxyWidget
-{
-	Q_OBJECT
+    class ModuleProxyWidget : public QGraphicsProxyWidget
+    {
+	    Q_OBJECT
 	
-public:
-  explicit ModuleProxyWidget(Module* module, QGraphicsItem* parent = 0);
-  void createPortPositionProviders();
-  Module* getModule();
-public slots:
-  void highlightIfSelected();
-signals:
-  void selected();
-protected:
-  void mousePressEvent(QGraphicsSceneMouseEvent *event);
-  void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-  void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-
-
-  //void dragEnterEvent(QGraphicsSceneDragDropEvent *event);
-  //void dragLeaveEvent(QGraphicsSceneDragDropEvent *event);
-  //void dragMoveEvent(QGraphicsSceneDragDropEvent *event);
-  //void dropEvent(QGraphicsSceneDragDropEvent *event);
-
-
-  QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-private:
-  bool isSubwidget(QWidget* alienWidget) const;
-  void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-  void addPort();
+    public:
+      explicit ModuleProxyWidget(Module* module, QGraphicsItem* parent = 0);
+      void createPortPositionProviders();
+      Module* getModule();
+    public slots:
+      void highlightIfSelected();
+    signals:
+      void selected();
+    protected:
+      void mousePressEvent(QGraphicsSceneMouseEvent *event);
+      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
+      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    private:
+      bool isSubwidget(QWidget* alienWidget) const;
+      void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
+      void addPort();
   
-  Module* module_;
-  bool grabbedByWidget_;
-  QWidget* pressedSubWidget_;
-  //int backupZ_;
-};
+      Module* module_;
+      bool grabbedByWidget_;
+      QWidget* pressedSubWidget_;
+    };
 
   }
 }

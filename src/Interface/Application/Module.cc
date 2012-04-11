@@ -26,11 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <QtGui>
 #include <Interface/Application/Module.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/PositionProvider.h>
+#include <Interface/Application/Logger.h>
 
 using namespace SCIRun::Gui;
 
@@ -40,7 +43,7 @@ QPointF ProxyWidgetPosition::currentPosition() const
 }
 
 Module::Module(const QString& name, QWidget* parent /* = 0 */)
-  : QFrame(parent), positionProvider_(0)
+  : QFrame(parent)
 {
   setupUi(this);
   titleLabel_->setText(name);
@@ -55,6 +58,7 @@ void Module::addAllHardCodedPorts(const QString& name)
 {
   outputPortLayout_ = new QHBoxLayout;
   outputPortLayout_->setSpacing(3);
+  
   QHBoxLayout* outputRowLayout = new QHBoxLayout;
   outputRowLayout->setAlignment(Qt::AlignLeft);
   outputRowLayout->addLayout(outputPortLayout_);
@@ -73,17 +77,19 @@ void Module::addAllHardCodedPorts(const QString& name)
     addPort(new OutputPort("Output1", Qt::blue, this));
     addPort(new OutputPort("Output2", Qt::blue, this));
     addPort(new OutputPort("Output2", Qt::blue, this));
-    addPort(new OutputPort("Output1", Qt::red, this));
-    addPort(new OutputPort("Output2", Qt::green, this));
     addPort(new InputPort("Input1", Qt::blue, this));
+    optionsButton_->setVisible(false);
   }
   else if (name.contains("ReadMatrix"))
   {
     addPort(new OutputPort("Output1", Qt::blue, this));
+    addPort(new OutputPort("Output1", Qt::darkGreen, this));
+    addPort(new InputPort("Input1", Qt::darkGreen, this));
   }
   else if (name.contains("WriteMatrix"))
   {
     addPort(new InputPort("Input1", Qt::blue, this));
+    addPort(new InputPort("Input1", Qt::darkGreen, this));
   }
 }
 
@@ -101,28 +107,13 @@ void Module::addPort(InputPort* port)
 
 Module::~Module()
 {
-  //foreach (Connection* c, connections_)
-  //  delete c;
   foreach (Port* p, ports_)
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
 }
 
-//void Module::addConnection(Connection* c)
-//{
-//  connections_.insert(c);
-//}
-//
-//void Module::removeConnection(Connection* c)
-//{
-//  connections_.erase(c);
-//}
-
 void Module::trackConnections()
 {
-  //foreach (Connection* c, connections_)
-  //  c->trackNodes();
-
   foreach (Port* p, ports_)
     p->trackConnections();
 }

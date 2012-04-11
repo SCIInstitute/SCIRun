@@ -30,8 +30,9 @@
 #include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
-#include "SCIRunMainWindow.h"
-#include "NetworkEditor.h"
+#include <Interface/Application/Logger.h>
+#include <Interface/Application/SCIRunMainWindow.h>
+#include <Interface/Application/NetworkEditor.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -65,9 +66,9 @@ class TreeViewModuleGetter : public CurrentModuleSelection
 {
 public:
   explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-  virtual std::string text() const
+  virtual QString text() const
   {
-    return tree_.currentItem()->text(0).toStdString();
+    return tree_.currentItem()->text(0);
   }
   virtual bool isModule() const
   {
@@ -81,7 +82,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
 
-  TreeViewModuleGetter* getter = new TreeViewModuleGetter(*moduleSelectorTreeWidget_);
+  boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Logger::Instance.reset(new LogAppender(logTextBrowser_));
   networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
@@ -130,5 +131,4 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   QStringList result = visitTree(moduleSelectorTreeWidget_);
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance), _1));
-
 }

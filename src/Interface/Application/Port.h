@@ -26,14 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef PORT_H
-#define PORT_H
+#ifndef PORTWIDGET_H
+#define PORTWIDGET_H
 
 #include <boost/shared_ptr.hpp>
 #include <QGraphicsWidget>
 #include <QWidget>
 #include <QColor>
 #include <set>
+#include <Interface/Application/PositionProvider.h>
 
 class QGraphicsScene;
 
@@ -44,8 +45,7 @@ class Connection;
 class ConnectionInProgress;
 class PositionProvider;
 
-
-class Port : public QWidget
+class Port : public QWidget, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
@@ -70,24 +70,18 @@ public:
   void trackConnections();
   void deleteConnections();
 
-  void setPositionObject(boost::shared_ptr<PositionProvider> provider) { positionProvider_ = provider; }
   QPointF position() const;
 
   //TODO: yuck
   static QGraphicsScene* TheScene;
-
-protected:
-
-  void mousePressEvent(QMouseEvent* event);
-  void mouseReleaseEvent(QMouseEvent* event);
-  void mouseMoveEvent(QMouseEvent* event);
-  
-  void paintEvent(QPaintEvent* event);
- 
-public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
+protected:
+  void mousePressEvent(QMouseEvent* event);
+  void mouseReleaseEvent(QMouseEvent* event);
+  void mouseMoveEvent(QMouseEvent* event);
+  void paintEvent(QPaintEvent* event);
 private:
   void performDrag(const QPointF& endPos);
   bool canBeConnected(Port* other) const;
@@ -99,12 +93,8 @@ private:
   bool lightOn_;
   QPointF startPos_;
   QWidget* moduleParent_;
-
   ConnectionInProgress* currentConnection_;
-
   std::set<Connection*> connections_;
-
-  boost::shared_ptr<PositionProvider> positionProvider_;
 };
 
 class InputPort : public Port 

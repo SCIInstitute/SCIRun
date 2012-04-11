@@ -26,57 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULEWIDGET_H
-#define MODULEWIDGET_H
+#ifndef LOGGER_H
+#define LOGGER_H
 
-#include "ui_Module.h"
 #include <boost/shared_ptr.hpp>
-#include <QFrame>
-#include <set>
-#include <Interface/Application/PositionProvider.h>
-
-class QGraphicsProxyWidget;
+#include <QString>
 
 namespace SCIRun {
 namespace Gui {
 
-class Port;
-class InputPort;
-class OutputPort;
-class PositionProvider;
+  class Logger
+  {
+  public:
+    virtual ~Logger() {}
+    virtual void log(const QString& message) const = 0;
 
-class Module : public QFrame, public NeedsScenePositionProvider, public Ui::Module
-{
-	Q_OBJECT
-	
-public:
-  explicit Module(const QString& name, QWidget* parent = 0);
-  ~Module();
-
-  void trackConnections();
-  QPointF inputPortPosition() const;
-  QPointF outputPortPosition() const;
-
-  double percentComplete() const;
-  void setPercentComplete(double p);
-
-  //for testing signal/slot of Execute
-public slots:
-  void incrementProgressFake();
-private:
-  
-public:
-  //TODO distinguish input/output
-  std::vector<Port*> ports_;
-private:
-  //FOR TESTING
-  void addAllHardCodedPorts(const QString& name);
-  void addPort(InputPort* port);
-  void addPort(OutputPort* port);
-  //
-  QHBoxLayout* outputPortLayout_;
-  QHBoxLayout* inputPortLayout_;
-};
+    static boost::shared_ptr<Logger> Instance;
+  };
 
 }
 }

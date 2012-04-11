@@ -44,83 +44,71 @@ namespace Gui {
   {
   public:
     virtual ~CurrentModuleSelection() {}
-    virtual std::string text() const = 0;
+    virtual QString text() const = 0;
     virtual bool isModule() const = 0;
   };
-
-  class Logger
-  {
-  public:
-    virtual ~Logger() {}
-    virtual void log(const QString& message) const = 0;
-    static boost::shared_ptr<Logger> Instance;
-  };
-
+  
   class Connection;
   class Module;
   class ModuleProxyWidget;
 
-class NetworkEditor : public QGraphicsView
-{
-	Q_OBJECT
+  class NetworkEditor : public QGraphicsView
+  {
+	  Q_OBJECT
 	
-public:
-  //TODO change to boost::shared_ptr
-  explicit NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent = 0);
-  void addActions(QWidget* widget);
-  void setExecuteAction(QAction* action) { executeAction_ = action; }
-protected:
-  virtual void dropEvent(QDropEvent* event);
-  virtual void dragEnterEvent(QDragEnterEvent* event);
-  virtual void dragMoveEvent(QDragMoveEvent* event);
-private slots:
-  void addModule();
-  void addModule(const QString& text, const QPointF& pos);
-  //void addLink();
-  void del();
-  void cut();
-  void copy();
-  void paste();
-  void bringToFront();
-  void sendToBack();
-  void properties();
-  void updateActions();
+  public:
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
+    void addActions(QWidget* widget);
+    void setExecuteAction(QAction* action) { executeAction_ = action; }
+  protected:
+    virtual void dropEvent(QDropEvent* event);
+    virtual void dragEnterEvent(QDragEnterEvent* event);
+    virtual void dragMoveEvent(QDragMoveEvent* event);
+  private slots:
+    void addModule();
+    void addModule(const QString& text, const QPointF& pos);
+    void del();
+    void cut();
+    void copy();
+    void paste();
+    void bringToFront();
+    void sendToBack();
+    void properties();
+    void updateActions();
 
-private:
-  typedef QPair<Module*, Module*> ModulePair;
-  void createActions();
-  //void createMenus();
-  //void createToolBars();
-  void setZValue(int z);
-  void setupModule(Module* node, const QPointF& pos = QPointF());
-  Module* selectedModule() const;
-  ModuleProxyWidget* selectedModuleProxy() const;
-  Connection* selectedLink() const;
-  ModulePair selectedModulePair() const;
-  //QMenu* fileMenu_;
-  //QMenu* editMenu_;
-  //QToolBar* editToolBar_;
-  //QAction* exitAction_;
-  //QAction* cutAction_;
-  //QAction* copyAction_;
-  //QAction* pasteAction_;
-  QAction* deleteAction_;
-  //QAction* addLinkAction_;
-  QAction* addNodeAction_;
-  QAction* bringToFrontAction_;
-  QAction* sendToBackAction_;
-  QAction* propertiesAction_;
+  private:
+    typedef QPair<Module*, Module*> ModulePair;
+    void createActions();
+    //void createMenus();
+    //void createToolBars();
+    void setZValue(int z);
+    void setupModule(Module* node, const QPointF& pos = QPointF());
+    Module* selectedModule() const;
+    ModuleProxyWidget* selectedModuleProxy() const;
+    Connection* selectedLink() const;
+    ModulePair selectedModulePair() const;
+    //QMenu* fileMenu_;
+    //QMenu* editMenu_;
+    //QToolBar* editToolBar_;
+    //QAction* cutAction_;
+    //QAction* copyAction_;
+    //QAction* pasteAction_;
+    QAction* deleteAction_;
+    //QAction* addLinkAction_;
+    QAction* addNodeAction_;
+    QAction* bringToFrontAction_;
+    QAction* sendToBackAction_;
+    QAction* propertiesAction_;
+    QAction* executeAction_;
 
-  QGraphicsScene* scene_;
+    QGraphicsScene* scene_;
   
-  int minZ_;
-  int maxZ_;
-  int seqNumber_;
+    int minZ_;
+    int maxZ_;
+    int seqNumber_;
 
-  //TODO change to boost::shared_ptr
-  CurrentModuleSelection* moduleSelectionGetter_;
-  QAction* executeAction_;
-};
+    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+  };
 
 }
 }

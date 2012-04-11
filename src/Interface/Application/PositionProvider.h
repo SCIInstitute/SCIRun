@@ -26,56 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULEWIDGET_H
-#define MODULEWIDGET_H
+#ifndef POSITION_PROVIDER_H
+#define POSITION_PROVIDER_H
 
-#include "ui_Module.h"
-#include <boost/shared_ptr.hpp>
-#include <QFrame>
-#include <set>
-#include <Interface/Application/PositionProvider.h>
+#include <QPointF>
 
 class QGraphicsProxyWidget;
 
 namespace SCIRun {
 namespace Gui {
 
-class Port;
-class InputPort;
-class OutputPort;
-class PositionProvider;
-
-class Module : public QFrame, public NeedsScenePositionProvider, public Ui::Module
+class PositionProvider
 {
-	Q_OBJECT
-	
 public:
-  explicit Module(const QString& name, QWidget* parent = 0);
-  ~Module();
+  virtual ~PositionProvider() {}
+  virtual QPointF currentPosition() const = 0;
+};
 
-  void trackConnections();
-  QPointF inputPortPosition() const;
-  QPointF outputPortPosition() const;
-
-  double percentComplete() const;
-  void setPercentComplete(double p);
-
-  //for testing signal/slot of Execute
-public slots:
-  void incrementProgressFake();
-private:
-  
+class NeedsScenePositionProvider
+{
 public:
-  //TODO distinguish input/output
-  std::vector<Port*> ports_;
+  virtual ~NeedsScenePositionProvider() {}
+  void setPositionObject(boost::shared_ptr<PositionProvider> provider) { positionProvider_ = provider; }
+protected:
+  boost::shared_ptr<PositionProvider> positionProvider_;
+};
+
+class ProxyWidgetPosition : public PositionProvider
+{
+public:
+  explicit ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset = QPointF()) : widget_(widget), offset_(offset) {}
+  virtual QPointF currentPosition() const;
 private:
-  //FOR TESTING
-  void addAllHardCodedPorts(const QString& name);
-  void addPort(InputPort* port);
-  void addPort(OutputPort* port);
-  //
-  QHBoxLayout* outputPortLayout_;
-  QHBoxLayout* inputPortLayout_;
+  QGraphicsProxyWidget* widget_;
+  QPointF offset_;
 };
 
 }

@@ -28,10 +28,11 @@
 
 #include <QtGui>
 #include <iostream>
-#include "ModuleProxyWidget.h"
-#include "Module.h"
-#include "Port.h"
-#include "Utility.h"
+#include <Interface/Application/ModuleProxyWidget.h>
+#include <Interface/Application/Module.h>
+#include <Interface/Application/Port.h>
+#include <Interface/Application/Utility.h>
+#include <Interface/Application/PositionProvider.h>
 
 using namespace SCIRun::Gui;
 
@@ -43,7 +44,8 @@ ModuleProxyWidget::ModuleProxyWidget(Module* module, QGraphicsItem* parent/* = 0
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
-  module_->setPositionObject(new ProxyWidgetPosition(this));
+  boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
+  module_->setPositionObject(pp);
   setAcceptDrops(true);
 }
 
@@ -63,22 +65,17 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
   {
-    //std::cout << "! ! ! mousePressEvent for Port" << std::endl;
-    //std::cout << "mousePressEvent for ModuleProxyWidget/Port: pos = " << to_string(event->pos()) << std::endl;
-    //std::cout << "\t\t\t and mapToScene(pos) = " << to_string(mapToScene(event->pos())) << std::endl;
     p->doMousePress(event->button(), mapToScene(event->pos()));
     return;
   }
 
   if (isSubwidget(pressedSubWidget_))
   {
-    //std::cout << "QGraphicsProxyWidget::mousePressEvent" << std::endl;
     QGraphicsProxyWidget::mousePressEvent(event);
     grabbedByWidget_ = true;
   }
   else
   {
-    //std::cout << "QGraphicsItem::mousePressEvent" << std::endl;
     QGraphicsItem::mousePressEvent(event);
     grabbedByWidget_ = false;
     emit selected();
@@ -87,23 +84,17 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  //updatePressedSubWidget(event);
   if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
   {
-    //std::cout << "! ! ! mouseReleaseEvent for Port" << std::endl;
-    //std::cout << "mouseReleaseEvent for ModuleProxyWidget/Port: pos = " << to_string(event->pos()) << std::endl;
-    //std::cout << "\t\t\t and mapToScene(pos) = " << to_string(mapToScene(event->pos())) << std::endl;
     p->doMouseRelease(event->button(), mapToScene(event->pos()));
     return;
   }
   if (grabbedByWidget_)
   {
-    //std::cout << "QGraphicsProxyWidget::mouseReleaseEvent" << std::endl;
     QGraphicsProxyWidget::mouseReleaseEvent(event);
   }
   else
   {
-    //std::cout << "QGraphicsItem::mouseReleaseEvent" << std::endl;
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;
@@ -111,20 +102,15 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-  //updatePressedSubWidget(event);
   if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
   {
-    //std::cout << "mouseMoveEvent for ModuleProxyWidget/Port: pos = " << to_string(event->pos()) << std::endl;
-    //std::cout << "\t\t\t and mapToScene(pos) = " << to_string(mapToScene(event->pos())) << std::endl;
     p->doMouseMove(event->buttons(), mapToScene(event->pos()));
     return;
   }
   if (grabbedByWidget_)
   {
-    //std::cout << "Returning from mouseMoveEvent since grabbedByWidget is true" << std::endl;
     return;
   }
-  //std::cout << "QGraphicsItem::mouseMoveEvent" << std::endl;
   QGraphicsItem::mouseMoveEvent(event);
 }
 

@@ -54,7 +54,6 @@ public:
   void add(const T& item);
   void remove(int item);
   T operator[](size_t) const;
-  //T get_port(int);
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
 };

@@ -28,12 +28,13 @@
 
 #include <iostream>
 #include <QtGui>
-#include "Port.h"
-#include "Connection.h"
-#include "Module.h" //for PositionProvider, please move
-#include "NetworkEditor.h"  //for Logger, move
-#include "Utility.h"
-#include "ModuleProxyWidget.h"
+#include <Interface/Application/Port.h>
+#include <Interface/Application/Connection.h>
+#include <Interface/Application/PositionProvider.h>
+#include <Interface/Application/Logger.h>
+#include <Interface/Application/Utility.h>
+#include <Interface/Application/ModuleProxyWidget.h>
+#include <Interface/Application/Module.h>
 
 using namespace SCIRun::Gui;
 
@@ -130,48 +131,30 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
     if (currentConnection_)
     {
-      /*
-      QPointF pos = event->pos();
-      QWidget* alienWidget = widget()->childAt(pos.toPoint());
-      if (isSubwidget(alienWidget))
-      */
-
-
-      //std::cout << "Released mouse with active current connection" << std::endl;
-      //std::cout << to_string(pos) << std::endl;
       QList<QGraphicsItem*> items = TheScene->items(pos);
       foreach (QGraphicsItem* item, items)
       {
         if (item)
         {
-          //std::cout << "On top of item type: " << typeid(*item).name() << std::endl;
           if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
           {
-            //std::cout << "On top of a ModuleProxyWidget" << std::endl;
             Module* overModule = mpw->getModule();
             if (overModule != moduleParent_)
             {
-              //std::cout << "...a different one!  need to figure out if on top of Port" << std::endl;
-              //std::cout << "mouseRelease pos = " << to_string(pos) << std::endl;
               foreach (Port* port, overModule->ports_)
               {
-                //std::cout << "\t Port position = " << to_string(port->position()) << std::endl;
                 int distance = (pos - port->position()).manhattanLength();
-                //std::cout << "\t\t distance from mouse to port: " << distance << std::endl;
                 if (distance <= PORT_CONNECTION_THRESHOLD)
                 {
                   if (canBeConnected(port))
                   {
                     Logger::Instance->log("Connection made.");
-                    //std::cout << "!!! CONNECTION CAN BE MADE!!!" << std::endl;
 
                     Connection* c = new Connection(this, port);
                     TheScene->addItem(c);
-
-
                   }
                   else
-                    std::cout << "ports are diffent datatype or same i/o type, should not be connected" << std::endl;
+                    std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
                 }
               }
             }

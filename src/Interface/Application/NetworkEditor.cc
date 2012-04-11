@@ -29,20 +29,21 @@
 #include <sstream>
 #include <QtGui>
 #include <iostream>
-#include "NetworkEditor.h"
-#include "Node.h"
-#include "Connection.h"
-#include "Module.h"
-#include "ModuleProxyWidget.h"
-#include "Utility.h"
-#include "Port.h"
+#include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/Node.h>
+#include <Interface/Application/Connection.h>
+#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleProxyWidget.h>
+#include <Interface/Application/Utility.h>
+#include <Interface/Application/Port.h>
+#include <Interface/Application/Logger.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 
 boost::shared_ptr<Logger> Logger::Instance;
 
-NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
+NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
   executeAction_(0)
 {
@@ -60,8 +61,6 @@ NetworkEditor::NetworkEditor(CurrentModuleSelection* moduleSelectionGetter, QWid
   seqNumber_ = 0;
 
   createActions();
-  //createMenus();
-  //createToolBars();
 
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
@@ -79,7 +78,6 @@ void NetworkEditor::addModule(const QString& text, const QPointF& pos)
 
   Module* module = new Module("<b><h2>" + text + "</h2></b>");
   setupModule(module, pos);
-  //logger_->log("Module Frame: " + to_string(proxy->pos()));
 }
 
 void NetworkEditor::setupModule(Module* module, const QPointF& pos)
@@ -163,17 +161,6 @@ Connection* NetworkEditor::selectedLink() const
     return dynamic_cast<Connection*>(items.first());
   return 0;
 }
-
-//void NetworkEditor::addLink()
-//{
-//  ModulePair nodes = selectedModulePair();
-//  if (nodes == ModulePair())
-//    return;
-//
-//  Connection* link = new Connection(nodes.first, nodes.second);
-//  scene_->addItem(link);
-//  
-//}
 
 NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
 {
@@ -351,31 +338,21 @@ void NetworkEditor::addActions(QWidget* widget)
 
 void NetworkEditor::dropEvent(QDropEvent* event)
 {
-  //static int count = 1;
-  //std::cout << "drop event " << count++ << std::endl;
-  //std::cout << "Currently selected module: " << (*moduleSelectionGetter_)() << std::endl;
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    //logger_->log(to_string(event->pos()));
-    addModule(moduleSelectionGetter_->text().c_str(), mapToScene(event->pos()));
+    addModule(moduleSelectionGetter_->text(), mapToScene(event->pos()));
   }
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
 {
-  //static int count = 1;
-  //std::cout << "dragEnterEvent event " << count++ << std::endl;
-  //if (event->mimeData()->hasFormat(""))
-    event->acceptProposedAction();
-    //logger_->log(to_string(event->pos()));
+  //???
+  event->acceptProposedAction();
 }
 
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
-  //static int count = 1;
-  //std::cout << "dragMoveEvent event " << count++ << std::endl;
-  //logger_->log(to_string(event->pos()));
 }
 
 /*

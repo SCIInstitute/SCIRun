@@ -27,7 +27,7 @@
 */
 
 #include <QApplication>
-#include "SCIRunMainWindow.h"
+#include <Interface/Application/SCIRunMainWindow.h>
 
 int main(int argc, char* argv[])
 {
