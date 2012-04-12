@@ -54,3 +54,13 @@ Connection::~Connection()
   oport_->detach(this);
   iport_->detach(this);
 }
+
+bool SCIRun::Domain::Networks::operator==(const ConnectionId& lhs, const ConnectionId& rhs)
+{
+  return lhs.id_ == rhs.id_;
+}
+
+bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const ConnectionId& rhs)
+{
+  return !(lhs == rhs);
+}

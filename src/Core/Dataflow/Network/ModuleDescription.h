@@ -38,6 +38,8 @@ namespace Networks {
 
   struct InputPortDescription
   {
+    InputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
+      name(n), datatype(d), color(c) {}
     std::string name;
     std::string datatype;
     std::string color;
@@ -46,6 +48,8 @@ namespace Networks {
 
   struct OutputPortDescription
   {
+    OutputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
+      name(n), datatype(d), color(c) {}
     std::string name;
     std::string datatype;
     std::string color;

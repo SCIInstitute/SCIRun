@@ -27,6 +27,8 @@
 */
 
 #include <gtest/gtest.h>
+#include <boost/assign.hpp>
+#include <boost/assign/list_of.hpp>
 #include <Core/Dataflow/Network/Network.h>
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
@@ -34,6 +36,7 @@
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using namespace boost::assign;
 
 TEST(NetworkTests, CanAddAndRemoveModules)
 {
@@ -48,6 +51,7 @@ TEST(NetworkTests, CanAddAndRemoveModules)
   EXPECT_EQ(md.module_name_, m->get_module_name());
 
   EXPECT_EQ(1, network.nmodules());
+  EXPECT_EQ(m, network.module(0));
 
   EXPECT_TRUE(network.remove_module(m->get_id()));
   EXPECT_EQ(0, network.nmodules());
@@ -62,19 +66,21 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
 
   ModuleDescription md1;
   md1.module_name_ = "Module1";
+  md1.output_ports_ += OutputPortDescription("o1", "d1", "c1");
   ModuleHandle m1 = network.add_module(md1);
   ModuleDescription md2;
   md2.module_name_ = "Module2";
+  md2.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1");
   ModuleHandle m2 = network.add_module(md2);
 
   EXPECT_EQ(2, network.nmodules());
+  EXPECT_EQ(m1, network.module(0));
+  EXPECT_EQ(m2, network.module(1));
 
-  ConnectionId connId = network.connect(m1, 1, m2, 2);
+  ConnectionId connId = network.connect(m1, 0, m2, 1);
   EXPECT_EQ(1, network.nconnections());
-  std::cout << connId.id_ << std::endl;
+  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
-
-  ASSERT_TRUE(false);
 }

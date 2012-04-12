@@ -42,6 +42,9 @@ namespace SCIRun {
         std::string id_;
       };
 
+      bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
+      bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
+
       class Connection 
       {
       public:

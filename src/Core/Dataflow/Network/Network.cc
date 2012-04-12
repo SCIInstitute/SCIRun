@@ -28,6 +28,7 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <iostream>
 #include <boost/lambda/lambda.hpp>
 #include <boost/lambda/bind.hpp>
 #include <Core/Dataflow/Network/Network.h>
@@ -84,7 +85,6 @@ ConnectionId Network::connect(ModuleHandle m1, int p1, ModuleHandle m2, int p2)
     return ConnectionId("");
   }
 
-
   std::ostringstream ids;
   ids << m1->get_id() << "_p" << p1 << "_to_" << m2->get_id() << "_p" << p2;
 
@@ -105,8 +105,14 @@ ConnectionId Network::connect(ModuleHandle m1, int p1, ModuleHandle m2, int p2)
   return conn->id_;
 }
 
-bool Network::disconnect(const ConnectionId&)
+bool Network::disconnect(const ConnectionId& id)
 {
+  Connections::iterator loc = std::find_if(connections_.begin(), connections_.end(), boost::lambda::bind(&Connection::id_, *_1) == id);
+  if (loc != connections_.end())
+  {
+    connections_.erase(loc);
+    return true;
+  }
   return false;
 }
 

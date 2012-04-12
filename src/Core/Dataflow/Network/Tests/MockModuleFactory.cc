@@ -26,7 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include <Core/Dataflow/Network/Tests/MockModule.h>
+#include <Core/Dataflow/Network/Tests/MockPorts.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 
 using namespace SCIRun::Domain::Networks;
@@ -36,10 +39,31 @@ using ::testing::NiceMock;
 
 ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
 {
+  static size_t moduleCounter = 0;
   MockModulePtr module(new NiceMock<MockModule>);
 
   EXPECT_CALL(*module, get_module_name()).WillRepeatedly(Return(info.module_name_));
-  //EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(dummyOutputPort));
+
+  EXPECT_CALL(*module, num_input_ports()).WillRepeatedly(Return(info.input_ports_.size()));
+  size_t portIndex = 0;
+  BOOST_FOREACH(const InputPortDescription& d, info.input_ports_)
+  {
+    MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
+    EXPECT_CALL(*module, get_input_port(portIndex)).WillRepeatedly(Return(inputPort));
+    portIndex++;
+  }
+  
+  EXPECT_CALL(*module, num_output_ports()).WillRepeatedly(Return(info.output_ports_.size()));
+  portIndex = 0;
+  BOOST_FOREACH(const OutputPortDescription& d, info.output_ports_)
+  {
+    MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
+    EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
+    portIndex++;
+  }
+
+  EXPECT_CALL(*module, get_id()).WillRepeatedly(Return("module" + boost::lexical_cast<std::string>(moduleCounter++)));
+
   return module;
 }
 
