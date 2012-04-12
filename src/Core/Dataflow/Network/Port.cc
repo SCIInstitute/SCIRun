@@ -29,6 +29,8 @@
 #include <iostream>
 #include <Core/Dataflow/Network/Port.h>
 
+#include <stdexcept>
+
 using namespace SCIRun::Domain::Networks;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)

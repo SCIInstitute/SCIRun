@@ -35,17 +35,17 @@ set(Boost_ADDITIONAL_VERSIONS "1.49" "1.49.0")
 find_package( Boost 1.49.0 )
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-	MESSAGE(STATUS "Boost")
-	MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
-	set(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
-endif()
+    MESSAGE(STATUS "Boost")
+    MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
+    set(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
+  endif()
 
 INCLUDE_DIRECTORIES(
-${SCIRun5Prototype_SOURCE_DIR}/
-${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
-${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
-${SCIRun5Prototype_BINARY_DIR}/
-${SCIRUN5_BOOST_INCLUDE_DIRS}
+  ${SCIRun5Prototype_SOURCE_DIR}/
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
+  ${SCIRun5Prototype_BINARY_DIR}/
+  ${SCIRUN5_BOOST_INCLUDE_DIRS}
 )
 
 

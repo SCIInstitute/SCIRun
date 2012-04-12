@@ -29,6 +29,8 @@
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Module.h>
 
+#include <stdexcept>
+
 using namespace SCIRun::Domain::Networks;
 
 Connection::Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int iportno, const std::string& id)
@@ -64,3 +66,4 @@ bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const Connect
 {
   return !(lhs == rhs);
 }
+
