@@ -33,6 +33,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <stdexcept>
+
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::Return;
