@@ -42,8 +42,9 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-Module::Module(const QString& name, QWidget* parent /* = 0 */)
-  : QFrame(parent)
+ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle realModule, QWidget* parent /* = 0 */)
+  : QFrame(parent),
+  realModule_(realModule)
 {
   setupUi(this);
   titleLabel_->setText(name);
@@ -51,10 +52,11 @@ Module::Module(const QString& name, QWidget* parent /* = 0 */)
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
   
+  addPortLayouts();
   addAllHardCodedPorts(name);
 }
 
-void Module::addAllHardCodedPorts(const QString& name)
+void ModuleWidget::addPortLayouts()
 {
   outputPortLayout_ = new QHBoxLayout;
   outputPortLayout_->setSpacing(3);
@@ -70,7 +72,10 @@ void Module::addAllHardCodedPorts(const QString& name)
   inputRowLayout->setAlignment(Qt::AlignLeft);
   inputRowLayout->addLayout(inputPortLayout_);
   verticalLayout_2->insertLayout(0, inputRowLayout);
+}
 
+void ModuleWidget::addAllHardCodedPorts(const QString& name)
+{
   //TODO: extract into factory
   if (name.contains("ComputeSVD"))
   {
@@ -93,51 +98,51 @@ void Module::addAllHardCodedPorts(const QString& name)
   }
 }
 
-void Module::addPort(OutputPort* port)
+void ModuleWidget::addPort(OutputPort* port)
 {
   outputPortLayout_->addWidget(port);
   ports_.push_back(port);
 }
 
-void Module::addPort(InputPort* port)
+void ModuleWidget::addPort(InputPort* port)
 {
   inputPortLayout_->addWidget(port);
   ports_.push_back(port);
 }
 
-Module::~Module()
+ModuleWidget::~ModuleWidget()
 {
   foreach (Port* p, ports_)
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
 }
 
-void Module::trackConnections()
+void ModuleWidget::trackConnections()
 {
   foreach (Port* p, ports_)
     p->trackConnections();
 }
 
-QPointF Module::inputPortPosition() const 
+QPointF ModuleWidget::inputPortPosition() const 
 {
   if (positionProvider_)
     return positionProvider_->currentPosition() + QPointF(20,10);
   return pos();
 }
 
-QPointF Module::outputPortPosition() const 
+QPointF ModuleWidget::outputPortPosition() const 
 {
   if (positionProvider_)
     return positionProvider_->currentPosition() + QPointF(20, height() - 10);
   return pos();
 }
 
-double Module::percentComplete() const
+double ModuleWidget::percentComplete() const
 {
   return progressBar_->value() / 100.0;
 }
 
-void Module::setPercentComplete(double p)
+void ModuleWidget::setPercentComplete(double p)
 {
   if (0 <= p && p <= 1)
   {
@@ -145,7 +150,7 @@ void Module::setPercentComplete(double p)
   }
 }
 
-void Module::incrementProgressFake()
+void ModuleWidget::incrementProgressFake()
 {
   setPercentComplete(percentComplete() + 0.1);
 }

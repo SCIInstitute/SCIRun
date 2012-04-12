@@ -45,7 +45,7 @@ namespace Networks {
     explicit Network(ModuleFactoryHandle moduleFactory);
     ~Network();
 
-    virtual ModuleHandle add_module(const ModuleDescription& info);
+    virtual ModuleHandle add_module(const ModuleLookupInfo& info);
     virtual bool remove_module(const std::string& id);
     virtual size_t nmodules() const;
     virtual ModuleHandle module(size_t i) const;

@@ -28,21 +28,32 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/assign.hpp>
 #include <Core/Dataflow/Network/Tests/MockModule.h>
 #include <Core/Dataflow/Network/Tests/MockPorts.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using namespace boost::assign;
 using ::testing::Return;
 using ::testing::NiceMock;
+
+ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& info)
+{
+  ModuleDescription d;
+  d.lookupInfo_ = info;
+  d.output_ports_ += OutputPortDescription("o1", "d1", "c1");
+  d.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1");
+  return d;
+}
 
 ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
 {
   static size_t moduleCounter = 0;
   MockModulePtr module(new NiceMock<MockModule>);
 
-  EXPECT_CALL(*module, get_module_name()).WillRepeatedly(Return(info.module_name_));
+  EXPECT_CALL(*module, get_module_name()).WillRepeatedly(Return(info.lookupInfo_.module_name_));
 
   EXPECT_CALL(*module, num_input_ports()).WillRepeatedly(Return(info.input_ports_.size()));
   size_t portIndex = 0;

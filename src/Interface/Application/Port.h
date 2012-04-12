@@ -41,7 +41,7 @@ class QGraphicsScene;
 namespace SCIRun {
 namespace Gui {
 
-class Connection;
+class ConnectionLine;
 class ConnectionInProgress;
 class PositionProvider;
 
@@ -64,8 +64,8 @@ public:
 
   QSize sizeHint() const;
 
-  void addConnection(Connection* c);
-  void removeConnection(Connection* c);
+  void addConnection(ConnectionLine* c);
+  void removeConnection(ConnectionLine* c);
 
   void trackConnections();
   void deleteConnections();
@@ -96,7 +96,7 @@ private:
   QWidget* moduleParent_;
   ConnectionInProgress* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
-  std::set<Connection*> connections_;
+  std::set<ConnectionLine*> connections_;
 };
 
 class InputPort : public Port 

@@ -44,6 +44,7 @@ class InputPortInterface;
 class OutputPortInterface;
 struct ConnectionId;
 struct ModuleDescription;
+struct ModuleLookupInfo;
 class ModuleFactory;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;

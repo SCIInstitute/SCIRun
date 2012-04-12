@@ -45,10 +45,10 @@ TEST(NetworkTests, CanAddAndRemoveModules)
  
   EXPECT_EQ(0, network.nmodules());
 
-  ModuleDescription md;
-  md.module_name_ = "Module1";
-  ModuleHandle m = network.add_module(md);
-  EXPECT_EQ(md.module_name_, m->get_module_name());
+  ModuleLookupInfo mli;
+  mli.module_name_ = "Module1";
+  ModuleHandle m = network.add_module(mli);
+  EXPECT_EQ(mli.module_name_, m->get_module_name());
 
   EXPECT_EQ(1, network.nmodules());
   EXPECT_EQ(m, network.module(0));
@@ -64,14 +64,12 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
   Network network(moduleFactory);
 
-  ModuleDescription md1;
-  md1.module_name_ = "Module1";
-  md1.output_ports_ += OutputPortDescription("o1", "d1", "c1");
-  ModuleHandle m1 = network.add_module(md1);
-  ModuleDescription md2;
-  md2.module_name_ = "Module2";
-  md2.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1");
-  ModuleHandle m2 = network.add_module(md2);
+  ModuleLookupInfo mli1;
+  mli1.module_name_ = "Module1";
+  ModuleHandle m1 = network.add_module(mli1);
+  ModuleLookupInfo mli2;
+  mli2.module_name_ = "Module2";
+  ModuleHandle m2 = network.add_module(mli2);
 
   EXPECT_EQ(2, network.nmodules());
   EXPECT_EQ(m1, network.module(0));

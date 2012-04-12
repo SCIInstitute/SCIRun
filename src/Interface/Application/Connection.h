@@ -36,11 +36,11 @@ namespace Gui {
 
 class Port;
 
-class Connection : public QGraphicsLineItem
+class ConnectionLine : public QGraphicsLineItem
 {
 public:
-  Connection(Port* fromPort, Port* toPort);
-  ~Connection();
+  ConnectionLine(Port* fromPort, Port* toPort);
+  ~ConnectionLine();
 
   void setColor(const QColor& color);
   QColor color() const;

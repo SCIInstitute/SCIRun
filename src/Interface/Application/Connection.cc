@@ -36,7 +36,7 @@
 
 using namespace SCIRun::Gui;
 
-Connection::Connection(Port* fromPort, Port* toPort)
+ConnectionLine::ConnectionLine(Port* fromPort, Port* toPort)
   : fromPort_(fromPort), toPort_(toPort)
 {
   if (fromPort_)
@@ -59,7 +59,7 @@ Connection::Connection(Port* fromPort, Port* toPort)
   trackNodes();
 }
 
-Connection::~Connection()
+ConnectionLine::~ConnectionLine()
 {
   if (fromPort_ && toPort_)
   {
@@ -71,17 +71,17 @@ Connection::~Connection()
   Logger::Instance->log("Connection deleted.");
 }
 
-void Connection::setColor(const QColor& color)
+void ConnectionLine::setColor(const QColor& color)
 {
   setPen(QPen(color, 5.0));
 }
 
-QColor Connection::color() const
+QColor ConnectionLine::color() const
 {
   return pen().color();
 }
 
-void Connection::trackNodes()
+void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {

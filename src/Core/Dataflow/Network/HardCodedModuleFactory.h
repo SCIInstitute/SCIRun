@@ -25,34 +25,24 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-//
-//#ifndef MOCK_MODULE_H
-//#define MOCK_MODULE_H
-//
-//#include <Core/Dataflow/Network/ModuleInterface.h>
-//#include <gmock/gmock.h>
-//
-//namespace SCIRun {
-//  namespace Domain {
-//    namespace Networks {
-//      namespace Mocks
-//      {
-//        class MockModule : public ModuleInterface
-//        {
-//        public:
-//          MOCK_METHOD0(execute, void());
-//          MOCK_CONST_METHOD0(get_modulename, std::string());
-//          MOCK_CONST_METHOD1(get_output_port, OutputPortHandle(size_t));
-//          MOCK_CONST_METHOD1(get_input_port, InputPortHandle(size_t));
-//          MOCK_CONST_METHOD0(num_input_ports, size_t());
-//          MOCK_CONST_METHOD0(num_output_ports, size_t());
-//          MOCK_CONST_METHOD0(get_id, std::string());
-//        };
-//
-//        typedef boost::shared_ptr<MockModule> MockModulePtr;
-//      }
-//    }
-//  }
-//}
-//
-//#endif
+
+#ifndef HARD_CODED_MODULE_FACTORY_H
+#define HARD_CODED_MODULE_FACTORY_H
+
+#include <Core/Dataflow/Network/ModuleFactory.h>
+
+namespace SCIRun {
+  namespace Domain {
+    namespace Networks {
+      
+      class HardCodedModuleFactory : public ModuleFactory
+      {
+      public:
+        virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
+        virtual ModuleHandle create(const ModuleDescription& info);
+      };
+    }
+  }
+}
+
+#endif

@@ -40,8 +40,10 @@ namespace Networks {
   {
   public:
     virtual ~ModuleFactory() {}
-    virtual ModuleHandle create(const ModuleDescription& info) = 0;
+    virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
+    virtual ModuleHandle create(const ModuleDescription& desc) = 0;
   };
+
 }}}
 
 #endif

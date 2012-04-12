@@ -35,16 +35,16 @@ namespace SCIRun
 {
   namespace Gui
   {
-    class Module;
+    class ModuleWidget;
 
     class ModuleProxyWidget : public QGraphicsProxyWidget
     {
 	    Q_OBJECT
 	
     public:
-      explicit ModuleProxyWidget(Module* module, QGraphicsItem* parent = 0);
+      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
       void createPortPositionProviders();
-      Module* getModule();
+      ModuleWidget* getModule();
     public slots:
       void highlightIfSelected();
     signals:
@@ -59,7 +59,7 @@ namespace SCIRun
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
   
-      Module* module_;
+      ModuleWidget* module_;
       bool grabbedByWidget_;
       QWidget* pressedSubWidget_;
     };

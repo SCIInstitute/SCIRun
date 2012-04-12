@@ -31,6 +31,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
+#include <Core/Dataflow/Network/NetworkFwd.h>
 
 class QMenu;
 class QToolBar;
@@ -48,8 +49,8 @@ namespace Gui {
     virtual bool isModule() const = 0;
   };
   
-  class Connection;
-  class Module;
+  class ConnectionLine;
+  class ModuleWidget;
   class ModuleProxyWidget;
 
   class NetworkEditor : public QGraphicsView
@@ -77,15 +78,15 @@ namespace Gui {
     void updateActions();
 
   private:
-    typedef QPair<Module*, Module*> ModulePair;
+    typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
     void createActions();
     //void createMenus();
     //void createToolBars();
     void setZValue(int z);
-    void setupModule(Module* node, const QPointF& pos = QPointF());
-    Module* selectedModule() const;
+    void setupModule(ModuleWidget* node, const QPointF& pos = QPointF());
+    ModuleWidget* selectedModule() const;
     ModuleProxyWidget* selectedModuleProxy() const;
-    Connection* selectedLink() const;
+    ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     //QMenu* fileMenu_;
     //QMenu* editMenu_;
@@ -108,6 +109,8 @@ namespace Gui {
     int seqNumber_;
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+
+    SCIRun::Domain::Networks::NetworkHandle theNetwork_;
   };
 
 }

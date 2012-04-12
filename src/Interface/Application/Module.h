@@ -35,6 +35,8 @@
 #include <set>
 #include <Interface/Application/PositionProvider.h>
 
+#include <Core/Dataflow/Network/NetworkFwd.h>
+
 class QGraphicsProxyWidget;
 
 namespace SCIRun {
@@ -45,13 +47,13 @@ class InputPort;
 class OutputPort;
 class PositionProvider;
 
-class Module : public QFrame, public NeedsScenePositionProvider, public Ui::Module
+class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public Ui::Module
 {
 	Q_OBJECT
 	
 public:
-  explicit Module(const QString& name, QWidget* parent = 0);
-  ~Module();
+  explicit ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle realModule, QWidget* parent = 0);
+  ~ModuleWidget();
 
   void trackConnections();
   QPointF inputPortPosition() const;
@@ -74,8 +76,11 @@ private:
   void addPort(InputPort* port);
   void addPort(OutputPort* port);
   //
+  void addPortLayouts();
   QHBoxLayout* outputPortLayout_;
   QHBoxLayout* inputPortLayout_;
+
+  SCIRun::Domain::Networks::ModuleHandle realModule_;
 };
 
 }

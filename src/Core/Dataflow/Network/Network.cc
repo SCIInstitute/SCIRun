@@ -34,6 +34,7 @@
 #include <Core/Dataflow/Network/Network.h>
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Module.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/ModuleFactory.h>
 
 using namespace SCIRun::Domain::Networks;
@@ -50,9 +51,9 @@ Network::~Network()
 
 }
 
-ModuleHandle Network::add_module(const ModuleDescription& info)
+ModuleHandle Network::add_module(const ModuleLookupInfo& info)
 {
-  ModuleHandle module = moduleFactory_->create(info);
+  ModuleHandle module = moduleFactory_->create(moduleFactory_->lookupDescription(info));
   modules_.push_back(module);
   return module;
 }

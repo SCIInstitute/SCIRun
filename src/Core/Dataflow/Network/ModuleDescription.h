@@ -56,12 +56,16 @@ namespace Networks {
     //oport_maker maker;
   };
 
-  struct ModuleDescription
+  struct ModuleLookupInfo
   {
-  public:
     std::string package_name_;
     std::string category_name_;
     std::string module_name_;
+  };
+
+  struct ModuleDescription
+  {
+    ModuleLookupInfo lookupInfo_;
     std::string module_version_;
     std::vector<InputPortDescription> input_ports_;
     std::vector<OutputPortDescription> output_ports_;

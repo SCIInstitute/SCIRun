@@ -154,7 +154,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
         {
           if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
           {
-            Module* overModule = mpw->getModule();
+            ModuleWidget* overModule = mpw->getModule();
             if (overModule != moduleParent_)
             {
               foreach (Port* port, overModule->ports_)
@@ -166,7 +166,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
                   {
                     Logger::Instance->log("Connection made.");
 
-                    Connection* c = new Connection(this, port);
+                    ConnectionLine* c = new ConnectionLine(this, port);
                     TheScene->addItem(c);
                     return;
                   }
@@ -208,26 +208,26 @@ void Port::performDrag(const QPointF& endPos)
     currentConnection_->update(endPos);
 }
 
-void Port::addConnection(Connection* c)
+void Port::addConnection(ConnectionLine* c)
 {
   connections_.insert(c);
 }
 
-void Port::removeConnection(Connection* c)
+void Port::removeConnection(ConnectionLine* c)
 {
   connections_.erase(c);
 }
 
 void Port::deleteConnections()
 {
-  foreach (Connection* c, connections_)
+  foreach (ConnectionLine* c, connections_)
     delete c;
   connections_.clear();
 }
 
 void Port::trackConnections()
 {
-  foreach (Connection* c, connections_)
+  foreach (ConnectionLine* c, connections_)
     c->trackNodes();
 }
 

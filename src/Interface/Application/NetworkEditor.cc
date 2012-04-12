@@ -38,8 +38,13 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Logger.h>
 
+#include <Core/Dataflow/Network/Network.h>
+#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
 
 boost::shared_ptr<Logger> Logger::Instance;
 
@@ -65,6 +70,11 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
   updateActions();
+
+  //DOMAIN HOOKUP
+
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  theNetwork_.reset(new Network(mf));
 }
 
 void NetworkEditor::addModule()
@@ -76,11 +86,16 @@ void NetworkEditor::addModule(const QString& text, const QPointF& pos)
 {
   Logger::Instance->log("Module added.");
 
-  Module* module = new Module("<b><h2>" + text + "</h2></b>");
+  ModuleLookupInfo info;
+  info.module_name_ = text.toStdString();
+  ModuleHandle realModule = theNetwork_->add_module(info);
+
+
+  ModuleWidget* module = new ModuleWidget("<b><h2>" + text + "</h2></b>", realModule);
   setupModule(module, pos);
 }
 
-void NetworkEditor::setupModule(Module* module, const QPointF& pos)
+void NetworkEditor::setupModule(ModuleWidget* module, const QPointF& pos)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
@@ -125,16 +140,16 @@ ModuleProxyWidget* getModuleProxy(QGraphicsItem* item)
   return dynamic_cast<ModuleProxyWidget*>(item);
 }
 
-Module* getModule(QGraphicsItem* item)
+ModuleWidget* getModule(QGraphicsItem* item)
 {
   ModuleProxyWidget* proxy = getModuleProxy(item);
   if (proxy)
-    return static_cast<Module*>(proxy->widget());
+    return static_cast<ModuleWidget*>(proxy->widget());
   return 0;
 }
 
 //TODO copy/paste
-Module* NetworkEditor::selectedModule() const
+ModuleWidget* NetworkEditor::selectedModule() const
 {
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 1)
@@ -154,11 +169,11 @@ ModuleProxyWidget* NetworkEditor::selectedModuleProxy() const
   return 0;
 }
 
-Connection* NetworkEditor::selectedLink() const
+ConnectionLine* NetworkEditor::selectedLink() const
 {
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 1)
-    return dynamic_cast<Connection*>(items.first());
+    return dynamic_cast<ConnectionLine*>(items.first());
   return 0;
 }
 
@@ -167,8 +182,8 @@ NetworkEditor::ModulePair NetworkEditor::selectedModulePair() const
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 2)
   {
-    Module* first = getModule(items.first());
-    Module* second = getModule(items.last());
+    ModuleWidget* first = getModule(items.first());
+    ModuleWidget* second = getModule(items.last());
     if (first && second)
       return ModulePair(first, second);
   }
@@ -181,7 +196,7 @@ void NetworkEditor::del()
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
   {
-    Connection* link = dynamic_cast<Connection*>(i.next());
+    ConnectionLine* link = dynamic_cast<ConnectionLine*>(i.next());
     if (link)
     {
       delete link;
@@ -193,8 +208,8 @@ void NetworkEditor::del()
 
 void NetworkEditor::properties()
 {
-  Module* node = selectedModule();
-  Connection* link = selectedLink();
+  ModuleWidget* node = selectedModule();
+  ConnectionLine* link = selectedLink();
 
   if (node)
   {

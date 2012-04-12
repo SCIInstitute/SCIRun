@@ -36,7 +36,7 @@
 
 using namespace SCIRun::Gui;
 
-ModuleProxyWidget::ModuleProxyWidget(Module* module, QGraphicsItem* parent/* = 0*/)
+ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
   module_(module),
   grabbedByWidget_(false),
@@ -54,7 +54,7 @@ void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
   pressedSubWidget_ = widget()->childAt(event->pos().toPoint());
 }
 
-Module* ModuleProxyWidget::getModule()
+ModuleWidget* ModuleProxyWidget::getModule()
 {
   return module_;
 }
