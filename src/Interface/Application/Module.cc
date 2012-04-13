@@ -45,8 +45,9 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider, QWidget* parent /* = 0 */)
-  : QFrame(parent)
+ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider, QWidget* parent /* = 0 */)
+  : QFrame(parent),
+  moduleId_(moduleInfoProvider.get_id())
 {
   setupUi(this);
   titleLabel_->setText("<b><h2>" + name + "</h2></b>");
@@ -55,7 +56,7 @@ ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::
   progressBar_->setValue(0);
   
   addPortLayouts();
-  addPorts(portInfoProvider);
+  addPorts(moduleInfoProvider);
 }
 
 void ModuleWidget::addPortLayouts()
@@ -76,19 +77,19 @@ void ModuleWidget::addPortLayouts()
   verticalLayout_2->insertLayout(0, inputRowLayout);
 }
 
-void ModuleWidget::addPorts(const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider)
+void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
-  for (size_t i = 0; i < portInfoProvider.num_input_ports(); ++i)
+  for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
-    InputPortHandle port = portInfoProvider.get_input_port(i);
+    InputPortHandle port = moduleInfoProvider.get_input_port(i);
     addPort(new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
   }
-  for (size_t i = 0; i < portInfoProvider.num_output_ports(); ++i)
+  for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
-    OutputPortHandle port = portInfoProvider.get_output_port(i);
+    OutputPortHandle port = moduleInfoProvider.get_output_port(i);
     addPort(new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
   }
-  optionsButton_->setVisible(portInfoProvider.has_ui());
+  optionsButton_->setVisible(moduleInfoProvider.has_ui());
 }
 
 void ModuleWidget::addPort(OutputPortWidget* port)
@@ -108,6 +109,7 @@ ModuleWidget::~ModuleWidget()
   foreach (PortWidget* p, ports_)
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
+  emit removeModule(moduleId_);
 }
 
 void ModuleWidget::trackConnections()

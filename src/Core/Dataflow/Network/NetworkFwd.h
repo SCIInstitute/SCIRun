@@ -46,7 +46,7 @@ struct ConnectionId;
 struct ModuleDescription;
 struct ModuleLookupInfo;
 class ModuleFactory;
-class PortInfoProvider;
+class ModuleInfoProvider;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

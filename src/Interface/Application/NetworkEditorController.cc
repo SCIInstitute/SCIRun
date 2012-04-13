@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
+
 #include <Interface/Application/NetworkEditorController.h>
 
 #include <Core/Dataflow/Network/Network.h>
@@ -49,5 +51,18 @@ void NetworkEditorController::addModule(const QString& moduleName)
   info.module_name_ = moduleName.toStdString();
   ModuleHandle realModule = theNetwork_->add_module(info);
   emit moduleAdded(moduleName, *realModule);
+  printNetwork();
+}
+
+void NetworkEditorController::removeModule(const std::string& id)
+{
+  theNetwork_->remove_module(id);
+  printNetwork();
+}
+
+void NetworkEditorController::printNetwork() const
+{
+  if (theNetwork_)
+    std::cout << theNetwork_->toString() << std::endl;
 }
 

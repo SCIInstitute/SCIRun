@@ -33,6 +33,7 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/NetworkEditorController.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;

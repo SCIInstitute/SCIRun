@@ -42,9 +42,11 @@ namespace Gui {
     NetworkEditorController();
   public slots:
     void addModule(const QString& moduleName);
+    void removeModule(const std::string& id);
   signals:
-    void moduleAdded(const QString& name, const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider);
+    void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
   private:
+    void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;
   };
 

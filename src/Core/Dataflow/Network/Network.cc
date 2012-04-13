@@ -139,3 +139,14 @@ size_t Network::nconnections() const
 {
   return connections_.size();
 }
+
+std::string Network::toString() const
+{
+  using boost::lambda::bind;
+  std::ostringstream ostr;
+  ostr << "Modules:\n";
+  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, " "), bind(to_string, *_1));
+  ostr << "\nConnections:\n";
+  std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, " "), bind(&Connection::id_, *_1));
+  return ostr.str();
+}

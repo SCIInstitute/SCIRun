@@ -32,6 +32,11 @@
 
 using namespace SCIRun::Domain::Networks;
 
+std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
+{
+  return m.get_module_name() + " [" + m.get_id() + "]";
+}
+
 Module::Module(const std::string& name, bool hasUi,
   const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
   : has_ui_(hasUi)

@@ -40,6 +40,7 @@ namespace SCIRun {
       {
         explicit ConnectionId(const std::string& s) : id_(s) {}
         std::string id_;
+        operator std::string() const { return id_; }
       };
 
       bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);

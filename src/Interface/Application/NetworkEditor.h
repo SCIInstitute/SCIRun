@@ -68,7 +68,7 @@ namespace Gui {
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
   public slots:
-    void addModule(const QString& name,  const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider);
+    void addModule(const QString& name,  const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
   private slots:
     void del();
     void cut();

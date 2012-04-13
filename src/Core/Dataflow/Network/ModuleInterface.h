@@ -37,24 +37,26 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class PortInfoProvider
+  class ModuleInfoProvider
   {
   public:
-    virtual ~PortInfoProvider() {}
+    virtual ~ModuleInfoProvider() {}
     virtual OutputPortHandle get_output_port(size_t idx) const = 0;
     virtual InputPortHandle get_input_port(size_t idx) const = 0;
     virtual size_t num_input_ports() const = 0;
     virtual size_t num_output_ports() const = 0;
     virtual bool has_ui() const = 0;
+    virtual std::string get_module_name() const = 0;
+    virtual std::string get_id() const = 0;
   };
 
-  class ModuleInterface : public PortInfoProvider
+  std::string to_string(const ModuleInfoProvider&);
+
+  class ModuleInterface : public ModuleInfoProvider
   {
   public:
     virtual ~ModuleInterface() {}
     virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual std::string get_id() const = 0;
   };
 }}}
 

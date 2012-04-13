@@ -52,7 +52,7 @@ class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public Ui
 	Q_OBJECT
 	
 public:
-  explicit ModuleWidget(const QString& name, const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider, QWidget* parent = 0);
+  explicit ModuleWidget(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider, QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();
@@ -65,15 +65,16 @@ public:
   //for testing signal/slot of Execute
 public slots:
   void incrementProgressFake();
-private:
-  
+signals:
+  void removeModule(const std::string& moduleId);
 public:
-  //TODO distinguish input/output
+  //TODO distinguish input/output, make private via boost::range/iterator erasure etc
   std::vector<PortWidget*> ports_;
 private:
-  void addPorts(const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider);
+  void addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
+  std::string moduleId_;
   //
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;

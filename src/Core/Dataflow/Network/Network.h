@@ -54,6 +54,7 @@ namespace Networks {
     virtual bool disconnect(const ConnectionId&);
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);
+    virtual std::string toString() const;
   private:
     ModuleFactoryHandle moduleFactory_;
 
