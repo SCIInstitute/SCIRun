@@ -27,6 +27,7 @@
 */
 
 #include <iostream>
+#include <boost/lexical_cast.hpp>
 #include <Core/Dataflow/Network/Module.h>
 #include <Core/Dataflow/Network/PortManager.h>
 
@@ -41,7 +42,9 @@ Module::Module(const std::string& name, bool hasUi,
   const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
   : has_ui_(hasUi)
 {
+  static int instanceCount = 0;
   set_modulename(name);
+  id_ = name + boost::lexical_cast<std::string>(instanceCount++);
 }
 
 Module::~Module()

@@ -76,7 +76,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   if (controller_) 
   {
     disconnect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
-      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::PortInfoProvider&)));
+      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
   }
   
   controller_ = controller;
@@ -84,7 +84,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   if (controller_) 
   {
     connect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
-      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::PortInfoProvider&)));
+      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
   }
 }
 
