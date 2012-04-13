@@ -35,6 +35,24 @@
 namespace SCIRun {
 namespace Gui {
 
+  //TODO move to separate header
+  inline QString to_QString(const std::string& str)
+  {
+    return QString::fromUtf8(str.c_str());
+  }
+
+  inline QColor to_color(const std::string& str)
+  {
+    if (str == "red")
+      return Qt::red;
+    if (str == "blue")
+      return Qt::blue;
+    if (str == "darkGreen")
+      return Qt::darkGreen;
+    else
+      return Qt::white;
+  }
+
   class Logger
   {
   public:

@@ -44,6 +44,7 @@ SET(SCIRunGUIPrototype_SOURCES
 )
 
 SET(SCIRunGUIPrototype_HEADERS
+  Logger.h
   Module.h
   ModuleProxyWidget.h
   SCIRunMainWindow.h

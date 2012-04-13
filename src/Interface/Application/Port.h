@@ -45,11 +45,11 @@ class ConnectionLine;
 class ConnectionInProgress;
 class PositionProvider;
 
-class Port : public QWidget, public NeedsScenePositionProvider
+class PortWidget : public QWidget, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
-  Port(const QString& name, const QColor& color, bool isInput, QWidget* parent = 0);
+  PortWidget(const QString& name, const QColor& color, bool isInput, QWidget* parent = 0);
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
@@ -84,7 +84,7 @@ protected:
   void paintEvent(QPaintEvent* event);
 private:
   void performDrag(const QPointF& endPos);
-  bool canBeConnected(Port* other) const;
+  bool canBeConnected(PortWidget* other) const;
 
 
   const QString name_;
@@ -99,16 +99,16 @@ private:
   std::set<ConnectionLine*> connections_;
 };
 
-class InputPort : public Port 
+class InputPortWidget : public PortWidget 
 {
 public:
-  InputPort(const QString& name, const QColor& color, QWidget* parent = 0);
+  InputPortWidget(const QString& name, const QColor& color, QWidget* parent = 0);
 };
 
-class OutputPort : public Port 
+class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPort(const QString& name, const QColor& color, QWidget* parent = 0);
+  OutputPortWidget(const QString& name, const QColor& color, QWidget* parent = 0);
 };
 
 }

@@ -54,7 +54,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
   scene_->setBackgroundBrush(Qt::darkGray);
-  Port::TheScene = scene_;
+  PortWidget::TheScene = scene_;
 
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);
@@ -89,7 +89,6 @@ void NetworkEditor::addModule(const QString& text, const QPointF& pos)
   ModuleLookupInfo info;
   info.module_name_ = text.toStdString();
   ModuleHandle realModule = theNetwork_->add_module(info);
-
 
   ModuleWidget* module = new ModuleWidget("<b><h2>" + text + "</h2></b>", realModule);
   setupModule(module, pos);

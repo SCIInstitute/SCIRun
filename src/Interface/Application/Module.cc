@@ -35,14 +35,17 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
 
+#include <Core/Dataflow/Network/Module.h>
+
 using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
 
 QPointF ProxyWidgetPosition::currentPosition() const
 {
   return widget_->pos() + offset_;
 }
 
-ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle realModule, QWidget* parent /* = 0 */)
+ModuleWidget::ModuleWidget(const QString& name, ModuleHandle realModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
   realModule_(realModule)
 {
@@ -53,7 +56,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::Module
   progressBar_->setValue(0);
   
   addPortLayouts();
-  addAllHardCodedPorts(name);
+  addPorts();
 }
 
 void ModuleWidget::addPortLayouts()
@@ -74,37 +77,28 @@ void ModuleWidget::addPortLayouts()
   verticalLayout_2->insertLayout(0, inputRowLayout);
 }
 
-void ModuleWidget::addAllHardCodedPorts(const QString& name)
+void ModuleWidget::addPorts()
 {
-  //TODO: extract into factory
-  if (name.contains("ComputeSVD"))
+  for (size_t i = 0; i < realModule_->num_input_ports(); ++i)
   {
-    addPort(new OutputPort("Output1", Qt::blue, this));
-    addPort(new OutputPort("Output2", Qt::blue, this));
-    addPort(new OutputPort("Output2", Qt::blue, this));
-    addPort(new InputPort("Input1", Qt::blue, this));
-    optionsButton_->setVisible(false);
+    InputPortHandle port = realModule_->get_input_port(i);
+    addPort(new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
   }
-  else if (name.contains("ReadMatrix"))
+  for (size_t i = 0; i < realModule_->num_output_ports(); ++i)
   {
-    addPort(new OutputPort("Output1", Qt::blue, this));
-    addPort(new OutputPort("Output1", Qt::darkGreen, this));
-    addPort(new InputPort("Input1", Qt::darkGreen, this));
+    OutputPortHandle port = realModule_->get_output_port(i);
+    addPort(new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
   }
-  else if (name.contains("WriteMatrix"))
-  {
-    addPort(new InputPort("Input1", Qt::blue, this));
-    addPort(new InputPort("Input1", Qt::darkGreen, this));
-  }
+  optionsButton_->setVisible(realModule_->has_ui());
 }
 
-void ModuleWidget::addPort(OutputPort* port)
+void ModuleWidget::addPort(OutputPortWidget* port)
 {
   outputPortLayout_->addWidget(port);
   ports_.push_back(port);
 }
 
-void ModuleWidget::addPort(InputPort* port)
+void ModuleWidget::addPort(InputPortWidget* port)
 {
   inputPortLayout_->addWidget(port);
   ports_.push_back(port);
@@ -112,14 +106,14 @@ void ModuleWidget::addPort(InputPort* port)
 
 ModuleWidget::~ModuleWidget()
 {
-  foreach (Port* p, ports_)
+  foreach (PortWidget* p, ports_)
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
 }
 
 void ModuleWidget::trackConnections()
 {
-  foreach (Port* p, ports_)
+  foreach (PortWidget* p, ports_)
     p->trackConnections();
 }
 

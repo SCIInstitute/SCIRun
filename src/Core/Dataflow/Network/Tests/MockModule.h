@@ -48,6 +48,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(num_input_ports, size_t());
           MOCK_CONST_METHOD0(num_output_ports, size_t());
           MOCK_CONST_METHOD0(get_id, std::string());
+          MOCK_CONST_METHOD0(has_ui, bool());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

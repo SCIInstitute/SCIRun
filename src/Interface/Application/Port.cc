@@ -38,9 +38,9 @@
 
 using namespace SCIRun::Gui;
 
-QGraphicsScene* Port::TheScene = 0;
+QGraphicsScene* PortWidget::TheScene = 0;
 
-Port::Port(const QString& name, const QColor& color, bool isInput, QWidget* parent /* = 0 */)
+PortWidget::PortWidget(const QString& name, const QColor& color, bool isInput, QWidget* parent /* = 0 */)
   : QWidget(parent), 
   name_(name), color_(color), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
   moduleParent_(parent)
@@ -49,7 +49,7 @@ Port::Port(const QString& name, const QColor& color, bool isInput, QWidget* pare
   setAcceptDrops(true);
 }
 
-QSize Port::sizeHint() const
+QSize PortWidget::sizeHint() const
 {
   const int width = 11;
   const int coloredHeight = isInput() ? 5 : 4;
@@ -57,22 +57,22 @@ QSize Port::sizeHint() const
   return QSize(width, coloredHeight + blackHeight);
 }
 
-void Port::toggleLight()
+void PortWidget::toggleLight()
 {
   lightOn_ = !lightOn_;
 }
 
-void Port::turn_off_light()
+void PortWidget::turn_off_light()
 {
   lightOn_ = false;
 }
 
-void Port::turn_on_light()
+void PortWidget::turn_on_light()
 {
   lightOn_ = true;
 }
 
-void Port::paintEvent(QPaintEvent* event)
+void PortWidget::paintEvent(QPaintEvent* event)
 {
   QSize size = sizeHint();
   QPainter painter(this);
@@ -82,12 +82,12 @@ void Port::paintEvent(QPaintEvent* event)
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
 }
 
-void Port::mousePressEvent(QMouseEvent* event)
+void PortWidget::mousePressEvent(QMouseEvent* event)
 {
   doMousePress(event->button(), event->pos());
 }
 
-void Port::doMousePress(Qt::MouseButton button, const QPointF& pos)
+void PortWidget::doMousePress(Qt::MouseButton button, const QPointF& pos)
 {
   if (button == Qt::LeftButton && !isConnected())
   {
@@ -97,12 +97,12 @@ void Port::doMousePress(Qt::MouseButton button, const QPointF& pos)
   }
 }
 
-void Port::mouseMoveEvent(QMouseEvent* event)
+void PortWidget::mouseMoveEvent(QMouseEvent* event)
 {
   doMouseMove(event->buttons(), event->pos());
 }
 
-void Port::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
+void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
 {
   if (buttons & Qt::LeftButton)
   {
@@ -112,7 +112,7 @@ void Port::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
   }
 }
 
-void Port::mouseReleaseEvent(QMouseEvent* event)
+void PortWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   doMouseRelease(event->button(), event->pos());
 }
@@ -126,18 +126,18 @@ namespace SCIRun {
   namespace Gui {
     struct DeleteCurrentConnectionAtEndOfBlock
     {
-      explicit DeleteCurrentConnectionAtEndOfBlock(Port* p) : p_(p) {}
+      explicit DeleteCurrentConnectionAtEndOfBlock(PortWidget* p) : p_(p) {}
       ~DeleteCurrentConnectionAtEndOfBlock()
       {
         delete p_->currentConnection_;
         p_->currentConnection_ = 0;
       }
-      Port* p_;
+      PortWidget* p_;
     };
   }
 }
 
-void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
+void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 {
   if (button == Qt::LeftButton && !isConnected())
   {
@@ -157,7 +157,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
             ModuleWidget* overModule = mpw->getModule();
             if (overModule != moduleParent_)
             {
-              foreach (Port* port, overModule->ports_)
+              foreach (PortWidget* port, overModule->ports_)
               {
                 int distance = (pos - port->position()).manhattanLength();
                 if (distance <= PORT_CONNECTION_THRESHOLD)
@@ -186,7 +186,7 @@ void Port::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
   }
 }
 
-bool Port::canBeConnected(Port* other) const
+bool PortWidget::canBeConnected(PortWidget* other) const
 {
   if (!other)
     return false;
@@ -194,7 +194,7 @@ bool Port::canBeConnected(Port* other) const
     isInput() != other->isInput();
 }
 
-void Port::performDrag(const QPointF& endPos)
+void PortWidget::performDrag(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
@@ -208,30 +208,30 @@ void Port::performDrag(const QPointF& endPos)
     currentConnection_->update(endPos);
 }
 
-void Port::addConnection(ConnectionLine* c)
+void PortWidget::addConnection(ConnectionLine* c)
 {
   connections_.insert(c);
 }
 
-void Port::removeConnection(ConnectionLine* c)
+void PortWidget::removeConnection(ConnectionLine* c)
 {
   connections_.erase(c);
 }
 
-void Port::deleteConnections()
+void PortWidget::deleteConnections()
 {
   foreach (ConnectionLine* c, connections_)
     delete c;
   connections_.clear();
 }
 
-void Port::trackConnections()
+void PortWidget::trackConnections()
 {
   foreach (ConnectionLine* c, connections_)
     c->trackNodes();
 }
 
-QPointF Port::position() const
+QPointF PortWidget::position() const
 {
   if (positionProvider_)
     return positionProvider_->currentPosition();
@@ -239,13 +239,13 @@ QPointF Port::position() const
 }
 
 
-InputPort::InputPort(const QString& name, const QColor& color, QWidget* parent /* = 0 */)
-  : Port(name, color, true, parent)
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, true, parent)
 {
 }
 
-OutputPort::OutputPort(const QString& name, const QColor& color, QWidget* parent /* = 0 */)
-  : Port(name, color, false, parent)
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, false, parent)
 {
 }
 

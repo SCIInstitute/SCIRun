@@ -36,7 +36,7 @@
 
 using namespace SCIRun::Gui;
 
-ConnectionLine::ConnectionLine(Port* fromPort, Port* toPort)
+ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort)
   : fromPort_(fromPort), toPort_(toPort)
 {
   if (fromPort_)
@@ -91,7 +91,7 @@ void ConnectionLine::trackNodes()
     throw std::logic_error("no from/to set for Connection");
 }
 
-ConnectionInProgress::ConnectionInProgress(Port* port)
+ConnectionInProgress::ConnectionInProgress(PortWidget* port)
   : fromPort_(port)
 {
   setZValue(1000);

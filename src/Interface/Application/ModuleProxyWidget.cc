@@ -63,7 +63,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
   updatePressedSubWidget(event);
 
-  if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
+  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMousePress(event->button(), mapToScene(event->pos()));
     return;
@@ -84,7 +84,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-  if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
+  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMouseRelease(event->button(), mapToScene(event->pos()));
     return;
@@ -102,7 +102,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void ModuleProxyWidget::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-  if (Port* p = qobject_cast<Port*>(pressedSubWidget_))
+  if (PortWidget* p = qobject_cast<PortWidget*>(pressedSubWidget_))
   {
     p->doMouseMove(event->buttons(), mapToScene(event->pos()));
     return;
@@ -140,7 +140,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  foreach(Port* p, module_->ports_)
+  foreach(PortWidget* p, module_->ports_)
   {
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(15,15)));
     p->setPositionObject(pp);

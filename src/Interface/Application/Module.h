@@ -42,9 +42,9 @@ class QGraphicsProxyWidget;
 namespace SCIRun {
 namespace Gui {
 
-class Port;
-class InputPort;
-class OutputPort;
+class PortWidget;
+class InputPortWidget;
+class OutputPortWidget;
 class PositionProvider;
 
 class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public Ui::Module
@@ -69,12 +69,11 @@ private:
   
 public:
   //TODO distinguish input/output
-  std::vector<Port*> ports_;
+  std::vector<PortWidget*> ports_;
 private:
-  //FOR TESTING
-  void addAllHardCodedPorts(const QString& name);
-  void addPort(InputPort* port);
-  void addPort(OutputPort* port);
+  void addPorts();
+  void addPort(InputPortWidget* port);
+  void addPort(OutputPortWidget* port);
   //
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;

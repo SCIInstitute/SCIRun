@@ -37,6 +37,7 @@
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/PortManager.h>
 
 namespace SCIRun {
@@ -46,14 +47,16 @@ namespace Networks {
   class Module : public ModuleInterface, boost::noncopyable
   {
   public:
-    Module(const std::string& name, const std::string& cat="unknown", const std::string& pack="unknown", 
+    //TODO replace params with ModuleLookupInfo
+    Module(const std::string& name, bool hasUi = true, const std::string& cat="unknown", const std::string& pack="unknown", 
       const std::string& version="1.0");
     virtual ~Module();
 
-    std::string get_module_name() const { return module_name_; }
-    std::string get_categoryname() const { return category_name_; }
-    std::string get_packagename() const { return package_name_; }
+    std::string get_module_name() const { return info_.module_name_; }
+    std::string get_categoryname() const { return info_.category_name_; }
+    std::string get_packagename() const { return info_.package_name_; }
     std::string get_id() const { return id_; }
+    bool has_ui() const { return has_ui_; }
 
     size_t num_input_ports() const;
     size_t num_output_ports() const;
@@ -72,6 +75,7 @@ namespace Networks {
       Builder& with_name(const std::string& name);
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
+      Builder& disable_ui();
       ModuleHandle build();
     private:
       boost::shared_ptr<Module> module_;
@@ -79,13 +83,11 @@ namespace Networks {
 
   protected:
 
-    void set_modulename(const std::string& name)   { module_name_ = name; }
-    void set_categoryname(const std::string& name) { category_name_ = name; }
-    void set_packagename(const std::string& name)  { package_name_ = name; }
+    void set_modulename(const std::string& name)   { info_.module_name_ = name; }
+    void set_categoryname(const std::string& name) { info_.category_name_ = name; }
+    void set_packagename(const std::string& name)  { info_.package_name_ = name; }
 
-    std::string module_name_;
-    std::string package_name_;
-    std::string category_name_;
+    ModuleLookupInfo info_;
 
     std::string id_;
 
@@ -93,6 +95,7 @@ namespace Networks {
     friend class Builder;
     void add_input_port(InputPortHandle);
     void add_output_port(OutputPortHandle);
+    bool has_ui_;
 
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;

@@ -48,6 +48,7 @@ namespace Networks {
     virtual size_t num_input_ports() const = 0;
     virtual size_t num_output_ports() const = 0;
     virtual std::string get_id() const = 0;
+    virtual bool has_ui() const = 0;
   };
 }}}
 

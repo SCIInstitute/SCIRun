@@ -32,10 +32,11 @@
 
 using namespace SCIRun::Domain::Networks;
 
-Module::Module(const std::string& name, const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
-  : module_name_(name)
+Module::Module(const std::string& name, bool hasUi,
+  const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
+  : has_ui_(hasUi)
 {
-
+  set_modulename(name);
 }
 
 Module::~Module()
@@ -104,6 +105,12 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
     OutputPortHandle port(new OutputPort(module_.get(), params));
     module_->add_output_port(port);
   }
+  return *this;
+}
+
+Module::Builder& Module::Builder::disable_ui()
+{
+  module_->has_ui_ = false;
   return *this;
 }
 

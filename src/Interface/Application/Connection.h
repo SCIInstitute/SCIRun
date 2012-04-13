@@ -34,12 +34,12 @@
 namespace SCIRun {
 namespace Gui {
 
-class Port;
+class PortWidget;
 
 class ConnectionLine : public QGraphicsLineItem
 {
 public:
-  ConnectionLine(Port* fromPort, Port* toPort);
+  ConnectionLine(PortWidget* fromPort, PortWidget* toPort);
   ~ConnectionLine();
 
   void setColor(const QColor& color);
@@ -48,14 +48,14 @@ public:
   void trackNodes();
 
 private:
-  Port* fromPort_;
-  Port* toPort_;
+  PortWidget* fromPort_;
+  PortWidget* toPort_;
 };
 
 class ConnectionInProgress : public QGraphicsLineItem
 {
 public:
-  explicit ConnectionInProgress(Port* port);
+  explicit ConnectionInProgress(PortWidget* port);
 
   void setColor(const QColor& color);
   QColor color() const;
@@ -63,7 +63,7 @@ public:
   void update(const QPointF& end);
 
 private:
-  Port* fromPort_;
+  PortWidget* fromPort_;
 };
 
 }

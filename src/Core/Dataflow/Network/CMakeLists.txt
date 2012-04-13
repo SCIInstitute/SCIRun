@@ -39,6 +39,7 @@ SET(Core_Dataflow_Network_HEADERS
   HardCodedModuleFactory.h
   Module.h
   ModuleFactory.h
+  ModuleDescription.h
   ModuleInterface.h
   Network.h
   NetworkFwd.h
