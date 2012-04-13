@@ -52,6 +52,7 @@ namespace Gui {
   class ConnectionLine;
   class ModuleWidget;
   class ModuleProxyWidget;
+  class NetworkEditorController;
 
   class NetworkEditor : public QGraphicsView
   {
@@ -61,13 +62,14 @@ namespace Gui {
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
     void addActions(QWidget* widget);
     void setExecuteAction(QAction* action) { executeAction_ = action; }
+    void setNetworkEditorController(boost::shared_ptr<NetworkEditorController> controller);
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
+  public slots:
+    void addModule(const QString& name,  const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider);
   private slots:
-    void addModule();
-    void addModule(const QString& text, const QPointF& pos);
     void del();
     void cut();
     void copy();
@@ -83,7 +85,7 @@ namespace Gui {
     //void createMenus();
     //void createToolBars();
     void setZValue(int z);
-    void setupModule(ModuleWidget* node, const QPointF& pos = QPointF());
+    void setupModule(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
     ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;
@@ -96,7 +98,7 @@ namespace Gui {
     //QAction* pasteAction_;
     QAction* deleteAction_;
     //QAction* addLinkAction_;
-    QAction* addNodeAction_;
+    //QAction* addNodeAction_;
     QAction* bringToFrontAction_;
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
@@ -108,9 +110,10 @@ namespace Gui {
     int maxZ_;
     int seqNumber_;
 
-    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+    QPointF lastModulePosition_;
 
-    SCIRun::Domain::Networks::NetworkHandle theNetwork_;
+    boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
+    boost::shared_ptr<NetworkEditorController> controller_;
   };
 
 }

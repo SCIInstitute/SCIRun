@@ -26,36 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_APPLICATION_NETWORKEDITORCONTROLLER_H
+#define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLER_H
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
-
-#include <string>
+#include <QObject>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  class PortInfoProvider
+namespace Gui {
+  
+  class NetworkEditorController : public QObject
   {
+    Q_OBJECT
   public:
-    virtual ~PortInfoProvider() {}
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual bool has_ui() const = 0;
+    NetworkEditorController();
+  public slots:
+    void addModule(const QString& moduleName);
+  signals:
+    void moduleAdded(const QString& name, const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider);
+  private:
+    SCIRun::Domain::Networks::NetworkHandle theNetwork_;
   };
 
-  class ModuleInterface : public PortInfoProvider
-  {
-  public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual std::string get_id() const = 0;
-  };
-}}}
+}
+}
 
 #endif

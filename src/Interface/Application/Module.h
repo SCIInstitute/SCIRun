@@ -52,7 +52,7 @@ class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public Ui
 	Q_OBJECT
 	
 public:
-  explicit ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle realModule, QWidget* parent = 0);
+  explicit ModuleWidget(const QString& name, const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider, QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();
@@ -71,15 +71,13 @@ public:
   //TODO distinguish input/output
   std::vector<PortWidget*> ports_;
 private:
-  void addPorts();
+  void addPorts(const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider);
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
   //
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;
   QHBoxLayout* inputPortLayout_;
-
-  SCIRun::Domain::Networks::ModuleHandle realModule_;
 };
 
 }

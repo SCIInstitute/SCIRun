@@ -41,6 +41,7 @@ SET(SCIRunGUIPrototype_SOURCES
   Port.cc
   Connection.cc
   NetworkEditor.cc
+  NetworkEditorController.cc
 )
 
 SET(SCIRunGUIPrototype_HEADERS
@@ -52,6 +53,7 @@ SET(SCIRunGUIPrototype_HEADERS
   Connection.h
   Port.h
   NetworkEditor.h
+  NetworkEditorController.h
 )
 
 SET(SCIRunGUIPrototype_FORMS

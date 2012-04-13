@@ -31,7 +31,7 @@
 #include <Interface/Application/Module.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
-#include <Interface/Application/NetworkEditor.h>
+//#include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
 
@@ -45,18 +45,17 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-ModuleWidget::ModuleWidget(const QString& name, ModuleHandle realModule, QWidget* parent /* = 0 */)
-  : QFrame(parent),
-  realModule_(realModule)
+ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider, QWidget* parent /* = 0 */)
+  : QFrame(parent)
 {
   setupUi(this);
-  titleLabel_->setText(name);
+  titleLabel_->setText("<b><h2>" + name + "</h2></b>");
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
   
   addPortLayouts();
-  addPorts();
+  addPorts(portInfoProvider);
 }
 
 void ModuleWidget::addPortLayouts()
@@ -77,19 +76,19 @@ void ModuleWidget::addPortLayouts()
   verticalLayout_2->insertLayout(0, inputRowLayout);
 }
 
-void ModuleWidget::addPorts()
+void ModuleWidget::addPorts(const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider)
 {
-  for (size_t i = 0; i < realModule_->num_input_ports(); ++i)
+  for (size_t i = 0; i < portInfoProvider.num_input_ports(); ++i)
   {
-    InputPortHandle port = realModule_->get_input_port(i);
+    InputPortHandle port = portInfoProvider.get_input_port(i);
     addPort(new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
   }
-  for (size_t i = 0; i < realModule_->num_output_ports(); ++i)
+  for (size_t i = 0; i < portInfoProvider.num_output_ports(); ++i)
   {
-    OutputPortHandle port = realModule_->get_output_port(i);
+    OutputPortHandle port = portInfoProvider.get_output_port(i);
     addPort(new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
   }
-  optionsButton_->setVisible(realModule_->has_ui());
+  optionsButton_->setVisible(portInfoProvider.has_ui());
 }
 
 void ModuleWidget::addPort(OutputPortWidget* port)

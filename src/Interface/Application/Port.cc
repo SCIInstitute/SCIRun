@@ -146,40 +146,46 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
     if (currentConnection_)
     {
-      DeleteCurrentConnectionAtEndOfBlock deleter(this);
-      QList<QGraphicsItem*> items = TheScene->items(pos);
-      foreach (QGraphicsItem* item, items)
-      {
-        if (item)
-        {
-          if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
-          {
-            ModuleWidget* overModule = mpw->getModule();
-            if (overModule != moduleParent_)
-            {
-              foreach (PortWidget* port, overModule->ports_)
-              {
-                int distance = (pos - port->position()).manhattanLength();
-                if (distance <= PORT_CONNECTION_THRESHOLD)
-                {
-                  if (canBeConnected(port))
-                  {
-                    Logger::Instance->log("Connection made.");
+      makeConnection(pos);
+    }
+  }
+}
 
-                    ConnectionLine* c = new ConnectionLine(this, port);
-                    TheScene->addItem(c);
-                    return;
-                  }
-                  else
-                    std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
-                }
-              }
-            }
-            else
+void PortWidget::makeConnection(const QPointF& pos)
+{
+  DeleteCurrentConnectionAtEndOfBlock deleter(this);
+  QList<QGraphicsItem*> items = TheScene->items(pos);
+  foreach (QGraphicsItem* item, items)
+  {
+    if (item)
+    {
+      if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        ModuleWidget* overModule = mpw->getModule();
+        if (overModule != moduleParent_)
+        {
+          foreach (PortWidget* port, overModule->ports_)
+          {
+            int distance = (pos - port->position()).manhattanLength();
+            if (distance <= PORT_CONNECTION_THRESHOLD)
             {
-              std::cout << "trying to connect a module with itself, let's not allow circular connections yet." << std::endl;
+              if (canBeConnected(port))
+              {
+                Logger::Instance->log("Connection made.");
+
+                ConnectionLine* c = new ConnectionLine(this, port);
+                TheScene->addItem(c);
+
+                return;
+              }
+              else
+                std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
             }
           }
+        }
+        else
+        {
+          std::cout << "trying to connect a module with itself, let's not allow circular connections yet." << std::endl;
         }
       }
     }

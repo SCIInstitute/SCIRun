@@ -37,14 +37,10 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Logger.h>
-
-#include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
-#include <Core/Dataflow/Network/ModuleDescription.h>
+#include <Interface/Application/NetworkEditorController.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
 
 boost::shared_ptr<Logger> Logger::Instance;
 
@@ -70,38 +66,42 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
   updateActions();
-
-  //DOMAIN HOOKUP
-
-  ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  theNetwork_.reset(new Network(mf));
 }
 
-void NetworkEditor::addModule()
+void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorController> controller)
 {
-  addModule(tr("Module %1").arg(seqNumber_ + 1), QPointF());
+  if (controller_ == controller)
+    return;
+
+  if (controller_) 
+  {
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::PortInfoProvider&)), 
+      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::PortInfoProvider&)));
+  }
+  
+  controller_ = controller;
+  
+  if (controller_) 
+  {
+    connect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::PortInfoProvider&)), 
+      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::PortInfoProvider&)));
+  }
 }
 
-void NetworkEditor::addModule(const QString& text, const QPointF& pos)
+void NetworkEditor::addModule(const QString& name,  const SCIRun::Domain::Networks::PortInfoProvider& portInfoProvider)
 {
-  Logger::Instance->log("Module added.");
-
-  ModuleLookupInfo info;
-  info.module_name_ = text.toStdString();
-  ModuleHandle realModule = theNetwork_->add_module(info);
-
-  ModuleWidget* module = new ModuleWidget("<b><h2>" + text + "</h2></b>", realModule);
-  setupModule(module, pos);
+  ModuleWidget* module = new ModuleWidget(name, portInfoProvider);
+  setupModule(module);
 }
 
-void NetworkEditor::setupModule(ModuleWidget* module, const QPointF& pos)
+void NetworkEditor::setupModule(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);
-  proxy->setPos(pos);
+  proxy->setPos(lastModulePosition_);
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
@@ -113,6 +113,8 @@ void NetworkEditor::setupModule(ModuleWidget* module, const QPointF& pos)
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
+
+  Logger::Instance->log("Module added.");
 }
 
 void NetworkEditor::bringToFront()
@@ -293,10 +295,10 @@ void NetworkEditor::createActions()
   //exitAction_->setShortcut(tr("Ctrl+Q"));
   //connect(exitAction_, SIGNAL(triggered()), this, SLOT(close()));
 
-  addNodeAction_ = new QAction(tr("Add &Module"), this);
-  addNodeAction_->setIcon(QIcon(":/images/node.png"));
-  addNodeAction_->setShortcut(tr("Ctrl+N"));
-  connect(addNodeAction_, SIGNAL(triggered()), this, SLOT(addModule()));
+  //addNodeAction_ = new QAction(tr("Add &Module"), this);
+  //addNodeAction_->setIcon(QIcon(":/images/node.png"));
+  //addNodeAction_->setShortcut(tr("Ctrl+N"));
+  //connect(addNodeAction_, SIGNAL(triggered()), this, SLOT(addModule()));
 
   //addLinkAction_ = new QAction(tr("Add &Connection"), this);
   //addLinkAction_->setIcon(QIcon(":/images/link.png"));
@@ -340,7 +342,7 @@ void NetworkEditor::createActions()
 
 void NetworkEditor::addActions(QWidget* widget)
 {
-  widget->addAction(addNodeAction_);
+  //widget->addAction(addNodeAction_);
   //widget->addAction(addLinkAction_);
   widget->addAction(bringToFrontAction_);
   widget->addAction(sendToBackAction_);
@@ -355,7 +357,9 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    addModule(moduleSelectionGetter_->text(), mapToScene(event->pos()));
+    lastModulePosition_ = mapToScene(event->pos());
+    controller_->addModule(moduleSelectionGetter_->text());
+    //addModule(moduleSelectionGetter_->text(), mapToScene());
   }
 }
 
@@ -364,7 +368,7 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
   //???
   event->acceptProposedAction();
 }
-
+  
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
 }

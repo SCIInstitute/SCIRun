@@ -26,36 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Application/NetworkEditorController.h>
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
+#include <Core/Dataflow/Network/Network.h>
+#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
+#include <Core/Dataflow/Network/Module.h>
 
-#include <string>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+using namespace SCIRun;
+using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
 
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
+NetworkEditorController::NetworkEditorController()
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  theNetwork_.reset(new Network(mf));
+}
 
-  class PortInfoProvider
-  {
-  public:
-    virtual ~PortInfoProvider() {}
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual bool has_ui() const = 0;
-  };
+void NetworkEditorController::addModule(const QString& moduleName)
+{
+  ModuleLookupInfo info;
+  info.module_name_ = moduleName.toStdString();
+  ModuleHandle realModule = theNetwork_->add_module(info);
+  emit moduleAdded(moduleName, *realModule);
+}
 
-  class ModuleInterface : public PortInfoProvider
-  {
-  public:
-    virtual ~ModuleInterface() {}
-    virtual void execute() = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual std::string get_id() const = 0;
-  };
-}}}
-
-#endif

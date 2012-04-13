@@ -85,7 +85,7 @@ protected:
 private:
   void performDrag(const QPointF& endPos);
   bool canBeConnected(PortWidget* other) const;
-
+  void makeConnection(const QPointF& pos);
 
   const QString name_;
   const QColor color_;

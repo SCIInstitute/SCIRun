@@ -93,6 +93,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
 
+  boost::shared_ptr<NetworkEditorController> controller(new NetworkEditorController);
+  networkEditor_->setNetworkEditorController(controller);
+
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
