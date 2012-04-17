@@ -27,6 +27,7 @@
 */
 
 #include <QtGui>
+#include <boost/range/join.hpp>
 #include <iostream>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/Module.h>
@@ -140,7 +141,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  foreach(PortWidget* p, module_->ports_)
+  foreach(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
   {
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(15,15)));
     p->setPositionObject(pp);

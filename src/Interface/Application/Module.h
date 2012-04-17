@@ -73,6 +73,7 @@ public slots:
   void incrementProgressFake();
 signals:
   void removeModule(const std::string& moduleId);
+  void addConnection(const std::string& id1, size_t port1, const std::string& id2, size_t port2);
 private:
   std::vector<PortWidget*> inputPorts_;
   std::vector<PortWidget*> outputPorts_;

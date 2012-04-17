@@ -77,6 +77,9 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   {
     disconnect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
       this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
+
+    disconnect(this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)), 
+      controller_.get(), SLOT(addConnection(const std::string&, size_t, const std::string&, size_t)));
   }
   
   controller_ = controller;
@@ -85,6 +88,9 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   {
     connect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
       this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
+
+    connect(this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)), 
+      controller_.get(), SLOT(addConnection(const std::string&, size_t, const std::string&, size_t)));
   }
 }
 
@@ -99,6 +105,8 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
+  connect(module, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)), 
+    this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)));
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);

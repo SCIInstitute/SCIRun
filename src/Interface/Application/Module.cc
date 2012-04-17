@@ -28,6 +28,8 @@
 
 #include <iostream>
 #include <QtGui>
+#include <boost/range/join.hpp>
+#include <boost/foreach.hpp>
 #include <Interface/Application/Module.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
@@ -83,12 +85,18 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    addPort(new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), this));
+    InputPortWidget* w = new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
+    connect(w, SIGNAL(connectionMade(const std::string&, size_t, const std::string&, size_t)), 
+      this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)));
+    addPort(w);
   }
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    addPort(new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), this));
+    OutputPortWidget* w = new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
+    connect(w, SIGNAL(connectionMade(const std::string&, size_t, const std::string&, size_t)), 
+      this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)));
+    addPort(w);
   }
   optionsButton_->setVisible(moduleInfoProvider.has_ui());
 }
@@ -102,12 +110,12 @@ void ModuleWidget::addPort(OutputPortWidget* port)
 void ModuleWidget::addPort(InputPortWidget* port)
 {
   inputPortLayout_->addWidget(port);
-  intputPorts_.push_back(port);
+  inputPorts_.push_back(port);
 }
 
 ModuleWidget::~ModuleWidget()
 {
-  foreach (PortWidget* p, ports_)
+  foreach (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
   emit removeModule(moduleId_);
@@ -115,7 +123,7 @@ ModuleWidget::~ModuleWidget()
 
 void ModuleWidget::trackConnections()
 {
-  foreach (PortWidget* p, ports_)
+  foreach (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->trackConnections();
 }
 

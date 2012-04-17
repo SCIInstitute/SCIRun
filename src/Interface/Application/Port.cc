@@ -40,9 +40,10 @@ using namespace SCIRun::Gui;
 
 QGraphicsScene* PortWidget::TheScene = 0;
 
-PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, bool isInput, QWidget* parent /* = 0 */)
+PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index,
+  bool isInput, QWidget* parent /* = 0 */)
   : QWidget(parent), 
-  name_(name), color_(color), moduleId_(moduleId), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
   moduleParent_(parent)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -163,13 +164,11 @@ void PortWidget::makeConnection(const QPointF& pos)
       ModuleWidget* overModule = mpw->getModule();
       if (overModule != moduleParent_)
       {
-        const std::vector<PortWidget*>& ports = isInput() ? overModule->getInputPorts() : overModule->getOutputPorts();
-        size_t portIndex = 0;
+        const std::vector<PortWidget*>& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();
         foreach (PortWidget* port, ports)
         {
-          if (tryConnectPort(pos, port, portIndex))
+          if (tryConnectPort(pos, port))
             return;
-          portIndex++;
         }
       }
       else
@@ -180,7 +179,7 @@ void PortWidget::makeConnection(const QPointF& pos)
   }
 }
 
-bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, size_t portIndex)
+bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 {
   int distance = (pos - port->position()).manhattanLength();
   if (distance <= PORT_CONNECTION_THRESHOLD)
@@ -191,7 +190,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, size_t por
 
       ConnectionLine* c = new ConnectionLine(this, port);
       TheScene->addItem(c);
-      emit connectionMade(moduleId_, 999, port->moduleId_, portIndex);
+      emit connectionMade(moduleId_.toStdString(), index_, port->moduleId_.toStdString(), port->index_);
 
       return true;
     }
@@ -255,13 +254,13 @@ QPointF PortWidget::position() const
 }
 
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, true, parent)
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, true, parent)
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, false, parent)
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, false, parent)
 {
 }
 

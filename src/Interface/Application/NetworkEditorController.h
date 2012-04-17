@@ -35,6 +35,7 @@
 namespace SCIRun {
 namespace Gui {
   
+  //TODO: rework with boost::signal/slots
   class NetworkEditorController : public QObject
   {
     Q_OBJECT
@@ -43,7 +44,8 @@ namespace Gui {
   public slots:
     void addModule(const QString& moduleName);
     void removeModule(const std::string& id);
-    void addConnection(const std::string& id1, int port1, const std::string& id2, int port2);
+    void addConnection(const std::string& id1, size_t port1, const std::string& id2, size_t port2);
+    void removeConnection(const std::string& id);
   signals:
     void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
     void moduleRemoved(const std::string& id);

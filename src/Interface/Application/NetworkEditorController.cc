@@ -68,3 +68,12 @@ void NetworkEditorController::printNetwork() const
     std::cout << theNetwork_->toString() << std::endl;
 }
 
+void NetworkEditorController::addConnection(const std::string& id1, size_t port1, const std::string& id2, size_t port2)
+{
+  std::cout << "addConnection called" << std::endl;
+}
+
+void NetworkEditorController::removeConnection(const std::string& id)
+{
+  std::cout << "removeConnection called" << std::endl;
+}
