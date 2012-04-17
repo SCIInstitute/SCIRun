@@ -49,7 +49,7 @@ class PortWidget : public QWidget, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, bool isInput, QWidget* parent = 0);
+  PortWidget(const QString& name, const QColor& color, const QString& moduleId, bool isInput, QWidget* parent = 0);
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
@@ -77,6 +77,8 @@ public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
+signals:
+  void connectionMade(const QString& id1, size_t port1, const QString& id2, size_t port2);
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
@@ -86,8 +88,10 @@ private:
   void performDrag(const QPointF& endPos);
   bool canBeConnected(PortWidget* other) const;
   void makeConnection(const QPointF& pos);
+  bool tryConnectPort(const QPointF& pos, PortWidget* port, size_t portIndex);
 
   const QString name_;
+  const QString moduleId_; 
   const QColor color_;
   const bool isInput_;
   bool isConnected_;
@@ -102,13 +106,13 @@ private:
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, QWidget* parent = 0);
+  InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, QWidget* parent = 0);
 };
 
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, QWidget* parent = 0);
+  OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, QWidget* parent = 0);
 };
 
 }

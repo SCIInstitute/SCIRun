@@ -56,6 +56,8 @@ void NetworkEditorController::addModule(const QString& moduleName)
 
 void NetworkEditorController::removeModule(const std::string& id)
 {
+  //before or after?
+  emit moduleRemoved(id);
   theNetwork_->remove_module(id);
   printNetwork();
 }

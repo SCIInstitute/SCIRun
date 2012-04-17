@@ -40,13 +40,14 @@ using namespace SCIRun::Gui;
 
 QGraphicsScene* PortWidget::TheScene = 0;
 
-PortWidget::PortWidget(const QString& name, const QColor& color, bool isInput, QWidget* parent /* = 0 */)
+PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, bool isInput, QWidget* parent /* = 0 */)
   : QWidget(parent), 
-  name_(name), color_(color), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), color_(color), moduleId_(moduleId), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
   moduleParent_(parent)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
+  setToolTip(name_);
 }
 
 QSize PortWidget::sizeHint() const
@@ -157,39 +158,49 @@ void PortWidget::makeConnection(const QPointF& pos)
   QList<QGraphicsItem*> items = TheScene->items(pos);
   foreach (QGraphicsItem* item, items)
   {
-    if (item)
+    if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
+      ModuleWidget* overModule = mpw->getModule();
+      if (overModule != moduleParent_)
       {
-        ModuleWidget* overModule = mpw->getModule();
-        if (overModule != moduleParent_)
+        const std::vector<PortWidget*>& ports = isInput() ? overModule->getInputPorts() : overModule->getOutputPorts();
+        size_t portIndex = 0;
+        foreach (PortWidget* port, ports)
         {
-          foreach (PortWidget* port, overModule->ports_)
-          {
-            int distance = (pos - port->position()).manhattanLength();
-            if (distance <= PORT_CONNECTION_THRESHOLD)
-            {
-              if (canBeConnected(port))
-              {
-                Logger::Instance->log("Connection made.");
-
-                ConnectionLine* c = new ConnectionLine(this, port);
-                TheScene->addItem(c);
-
-                return;
-              }
-              else
-                std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
-            }
-          }
+          if (tryConnectPort(pos, port, portIndex))
+            return;
+          portIndex++;
         }
-        else
-        {
-          std::cout << "trying to connect a module with itself, let's not allow circular connections yet." << std::endl;
-        }
+      }
+      else
+      {
+        std::cout << "trying to connect a module with itself, let's not allow circular connections yet." << std::endl;
       }
     }
   }
+}
+
+bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port, size_t portIndex)
+{
+  int distance = (pos - port->position()).manhattanLength();
+  if (distance <= PORT_CONNECTION_THRESHOLD)
+  {
+    if (canBeConnected(port))
+    {
+      Logger::Instance->log("Connection made.");
+
+      ConnectionLine* c = new ConnectionLine(this, port);
+      TheScene->addItem(c);
+      emit connectionMade(moduleId_, 999, port->moduleId_, portIndex);
+
+      return true;
+    }
+    else
+    {
+      std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
+    }
+  }
+  return false;
 }
 
 bool PortWidget::canBeConnected(PortWidget* other) const
@@ -210,8 +221,7 @@ void PortWidget::performDrag(const QPointF& endPos)
       TheScene->addItem(currentConnection_);
     currentConnection_->setVisible(true);
   }
-  if (TheScene)
-    currentConnection_->update(endPos);
+  currentConnection_->update(endPos);
 }
 
 void PortWidget::addConnection(ConnectionLine* c)
@@ -245,13 +255,13 @@ QPointF PortWidget::position() const
 }
 
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, true, parent)
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, true, parent)
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, false, parent)
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, false, parent)
 {
 }
 

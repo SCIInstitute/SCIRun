@@ -62,15 +62,21 @@ public:
   double percentComplete() const;
   void setPercentComplete(double p);
 
-  //for testing signal/slot of Execute
+  size_t numInputPorts() const;
+  size_t numOutputPorts() const;
+  //TODO abstract
+  const std::vector<PortWidget*>& getInputPorts() const { return inputPorts_; }
+  const std::vector<PortWidget*>& getOutputPorts() const { return outputPorts_; }
+  
 public slots:
+  //for testing signal/slot of Execute
   void incrementProgressFake();
 signals:
   void removeModule(const std::string& moduleId);
-public:
-  //TODO distinguish input/output, make private via boost::range/iterator erasure etc
-  std::vector<PortWidget*> ports_;
 private:
+  std::vector<PortWidget*> inputPorts_;
+  std::vector<PortWidget*> outputPorts_;
+
   void addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);

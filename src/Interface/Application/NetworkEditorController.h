@@ -43,8 +43,10 @@ namespace Gui {
   public slots:
     void addModule(const QString& moduleName);
     void removeModule(const std::string& id);
+    void addConnection(const std::string& id1, int port1, const std::string& id2, int port2);
   signals:
     void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
+    void moduleRemoved(const std::string& id);
   private:
     void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;

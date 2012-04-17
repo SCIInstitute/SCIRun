@@ -50,7 +50,7 @@ namespace Networks {
     virtual size_t nmodules() const;
     virtual ModuleHandle module(size_t i) const;
 
-    virtual ConnectionId connect(ModuleHandle, int, ModuleHandle, int);
+    virtual ConnectionId connect(ModuleHandle m1, int p1, ModuleHandle m2, int p2);
     virtual bool disconnect(const ConnectionId&);
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);

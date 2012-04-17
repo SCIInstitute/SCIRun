@@ -45,7 +45,7 @@ public:
   struct ConstructionParams
   {
     std::string type_name, port_name, color_name;
-    ConstructionParams(const std::string& t, const std::string& p, const std::string& c)
+    ConstructionParams(const std::string& p, const std::string& t, const std::string& c)
       : type_name(t), port_name(p), color_name(c) {}
   };
   Port(ModuleInterface* module, const ConstructionParams& params);

@@ -79,15 +79,16 @@ void ModuleWidget::addPortLayouts()
 
 void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
+  const std::string moduleId = moduleInfoProvider.get_id();
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    addPort(new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
+    addPort(new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), this));
   }
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    addPort(new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), this));
+    addPort(new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), this));
   }
   optionsButton_->setVisible(moduleInfoProvider.has_ui());
 }
@@ -95,13 +96,13 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
 void ModuleWidget::addPort(OutputPortWidget* port)
 {
   outputPortLayout_->addWidget(port);
-  ports_.push_back(port);
+  outputPorts_.push_back(port);
 }
 
 void ModuleWidget::addPort(InputPortWidget* port)
 {
   inputPortLayout_->addWidget(port);
-  ports_.push_back(port);
+  intputPorts_.push_back(port);
 }
 
 ModuleWidget::~ModuleWidget()
