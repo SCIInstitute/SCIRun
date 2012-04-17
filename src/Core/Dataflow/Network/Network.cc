@@ -69,8 +69,10 @@ bool Network::remove_module(const std::string& id)
   return false;
 }
 
-ConnectionId Network::connect(ModuleHandle m1, int p1, ModuleHandle m2, int p2)
+ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_t p2)
 {
+  if (!m1 || !m2)
+    throw std::invalid_argument("cannot connect null modules");
   // assure that the ports are not altered while connecting
   //m1->oports_.lock();
   //m2->iports_.lock();
@@ -86,10 +88,7 @@ ConnectionId Network::connect(ModuleHandle m1, int p1, ModuleHandle m2, int p2)
     return ConnectionId("");
   }
 
-  std::ostringstream ids;
-  ids << m1->get_id() << "_p" << p1 << "_to_" << m2->get_id() << "_p" << p2;
-
-  ConnectionHandle conn(new Connection(m1, p1, m2, p2, ids.str()));
+  ConnectionHandle conn(new Connection(m1, p1, m2, p2, ConnectionId::create(ConnectionDescription(m1->get_id(), p1, m2->get_id(), p2))));
 
   //lock.lock();
 
@@ -119,7 +118,7 @@ bool Network::disconnect(const ConnectionId& id)
 
 void Network::disable_connection(const ConnectionId&)
 {
-
+  //TODO
 }
 
 size_t Network::nmodules() const
@@ -135,6 +134,12 @@ ModuleHandle Network::module(size_t i) const
   return modules_[i];
 }
 
+ModuleHandle Network::lookupModule(const std::string& id) const
+{
+  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *_1) == id);
+  return i == modules_.end() ? ModuleHandle() : *i;
+}
+
 size_t Network::nconnections() const
 {
   return connections_.size();
@@ -144,9 +149,10 @@ std::string Network::toString() const
 {
   using boost::lambda::bind;
   std::ostringstream ostr;
+  ostr << "~~~NETWORK DESCRIPTION~~~\n";
   ostr << "Modules:\n";
-  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, " "), bind(to_string, *_1));
+  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *_1));
   ostr << "\nConnections:\n";
-  std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, " "), bind(&Connection::id_, *_1));
+  std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(&Connection::id_, *_1));
   return ostr.str();
 }

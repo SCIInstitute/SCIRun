@@ -70,7 +70,8 @@ namespace Gui {
   public slots:
     void addModule(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
   signals:
-    void addConnection(const std::string& id1, size_t port1, const std::string& id2, size_t port2);
+    void addConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
+    void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
   private slots:
     void del();
     void cut();

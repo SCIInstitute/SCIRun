@@ -28,6 +28,7 @@
 
 SET(Core_Dataflow_Network_SRCS
   Connection.cc
+  ConnectionId.cc
   HardCodedModuleFactory.cc
   Module.cc
   Network.cc
@@ -36,6 +37,7 @@ SET(Core_Dataflow_Network_SRCS
 
 SET(Core_Dataflow_Network_HEADERS
   Connection.h
+  ConnectionId.h
   HardCodedModuleFactory.h
   Module.h
   ModuleFactory.h

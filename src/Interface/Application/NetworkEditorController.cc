@@ -30,6 +30,7 @@
 
 #include <Interface/Application/NetworkEditorController.h>
 
+#include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Network.h>
 #include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
@@ -68,12 +69,14 @@ void NetworkEditorController::printNetwork() const
     std::cout << theNetwork_->toString() << std::endl;
 }
 
-void NetworkEditorController::addConnection(const std::string& id1, size_t port1, const std::string& id2, size_t port2)
+void NetworkEditorController::addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc)
 {
-  std::cout << "addConnection called" << std::endl;
+  theNetwork_->connect(theNetwork_->lookupModule(desc.moduleId1_), desc.port1_, theNetwork_->lookupModule(desc.moduleId2_), desc.port2_);
+  printNetwork();
 }
 
-void NetworkEditorController::removeConnection(const std::string& id)
+void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
-  std::cout << "removeConnection called" << std::endl;
+  theNetwork_->disconnect(id);
+  printNetwork();
 }

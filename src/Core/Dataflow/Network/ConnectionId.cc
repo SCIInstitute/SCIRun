@@ -26,32 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+#include <Core/Dataflow/Network/ConnectionId.h>
 
-#ifndef CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
+using namespace SCIRun::Domain::Networks;
 
-#include <Core/Dataflow/Network/NetworkFwd.h>
+bool SCIRun::Domain::Networks::operator==(const ConnectionId& lhs, const ConnectionId& rhs)
+{
+  return lhs.id_ == rhs.id_;
+}
 
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  class NetworkInterface
-  {
-  public:
-    virtual ~NetworkInterface() {}
-    virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
-    virtual bool remove_module(const std::string& id) = 0;
-    virtual size_t nmodules() const = 0;
-    virtual ModuleHandle module(size_t i) const = 0;
-    virtual ModuleHandle lookupModule(const std::string& id) const = 0;
-    virtual ConnectionId connect(ModuleHandle, size_t, ModuleHandle, size_t) = 0;
-    virtual bool disconnect(const ConnectionId&) = 0;
-    virtual size_t nconnections() const = 0;
-    virtual void disable_connection(const ConnectionId&) = 0;
-    virtual std::string toString() const = 0;
-  };
-}}}
+bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const ConnectionId& rhs)
+{
+  return !(lhs == rhs);
+}
 
 
-#endif
+/*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
+{
+  std::ostringstream cid;
+  cid << desc.moduleId1_ << "_p" << desc.port1_ << "_to_" << desc.moduleId2_ << "_p" << desc.port2_;
+  return ConnectionId(cid.str());
+}

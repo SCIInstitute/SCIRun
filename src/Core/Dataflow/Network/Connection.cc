@@ -33,7 +33,7 @@
 
 using namespace SCIRun::Domain::Networks;
 
-Connection::Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int iportno, const std::string& id)
+Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id)
   : omod_(omod), imod_(imod), id_(id)
 {
   if (!omod)
@@ -55,15 +55,5 @@ Connection::~Connection()
 {
   oport_->detach(this);
   iport_->detach(this);
-}
-
-bool SCIRun::Domain::Networks::operator==(const ConnectionId& lhs, const ConnectionId& rhs)
-{
-  return lhs.id_ == rhs.id_;
-}
-
-bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const ConnectionId& rhs)
-{
-  return !(lhs == rhs);
 }
 

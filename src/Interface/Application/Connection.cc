@@ -36,8 +36,8 @@
 
 using namespace SCIRun::Gui;
 
-ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort)
-  : fromPort_(fromPort), toPort_(toPort)
+ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Domain::Networks::ConnectionId& id)
+  : fromPort_(fromPort), toPort_(toPort), id_(id)
 {
   if (fromPort_)
   {
@@ -68,6 +68,7 @@ ConnectionLine::~ConnectionLine()
     toPort_->removeConnection(this);
     toPort_->turn_off_light();
   }
+  emit deleted(id_);
   Logger::Instance->log("Connection deleted.");
 }
 

@@ -31,25 +31,16 @@
 
 #include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
 
 namespace SCIRun {
   namespace Domain {
     namespace Networks {
 
-      struct ConnectionId
-      {
-        explicit ConnectionId(const std::string& s) : id_(s) {}
-        std::string id_;
-        operator std::string() const { return id_; }
-      };
-
-      bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
-      bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
-
       class Connection 
       {
       public:
-        Connection(ModuleHandle omod, int oportno, ModuleHandle imod, int iportno, const std::string &id);
+        Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id);
         ~Connection();
 
         OutputPortHandle oport_;

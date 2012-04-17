@@ -35,6 +35,7 @@
 #include <QColor>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
 
 class QGraphicsScene;
 
@@ -78,7 +79,8 @@ public:
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
 signals:
-  void connectionMade(const std::string& id1, size_t port1, const std::string& id2, size_t port2);
+  void connectionMade(const SCIRun::Domain::Networks::ConnectionDescription& desc);
+  void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);

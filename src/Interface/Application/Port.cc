@@ -164,7 +164,7 @@ void PortWidget::makeConnection(const QPointF& pos)
       ModuleWidget* overModule = mpw->getModule();
       if (overModule != moduleParent_)
       {
-        const std::vector<PortWidget*>& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();
+        const ModuleWidget::Ports& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();
         foreach (PortWidget* port, ports)
         {
           if (tryConnectPort(pos, port))
@@ -188,9 +188,11 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
     {
       Logger::Instance->log("Connection made.");
 
-      ConnectionLine* c = new ConnectionLine(this, port);
+      SCIRun::Domain::Networks::ConnectionDescription cd(moduleId_.toStdString(), index_, port->moduleId_.toStdString(), port->index_);
+      ConnectionLine* c = new ConnectionLine(this, port, SCIRun::Domain::Networks::ConnectionId::create(cd));
       TheScene->addItem(c);
-      emit connectionMade(moduleId_.toStdString(), index_, port->moduleId_.toStdString(), port->index_);
+      connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+      emit connectionMade(cd);
 
       return true;
     }

@@ -65,18 +65,20 @@ public:
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
   //TODO abstract
-  const std::vector<PortWidget*>& getInputPorts() const { return inputPorts_; }
-  const std::vector<PortWidget*>& getOutputPorts() const { return outputPorts_; }
+  typedef std::vector<PortWidget*> Ports;
+  const Ports& getInputPorts() const { return inputPorts_; }
+  const Ports& getOutputPorts() const { return outputPorts_; }
   
 public slots:
   //for testing signal/slot of Execute
   void incrementProgressFake();
 signals:
   void removeModule(const std::string& moduleId);
-  void addConnection(const std::string& id1, size_t port1, const std::string& id2, size_t port2);
+  void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
+  void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
 private:
-  std::vector<PortWidget*> inputPorts_;
-  std::vector<PortWidget*> outputPorts_;
+  Ports inputPorts_;
+  Ports outputPorts_;
 
   void addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addPort(InputPortWidget* port);

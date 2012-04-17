@@ -27,30 +27,38 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
+#ifndef CORE_DATAFLOW_NETWORK_CONNECTIONID_H
+#define CORE_DATAFLOW_NETWORK_CONNECTIONID_H 
 
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <string>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class NetworkInterface
+  struct ConnectionDescription
   {
-  public:
-    virtual ~NetworkInterface() {}
-    virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
-    virtual bool remove_module(const std::string& id) = 0;
-    virtual size_t nmodules() const = 0;
-    virtual ModuleHandle module(size_t i) const = 0;
-    virtual ModuleHandle lookupModule(const std::string& id) const = 0;
-    virtual ConnectionId connect(ModuleHandle, size_t, ModuleHandle, size_t) = 0;
-    virtual bool disconnect(const ConnectionId&) = 0;
-    virtual size_t nconnections() const = 0;
-    virtual void disable_connection(const ConnectionId&) = 0;
-    virtual std::string toString() const = 0;
+    ConnectionDescription(const std::string& id1, size_t p1, const std::string& id2, size_t p2)
+      : moduleId1_(id1), port1_(p1), moduleId2_(id2), port2_(p2) {}
+    std::string moduleId1_;
+    size_t port1_;
+    std::string moduleId2_;
+    size_t port2_;
   };
+
+  struct ConnectionId
+  {
+    ConnectionId(const char* s) : id_(s) {}
+    ConnectionId(const std::string& s) : id_(s) {}
+    static ConnectionId create(const ConnectionDescription& desc);
+
+    std::string id_;
+    operator std::string() const { return id_; }
+  };
+
+  bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
+  bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
+
 }}}
 
 

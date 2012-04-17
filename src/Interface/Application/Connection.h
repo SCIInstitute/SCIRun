@@ -30,26 +30,31 @@
 #define INTERFACE_APPLICATION_CONNECTION_H
 
 #include <QGraphicsLineItem>
+#include <Core/Dataflow/Network/ConnectionId.h>
 
 namespace SCIRun {
 namespace Gui {
 
 class PortWidget;
 
-class ConnectionLine : public QGraphicsLineItem
+class ConnectionLine : public QObject, public QGraphicsLineItem
 {
+  Q_OBJECT
+
 public:
-  ConnectionLine(PortWidget* fromPort, PortWidget* toPort);
+  ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Domain::Networks::ConnectionId& id);
   ~ConnectionLine();
 
   void setColor(const QColor& color);
   QColor color() const;
 
   void trackNodes();
-
+signals:
+  void deleted(const SCIRun::Domain::Networks::ConnectionId& id);
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
+  SCIRun::Domain::Networks::ConnectionId id_;
 };
 
 class ConnectionInProgress : public QGraphicsLineItem

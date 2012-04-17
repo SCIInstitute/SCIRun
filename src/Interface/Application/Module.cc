@@ -86,16 +86,21 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
     InputPortWidget* w = new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
-    connect(w, SIGNAL(connectionMade(const std::string&, size_t, const std::string&, size_t)), 
-      this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)));
+    connect(w, SIGNAL(connectionMade(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+      this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+    connect(w, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
+      this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+
     addPort(w);
   }
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
     OutputPortWidget* w = new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
-    connect(w, SIGNAL(connectionMade(const std::string&, size_t, const std::string&, size_t)), 
-      this, SIGNAL(addConnection(const std::string&, size_t, const std::string&, size_t)));
+    connect(w, SIGNAL(connectionMade(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+      this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+    connect(w, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
+      this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
     addPort(w);
   }
   optionsButton_->setVisible(moduleInfoProvider.has_ui());
