@@ -83,6 +83,7 @@ private:
   void addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
+  void hookUpSignals(PortWidget* port) const;
   std::string moduleId_;
   //
   void addPortLayouts();

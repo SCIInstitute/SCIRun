@@ -38,18 +38,20 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
   return m.get_module_name() + " [" + m.get_id() + "]";
 }
 
+/*static*/ int Module::instanceCount_ = 0;
+
 Module::Module(const std::string& name, bool hasUi,
   const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
   : has_ui_(hasUi)
 {
-  static int instanceCount = 0;
   set_modulename(name);
-  id_ = name + boost::lexical_cast<std::string>(instanceCount++);
+  id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
 }
 
 Module::~Module()
 {
-
+  //std::cout << "Deleting Module # " << instanceCount_ << std::endl;
+  instanceCount_--;
 }
 
 OutputPortHandle Module::get_output_port(size_t idx) const

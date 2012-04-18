@@ -82,3 +82,27 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
 }
+
+TEST(NetworkTests, CannotMakeSameConnectionTwice)
+{
+  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
+  Network network(moduleFactory);
+
+  ModuleLookupInfo mli1;
+  mli1.module_name_ = "Module1";
+  ModuleHandle m1 = network.add_module(mli1);
+  ModuleLookupInfo mli2;
+  mli2.module_name_ = "Module2";
+  ModuleHandle m2 = network.add_module(mli2);
+  
+  ConnectionId connId = network.connect(m1, 0, m2, 1);
+  EXPECT_EQ(1, network.nconnections());
+  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
+
+  connId = network.connect(m1, 0, m2, 1);
+  EXPECT_EQ(1, network.nconnections());
+  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
+
+  EXPECT_TRUE(network.disconnect(connId));
+  EXPECT_EQ(0, network.nconnections());
+}

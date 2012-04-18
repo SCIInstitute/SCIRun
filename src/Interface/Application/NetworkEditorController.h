@@ -48,7 +48,8 @@ namespace Gui {
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
   signals:
     void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
-    void moduleRemoved(const std::string& id);
+    void moduleRemoved(const std::string& id); //not used yet
+    //add/remove connection: not used yet
   private:
     void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;

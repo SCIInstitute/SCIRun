@@ -99,6 +99,7 @@ namespace Networks {
 
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
+    static int instanceCount_;
   };
 
 }}}

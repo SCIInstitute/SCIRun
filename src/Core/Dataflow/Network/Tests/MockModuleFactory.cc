@@ -50,7 +50,6 @@ ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& i
 
 ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
 {
-  static size_t moduleCounter = 0;
   MockModulePtr module(new NiceMock<MockModule>);
 
   EXPECT_CALL(*module, get_module_name()).WillRepeatedly(Return(info.lookupInfo_.module_name_));
@@ -72,9 +71,8 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
     EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
     portIndex++;
   }
-
-  EXPECT_CALL(*module, get_id()).WillRepeatedly(Return("module" + boost::lexical_cast<std::string>(moduleCounter++)));
-
+  
+  EXPECT_CALL(*module, get_id()).WillRepeatedly(Return("module" + boost::lexical_cast<std::string>(++moduleCounter_)));
   return module;
 }
 

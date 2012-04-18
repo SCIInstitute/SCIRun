@@ -56,8 +56,11 @@ namespace SCIRun {
         class MockModuleFactory : public ModuleFactory
         {
         public:
+          MockModuleFactory() : moduleCounter_(0) {}
           virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
           virtual ModuleHandle create(const ModuleDescription& info);
+        private:
+          size_t moduleCounter_;
         };
       }
     }
