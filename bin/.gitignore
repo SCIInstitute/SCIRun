@@ -7,6 +7,10 @@
 *.dylib
 *.so
 *.a
+*.sdf
+*.suo
+*.opensdf
+*.sln
 CMakeCache.txt
 CMakeFiles
 Makefile
