@@ -4,7 +4,9 @@
 *.exe
 *.idb
 *.vcxproj*
-bin/*/*
+*.dylib
+*.so
+*.a
 CMakeCache.txt
 CMakeFiles
 Makefile

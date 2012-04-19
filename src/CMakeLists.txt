@@ -32,7 +32,7 @@ PROJECT(SCIRun5Prototype)
 FIND_PACKAGE(Qt4 REQUIRED)
 
 set(Boost_ADDITIONAL_VERSIONS "1.49" "1.49.0")
-find_package( Boost 1.49.0 )
+find_package( Boost 1.49.0 REQUIRED )
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     MESSAGE(STATUS "Boost")
