@@ -28,7 +28,7 @@
 
 #include <iostream>
 
-#include <Interface/Application/NetworkEditorController.h>
+#include <Engine/Network/NetworkEditorController.h>
 
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Network.h>

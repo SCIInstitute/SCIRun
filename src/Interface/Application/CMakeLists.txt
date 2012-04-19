@@ -41,7 +41,6 @@ SET(SCIRunGUIPrototype_SOURCES
   Port.cc
   Connection.cc
   NetworkEditor.cc
-  NetworkEditorController.cc
   NetworkEditorControllerGuiProxy.cc
 )
 
@@ -54,7 +53,6 @@ SET(SCIRunGUIPrototype_HEADERS
   Connection.h
   Port.h
   NetworkEditor.h
-  NetworkEditorController.h
   NetworkEditorControllerGuiProxy.h
 )
 
@@ -85,6 +83,7 @@ ADD_EXECUTABLE(SCIRunGUIPrototype
 
 TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
   Core_Dataflow_Network
+  Engine_Network
   ${QT_LIBRARIES})
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
