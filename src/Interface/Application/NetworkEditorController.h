@@ -43,20 +43,13 @@ namespace Engine {
   {
   public:
     NetworkEditorController();
-  public /*slots*/:
+  public:
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
-  //signals:
-    //void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
-  public:
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
-
-
-
-    //add/remove connection: not used yet
   private:
     void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;

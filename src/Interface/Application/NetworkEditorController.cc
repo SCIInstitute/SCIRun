@@ -85,3 +85,8 @@ boost::signals2::connection NetworkEditorController::connectModuleAdded(const Mo
 {
   return moduleAdded_.connect(subscriber);
 }
+
+boost::signals2::connection NetworkEditorController::connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber)
+{
+  return moduleRemoved_.connect(subscriber);
+}
