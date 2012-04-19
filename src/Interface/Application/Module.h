@@ -69,10 +69,10 @@ public:
   const Ports& getInputPorts() const { return inputPorts_; }
   const Ports& getOutputPorts() const { return outputPorts_; }
   
-public slots:
+public Q_SLOTS:
   //for testing signal/slot of Execute
   void incrementProgressFake();
-signals:
+Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);

@@ -79,7 +79,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     QGraphicsItem::mousePressEvent(event);
     grabbedByWidget_ = false;
-    emit selected();
+    Q_EMIT selected();
   }
 }
 
@@ -141,7 +141,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  foreach(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
+  Q_FOREACH(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
   {
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(15,15)));
     p->setPositionObject(pp);

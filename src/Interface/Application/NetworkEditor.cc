@@ -296,7 +296,7 @@ void NetworkEditor::updateActions()
   sendToBackAction_->setEnabled(isNode);
   propertiesAction_->setEnabled(isNode || isLink);
 
-  foreach (QAction* action, actions())
+  Q_FOREACH (QAction* action, actions())
     removeAction(action);
 
   //foreach (QAction* action, editToolBar_->actions())
@@ -375,7 +375,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   if (moduleSelectionGetter_->isModule())
   {
     lastModulePosition_ = mapToScene(event->pos());
-    controller_->addModule(moduleSelectionGetter_->text());
+    controller_->addModule(moduleSelectionGetter_->text().toStdString());
     //addModule(moduleSelectionGetter_->text(), mapToScene());
   }
 }

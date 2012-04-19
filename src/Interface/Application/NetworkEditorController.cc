@@ -46,19 +46,19 @@ NetworkEditorController::NetworkEditorController()
   theNetwork_.reset(new Network(mf));
 }
 
-void NetworkEditorController::addModule(const QString& moduleName)
+void NetworkEditorController::addModule(const std::string& moduleName)
 {
   ModuleLookupInfo info;
-  info.module_name_ = moduleName.toStdString();
+  info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
-  emit moduleAdded(moduleName, *realModule);
+  /*emit*/ moduleAdded(moduleName, *realModule);
   printNetwork();
 }
 
 void NetworkEditorController::removeModule(const std::string& id)
 {
   //before or after?
-  emit moduleRemoved(id);
+  /*emit*/ moduleRemoved(id);
   theNetwork_->remove_module(id);
   printNetwork();
 }

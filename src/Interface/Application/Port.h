@@ -78,7 +78,7 @@ public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
-signals:
+Q_SIGNALS:
   void connectionMade(const SCIRun::Domain::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
 protected:

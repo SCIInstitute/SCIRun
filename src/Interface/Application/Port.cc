@@ -157,7 +157,7 @@ void PortWidget::makeConnection(const QPointF& pos)
 {
   DeleteCurrentConnectionAtEndOfBlock deleter(this);
   QList<QGraphicsItem*> items = TheScene->items(pos);
-  foreach (QGraphicsItem* item, items)
+  Q_FOREACH (QGraphicsItem* item, items)
   {
     if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
     {
@@ -165,7 +165,7 @@ void PortWidget::makeConnection(const QPointF& pos)
       if (overModule != moduleParent_)
       {
         const ModuleWidget::Ports& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();
-        foreach (PortWidget* port, ports)
+        Q_FOREACH (PortWidget* port, ports)
         {
           if (tryConnectPort(pos, port))
             return;
@@ -192,7 +192,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
       ConnectionLine* c = new ConnectionLine(this, port, SCIRun::Domain::Networks::ConnectionId::create(cd));
       TheScene->addItem(c);
       connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
-      emit connectionMade(cd);
+      Q_EMIT connectionMade(cd);
 
       return true;
     }
@@ -237,14 +237,14 @@ void PortWidget::removeConnection(ConnectionLine* c)
 
 void PortWidget::deleteConnections()
 {
-  foreach (ConnectionLine* c, connections_)
+  Q_FOREACH (ConnectionLine* c, connections_)
     delete c;
   connections_.clear();
 }
 
 void PortWidget::trackConnections()
 {
-  foreach (ConnectionLine* c, connections_)
+  Q_FOREACH (ConnectionLine* c, connections_)
     c->trackNodes();
 }
 

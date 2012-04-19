@@ -45,9 +45,9 @@ namespace SCIRun
       explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
       void createPortPositionProviders();
       ModuleWidget* getModule();
-    public slots:
+    public Q_SLOTS:
       void highlightIfSelected();
-    signals:
+    Q_SIGNALS:
       void selected();
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);

@@ -29,26 +29,30 @@
 #ifndef INTERFACE_APPLICATION_NETWORKEDITORCONTROLLER_H
 #define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLER_H
 
-#include <QObject>
+#include <boost/signals2.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace Gui {
   
+  typedef boost::signals2::signal<void (const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)> ModuleAddedSignalType;
+  typedef boost::signals2::signal<void (const std::string& id)> ModuleRemovedSignalType;
+
   //TODO: rework with boost::signal/slots, cut Qt dependency, push to middle layer
-  class NetworkEditorController : public QObject
+  class NetworkEditorController 
   {
-    Q_OBJECT
   public:
     NetworkEditorController();
-  public slots:
-    void addModule(const QString& moduleName);
+  public /*slots*/:
+    void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
-  signals:
-    void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
-    void moduleRemoved(const std::string& id); //not used yet
+  //signals:
+    //void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
+  public:
+    ModuleAddedSignalType moduleAdded;
+    ModuleRemovedSignalType moduleRemoved; //not used yet
     //add/remove connection: not used yet
   private:
     void printNetwork() const;

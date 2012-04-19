@@ -121,15 +121,15 @@ void ModuleWidget::addPort(InputPortWidget* port)
 
 ModuleWidget::~ModuleWidget()
 {
-  foreach (PortWidget* p, boost::join(inputPorts_, outputPorts_))
+  Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
-  emit removeModule(moduleId_);
+  Q_EMIT removeModule(moduleId_);
 }
 
 void ModuleWidget::trackConnections()
 {
-  foreach (PortWidget* p, boost::join(inputPorts_, outputPorts_))
+  Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->trackConnections();
 }
 

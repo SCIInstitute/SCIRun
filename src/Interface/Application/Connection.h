@@ -49,7 +49,7 @@ public:
   QColor color() const;
 
   void trackNodes();
-signals:
+Q_SIGNALS:
   void deleted(const SCIRun::Domain::Networks::ConnectionId& id);
 private:
   PortWidget* fromPort_;

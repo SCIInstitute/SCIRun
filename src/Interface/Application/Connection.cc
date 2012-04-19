@@ -68,7 +68,7 @@ ConnectionLine::~ConnectionLine()
     toPort_->removeConnection(this);
     toPort_->turn_off_light();
   }
-  emit deleted(id_);
+  Q_EMIT deleted(id_);
   Logger::Instance->log("Connection deleted.");
 }
 
