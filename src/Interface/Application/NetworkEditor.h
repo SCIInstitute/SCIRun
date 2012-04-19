@@ -52,7 +52,7 @@ namespace Gui {
   class ConnectionLine;
   class ModuleWidget;
   class ModuleProxyWidget;
-  class NetworkEditorController;
+  class NetworkEditorControllerGuiProxy;
 
   class NetworkEditor : public QGraphicsView
   {
@@ -62,13 +62,13 @@ namespace Gui {
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
     void addActions(QWidget* widget);
     void setExecuteAction(QAction* action) { executeAction_ = action; }
-    void setNetworkEditorController(boost::shared_ptr<NetworkEditorController> controller);
+    void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
   public Q_SLOTS:
-    void addModule(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
+    void addModule(const std::string& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
   Q_SIGNALS:
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
@@ -116,7 +116,7 @@ namespace Gui {
     QPointF lastModulePosition_;
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
-    boost::shared_ptr<NetworkEditorController> controller_;
+    boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
   };
 
 }

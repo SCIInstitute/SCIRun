@@ -37,7 +37,7 @@
 #include <Core/Dataflow/Network/Module.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Gui;
+using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
 
 NetworkEditorController::NetworkEditorController()
@@ -51,14 +51,14 @@ void NetworkEditorController::addModule(const std::string& moduleName)
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
-  /*emit*/ moduleAdded(moduleName, *realModule);
+  /*emit*/ moduleAdded_(moduleName, *realModule);
   printNetwork();
 }
 
 void NetworkEditorController::removeModule(const std::string& id)
 {
   //before or after?
-  /*emit*/ moduleRemoved(id);
+  /*emit*/ moduleRemoved_(id);
   theNetwork_->remove_module(id);
   printNetwork();
 }
@@ -79,4 +79,9 @@ void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
   theNetwork_->disconnect(id);
   printNetwork();
+}
+
+boost::signals2::connection NetworkEditorController::connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber)
+{
+  return moduleAdded_.connect(subscriber);
 }

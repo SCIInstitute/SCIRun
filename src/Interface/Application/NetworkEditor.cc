@@ -37,7 +37,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Logger.h>
-#include <Interface/Application/NetworkEditorController.h>
+#include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -68,15 +68,15 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   updateActions();
 }
 
-void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorController> controller)
+void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
 {
   if (controller_ == controller)
     return;
 
   if (controller_) 
   {
-    disconnect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
-      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
+      this, SLOT(addModule(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
 
     disconnect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
       controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
@@ -89,8 +89,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   
   if (controller_) 
   {
-    connect(controller_.get(), SIGNAL(moduleAdded(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
-      this, SLOT(addModule(const QString&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
+    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
+      this, SLOT(addModule(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
 
     connect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
       controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
@@ -100,9 +100,9 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   }
 }
 
-void NetworkEditor::addModule(const QString& name,  const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider)
+void NetworkEditor::addModule(const std::string& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
-  ModuleWidget* module = new ModuleWidget(name, moduleInfoProvider);
+  ModuleWidget* module = new ModuleWidget(to_QString(name), moduleInfoProvider);
   setupModule(module);
 }
 
@@ -110,6 +110,7 @@ void NetworkEditor::setupModule(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
+  //controller_->rem
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
   connect(module, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
     this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));

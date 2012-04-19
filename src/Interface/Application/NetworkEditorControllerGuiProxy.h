@@ -26,42 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_NETWORKEDITORCONTROLLER_H
-#define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLER_H
+#ifndef INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
+#define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 
-#include <boost/signals2.hpp>
+#include <QObject>
+#include <boost/shared_ptr.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
-namespace Engine {
-  
-  typedef boost::signals2::signal<void (const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)> ModuleAddedSignalType;
-  typedef boost::signals2::signal<void (const std::string& id)> ModuleRemovedSignalType;
-
-  //TODO: rework with boost::signal/slots, cut Qt dependency, push to middle layer
-  class NetworkEditorController 
+  namespace Engine
   {
+    class NetworkEditorController;
+  }
+
+namespace Gui {
+  
+  class NetworkEditorControllerGuiProxy : public QObject
+  {
+    Q_OBJECT
   public:
-    NetworkEditorController();
-  public /*slots*/:
+    explicit NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller);
+  public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
-  //signals:
-    //void moduleAdded(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
-  public:
-    boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
-    boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
-
-
-
-    //add/remove connection: not used yet
+  Q_SIGNALS:
+    void moduleAdded(const std::string& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
   private:
-    void printNetwork() const;
-    SCIRun::Domain::Networks::NetworkHandle theNetwork_;
-    ModuleAddedSignalType moduleAdded_;
-    ModuleRemovedSignalType moduleRemoved_; //not used yet
+    boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller_;
   };
 
 }
