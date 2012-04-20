@@ -32,13 +32,20 @@ PROJECT(SCIRun5Prototype)
 FIND_PACKAGE(Qt4 REQUIRED)
 
 set(Boost_ADDITIONAL_VERSIONS "1.42" "1.49" "1.49.0")
-find_package( Boost 1.49.0 REQUIRED )
+set(Boost_USE_STATIC_LIBS        ON)
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+set(Boost_DIR "C:/Dev/git/boost_1_49_0")
+set(BOOST_LIBRARYDIR "C:/dev/git/scirunguiprototype/src/Externals/x64")
+
+find_package( Boost 1.49.0 REQUIRED COMPONENTS thread date_time)
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     MESSAGE(STATUS "Boost")
     MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
     set(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
   endif()
+
 
 INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/
