@@ -72,6 +72,7 @@ public:
 public Q_SLOTS:
   //for testing signal/slot of Execute
   void incrementProgressFake();
+  void execute();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);

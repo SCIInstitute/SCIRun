@@ -38,7 +38,6 @@ namespace Engine {
   typedef boost::signals2::signal<void (const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const std::string& id)> ModuleRemovedSignalType;
 
-  //TODO: rework with boost::signal/slots, cut Qt dependency, push to middle layer
   class NetworkEditorController 
   {
   public:

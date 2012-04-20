@@ -56,6 +56,7 @@ namespace Networks {
   {
   public:
     virtual ~ModuleInterface() {}
+    virtual void do_execute() = 0;
     virtual void execute() = 0;
   };
 }}}

@@ -27,7 +27,9 @@
 */
 
 #include <iostream>
+#include <memory>
 #include <boost/lexical_cast.hpp>
+#include <boost/bind.hpp>
 #include <Core/Dataflow/Network/Module.h>
 #include <Core/Dataflow/Network/PortManager.h>
 
@@ -42,7 +44,7 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 
 Module::Module(const std::string& name, bool hasUi,
   const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
-  : has_ui_(hasUi)
+  : has_ui_(hasUi), executionTime_(1.0)
 {
   set_modulename(name);
   id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
@@ -74,9 +76,89 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
+//TODO: make pure virtual
 void Module::execute()
 {
-  std::cout << "Module " << get_module_name() << " executing..." << std::endl;
+  std::cout << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
+}
+
+void Module::do_execute()
+{
+  //abort_flag_=0;
+
+  //TODO: soon
+  //Logger::Instance->log("STARTING MODULE: "+id_);
+
+  // Reset all of the ports.
+  oports_.apply(boost::bind(&PortInterface::reset, _1));
+  iports_.apply(boost::bind(&PortInterface::reset, _1));
+
+  // Reset the TCL variables.
+  //reset_vars();
+
+  // This gets flagged if the data on any input port has changed.
+  // Also used in the various execute functions to note gui_vars changing.
+  //inputs_changed_ = false;
+
+  // Call the User's execute function.
+  //update_msg_state(Reset);
+  //timer_ = Time::currentTicks();
+
+  //update_state(JustStarted);
+
+  try 
+  {
+    execute();
+  }
+  catch(const std::bad_alloc& /*ba*/)
+  {
+    std::cerr << "MODULE ERROR: bad_alloc caught" << std::endl;
+    //std::ostringstream command;
+    //command << "createSciDialog -error -title \"Memory Allocation Error\""
+    //  << " -message \"" << module_name_ << " tried to allocate too much memory.\n"
+    //  << "You network may be in an unstable state.  Please consider saving it\n"
+    //  << "if necessary and restarting SCIRun using a smaller data set.\n"
+    //  << "(You may need to use ^u to unlock the Network Editor (if SCIRun didn't\n"
+    //  << "finish executing) before you can save your network.)\"";
+    //error( "Module tried to allocate too much memory... Be careful, your network"
+    //  " may be unstable now." );
+    //TCLInterface::eval( command.str() );
+  }
+  catch (const std::exception& /*e*/)
+  {
+    std::cerr << "MODULE ERROR: std::exception caught" << std::endl;
+    //error(std::string("Module crashed with the following exception:\n  ")+
+    //  e.message());
+    //if (e.stackTrace())
+    //{
+    //  error("Thread Stacktrace:");
+    //  error(e.stackTrace());
+    //}
+  }
+  catch (const std::string& /*a*/)
+  {
+    std::cerr << "MODULE ERROR: std::string caught" << std::endl;
+    //error(a);
+  }
+  catch (const char * /*a*/)
+  {
+    std::cerr << "MODULE ERROR: const char* caught" << std::endl;
+    //error(a);
+  }
+  catch (...)
+  {
+    std::cerr << "MODULE ERROR: unhandled exception caught" << std::endl;
+    //error("Module.cc: Module caught unhandled exception.");
+  }
+
+  //update_state(Completed);
+
+  // Call finish on all ports.
+  iports_.apply(boost::bind(&PortInterface::finish, _1));
+  oports_.apply(boost::bind(&PortInterface::finish, _1));
+
+  //TODO: soon
+  //Logger::Instance->log("MODULE FINISHED: " + id_);  
 }
 
 void Module::add_input_port(InputPortHandle h)

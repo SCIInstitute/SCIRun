@@ -30,8 +30,11 @@
 #ifndef CORE_DATAFLOW_NETWORK_PORTMANAGER_H
 #define CORE_DATAFLOW_NETWORK_PORTMANAGER_H 
 
+
 #include <Core/Dataflow/Network/Port.h>
 
+#include <boost/function.hpp>
+#include <boost/foreach.hpp>
 #include <string>
 #include <vector>
 #include <map>
@@ -56,6 +59,7 @@ public:
   T operator[](size_t) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
+  void apply(boost::function<void(T&)> func);
 };
 
 template<class T>
@@ -94,6 +98,14 @@ T
 PortManager<T>::operator[](size_t item) const
 {
   return ports_[item];
+}
+
+template<class T>
+void 
+PortManager<T>::apply(boost::function<void(T&)> func)
+{
+  BOOST_FOREACH(T& port, ports_)
+    func(port);
 }
 
 }}}

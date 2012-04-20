@@ -66,7 +66,8 @@ namespace Networks {
     OutputPortHandle get_output_port(size_t idx) const;
     InputPortHandle get_input_port(size_t idx) const;
 
-    void execute();
+    virtual void do_execute();
+    virtual void execute();
 
     class Builder : boost::noncopyable
     {
@@ -96,6 +97,8 @@ namespace Networks {
     void add_input_port(InputPortHandle);
     void add_output_port(OutputPortHandle);
     bool has_ui_;
+
+    double executionTime_;
 
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;

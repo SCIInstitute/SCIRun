@@ -61,6 +61,9 @@ public:
   virtual void attach(Connection* conn);
   virtual void detach(Connection* conn);
 
+  virtual void reset() {}
+  virtual void finish() {}
+
 protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;

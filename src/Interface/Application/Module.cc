@@ -59,6 +59,8 @@ ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::
   
   addPortLayouts();
   addPorts(moduleInfoProvider);
+
+  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(execute()));
 }
 
 void ModuleWidget::addPortLayouts()
@@ -163,4 +165,9 @@ void ModuleWidget::setPercentComplete(double p)
 void ModuleWidget::incrementProgressFake()
 {
   setPercentComplete(percentComplete() + 0.1);
+}
+
+void ModuleWidget::execute()
+{
+  std::cout << "Execute, I mean Options button, pressed on module " << moduleId_ << std::endl;
 }

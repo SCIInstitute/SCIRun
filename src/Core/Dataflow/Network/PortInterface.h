@@ -47,6 +47,9 @@ namespace Networks {
     virtual const Connection* connection(size_t) const = 0;
     virtual std::string get_colorname() const = 0;
     virtual std::string get_portname() const = 0;
+
+    virtual void reset() = 0;
+    virtual void finish() = 0;
   };
   
   class InputPortInterface : virtual public PortInterface
