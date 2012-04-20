@@ -109,7 +109,7 @@ void NetworkEditor::addModule(const std::string& name, const SCIRun::Domain::Net
 void NetworkEditor::setupModule(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
-  connect(executeAction_, SIGNAL(triggered()), module, SLOT(incrementProgressFake()));
+  connect(executeAction_, SIGNAL(triggered()), module, SLOT(execute()));
   //controller_->rem
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
   connect(module, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 

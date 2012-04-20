@@ -26,13 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <Interface/Application/SCIRunMainWindow.h>
+#include <gtest/gtest.h>
+#include <Engine/Network/NetworkEditorController.h>
 
-int main(int argc, char* argv[])
+using namespace SCIRun;
+using namespace SCIRun::Engine;
+using namespace SCIRun::Domain::Networks;
+
+TEST(NetworkEditorControllerTests, Test1)
 {
-	QApplication app(argc, argv);
-	SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-	mainWin->show();
-	return app.exec();
+  EXPECT_TRUE(false);
 }

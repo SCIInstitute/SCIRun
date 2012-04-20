@@ -26,13 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <Interface/Application/SCIRunMainWindow.h>
+#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
+#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 
-int main(int argc, char* argv[])
+#include "ui_ModuleDialogBasic.h"
+#include <boost/shared_ptr.hpp>
+
+namespace SCIRun {
+namespace Gui {
+  
+  class ModuleDialogGeneric : public QDialog
+  {
+    Q_OBJECT
+  public:
+    virtual ~ModuleDialogGeneric() {}
+    //TODO: input state hookup?
+    virtual int moduleExecutionTime() = 0;
+  Q_SIGNALS:
+    void executionTimeChanged(int time);
+  protected:
+    explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) {}
+  };
+
+class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
 {
-	QApplication app(argc, argv);
-	SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-	mainWin->show();
-	return app.exec();
+	Q_OBJECT
+	
+public:
+  explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+};
+
 }
+}
+
+#endif

@@ -33,7 +33,7 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/NetworkEditorController.h>
+#include <Engine/Network/NetworkEditorController.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 
 using namespace SCIRun;
@@ -80,6 +80,17 @@ public:
 private:
   QTreeWidget& tree_;
 };
+
+SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
+
+SCIRunMainWindow* SCIRunMainWindow::Instance()
+{
+  if (!instance_)
+  {
+    instance_ = new SCIRunMainWindow;
+  }
+  return instance_;
+}
 
 SCIRunMainWindow::SCIRunMainWindow()
 {
@@ -138,4 +149,6 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   QStringList result = visitTree(moduleSelectorTreeWidget_);
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance), _1));
+
+  //connect(this, SIGNAL(closed()), this, SLOT(...));
 }

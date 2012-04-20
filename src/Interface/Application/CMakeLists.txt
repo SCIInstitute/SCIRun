@@ -34,6 +34,7 @@
 
 SET(SCIRunGUIPrototype_SOURCES 
   Module.cc
+  ModuleDialogBasic.cc
   ModuleProxyWidget.cc
   scirunMain.cc 
   SCIRunMainWindow.cc
@@ -47,6 +48,7 @@ SET(SCIRunGUIPrototype_SOURCES
 SET(SCIRunGUIPrototype_HEADERS
   Logger.h
   Module.h
+  ModuleDialogBasic.h
   ModuleProxyWidget.h
   SCIRunMainWindow.h
   Node.h
@@ -58,6 +60,7 @@ SET(SCIRunGUIPrototype_HEADERS
 
 SET(SCIRunGUIPrototype_FORMS
   Module.ui
+  ModuleDialogBasic.ui
   SCIRunMainWindow.ui
 )
 
@@ -84,6 +87,7 @@ ADD_EXECUTABLE(SCIRunGUIPrototype
 TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
   Core_Dataflow_Network
   Engine_Network
+  ${Boost_LIBRARIES}
   ${QT_LIBRARIES})
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

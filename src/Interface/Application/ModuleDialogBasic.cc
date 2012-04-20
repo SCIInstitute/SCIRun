@@ -26,13 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <Interface/Application/SCIRunMainWindow.h>
+#include <QtGui>
+#include <Interface/Application/ModuleDialogBasic.h>
+#include <Interface/Application/Logger.h>
 
-int main(int argc, char* argv[])
+using namespace SCIRun::Gui;
+
+ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(parent)
 {
-	QApplication app(argc, argv);
-	SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-	mainWin->show();
-	return app.exec();
+  setupUi(this);
+  setModal(false);
+  setWindowTitle(to_QString(name));
+  executionTimeHorizontalSlider_->setValue(executionTime);
+  connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
+}
+
+int ModuleDialogBasic::moduleExecutionTime()
+{
+  return executionTimeHorizontalSlider_->value();
 }

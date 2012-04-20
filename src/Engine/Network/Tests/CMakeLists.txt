@@ -25,3 +25,23 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
+SET(Engine_Network_Tests_SRCS
+  NetworkEditorControllerTests.cc
+)
+
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+ADD_EXECUTABLE(Engine_Network_Tests
+#${Engine_Network_Tests_HEADERS}
+${Engine_Network_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Engine_Network_Tests
+Core_Dataflow_Network
+Engine_Network
+gtest_main
+gtest
+gmock
+)

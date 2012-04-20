@@ -30,14 +30,21 @@
 #include <QtGui>
 #include <boost/range/join.hpp>
 #include <boost/foreach.hpp>
+#include <boost/thread.hpp>
+
 #include <Interface/Application/Module.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
-//#include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
+#include <Interface/Application/ModuleDialogBasic.h>
+
+//TODO: BAD, or will we have some sort of Application global anyway?
+#include <Interface/Application/SCIRunMainWindow.h>
 
 #include <Core/Dataflow/Network/Module.h>
+
+#include <windows.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
@@ -49,7 +56,8 @@ QPointF ProxyWidgetPosition::currentPosition() const
 
 ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider, QWidget* parent /* = 0 */)
   : QFrame(parent),
-  moduleId_(moduleInfoProvider.get_id())
+  moduleId_(moduleInfoProvider.get_id()),
+  executionTime_(0)
 {
   setupUi(this);
   titleLabel_->setText("<b><h2>" + name + "</h2></b>");
@@ -60,7 +68,7 @@ ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::
   addPortLayouts();
   addPorts(moduleInfoProvider);
 
-  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(execute()));
+  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(openOptionsDialog()));
 }
 
 void ModuleWidget::addPortLayouts()
@@ -126,6 +134,7 @@ ModuleWidget::~ModuleWidget()
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   Logger::Instance->log("Module deleted.");
+  dialog_.reset();
   Q_EMIT removeModule(moduleId_);
 }
 
@@ -162,12 +171,42 @@ void ModuleWidget::setPercentComplete(double p)
   }
 }
 
-void ModuleWidget::incrementProgressFake()
+//void ModuleWidget::incrementProgressFake()
+//{
+//  setPercentComplete(percentComplete() + 0.1);
+//}
+
+void ModuleWidget::FakeExecutionRunner::operator()()
 {
-  setPercentComplete(percentComplete() + 0.1);
+  boost::this_thread::sleep(boost::posix_time::milliseconds(module_->executionTime_));
+  module_->setPercentComplete(1);
 }
 
 void ModuleWidget::execute()
 {
-  std::cout << "Execute, I mean Options button, pressed on module " << moduleId_ << std::endl;
+  std::cout << "Executing " << moduleId_ << std::endl;
+  std::cout << "Sleeping for " << executionTime_ << " milliseconds." << std::endl;
+  {
+    FakeExecutionRunner runner(this);
+    boost::thread execution = boost::thread(runner);
+    execution.join();
+  }
+  std::cout << "Done executing." << std::endl;
+}
+
+void ModuleWidget::setExecutionTime(int milliseconds) 
+{ 
+  executionTime_ = milliseconds; 
+  setPercentComplete(0);
+}
+
+void ModuleWidget::openOptionsDialog()
+{
+  //std::cout << "Execute, I mean Options button, pressed on module " << moduleId_ << std::endl;
+  if (!dialog_)
+  {
+    dialog_.reset(new ModuleDialogBasic(moduleId_, executionTime_, SCIRunMainWindow::Instance()));
+    connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
+  }
+  dialog_->show();
 }

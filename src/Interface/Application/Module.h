@@ -31,6 +31,7 @@
 
 #include "ui_Module.h"
 #include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <QFrame>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
@@ -71,8 +72,10 @@ public:
   
 public Q_SLOTS:
   //for testing signal/slot of Execute
-  void incrementProgressFake();
+  //void incrementProgressFake();
   void execute();
+  void openOptionsDialog();
+  void setExecutionTime(int milliseconds);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
@@ -86,6 +89,18 @@ private:
   void addPort(OutputPortWidget* port);
   void hookUpSignals(PortWidget* port) const;
   std::string moduleId_;
+  boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
+  int executionTime_;
+
+  class FakeExecutionRunner
+  {
+  public:
+    explicit FakeExecutionRunner(ModuleWidget* module) : module_(module) {}
+    void operator()();
+  private:
+    ModuleWidget* module_;
+  };
+  friend class FakeExecutionRunner;
   //
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;

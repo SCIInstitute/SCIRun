@@ -41,8 +41,10 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT
 public:
-	SCIRunMainWindow();
+	static SCIRunMainWindow* Instance();
 private:
+  static SCIRunMainWindow* instance_;
+  SCIRunMainWindow();
   NetworkEditor* networkEditor_;
 };
 
