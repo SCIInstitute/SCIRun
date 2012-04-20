@@ -99,9 +99,10 @@ TEST(NetworkTests, CannotMakeSameConnectionTwice)
   EXPECT_EQ(1, network.nconnections());
   EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
 
-  connId = network.connect(m1, 0, m2, 1);
+  ConnectionId connIdEmpty = network.connect(m1, 0, m2, 1);
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
+  //not sure what to return here.
+  EXPECT_EQ("", connIdEmpty.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());

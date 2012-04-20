@@ -59,6 +59,14 @@ namespace Networks {
   bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
   bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
 
+  struct OrderedByConnectionId
+  {
+    bool operator()(const ConnectionId& lhs, const ConnectionId& rhs) const
+    {
+      return lhs.id_ < rhs.id_;
+    }
+  };
+
 }}}
 
 

@@ -33,7 +33,9 @@
 #include <boost/noncopyable.hpp>
 #include <string>
 #include <vector>
+#include <map>
 #include <Core/Dataflow/Network/NetworkInterface.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -55,12 +57,12 @@ namespace Networks {
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);
     virtual std::string toString() const;
+
+    typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
+    typedef std::vector<ModuleHandle> Modules;
   private:
     ModuleFactoryHandle moduleFactory_;
-
-    typedef std::vector<ConnectionHandle> Connections;
     Connections connections_;
-    typedef std::vector<ModuleHandle> Modules;
     Modules modules_;
   };
 

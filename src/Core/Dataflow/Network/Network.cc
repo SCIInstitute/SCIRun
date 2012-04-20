@@ -88,11 +88,14 @@ ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_
     return ConnectionId("");
   }
 
-  ConnectionHandle conn(new Connection(m1, p1, m2, p2, ConnectionId::create(ConnectionDescription(m1->get_id(), p1, m2->get_id(), p2))));
+  ConnectionId id = ConnectionId::create(ConnectionDescription(m1->get_id(), p1, m2->get_id(), p2));
+  if (connections_.find(id) == connections_.end())
+  {
+    ConnectionHandle conn(new Connection(m1, p1, m2, p2, id));
 
   //lock.lock();
 
-  connections_.push_back(conn);
+    connections_[id] = conn;
 
   // Reschedule next time we can.
   //reschedule=1;
@@ -102,12 +105,14 @@ ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_
   //m1->oports_.unlock();
   //m2->iports_.unlock();
 
-  return conn->id_;
+    return id;
+  }
+  return ConnectionId(""); //??
 }
 
 bool Network::disconnect(const ConnectionId& id)
 {
-  Connections::iterator loc = std::find_if(connections_.begin(), connections_.end(), boost::lambda::bind(&Connection::id_, *_1) == id);
+  Connections::iterator loc = connections_.find(id);
   if (loc != connections_.end())
   {
     connections_.erase(loc);
@@ -145,6 +150,14 @@ size_t Network::nconnections() const
   return connections_.size();
 }
 
+struct GetConnectionIds
+{
+  std::string operator()(const Network::Connections::value_type& pair) const
+  {
+    return pair.first.id_;
+  }
+};
+
 std::string Network::toString() const
 {
   using boost::lambda::bind;
@@ -153,6 +166,6 @@ std::string Network::toString() const
   ostr << "Modules:\n";
   std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *_1));
   ostr << "\nConnections:\n";
-  std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(&Connection::id_, *_1));
+  std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), GetConnectionIds());
   return ostr.str();
 }
