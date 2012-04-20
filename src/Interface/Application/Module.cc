@@ -171,14 +171,15 @@ void ModuleWidget::setPercentComplete(double p)
   }
 }
 
-//void ModuleWidget::incrementProgressFake()
-//{
-//  setPercentComplete(percentComplete() + 0.1);
-//}
-
 void ModuleWidget::FakeExecutionRunner::operator()()
 {
-  boost::this_thread::sleep(boost::posix_time::milliseconds(module_->executionTime_));
+  const int numIncrements = 20;
+  const int increment = module_->executionTime_ / numIncrements;
+  for (int i = 0; i < numIncrements; ++i)
+  {
+     boost::this_thread::sleep(boost::posix_time::milliseconds(increment));
+     module_->setPercentComplete(i / (double)numIncrements);
+  }
   module_->setPercentComplete(1);
 }
 
