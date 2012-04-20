@@ -185,11 +185,10 @@ void ModuleWidget::FakeExecutionRunner::operator()()
 void ModuleWidget::execute()
 {
   std::cout << "Executing " << moduleId_ << std::endl;
-  std::cout << "Sleeping for " << executionTime_ << " milliseconds." << std::endl;
+  std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
   {
     FakeExecutionRunner runner(this);
     boost::thread execution = boost::thread(runner);
-    execution.join();
   }
   std::cout << "Done executing." << std::endl;
 }
