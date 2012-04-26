@@ -42,6 +42,8 @@ using namespace SCIRun::Domain::Networks;
 
 NetworkEditorController::NetworkEditorController()
 {
+  //TODO parameterize
+  //TODO should this class own or just keep a reference?
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   theNetwork_.reset(new Network(mf));
 }

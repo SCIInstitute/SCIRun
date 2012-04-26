@@ -5,6 +5,8 @@
 *.idb
 *.vcxproj*
 bin/*/*
+doc/*
+src/Doxyfile
 CMakeCache.txt
 CMakeFiles
 Makefile

@@ -27,13 +27,40 @@
 */
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Engine/Network/NetworkEditorController.h>
+#include <Core/Dataflow/Network/ModuleInterface.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
+using ::testing::_;
+
+class SlotClassForNetworkEditorController
+{
+public:
+  virtual ~SlotClassForNetworkEditorController() {}
+  virtual void moduleAddedSlot(const std::string&, const ModuleInfoProvider&) = 0;
+  virtual void moduleRemovedSlot(const std::string& id) = 0;
+};
+
+class DummySlotClassForNetworkEditorController : public SlotClassForNetworkEditorController
+{
+public:
+  MOCK_METHOD2(moduleAddedSlot, void(const std::string&, const ModuleInfoProvider&));
+  MOCK_METHOD1(moduleRemovedSlot, void(const std::string&));
+};
 
 TEST(NetworkEditorControllerTests, Test1)
 {
-  EXPECT_TRUE(false);
+  NetworkEditorController controller;
+  DummySlotClassForNetworkEditorController slots;
+  controller.connectModuleAdded(boost::bind(&SlotClassForNetworkEditorController::moduleAddedSlot, &slots, _1, _2));
+  controller.connectModuleRemoved(boost::bind(&SlotClassForNetworkEditorController::moduleRemovedSlot, &slots, _1));
+
+  EXPECT_CALL(slots, moduleAddedSlot(_,_)).Times(1);
+  controller.addModule("m1");
+  
+  EXPECT_CALL(slots, moduleRemovedSlot(_)).Times(1);
+  controller.removeModule("c1");
 }
