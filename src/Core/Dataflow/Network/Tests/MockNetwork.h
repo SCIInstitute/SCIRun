@@ -26,37 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
-#define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
+#ifndef MOCK_NETWORK_H
+#define MOCK_NETWORK_H
 
-#include <boost/signals2.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/NetworkInterface.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
+#include <gmock/gmock.h>
 
 namespace SCIRun {
-namespace Engine {
-  
-  typedef boost::signals2::signal<void (const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)> ModuleAddedSignalType;
-  typedef boost::signals2::signal<void (const std::string& id)> ModuleRemovedSignalType;
+  namespace Domain {
+    namespace Networks {
+      namespace Mocks
+      {
+        class MockNetwork : public NetworkInterface
+        {
+        public:
+          MOCK_METHOD1(add_module, ModuleHandle(const ModuleLookupInfo&));
+          MOCK_METHOD1(remove_module, bool(const std::string&));
+          MOCK_CONST_METHOD0(nmodules, size_t());
+          MOCK_CONST_METHOD1(module, ModuleHandle(size_t));
+          MOCK_CONST_METHOD1(lookupModule, ModuleHandle(const std::string&));
+          MOCK_METHOD4(connect, ConnectionId(ModuleHandle, size_t, ModuleHandle, size_t));
+          MOCK_METHOD1(disconnect, bool(const ConnectionId&));
+          MOCK_CONST_METHOD0(nconnections, size_t());
+          MOCK_METHOD1(disable_connection, void(const ConnectionId&));
+          MOCK_CONST_METHOD0(toString, std::string());
+        };
 
-  class NetworkEditorController 
-  {
-  public:
-    NetworkEditorController();
-    explicit NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network);
-    void addModule(const std::string& moduleName);
-    void removeModule(const std::string& id);
-    void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
-    void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
-    boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
-    boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
-  private:
-    void printNetwork() const;
-    SCIRun::Domain::Networks::NetworkHandle theNetwork_;
-    ModuleAddedSignalType moduleAdded_;
-    ModuleRemovedSignalType moduleRemoved_; //not used yet
-  };
-
-}
+        typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;
+      }
+    }
+  }
 }
 
 #endif
