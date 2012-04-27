@@ -72,9 +72,6 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
   EXPECT_CALL(*sink, receive()).Times(0);
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_FALSE(data);
-
-  
-  EXPECT_TRUE(false);
 }
 
 
@@ -86,16 +83,22 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 
-  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
+  DatatypeSourceInterfaceHandle dummySource(new NiceMock<MockDatatypeSource>);
+  //EXPECT_CALL(*dummySource, send()).WillOnce(Return())
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, dummySource));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
   Connection c(outputModule, 1, inputModule, 2, "test");
+
+  const int dataValue = 2;
+  DatatypeHandle dataToPush(new Datatype(dataValue));
+  outputPort->sendData(dataToPush);
 
   EXPECT_CALL(*sink, waitForData()).Times(1);
   EXPECT_CALL(*sink, receive()).Times(1);
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
-
+  EXPECT_EQ(dataValue, boost::any_cast<int>((*data)->value_));
 
 
   EXPECT_TRUE(false);

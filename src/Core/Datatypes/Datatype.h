@@ -30,17 +30,22 @@
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 
 
-#include <string>
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
+#include <boost/any.hpp>
 
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
 
+  // hold anything for now
   class Datatype
   {
+  public:
+    template <typename T>
+    explicit Datatype(const T& t) : value_(t) {}
 
+    boost::any value_;
   };
 
   typedef boost::shared_ptr<Datatype> DatatypeHandle;

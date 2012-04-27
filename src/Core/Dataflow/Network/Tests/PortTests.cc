@@ -110,3 +110,17 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
   EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), std::logic_error);
 }
 
+TEST_F(PortTests, CannotConnectPortsWithDifferentDatatypes)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST_F(PortTests, CannotConnectInputPortToInputPort)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST_F(PortTests, CannotConnectOutputPortToOutputPort)
+{
+  EXPECT_TRUE(false);
+}

@@ -204,6 +204,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
   return false;
 }
 
+//TODO: push this verification down to the domain layer!  make this layer as dumb as possible
 bool PortWidget::canBeConnected(PortWidget* other) const
 {
   if (!other)

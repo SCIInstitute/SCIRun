@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Dataflow/Network/Port.h>
+#include <Core/Dataflow/Network/Connection.h>
+#include <Core/Dataflow/Network/Tests/MockModule.h>
+#include <Core/Dataflow/Network/Tests/MockPorts.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-#ifndef CORE_DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
-#define CORE_DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H 
+#include <stdexcept>
 
-#include <boost/optional.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
+using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Domain::Datatypes;
+using ::testing::Return;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
 
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  class DatatypeSourceInterface
+class OutputPortTest : public ::testing::Test
+{
+protected:
+  virtual void SetUp()
   {
-  public:
-    virtual ~DatatypeSourceInterface() {}
-    virtual void send(void* reciever, Datatypes::DatatypeHandle data) = 0;
-  };
+    DefaultValue<InputPortHandle>::Set(InputPortHandle());
+    DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
+    
+    inputModule.reset(new NiceMock<MockModule>);
+    outputModule.reset(new NiceMock<MockModule>);
+  }
 
-  class DatatypeSinkInterface
-  {
-  public:
-    virtual ~DatatypeSinkInterface() {}
-    virtual void waitForData() = 0;
-    virtual Datatypes::DatatypeHandleOption receive() = 0;
-  };
+  MockModulePtr inputModule;
+  MockModulePtr outputModule;
+};
 
-}}}
-
-
-#endif
+TEST_F(OutputPortTest, Test1)
+{
+  EXPECT_TRUE(false);
+}

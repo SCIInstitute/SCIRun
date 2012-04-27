@@ -47,6 +47,8 @@ Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, siz
   if (!iport_)
     throw std::invalid_argument("input port is null");
 
+  //TODO: check for matching types here
+
   oport_->attach(this);
   iport_->attach(this);
 }

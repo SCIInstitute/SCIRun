@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 #include <Engine/Network/NetworkEditorController.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>
 
 using namespace SCIRun;
@@ -39,6 +40,7 @@ using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
+using ::testing::Return;
 
 class SlotClassForNetworkEditorController
 {
@@ -46,6 +48,7 @@ public:
   virtual ~SlotClassForNetworkEditorController() {}
   virtual void moduleAddedSlot(const std::string&, const ModuleInfoProvider&) = 0;
   virtual void moduleRemovedSlot(const std::string& id) = 0;
+  virtual void connectionAddedSlot(const ConnectionId&) = 0;
 };
 
 class DummySlotClassForNetworkEditorController : public SlotClassForNetworkEditorController
@@ -53,30 +56,49 @@ class DummySlotClassForNetworkEditorController : public SlotClassForNetworkEdito
 public:
   MOCK_METHOD2(moduleAddedSlot, void(const std::string&, const ModuleInfoProvider&));
   MOCK_METHOD1(moduleRemovedSlot, void(const std::string&));
+  MOCK_METHOD1(connectionAddedSlot, void(const ConnectionId&));
 };
 
-TEST(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
+class NetworkEditorControllerTests : public ::testing::Test
 {
-  DefaultValue<ModuleHandle>::Set(ModuleHandle());
-  DefaultValue<ConnectionId>::Set(ConnectionId(""));
+protected:
+  virtual void SetUp()
+  {
+    DefaultValue<ModuleHandle>::Set(ModuleHandle());
+    DefaultValue<ConnectionId>::Set(ConnectionId(""));
+    mockNetwork_.reset(new NiceMock<MockNetwork>);
+  }
+  MockNetworkPtr mockNetwork_;
+  DummySlotClassForNetworkEditorController slots_;
+};
 
-  MockNetworkPtr mockNetwork(new NiceMock<MockNetwork>);
-  NetworkEditorController controller(mockNetwork);
-  DummySlotClassForNetworkEditorController slots;
-  controller.connectModuleAdded(boost::bind(&SlotClassForNetworkEditorController::moduleAddedSlot, &slots, _1, _2));
-  controller.connectModuleRemoved(boost::bind(&SlotClassForNetworkEditorController::moduleRemovedSlot, &slots, _1));
-
-  EXPECT_CALL(slots, moduleAddedSlot(_,_)).Times(1);
-  EXPECT_CALL(*mockNetwork, add_module(_)).Times(1);
+TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
+{
+  NetworkEditorController controller(mockNetwork_);
+  
+  controller.connectModuleAdded(boost::bind(&SlotClassForNetworkEditorController::moduleAddedSlot, &slots_, _1, _2));
+  controller.connectModuleRemoved(boost::bind(&SlotClassForNetworkEditorController::moduleRemovedSlot, &slots_, _1));
+  
+  EXPECT_CALL(slots_, moduleAddedSlot(_,_)).Times(1);
+  EXPECT_CALL(*mockNetwork_, add_module(_)).Times(1);
   controller.addModule("m1");
   
-  EXPECT_CALL(slots, moduleRemovedSlot(_)).Times(1);
-  EXPECT_CALL(*mockNetwork, remove_module("m1")).Times(1);
+  EXPECT_CALL(slots_, moduleRemovedSlot(_)).Times(1);
+  EXPECT_CALL(*mockNetwork_, remove_module("m1")).Times(1);
   controller.removeModule("m1");
 }
 
-TEST(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
+TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
 {
+  NetworkEditorController controller(mockNetwork_);
+
+  controller.connectConnectionAdded(boost::bind(&SlotClassForNetworkEditorController::connectionAddedSlot, &slots_, _1));
+
+  EXPECT_CALL(slots_, connectionAddedSlot(_)).Times(1);
+  EXPECT_CALL(*mockNetwork_, connect(_,_,_,_)).Times(1).WillOnce(Return(ConnectionId("non empty string")));
+  controller.addConnection(ConnectionDescription("m1", 1, "m2", 2));
+
+
   //TODO
-  EXPECT_TRUE(false);
+  //EXPECT_TRUE(false);
 }

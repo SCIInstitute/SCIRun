@@ -36,7 +36,8 @@ namespace SCIRun {
 namespace Engine {
   
   typedef boost::signals2::signal<void (const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)> ModuleAddedSignalType;
-  typedef boost::signals2::signal<void (const std::string& id)> ModuleRemovedSignalType;
+  typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
+  typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionId&)> ConnectionAddedSignalType;
 
   class NetworkEditorController 
   {
@@ -49,11 +50,13 @@ namespace Engine {
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
+    boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
   private:
     void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
+    ConnectionAddedSignalType connectionAdded_;
   };
 
 }

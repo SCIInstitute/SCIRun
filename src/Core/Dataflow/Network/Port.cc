@@ -93,7 +93,8 @@ DatatypeHandleOption InputPort::getData()
 void InputPort::attach(Connection* conn)
 {
   if (connections_.size() > 0)
-    throw std::logic_error("input ports accept at most one connection");
+    //TODO: make custom exception type
+    throw std::invalid_argument("input ports accept at most one connection");
   Port::attach(conn);
 }
 
