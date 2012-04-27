@@ -28,6 +28,7 @@
 
 SET(Core_Dataflow_Network_Tests_SRCS
   ConnectionTests.cc
+  InputPortTest.cc
   ModuleTests.cc
   MockModuleFactory.cc
   NetworkTests.cc

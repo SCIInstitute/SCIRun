@@ -81,18 +81,23 @@ private:
 class InputPort : public Port, public InputPortInterface
 {
 public:
-  InputPort(ModuleInterface* module, const ConstructionParams& params);
+  InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual Datatypes::DatatypeHandle get();
+  virtual Datatypes::DatatypeHandleOption get();
+  virtual void attach(Connection* conn);
+private:
+  DatatypeSinkInterfaceHandle sink_;
 };
 
 
 class OutputPort : public Port, public OutputPortInterface
 {
 public:
-  OutputPort(ModuleInterface* module, const ConstructionParams& params);
+  OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
   virtual void send(Datatypes::DatatypeHandle data);
+private:
+  DatatypeSourceInterfaceHandle source_;
 };
 
 #pragma warning (pop)

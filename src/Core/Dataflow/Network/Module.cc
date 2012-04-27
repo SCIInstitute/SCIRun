@@ -185,7 +185,8 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
 {
   if (module_)
   {
-    InputPortHandle port(new InputPort(module_.get(), params));
+    //TODO
+    InputPortHandle port(new InputPort(module_.get(), params, DatatypeSinkInterfaceHandle()));
     module_->add_input_port(port);
   }
   return *this;
@@ -195,7 +196,8 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 {
   if (module_)
   {
-    OutputPortHandle port(new OutputPort(module_.get(), params));
+    //TODO
+    OutputPortHandle port(new OutputPort(module_.get(), params, DatatypeSourceInterfaceHandle()));
     module_->add_output_port(port);
   }
   return *this;

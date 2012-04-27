@@ -74,8 +74,8 @@ size_t Port::nconnections() const
   return connections_.size();
 }
 
-InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params)
-  : Port(module, params)
+InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
+  : Port(module, params), sink_(sink)
 {
 
 }
@@ -85,13 +85,20 @@ InputPort::~InputPort()
 
 }
 
-DatatypeHandle InputPort::get()
+DatatypeHandleOption InputPort::get()
 {
-  throw "TDD";
+  return DatatypeHandleOption();
 }
 
-OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params)
-  : Port(module, params)
+void InputPort::attach(Connection* conn)
+{
+  if (connections_.size() > 0)
+    throw std::logic_error("input ports accept at most one connection");
+  Port::attach(conn);
+}
+
+OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
+  : Port(module, params), source_(source)
 {
 
 }

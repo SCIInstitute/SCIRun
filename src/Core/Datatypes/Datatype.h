@@ -32,6 +32,7 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <boost/optional.hpp>
 
 namespace SCIRun {
 namespace Domain {
@@ -43,6 +44,7 @@ namespace Datatypes {
   };
 
   typedef boost::shared_ptr<Datatype> DatatypeHandle;
+  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
 
 }}}
 

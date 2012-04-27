@@ -56,7 +56,7 @@ namespace Networks {
   class InputPortInterface : virtual public PortInterface
   {
   public:
-    virtual Datatypes::DatatypeHandle get() = 0;
+    virtual Datatypes::DatatypeHandleOption get() = 0;
   };
   
   class OutputPortInterface : virtual public PortInterface

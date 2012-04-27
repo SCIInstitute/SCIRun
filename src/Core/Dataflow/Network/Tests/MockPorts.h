@@ -30,6 +30,7 @@
 #define MOCK_PORTS_H
 
 #include <Core/Dataflow/Network/PortInterface.h>
+#include <Core/Dataflow/Network/DataflowInterfaces.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {
@@ -48,7 +49,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_METHOD0(reset, void());
           MOCK_METHOD0(finish, void());
-          MOCK_METHOD0(get, Datatypes::DatatypeHandle());
+          MOCK_METHOD0(get, Datatypes::DatatypeHandleOption());
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -68,6 +69,23 @@ namespace SCIRun {
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
+
+        class MockDatatypeSink : public DatatypeSinkInterface
+        {
+        public:
+          MOCK_METHOD0(waitForData, void());
+          MOCK_METHOD0(receive, Datatypes::DatatypeHandleOption());
+        };
+
+        typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;
+
+        class MockDatatypeSource : public DatatypeSourceInterface
+        {
+        public:
+          MOCK_METHOD1(send, void(Datatypes::DatatypeHandle));
+        };
+
+        typedef boost::shared_ptr<MockDatatypeSource> MockDatatypeSourcePtr;
       }
     }
   }

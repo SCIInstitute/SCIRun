@@ -37,11 +37,12 @@
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Domain::Datatypes;
 using ::testing::Return;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 
-class PortTests : public ::testing::Test
+class InputPortTest : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -57,56 +58,48 @@ protected:
   MockModulePtr outputModule;
 };
 
-TEST_F(PortTests, CtorThrowsWithEmptyArguments)
-{
-  ASSERT_THROW(Port(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue")),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue")),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue")),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "")),            std::invalid_argument);
-}
 
-TEST_F(PortTests, AggregatesConnections)
+TEST_F(InputPortTest, GetValueBehavior)
 {
   Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
-  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
+
+  MockDatatypeSinkPtr sink(new NiceMock<MockDatatypeSink>);
+
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
+
+  //no connection hooked up, so should exit before going to the sink.
+  EXPECT_CALL(*sink, waitForData()).Times(0);
+  EXPECT_CALL(*sink, receive()).Times(0);
+  DatatypeHandleOption data = inputPort->get();
+  EXPECT_FALSE(data);
+
+
+
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
-
-  ASSERT_EQ(0, inputPort->nconnections());
-  ASSERT_EQ(0, outputPort->nconnections());
-  {
-    Connection c(outputModule, 1, inputModule, 2, "test");
-    //connection added on construction
-    ASSERT_EQ(1, inputPort->nconnections());
-    ASSERT_EQ(1, outputPort->nconnections());
-    ASSERT_EQ(&c, inputPort->connection(0));
-    ASSERT_EQ(&c, outputPort->connection(0));
-  }
-  //and removed on destruction
-  ASSERT_EQ(0, inputPort->nconnections());
-  ASSERT_EQ(0, outputPort->nconnections());
-}
-
-TEST_F(PortTests, InputPortTakesAtMostOneConnection)
-{
-  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
-  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
-  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
-  EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
-
-  ASSERT_EQ(0, inputPort->nconnections());
-  ASSERT_EQ(0, outputPort->nconnections());
   Connection c(outputModule, 1, inputModule, 2, "test");
-  ASSERT_EQ(1, inputPort->nconnections());
-  ASSERT_EQ(1, outputPort->nconnections());
 
-  //shouldn't be able to connect a second output to the same input.
-  EXPECT_THROW(Connection c(outputModule, 1, inputModule, 2, "test"), std::logic_error);
+  EXPECT_CALL(*sink, waitForData()).Times(1);
+  EXPECT_CALL(*sink, receive()).Times(1);
+  data = inputPort->get();
+  EXPECT_TRUE(data);
 
-  OutputPortHandle outputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  EXPECT_CALL(*outputModule, get_output_port(2)).WillRepeatedly(Return(outputPort2));
-  EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), std::logic_error);
+
+
+  //ASSERT_EQ(0, inputPort->nconnections());
+  //ASSERT_EQ(0, outputPort->nconnections());
+  //{
+  
+  //  //connection added on construction
+  //  ASSERT_EQ(1, inputPort->nconnections());
+  //  ASSERT_EQ(1, outputPort->nconnections());
+  //  ASSERT_EQ(&c, inputPort->connection(0));
+  //  ASSERT_EQ(&c, outputPort->connection(0));
+  //}
+  ////and removed on destruction
+  //ASSERT_EQ(0, inputPort->nconnections());
+  //ASSERT_EQ(0, outputPort->nconnections());
+
+  EXPECT_TRUE(false);
 }
-
