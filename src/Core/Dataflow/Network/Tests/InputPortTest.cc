@@ -59,7 +59,7 @@ protected:
 };
 
 
-TEST_F(InputPortTest, GetValueBehavior)
+TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 {
   Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
 
@@ -70,10 +70,21 @@ TEST_F(InputPortTest, GetValueBehavior)
   //no connection hooked up, so should exit before going to the sink.
   EXPECT_CALL(*sink, waitForData()).Times(0);
   EXPECT_CALL(*sink, receive()).Times(0);
-  DatatypeHandleOption data = inputPort->get();
+  DatatypeHandleOption data = inputPort->getData();
   EXPECT_FALSE(data);
 
+  
+  EXPECT_TRUE(false);
+}
 
+
+TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
+{
+  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+
+  MockDatatypeSinkPtr sink(new NiceMock<MockDatatypeSink>);
+
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
@@ -82,24 +93,10 @@ TEST_F(InputPortTest, GetValueBehavior)
 
   EXPECT_CALL(*sink, waitForData()).Times(1);
   EXPECT_CALL(*sink, receive()).Times(1);
-  data = inputPort->get();
+  DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
 
 
-
-  //ASSERT_EQ(0, inputPort->nconnections());
-  //ASSERT_EQ(0, outputPort->nconnections());
-  //{
-  
-  //  //connection added on construction
-  //  ASSERT_EQ(1, inputPort->nconnections());
-  //  ASSERT_EQ(1, outputPort->nconnections());
-  //  ASSERT_EQ(&c, inputPort->connection(0));
-  //  ASSERT_EQ(&c, outputPort->connection(0));
-  //}
-  ////and removed on destruction
-  //ASSERT_EQ(0, inputPort->nconnections());
-  //ASSERT_EQ(0, outputPort->nconnections());
 
   EXPECT_TRUE(false);
 }

@@ -85,7 +85,7 @@ InputPort::~InputPort()
 
 }
 
-DatatypeHandleOption InputPort::get()
+DatatypeHandleOption InputPort::getData()
 {
   return DatatypeHandleOption();
 }
@@ -108,7 +108,7 @@ OutputPort::~OutputPort()
 
 }
 
-void OutputPort::send(DatatypeHandle data)
+void OutputPort::sendData(DatatypeHandle data)
 {
   throw "TDD";
 }

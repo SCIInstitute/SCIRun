@@ -83,7 +83,7 @@ class InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual Datatypes::DatatypeHandleOption get();
+  virtual Datatypes::DatatypeHandleOption getData();
   virtual void attach(Connection* conn);
 private:
   DatatypeSinkInterfaceHandle sink_;
@@ -95,7 +95,7 @@ class OutputPort : public Port, public OutputPortInterface
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
-  virtual void send(Datatypes::DatatypeHandle data);
+  virtual void sendData(Datatypes::DatatypeHandle data);
 private:
   DatatypeSourceInterfaceHandle source_;
 };

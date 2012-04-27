@@ -49,7 +49,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_METHOD0(reset, void());
           MOCK_METHOD0(finish, void());
-          MOCK_METHOD0(get, Datatypes::DatatypeHandleOption());
+          MOCK_METHOD0(getData, Datatypes::DatatypeHandleOption());
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -65,7 +65,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_METHOD0(reset, void());
           MOCK_METHOD0(finish, void());
-          MOCK_METHOD1(send, void(Datatypes::DatatypeHandle));
+          MOCK_METHOD1(sendData, void(Datatypes::DatatypeHandle));
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;
