@@ -44,8 +44,6 @@
 
 #include <Core/Dataflow/Network/Module.h>
 
-#include <windows.h>
-
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 
