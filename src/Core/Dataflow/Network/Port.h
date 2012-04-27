@@ -83,6 +83,7 @@ class InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params);
   virtual ~InputPort();
+  virtual Datatypes::DatatypeHandle get();
 };
 
 
@@ -91,6 +92,7 @@ class OutputPort : public Port, public OutputPortInterface
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params);
   virtual ~OutputPort();
+  virtual void send(Datatypes::DatatypeHandle data);
 };
 
 #pragma warning (pop)

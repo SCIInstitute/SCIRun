@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,43 +27,24 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_PORT_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_PORT_INTERFACE_H 
+#ifndef CORE_DATATYPES_DATATYPE_H
+#define CORE_DATATYPES_DATATYPE_H 
 
 #include <string>
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
+#include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
 namespace Domain {
-namespace Networks {
+namespace Datatypes {
 
-  class PortInterface
+  class Datatype
   {
-  public:
-    virtual ~PortInterface() {}
-    virtual void attach(Connection* conn) = 0;
-    virtual void detach(Connection* conn) = 0;
-    virtual size_t nconnections() const = 0;
-    virtual const Connection* connection(size_t) const = 0;
-    virtual std::string get_colorname() const = 0;
-    virtual std::string get_portname() const = 0;
 
-    virtual void reset() = 0;
-    virtual void finish() = 0;
   };
-  
-  class InputPortInterface : virtual public PortInterface
-  {
-  public:
-    virtual Datatypes::DatatypeHandle get() = 0;
-  };
-  
-  class OutputPortInterface : virtual public PortInterface
-  {
-  public:
-    virtual void send(Datatypes::DatatypeHandle data) = 0;
-  };
+
+  typedef boost::shared_ptr<Datatype> DatatypeHandle;
+
 }}}
+
 
 #endif

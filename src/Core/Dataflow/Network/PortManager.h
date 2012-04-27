@@ -34,6 +34,7 @@
 #include <Core/Dataflow/Network/Port.h>
 
 #include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <string>
 #include <vector>
@@ -60,6 +61,7 @@ public:
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
   void apply(boost::function<void(T&)> func);
+  void resetAll();
 };
 
 template<class T>
@@ -106,6 +108,13 @@ PortManager<T>::apply(boost::function<void(T&)> func)
 {
   BOOST_FOREACH(T& port, ports_)
     func(port);
+}
+
+template<class T>
+void 
+PortManager<T>::resetAll()
+{
+  apply(boost::bind(&T::reset, _1));
 }
 
 }}}

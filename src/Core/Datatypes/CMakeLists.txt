@@ -26,35 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Dataflow_Network_SRCS
-  Connection.cc
-  ConnectionId.cc
-  HardCodedModuleFactory.cc
-  Module.cc
-  Network.cc
-  Port.cc
+SET(Core_Datatypes_SRCS
+  Datatype.cc
 )
 
-SET(Core_Dataflow_Network_HEADERS
-  Connection.h
-  ConnectionId.h
-  DataflowInterfaces.h
-  HardCodedModuleFactory.h
-  Module.h
-  ModuleFactory.h
-  ModuleDescription.h
-  ModuleInterface.h
-  Network.h
-  NetworkFwd.h
-  NetworkInterface.h
-  Port.h
-  PortInterface.h
-  PortManager.h
+SET(Core_Datatypes_HEADERS
+  Datatype.h
 )
 
-ADD_LIBRARY(Core_Dataflow_Network 
-${Core_Dataflow_Network_HEADERS}
-${Core_Dataflow_Network_SRCS})
+ADD_LIBRARY(Core_Datatypes 
+${Core_Datatypes_HEADERS}
+${Core_Datatypes_SRCS})
 
 ADD_SUBDIRECTORY(Tests)
 

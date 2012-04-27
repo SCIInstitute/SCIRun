@@ -28,10 +28,12 @@
 
 #include <iostream>
 #include <Core/Dataflow/Network/Port.h>
+#include <Core/Datatypes/Datatype.h>
 
 #include <stdexcept>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::Datatypes;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
   : module_(module), typeName_(params.type_name), portName_(params.port_name), colorName_(params.color_name)
@@ -83,6 +85,11 @@ InputPort::~InputPort()
 
 }
 
+DatatypeHandle InputPort::get()
+{
+  throw "TDD";
+}
+
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params)
   : Port(module, params)
 {
@@ -92,4 +99,9 @@ OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params
 OutputPort::~OutputPort()
 {
 
+}
+
+void OutputPort::send(DatatypeHandle data)
+{
+  throw "TDD";
 }

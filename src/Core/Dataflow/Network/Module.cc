@@ -48,11 +48,12 @@ Module::Module(const std::string& name, bool hasUi,
 {
   set_modulename(name);
   id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
+  iports_.set_module(this);
+  oports_.set_module(this);
 }
 
 Module::~Module()
 {
-  //std::cout << "Deleting Module # " << instanceCount_ << std::endl;
   instanceCount_--;
 }
 
@@ -90,8 +91,8 @@ void Module::do_execute()
   //Logger::Instance->log("STARTING MODULE: "+id_);
 
   // Reset all of the ports.
-  oports_.apply(boost::bind(&PortInterface::reset, _1));
-  iports_.apply(boost::bind(&PortInterface::reset, _1));
+  oports_.resetAll();
+  iports_.resetAll();
 
   // Reset the TCL variables.
   //reset_vars();

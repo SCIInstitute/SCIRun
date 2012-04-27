@@ -27,3 +27,4 @@
 #
 
 ADD_SUBDIRECTORY(Dataflow)
+ADD_SUBDIRECTORY(Datatypes)

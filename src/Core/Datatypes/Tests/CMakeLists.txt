@@ -25,36 +25,3 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
-
-SET(Core_Dataflow_Network_SRCS
-  Connection.cc
-  ConnectionId.cc
-  HardCodedModuleFactory.cc
-  Module.cc
-  Network.cc
-  Port.cc
-)
-
-SET(Core_Dataflow_Network_HEADERS
-  Connection.h
-  ConnectionId.h
-  DataflowInterfaces.h
-  HardCodedModuleFactory.h
-  Module.h
-  ModuleFactory.h
-  ModuleDescription.h
-  ModuleInterface.h
-  Network.h
-  NetworkFwd.h
-  NetworkInterface.h
-  Port.h
-  PortInterface.h
-  PortManager.h
-)
-
-ADD_LIBRARY(Core_Dataflow_Network 
-${Core_Dataflow_Network_HEADERS}
-${Core_Dataflow_Network_SRCS})
-
-ADD_SUBDIRECTORY(Tests)
-
