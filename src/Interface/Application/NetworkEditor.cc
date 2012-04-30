@@ -92,6 +92,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
     connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
       this, SLOT(addModule(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
 
+    //TODO: flip this
     connect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
       controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
 

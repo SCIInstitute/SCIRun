@@ -198,7 +198,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
     }
     else
     {
-      std::cout << "ports are different datatype or same i/o type, should not be connected" << std::endl;
+      std::cout << "input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!" << std::endl;
     }
   }
   return false;
@@ -208,6 +208,8 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 bool PortWidget::canBeConnected(PortWidget* other) const
 {
   if (!other)
+    return false;
+  if (other->isInput() && !other->connections_.empty())
     return false;
   return color() == other->color() &&
     isInput() != other->isInput();
