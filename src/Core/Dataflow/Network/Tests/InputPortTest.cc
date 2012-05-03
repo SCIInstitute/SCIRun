@@ -30,6 +30,7 @@
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Tests/MockModule.h>
 #include <Core/Dataflow/Network/Tests/MockPorts.h>
+#include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -74,39 +75,6 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
   EXPECT_FALSE(data);
 }
 
-class SimpleSink : public DatatypeSinkInterface
-{
-public:
-  virtual void waitForData()
-  {
-    //do nothing
-  }
-
-  virtual DatatypeHandleOption receive()
-  {
-    return data_;
-  }
-
-  void setData(DatatypeHandle data)
-  {
-    data_ = data;
-  }
-private:
-  DatatypeHandle data_;
-};
-
-class SimpleSource : public DatatypeSourceInterface
-{
-public:
-  virtual void send(DatatypeSinkInterfaceHandle receiver, DatatypeHandle data)
-  {
-    SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
-    if (!sink)
-      throw std::invalid_argument("SimpleSource can only send to SimpleSinks");
-    sink->setData(data);
-  }
-};
-
 //let's just use all "real" objects to see if it works.
 TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 {
@@ -129,5 +97,5 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
-  EXPECT_EQ(dataValue, boost::any_cast<int>((*data)->value_));
+  EXPECT_EQ(dataValue, (*data)->getValue<int>());
 }

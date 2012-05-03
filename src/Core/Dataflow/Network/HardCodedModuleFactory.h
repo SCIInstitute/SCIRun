@@ -38,6 +38,7 @@ namespace SCIRun {
       class HardCodedModuleFactory : public ModuleFactory
       {
       public:
+        HardCodedModuleFactory();
         virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
         virtual ModuleHandle create(const ModuleDescription& info);
       };

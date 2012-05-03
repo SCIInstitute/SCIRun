@@ -28,17 +28,39 @@
 
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
+#include <boost/functional/factory.hpp>
 #include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
 
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Modules/Basic/SendScalar.h>
+
+//TODO
+#include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
+
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Basic;
 using namespace boost::assign;
+
+HardCodedModuleFactory::HardCodedModuleFactory()
+{
+  Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
+  Module::Builder::use_source_type(boost::factory<SimpleSource*>());
+}
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;
-  builder.with_name(desc.lookupInfo_.module_name_);
+  
+  //YUCK YUCK 
+  if (desc.lookupInfo_.module_name_ == "SendScalar")
+    builder.using_func(boost::factory<SendScalarModule*>());
+  else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
+    builder.using_func(boost::factory<ReceiveScalarModule*>());
+  else
+    builder.with_name(desc.lookupInfo_.module_name_);
+
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
   {
     builder.add_input_port(Port::ConstructionParams(input.name, input.datatype, input.color));

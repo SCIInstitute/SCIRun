@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,39 +26,52 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_DATAFLOW_NETWORK_SIMPLESOURCESINK_H
+#define CORE_DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
+#include <stdexcept>
+#include <Core/Dataflow/Network/DataflowInterfaces.h>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-
-namespace SCIRun {
-namespace Domain {
-namespace Datatypes {
-
-  // hold anything for now
-  class Datatype
+namespace SCIRun
+{
+  namespace Domain
   {
-  public:
-    template <typename T>
-    explicit Datatype(const T& t) : value_(t) {}
-
-    template <typename T>
-    T getValue()
+    namespace Networks
     {
-      return boost::any_cast<T>(value_);
+      class SimpleSink : public DatatypeSinkInterface
+      {
+      public:
+        virtual void waitForData()
+        {
+          //do nothing
+        }
+
+        virtual SCIRun::Domain::Datatypes::DatatypeHandleOption receive()
+        {
+          return data_;
+        }
+
+        void setData(SCIRun::Domain::Datatypes::DatatypeHandle data)
+        {
+          data_ = data;
+        }
+      private:
+        SCIRun::Domain::Datatypes::DatatypeHandle data_;
+      };
+
+      class SimpleSource : public DatatypeSourceInterface
+      {
+      public:
+        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Domain::Datatypes::DatatypeHandle data)
+        {
+          SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
+          if (!sink)
+            throw std::invalid_argument("SimpleSource can only send to SimpleSinks");
+          sink->setData(data);
+        }
+      };
     }
-
-  private:
-    boost::any value_;
-  };
-
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
-
-}}}
-
+  }
+}
 
 #endif

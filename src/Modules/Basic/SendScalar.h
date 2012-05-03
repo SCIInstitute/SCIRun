@@ -38,9 +38,11 @@ namespace Basic {
   class SendScalarModule : public SCIRun::Domain::Networks::Module
   {
   public:
-  
+    SendScalarModule();
+    virtual void execute();
+    void setScalar(double data) { data_ = data; }
   private:
-  
+    double data_;
   };
 
 }}}

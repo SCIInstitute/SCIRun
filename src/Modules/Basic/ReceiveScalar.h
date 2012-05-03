@@ -38,9 +38,11 @@ namespace SCIRun {
       class ReceiveScalarModule : public SCIRun::Domain::Networks::Module
       {
       public:
-
+        ReceiveScalarModule();
+        virtual void execute();
+        double latestReceivedValue() const { return latestValue_; }
       private:
-
+        double latestValue_;
       };
 
 }}}
