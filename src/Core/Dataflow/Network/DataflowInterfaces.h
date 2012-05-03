@@ -38,12 +38,12 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  template <class Receiver>
+  //template <class Receiver> switch to run-time compatibility checking...
   class DatatypeSourceInterface
   {
   public:
     virtual ~DatatypeSourceInterface() {}
-    virtual void send(Receiver& receiver, Datatypes::DatatypeHandle data) = 0;
+    virtual void send(DatatypeSinkInterfaceHandle receiver, Datatypes::DatatypeHandle data) = 0;
   };
 
   class DatatypeSinkInterface

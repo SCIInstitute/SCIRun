@@ -74,32 +74,60 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
   EXPECT_FALSE(data);
 }
 
+class SimpleSink : public DatatypeSinkInterface
+{
+public:
+  virtual void waitForData()
+  {
+    //do nothing
+  }
 
+  virtual DatatypeHandleOption receive()
+  {
+    return data_;
+  }
+
+  void setData(DatatypeHandle data)
+  {
+    data_ = data;
+  }
+private:
+  DatatypeHandle data_;
+};
+
+class SimpleSource : public DatatypeSourceInterface
+{
+public:
+  virtual void send(DatatypeSinkInterfaceHandle receiver, DatatypeHandle data)
+  {
+    SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
+    if (!sink)
+      throw std::invalid_argument("SimpleSource can only send to SimpleSinks");
+    sink->setData(data);
+  }
+};
+
+//let's just use all "real" objects to see if it works.
 TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 {
   Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
 
-  MockDatatypeSinkPtr sink(new NiceMock<MockDatatypeSink>);
+  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
 
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
 
-  DatatypeSourceInterfaceHandle dummySource(new NiceMock<MockDatatypeSource>);
-  //EXPECT_CALL(*dummySource, send()).WillOnce(Return())
-  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, dummySource));
+  boost::shared_ptr<SimpleSource> source(new SimpleSource);
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, source));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
+
   Connection c(outputModule, 1, inputModule, 2, "test");
 
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Datatype(dataValue));
   outputPort->sendData(dataToPush);
-
-  EXPECT_CALL(*sink, waitForData()).Times(1);
-  EXPECT_CALL(*sink, receive()).Times(1);
+  
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
   EXPECT_EQ(dataValue, boost::any_cast<int>((*data)->value_));
-
-
-  EXPECT_TRUE(false);
 }

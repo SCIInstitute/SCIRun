@@ -69,7 +69,6 @@ TEST_F(OutputPortTest, SendSomeData)
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
 
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
-  //EXPECT_CALL(*inputPort, sink()).WillRepeatedly(Return(*sink_));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
 
@@ -104,9 +103,7 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
 
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
-  //EXPECT_CALL(*inputPort, sink()).WillRepeatedly(Return(*sink_));
   MockInputPortPtr inputPort2(new NiceMock<MockInputPort>);
-  //EXPECT_CALL(*inputPort2, sink()).WillRepeatedly(Return(*sink_));
   EXPECT_CALL(*inputModule, get_input_port(1)).WillOnce(Return(inputPort));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort2));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));

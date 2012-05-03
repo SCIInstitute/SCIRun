@@ -71,6 +71,14 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     d.input_ports_ += InputPortDescription("Input1", "Matrix", "blue"), InputPortDescription("Input2", "String", "darkGreen");
   }
+  else if (name.find("SendScalar") != std::string::npos)
+  {
+    d.output_ports_ += OutputPortDescription("Output", "Scalar", "cyan");
+  }
+  else if (name.find("ReceiveScalar") != std::string::npos)
+  {
+    d.input_ports_ += InputPortDescription("Input", "Scalar", "cyan");
+  }
   return d;
 }
 

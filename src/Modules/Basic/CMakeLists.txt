@@ -1,4 +1,3 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -27,28 +26,19 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Interface_Modules_FORMS
-  ReceiveScalar.ui
-  SendScalar.ui
+SET(Modules_Basic_SRCS
+  ReceiveScalar.cc
+  SendScalar.cc
 )
 
-
-SET(Interface_Modules_HEADERS
+SET(Modules_Basic_HEADERS
+  ReceiveScalar.h
   SendScalar.h
 )
 
-QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
-QT4_WRAP_CPP(Interface_Modules_HEADERS_MOC ${Interface_Modules_HEADERS})
+ADD_LIBRARY(Modules_Basic 
+${Modules_Basic_HEADERS}
+${Modules_Basic_SRCS})
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
+ADD_SUBDIRECTORY(Tests)
 
-ADD_LIBRARY(Interface_Modules 
-${Interface_Modules_FORMS_HEADERS}
-${Interface_Modules_HEADERS_MOC})
-
-TARGET_LINK_LIBRARIES(Interface_Modules 
-  ${Boost_LIBRARIES}
-  ${QT_LIBRARIES})
-  
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

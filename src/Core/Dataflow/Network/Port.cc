@@ -95,7 +95,11 @@ DatatypeSinkInterfaceHandle InputPort::sink()
 
 DatatypeHandleOption InputPort::getData()
 {
-  return DatatypeHandleOption();
+  if (0 == nconnections())
+    return DatatypeHandleOption();
+
+  sink_->waitForData();
+  return sink_->receive();
 }
 
 void InputPort::attach(Connection* conn)
@@ -122,5 +126,5 @@ void OutputPort::sendData(DatatypeHandle data)
   if (0 == nconnections())
     return;
   BOOST_FOREACH(Connection* c, connections_)
-    source_->send(*c->iport_->sink(), data);
+    source_->send(c->iport_->sink(), data);
 }
