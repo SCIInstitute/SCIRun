@@ -64,6 +64,9 @@ public:
   virtual void reset() {}
   virtual void finish() {}
 
+  //TODO:
+  // light interface
+
 protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;
@@ -85,6 +88,7 @@ public:
   virtual ~InputPort();
   virtual Datatypes::DatatypeHandleOption getData();
   virtual void attach(Connection* conn);
+  virtual DatatypeSinkInterfaceHandle sink();
 private:
   DatatypeSinkInterfaceHandle sink_;
 };

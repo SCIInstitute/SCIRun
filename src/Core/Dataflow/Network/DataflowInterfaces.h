@@ -38,11 +38,12 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
+  template <class Receiver>
   class DatatypeSourceInterface
   {
   public:
     virtual ~DatatypeSourceInterface() {}
-    virtual void send(void* reciever, Datatypes::DatatypeHandle data) = 0;
+    virtual void send(Receiver& receiver, Datatypes::DatatypeHandle data) = 0;
   };
 
   class DatatypeSinkInterface

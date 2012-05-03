@@ -50,6 +50,7 @@ namespace SCIRun {
           MOCK_METHOD0(reset, void());
           MOCK_METHOD0(finish, void());
           MOCK_METHOD0(getData, Datatypes::DatatypeHandleOption());
+          MOCK_METHOD0(sink, DatatypeSinkInterfaceHandle());
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -79,10 +80,10 @@ namespace SCIRun {
 
         typedef boost::shared_ptr<MockDatatypeSink> MockDatatypeSinkPtr;
 
-        class MockDatatypeSource : public DatatypeSourceInterface
+        class MockDatatypeSource : public DatatypeSourceInterface<DatatypeSinkInterface>
         {
         public:
-          MOCK_METHOD2(send, void(void*, Datatypes::DatatypeHandle));
+          MOCK_METHOD2(send, void(DatatypeSinkInterface&, Datatypes::DatatypeHandle));
         };
 
         typedef boost::shared_ptr<MockDatatypeSource> MockDatatypeSourcePtr;

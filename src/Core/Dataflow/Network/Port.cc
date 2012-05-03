@@ -27,8 +27,11 @@
 */
 
 #include <iostream>
+#include <boost/foreach.hpp>
 #include <Core/Dataflow/Network/Port.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Dataflow/Network/Connection.h>
+#include <Core/Dataflow/Network/DataflowInterfaces.h>
 
 #include <stdexcept>
 
@@ -85,6 +88,11 @@ InputPort::~InputPort()
 
 }
 
+DatatypeSinkInterfaceHandle InputPort::sink()
+{
+  return sink_;
+}
+
 DatatypeHandleOption InputPort::getData()
 {
   return DatatypeHandleOption();
@@ -111,5 +119,8 @@ OutputPort::~OutputPort()
 
 void OutputPort::sendData(DatatypeHandle data)
 {
-  throw "TDD";
+  if (0 == nconnections())
+    return;
+  BOOST_FOREACH(Connection* c, connections_)
+    source_->send(*c->iport_->sink(), data);
 }

@@ -41,6 +41,7 @@ using namespace SCIRun::Domain::Datatypes;
 using ::testing::Return;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
+using ::testing::_;
 
 class OutputPortTest : public ::testing::Test
 {
@@ -49,6 +50,7 @@ protected:
   {
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
+    DefaultValue<DatatypeSinkInterfaceHandle>::Set(sink_);
     
     inputModule.reset(new NiceMock<MockModule>);
     outputModule.reset(new NiceMock<MockModule>);
@@ -56,9 +58,66 @@ protected:
 
   MockModulePtr inputModule;
   MockModulePtr outputModule;
+  DatatypeSinkInterfaceHandle sink_;
 };
 
-TEST_F(OutputPortTest, Test1)
+TEST_F(OutputPortTest, SendSomeData)
 {
-  EXPECT_TRUE(false);
+  Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
+
+  MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
+
+  MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
+  //EXPECT_CALL(*inputPort, sink()).WillRepeatedly(Return(*sink_));
+  EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
+  EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
+
+  Connection c(outputModule, 1, inputModule, 2, "test");
+  
+  const int dataValue = 2;
+  DatatypeHandle dataToPush(new Datatype(dataValue));
+  
+  EXPECT_CALL(*mockSource, send(_, dataToPush));
+  outputPort->sendData(dataToPush);
+}
+
+TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
+{
+  Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
+
+  MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
+
+  const int dataValue = 2;
+  DatatypeHandle dataToPush(new Datatype(dataValue));
+
+  EXPECT_CALL(*mockSource, send(_, dataToPush)).Times(0);
+  outputPort->sendData(dataToPush);
+}
+
+TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
+{
+  Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
+
+  MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
+
+  MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
+  //EXPECT_CALL(*inputPort, sink()).WillRepeatedly(Return(*sink_));
+  MockInputPortPtr inputPort2(new NiceMock<MockInputPort>);
+  //EXPECT_CALL(*inputPort2, sink()).WillRepeatedly(Return(*sink_));
+  EXPECT_CALL(*inputModule, get_input_port(1)).WillOnce(Return(inputPort));
+  EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort2));
+  EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
+
+  Connection c1(outputModule, 1, inputModule, 1, "test1");
+  Connection c2(outputModule, 1, inputModule, 2, "test2");
+  EXPECT_EQ(2, outputPort->nconnections());
+
+  const int dataValue = 2;
+  DatatypeHandle dataToPush(new Datatype(dataValue));
+
+  EXPECT_CALL(*mockSource, send(_, dataToPush)).Times(2);
+  outputPort->sendData(dataToPush);
 }
