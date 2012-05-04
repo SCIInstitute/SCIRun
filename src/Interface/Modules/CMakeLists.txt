@@ -34,7 +34,7 @@ SET(Interface_Modules_FORMS
 )
 
 SET(Interface_Modules_HEADERS
-  SendScalar.h
+  SendScalarDialog.h
   ModuleDialogBasic.h
 )
 
@@ -49,6 +49,7 @@ INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_LIBRARY(Interface_Modules 
+${Interface_Modules_HEADERS}
 ${Interface_Modules_FORMS_HEADERS}
 ${Interface_Modules_HEADERS_MOC}
 ${Interface_Modules_SOURCES}
