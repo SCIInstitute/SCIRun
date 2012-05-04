@@ -69,8 +69,10 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   {
     builder.add_output_port(Port::ConstructionParams(output.name, output.datatype, output.color));
   }
+
   if (desc.lookupInfo_.module_name_.find("ComputeSVD") != std::string::npos)
     builder.disable_ui();
+
   return builder.build();
 }
 

@@ -26,23 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
-#include <Interface/Application/ModuleDialogBasic.h>
-#include <Interface/Application/Logger.h>
+#ifndef INTERFACE_MODULES_SEND_SCALAR_H
+#define INTERFACE_MODULES_SEND_SCALAR_H
 
-using namespace SCIRun::Gui;
+#include "ui_SendScalar.h"
+#include <boost/shared_ptr.hpp>
 
-ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent)
+namespace SCIRun {
+namespace Gui {
+  
+  //TODO this interface needs to go in Engine/State i think
+  class SendScalarState
+  {
+  public:
+    virtual ~SendScalarState() {}
+    virtual int scalarValue() const = 0;
+  };
+
+class SendScalarDialog : public ModuleDialogGeneric, public SendScalarState, public Ui::SendScalar
 {
-  setupUi(this);
-  setModal(false);
-  setWindowTitle(to_QString(name));
-  executionTimeHorizontalSlider_->setValue(executionTime);
-  connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
+	Q_OBJECT
+	
+public:
+  explicit SendScalarDialog(const std::string& name, int executionTime, QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+  virtual int scalarValue();
+};
+
+}
 }
 
-int ModuleDialogBasic::moduleExecutionTime()
-{
-  return executionTimeHorizontalSlider_->value();
-}
+#endif

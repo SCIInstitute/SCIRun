@@ -28,13 +28,18 @@
 #
 
 SET(Interface_Modules_FORMS
+  ModuleDialogBasic.ui
   ReceiveScalar.ui
   SendScalar.ui
 )
 
-
 SET(Interface_Modules_HEADERS
   SendScalar.h
+  ModuleDialogBasic.h
+)
+
+SET(Interface_Modules_SOURCES 
+  ModuleDialogBasic.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
@@ -45,7 +50,9 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_LIBRARY(Interface_Modules 
 ${Interface_Modules_FORMS_HEADERS}
-${Interface_Modules_HEADERS_MOC})
+${Interface_Modules_HEADERS_MOC}
+${Interface_Modules_SOURCES}
+)
 
 TARGET_LINK_LIBRARIES(Interface_Modules 
   ${Boost_LIBRARIES}

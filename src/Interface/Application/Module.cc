@@ -37,7 +37,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
-#include <Interface/Application/ModuleDialogBasic.h>
+#include <Interface/Modules/ModuleDialogBasic.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -200,7 +200,6 @@ void ModuleWidget::setExecutionTime(int milliseconds)
 
 void ModuleWidget::openOptionsDialog()
 {
-  //std::cout << "Execute, I mean Options button, pressed on module " << moduleId_ << std::endl;
   if (!dialog_)
   {
     dialog_.reset(new ModuleDialogBasic(moduleId_, executionTime_, SCIRunMainWindow::Instance()));
