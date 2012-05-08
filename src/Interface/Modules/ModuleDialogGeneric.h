@@ -26,22 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-
-#include "ui_ModuleDialogBasic.h"
-#include <Interface/Modules/ModuleDialogGeneric.h>
+#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
+#define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
 namespace SCIRun {
 namespace Gui {
   
-  class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
+  class ModuleDialogGeneric : public QDialog
   {
     Q_OBJECT
-
   public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-    virtual int moduleExecutionTime();
+    virtual ~ModuleDialogGeneric() {}
+    //TODO: input state hookup?
+    //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
+    virtual int moduleExecutionTime() = 0;
+    //TODO: how to genericize this?  do we need to?
+  Q_SIGNALS:
+    void executionTimeChanged(int time);
+  protected:
+    explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) {}
   };
 
 }

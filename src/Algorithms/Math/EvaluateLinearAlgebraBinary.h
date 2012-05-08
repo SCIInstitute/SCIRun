@@ -26,25 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
+#ifndef MODULES_BASIC_RECEIVE_SCALAR_H
+#define MODULES_BASIC_RECEIVE_SCALAR_H
 
-#include "ui_ModuleDialogBasic.h"
-#include <Interface/Modules/ModuleDialogGeneric.h>
+#include <Core/Dataflow/Network/Module.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-  class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
-  {
-    Q_OBJECT
+  namespace Modules {
+    namespace Basic {
 
-  public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-    virtual int moduleExecutionTime();
-  };
+      class ReceiveScalarModule : public SCIRun::Domain::Networks::Module
+      {
+      public:
+        ReceiveScalarModule();
+        virtual void execute();
+        double latestReceivedValue() const { return latestValue_; }
+      private:
+        double latestValue_;
+      };
 
-}
-}
+}}}
 
 #endif

@@ -26,22 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
+#ifndef ENGINE_STATE_SENDSCALARMODULESTATE_H
+#define ENGINE_STATE_SENDSCALARMODULESTATE_H
 
-#include "ui_ModuleDialogBasic.h"
-#include <Interface/Modules/ModuleDialogGeneric.h>
+#include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
-namespace Gui {
+namespace State {
   
-  class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
+  class SendScalarState //: public AbstractModuleState...
   {
-    Q_OBJECT
-
   public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-    virtual int moduleExecutionTime();
+    virtual ~SendScalarState() {}
+    virtual int scalarValue() const = 0;
   };
 
 }

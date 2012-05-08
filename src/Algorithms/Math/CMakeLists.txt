@@ -26,5 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(Math)
+SET(Algorithms_Math_SRCS
+  EvaluateLinearAlgebraUnary.cc
+  EvaluateLinearAlgebraBinary.cc
+  ReportMatrixInfo.cc
+)
+
+SET(Algorithms_Math_HEADERS
+  EvaluateLinearAlgebraUnary.h
+  EvaluateLinearAlgebraBinary.h
+  ReportMatrixInfo.h
+)
+
+ADD_LIBRARY(Algorithms_Math 
+${Algorithms_Math_HEADERS}
+${Algorithms_Math_SRCS})
+
+ADD_SUBDIRECTORY(Tests)
+

@@ -26,5 +26,24 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(Math)
+SET(Modules_Math_Tests_SRCS
+  ReportMatrixInfoTests.cc
+  EvaluateLinearAlgebraUnaryTests.cc
+  EvaluateLinearAlgebraBinaryTests.cc
+  MatrixCalculatorFunctionalTests.cc
+)
+
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+ADD_EXECUTABLE(Modules_Math_Tests
+${Modules_Math_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_Math_Tests
+Modules_Math
+Algorithms_Math
+gtest_main
+gtest
+gmock
+)

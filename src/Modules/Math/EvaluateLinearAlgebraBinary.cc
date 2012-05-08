@@ -26,25 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
+#include <iostream>
+#include <Core/Datatypes/Datatype.h>
+#include <Modules/Basic/SendScalar.h>
 
-#include "ui_ModuleDialogBasic.h"
-#include <Interface/Modules/ModuleDialogGeneric.h>
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Domain::Datatypes;
 
-namespace SCIRun {
-namespace Gui {
-  
-  class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
-  {
-    Q_OBJECT
-
-  public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-    virtual int moduleExecutionTime();
-  };
+SendScalarModule::SendScalarModule()
+  : Module("SendScalar"),
+  data_(-1)
+{
 
 }
-}
 
-#endif
+void SendScalarModule::execute()
+{
+  DatatypeHandle output(new Datatype(data_));
+  send_output_handle(0, output);
+}
