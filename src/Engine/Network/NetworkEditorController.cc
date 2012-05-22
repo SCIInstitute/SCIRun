@@ -77,7 +77,9 @@ void NetworkEditorController::printNetwork() const
 
 void NetworkEditorController::addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc)
 {
-  theNetwork_->connect(theNetwork_->lookupModule(desc.moduleId1_), desc.port1_, theNetwork_->lookupModule(desc.moduleId2_), desc.port2_);
+  ConnectionId id = theNetwork_->connect(theNetwork_->lookupModule(desc.moduleId1_), desc.port1_, theNetwork_->lookupModule(desc.moduleId2_), desc.port2_);
+  if (!id.id_.empty())
+    connectionAdded_(id);
   printNetwork();
 }
 
@@ -95,4 +97,9 @@ boost::signals2::connection NetworkEditorController::connectModuleAdded(const Mo
 boost::signals2::connection NetworkEditorController::connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber)
 {
   return moduleRemoved_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber)
+{
+  return connectionAdded_.connect(subscriber);
 }

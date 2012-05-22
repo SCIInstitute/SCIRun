@@ -28,17 +28,39 @@
 
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
+#include <boost/functional/factory.hpp>
 #include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
 
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Modules/Basic/SendScalar.h>
+
+//TODO
+#include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
+
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Basic;
 using namespace boost::assign;
+
+HardCodedModuleFactory::HardCodedModuleFactory()
+{
+  Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
+  Module::Builder::use_source_type(boost::factory<SimpleSource*>());
+}
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;
-  builder.with_name(desc.lookupInfo_.module_name_);
+  
+  //YUCK YUCK 
+  if (desc.lookupInfo_.module_name_ == "SendScalar")
+    builder.using_func(boost::factory<SendScalarModule*>());
+  else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
+    builder.using_func(boost::factory<ReceiveScalarModule*>());
+  else
+    builder.with_name(desc.lookupInfo_.module_name_);
+
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
   {
     builder.add_input_port(Port::ConstructionParams(input.name, input.datatype, input.color));
@@ -47,8 +69,10 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   {
     builder.add_output_port(Port::ConstructionParams(output.name, output.datatype, output.color));
   }
+
   if (desc.lookupInfo_.module_name_.find("ComputeSVD") != std::string::npos)
     builder.disable_ui();
+
   return builder.build();
 }
 
@@ -70,6 +94,14 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   else if (name.find("WriteMatrix") != std::string::npos)
   {
     d.input_ports_ += InputPortDescription("Input1", "Matrix", "blue"), InputPortDescription("Input2", "String", "darkGreen");
+  }
+  else if (name.find("SendScalar") != std::string::npos)
+  {
+    d.output_ports_ += OutputPortDescription("Output", "Scalar", "cyan");
+  }
+  else if (name.find("ReceiveScalar") != std::string::npos)
+  {
+    d.input_ports_ += InputPortDescription("Input", "Scalar", "cyan");
   }
   return d;
 }

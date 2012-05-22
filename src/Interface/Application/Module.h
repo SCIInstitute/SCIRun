@@ -53,7 +53,7 @@ class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public Ui
 	Q_OBJECT
 	
 public:
-  explicit ModuleWidget(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider, QWidget* parent = 0);
+  ModuleWidget(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider, QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();

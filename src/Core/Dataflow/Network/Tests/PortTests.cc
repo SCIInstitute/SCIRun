@@ -68,8 +68,8 @@ TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 TEST_F(PortTests, AggregatesConnections)
 {
   Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
-  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp));
-  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp));
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
 
@@ -86,4 +86,41 @@ TEST_F(PortTests, AggregatesConnections)
   //and removed on destruction
   ASSERT_EQ(0, inputPort->nconnections());
   ASSERT_EQ(0, outputPort->nconnections());
+}
+
+TEST_F(PortTests, InputPortTakesAtMostOneConnection)
+{
+  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
+  EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
+  EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
+
+  ASSERT_EQ(0, inputPort->nconnections());
+  ASSERT_EQ(0, outputPort->nconnections());
+  Connection c(outputModule, 1, inputModule, 2, "test");
+  ASSERT_EQ(1, inputPort->nconnections());
+  ASSERT_EQ(1, outputPort->nconnections());
+
+  //shouldn't be able to connect a second output to the same input.
+  EXPECT_THROW(Connection c(outputModule, 1, inputModule, 2, "test"), std::logic_error);
+
+  OutputPortHandle outputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
+  EXPECT_CALL(*outputModule, get_output_port(2)).WillRepeatedly(Return(outputPort2));
+  EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), std::logic_error);
+}
+
+TEST_F(PortTests, CannotConnectPortsWithDifferentDatatypes)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST_F(PortTests, CannotConnectInputPortToInputPort)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST_F(PortTests, CannotConnectOutputPortToOutputPort)
+{
+  EXPECT_TRUE(false);
 }

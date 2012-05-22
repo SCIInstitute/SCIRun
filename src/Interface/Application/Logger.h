@@ -49,6 +49,8 @@ namespace Gui {
       return Qt::blue;
     if (str == "darkGreen")
       return Qt::darkGreen;
+    if (str == "cyan")
+      return Qt::cyan;
     else
       return Qt::white;
   }

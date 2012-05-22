@@ -66,20 +66,31 @@ namespace Networks {
     OutputPortHandle get_output_port(size_t idx) const;
     InputPortHandle get_input_port(size_t idx) const;
 
-    virtual void do_execute();
+    void do_execute();
     virtual void execute();
+
+    virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
+    virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data);
 
     class Builder : boost::noncopyable
     {
     public:
       Builder();
       Builder& with_name(const std::string& name);
+      Builder& using_func(boost::function<Module*()> create);
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
       Builder& disable_ui();
       ModuleHandle build();
+
+      typedef boost::function<SCIRun::Domain::Networks::DatatypeSinkInterface*()> SinkMaker;
+      typedef boost::function<SCIRun::Domain::Networks::DatatypeSourceInterface*()> SourceMaker;
+      static void use_sink_type(SinkMaker func) { sink_maker_ = func; }
+      static void use_source_type(SourceMaker func) { source_maker_ = func; }
     private:
       boost::shared_ptr<Module> module_;
+      static SinkMaker sink_maker_;
+      static SourceMaker source_maker_;
     };
 
   protected:

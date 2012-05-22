@@ -32,6 +32,7 @@
 #include <boost/bind.hpp>
 #include <Core/Dataflow/Network/Module.h>
 #include <Core/Dataflow/Network/PortManager.h>
+#include <Core/Dataflow/Network/DataflowInterfaces.h>
 
 using namespace SCIRun::Domain::Networks;
 
@@ -172,7 +173,32 @@ void Module::add_output_port(OutputPortHandle h)
   oports_.add(h);
 }
 
+SCIRun::Domain::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
+{
+  //TODO test...
+  if (idx >= iports_.size())
+  {
+    throw std::invalid_argument("port does not exist at index " + boost::lexical_cast<std::string>(idx));
+  }
+
+  return iports_[idx]->getData();
+}
+
+void Module::send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data)
+{
+  //TODO test...
+  if (idx >= oports_.size())
+  {
+    throw std::invalid_argument("port does not exist at index " + boost::lexical_cast<std::string>(idx));
+  }
+
+  oports_[idx]->sendData(data);
+}
+
 Module::Builder::Builder() {}
+
+Module::Builder::SinkMaker Module::Builder::sink_maker_;
+Module::Builder::SourceMaker Module::Builder::source_maker_;
 
 Module::Builder& Module::Builder::with_name(const std::string& name)
 {
@@ -181,11 +207,19 @@ Module::Builder& Module::Builder::with_name(const std::string& name)
   return *this;
 }
 
+Module::Builder& Module::Builder::using_func(boost::function<Module*()> create)
+{
+  if (!module_)
+    module_.reset(create());
+  return *this;
+}
+
 Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams& params)
 {
   if (module_)
   {
-    InputPortHandle port(new InputPort(module_.get(), params));
+    DatatypeSinkInterfaceHandle sink(sink_maker_());
+    InputPortHandle port(new InputPort(module_.get(), params, sink));
     module_->add_input_port(port);
   }
   return *this;
@@ -195,7 +229,8 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 {
   if (module_)
   {
-    OutputPortHandle port(new OutputPort(module_.get(), params));
+    DatatypeSourceInterfaceHandle source(source_maker_());
+    OutputPortHandle port(new OutputPort(module_.get(), params, source));
     module_->add_output_port(port);
   }
   return *this;

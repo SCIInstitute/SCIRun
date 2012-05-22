@@ -91,21 +91,30 @@ ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_
   ConnectionId id = ConnectionId::create(ConnectionDescription(m1->get_id(), p1, m2->get_id(), p2));
   if (connections_.find(id) == connections_.end())
   {
-    ConnectionHandle conn(new Connection(m1, p1, m2, p2, id));
+    try
+    {
+      ConnectionHandle conn(new Connection(m1, p1, m2, p2, id));
 
-  //lock.lock();
+      //lock.lock();
 
-    connections_[id] = conn;
+      connections_[id] = conn;
 
-  // Reschedule next time we can.
-  //reschedule=1;
+      // Reschedule next time we can.
+      //reschedule=1;
 
-  //lock.unlock();
+      //lock.unlock();
 
-  //m1->oports_.unlock();
-  //m2->iports_.unlock();
+      //m1->oports_.unlock();
+      //m2->iports_.unlock();
 
-    return id;
+      return id;
+    }
+    catch (const std::invalid_argument& e)
+    {
+      std::cout << "Caught exception making a connection: " << e.what() << std::endl;
+      ///????????
+      return ConnectionId(""); //??
+    }
   }
   return ConnectionId(""); //??
 }

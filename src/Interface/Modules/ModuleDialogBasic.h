@@ -29,33 +29,20 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 
-#include "ui_ModuleDialogBasic.h"
-#include <boost/shared_ptr.hpp>
+#include "Interface/Modules/ui_ModuleDialogBasic.h"
+#include <Interface/Modules/ModuleDialogGeneric.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  class ModuleDialogGeneric : public QDialog
+  class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
   {
     Q_OBJECT
-  public:
-    virtual ~ModuleDialogGeneric() {}
-    //TODO: input state hookup?
-    virtual int moduleExecutionTime() = 0;
-  Q_SIGNALS:
-    void executionTimeChanged(int time);
-  protected:
-    explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) {}
-  };
 
-class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
-{
-	Q_OBJECT
-	
-public:
-  explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-  virtual int moduleExecutionTime();
-};
+  public:
+    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
+    virtual int moduleExecutionTime();
+  };
 
 }
 }

@@ -32,6 +32,7 @@
 
 #include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Datatypes/Datatype.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -56,8 +57,12 @@ namespace Networks {
   {
   public:
     virtual ~ModuleInterface() {}
-    virtual void do_execute() = 0;
+    //virtual void do_execute() = 0;
+
     virtual void execute() = 0;
+
+    virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
+    virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data) = 0;
   };
 }}}
 

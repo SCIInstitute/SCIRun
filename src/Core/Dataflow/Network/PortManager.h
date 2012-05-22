@@ -34,7 +34,6 @@
 #include <Core/Dataflow/Network/Port.h>
 
 #include <boost/function.hpp>
-#include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include <string>
 #include <vector>

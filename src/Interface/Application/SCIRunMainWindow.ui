@@ -221,6 +221,16 @@
          </item>
          <item>
           <property name="text">
+           <string>ReceiveScalar</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SendScalar</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>WriteMatrix</string>
           </property>
          </item>

@@ -58,3 +58,7 @@ ${Core_Dataflow_Network_SRCS})
 
 ADD_SUBDIRECTORY(Tests)
 
+
+TARGET_LINK_LIBRARIES(Core_Dataflow_Network
+Modules_Basic
+)

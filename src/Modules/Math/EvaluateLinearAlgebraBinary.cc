@@ -26,23 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
-#include <Interface/Application/ModuleDialogBasic.h>
-#include <Interface/Application/Logger.h>
+#include <iostream>
+#include <Core/Datatypes/Datatype.h>
+#include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 
-using namespace SCIRun::Gui;
-
-ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent)
-{
-  setupUi(this);
-  setModal(false);
-  setWindowTitle(to_QString(name));
-  executionTimeHorizontalSlider_->setValue(executionTime);
-  connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
-}
-
-int ModuleDialogBasic::moduleExecutionTime()
-{
-  return executionTimeHorizontalSlider_->value();
-}
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Domain::Datatypes;
