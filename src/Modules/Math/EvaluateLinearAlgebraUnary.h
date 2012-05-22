@@ -35,14 +35,11 @@ namespace SCIRun {
 namespace Modules {
 namespace Basic {
   
-  class SendScalarModule : public SCIRun::Domain::Networks::Module
+  class EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
   {
   public:
-    SendScalarModule();
+    EvaluateLinearAlgebraUnaryModule();
     virtual void execute();
-    void setScalar(double data) { data_ = data; }
-  private:
-    double data_;
   };
 
 }}}

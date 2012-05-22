@@ -45,7 +45,7 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-
+#if 0
 TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
@@ -86,3 +86,4 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
 
 
 
+#endif

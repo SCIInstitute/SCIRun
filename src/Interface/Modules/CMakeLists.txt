@@ -36,6 +36,7 @@ SET(Interface_Modules_FORMS
 SET(Interface_Modules_HEADERS
   SendScalarDialog.h
   ModuleDialogBasic.h
+  ModuleDialogGeneric.h
 )
 
 SET(Interface_Modules_SOURCES 

@@ -35,14 +35,11 @@ namespace SCIRun {
   namespace Modules {
     namespace Basic {
 
-      class ReceiveScalarModule : public SCIRun::Domain::Networks::Module
+      class EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module
       {
       public:
-        ReceiveScalarModule();
+        EvaluateLinearAlgebraBinaryModule();
         virtual void execute();
-        double latestReceivedValue() const { return latestValue_; }
-      private:
-        double latestValue_;
       };
 
 }}}

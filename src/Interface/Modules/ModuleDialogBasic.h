@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 
-#include "ui_ModuleDialogBasic.h"
+#include "Interface/Modules/ui_ModuleDialogBasic.h"
 #include <Interface/Modules/ModuleDialogGeneric.h>
 
 namespace SCIRun {

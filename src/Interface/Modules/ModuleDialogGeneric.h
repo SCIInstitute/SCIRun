@@ -29,6 +29,8 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
+#include <QDialog>
+
 namespace SCIRun {
 namespace Gui {
   

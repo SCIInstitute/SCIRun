@@ -28,61 +28,12 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
-#include <Core/Dataflow/Network/ModuleInterface.h>
-#include <Core/Dataflow/Network/ConnectionId.h>
-#include <Core/Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
+//using namespace SCIRun;
+//using namespace SCIRun::Domain::Networks;
+//using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
-
-
-TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
-{
-  ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  Network firstBasicNetwork(mf);
-
-  ModuleLookupInfo sendInfo;
-  sendInfo.module_name_ = "SendScalar";
-  ModuleHandle send = firstBasicNetwork.add_module(sendInfo);
-  ModuleLookupInfo receiveInfo;
-  receiveInfo.module_name_ = "ReceiveScalar";
-  ModuleHandle receive = firstBasicNetwork.add_module(receiveInfo);
-
-  EXPECT_EQ(2, firstBasicNetwork.nmodules());
-
-  firstBasicNetwork.connect(send, 0, receive, 0);
-  EXPECT_EQ(1, firstBasicNetwork.nconnections());
-
-  const double dataToSend = 3.14;
-  SendScalarModule* sendScalar = dynamic_cast<SendScalarModule*>(send.get());
-  EXPECT_TRUE(sendScalar != 0);
-  
-  sendScalar->setScalar(dataToSend);
-  
-  //manually execute the network, in the correct order.
-  send->execute();
-  receive->execute();
-
-  ReceiveScalarModule* receiveScalar = dynamic_cast<ReceiveScalarModule*>(receive.get());
-  EXPECT_TRUE(receiveScalar != 0);
-  EXPECT_EQ(dataToSend, receiveScalar->latestReceivedValue());
-}
-
-
-
-
-
-
-
-
 

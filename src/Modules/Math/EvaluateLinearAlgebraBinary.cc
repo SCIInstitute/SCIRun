@@ -28,20 +28,7 @@
 
 #include <iostream>
 #include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
-
-SendScalarModule::SendScalarModule()
-  : Module("SendScalar"),
-  data_(-1)
-{
-
-}
-
-void SendScalarModule::execute()
-{
-  DatatypeHandle output(new Datatype(data_));
-  send_output_handle(0, output);
-}

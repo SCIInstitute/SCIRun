@@ -31,6 +31,7 @@
 
 #include "ui_SendScalar.h"
 #include <boost/shared_ptr.hpp>
+#include <Interface/Modules/ModuleDialogGeneric.h>
 
 namespace SCIRun {
 namespace Gui {

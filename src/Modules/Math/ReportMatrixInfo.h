@@ -35,14 +35,11 @@ namespace SCIRun {
 namespace Modules {
 namespace Basic {
   
-  class SendScalarModule : public SCIRun::Domain::Networks::Module
+  class ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
   {
   public:
-    SendScalarModule();
+    ReportMatrixInfoModule();
     virtual void execute();
-    void setScalar(double data) { data_ = data; }
-  private:
-    double data_;
   };
 
 }}}
