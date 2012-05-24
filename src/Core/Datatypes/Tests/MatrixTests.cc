@@ -26,9 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
+//using namespace SCIRun;
+//using namespace SCIRun::Modules::Basic;
+//using namespace SCIRun::Domain::Networks;
+//using namespace SCIRun::Domain::Networks::Mocks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+

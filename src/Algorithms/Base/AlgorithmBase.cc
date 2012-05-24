@@ -27,8 +27,5 @@
 */
 
 #include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Algorithms/Base/AlgorithmBase.h>
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;

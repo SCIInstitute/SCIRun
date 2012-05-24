@@ -26,9 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#ifndef ALGORITHMS_DATAIO_READMATRIX_H
+#define ALGORITHMS_DATAIO_READMATRIX_H
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
+#include <Algorithms/Base/AlgorithmBase.h>
+
+namespace SCIRun {
+  namespace Algorithms {
+    namespace DataIO {
+
+      class ReadMatrixAlgorithm : public AlgorithmBase
+      {
+      };
+
+}}}
+
+#endif

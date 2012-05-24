@@ -26,9 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
+#define ALGORITHMS_BASE_ALGORITHMBASE_H
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
+namespace SCIRun {
+namespace Algorithms {
+
+class AlgorithmBase
+{
+public:
+  virtual ~AlgorithmBase() {}
+};
+
+}}
+
+#endif

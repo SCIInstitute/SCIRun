@@ -26,7 +26,19 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
+SET(Algorithms_DataIO_SRCS
+  ReadMatrix.cc
+  WriteMatrix.cc
+)
+
+SET(Algorithms_DataIO_HEADERS
+  ReadMatrix.h
+  WriteMatrix.h
+)
+
+ADD_LIBRARY(Algorithms_DataIO 
+${Algorithms_DataIO_HEADERS}
+${Algorithms_DataIO_SRCS})
+
+ADD_SUBDIRECTORY(Tests)
 

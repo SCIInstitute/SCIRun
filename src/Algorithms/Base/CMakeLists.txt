@@ -26,7 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
+SET(Algorithms_Base_SRCS
+  AlgorithmBase.cc
+)
+
+SET(Algorithms_Base_HEADERS
+  AlgorithmBase.h
+)
+
+ADD_LIBRARY(Algorithms_Base 
+${Algorithms_Base_HEADERS}
+${Algorithms_Base_SRCS})
+
+ADD_SUBDIRECTORY(Tests)
 

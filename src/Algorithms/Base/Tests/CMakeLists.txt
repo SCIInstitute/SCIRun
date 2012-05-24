@@ -26,7 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
+SET(Algorithms_Base_Tests_SRCS
+  AlgorithmBaseTests.cc
+)
 
+ADD_EXECUTABLE(Algorithms_Base_Tests
+${Algorithms_Base_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Algorithms_Base_Tests
+Algorithms_Base
+gtest_main
+gtest
+gmock
+)
