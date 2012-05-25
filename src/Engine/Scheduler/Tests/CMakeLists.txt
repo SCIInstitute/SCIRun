@@ -26,23 +26,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Basic_SRCS
-  ReceiveScalar.cc
-  ReceiveScalarModuleState.cc
-  SendScalar.cc
-  SendScalarModuleState.cc
+SET(Engine_Scheduler_Tests_SRCS
+  SchedulerBehavioralTests.cc
 )
 
-SET(Modules_Basic_HEADERS
-  ReceiveScalar.h
-  ReceiveScalarModuleState.h
-  SendScalar.h
-  SendScalarModuleState.h
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+ADD_EXECUTABLE(Engine_Scheduler_Tests
+#${Engine_Network_Tests_HEADERS}
+${Engine_Scheduler_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
+Core_Dataflow_Network
+Engine_Network
+Engine_Scheduler
+gtest_main
+gtest
+gmock
 )
-
-ADD_LIBRARY(Modules_Basic 
-${Modules_Basic_HEADERS}
-${Modules_Basic_SRCS})
-
-ADD_SUBDIRECTORY(Tests)
-

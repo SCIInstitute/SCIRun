@@ -26,23 +26,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Basic_SRCS
-  ReceiveScalar.cc
-  ReceiveScalarModuleState.cc
-  SendScalar.cc
-  SendScalarModuleState.cc
+SET(Modules_DataIO_SRCS
+  ReadMatrix.cc
+  ReadMatrixState.cc
+  WriteMatrix.cc
+  WriteMatrixState.cc
 )
 
-SET(Modules_Basic_HEADERS
-  ReceiveScalar.h
-  ReceiveScalarModuleState.h
-  SendScalar.h
-  SendScalarModuleState.h
+SET(Modules_DataIO_HEADERS
+  ReadMatrix.h
+  ReadMatrixState.h
+  WriteMatrix.h
+  WriteMatrixState.h
 )
 
-ADD_LIBRARY(Modules_Basic 
-${Modules_Basic_HEADERS}
-${Modules_Basic_SRCS})
+ADD_LIBRARY(Modules_DataIO 
+${Modules_DataIO_HEADERS}
+${Modules_DataIO_SRCS})
 
 ADD_SUBDIRECTORY(Tests)
 

@@ -26,23 +26,22 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_Basic_SRCS
-  ReceiveScalar.cc
-  ReceiveScalarModuleState.cc
-  SendScalar.cc
-  SendScalarModuleState.cc
+SET(Modules_DataIO_Tests_SRCS
+  ReadMatrixTests.cc
+  ReadWriteMatrixFunctionalTest.cc
+  WriteMatrixTests.cc
 )
 
-SET(Modules_Basic_HEADERS
-  ReceiveScalar.h
-  ReceiveScalarModuleState.h
-  SendScalar.h
-  SendScalarModuleState.h
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+ADD_EXECUTABLE(Modules_DataIO_Tests
+${Modules_DataIO_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_DataIO_Tests
+Modules_DataIO
+gtest_main
+gtest
+gmock
 )
-
-ADD_LIBRARY(Modules_Basic 
-${Modules_Basic_HEADERS}
-${Modules_Basic_SRCS})
-
-ADD_SUBDIRECTORY(Tests)
-
