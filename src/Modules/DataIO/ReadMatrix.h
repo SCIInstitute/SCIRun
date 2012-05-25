@@ -33,12 +33,12 @@
 
 namespace SCIRun {
 namespace Modules {
-namespace Basic {
+namespace DataIO {
   
-  class EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
+  //TODO DAN
+  class ReadMatrix : public SCIRun::Domain::Networks::Module
   {
   public:
-    EvaluateLinearAlgebraUnaryModule();
     virtual void execute();
   };
 

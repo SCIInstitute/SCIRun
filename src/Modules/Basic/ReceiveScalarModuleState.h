@@ -33,11 +33,11 @@
 
 namespace SCIRun {
 namespace State {
-  
-  class SendScalarState //: public AbstractModuleState...
+  //TODO DAN
+  class ReceiveScalarState //: public AbstractModuleState...
   {
   public:
-    virtual ~SendScalarState() {}
+    virtual ~ReceiveScalarState() {}
     virtual int scalarValue() const = 0;
   };
 

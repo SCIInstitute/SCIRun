@@ -25,3 +25,18 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
+SET(Core_Logging_SRCS
+  Logger.cc
+)
+
+SET(Core_Logging_HEADERS
+  Logger.h
+)
+
+ADD_LIBRARY(Core_Logging 
+${Core_Logging_HEADERS}
+${Core_Logging_SRCS})
+
+ADD_SUBDIRECTORY(Tests)
+

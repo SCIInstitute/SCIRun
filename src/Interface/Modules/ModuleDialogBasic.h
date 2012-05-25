@@ -34,7 +34,7 @@
 
 namespace SCIRun {
 namespace Gui {
-  
+  //TODO DAN
   class ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
   {
     Q_OBJECT

@@ -26,22 +26,4 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SENDSCALARMODULESTATE_H
-#define ENGINE_STATE_SENDSCALARMODULESTATE_H
-
-#include <boost/shared_ptr.hpp>
-
-namespace SCIRun {
-namespace State {
-  
-  class SendScalarState //: public AbstractModuleState...
-  {
-  public:
-    virtual ~SendScalarState() {}
-    virtual int scalarValue() const = 0;
-  };
-
-}
-}
-
-#endif
+//TODO DAN

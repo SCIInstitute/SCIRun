@@ -26,16 +26,15 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Datatypes_Tests_SRCS
-  MatrixTests.cc
-  ScalarTests.cc
+SET(Core_Logging_Tests_SRCS
+  LoggerTests.cc
 )
 
-ADD_EXECUTABLE(Core_Datatypes_Tests
-${Core_Datatypes_Tests_SRCS})
+ADD_EXECUTABLE(Core_Logging_Tests
+${Core_Logging_Tests_SRCS})
 
-TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
-Core_Datatypes
+TARGET_LINK_LIBRARIES(Core_Logging_Tests
+Core_Logging
 gtest_main
 gtest
 gmock

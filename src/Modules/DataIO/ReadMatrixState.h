@@ -33,8 +33,8 @@
 
 namespace SCIRun {
 namespace Modules {
-namespace Basic {
-  
+namespace DataIO {
+  //TODO DAN
   class EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
   {
   public:

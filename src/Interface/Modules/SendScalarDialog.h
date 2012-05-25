@@ -32,19 +32,16 @@
 #include "ui_SendScalar.h"
 #include <boost/shared_ptr.hpp>
 #include <Interface/Modules/ModuleDialogGeneric.h>
+#include <Modules/Basic/SendScalarModuleState.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  //TODO this interface needs to go in Engine/State i think
-  class SendScalarState
-  {
-  public:
-    virtual ~SendScalarState() {}
-    virtual int scalarValue() const = 0;
-  };
+  //TODO DAN
 
-class SendScalarDialog : public ModuleDialogGeneric, public SendScalarState, public Ui::SendScalar
+class SendScalarDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::SendScalar
 {
 	Q_OBJECT
 	
