@@ -60,7 +60,7 @@ ModuleHandle Network::add_module(const ModuleLookupInfo& info)
 
 bool Network::remove_module(const std::string& id)
 {
-  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *_1) == id);
+  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   if (loc != modules_.end())
   {
     modules_.erase(loc);
@@ -150,7 +150,7 @@ ModuleHandle Network::module(size_t i) const
 
 ModuleHandle Network::lookupModule(const std::string& id) const
 {
-  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *_1) == id);
+  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   return i == modules_.end() ? ModuleHandle() : *i;
 }
 
@@ -173,7 +173,7 @@ std::string Network::toString() const
   std::ostringstream ostr;
   ostr << "~~~NETWORK DESCRIPTION~~~\n";
   ostr << "Modules:\n";
-  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *_1));
+  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *boost::lambda::_1));
   ostr << "\nConnections:\n";
   std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), GetConnectionIds());
   return ostr.str();
