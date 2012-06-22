@@ -54,11 +54,11 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   Module::Builder builder;
   
   //YUCK YUCK 
-  if (desc.lookupInfo_.module_name_ == "SendScalar")
-    builder.using_func(boost::factory<SendScalarModule*>());
-  else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
-    builder.using_func(boost::factory<ReceiveScalarModule*>());
-  else
+  //if (desc.lookupInfo_.module_name_ == "SendScalar")
+  //  builder.using_func(boost::factory<SendScalarModule*>());
+  //else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
+  //  builder.using_func(boost::factory<ReceiveScalarModule*>());
+  //else
     builder.with_name(desc.lookupInfo_.module_name_);
 
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)

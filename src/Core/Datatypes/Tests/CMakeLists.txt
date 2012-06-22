@@ -25,3 +25,18 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
+SET(Core_Datatypes_Tests_SRCS
+  MatrixTests.cc
+  ScalarTests.cc
+)
+
+ADD_EXECUTABLE(Core_Datatypes_Tests
+${Core_Datatypes_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
+Core_Datatypes
+gtest_main
+gtest
+gmock
+)

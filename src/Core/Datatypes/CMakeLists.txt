@@ -28,10 +28,14 @@
 
 SET(Core_Datatypes_SRCS
   Datatype.cc
+  Matrix.cc
+  Scalar.cc
 )
 
 SET(Core_Datatypes_HEADERS
   Datatype.h
+  Matrix.h
+  Scalar.h
 )
 
 ADD_LIBRARY(Core_Datatypes 

@@ -48,7 +48,6 @@ struct ModuleLookupInfo;
 class ModuleFactory;
 class ModuleInfoProvider;
 struct ConnectionDescription;
-//template <class Receiver>
 class DatatypeSourceInterface;
 class DatatypeSinkInterface;
 

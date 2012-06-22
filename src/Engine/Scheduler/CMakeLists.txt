@@ -25,3 +25,18 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 #
+
+SET(Engine_Scheduler_SRCS
+  Scheduler.cc
+)
+
+SET(Engine_Scheduler_HEADERS
+  Scheduler.h
+)
+
+ADD_LIBRARY(Engine_Scheduler 
+${Engine_Scheduler_HEADERS}
+${Engine_Scheduler_SRCS})
+
+ADD_SUBDIRECTORY(Tests)
+

@@ -34,6 +34,8 @@
 #include <Core/Dataflow/Network/Port.h>
 
 #include <boost/function.hpp>
+#include <boost/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
 #include <string>
 #include <vector>
@@ -113,7 +115,7 @@ template<class T>
 void 
 PortManager<T>::resetAll()
 {
-  apply(boost::bind(&T::reset, _1));
+  //apply(boost::bind(&T::reset, boost::lambda::_1));
 }
 
 }}}

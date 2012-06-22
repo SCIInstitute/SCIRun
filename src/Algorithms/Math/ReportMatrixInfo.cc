@@ -27,22 +27,5 @@
 */
 
 #include <iostream>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Core/Datatypes/Datatype.h>
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
-
-ReceiveScalarModule::ReceiveScalarModule()
-  : Module("ReceiveScalar"),
-  latestValue_(-1)
-{
-
-}
-
-void ReceiveScalarModule::execute()
-{
-  DatatypeHandleOption data = get_input_handle(0);
-  if (data)
-    latestValue_ = (*data)->getValue<double>();
-}
+//TODO DAN

@@ -26,22 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SENDSCALARMODULESTATE_H
-#define ENGINE_STATE_SENDSCALARMODULESTATE_H
+#ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
+#define ALGORITHMS_BASE_ALGORITHMBASE_H
 
-#include <boost/shared_ptr.hpp>
+//TODO DAN
 
 namespace SCIRun {
-namespace State {
-  
-  class SendScalarState //: public AbstractModuleState...
-  {
-  public:
-    virtual ~SendScalarState() {}
-    virtual int scalarValue() const = 0;
-  };
+namespace Algorithms {
 
-}
-}
+class AlgorithmBase
+{
+public:
+  virtual ~AlgorithmBase() {}
+};
+
+}}
 
 #endif

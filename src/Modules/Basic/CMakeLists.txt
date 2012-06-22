@@ -28,12 +28,16 @@
 
 SET(Modules_Basic_SRCS
   ReceiveScalar.cc
+  ReceiveScalarModuleState.cc
   SendScalar.cc
+  SendScalarModuleState.cc
 )
 
 SET(Modules_Basic_HEADERS
   ReceiveScalar.h
+  ReceiveScalarModuleState.h
   SendScalar.h
+  SendScalarModuleState.h
 )
 
 ADD_LIBRARY(Modules_Basic 

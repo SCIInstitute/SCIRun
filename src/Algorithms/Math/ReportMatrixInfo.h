@@ -29,20 +29,17 @@
 #ifndef MODULES_BASIC_SEND_SCALAR_H
 #define MODULES_BASIC_SEND_SCALAR_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Algorithms/Base/AlgorithmBase.h>
+
+//TODO DAN
 
 namespace SCIRun {
-namespace Modules {
-namespace Basic {
+namespace Algorithms {
+namespace Math {
   
-  class SendScalarModule : public SCIRun::Domain::Networks::Module
+  class ReportMatrixInfoAlgorithm : public AlgorithmBase
   {
   public:
-    SendScalarModule();
-    virtual void execute();
-    void setScalar(double data) { data_ = data; }
-  private:
-    double data_;
   };
 
 }}}

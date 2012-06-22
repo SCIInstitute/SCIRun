@@ -28,14 +28,20 @@
 
 SET(Modules_Math_SRCS
   EvaluateLinearAlgebraUnary.cc
+  EvaluateLinearAlgebraUnaryState.cc
   EvaluateLinearAlgebraBinary.cc
+  EvaluateLinearAlgebraBinaryState.cc
   ReportMatrixInfo.cc
+  ReportMatrixInfoState.cc
 )
 
 SET(Modules_Math_HEADERS
   EvaluateLinearAlgebraUnary.h
+  EvaluateLinearAlgebraUnaryState.h
   EvaluateLinearAlgebraBinary.h
+  EvaluateLinearAlgebraBinaryState.h
   ReportMatrixInfo.h
+  ReportMatrixInfoState.h
 )
 
 ADD_LIBRARY(Modules_Math 
