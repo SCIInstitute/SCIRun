@@ -29,6 +29,11 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
+using namespace boost::numeric::ublas;
+
 //using namespace SCIRun;
 //using namespace SCIRun::Modules::Basic;
 //using namespace SCIRun::Domain::Networks;
@@ -39,3 +44,33 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 
 //TODO DAN
+
+
+TEST(MatrixTest, CanCreateBasicMatrix)
+{
+  matrix<double> m (3, 3);
+  for (unsigned i = 0; i < m.size1 (); ++ i)
+    for (unsigned j = 0; j < m.size2 (); ++ j)
+      m (i, j) = 3 * i + j;
+  std::cout << m << std::endl;
+
+//  "3.14 3.14\n3.14 3.14";
+}
+
+TEST(MatrixTest, CanMultiply)
+{
+  matrix<double> m (3, 3);
+  for (unsigned i = 0; i < m.size1 (); ++ i)
+    for (unsigned j = 0; j < m.size2 (); ++ j)
+      m (i, j) = 3 * i + j;
+  std::cout << m << std::endl;
+
+  std::cout << -m << std::endl;
+  std::cout << m+m << std::endl;
+  std::cout << 2*m << std::endl;
+  std::cout << m*2 << std::endl;
+  std::cout << m-m << std::endl;
+  std::cout << prod(m,m) << std::endl;
+  std::cout << trans(m) << std::endl;
+
+}
