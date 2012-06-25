@@ -35,42 +35,128 @@
 using namespace boost::numeric::ublas;
 
 //using namespace SCIRun;
-//using namespace SCIRun::Modules::Basic;
-//using namespace SCIRun::Domain::Networks;
-//using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
+typedef matrix<double> MatrixInternal;
 //TODO DAN
 
+namespace
+{
+  MatrixInternal matrix1()
+  {
+    MatrixInternal m (3, 3);
+    for (unsigned i = 0; i < m.size1 (); ++ i)
+      for (unsigned j = 0; j < m.size2 (); ++ j)
+        m (i, j) = 3 * i + j;
+    return m;
+  }
+}
+
+bool operator==(const MatrixInternal& m, const MatrixInternal& n)
+{
+  bool returnValue = 
+    (m.size1() == n.size1()) &&
+    (m.size2() == n.size2());
+
+  if (returnValue)
+  {
+    for (size_t i = 0; returnValue && i < m.size1(); ++i)
+    {
+      for (size_t j = 0; returnValue && j < m.size2(); ++j)
+      {
+        returnValue &= m(i,j) == n(i,j);
+      }
+    }
+  }
+  return returnValue;
+}
+
+std::string matrix_to_string(const MatrixInternal& m)
+{
+  std::ostringstream o;
+  for (size_t i = 0; i < m.size1(); ++i)
+  {
+    for (size_t j = 0; j < m.size2(); ++j)
+    {
+      o << m(i,j) << " ";
+    }
+    o << "\n";
+  }
+  return o.str();
+}
+
+#define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
 
 TEST(MatrixTest, CanCreateBasicMatrix)
 {
-  matrix<double> m (3, 3);
-  for (unsigned i = 0; i < m.size1 (); ++ i)
-    for (unsigned j = 0; j < m.size2 (); ++ j)
-      m (i, j) = 3 * i + j;
-  std::cout << m << std::endl;
-
-//  "3.14 3.14\n3.14 3.14";
+  MatrixInternal m(matrix1());
+  PRINT_MATRIX(m);
 }
 
-TEST(MatrixTest, CanMultiply)
+TEST(MatrixTest, CanPrintInLegacyFormat)
 {
-  matrix<double> m (3, 3);
-  for (unsigned i = 0; i < m.size1 (); ++ i)
-    for (unsigned j = 0; j < m.size2 (); ++ j)
-      m (i, j) = 3 * i + j;
-  std::cout << m << std::endl;
+  MatrixInternal m(matrix1());
+  std::string legacy = matrix_to_string(0.5 * m);
+  std::cout << legacy << std::endl;
+  EXPECT_EQ("0 0.5 1 \n1.5 2 2.5 \n3 3.5 4 \n", legacy);
+}
 
-  std::cout << -m << std::endl;
-  std::cout << m+m << std::endl;
-  std::cout << 2*m << std::endl;
-  std::cout << m*2 << std::endl;
-  std::cout << m-m << std::endl;
-  std::cout << prod(m,m) << std::endl;
-  std::cout << trans(m) << std::endl;
+TEST(MatrixUnaryOperationTests, CanNegate)
+{
+  MatrixInternal m(matrix1());
 
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(-m);
+
+  MatrixInternal n = - -m;
+  EXPECT_TRUE(m == n);
+}
+
+TEST(MatrixUnaryOperationTests, CanScalarMultiply)
+{
+  MatrixInternal m(matrix1());
+
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(2*m);
+  PRINT_MATRIX(m*2);
+  EXPECT_TRUE(2*m == m*2);
+}
+
+TEST(MatrixUnaryOperationTests, CanTranspose)
+{
+  MatrixInternal m(matrix1());
+
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(trans(m));
+
+  EXPECT_TRUE(m == trans(trans(m)));
+}
+
+TEST(MatrixBinaryOperationTests, CanMultiply)
+{
+  MatrixInternal m(matrix1());
+
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(prod(m, m));
+}
+
+TEST(MatrixBinaryOperationTests, CanAdd)
+{
+  MatrixInternal m(matrix1());
+
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(m + m);
+  EXPECT_TRUE(m + m == 2*m);
+}
+
+TEST(MatrixBinaryOperationTests, CanSubtract)
+{
+  MatrixInternal m(matrix1());
+
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(m - m);
+  EXPECT_TRUE(m - m == zero_matrix<double>(3, 3));
 }
