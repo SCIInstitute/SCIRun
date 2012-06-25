@@ -38,7 +38,6 @@
 #include <Core/Dataflow/Network/ModuleFactory.h>
 
 using namespace SCIRun::Domain::Networks;
-using namespace boost::lambda;
 
 Network::Network(ModuleFactoryHandle moduleFactory)
   : moduleFactory_(moduleFactory)
@@ -150,7 +149,7 @@ ModuleHandle Network::module(size_t i) const
 
 ModuleHandle Network::lookupModule(const std::string& id) const
 {
-  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
+  Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   return i == modules_.end() ? ModuleHandle() : *i;
 }
 
