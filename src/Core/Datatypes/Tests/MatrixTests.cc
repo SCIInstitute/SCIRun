@@ -53,6 +53,7 @@ namespace
         m (i, j) = 3 * i + j;
     return m;
   }
+  const MatrixInternal Zero(zero_matrix<double>(3,3));
 }
 
 bool operator==(const MatrixInternal& m, const MatrixInternal& n)
@@ -74,9 +75,8 @@ bool operator==(const MatrixInternal& m, const MatrixInternal& n)
   return returnValue;
 }
 
-std::string matrix_to_string(const MatrixInternal& m)
+std::ostream& operator<<(std::ostream& o, const MatrixInternal& m)
 {
-  std::ostringstream o;
   for (size_t i = 0; i < m.size1(); ++i)
   {
     for (size_t j = 0; j < m.size2(); ++j)
@@ -85,6 +85,13 @@ std::string matrix_to_string(const MatrixInternal& m)
     }
     o << "\n";
   }
+  return o;
+}
+
+std::string matrix_to_string(const MatrixInternal& m)
+{
+  std::ostringstream o;
+  o << m;
   return o.str();
 }
 
@@ -113,6 +120,7 @@ TEST(MatrixUnaryOperationTests, CanNegate)
 
   MatrixInternal n = - -m;
   EXPECT_TRUE(m == n);
+  EXPECT_TRUE(m + (-m) == Zero);
 }
 
 TEST(MatrixUnaryOperationTests, CanScalarMultiply)
@@ -141,6 +149,7 @@ TEST(MatrixBinaryOperationTests, CanMultiply)
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(prod(m, m));
+  EXPECT_TRUE(prod(Zero, m) == Zero);
 }
 
 TEST(MatrixBinaryOperationTests, CanAdd)
@@ -158,5 +167,5 @@ TEST(MatrixBinaryOperationTests, CanSubtract)
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m - m);
-  EXPECT_TRUE(m - m == zero_matrix<double>(3, 3));
+  EXPECT_TRUE(m - m == Zero);
 }
