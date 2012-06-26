@@ -50,7 +50,7 @@ namespace Datatypes {
       {
         for (size_t j = 0; returnValue && j < lhs.ncols(); ++j)
         {
-          returnValue &= lhs(i,j) == rhs(i,j);
+          returnValue &= std::fabs(lhs(i,j) - rhs(i,j)) < 1e-15;
         }
       }
     }

@@ -38,6 +38,11 @@ namespace Datatypes {
   //TODO DAN
 
 template <typename T>
+DenseMatrixGeneric<T>::DenseMatrixGeneric()
+{
+}
+
+template <typename T>
 DenseMatrixGeneric<T>::DenseMatrixGeneric(size_t nrows, size_t ncols) : matrix_(nrows, ncols)
 {
 }

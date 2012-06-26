@@ -89,16 +89,22 @@ TEST(DenseMatrixTest, CanDetermineSize)
 TEST(DenseMatrixTest, CanCopyConstrunt)
 {
   DenseMatrix m(matrixNonSquare());
-
-  EXPECT_TRUE(false);
+  DenseMatrix m2(m);
+  EXPECT_EQ(m, m2);
+  m(1,2) += 1;
+  EXPECT_NE(m, m2);
 }
 
 TEST(DenseMatrixTest, CanAssign)
 {
   DenseMatrix m(matrixNonSquare());
   
-  
-  EXPECT_TRUE(false);
+  DenseMatrix m2;
+  EXPECT_NE(m, m2);
+  m2 = m;
+  EXPECT_EQ(m, m2);
+  m(1,2) += 1;
+  EXPECT_NE(m, m2);
 }
 
 TEST(DenseMatrixUnaryOperationTests, CanNegate)
@@ -109,8 +115,8 @@ TEST(DenseMatrixUnaryOperationTests, CanNegate)
   PRINT_MATRIX(-m);
 
   DenseMatrix n = - -m;
-  EXPECT_TRUE(m == n);
-  EXPECT_TRUE(m + (-m) == Zero);
+  EXPECT_EQ(m, n);
+  EXPECT_EQ(m + (-m), Zero);
 }
 
 TEST(DenseMatrixUnaryOperationTests, CanScalarMultiply)
@@ -120,7 +126,7 @@ TEST(DenseMatrixUnaryOperationTests, CanScalarMultiply)
   PRINT_MATRIX(m);
   PRINT_MATRIX(2*m);
   PRINT_MATRIX(m*2);
-  EXPECT_TRUE(2*m == m*2);
+  EXPECT_EQ(2*m, m*2);
 }
 
 TEST(DenseMatrixUnaryOperationTests, CanTranspose)
@@ -130,7 +136,7 @@ TEST(DenseMatrixUnaryOperationTests, CanTranspose)
   PRINT_MATRIX(m);
   PRINT_MATRIX(transpose(m));
 
-  EXPECT_TRUE(m == transpose(transpose(m)));
+  EXPECT_EQ(m, transpose(transpose(m)));
 }
 
 TEST(DenseMatrixBinaryOperationTests, CanMultiply)
@@ -139,7 +145,7 @@ TEST(DenseMatrixBinaryOperationTests, CanMultiply)
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m * m);
-  EXPECT_TRUE(Zero * m == Zero);
+  EXPECT_EQ(Zero * m, Zero);
 }
 
 TEST(DenseMatrixBinaryOperationTests, CanAdd)
@@ -148,7 +154,7 @@ TEST(DenseMatrixBinaryOperationTests, CanAdd)
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m + m);
-  EXPECT_TRUE(m + m == 2*m);
+  EXPECT_EQ(m + m, 2*m);
 }
 
 TEST(DenseMatrixBinaryOperationTests, CanSubtract)
@@ -157,5 +163,14 @@ TEST(DenseMatrixBinaryOperationTests, CanSubtract)
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m - m);
-  EXPECT_TRUE(m - m == Zero);
+  EXPECT_EQ(m - m, Zero);
+}
+
+//TODO: compare to v4.
+TEST(DenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
+{
+  DenseMatrix sum = matrix1() + matrixNonSquare();
+  std::cout << sum.nrows() << std::endl;
+  std::cout << sum.ncols() << std::endl;
+  PRINT_MATRIX(sum);
 }

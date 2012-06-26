@@ -45,6 +45,7 @@ namespace Datatypes {
     typedef T value_type;
     typedef DenseMatrixGeneric<T> this_type;
 
+    DenseMatrixGeneric();
     DenseMatrixGeneric(size_t nrows, size_t ncols);
     DenseMatrixGeneric(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator=(const DenseMatrixGeneric& rhs);

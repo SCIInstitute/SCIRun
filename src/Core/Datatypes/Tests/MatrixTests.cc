@@ -105,7 +105,12 @@ std::string matrix_to_string(const MatrixInternal& m)
   return o.str();
 }
 
+#define print
+#ifdef print
 #define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
+#else
+#define PRINT_MATRIX
+#endif
 
 TEST(MatrixTest, CanCreateBasicMatrix)
 {
@@ -182,5 +187,8 @@ TEST(MatrixBinaryOperationTests, CanSubtract)
 
 TEST(MatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
 {
-  matrix1() + matrix2();
+  MatrixInternal sum = matrix1() + matrix2();
+  std::cout << sum.size1() << std::endl;
+  std::cout << sum.size2() << std::endl;
+  PRINT_MATRIX(sum);
 }
