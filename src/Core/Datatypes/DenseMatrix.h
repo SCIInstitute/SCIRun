@@ -35,7 +35,6 @@
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
-  //TODO DAN
 
 template <typename T>
 DenseMatrixGeneric<T>::DenseMatrixGeneric()

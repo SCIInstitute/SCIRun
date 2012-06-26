@@ -35,13 +35,7 @@ namespace SCIRun {
   namespace Modules {
     namespace Basic {
       //TODO DAN
-      class EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module
-      {
-      public:
-        EvaluateLinearAlgebraBinaryModule();
-        virtual void execute();
-      };
-
+    
 }}}
 
 #endif

@@ -26,11 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Core/Datatypes/Datatype.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
 
 //TODO DAN
+
+DenseMatrixHandle EvaluateLinearAlgebraUnaryAlgorithm::run(DenseMatrixHandle matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
+{
+  return DenseMatrixHandle();
+}

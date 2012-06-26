@@ -27,21 +27,13 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
 using namespace boost::numeric::ublas;
 
-//using namespace SCIRun;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-
 typedef matrix<double> MatrixInternal;
-//TODO DAN
 
 namespace
 {
@@ -105,7 +97,7 @@ std::string matrix_to_string(const MatrixInternal& m)
   return o.str();
 }
 
-#define print
+//#define print
 #ifdef print
 #define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
 #else

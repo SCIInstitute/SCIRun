@@ -30,13 +30,12 @@
 #ifndef CORE_DATATYPES_MATRIX_H
 #define CORE_DATATYPES_MATRIX_H 
 
-#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix.hpp> //TODO
 #include <Core/Datatypes/Datatype.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
-  //TODO DAN
 
   template <typename T>
   class DenseMatrixGeneric : public Datatype
@@ -59,6 +58,7 @@ namespace Datatypes {
     DenseMatrixGeneric& operator-=(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator*=(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator*=(const T& scalar);
+    //DenseMatrixGeneric operator-();
 
     DenseMatrixGeneric make_transpose() const;
     

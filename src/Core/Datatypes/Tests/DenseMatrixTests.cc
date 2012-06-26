@@ -27,19 +27,12 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Domain::Datatypes;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-
-//TODO DAN
 
 namespace
 {

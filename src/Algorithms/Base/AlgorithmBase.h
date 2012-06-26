@@ -38,6 +38,16 @@ class AlgorithmBase
 {
 public:
   virtual ~AlgorithmBase() {}
+  
+  /*
+    idea: make it mockable
+  
+  virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
+
+    ModuleParameterState: essentially a map of GuiVars. but need hooks for undo/redo and serialization
+    Input: tuple/heterogeneous vector of Datatypes
+    Output: tuple of Datatypes, possibly delay-executed
+  */
 };
 
 }}

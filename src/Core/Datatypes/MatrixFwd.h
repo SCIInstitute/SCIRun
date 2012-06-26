@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,47 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
-#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixComparison.h>
+#ifndef CORE_DATATYPES_MATRIX_FWD_H
+#define CORE_DATATYPES_MATRIX_FWD_H 
 
-//using namespace SCIRun;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
-//using namespace SCIRun::Domain::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <boost/shared_ptr.hpp>
+#include <boost/optional.hpp>
+#include <boost/tuple/tuple.hpp>
 
-//TODO DAN
+namespace SCIRun {
+namespace Domain {
+namespace Datatypes {
 
-TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegate)
-{
-  EvaluateLinearAlgebraUnaryAlgorithm algo;
+  template <typename T>
+  class DenseMatrixGeneric;
 
-  DenseMatrixHandle m; //=...
-  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  EXPECT_EQ(-*m, *result);
+  typedef DenseMatrixGeneric<double> DenseMatrix;
 
-  EXPECT_TRUE(false);
-}
+  typedef boost::shared_ptr<DenseMatrix> DenseMatrixHandle;
 
-TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanTranspose)
-{
+}}}
 
 
-
-  EXPECT_TRUE(false);
-}
-
-TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiply)
-{
-
-
-
-  EXPECT_TRUE(false);
-}
+#endif
