@@ -46,7 +46,7 @@ namespace Math {
       TRANSPOSE,
       SCALAR_MULTIPLY
     };
-    typedef boost::tuple<Operator, boost::optional<double>> Parameters;
+    typedef boost::tuple<Operator, boost::optional<double> > Parameters;
 
     SCIRun::Domain::Datatypes::DenseMatrixHandle run(SCIRun::Domain::Datatypes::DenseMatrixHandle matrix, const Parameters& params) const;
   };
