@@ -27,11 +27,11 @@
 */
 
 
-#ifndef CORE_DATATYPES_MATRIX_H
-#define CORE_DATATYPES_MATRIX_H 
+#ifndef CORE_DATATYPES_MATRIX_IO_H
+#define CORE_DATATYPES_MATRIX_IO_H 
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Matrix.h>
+#include <ostream>
 
 namespace SCIRun {
 namespace Domain {
@@ -39,38 +39,26 @@ namespace Datatypes {
   //TODO DAN
 
   template <typename T>
-  class DenseMatrixGeneric : public Datatype
+  std::ostream& operator<<(std::ostream& o, const DenseMatrixGeneric<T>& m)
   {
-  public:
-    typedef T value_type;
-    typedef DenseMatrixGeneric<T> this_type;
+    for (size_t i = 0; i < m.nrows(); ++i)
+    {
+      for (size_t j = 0; j < m.ncols(); ++j)
+      {
+        o << m(i,j) << " ";
+      }
+      o << "\n";
+    }
+    return o;
+  }
 
-    DenseMatrixGeneric(size_t nrows, size_t ncols);
-    DenseMatrixGeneric(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator=(const DenseMatrixGeneric& rhs);
-
-    size_t nrows() const;
-    size_t ncols() const;
-    T& operator()(size_t r, size_t c);
-    const T& operator()(size_t r, size_t c) const;
-
-    DenseMatrixGeneric& operator+=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator-=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator*=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator*=(const T& scalar);
-
-    DenseMatrixGeneric make_transpose() const;
-    
-    static DenseMatrixGeneric zeroMatrix(size_t nrows, size_t ncols);
-
-  private:
-    typedef boost::numeric::ublas::matrix<T> MatrixInternal;
-    DenseMatrixGeneric(const MatrixInternal& internals);
-    MatrixInternal matrix_;
-  };
-
-  typedef DenseMatrixGeneric<double> DenseMatrix;
-
+  template <typename T>
+  std::string matrix_to_string(const DenseMatrixGeneric<T>& m)
+  {
+    std::ostringstream o;
+    o << m;
+    return o.str();
+  }
 
 }}}
 

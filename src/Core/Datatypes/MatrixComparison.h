@@ -27,11 +27,10 @@
 */
 
 
-#ifndef CORE_DATATYPES_MATRIX_H
-#define CORE_DATATYPES_MATRIX_H 
+#ifndef CORE_DATATYPES_MATRIX_COMPARISON_H
+#define CORE_DATATYPES_MATRIX_COMPARISON_H 
 
-#include <boost/numeric/ublas/matrix.hpp>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Matrix.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -39,38 +38,30 @@ namespace Datatypes {
   //TODO DAN
 
   template <typename T>
-  class DenseMatrixGeneric : public Datatype
+  bool operator==(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
   {
-  public:
-    typedef T value_type;
-    typedef DenseMatrixGeneric<T> this_type;
+    bool returnValue = 
+      (lhs.nrows() == lhs.nrows()) &&
+      (lhs.ncols() == rhs.ncols());
 
-    DenseMatrixGeneric(size_t nrows, size_t ncols);
-    DenseMatrixGeneric(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator=(const DenseMatrixGeneric& rhs);
+    if (returnValue)
+    {
+      for (size_t i = 0; returnValue && i < lhs.nrows(); ++i)
+      {
+        for (size_t j = 0; returnValue && j < lhs.ncols(); ++j)
+        {
+          returnValue &= lhs(i,j) == rhs(i,j);
+        }
+      }
+    }
+    return returnValue;
+  }
 
-    size_t nrows() const;
-    size_t ncols() const;
-    T& operator()(size_t r, size_t c);
-    const T& operator()(size_t r, size_t c) const;
-
-    DenseMatrixGeneric& operator+=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator-=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator*=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator*=(const T& scalar);
-
-    DenseMatrixGeneric make_transpose() const;
-    
-    static DenseMatrixGeneric zeroMatrix(size_t nrows, size_t ncols);
-
-  private:
-    typedef boost::numeric::ublas::matrix<T> MatrixInternal;
-    DenseMatrixGeneric(const MatrixInternal& internals);
-    MatrixInternal matrix_;
-  };
-
-  typedef DenseMatrixGeneric<double> DenseMatrix;
-
+  template <typename T>
+  bool operator!=(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
+  {
+    return !(lhs == rhs);
+  }
 
 }}}
 

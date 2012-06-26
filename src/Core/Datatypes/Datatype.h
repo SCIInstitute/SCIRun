@@ -42,6 +42,7 @@ namespace Datatypes {
   class Datatype
   {
   public:
+    Datatype() {}
     template <typename T>
     explicit Datatype(const T& t) : value_(t) {}
 

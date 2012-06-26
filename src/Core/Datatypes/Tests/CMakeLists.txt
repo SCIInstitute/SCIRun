@@ -27,6 +27,7 @@
 #
 
 SET(Core_Datatypes_Tests_SRCS
+  DenseMatrixTests.cc
   MatrixTests.cc
   ScalarTests.cc
 )

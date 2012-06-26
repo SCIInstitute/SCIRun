@@ -53,6 +53,16 @@ namespace
         m (i, j) = 3 * i + j;
     return m;
   }
+  
+  MatrixInternal matrix2()
+  {
+    MatrixInternal m (2, 2);
+    for (unsigned i = 0; i < m.size1 (); ++ i)
+      for (unsigned j = 0; j < m.size2 (); ++ j)
+        m (i, j) = 2 * i + j;
+    return m;
+  }
+
   const MatrixInternal Zero(zero_matrix<double>(3,3));
 }
 
@@ -168,4 +178,9 @@ TEST(MatrixBinaryOperationTests, CanSubtract)
   PRINT_MATRIX(m);
   PRINT_MATRIX(m - m);
   EXPECT_TRUE(m - m == Zero);
+}
+
+TEST(MatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
+{
+  matrix1() + matrix2();
 }
