@@ -52,7 +52,7 @@ namespace
         m(i, j) = 3.0 * i + j;
     return m;
   }
-  const DenseMatrix Zero(DenseMatrix::zeroMatrix(3,3));
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
 

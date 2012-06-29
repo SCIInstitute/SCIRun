@@ -51,7 +51,7 @@ DenseMatrixHandle EvaluateLinearAlgebraUnaryAlgorithm::run(DenseMatrixConstHandl
     (*result) *= -1;
     break;
   case EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE:
-    result.reset(matrix->make_transpose().clone());
+    result.reset(matrix->make_transpose()); 
     break;
   case EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY:
     boost::optional<double> scalarOption = params.get<1>();

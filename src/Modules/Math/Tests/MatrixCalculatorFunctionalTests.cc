@@ -33,11 +33,15 @@
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Modules/Basic/SendTestMatrix.h>
+#include <Modules/Basic/ReceiveTestMatrix.h>
+#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::_;
@@ -46,3 +50,57 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 
 //TODO DAN
+
+namespace
+{
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++i)
+      for (size_t j = 0; j < m->ncols(); ++j)
+        (*m)(i, j) = 3.0 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+}
+
+TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOperation)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  Network matrixUnaryNetwork(mf);
+
+  ModuleLookupInfo sendTestMatrixInfo;
+  sendTestMatrixInfo.module_name_ = "SendTestMatrix";
+  ModuleHandle send = matrixUnaryNetwork.add_module(sendTestMatrixInfo);
+
+  ModuleLookupInfo processMatrixInfo;
+  processMatrixInfo.module_name_ = "EvaluateLinearAlgebraUnary";
+  ModuleHandle process = matrixUnaryNetwork.add_module(processMatrixInfo);
+
+  ModuleLookupInfo receiveTestMatrixInfo;
+  receiveTestMatrixInfo.module_name_ = "ReceiveTestMatrix";
+  ModuleHandle receive = matrixUnaryNetwork.add_module(receiveTestMatrixInfo);
+
+  EXPECT_EQ(3, matrixUnaryNetwork.nmodules());
+
+  matrixUnaryNetwork.connect(send, 0, process, 0);
+  EXPECT_EQ(1, matrixUnaryNetwork.nconnections());
+  matrixUnaryNetwork.connect(process, 0, receive, 0);
+  EXPECT_EQ(2, matrixUnaryNetwork.nconnections());
+
+  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  EXPECT_TRUE(sendModule != 0);
+  EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
+  EXPECT_TRUE(evalModule != 0);
+
+  sendModule->setMatrix(matrix1());
+
+  //manually execute the network, in the correct order.
+  send->execute();
+  process->execute();
+  receive->execute();
+
+  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  EXPECT_TRUE(receiveModule != 0);
+  EXPECT_EQ(*matrix1(), *receiveModule->latestReceivedMatrix());
+}

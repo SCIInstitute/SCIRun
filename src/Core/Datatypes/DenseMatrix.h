@@ -92,7 +92,7 @@ const T& DenseMatrixGeneric<T>::operator()(size_t r, size_t c) const
 }
 
 template <typename T>
-/*static*/ DenseMatrixGeneric<T> DenseMatrixGeneric<T>::zeroMatrix(size_t nrows, size_t ncols)
+/*static*/ DenseMatrixGeneric<T> DenseMatrixGeneric<T>::zero_matrix(size_t nrows, size_t ncols)
 {
   return DenseMatrixGeneric(nrows, ncols);
 }
@@ -131,9 +131,15 @@ DenseMatrixGeneric<T>::DenseMatrixGeneric(const MatrixInternal& internals) : mat
 }
 
 template <typename T>
-DenseMatrixGeneric<T> DenseMatrixGeneric<T>::make_transpose() const
+DenseMatrixGeneric<T>* DenseMatrixGeneric<T>::make_transpose() const
 {
-  return DenseMatrixGeneric(trans(matrix_));
+  return new DenseMatrixGeneric(trans(matrix_));
+}
+
+template <typename T>
+void DenseMatrixGeneric<T>::transpose_in_place()
+{
+  matrix_ = trans(matrix_);
 }
 
 //operators
@@ -184,7 +190,9 @@ DenseMatrixGeneric<T> operator-(const DenseMatrixGeneric<T>& lhs, const DenseMat
 template <typename T>
 DenseMatrixGeneric<T> transpose(const DenseMatrixGeneric<T>& m)
 {
-  return m.make_transpose();
+  DenseMatrixGeneric<T> mt(m);
+  mt.transpose_in_place();
+  return mt;
 }
 
 

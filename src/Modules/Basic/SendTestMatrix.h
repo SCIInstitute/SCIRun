@@ -26,23 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO DAN
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
-#include <Core/Dataflow/Network/ModuleInterface.h>
-#include <Core/Dataflow/Network/ConnectionId.h>
-#include <Core/Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#ifndef MODULES_BASIC_SEND_TEST_MATRIX_H
+#define MODULES_BASIC_SEND_TEST_MATRIX_H
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Core/Dataflow/Network/Module.h>
+#include <Core/Datatypes/MatrixFwd.h>
 
+namespace SCIRun {
+namespace Modules {
+namespace Basic {
+  
+  class SendTestMatrixModule : public SCIRun::Domain::Networks::Module
+  {
+  public:
+    SendTestMatrixModule();
+    virtual void execute();
+    void setMatrix(SCIRun::Domain::Datatypes::DenseMatrixHandle data) { data_ = data; }
+  private:
+    SCIRun::Domain::Datatypes::DenseMatrixHandle data_;
+  };
+
+}}}
+
+#endif

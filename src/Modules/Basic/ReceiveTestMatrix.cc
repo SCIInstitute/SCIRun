@@ -26,23 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO DAN
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
-#include <Core/Dataflow/Network/ModuleInterface.h>
-#include <Core/Dataflow/Network/ConnectionId.h>
-#include <Core/Dataflow/Network/Tests/MockNetwork.h>
+#include <iostream>
 #include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Core/Datatypes/Datatype.h>
 
-using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+using namespace SCIRun::Domain::Datatypes;
 
+//TODO DAN

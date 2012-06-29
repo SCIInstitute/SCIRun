@@ -28,21 +28,29 @@
 
 SET(Modules_Basic_SRCS
   ReceiveScalar.cc
+  ReceiveTestMatrix.cc
   ReceiveScalarModuleState.cc
   SendScalar.cc
+  SendTestMatrix.cc
   SendScalarModuleState.cc
 )
 
 SET(Modules_Basic_HEADERS
   ReceiveScalar.h
   ReceiveScalarModuleState.h
+  ReceiveTestMatrix.h
   SendScalar.h
   SendScalarModuleState.h
+  SendTestMatrix.h
 )
 
 ADD_LIBRARY(Modules_Basic 
 ${Modules_Basic_HEADERS}
 ${Modules_Basic_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_Basic
+Core_Datatypes
+)
 
 ADD_SUBDIRECTORY(Tests)
 

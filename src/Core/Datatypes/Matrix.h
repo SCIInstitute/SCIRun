@@ -32,6 +32,7 @@
 
 #include <boost/numeric/ublas/matrix.hpp> //TODO
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/MatrixFwd.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -60,11 +61,12 @@ namespace Datatypes {
     DenseMatrixGeneric& operator*=(const T& scalar);
     //DenseMatrixGeneric operator-();
 
-    DenseMatrixGeneric make_transpose() const;
+    DenseMatrixGeneric* make_transpose() const;
+    void transpose_in_place();
 
     virtual DenseMatrixGeneric* clone() const;
     
-    static DenseMatrixGeneric zeroMatrix(size_t nrows, size_t ncols);
+    static DenseMatrixGeneric zero_matrix(size_t nrows, size_t ncols);
 
   private:
     typedef boost::numeric::ublas::matrix<T> MatrixInternal;

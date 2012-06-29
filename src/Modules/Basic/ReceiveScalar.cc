@@ -33,4 +33,16 @@
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
+ReceiveScalarModule::ReceiveScalarModule()
+  : Module("ReceiveScalar"),
+  latestValue_(-1)
+{
+
+}
+
+void ReceiveScalarModule::execute()
+{
+  DatatypeHandleOption data = get_input_handle(0);
+  if (data)
+    latestValue_ = (*data)->getValue<double>();
+}
