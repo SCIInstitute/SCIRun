@@ -26,24 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
-#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#ifndef ALGORITHMS_MATH_ALGORITHMFWD_H
+#define ALGORITHMS_MATH_ALGORITHMFWD_H
 
-#include <Core/Dataflow/Network/Module.h>
-#include <Algorithms/Math/AlgorithmFwd.h>
+#include <Core/Datatypes/MatrixFwd.h>
+
+//TODO DAN
 
 namespace SCIRun {
-namespace Modules {
+namespace Algorithms {
 namespace Math {
-  //TODO DAN
-  class EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
-  {
-  public:
-    EvaluateLinearAlgebraUnaryModule();
-    virtual void execute();
 
-    //void set_operation(const SCIRun::Algorithms::Math::EvaluateLinearAlgebraUnaryAlgorithmParameters&) {}
-  };
+  struct EvaluateLinearAlgebraUnaryAlgorithmParameters;
 
 }}}
 

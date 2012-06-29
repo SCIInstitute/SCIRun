@@ -50,6 +50,7 @@ namespace Math {
 
     SCIRun::Domain::Datatypes::DenseMatrixHandle run(SCIRun::Domain::Datatypes::DenseMatrixConstHandle matrix, const Parameters& params) const;
   };
+
 }}}
 
 #endif

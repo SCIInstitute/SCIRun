@@ -41,6 +41,7 @@ ${Engine_Network_Tests_SRCS})
 TARGET_LINK_LIBRARIES(Engine_Network_Tests
 Core_Dataflow_Network
 Engine_Network
+Algorithms_Math
 gtest_main
 gtest
 gmock

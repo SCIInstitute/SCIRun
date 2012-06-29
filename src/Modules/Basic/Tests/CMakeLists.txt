@@ -41,6 +41,7 @@ ${Modules_Basic_Tests_SRCS})
 TARGET_LINK_LIBRARIES(Modules_Basic_Tests
 Core_Dataflow_Network
 Core_Datatypes
+Algorithms_Math
 gtest_main
 gtest
 gmock

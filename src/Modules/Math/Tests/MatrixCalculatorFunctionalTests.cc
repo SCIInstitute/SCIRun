@@ -39,6 +39,7 @@
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
@@ -46,6 +47,7 @@ using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Algorithms::Math;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -93,11 +95,12 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
   ASSERT_TRUE(sendModule != 0);
   EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
-  EXPECT_TRUE(evalModule != 0);
+  ASSERT_TRUE(evalModule != 0);
 
   DenseMatrixHandle input = matrix1();
   sendModule->setMatrix(input);
 
+  //evalModule->set_operation(EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   //manually execute the network, in the correct order.
   send->execute();
   process->execute();
@@ -106,5 +109,16 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != 0);
   ASSERT_TRUE(receiveModule->latestReceivedMatrix());
+
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
+
+  //evalModule->set_operation(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(transpose(*input), *receiveModule->latestReceivedMatrix());
+
+  //evalModule->set_operation(EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.0));
+  process->execute();
+  receive->execute();
+  EXPECT_EQ(2.0 * *input, *receiveModule->latestReceivedMatrix());
 }
