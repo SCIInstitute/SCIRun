@@ -59,7 +59,6 @@ namespace Datatypes {
     DenseMatrixGeneric& operator-=(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator*=(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator*=(const T& scalar);
-    //DenseMatrixGeneric operator-();
 
     DenseMatrixGeneric* make_transpose() const;
     void transpose_in_place();

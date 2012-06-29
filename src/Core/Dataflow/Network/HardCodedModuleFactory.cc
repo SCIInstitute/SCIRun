@@ -35,12 +35,16 @@
 
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
+#include <Modules/Basic/ReceiveTestMatrix.h>
+#include <Modules/Basic/SendTestMatrix.h>
+#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 
 //TODO
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
 using namespace boost::assign;
 
 HardCodedModuleFactory::HardCodedModuleFactory()
@@ -58,6 +62,12 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
     builder.using_func(boost::factory<SendScalarModule*>());
   else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
     builder.using_func(boost::factory<ReceiveScalarModule*>());
+  else if (desc.lookupInfo_.module_name_ == "SendTestMatrix")
+    builder.using_func(boost::factory<SendTestMatrixModule*>());
+  else if (desc.lookupInfo_.module_name_ == "ReceiveTestMatrix")
+    builder.using_func(boost::factory<ReceiveTestMatrixModule*>());
+  else if (desc.lookupInfo_.module_name_ == "EvaluateLinearAlgebraUnary")
+    builder.using_func(boost::factory<EvaluateLinearAlgebraUnaryModule*>());
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 
@@ -102,6 +112,19 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   else if (name.find("ReceiveScalar") != std::string::npos)
   {
     d.input_ports_ += InputPortDescription("Input", "Scalar", "cyan");
+  }
+  else if (name.find("SendTestMatrix") != std::string::npos)
+  {
+    d.output_ports_ += OutputPortDescription("Output", "Matrix", "blue");
+  }
+  else if (name.find("ReceiveTestMatrix") != std::string::npos)
+  {
+    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+  }
+  else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
+  {
+    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    d.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
   }
   return d;
 }

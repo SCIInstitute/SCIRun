@@ -26,14 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
+#define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
 
 #include <Core/Dataflow/Network/Module.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace Basic {
+namespace Math {
   //TODO DAN
   class EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
   {

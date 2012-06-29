@@ -26,4 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO DAN
+#include <iostream>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/Basic/SendTestMatrix.h>
+
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Domain::Datatypes;
+
+SendTestMatrixModule::SendTestMatrixModule()
+  : Module("SendTestMatrix")
+{
+}
+
+void SendTestMatrixModule::execute()
+{
+  send_output_handle(0, data_);
+}

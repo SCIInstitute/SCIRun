@@ -35,12 +35,14 @@
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixIO.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
@@ -89,11 +91,12 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   EXPECT_EQ(2, matrixUnaryNetwork.nconnections());
 
   SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
-  EXPECT_TRUE(sendModule != 0);
+  ASSERT_TRUE(sendModule != 0);
   EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
   EXPECT_TRUE(evalModule != 0);
 
-  sendModule->setMatrix(matrix1());
+  DenseMatrixHandle input = matrix1();
+  sendModule->setMatrix(input);
 
   //manually execute the network, in the correct order.
   send->execute();
@@ -101,6 +104,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   receive->execute();
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
-  EXPECT_TRUE(receiveModule != 0);
-  EXPECT_EQ(*matrix1(), *receiveModule->latestReceivedMatrix());
+  ASSERT_TRUE(receiveModule != 0);
+  ASSERT_TRUE(receiveModule->latestReceivedMatrix());
+  EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 }

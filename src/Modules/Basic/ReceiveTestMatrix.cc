@@ -27,10 +27,20 @@
 */
 
 #include <iostream>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Core/Datatypes/Datatype.h>
+#include <Modules/Basic/ReceiveTestMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
+ReceiveTestMatrixModule::ReceiveTestMatrixModule()
+  : Module("ReceiveTestMatrix")
+{
+}
+
+void ReceiveTestMatrixModule::execute()
+{
+  DatatypeHandleOption data = get_input_handle(0);
+  if (data)
+    latestValue_ = boost::dynamic_pointer_cast<DenseMatrix>(*data);
+}

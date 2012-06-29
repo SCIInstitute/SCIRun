@@ -58,7 +58,8 @@ ${Core_Dataflow_Network_SRCS})
 
 ADD_SUBDIRECTORY(Tests)
 
-
+# TODO: circular
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network
-Modules_Basic
+  Modules_Basic
+  Modules_Math
 )
