@@ -48,6 +48,7 @@ ${Core_Dataflow_Network_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network_Tests
 Core_Dataflow_Network
+Core_Datatypes
 gtest_main
 gtest
 gmock

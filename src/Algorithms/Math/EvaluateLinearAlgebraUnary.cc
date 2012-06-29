@@ -27,13 +27,40 @@
 */
 
 #include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
 
 //TODO DAN
 
-DenseMatrixHandle EvaluateLinearAlgebraUnaryAlgorithm::run(DenseMatrixHandle matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
+DenseMatrixHandle EvaluateLinearAlgebraUnaryAlgorithm::run(DenseMatrixConstHandle matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
-  return DenseMatrixHandle();
+  DenseMatrixHandle result;
+
+  if (!matrix)
+    return result;
+
+  Operator oper = params.get<0>();
+
+  //TODO DAN: absolutely need matrix move semantics here!!!!!!!
+  switch (oper)
+  {
+  case EvaluateLinearAlgebraUnaryAlgorithm::NEGATE:
+    result.reset(matrix->clone());
+    (*result) *= -1;
+    break;
+  case EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE:
+    result.reset(matrix->make_transpose().clone());
+    break;
+  case EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY:
+    boost::optional<double> scalarOption = params.get<1>();
+    if (!scalarOption)
+      throw std::invalid_argument("No scalar value available to multiply!");
+    double scalar = scalarOption.get();
+    result.reset(matrix->clone());
+    (*result) *= scalar;
+    break;
+  }
+  return result;
 }

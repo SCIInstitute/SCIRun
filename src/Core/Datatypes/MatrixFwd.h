@@ -44,6 +44,7 @@ namespace Datatypes {
   typedef DenseMatrixGeneric<double> DenseMatrix;
 
   typedef boost::shared_ptr<DenseMatrix> DenseMatrixHandle;
+  typedef boost::shared_ptr<const DenseMatrix> DenseMatrixConstHandle;
 
 }}}
 

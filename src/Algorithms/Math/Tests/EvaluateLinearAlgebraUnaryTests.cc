@@ -44,29 +44,68 @@ using ::testing::Return;
 
 //TODO DAN
 
+namespace
+{
+  DenseMatrix matrix1()
+  {
+    DenseMatrix m (3, 3);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.0 * i + j;
+    return m;
+  }
+  DenseMatrix matrixNonSquare()
+  {
+    DenseMatrix m (3, 4);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.0 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zeroMatrix(3,3));
+}
+
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegate)
 {
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  DenseMatrixHandle m; //=...
+  DenseMatrixHandle m(matrix1().clone());
   DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   EXPECT_EQ(-*m, *result);
 
-  EXPECT_TRUE(false);
+  //EXPECT_TRUE(false);
 }
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanTranspose)
 {
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
 
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  EXPECT_EQ(m->make_transpose(), *result);
 
-
-  EXPECT_TRUE(false);
+  //EXPECT_TRUE(false);
 }
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiply)
 {
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.5));
+  EXPECT_EQ(2.5* *m, *result);
 
 
 
-  EXPECT_TRUE(false);
+  //EXPECT_TRUE(false);
+}
+
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, NullInputReturnsNull)
+{
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
+
+  DenseMatrixHandle result = algo.run(DenseMatrixHandle(), EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  EXPECT_FALSE(result);
+
+  //EXPECT_TRUE(false);
 }

@@ -74,6 +74,12 @@ size_t DenseMatrixGeneric<T>::ncols() const
 }
 
 template <typename T>
+DenseMatrixGeneric<T>* DenseMatrixGeneric<T>::clone() const
+{
+  return new DenseMatrixGeneric(*this);
+}
+
+template <typename T>
 T& DenseMatrixGeneric<T>::operator()(size_t r, size_t c)
 {
   return matrix_(r,c);

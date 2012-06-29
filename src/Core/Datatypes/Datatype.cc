@@ -31,4 +31,20 @@
 
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
+Datatype::Datatype(const Datatype& other) : value_(other.value_)
+{
+}
+
+Datatype& Datatype::operator=(const Datatype& rhs) 
+{
+  if (this != &rhs)
+  {
+    value_ = rhs.value_;
+  }
+  return *this;
+}
+
+Datatype* Datatype::clone() const
+{
+  return new Datatype(*this);
+}

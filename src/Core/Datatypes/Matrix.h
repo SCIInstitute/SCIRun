@@ -61,6 +61,8 @@ namespace Datatypes {
     //DenseMatrixGeneric operator-();
 
     DenseMatrixGeneric make_transpose() const;
+
+    virtual DenseMatrixGeneric* clone() const;
     
     static DenseMatrixGeneric zeroMatrix(size_t nrows, size_t ncols);
 
