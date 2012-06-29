@@ -74,3 +74,45 @@ ADD_SUBDIRECTORY(Algorithms)
 ADD_SUBDIRECTORY(Engine)
 ADD_SUBDIRECTORY(Modules)
 ADD_SUBDIRECTORY(Externals)
+
+
+#
+# Organize projects into folders
+#
+SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
+
+SET_PROPERTY(TARGET Algorithms_Base         PROPERTY FOLDER "Algorithms")
+SET_PROPERTY(TARGET Algorithms_Base_Tests   PROPERTY FOLDER "Algorithms/Tests")
+SET_PROPERTY(TARGET Algorithms_DataIO       PROPERTY FOLDER "Algorithms")
+SET_PROPERTY(TARGET Algorithms_DataIO_Tests PROPERTY FOLDER "Algorithms/Tests")
+SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Algorithms")
+SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Algorithms/Tests")
+
+SET_PROPERTY(TARGET Core_Dataflow_Network         PROPERTY FOLDER "Core/Dataflow")
+SET_PROPERTY(TARGET Core_Dataflow_Network_Tests   PROPERTY FOLDER "Core/Dataflow/Tests")
+SET_PROPERTY(TARGET Core_Datatypes         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_Tests   PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Logging_Tests   PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Core/Engine")
+SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Core/Engine/Tests")
+SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Core/Engine")
+SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Core/Engine/Tests")
+SET_PROPERTY(TARGET Engine_State         PROPERTY FOLDER "Core/Engine")
+SET_PROPERTY(TARGET Engine_State_Tests   PROPERTY FOLDER "Core/Engine/Tests")
+
+SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
+
+SET_PROPERTY(TARGET Interface_Modules   PROPERTY FOLDER "Interface/Modules")
+
+SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
+SET_PROPERTY(TARGET Modules_Basic_Tests   PROPERTY FOLDER "Modules/Basic")
+SET_PROPERTY(TARGET Modules_Math   PROPERTY FOLDER "Modules/Math")
+SET_PROPERTY(TARGET Modules_Math_Tests   PROPERTY FOLDER "Modules/Math")
+SET_PROPERTY(TARGET Modules_DataIO   PROPERTY FOLDER "Modules/DataIO")
+SET_PROPERTY(TARGET Modules_DataIO_Tests   PROPERTY FOLDER "Modules/DataIO")
+
+
