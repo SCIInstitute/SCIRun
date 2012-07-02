@@ -47,6 +47,7 @@ namespace Datatypes {
 
     DenseMatrixGeneric();
     DenseMatrixGeneric(size_t nrows, size_t ncols);
+    DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val);
     DenseMatrixGeneric(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator=(const DenseMatrixGeneric& rhs);
 
@@ -54,6 +55,9 @@ namespace Datatypes {
     size_t ncols() const;
     T& operator()(size_t r, size_t c);
     const T& operator()(size_t r, size_t c) const;
+
+    T min() const;
+    T max() const;
 
     DenseMatrixGeneric& operator+=(const DenseMatrixGeneric& rhs);
     DenseMatrixGeneric& operator-=(const DenseMatrixGeneric& rhs);

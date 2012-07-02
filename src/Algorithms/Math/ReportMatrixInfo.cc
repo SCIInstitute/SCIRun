@@ -26,6 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-//TODO DAN
+using namespace SCIRun::Algorithms::Math;
+
+ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
+{
+  if (!input)
+    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
+
+  const std::string type = typeid(*input).name();
+
+  return Outputs(type, 
+    input->nrows(), 
+    input->ncols(), 
+    input->nrows() * input->ncols(), 
+    input->min(), 
+    input->max());
+}

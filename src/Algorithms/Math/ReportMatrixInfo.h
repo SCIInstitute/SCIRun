@@ -26,10 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef ALGORITHMS_MATH_REPORTMATRIXINFO_H
+#define ALGORITHMS_MATH_REPORTMATRIXINFO_H
 
 #include <Algorithms/Base/AlgorithmBase.h>
+#include <Algorithms/Math/AlgorithmFwd.h>
 
 //TODO DAN
 
@@ -40,6 +41,11 @@ namespace Math {
   class ReportMatrixInfoAlgorithm : public AlgorithmBase
   {
   public:
+    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
+    typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
+
+    Outputs run(const Inputs& input, const Parameters& params = 0) const;
   };
 
 }}}

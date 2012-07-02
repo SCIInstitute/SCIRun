@@ -31,6 +31,7 @@
 #include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;

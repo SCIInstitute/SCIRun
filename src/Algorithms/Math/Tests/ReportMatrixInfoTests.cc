@@ -27,15 +27,85 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
-//using namespace SCIRun;
-//using namespace SCIRun::Modules::Basic;
-//using namespace SCIRun::Domain::Networks;
-//using namespace SCIRun::Domain::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
 
-//TODO DAN
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
+
+namespace
+{
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 4));
+    for (size_t i = 0; i < m->nrows(); ++ i)
+      for (size_t j = 0; j < m->ncols(); ++ j)
+        (*m)(i, j) = 3.0 * i + j - 5;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+}
+
+TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
+{
+  ReportMatrixInfoAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  EXPECT_EQ("class SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>", result.get<0>());
+
+  //EXPECT_FALSE(true);
+}
+
+TEST(ReportMatrixInfoAlgorithmTests, ReportsRowAndColumnCount)
+{
+  ReportMatrixInfoAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  EXPECT_EQ(3, result.get<1>());
+  EXPECT_EQ(4, result.get<2>());
+
+  //EXPECT_FALSE(true);
+}
+
+TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfElements)
+{
+  ReportMatrixInfoAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  
+  EXPECT_EQ(12, result.get<3>());
+
+  //EXPECT_FALSE(true);
+}
+
+TEST(ReportMatrixInfoAlgorithmTests, ReportsMinimumAndMaximum)
+{
+  ReportMatrixInfoAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  EXPECT_EQ(-5, result.get<4>());
+  EXPECT_EQ(4, result.get<5>());
+
+  //EXPECT_FALSE(true);
+}
+
+TEST(ReportMatrixInfoAlgorithmTests, NullInputReturnsDummyValues)
+{
+  ReportMatrixInfoAlgorithm algo;
+
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(DenseMatrixHandle());
+  EXPECT_EQ("<null>", result.get<0>());
+  EXPECT_EQ(0, result.get<1>());
+  EXPECT_EQ(0, result.get<2>());
+  EXPECT_EQ(0, result.get<3>());
+  EXPECT_EQ(0, result.get<4>());
+  EXPECT_EQ(0, result.get<5>());
+
+  //EXPECT_FALSE(true);
+}

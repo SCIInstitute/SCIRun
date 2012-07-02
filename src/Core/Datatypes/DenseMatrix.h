@@ -47,6 +47,11 @@ DenseMatrixGeneric<T>::DenseMatrixGeneric(size_t nrows, size_t ncols) : matrix_(
 }
 
 template <typename T>
+DenseMatrixGeneric<T>::DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val) : matrix_(nrows, ncols, val)
+{
+}
+
+template <typename T>
 DenseMatrixGeneric<T>::DenseMatrixGeneric(const DenseMatrixGeneric<T>& copy) : matrix_(copy.matrix_)
 {
 }
@@ -92,9 +97,21 @@ const T& DenseMatrixGeneric<T>::operator()(size_t r, size_t c) const
 }
 
 template <typename T>
+T DenseMatrixGeneric<T>::min() const
+{
+  return *std::min_element(matrix_.data().begin(), matrix_.data().end());
+}
+
+template <typename T>
+T DenseMatrixGeneric<T>::max() const
+{
+  return *std::max_element(matrix_.data().begin(), matrix_.data().end());
+}
+
+template <typename T>
 /*static*/ DenseMatrixGeneric<T> DenseMatrixGeneric<T>::zero_matrix(size_t nrows, size_t ncols)
 {
-  return DenseMatrixGeneric(nrows, ncols);
+  return DenseMatrixGeneric(nrows, ncols, 0);
 }
 
 template <typename T>
