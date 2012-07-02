@@ -32,8 +32,6 @@
 #include <Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
 
-//TODO DAN
-
 namespace SCIRun {
 namespace Algorithms {
 namespace Math {
@@ -46,11 +44,13 @@ namespace Math {
       TRANSPOSE,
       SCALAR_MULTIPLY
     };
+
+    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
     typedef boost::tuple<Operator, boost::optional<double> > Parameters;
+    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
-    SCIRun::Domain::Datatypes::DenseMatrixHandle run(SCIRun::Domain::Datatypes::DenseMatrixConstHandle matrix, const Parameters& params) const;
+    Outputs run(const Inputs& matrix, const Parameters& params) const;
   };
-
 }}}
 
 #endif

@@ -27,22 +27,13 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 #include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
-//using namespace SCIRun;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
-//using namespace SCIRun::Domain::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
-
-//TODO DAN
 
 namespace
 {

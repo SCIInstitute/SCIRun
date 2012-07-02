@@ -26,18 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_RECEIVE_SCALAR_H
-#define MODULES_BASIC_RECEIVE_SCALAR_H
+#ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
+#define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
 
-#include <Core/Dataflow/Network/Module.h>
-
-//TODO DAN
+#include <Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/MatrixFwd.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Basic {
+namespace Algorithms {
+namespace Math {
+  class EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
+  {
+  public:
+    enum Operator
+    {
+      ADD,
+      SUBTRACT,
+      MULTIPLY
+    };
+        
+    typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
+    typedef Operator Parameters;
+    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
-
+    Outputs run(const Inputs& inputs, const Parameters& params) const;
+  };
 }}}
 
 #endif

@@ -27,12 +27,60 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
-//using namespace SCIRun;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
 
-//TODO DAN
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
+
+namespace
+{
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++ i)
+      for (size_t j = 0; j < m->ncols(); ++ j)
+        (*m)(i, j) = 3.0 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+}
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAdd)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  EXPECT_EQ(2 * *m, *result);
+}
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtract)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT);
+  EXPECT_EQ(Zero, *result);
+}
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiply)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+  EXPECT_EQ(*m * *m, *result);
+}
+
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, NullInputReturnsNull)
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo;
+
+  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), matrix1()), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  EXPECT_FALSE(result);
+  result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(matrix1(), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  EXPECT_FALSE(result);
+}

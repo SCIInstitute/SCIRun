@@ -26,11 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
 
-//TODO DAN
+EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
+{
+  DenseMatrixHandle result;
+  DenseMatrixConstHandle lhs = inputs.get<0>();
+  DenseMatrixConstHandle rhs = inputs.get<1>();
+  if (!lhs || !rhs)
+    return result;
+
+  Operator oper = params;
+
+  //TODO DAN: absolutely need matrix move semantics here!!!!!!!
+  switch (oper)
+  {
+  case ADD:
+    result.reset(lhs->clone());
+    *result += *rhs;
+    break;
+  case SUBTRACT:
+    result.reset(lhs->clone());
+    *result -= *rhs;
+    break;
+  case MULTIPLY:
+    result.reset(lhs->clone());
+    *result *= *rhs;
+    break;
+  }
+
+  return result;
+}

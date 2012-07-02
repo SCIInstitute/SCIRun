@@ -32,9 +32,7 @@
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
 
-//TODO DAN
-
-DenseMatrixHandle EvaluateLinearAlgebraUnaryAlgorithm::run(DenseMatrixConstHandle matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
+EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
   DenseMatrixHandle result;
 
@@ -46,14 +44,14 @@ DenseMatrixHandle EvaluateLinearAlgebraUnaryAlgorithm::run(DenseMatrixConstHandl
   //TODO DAN: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
-  case EvaluateLinearAlgebraUnaryAlgorithm::NEGATE:
+  case NEGATE:
     result.reset(matrix->clone());
     (*result) *= -1;
     break;
-  case EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE:
+  case TRANSPOSE:
     result.reset(matrix->make_transpose()); 
     break;
-  case EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY:
+  case SCALAR_MULTIPLY:
     boost::optional<double> scalarOption = params.get<1>();
     if (!scalarOption)
       throw std::invalid_argument("No scalar value available to multiply!");
