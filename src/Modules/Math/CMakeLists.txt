@@ -49,6 +49,13 @@ ADD_LIBRARY(Modules_Math
 ${Modules_Math_HEADERS}
 ${Modules_Math_SRCS})
 
+TARGET_LINK_LIBRARIES(Modules_Math
+Core_Dataflow_Network
+Core_Datatypes
+Algorithms_Math
+Algorithms_Base
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Math)
 ENDIF(BUILD_SHARED_LIBS)

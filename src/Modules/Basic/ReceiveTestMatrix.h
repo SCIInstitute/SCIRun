@@ -31,12 +31,13 @@
 
 #include <Core/Dataflow/Network/Module.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Modules/Basic/Share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Basic {
 
-      class ReceiveTestMatrixModule : public SCIRun::Domain::Networks::Module
+      class SCISHARE ReceiveTestMatrixModule : public SCIRun::Domain::Networks::Module
       {
       public:
         ReceiveTestMatrixModule();

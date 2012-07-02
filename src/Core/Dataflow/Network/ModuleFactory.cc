@@ -26,22 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Scalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Core/Dataflow/Network/ModuleFactory.h>
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 
-SendScalarModule::SendScalarModule()
-  : Module("SendScalar"),
-  data_(-1)
-{
-
-}
-
-void SendScalarModule::execute()
-{
-  DatatypeHandle output(new Double(data_));
-  send_output_handle(0, output);
-}
+ModuleFactory::~ModuleFactory() {}

@@ -30,12 +30,13 @@
 #define MODULES_BASIC_SEND_SCALAR_H
 
 #include <Core/Dataflow/Network/Module.h>
+#include <Modules/Basic/Share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
   
-  class SendScalarModule : public SCIRun::Domain::Networks::Module
+  class SCISHARE SendScalarModule : public SCIRun::Domain::Networks::Module
   {
   public:
     SendScalarModule();

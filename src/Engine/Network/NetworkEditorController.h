@@ -31,6 +31,7 @@
 
 #include <boost/signals2.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Engine/Network/Share.h>
 
 namespace SCIRun {
 namespace Engine {
@@ -39,10 +40,10 @@ namespace Engine {
   typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionId&)> ConnectionAddedSignalType;
 
-  class NetworkEditorController 
+  class SCISHARE NetworkEditorController 
   {
   public:
-    NetworkEditorController();
+    explicit NetworkEditorController(SCIRun::Domain::Networks::ModuleFactoryHandle mf);
     explicit NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network);
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);

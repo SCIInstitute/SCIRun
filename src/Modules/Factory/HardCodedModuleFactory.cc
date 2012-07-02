@@ -44,6 +44,7 @@
 #include <Modules/Factory/Share.h>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace boost::assign;

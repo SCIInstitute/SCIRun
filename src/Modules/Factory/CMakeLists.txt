@@ -39,6 +39,12 @@ ADD_LIBRARY(Modules_Factory
 ${Modules_Factory_HEADERS}
 ${Modules_Factory_SRCS})
 
+TARGET_LINK_LIBRARIES(Modules_Factory
+Core_Dataflow_Network
+Modules_Math
+Modules_Basic
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Modules_Factory)
 ENDIF(BUILD_SHARED_LIBS)

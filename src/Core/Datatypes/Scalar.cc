@@ -31,13 +31,16 @@
 
 using namespace SCIRun::Domain::Datatypes;
 
+template class Scalar<int>;
+template class Scalar<double>;
+
 //TODO DAN
-
-Int32::Int32(int val) : val_(val)
-{
-}
-
-int Int32::getValue() const
-{
-  return val_;
-}
+//
+//Int32::Int32(int val) : val_(val)
+//{
+//}
+//
+//int Int32::getValue() const
+//{
+//  return val_;
+//}

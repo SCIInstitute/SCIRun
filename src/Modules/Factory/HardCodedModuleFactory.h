@@ -36,12 +36,12 @@ namespace SCIRun {
   namespace Modules {
     namespace Factory {
       
-      class SCISHARE HardCodedModuleFactory : public ModuleFactory
+      class SCISHARE HardCodedModuleFactory : public SCIRun::Domain::Networks::ModuleFactory
       {
       public:
         HardCodedModuleFactory();
-        virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
-        virtual ModuleHandle create(const ModuleDescription& info);
+        virtual SCIRun::Domain::Networks::ModuleDescription lookupDescription(const SCIRun::Domain::Networks::ModuleLookupInfo& info);
+        virtual SCIRun::Domain::Networks::ModuleHandle create(const SCIRun::Domain::Networks::ModuleDescription& info);
       };
     }
   }

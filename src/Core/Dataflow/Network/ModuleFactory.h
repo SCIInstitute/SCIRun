@@ -40,7 +40,7 @@ namespace Networks {
   class SCISHARE ModuleFactory
   {
   public:
-    virtual ~ModuleFactory() {}
+    virtual ~ModuleFactory();
     virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
     virtual ModuleHandle create(const ModuleDescription& desc) = 0;
   };

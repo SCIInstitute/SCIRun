@@ -30,12 +30,13 @@
 #define MODULES_BASIC_RECEIVE_SCALAR_H
 
 #include <Core/Dataflow/Network/Module.h>
+#include <Modules/Basic/Share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Basic {
 
-      class ReceiveScalarModule : public SCIRun::Domain::Networks::Module
+      class SCISHARE ReceiveScalarModule : public SCIRun::Domain::Networks::Module
       {
       public:
         ReceiveScalarModule();

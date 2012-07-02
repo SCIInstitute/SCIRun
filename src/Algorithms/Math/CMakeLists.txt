@@ -43,7 +43,6 @@ ADD_LIBRARY(Algorithms_Math
 ${Algorithms_Math_HEADERS}
 ${Algorithms_Math_SRCS})
 
-
 TARGET_LINK_LIBRARIES(Algorithms_Math
 Core_Datatypes
 Algorithms_Base

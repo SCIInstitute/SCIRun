@@ -31,6 +31,7 @@ SET(Core_Dataflow_Network_SRCS
   ConnectionId.cc
   Module.cc
   ModuleDescription.cc
+  ModuleFactory.cc
   ModuleInterface.cc
   Network.cc
   Port.cc

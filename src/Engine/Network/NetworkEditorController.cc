@@ -32,7 +32,6 @@
 
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
 
@@ -40,10 +39,9 @@ using namespace SCIRun;
 using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
 
-NetworkEditorController::NetworkEditorController()
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf)
 {
   //TODO should this class own or just keep a reference?
-  ModuleFactoryHandle mf(new HardCodedModuleFactory);
   theNetwork_.reset(new Network(mf));
 }
 
