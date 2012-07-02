@@ -27,35 +27,19 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
-#define CORE_DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H 
+#ifndef ENGINE_NETWORK_SHARE_H
+#define ENGINE_NETWORK_SHARE_H 
 
-#include <boost/optional.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Dataflow/Network/Share.h>
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  //template <class Receiver> switch to run-time compatibility checking...
-  class SCISHARE DatatypeSourceInterface
-  {
-  public:
-    virtual ~DatatypeSourceInterface() {}
-    virtual void send(DatatypeSinkInterfaceHandle receiver, Datatypes::DatatypeHandle data) = 0;
-  };
-
-  class SCISHARE DatatypeSinkInterface
-  {
-  public:
-    virtual ~DatatypeSinkInterface() {}
-    virtual void waitForData() = 0;
-    virtual Datatypes::DatatypeHandleOption receive() = 0;
-  };
-
-}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Engine_Network
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
 
 #endif

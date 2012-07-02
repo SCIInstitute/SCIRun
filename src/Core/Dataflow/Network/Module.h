@@ -39,12 +39,13 @@
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/PortManager.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
   
-  class Module : public ModuleInterface, boost::noncopyable
+  class SCISHARE Module : public ModuleInterface, boost::noncopyable
   {
   public:
     //TODO replace params with ModuleLookupInfo

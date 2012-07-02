@@ -31,12 +31,13 @@
 
 #include <Core/Dataflow/Network/Module.h>
 #include <Algorithms/Math/AlgorithmFwd.h>
+#include <Modules/Math/Share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace Math {
   //TODO DAN
-  class EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
+  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
   {
   public:
     EvaluateLinearAlgebraUnaryModule();

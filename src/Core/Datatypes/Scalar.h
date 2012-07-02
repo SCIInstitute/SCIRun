@@ -27,8 +27,8 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
+#ifndef CORE_DATATYPES_SCALAR_H
+#define CORE_DATATYPES_SCALAR_H 
 
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
@@ -39,6 +39,41 @@ namespace Domain {
 namespace Datatypes {
 
 //TODO DAN
+  class SCISHARE Scalar : public Datatype
+  {
+
+  };
+
+  class SCISHARE Int32 : public Scalar
+  {
+
+  };
+
+  class SCISHARE UInt32 : public Scalar
+  {
+
+  };
+
+  class SCISHARE Int64 : public Scalar
+  {
+
+  };
+
+  class SCISHARE UInt64 : public Scalar
+  {
+
+  };
+
+  class SCISHARE Float : public Scalar
+  {
+
+  };
+
+  class SCISHARE Double : public Scalar
+  {
+
+  };
+
 
 }}}
 

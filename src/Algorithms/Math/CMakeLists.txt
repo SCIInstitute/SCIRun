@@ -36,6 +36,7 @@ SET(Algorithms_Math_HEADERS
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
   ReportMatrixInfo.h
+  Share.h
 )
 
 ADD_LIBRARY(Algorithms_Math 
@@ -45,6 +46,7 @@ ${Algorithms_Math_SRCS})
 
 TARGET_LINK_LIBRARIES(Algorithms_Math
 Core_Datatypes
+Algorithms_Base
 )
 
 IF(BUILD_SHARED_LIBS)

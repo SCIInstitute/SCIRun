@@ -29,15 +29,16 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
 #define ALGORITHMS_BASE_ALGORITHMBASE_H
 
+#include <Algorithms/Base/Share.h>
 //TODO DAN
 
 namespace SCIRun {
 namespace Algorithms {
 
-class AlgorithmBase
+class SCISHARE AlgorithmBase
 {
 public:
-  virtual ~AlgorithmBase() {}
+  virtual ~AlgorithmBase();
   
   /*
     idea: make it mockable

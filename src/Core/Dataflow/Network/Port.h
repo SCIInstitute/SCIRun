@@ -34,12 +34,13 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 #include <Core/Dataflow/Network/PortInterface.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
   
-class Port : virtual public PortInterface, boost::noncopyable
+class SCISHARE Port : virtual public PortInterface, boost::noncopyable
 {
 public:
   struct ConstructionParams
@@ -81,7 +82,7 @@ private:
 #pragma warning (push)
 #pragma warning (disable : 4250)
 
-class InputPort : public Port, public InputPortInterface
+class SCISHARE InputPort : public Port, public InputPortInterface
 {
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
@@ -94,7 +95,7 @@ private:
 };
 
 
-class OutputPort : public Port, public OutputPortInterface
+class SCISHARE OutputPort : public Port, public OutputPortInterface
 {
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);

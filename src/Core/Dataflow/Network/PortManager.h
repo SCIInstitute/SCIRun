@@ -30,7 +30,6 @@
 #ifndef CORE_DATAFLOW_NETWORK_PORTMANAGER_H
 #define CORE_DATAFLOW_NETWORK_PORTMANAGER_H 
 
-
 #include <Core/Dataflow/Network/Port.h>
 
 #include <boost/function.hpp>

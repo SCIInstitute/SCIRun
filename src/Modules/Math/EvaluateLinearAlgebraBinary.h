@@ -26,16 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_RECEIVE_SCALAR_H
-#define MODULES_BASIC_RECEIVE_SCALAR_H
+#ifndef MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULE_H
+#define MODULES_MATH_EVALUATELINEARALGEBRABINARYMODULE_H
 
 #include <Core/Dataflow/Network/Module.h>
+#include <Modules/Math/Share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Basic {
       //TODO DAN
-      class EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module
+      class SCISHARE EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module
       {
       public:
         EvaluateLinearAlgebraBinaryModule();

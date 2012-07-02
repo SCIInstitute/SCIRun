@@ -32,11 +32,16 @@ SET(Algorithms_Base_SRCS
 
 SET(Algorithms_Base_HEADERS
   AlgorithmBase.h
+  Share.h
 )
 
 ADD_LIBRARY(Algorithms_Base 
 ${Algorithms_Base_HEADERS}
 ${Algorithms_Base_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Base)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

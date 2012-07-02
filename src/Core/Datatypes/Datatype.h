@@ -39,31 +39,15 @@ namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
 
-#ifdef BUILD_Core_Datatypes
-#pragma message("poot")
-#endif
-
-  // hold anything for now
   class SCISHARE Datatype
   {
   public:
     Datatype();
-    ~Datatype();
-    template <typename T>
-    explicit Datatype(const T& t) : value_(t) {}
+    virtual ~Datatype();
     Datatype(const Datatype& other);
     Datatype& operator=(const Datatype& rhs);
 
-    template <typename T>
-    T getValue()
-    {
-      return boost::any_cast<T>(value_);
-    }
-
     virtual Datatype* clone() const;
-
-  private:
-    boost::any value_;
   };
 
   typedef boost::shared_ptr<Datatype> DatatypeHandle;

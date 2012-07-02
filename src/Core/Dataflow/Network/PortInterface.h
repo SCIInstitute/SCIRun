@@ -33,12 +33,13 @@
 #include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class PortInterface
+  class SCISHARE PortInterface
   {
   public:
     virtual ~PortInterface() {}
@@ -53,14 +54,14 @@ namespace Networks {
     virtual void finish() = 0;
   };
   
-  class InputPortInterface : virtual public PortInterface
+  class SCISHARE InputPortInterface : virtual public PortInterface
   {
   public:
     virtual Datatypes::DatatypeHandleOption getData() = 0;
     virtual DatatypeSinkInterfaceHandle sink() = 0;
   };
   
-  class OutputPortInterface : virtual public PortInterface
+  class SCISHARE OutputPortInterface : virtual public PortInterface
   {
   public:
     virtual void sendData(Datatypes::DatatypeHandle data) = 0;

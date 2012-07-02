@@ -32,11 +32,16 @@ SET(Engine_State_SRCS
 
 SET(Engine_State_HEADERS
   ModuleStateBase.h
+  Share.h
 )
 
 ADD_LIBRARY(Engine_State 
 ${Engine_State_HEADERS}
 ${Engine_State_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Engine_State)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

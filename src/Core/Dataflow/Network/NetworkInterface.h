@@ -31,12 +31,13 @@
 #define CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class NetworkInterface
+  class SCISHARE NetworkInterface
   {
   public:
     virtual ~NetworkInterface() {}

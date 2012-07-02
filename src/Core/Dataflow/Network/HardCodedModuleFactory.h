@@ -30,12 +30,13 @@
 #define HARD_CODED_MODULE_FACTORY_H
 
 #include <Core/Dataflow/Network/ModuleFactory.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
   namespace Domain {
     namespace Networks {
       
-      class HardCodedModuleFactory : public ModuleFactory
+      class SCISHARE HardCodedModuleFactory : public ModuleFactory
       {
       public:
         HardCodedModuleFactory();

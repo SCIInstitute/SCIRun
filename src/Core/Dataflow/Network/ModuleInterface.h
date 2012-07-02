@@ -33,12 +33,13 @@
 #include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class ModuleInfoProvider
+  class SCISHARE ModuleInfoProvider
   {
   public:
     virtual ~ModuleInfoProvider() {}
@@ -51,9 +52,9 @@ namespace Networks {
     virtual std::string get_id() const = 0;
   };
 
-  std::string to_string(const ModuleInfoProvider&);
+  SCISHARE std::string to_string(const ModuleInfoProvider&);
 
-  class ModuleInterface : public ModuleInfoProvider
+  class SCISHARE ModuleInterface : public ModuleInfoProvider
   {
   public:
     virtual ~ModuleInterface() {}

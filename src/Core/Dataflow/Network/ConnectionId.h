@@ -31,12 +31,13 @@
 #define CORE_DATAFLOW_NETWORK_CONNECTIONID_H 
 
 #include <string>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  struct ConnectionDescription
+  struct SCISHARE ConnectionDescription
   {
     ConnectionDescription(const std::string& id1, size_t p1, const std::string& id2, size_t p2)
       : moduleId1_(id1), port1_(p1), moduleId2_(id2), port2_(p2) {}
@@ -46,7 +47,7 @@ namespace Networks {
     size_t port2_;
   };
 
-  struct ConnectionId
+  struct SCISHARE ConnectionId
   {
     ConnectionId(const char* s) : id_(s) {}
     ConnectionId(const std::string& s) : id_(s) {}
@@ -56,10 +57,10 @@ namespace Networks {
     operator std::string() const { return id_; }
   };
 
-  bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
-  bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
+  SCISHARE bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
+  SCISHARE bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
 
-  struct OrderedByConnectionId
+  struct SCISHARE OrderedByConnectionId
   {
     bool operator()(const ConnectionId& lhs, const ConnectionId& rhs) const
     {

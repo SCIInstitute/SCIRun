@@ -32,12 +32,13 @@
 #include <string>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
   namespace Domain {
     namespace Networks {
 
-      class Connection 
+      class SCISHARE Connection 
       {
       public:
         Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id);

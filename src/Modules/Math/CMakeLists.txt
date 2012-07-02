@@ -42,11 +42,16 @@ SET(Modules_Math_HEADERS
   EvaluateLinearAlgebraBinaryState.h
   ReportMatrixInfo.h
   ReportMatrixInfoState.h
+  Share.h
 )
 
 ADD_LIBRARY(Modules_Math 
 ${Modules_Math_HEADERS}
 ${Modules_Math_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Math)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

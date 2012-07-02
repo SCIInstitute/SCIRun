@@ -31,12 +31,13 @@
 #define CORE_DATAFLOW_NETWORK_MODULE_FACTORY_H 
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class ModuleFactory
+  class SCISHARE ModuleFactory
   {
   public:
     virtual ~ModuleFactory() {}

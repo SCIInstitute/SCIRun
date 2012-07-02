@@ -50,11 +50,16 @@ SET(Core_Dataflow_Network_HEADERS
   Port.h
   PortInterface.h
   PortManager.h
+  Share.h
 )
 
 ADD_LIBRARY(Core_Dataflow_Network 
 ${Core_Dataflow_Network_HEADERS}
 ${Core_Dataflow_Network_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Dataflow_Network)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

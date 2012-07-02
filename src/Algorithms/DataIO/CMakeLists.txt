@@ -34,6 +34,7 @@ SET(Algorithms_DataIO_SRCS
 SET(Algorithms_DataIO_HEADERS
   ReadMatrix.h
   WriteMatrix.h
+  Share.h
 )
 
 ADD_LIBRARY(Algorithms_DataIO 

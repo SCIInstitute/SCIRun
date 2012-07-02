@@ -36,12 +36,13 @@
 #include <map>
 #include <Core/Dataflow/Network/NetworkInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class Network : public NetworkInterface, boost::noncopyable
+  class SCISHARE Network : public NetworkInterface, boost::noncopyable
   {
   public:
     explicit Network(ModuleFactoryHandle moduleFactory);

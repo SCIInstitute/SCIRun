@@ -39,6 +39,7 @@ SET(Core_Datatypes_HEADERS
   MatrixComparison.h
   MatrixIO.h
   Scalar.h
+  Share.h
 )
 
 ADD_LIBRARY(Core_Datatypes 

@@ -32,11 +32,16 @@ SET(Engine_Scheduler_SRCS
 
 SET(Engine_Scheduler_HEADERS
   Scheduler.h
+  Share.h
 )
 
 ADD_LIBRARY(Engine_Scheduler 
 ${Engine_Scheduler_HEADERS}
 ${Engine_Scheduler_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Engine_Scheduler)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

@@ -31,12 +31,13 @@
 #define CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  struct InputPortDescription
+  struct SCISHARE InputPortDescription
   {
     InputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
       name(n), datatype(d), color(c) {}
@@ -46,7 +47,7 @@ namespace Networks {
     //iport_maker maker;
   };
 
-  struct OutputPortDescription
+  struct SCISHARE OutputPortDescription
   {
     OutputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
       name(n), datatype(d), color(c) {}
@@ -56,14 +57,14 @@ namespace Networks {
     //oport_maker maker;
   };
 
-  struct ModuleLookupInfo
+  struct SCISHARE ModuleLookupInfo
   {
     std::string package_name_;
     std::string category_name_;
     std::string module_name_;
   };
 
-  struct ModuleDescription
+  struct SCISHARE ModuleDescription
   {
     ModuleLookupInfo lookupInfo_;
     std::string module_version_;

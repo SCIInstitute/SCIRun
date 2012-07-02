@@ -32,11 +32,16 @@ SET(Engine_Network_SRCS
 
 SET(Engine_Network_HEADERS
   NetworkEditorController.h
+  Share.h
 )
 
 ADD_LIBRARY(Engine_Network 
 ${Engine_Network_HEADERS}
 ${Engine_Network_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Engine_Network)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 
