@@ -31,11 +31,12 @@
 
 #include <Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Algorithms/Math/Share.h>
 
 namespace SCIRun {
 namespace Algorithms {
 namespace Math {
-  class EvaluateLinearAlgebraUnaryAlgorithm : public AlgorithmBase
+  class SCISHARE EvaluateLinearAlgebraUnaryAlgorithm : public AlgorithmBase
   {
   public:
     enum Operator

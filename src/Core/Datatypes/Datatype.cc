@@ -31,6 +31,10 @@
 
 using namespace SCIRun::Domain::Datatypes;
 
+Datatype::Datatype() {}
+
+Datatype::~Datatype() {}
+
 Datatype::Datatype(const Datatype& other) : value_(other.value_)
 {
 }

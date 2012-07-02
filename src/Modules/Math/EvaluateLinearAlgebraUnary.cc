@@ -46,20 +46,20 @@ EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
 
 void EvaluateLinearAlgebraUnaryModule::execute()
 {
-  EvaluateLinearAlgebraUnaryAlgorithm algo;
+  EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO DAN inject
 
   DatatypeHandleOption input = get_input_handle(0);
   if (!input)
     throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
 
-  DenseMatrixConstHandle denseInput = boost::dynamic_pointer_cast<DenseMatrix>(*input);
+  DenseMatrixConstHandle denseInput = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
   if (!denseInput)
   {
     //TODO DAN log error? send null? check standard practice.
     return;
   }
 
-  DenseMatrixHandle output = algo.run(denseInput, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  DenseMatrixHandle output = algo.run(denseInput, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);  //TODO DAN
 
   send_output_handle(0, output);
 }

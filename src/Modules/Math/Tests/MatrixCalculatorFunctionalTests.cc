@@ -65,6 +65,14 @@ namespace
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
+  DenseMatrixHandle matrix2()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++i)
+      for (size_t j = 0; j < m->ncols(); ++j)
+        (*m)(i, j) = -2.0 * i + j;
+    return m;
+  }
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
@@ -121,4 +129,35 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   process->execute();
   receive->execute();
   EXPECT_EQ(2.0 * *input, *receiveModule->latestReceivedMatrix());
+}
+
+
+TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
+{
+  std::cout << "m1" << std::endl;
+  std::cout << *matrix1() << std::endl;
+  std::cout << "m2" << std::endl;
+  std::cout << *matrix2() << std::endl;
+  std::cout << "(-m1 * 4m2) + trans(m1)" << std::endl;
+  std::cout << (-*matrix1()) * (4* *matrix2()) + transpose(*matrix1()) << std::endl;
+
+  //Test network:
+  /*
+  send m1             send m2
+  |         |         |
+  transpose negate    scalar mult *4
+  |         |         |
+  |           multiply
+  |           |
+        add
+        |
+        report
+  */
+
+
+
+
+
+
+
 }

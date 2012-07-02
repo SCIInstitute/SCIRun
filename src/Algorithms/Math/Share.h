@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_REPORTMATRIXINFO_H
-#define ALGORITHMS_MATH_REPORTMATRIXINFO_H
 
-#include <Algorithms/Base/AlgorithmBase.h>
-#include <Algorithms/Math/AlgorithmFwd.h>
-#include <Algorithms/Math/Share.h>
+#ifndef CORE_DATATYPES_SHARE_H
+#define CORE_DATATYPES_SHARE_H 
 
-//TODO DAN
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Algorithms {
-namespace Math {
-  
-  class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
-  {
-  public:
-    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
-    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
-    typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
-
-    Outputs run(const Inputs& input, const Parameters& params = 0) const;
-  };
-
-}}}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Algorithms_Math
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
 
 #endif

@@ -33,16 +33,22 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
 
+#ifdef BUILD_Core_Datatypes
+#pragma message("poot")
+#endif
+
   // hold anything for now
-  class Datatype
+  class SCISHARE Datatype
   {
   public:
-    Datatype() {}
+    Datatype();
+    ~Datatype();
     template <typename T>
     explicit Datatype(const T& t) : value_(t) {}
     Datatype(const Datatype& other);

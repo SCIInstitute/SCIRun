@@ -45,5 +45,9 @@ ADD_LIBRARY(Core_Datatypes
 ${Core_Datatypes_HEADERS}
 ${Core_Datatypes_SRCS})
 
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
+ENDIF(BUILD_SHARED_LIBS)
+
 ADD_SUBDIRECTORY(Tests)
 

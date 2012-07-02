@@ -42,5 +42,14 @@ ADD_LIBRARY(Algorithms_Math
 ${Algorithms_Math_HEADERS}
 ${Algorithms_Math_SRCS})
 
+
+TARGET_LINK_LIBRARIES(Algorithms_Math
+Core_Datatypes
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Math)
+ENDIF(BUILD_SHARED_LIBS)
+
 ADD_SUBDIRECTORY(Tests)
 
