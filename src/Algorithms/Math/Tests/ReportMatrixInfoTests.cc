@@ -58,7 +58,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
   const std::string expectedType = "class SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>";
   EXPECT_EQ(expectedType, result.get<0>());
 #else
-  const std::string expectedType = ; //fill this in later
+  const std::string expectedType = ""; //fill this in later
   //EXPECT_EQ(expectedType, result.get<0>());
 #endif
   EXPECT_TRUE(result.get<0>().find("DenseMatrix") != std::string::npos);
