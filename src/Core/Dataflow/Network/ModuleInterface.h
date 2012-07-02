@@ -57,7 +57,7 @@ namespace Networks {
   class SCISHARE ModuleInterface : public ModuleInfoProvider
   {
   public:
-    virtual ~ModuleInterface() {}
+    virtual ~ModuleInterface();
     //virtual void do_execute() = 0;
 
     virtual void execute() = 0;

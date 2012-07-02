@@ -26,25 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef HARD_CODED_MODULE_FACTORY_H
-#define HARD_CODED_MODULE_FACTORY_H
+#include <Core/Dataflow/Network/ModuleInterface.h>
 
-#include <Core/Dataflow/Network/ModuleFactory.h>
-#include <Core/Dataflow/Network/Share.h>
+using namespace SCIRun::Domain::Networks;
 
-namespace SCIRun {
-  namespace Domain {
-    namespace Networks {
-      
-      class SCISHARE HardCodedModuleFactory : public ModuleFactory
-      {
-      public:
-        HardCodedModuleFactory();
-        virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
-        virtual ModuleHandle create(const ModuleDescription& info);
-      };
-    }
-  }
+ModuleInterface::~ModuleInterface()
+{
 }
-
-#endif

@@ -31,6 +31,7 @@
 #include <Core/Dataflow/Network/Tests/MockModule.h>
 #include <Core/Dataflow/Network/Tests/MockPorts.h>
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Core/Datatypes/Scalar.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -92,10 +93,10 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   Connection c(outputModule, 1, inputModule, 2, "test");
 
   const int dataValue = 2;
-  DatatypeHandle dataToPush(new Datatype(dataValue));
+  DatatypeHandle dataToPush(new Int32(dataValue));
   outputPort->sendData(dataToPush);
   
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
-  EXPECT_EQ(dataValue, (*data)->getValue<int>());
+  EXPECT_EQ(dataValue, (*data)->as<Int32>()->getValue());
 }

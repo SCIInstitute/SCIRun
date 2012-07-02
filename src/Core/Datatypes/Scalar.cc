@@ -27,8 +27,17 @@
 */
 
 #include <sstream>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun::Domain::Datatypes;
 
 //TODO DAN
+
+Int32::Int32(int val) : val_(val)
+{
+}
+
+int Int32::getValue() const
+{
+  return val_;
+}

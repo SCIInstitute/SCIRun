@@ -200,6 +200,9 @@ Module::Builder::Builder() {}
 Module::Builder::SinkMaker Module::Builder::sink_maker_;
 Module::Builder::SourceMaker Module::Builder::source_maker_;
 
+/*static*/ void Module::Builder::use_sink_type(Module::Builder::SinkMaker func) { sink_maker_ = func; }
+/*static*/ void Module::Builder::use_source_type(Module::Builder::SourceMaker func) { source_maker_ = func; }
+
 Module::Builder& Module::Builder::with_name(const std::string& name)
 {
   if (!module_)

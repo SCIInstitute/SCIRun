@@ -30,6 +30,7 @@
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Tests/MockModule.h>
 #include <Core/Dataflow/Network/Tests/MockPorts.h>
+#include <Core/Datatypes/Scalar.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -75,7 +76,7 @@ TEST_F(OutputPortTest, SendSomeData)
   Connection c(outputModule, 1, inputModule, 2, "test");
   
   const int dataValue = 2;
-  DatatypeHandle dataToPush(new Datatype(dataValue));
+  DatatypeHandle dataToPush(new Int32(dataValue));
   
   EXPECT_CALL(*mockSource, send(_, dataToPush));
   outputPort->sendData(dataToPush);
@@ -89,7 +90,7 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
 
   const int dataValue = 2;
-  DatatypeHandle dataToPush(new Datatype(dataValue));
+  DatatypeHandle dataToPush(new Int32(dataValue));
 
   EXPECT_CALL(*mockSource, send(_, dataToPush)).Times(0);
   outputPort->sendData(dataToPush);
@@ -113,7 +114,7 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   EXPECT_EQ(2, outputPort->nconnections());
 
   const int dataValue = 2;
-  DatatypeHandle dataToPush(new Datatype(dataValue));
+  DatatypeHandle dataToPush(new Int32(dataValue));
 
   EXPECT_CALL(*mockSource, send(_, dataToPush)).Times(2);
   outputPort->sendData(dataToPush);

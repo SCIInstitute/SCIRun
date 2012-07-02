@@ -73,7 +73,7 @@ namespace Networks {
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data);
 
-    class Builder : boost::noncopyable
+    class SCISHARE Builder : boost::noncopyable
     {
     public:
       Builder();
@@ -86,8 +86,8 @@ namespace Networks {
 
       typedef boost::function<SCIRun::Domain::Networks::DatatypeSinkInterface*()> SinkMaker;
       typedef boost::function<SCIRun::Domain::Networks::DatatypeSourceInterface*()> SourceMaker;
-      static void use_sink_type(SinkMaker func) { sink_maker_ = func; }
-      static void use_source_type(SourceMaker func) { source_maker_ = func; }
+      static void use_sink_type(SinkMaker func);
+      static void use_source_type(SourceMaker func);
     private:
       boost::shared_ptr<Module> module_;
       static SinkMaker sink_maker_;

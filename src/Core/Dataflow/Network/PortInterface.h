@@ -42,7 +42,7 @@ namespace Networks {
   class SCISHARE PortInterface
   {
   public:
-    virtual ~PortInterface() {}
+    virtual ~PortInterface();
     virtual void attach(Connection* conn) = 0;
     virtual void detach(Connection* conn) = 0;
     virtual size_t nconnections() const = 0;
@@ -57,6 +57,7 @@ namespace Networks {
   class SCISHARE InputPortInterface : virtual public PortInterface
   {
   public:
+    virtual ~InputPortInterface();
     virtual Datatypes::DatatypeHandleOption getData() = 0;
     virtual DatatypeSinkInterfaceHandle sink() = 0;
   };
@@ -64,6 +65,7 @@ namespace Networks {
   class SCISHARE OutputPortInterface : virtual public PortInterface
   {
   public:
+    virtual ~OutputPortInterface();
     virtual void sendData(Datatypes::DatatypeHandle data) = 0;
   };
 }}}

@@ -27,40 +27,19 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
+#ifndef MODULES_FACTORY_SHARE_H
+#define MODULES_FACTORY_SHARE_H 
 
-#include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include <Core/Datatypes/Share.h>
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Domain {
-namespace Datatypes {
-
-  class SCISHARE Datatype
-  {
-  public:
-    Datatype();
-    virtual ~Datatype();
-    Datatype(const Datatype& other);
-    Datatype& operator=(const Datatype& rhs);
-
-    //TODO
-    template <typename T>
-    const T* as() const
-    {
-      return dynamic_cast<const T*>(this);
-    }
-
-    virtual Datatype* clone() const;
-  };
-
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
-
-}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Factory
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
 
 #endif

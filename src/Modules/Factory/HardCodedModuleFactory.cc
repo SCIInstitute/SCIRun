@@ -29,7 +29,7 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <boost/functional/factory.hpp>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
 
@@ -41,6 +41,7 @@
 
 //TODO
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Modules/Factory/Share.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::Basic;

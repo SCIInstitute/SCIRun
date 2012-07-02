@@ -30,6 +30,8 @@
 #ifndef CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 #define CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
 
+#include <string>
+#include <vector>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 
@@ -66,6 +68,8 @@ namespace Networks {
 
   struct SCISHARE ModuleDescription
   {
+    ModuleDescription();
+    ~ModuleDescription();
     ModuleLookupInfo lookupInfo_;
     std::string module_version_;
     std::vector<InputPortDescription> input_ports_;

@@ -30,9 +30,8 @@
 #ifndef CORE_DATATYPES_SCALAR_H
 #define CORE_DATATYPES_SCALAR_H 
 
-#include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
 namespace Domain {
@@ -46,7 +45,11 @@ namespace Datatypes {
 
   class SCISHARE Int32 : public Scalar
   {
-
+  public:
+    explicit Int32(int val);
+    int getValue() const;
+  private:
+    int val_;
   };
 
   class SCISHARE UInt32 : public Scalar

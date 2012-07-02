@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Dataflow/Network/PortInterface.h>
 
-#ifndef CORE_DATATYPES_DATATYPE_H
-#define CORE_DATATYPES_DATATYPE_H 
+using namespace SCIRun::Domain::Networks;
 
-#include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include <Core/Datatypes/Share.h>
+PortInterface::~PortInterface()
+{
+}
 
-namespace SCIRun {
-namespace Domain {
-namespace Datatypes {
+InputPortInterface::~InputPortInterface()
+{
+}
 
-  class SCISHARE Datatype
-  {
-  public:
-    Datatype();
-    virtual ~Datatype();
-    Datatype(const Datatype& other);
-    Datatype& operator=(const Datatype& rhs);
-
-    //TODO
-    template <typename T>
-    const T* as() const
-    {
-      return dynamic_cast<const T*>(this);
-    }
-
-    virtual Datatype* clone() const;
-  };
-
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
-
-}}}
-
-
-#endif
+OutputPortInterface::~OutputPortInterface()
+{
+}
