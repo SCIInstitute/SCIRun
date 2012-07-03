@@ -30,7 +30,7 @@ SET(Algorithms_Base_Tests_SRCS
   AlgorithmBaseTests.cc
 )
 
-ADD_EXECUTABLE(Algorithms_Base_Tests
+SCIRUN_ADD_UNIT_TEST(Algorithms_Base_Tests
 ${Algorithms_Base_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Algorithms_Base_Tests

@@ -42,7 +42,7 @@ SET(Core_Dataflow_Network_Tests_HEADERS
   MockPorts.h
 )
 
-ADD_EXECUTABLE(Core_Dataflow_Network_Tests 
+SCIRUN_ADD_UNIT_TEST(Core_Dataflow_Network_Tests 
 ${Core_Dataflow_Network_Tests_HEADERS}
 ${Core_Dataflow_Network_Tests_SRCS})
 

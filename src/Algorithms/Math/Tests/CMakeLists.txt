@@ -36,7 +36,7 @@ SET(Algorithms_Math_Tests_SRCS
 #  NetworkEditorControllerTests_.h
 #)
 
-ADD_EXECUTABLE(Algorithms_Math_Tests
+SCIRUN_ADD_UNIT_TEST(Algorithms_Math_Tests
 ${Algorithms_Math_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Algorithms_Math_Tests

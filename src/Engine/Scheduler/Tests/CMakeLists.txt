@@ -34,7 +34,7 @@ SET(Engine_Scheduler_Tests_SRCS
 #  NetworkEditorControllerTests_.h
 #)
 
-ADD_EXECUTABLE(Engine_Scheduler_Tests
+SCIRUN_ADD_UNIT_TEST(Engine_Scheduler_Tests
 #${Engine_Network_Tests_HEADERS}
 ${Engine_Scheduler_Tests_SRCS})
 

@@ -30,7 +30,7 @@ SET(Core_Logging_Tests_SRCS
   LoggerTests.cc
 )
 
-ADD_EXECUTABLE(Core_Logging_Tests
+SCIRUN_ADD_UNIT_TEST(Core_Logging_Tests
 ${Core_Logging_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Logging_Tests

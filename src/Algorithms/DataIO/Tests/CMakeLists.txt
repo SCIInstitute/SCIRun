@@ -31,7 +31,7 @@ SET(Algorithms_DataIO_Tests_SRCS
   WriteMatrixTests.cc
 )
 
-ADD_EXECUTABLE(Algorithms_DataIO_Tests
+SCIRUN_ADD_UNIT_TEST(Algorithms_DataIO_Tests
 ${Algorithms_DataIO_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Algorithms_DataIO_Tests

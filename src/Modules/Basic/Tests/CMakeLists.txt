@@ -34,7 +34,7 @@ SET(Modules_Basic_Tests_SRCS
 #  NetworkEditorControllerTests_.h
 #)
 
-ADD_EXECUTABLE(Modules_Basic_Tests
+SCIRUN_ADD_UNIT_TEST(Modules_Basic_Tests
 #${Engine_Network_Tests_HEADERS}
 ${Modules_Basic_Tests_SRCS})
 
