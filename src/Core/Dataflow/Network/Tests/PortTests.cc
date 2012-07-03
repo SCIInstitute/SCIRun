@@ -112,15 +112,18 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 
 TEST_F(PortTests, CannotConnectPortsWithDifferentDatatypes)
 {
+  std::cout << "TODO" << std::endl;
   EXPECT_TRUE(false);
 }
 
 TEST_F(PortTests, CannotConnectInputPortToInputPort)
 {
+  std::cout << "TODO" << std::endl;
   EXPECT_TRUE(false);
 }
 
 TEST_F(PortTests, CannotConnectOutputPortToOutputPort)
 {
+  std::cout << "TODO" << std::endl;
   EXPECT_TRUE(false);
 }

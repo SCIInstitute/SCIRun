@@ -195,7 +195,9 @@ void Module::send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeH
   oports_[idx]->sendData(data);
 }
 
-Module::Builder::Builder() {}
+Module::Builder::Builder() 
+{
+}
 
 Module::Builder::SinkMaker Module::Builder::sink_maker_;
 Module::Builder::SourceMaker Module::Builder::source_maker_;
@@ -221,7 +223,7 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
 {
   if (module_)
   {
-    DatatypeSinkInterfaceHandle sink(sink_maker_());
+    DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
     InputPortHandle port(new InputPort(module_.get(), params, sink));
     module_->add_input_port(port);
   }
@@ -232,7 +234,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
 {
   if (module_)
   {
-    DatatypeSourceInterfaceHandle source(source_maker_());
+    DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : 0);
     OutputPortHandle port(new OutputPort(module_.get(), params, source));
     module_->add_output_port(port);
   }
