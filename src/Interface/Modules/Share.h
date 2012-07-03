@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 
-#include "Interface/Modules/ui_ModuleDialogBasic.h"
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
+#ifndef INTERFACE_MODULES_SHARE_H
+#define INTERFACE_MODULES_SHARE_H 
 
-namespace SCIRun {
-namespace Gui {
-  //TODO DAN
-  class SCISHARE ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
-  {
-    Q_OBJECT
+#undef SCISHARE
 
-  public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-    virtual int moduleExecutionTime();
-  };
-
-}
-}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
 
 #endif

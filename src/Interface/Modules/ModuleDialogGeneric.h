@@ -30,11 +30,12 @@
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
 #include <QDialog>
+#include <Interface/Modules/Share.h>
 
 namespace SCIRun {
 namespace Gui {
   //TODO DAN
-  class ModuleDialogGeneric : public QDialog
+  class SCISHARE ModuleDialogGeneric : public QDialog
   {
     Q_OBJECT
   public:

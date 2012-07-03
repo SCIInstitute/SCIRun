@@ -39,6 +39,10 @@ ADD_LIBRARY(Engine_Network
 ${Engine_Network_HEADERS}
 ${Engine_Network_SRCS})
 
+TARGET_LINK_LIBRARIES(Engine_Network
+Core_Dataflow_Network
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Network)
 ENDIF(BUILD_SHARED_LIBS)

@@ -29,7 +29,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>

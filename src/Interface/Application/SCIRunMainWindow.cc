@@ -35,10 +35,14 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Engine/Network/NetworkEditorController.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Engine;
+using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Factory;
 
 void visitTree(QStringList& list, QTreeWidgetItem* item){
   list << item->text(0) + "," + QString::number(item->childCount());
@@ -107,7 +111,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
 
-  boost::shared_ptr<NetworkEditorController> controller(new NetworkEditorController);
+  ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
+  boost::shared_ptr<NetworkEditorController> controller(new NetworkEditorController(moduleFactory));
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
 

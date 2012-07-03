@@ -31,15 +31,16 @@
 
 #include "ui_SendScalar.h"
 #include <boost/shared_ptr.hpp>
-#include <Interface/Modules/ModuleDialogGeneric.h>
 #include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/ModuleDialogGeneric.h>
+#include <Interface/Modules/Share.h>
 
 namespace SCIRun {
 namespace Gui {
   
   //TODO DAN
 
-class SendScalarDialog : public ModuleDialogGeneric, 
+class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
   public Ui::SendScalar
 {

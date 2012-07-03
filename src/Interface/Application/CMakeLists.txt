@@ -84,8 +84,8 @@ ADD_EXECUTABLE(SCIRunGUIPrototype
 TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
   Core_Dataflow_Network
   Engine_Network
+  Modules_Factory
   Interface_Modules
-  Algorithms_Math
   ${Boost_LIBRARIES}
   ${QT_LIBRARIES})
 

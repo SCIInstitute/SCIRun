@@ -40,7 +40,7 @@ ${Engine_State_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Engine_State_Tests
 Core_Dataflow_Network
-Engine_State
+#Engine_State
 gtest_main
 gtest
 gmock

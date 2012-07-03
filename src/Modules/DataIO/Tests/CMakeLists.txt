@@ -40,7 +40,7 @@ ADD_EXECUTABLE(Modules_DataIO_Tests
 ${Modules_DataIO_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_DataIO_Tests
-Modules_DataIO
+#Modules_DataIO
 gtest_main
 gtest
 gmock

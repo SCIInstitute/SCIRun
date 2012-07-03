@@ -29,7 +29,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>
@@ -39,11 +38,13 @@
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;

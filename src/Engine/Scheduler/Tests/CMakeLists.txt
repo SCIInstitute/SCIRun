@@ -41,7 +41,7 @@ ${Engine_Scheduler_Tests_SRCS})
 TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
 Core_Dataflow_Network
 Engine_Network
-Engine_Scheduler
+#Engine_Scheduler
 Algorithms_Math
 gtest_main
 gtest

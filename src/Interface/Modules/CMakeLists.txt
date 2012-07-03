@@ -37,6 +37,7 @@ SET(Interface_Modules_HEADERS
   SendScalarDialog.h
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
+  Share.h
 )
 
 SET(Interface_Modules_SOURCES 
@@ -59,5 +60,9 @@ ${Interface_Modules_SOURCES}
 TARGET_LINK_LIBRARIES(Interface_Modules 
   ${Boost_LIBRARIES}
   ${QT_LIBRARIES})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules)
+ENDIF(BUILD_SHARED_LIBS)
   
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

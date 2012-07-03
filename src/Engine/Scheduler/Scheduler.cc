@@ -32,7 +32,6 @@
 
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
 
