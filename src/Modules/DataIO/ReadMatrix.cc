@@ -27,9 +27,4 @@
 */
 
 #include <iostream>
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Datatypes/Datatype.h>
-
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Domain::Datatypes;
 //TODO DAN

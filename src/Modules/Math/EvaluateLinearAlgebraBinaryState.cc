@@ -27,9 +27,5 @@
 */
 
 #include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
 //TODO DAN

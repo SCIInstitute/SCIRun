@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef MODULES_MATH_REPORTMATRIXINFOSTATE_H
+#define MODULES_MATH_REPORTMATRIXINFOSTATE_H
 
 #include <Core/Dataflow/Network/Module.h>
 
@@ -35,12 +35,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Basic {
   //TODO DAN
-  class ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
-  {
-  public:
-    ReportMatrixInfoModule();
-    virtual void execute();
-  };
+
 
 }}}
 

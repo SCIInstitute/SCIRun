@@ -216,5 +216,51 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
     std::cout << "has ui: " << m->has_ui() << std::endl;
   }
 
+  EXPECT_EQ(0, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(matrix1Send, 0, transpose, 0);
+  EXPECT_EQ(1, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(matrix1Send, 0, negate, 0);
+  EXPECT_EQ(2, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(matrix2Send, 0, scalar, 0);
+  EXPECT_EQ(3, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(negate, 0, multiply, 0);
+  EXPECT_EQ(4, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(scalar, 0, multiply, 1);
+  EXPECT_EQ(5, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(transpose, 0, add, 0);
+  EXPECT_EQ(6, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(multiply, 0, add, 1);
+  EXPECT_EQ(7, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(add, 0, report, 0);
+  EXPECT_EQ(8, matrixMathNetwork.nconnections());
+  matrixMathNetwork.connect(add, 0, receive, 0);
+  EXPECT_EQ(9, matrixMathNetwork.nconnections());
+
+  //Set module parameters.
+  matrix1Send->get_state()["MatrixToSend"] = matrix1();
+  matrix2Send->get_state()["MatrixToSend"] = matrix2();
+  transpose->get_state()["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE;
+  negate->get_state()["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::NEGATE;
+  scalar->get_state()["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 4.0);
+  multiply->get_state()["Operation"] = EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY;
+  add->get_state()["Operation"] = EvaluateLinearAlgebraBinaryAlgorithm::ADD;
+  
+  //execute all manually, in order
+  matrix1Send->execute();
+  matrix2Send->execute();
+  transpose->execute();
+  scalar->execute();
+  negate->execute();
+  multiply->execute();
+  add->execute();
+  report->execute();
+  receive->execute();
+
+  //grab reporting module state
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = report->get_state()["ReportedInfo"];
+  DenseMatrixHandle receivedMatrix = receive->get_state()["ReceivedMatrix"];
+
+  //verify results
+
   EXPECT_TRUE(false);
 }

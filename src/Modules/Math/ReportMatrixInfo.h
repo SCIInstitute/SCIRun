@@ -26,16 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef MODULES_MATH_REPORTMATRIXINFO_H
+#define MODULES_MATH_REPORTMATRIXINFO_H
 
 #include <Core/Dataflow/Network/Module.h>
+#include <Modules/Math/Share.h>
 
 namespace SCIRun {
 namespace Modules {
-namespace Basic {
+namespace Math {
   //TODO DAN
-  class ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
+  class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
   {
   public:
     ReportMatrixInfoModule();

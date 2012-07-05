@@ -27,9 +27,43 @@
 */
 
 #include <iostream>
-#include <Core/Datatypes/Datatype.h>
+#include <stdexcept>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/DenseMatrix.h> //TODO DAN: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
 
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Algorithms::Math;
 using namespace SCIRun::Domain::Datatypes;
 //TODO DAN
+
+EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
+Module("EvaluateLinearAlgebraBinary")
+{
+
+}
+
+void EvaluateLinearAlgebraBinaryModule::execute()
+{
+  EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO DAN inject
+
+  DatatypeHandleOption lhs = get_input_handle(0);
+  if (!lhs)
+    throw std::logic_error("TODO DAN Input data (lhs) required, need to move this check to Module base class!");
+  DatatypeHandleOption rhs = get_input_handle(1);
+  if (!rhs)
+    throw std::logic_error("TODO DAN Input data (rhs) required, need to move this check to Module base class!");
+
+  DenseMatrixConstHandle lhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO DAN: clean
+  DenseMatrixConstHandle rhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO DAN: clean
+  if (!lhsInput || !rhsInput)
+  {
+    //TODO DAN log error? send null? check standard practice.
+    return;
+  }
+
+  DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhsInput, rhsInput), EvaluateLinearAlgebraBinaryAlgorithm::ADD);  //TODO DAN
+
+  send_output_handle(0, output);
+}

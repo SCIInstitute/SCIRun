@@ -33,14 +33,9 @@
 
 namespace SCIRun {
 namespace Modules {
-namespace Basic {
+namespace DataIO {
   //TODO DAN
-  class ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
-  {
-  public:
-    ReportMatrixInfoModule();
-    virtual void execute();
-  };
+  
 
 }}}
 

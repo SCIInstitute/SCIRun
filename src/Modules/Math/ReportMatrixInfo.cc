@@ -30,6 +30,13 @@
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/Datatype.h>
 
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
 //TODO DAN
+
+ReportMatrixInfoModule::ReportMatrixInfoModule() : Module("ReportMatrixInfo") {}
+
+void ReportMatrixInfoModule::execute()
+{
+  std::cout << "nothing to execute yet in ReportMatrixInfo................................" << std::endl;
+}

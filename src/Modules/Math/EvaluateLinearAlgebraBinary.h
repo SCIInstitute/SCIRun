@@ -34,7 +34,7 @@
 
 namespace SCIRun {
   namespace Modules {
-    namespace Basic {
+    namespace Math {
       //TODO DAN
       class SCISHARE EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module
       {

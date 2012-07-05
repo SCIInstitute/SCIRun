@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 #include <boost/functional/factory.hpp>
@@ -38,6 +39,8 @@
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Math/EvaluateLinearAlgebraBinary.h>
+#include <Modules/Math/ReportMatrixInfo.h>
 
 //TODO
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
@@ -59,7 +62,6 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;
   
-  //YUCK YUCK 
   if (desc.lookupInfo_.module_name_ == "SendScalar")
     builder.using_func(boost::factory<SendScalarModule*>());
   else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
@@ -68,8 +70,12 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
     builder.using_func(boost::factory<SendTestMatrixModule*>());
   else if (desc.lookupInfo_.module_name_ == "ReceiveTestMatrix")
     builder.using_func(boost::factory<ReceiveTestMatrixModule*>());
+  else if (desc.lookupInfo_.module_name_ == "ReportMatrixInfo")
+    builder.using_func(boost::factory<ReportMatrixInfoModule*>());
   else if (desc.lookupInfo_.module_name_ == "EvaluateLinearAlgebraUnary")
     builder.using_func(boost::factory<EvaluateLinearAlgebraUnaryModule*>());
+  else if (desc.lookupInfo_.module_name_ == "EvaluateLinearAlgebraBinary")
+    builder.using_func(boost::factory<EvaluateLinearAlgebraBinaryModule*>());
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 
@@ -123,10 +129,23 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
   }
+  else if (name.find("ReportMatrixInfo") != std::string::npos)
+  {
+    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+  }
   else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
   {
     d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
     d.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+  }
+  else if (name.find("EvaluateLinearAlgebraBinary") != std::string::npos)
+  {
+    d.input_ports_ += InputPortDescription("InputLHS", "Matrix", "blue"), InputPortDescription("InputRHS", "Matrix", "blue");
+    d.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+  }
+  else
+  {
+    std::cout << "NOTE: Module " << name << " does not have any ports defined yet!" << std::endl;
   }
   return d;
 }
