@@ -75,6 +75,49 @@ namespace
     return m;
   }
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+
+  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
+  {
+    ModuleLookupInfo info;
+    info.module_name_ = moduleName;
+    return network.add_module(info);
+  }
+}
+
+TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithHardCodedOperation)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  Network matrixUnaryNetwork(mf);
+  
+  ModuleHandle send = addModuleToNetwork(matrixUnaryNetwork, "SendTestMatrix");
+  ModuleHandle process = addModuleToNetwork(matrixUnaryNetwork, "EvaluateLinearAlgebraUnary");
+  ModuleHandle receive = addModuleToNetwork(matrixUnaryNetwork, "ReceiveTestMatrix");
+
+  EXPECT_EQ(3, matrixUnaryNetwork.nmodules());
+
+  matrixUnaryNetwork.connect(send, 0, process, 0);
+  EXPECT_EQ(1, matrixUnaryNetwork.nconnections());
+  matrixUnaryNetwork.connect(process, 0, receive, 0);
+  EXPECT_EQ(2, matrixUnaryNetwork.nconnections());
+
+  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
+  ASSERT_TRUE(sendModule != 0);
+  EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
+  ASSERT_TRUE(evalModule != 0);
+
+  DenseMatrixHandle input = matrix1();
+  sendModule->setMatrix(input);
+
+  //manually execute the network, in the correct order.
+  send->execute();
+  process->execute();
+  receive->execute();
+
+  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  ASSERT_TRUE(receiveModule != 0);
+  ASSERT_TRUE(receiveModule->latestReceivedMatrix());
+
+  EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 }
 
 TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOperation)
@@ -82,17 +125,9 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   Network matrixUnaryNetwork(mf);
 
-  ModuleLookupInfo sendTestMatrixInfo;
-  sendTestMatrixInfo.module_name_ = "SendTestMatrix";
-  ModuleHandle send = matrixUnaryNetwork.add_module(sendTestMatrixInfo);
-
-  ModuleLookupInfo processMatrixInfo;
-  processMatrixInfo.module_name_ = "EvaluateLinearAlgebraUnary";
-  ModuleHandle process = matrixUnaryNetwork.add_module(processMatrixInfo);
-
-  ModuleLookupInfo receiveTestMatrixInfo;
-  receiveTestMatrixInfo.module_name_ = "ReceiveTestMatrix";
-  ModuleHandle receive = matrixUnaryNetwork.add_module(receiveTestMatrixInfo);
+  ModuleHandle send = addModuleToNetwork(matrixUnaryNetwork, "SendTestMatrix");
+  ModuleHandle process = addModuleToNetwork(matrixUnaryNetwork, "EvaluateLinearAlgebraUnary");
+  ModuleHandle receive = addModuleToNetwork(matrixUnaryNetwork, "ReceiveTestMatrix");
 
   EXPECT_EQ(3, matrixUnaryNetwork.nmodules());
 
@@ -151,14 +186,35 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   |           multiply
   |           |
         add
-        |
-        report
+        |      |
+        report receive
   */
 
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  Network matrixMathNetwork(mf);
+  ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
+  ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
+  
+  ModuleHandle transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+  ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+  ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
 
+  ModuleHandle multiply = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
+  ModuleHandle add = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
 
+  ModuleHandle report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
+  ModuleHandle receive = addModuleToNetwork(matrixMathNetwork, "ReceiveTestMatrix");
+  
+  EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
+  for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
+  {
+    ModuleHandle m = matrixMathNetwork.module(i);
+    std::cout << m->get_module_name() << std::endl;
+    std::cout << "inputs: " << m->num_input_ports() << std::endl;
+    std::cout << "outputs: " << m->num_output_ports() << std::endl;
+    std::cout << "has ui: " << m->has_ui() << std::endl;
+  }
 
-
-
+  EXPECT_TRUE(false);
 }

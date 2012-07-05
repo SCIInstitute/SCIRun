@@ -58,7 +58,6 @@ namespace Networks {
     std::string get_packagename() const { return info_.package_name_; }
     std::string get_id() const { return id_; }
     bool has_ui() const { return has_ui_; }
-
     size_t num_input_ports() const;
     size_t num_output_ports() const;
 
@@ -68,7 +67,7 @@ namespace Networks {
     InputPortHandle get_input_port(size_t idx) const;
 
     void do_execute();
-    virtual void execute();
+    virtual void execute() = 0;
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data);
@@ -102,6 +101,7 @@ namespace Networks {
 
     ModuleLookupInfo info_;
 
+    double executionTime_;
     std::string id_;
 
   private:
@@ -110,7 +110,7 @@ namespace Networks {
     void add_output_port(OutputPortHandle);
     bool has_ui_;
 
-    double executionTime_;
+   
 
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;

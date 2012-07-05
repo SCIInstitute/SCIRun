@@ -78,12 +78,6 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
-//TODO: make pure virtual
-void Module::execute()
-{
-  std::cout << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
-}
-
 void Module::do_execute()
 {
   //abort_flag_=0;
@@ -205,10 +199,20 @@ Module::Builder::SourceMaker Module::Builder::source_maker_;
 /*static*/ void Module::Builder::use_sink_type(Module::Builder::SinkMaker func) { sink_maker_ = func; }
 /*static*/ void Module::Builder::use_source_type(Module::Builder::SourceMaker func) { source_maker_ = func; }
 
+class DummyModule : public Module
+{
+public:
+  explicit DummyModule(const std::string& name) : Module(name) {}
+  virtual void execute() 
+  {
+    std::cout << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
+  }
+};
+
 Module::Builder& Module::Builder::with_name(const std::string& name)
 {
   if (!module_)
-    module_.reset(new Module(name));
+    module_.reset(new DummyModule(name));
   return *this;
 }
 

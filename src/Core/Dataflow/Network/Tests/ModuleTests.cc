@@ -31,13 +31,6 @@
 
 using namespace SCIRun::Domain::Networks;
 
-TEST(ModuleTests, CanConstructEmptyModuleWithName)
-{
-  std::string name = "CreateMatrix";
-  Module m(name);
-  ASSERT_EQ(m.get_module_name(), name);
-}
-
 TEST(ModuleTests, CanBuildWithPorts)
 {
   ModuleHandle module = Module::Builder().with_name("SolveLinearSystem")
