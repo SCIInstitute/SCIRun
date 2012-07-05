@@ -49,8 +49,12 @@ namespace Networks {
   {
   public:
     //TODO replace params with ModuleLookupInfo
-    Module(const std::string& name, bool hasUi = true, const std::string& cat="unknown", const std::string& pack="unknown", 
-      const std::string& version="1.0");
+    Module(const std::string& name, 
+      ModuleStateFactoryHandle stateMaker = ModuleStateFactoryHandle(),
+      bool hasUi = true, 
+      const std::string& cat = "unknown", 
+      const std::string& pack = "unknown", 
+      const std::string& version = "1.0");
     virtual ~Module();
 
     std::string get_module_name() const { return info_.module_name_; }
@@ -68,6 +72,8 @@ namespace Networks {
 
     void do_execute();
     virtual void execute() = 0;
+    virtual const ModuleStateInterface& get_state() const;
+    virtual ModuleStateInterface& get_state();
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data);
@@ -109,9 +115,8 @@ namespace Networks {
     void add_input_port(InputPortHandle);
     void add_output_port(OutputPortHandle);
     bool has_ui_;
-
    
-
+    boost::shared_ptr<ModuleStateInterface> state_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
     static int instanceCount_;

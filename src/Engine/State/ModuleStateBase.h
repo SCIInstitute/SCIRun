@@ -26,22 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_MODULESTATEBASE_H
-#define ENGINE_STATE_MODULESTATEBASE_H
+#ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
+#define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Dataflow/Network/ModuleInterface.h>
 
 namespace SCIRun {
+namespace Domain {
 namespace State {
   //TODO DAN
-  class ModuleStateBase
+  class SimpleMapModuleState : public ModuleStateInterface
   {
   public:
-    virtual ~ModuleStateBase() {}
-    
+    virtual boost::any& operator[](const std::string& parameterName);
   };
 
-}
-}
+}}}
 
 #endif

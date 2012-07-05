@@ -40,6 +40,8 @@
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Algorithms/Math/ReportMatrixInfo.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
@@ -144,7 +146,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   DenseMatrixHandle input = matrix1();
   sendModule->setMatrix(input);
 
-  //evalModule->set_operation(EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  process->get_state()["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::NEGATE;
   //manually execute the network, in the correct order.
   send->execute();
   process->execute();
@@ -156,12 +158,12 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
-  //evalModule->set_operation(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->get_state()["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE;
   process->execute();
   receive->execute();
   EXPECT_EQ(transpose(*input), *receiveModule->latestReceivedMatrix());
 
-  //evalModule->set_operation(EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.0));
+  process->get_state()["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.0);
   process->execute();
   receive->execute();
   EXPECT_EQ(2.0 * *input, *receiveModule->latestReceivedMatrix());
@@ -207,14 +209,15 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   
   EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
-  for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
-  {
-    ModuleHandle m = matrixMathNetwork.module(i);
-    std::cout << m->get_module_name() << std::endl;
-    std::cout << "inputs: " << m->num_input_ports() << std::endl;
-    std::cout << "outputs: " << m->num_output_ports() << std::endl;
-    std::cout << "has ui: " << m->has_ui() << std::endl;
-  }
+  //TODO: turn this into a convenience network printing function
+  //for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
+  //{
+  //  ModuleHandle m = matrixMathNetwork.module(i);
+  //  std::cout << m->get_module_name() << std::endl;
+  //  std::cout << "inputs: " << m->num_input_ports() << std::endl;
+  //  std::cout << "outputs: " << m->num_output_ports() << std::endl;
+  //  std::cout << "has ui: " << m->has_ui() << std::endl;
+  //}
 
   EXPECT_EQ(0, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(matrix1Send, 0, transpose, 0);
@@ -257,8 +260,8 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   receive->execute();
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = report->get_state()["ReportedInfo"];
-  DenseMatrixHandle receivedMatrix = receive->get_state()["ReceivedMatrix"];
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = boost::any_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()["ReportedInfo"]);
+  DenseMatrixHandle receivedMatrix = boost::any_cast<DenseMatrixHandle>(receive->get_state()["ReceivedMatrix"]);
 
   //verify results
 

@@ -42,7 +42,8 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD0(execute, void());
-          //MOCK_METHOD0(do_execute, void());
+          MOCK_METHOD0(get_state, ModuleStateInterface&());
+          MOCK_CONST_METHOD0(get_state, const ModuleStateInterface&());
           MOCK_METHOD2(send_output_handle, void(size_t, SCIRun::Domain::Datatypes::DatatypeHandle));
           MOCK_METHOD1(get_input_handle, SCIRun::Domain::Datatypes::DatatypeHandleOption(size_t));
           MOCK_CONST_METHOD0(get_module_name, std::string());

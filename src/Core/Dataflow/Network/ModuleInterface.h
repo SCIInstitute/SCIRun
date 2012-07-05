@@ -31,6 +31,7 @@
 #define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
 
 #include <string>
+#include <boost/any.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Dataflow/Network/Share.h>
@@ -54,13 +55,30 @@ namespace Networks {
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
 
+  //TODO DAN MOVE TO NEW FILE
+  class SCISHARE ModuleStateInterface
+  {
+  public:
+    virtual ~ModuleStateInterface();
+    
+    virtual boost::any& operator[](const std::string& parameterName) = 0;
+  };
+
+  class SCISHARE ModuleStateInterfaceFactory
+  {
+  public:
+    virtual ~ModuleStateInterfaceFactory();
+    virtual ModuleStateInterface* make_state(const std::string& name) const = 0;
+  };
+
   class SCISHARE ModuleInterface : public ModuleInfoProvider
   {
   public:
     virtual ~ModuleInterface();
-    //virtual void do_execute() = 0;
 
     virtual void execute() = 0;
+    virtual const ModuleStateInterface& get_state() const = 0;
+    virtual ModuleStateInterface& get_state() = 0;
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data) = 0;

@@ -43,9 +43,24 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 
 /*static*/ int Module::instanceCount_ = 0;
 
-Module::Module(const std::string& name, bool hasUi,
+//TODO NEW FILE BEING LAZY NOW
+class NullModuleState : public ModuleStateInterface
+{
+public:
+  virtual boost::any& operator[](const std::string& parameterName)
+  {
+    return dummy_;
+  }
+private:
+  boost::any dummy_;
+};
+
+
+Module::Module(const std::string& name, 
+  ModuleStateFactoryHandle stateMaker,
+  bool hasUi,
   const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
-  : has_ui_(hasUi), executionTime_(1.0)
+  : has_ui_(hasUi), executionTime_(1.0), state_(stateMaker ? stateMaker->make_state(name) : new NullModuleState)
 {
   set_modulename(name);
   id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
@@ -155,6 +170,16 @@ void Module::do_execute()
 
   //TODO: soon
   //Logger::Instance->log("MODULE FINISHED: " + id_);  
+}
+
+const ModuleStateInterface& Module::get_state() const
+{
+  return *state_;
+}
+
+ModuleStateInterface& Module::get_state() 
+{
+  return *state_;
 }
 
 void Module::add_input_port(InputPortHandle h)
