@@ -32,6 +32,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/function.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 
@@ -66,6 +67,8 @@ namespace Networks {
     std::string module_name_;
   };
 
+  typedef boost::function<class Module*()> ModuleMaker;
+
   struct SCISHARE ModuleDescription
   {
     ModuleDescription();
@@ -79,7 +82,7 @@ namespace Networks {
     //bool                              dynamic_;
     //std::vector<std::string>          authors_;
     //std::string                       summary_;
-    //ModuleMaker                       maker_;
+    ModuleMaker                       maker_;
     //bool last_port_dynamic_;
     //bool                              has_gui_node_;
   };

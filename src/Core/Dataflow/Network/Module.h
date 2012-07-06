@@ -80,7 +80,7 @@ namespace Networks {
     public:
       Builder();
       Builder& with_name(const std::string& name);
-      Builder& using_func(boost::function<Module*()> create);
+      Builder& using_func(ModuleMaker create);
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
       Builder& disable_ui();
@@ -120,23 +120,22 @@ namespace Networks {
   };
 
 
-#if 0
   template <class PortTypeTag>
-  class HasInputPort
+  class HasInputPorts
   {
   public:
-    InputPortDescription description() const;
+    static InputPortDescription description(const std::string& name);
   };
 
   struct MatrixPortTag {};
 
   template <>
-  class HasInputPort<MatrixPortTag>
+  class HasInputPorts<MatrixPortTag>
   {
   public:
-    InputPortDescription description() const
+    static InputPortDescription description(const std::string& name)
     {
-      return InputPortDescription(????, "Matrix", "blue"); 
+      return InputPortDescription(name, "Matrix", "blue"); 
     }
   };
 
@@ -147,7 +146,7 @@ namespace Networks {
   };
 
   //const char* PortName<ReportMatrixInfo, 0>::name = "Hello int";
-#endif
+
 
 }}}
 

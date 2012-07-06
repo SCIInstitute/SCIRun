@@ -67,20 +67,8 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;
   
-  if (desc.lookupInfo_.module_name_ == "SendScalar")
-    builder.using_func(boost::factory<SendScalarModule*>());
-  else if (desc.lookupInfo_.module_name_ == "ReceiveScalar")
-    builder.using_func(boost::factory<ReceiveScalarModule*>());
-  else if (desc.lookupInfo_.module_name_ == "SendTestMatrix")
-    builder.using_func(boost::factory<SendTestMatrixModule*>());
-  else if (desc.lookupInfo_.module_name_ == "ReceiveTestMatrix")
-    builder.using_func(boost::factory<ReceiveTestMatrixModule*>());
-  else if (desc.lookupInfo_.module_name_ == "ReportMatrixInfo")
-    builder.using_func(boost::factory<ReportMatrixInfoModule*>());
-  else if (desc.lookupInfo_.module_name_ == "EvaluateLinearAlgebraUnary")
-    builder.using_func(boost::factory<EvaluateLinearAlgebraUnaryModule*>());
-  else if (desc.lookupInfo_.module_name_ == "EvaluateLinearAlgebraBinary")
-    builder.using_func(boost::factory<EvaluateLinearAlgebraBinaryModule*>());
+  if (desc.maker_)
+    builder.using_func(desc.maker_);
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 
@@ -102,56 +90,66 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
 {
   std::string name = info.module_name_;
-  ModuleDescription d;
-  d.lookupInfo_ = info;
+  ModuleDescription description;
+  description.lookupInfo_ = info;
   if (name.find("ComputeSVD") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
-    d.output_ports_ += OutputPortDescription("U", "Matrix", "blue"), OutputPortDescription("S", "Matrix", "blue"), OutputPortDescription("V", "Matrix", "blue");
+    description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    description.output_ports_ += OutputPortDescription("U", "Matrix", "blue"), OutputPortDescription("S", "Matrix", "blue"), OutputPortDescription("V", "Matrix", "blue");
+    description.maker_ = 0;
   }
   else if (name.find("ReadMatrix") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input1", "String", "darkGreen");
-    d.output_ports_ += OutputPortDescription("Output1", "Matrix", "blue"), OutputPortDescription("Output2", "String", "darkGreen");
+    description.input_ports_ += InputPortDescription("Input1", "String", "darkGreen");
+    description.output_ports_ += OutputPortDescription("Output1", "Matrix", "blue"), OutputPortDescription("Output2", "String", "darkGreen");
+    description.maker_ = 0;
   }
   else if (name.find("WriteMatrix") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input1", "Matrix", "blue"), InputPortDescription("Input2", "String", "darkGreen");
+    description.input_ports_ += InputPortDescription("Input1", "Matrix", "blue"), InputPortDescription("Input2", "String", "darkGreen");
+    description.maker_ = 0;
   }
   else if (name.find("SendScalar") != std::string::npos)
   {
-    d.output_ports_ += OutputPortDescription("Output", "Scalar", "cyan");
+    description.output_ports_ += OutputPortDescription("Output", "Scalar", "cyan");
+    description.maker_ = boost::factory<SendScalarModule*>();
   }
   else if (name.find("ReceiveScalar") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input", "Scalar", "cyan");
+    description.input_ports_ += InputPortDescription("Input", "Scalar", "cyan");
+    description.maker_ = boost::factory<ReceiveScalarModule*>();
   }
   else if (name.find("SendTestMatrix") != std::string::npos)
   {
-    d.output_ports_ += OutputPortDescription("Output", "Matrix", "blue");
+    description.output_ports_ += OutputPortDescription("Output", "Matrix", "blue");
+    description.maker_ = boost::factory<SendTestMatrixModule*>();
   }
   else if (name.find("ReceiveTestMatrix") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    description.maker_ = boost::factory<ReceiveTestMatrixModule*>();
   }
   else if (name.find("ReportMatrixInfo") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    description.input_ports_ += ReportMatrixInfoModule::description(PortTraits<ReportMatrixInfoModule, 0>::name);
+    description.maker_ = boost::factory<ReportMatrixInfoModule*>();
   }
   else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
-    d.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+    description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+    description.maker_ = boost::factory<EvaluateLinearAlgebraUnaryModule*>();
   }
   else if (name.find("EvaluateLinearAlgebraBinary") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("InputLHS", "Matrix", "blue"), InputPortDescription("InputRHS", "Matrix", "blue");
-    d.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+    description.input_ports_ += InputPortDescription("InputLHS", "Matrix", "blue"), InputPortDescription("InputRHS", "Matrix", "blue");
+    description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+    description.maker_ = boost::factory<EvaluateLinearAlgebraBinaryModule*>();
   }
   else
   {
     std::cout << "NOTE: Module " << name << " does not have any ports defined yet!" << std::endl;
   }
-  return d;
+  return description;
 }
 

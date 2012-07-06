@@ -237,7 +237,7 @@ Module::Builder& Module::Builder::with_name(const std::string& name)
   return *this;
 }
 
-Module::Builder& Module::Builder::using_func(boost::function<Module*()> create)
+Module::Builder& Module::Builder::using_func(ModuleMaker create)
 {
   if (!module_)
     module_.reset(create());
