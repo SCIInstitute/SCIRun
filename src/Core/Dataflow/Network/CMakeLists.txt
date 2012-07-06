@@ -33,6 +33,7 @@ SET(Core_Dataflow_Network_SRCS
   ModuleDescription.cc
   ModuleFactory.cc
   ModuleInterface.cc
+  ModuleStateInterface.cc
   Network.cc
   Port.cc
   PortInterface.cc
@@ -46,6 +47,7 @@ SET(Core_Dataflow_Network_HEADERS
   ModuleFactory.h
   ModuleDescription.h
   ModuleInterface.h
+  ModuleStateInterface.h
   Network.h
   NetworkFwd.h
   NetworkInterface.h

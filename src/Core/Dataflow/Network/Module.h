@@ -31,10 +31,7 @@
 #define CORE_DATAFLOW_NETWORK_MODULE_H 
 
 #include <boost/noncopyable.hpp>
-#include <string>
 #include <vector>
-#include <map>
-
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>

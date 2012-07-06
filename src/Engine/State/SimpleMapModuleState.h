@@ -29,16 +29,19 @@
 #ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
 #define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
 
-#include <Core/Dataflow/Network/ModuleInterface.h>
+#include <map>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace State {
   //TODO DAN
-  class SimpleMapModuleState : public ModuleStateInterface
+  class SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
   {
   public:
     virtual boost::any& operator[](const std::string& parameterName);
+  private:
+    std::map<std::string, boost::any> stateMap_;
   };
 
 }}}

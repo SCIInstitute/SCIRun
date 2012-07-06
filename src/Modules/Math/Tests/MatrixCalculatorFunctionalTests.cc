@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 #include <Core/Dataflow/Network/Network.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -172,15 +173,15 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
 TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
 {
-  std::cout << "m1" << std::endl;
-  std::cout << *matrix1() << std::endl;
-  std::cout << "m2" << std::endl;
-  std::cout << *matrix2() << std::endl;
-  std::cout << "(-m1 * 4m2) + trans(m1)" << std::endl;
-  std::cout << (-*matrix1()) * (4* *matrix2()) + transpose(*matrix1()) << std::endl;
+  //std::cout << "m1" << std::endl;
+  //std::cout << *matrix1() << std::endl;
+  //std::cout << "m2" << std::endl;
+  //std::cout << *matrix2() << std::endl;
+  //std::cout << "(-m1 * 4m2) + trans(m1)" << std::endl;
+  DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + transpose(*matrix1());
 
   //Test network:
-  /*
+  /* 
   send m1             send m2
   |         |         |
   transpose negate    scalar mult *4
@@ -221,21 +222,13 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
 
   EXPECT_EQ(0, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(matrix1Send, 0, transpose, 0);
-  EXPECT_EQ(1, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(matrix1Send, 0, negate, 0);
-  EXPECT_EQ(2, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(matrix2Send, 0, scalar, 0);
-  EXPECT_EQ(3, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(negate, 0, multiply, 0);
-  EXPECT_EQ(4, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(scalar, 0, multiply, 1);
-  EXPECT_EQ(5, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(transpose, 0, add, 0);
-  EXPECT_EQ(6, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(multiply, 0, add, 1);
-  EXPECT_EQ(7, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(add, 0, report, 0);
-  EXPECT_EQ(8, matrixMathNetwork.nconnections());
   matrixMathNetwork.connect(add, 0, receive, 0);
   EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
@@ -264,6 +257,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   DenseMatrixHandle receivedMatrix = boost::any_cast<DenseMatrixHandle>(receive->get_state()["ReceivedMatrix"]);
 
   //verify results
+  EXPECT_EQ(expected, *receivedMatrix);
 
   EXPECT_TRUE(false);
 }

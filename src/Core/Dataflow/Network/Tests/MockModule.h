@@ -30,6 +30,7 @@
 #define MOCK_MODULE_H
 
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/ModuleFactory.h>
 #include <gmock/gmock.h>
 

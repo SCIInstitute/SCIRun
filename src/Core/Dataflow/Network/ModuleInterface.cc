@@ -33,11 +33,3 @@ using namespace SCIRun::Domain::Networks;
 ModuleInterface::~ModuleInterface()
 {
 }
-
-ModuleStateInterface::~ModuleStateInterface()
-{
-}
-
-ModuleStateInterfaceFactory::~ModuleStateInterfaceFactory()
-{
-}

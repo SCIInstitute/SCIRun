@@ -26,4 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO DAN
+#ifndef CORE_DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
+#define CORE_DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H 
+
+#include <string>
+#include <boost/any.hpp>
+#include <Core/Dataflow/Network/Share.h>
+
+namespace SCIRun {
+namespace Domain {
+namespace Networks {
+
+  class SCISHARE ModuleStateInterface
+  {
+  public:
+    virtual ~ModuleStateInterface();
+    
+    virtual boost::any& operator[](const std::string& parameterName) = 0;
+  };
+
+  class SCISHARE ModuleStateInterfaceFactory
+  {
+  public:
+    virtual ~ModuleStateInterfaceFactory();
+    virtual ModuleStateInterface* make_state(const std::string& name) const = 0;
+  };
+
+}}}
+
+#endif

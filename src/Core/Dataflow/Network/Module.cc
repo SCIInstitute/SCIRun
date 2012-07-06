@@ -32,6 +32,7 @@
 #include <boost/bind.hpp>
 #include <Core/Dataflow/Network/Module.h>
 #include <Core/Dataflow/Network/PortManager.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/DataflowInterfaces.h>
 
 using namespace SCIRun::Domain::Networks;

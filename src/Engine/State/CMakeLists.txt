@@ -27,11 +27,11 @@
 #
 
 SET(Engine_State_SRCS
-  ModuleStateBase.cc
+  SimpleMapModuleState.cc
 )
 
 SET(Engine_State_HEADERS
-  ModuleStateBase.h
+  SimpleMapModuleState.h
   Share.h
 )
 

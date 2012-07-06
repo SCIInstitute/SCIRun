@@ -26,45 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_INTERFACE_H 
+using namespace SCIRun::Domain::Networks;
 
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Dataflow/Network/Share.h>
+ModuleStateInterface::~ModuleStateInterface()
+{
+}
 
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  class SCISHARE ModuleInfoProvider
-  {
-  public:
-    virtual ~ModuleInfoProvider() {}
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
-    virtual size_t num_output_ports() const = 0;
-    virtual bool has_ui() const = 0;
-    virtual std::string get_module_name() const = 0;
-    virtual std::string get_id() const = 0;
-  };
-
-  SCISHARE std::string to_string(const ModuleInfoProvider&);
-  
-  class SCISHARE ModuleInterface : public ModuleInfoProvider
-  {
-  public:
-    virtual ~ModuleInterface();
-
-    virtual void execute() = 0;
-    virtual const ModuleStateInterface& get_state() const = 0;
-    virtual ModuleStateInterface& get_state() = 0;
-
-    virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
-    virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data) = 0;
-  };
-}}}
-
-#endif
+ModuleStateInterfaceFactory::~ModuleStateInterfaceFactory()
+{
+}
