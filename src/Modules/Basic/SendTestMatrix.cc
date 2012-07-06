@@ -40,5 +40,7 @@ SendTestMatrixModule::SendTestMatrixModule()
 
 void SendTestMatrixModule::execute()
 {
+  data_ = boost::any_cast<DenseMatrixHandle>((*get_state())["MatrixToSend"]);
+
   send_output_handle(0, data_);
 }

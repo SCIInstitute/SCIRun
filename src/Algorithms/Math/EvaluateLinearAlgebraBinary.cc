@@ -38,7 +38,9 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   DenseMatrixConstHandle lhs = inputs.get<0>();
   DenseMatrixConstHandle rhs = inputs.get<1>();
   if (!lhs || !rhs)
+  {
     return result;
+  }
 
   Operator oper = params;
 
@@ -56,6 +58,9 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   case MULTIPLY:
     result.reset(lhs->clone());
     *result *= *rhs;
+    break;
+  default:
+    std::cout << "ERROR: unknown binary operation" << std::endl;
     break;
   }
 

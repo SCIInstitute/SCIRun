@@ -90,43 +90,6 @@ namespace
   }
 }
 
-TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithHardCodedOperation)
-{
-  ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network matrixUnaryNetwork(mf, sf);
-  
-  ModuleHandle send = addModuleToNetwork(matrixUnaryNetwork, "SendTestMatrix");
-  ModuleHandle process = addModuleToNetwork(matrixUnaryNetwork, "EvaluateLinearAlgebraUnary");
-  ModuleHandle receive = addModuleToNetwork(matrixUnaryNetwork, "ReceiveTestMatrix");
-
-  EXPECT_EQ(3, matrixUnaryNetwork.nmodules());
-
-  matrixUnaryNetwork.connect(send, 0, process, 0);
-  EXPECT_EQ(1, matrixUnaryNetwork.nconnections());
-  matrixUnaryNetwork.connect(process, 0, receive, 0);
-  EXPECT_EQ(2, matrixUnaryNetwork.nconnections());
-
-  SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
-  ASSERT_TRUE(sendModule != 0);
-  EvaluateLinearAlgebraUnaryModule* evalModule = dynamic_cast<EvaluateLinearAlgebraUnaryModule*>(process.get());
-  ASSERT_TRUE(evalModule != 0);
-
-  DenseMatrixHandle input = matrix1();
-  sendModule->setMatrix(input);
-
-  //manually execute the network, in the correct order.
-  send->execute();
-  process->execute();
-  receive->execute();
-
-  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
-  ASSERT_TRUE(receiveModule != 0);
-  ASSERT_TRUE(receiveModule->latestReceivedMatrix());
-
-  EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
-}
-
 TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOperation)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
@@ -150,9 +113,9 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   ASSERT_TRUE(evalModule != 0);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->setMatrix(input);
+  (*sendModule->get_state())["MatrixToSend"] = input;
 
-  (*process->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::NEGATE;
+  (*process->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   //manually execute the network, in the correct order.
   send->execute();
   process->execute();
@@ -164,7 +127,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
-  (*process->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE;
+  (*process->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
   EXPECT_EQ(transpose(*input), *receiveModule->latestReceivedMatrix());
@@ -241,11 +204,11 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   //Set module parameters.
   (*matrix1Send->get_state())["MatrixToSend"] = matrix1();
   (*matrix2Send->get_state())["MatrixToSend"] = matrix2();
-  (*transpose->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE;
-  (*negate->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::NEGATE;
+  (*transpose->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  (*negate->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   (*scalar->get_state())["Operation"] = EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 4.0);
-  (*multiply->get_state())["Operation"] = EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY;
-  (*add->get_state())["Operation"] = EvaluateLinearAlgebraBinaryAlgorithm::ADD;
+  (*multiply->get_state())["Operation"] = EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+  (*add->get_state())["Operation"] = EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::ADD);
   
   //execute all manually, in order
   matrix1Send->execute();
@@ -262,8 +225,14 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   ReportMatrixInfoAlgorithm::Outputs reportOutput = boost::any_cast<ReportMatrixInfoAlgorithm::Outputs>((*report->get_state())["ReportedInfo"]);
   DenseMatrixHandle receivedMatrix = boost::any_cast<DenseMatrixHandle>((*receive->get_state())["ReceivedMatrix"]);
 
+  ASSERT_TRUE(receivedMatrix);
   //verify results
   EXPECT_EQ(expected, *receivedMatrix);
+  EXPECT_EQ(3, reportOutput.get<1>());
+  EXPECT_EQ(3, reportOutput.get<2>());
+  EXPECT_EQ(9, reportOutput.get<3>());
+  EXPECT_EQ(22, reportOutput.get<4>());
+  EXPECT_EQ(186, reportOutput.get<5>());
 
-  EXPECT_TRUE(false);
+  //EXPECT_TRUE(false);
 }

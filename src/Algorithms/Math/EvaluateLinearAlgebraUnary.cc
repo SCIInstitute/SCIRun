@@ -60,5 +60,6 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     (*result) *= scalar;
     break;
   }
+
   return result;
 }

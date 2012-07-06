@@ -36,6 +36,7 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Algorithms::Math;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 //TODO DAN
 
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
@@ -46,8 +47,6 @@ Module("EvaluateLinearAlgebraBinary")
 
 void EvaluateLinearAlgebraBinaryModule::execute()
 {
-  EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO DAN inject
-
   DatatypeHandleOption lhs = get_input_handle(0);
   if (!lhs)
     throw std::logic_error("TODO DAN Input data (lhs) required, need to move this check to Module base class!");
@@ -55,15 +54,19 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   if (!rhs)
     throw std::logic_error("TODO DAN Input data (rhs) required, need to move this check to Module base class!");
 
-  DenseMatrixConstHandle lhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO DAN: clean
-  DenseMatrixConstHandle rhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO DAN: clean
+  DenseMatrixHandle lhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO DAN: clean
+  DenseMatrixHandle rhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO DAN: clean
   if (!lhsInput || !rhsInput)
   {
     //TODO DAN log error? send null? check standard practice.
     return;
   }
 
-  DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhsInput, rhsInput), EvaluateLinearAlgebraBinaryAlgorithm::ADD);  //TODO DAN
+  ModuleStateHandle state = get_state();
+  EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = boost::any_cast<EvaluateLinearAlgebraBinaryAlgorithm::Parameters>((*state)["Operation"]);
+
+  EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO DAN inject
+  DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhsInput, rhsInput), oper); 
 
   send_output_handle(0, output);
 }

@@ -28,15 +28,32 @@
 
 #include <iostream>
 #include <Modules/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/Datatype.h>
+#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
 //TODO DAN
 
 ReportMatrixInfoModule::ReportMatrixInfoModule() : Module("ReportMatrixInfo") {}
 
 void ReportMatrixInfoModule::execute()
 {
-  std::cout << "nothing to execute yet in ReportMatrixInfo................................" << std::endl;
+  DatatypeHandleOption input = get_input_handle(0);
+  if (!input)
+    throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
+
+  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
+  if (!matrix)
+  {
+    //TODO DAN log error? send null? check standard practice.
+    return;
+  }
+
+  ReportMatrixInfoAlgorithm algo;
+  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
+  (*get_state())["ReportedInfo"] = output;
+
+  std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
 }

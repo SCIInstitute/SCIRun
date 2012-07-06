@@ -42,5 +42,8 @@ void ReceiveTestMatrixModule::execute()
 {
   DatatypeHandleOption data = get_input_handle(0);
   if (data)
+  {
     latestValue_ = boost::dynamic_pointer_cast<DenseMatrix>(*data);
+    (*get_state())["ReceivedMatrix"] = latestValue_;
+  }
 }

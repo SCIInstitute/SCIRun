@@ -34,6 +34,7 @@
 #include <vector>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/PortManager.h>
 #include <Core/Dataflow/Network/Share.h>
