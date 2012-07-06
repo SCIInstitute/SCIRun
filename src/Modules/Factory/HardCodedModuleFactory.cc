@@ -58,6 +58,11 @@ HardCodedModuleFactory::HardCodedModuleFactory()
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
 }
 
+void HardCodedModuleFactory::setStateFactory(SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory)
+{
+  stateFactory_ = stateFactory;
+}
+
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;

@@ -39,6 +39,10 @@ ADD_LIBRARY(Engine_State
 ${Engine_State_HEADERS}
 ${Engine_State_SRCS})
 
+TARGET_LINK_LIBRARIES(Engine_State
+Core_Dataflow_Network
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_State)
 ENDIF(BUILD_SHARED_LIBS)

@@ -45,7 +45,7 @@ namespace Networks {
   class SCISHARE Network : public NetworkInterface, boost::noncopyable
   {
   public:
-    explicit Network(ModuleFactoryHandle moduleFactory);
+    Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory);
     ~Network();
 
     virtual ModuleHandle add_module(const ModuleLookupInfo& info);
@@ -63,6 +63,7 @@ namespace Networks {
     typedef std::vector<ModuleHandle> Modules;
   private:
     ModuleFactoryHandle moduleFactory_;
+    ModuleStateFactoryHandle stateFactory_;
     Connections connections_;
     Modules modules_;
   };

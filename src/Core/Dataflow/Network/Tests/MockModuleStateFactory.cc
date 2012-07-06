@@ -26,26 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_FACTORY_H
-#define CORE_DATAFLOW_NETWORK_MODULE_FACTORY_H 
-
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Dataflow/Network/Share.h>
-
-namespace SCIRun {
-namespace Domain {
-namespace Networks {
-
-  class SCISHARE ModuleFactory
-  {
-  public:
-    virtual ~ModuleFactory();
-    virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
-    virtual ModuleHandle create(const ModuleDescription& desc) = 0;
-    virtual void setStateFactory(ModuleStateFactoryHandle stateFactory) = 0;
-  };
-
-}}}
-
-#endif
+//#include <Core/Dataflow/Network/Tests/MockModuleState.h>
+//
+//using namespace SCIRun::Domain::Networks;
+//using namespace SCIRun::Domain::Networks::Mocks;
+//using ::testing::NiceMock;
+//
+//ModuleStateInterface* MockModuleStateFactory::make_state(const std::string& name) const
+//

@@ -43,7 +43,7 @@ namespace Engine {
   class SCISHARE NetworkEditorController 
   {
   public:
-    explicit NetworkEditorController(SCIRun::Domain::Networks::ModuleFactoryHandle mf);
+    explicit NetworkEditorController(SCIRun::Domain::Networks::ModuleFactoryHandle mf, SCIRun::Domain::Networks::ModuleStateFactoryHandle sf);
     explicit NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network);
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);

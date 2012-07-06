@@ -31,8 +31,14 @@
 #include <Engine/State/SimpleMapModuleState.h>
 
 using namespace SCIRun::Domain::State;
+using namespace SCIRun::Domain::Networks;
 
 boost::any& SimpleMapModuleState::operator[](const std::string& parameterName)
 {
   return stateMap_[parameterName];
+}
+
+ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const
+{
+  return new SimpleMapModuleState;
 }

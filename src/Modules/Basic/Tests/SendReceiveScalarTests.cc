@@ -35,6 +35,7 @@
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Dataflow/Network/Tests/MockModuleState.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
@@ -51,7 +52,8 @@ using ::testing::Return;
 TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  Network firstBasicNetwork(mf);
+  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
+  Network firstBasicNetwork(mf, sf);
 
   ModuleLookupInfo sendInfo;
   sendInfo.module_name_ = "SendScalar";

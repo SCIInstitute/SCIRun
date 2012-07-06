@@ -26,12 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MOCK_MODULE_H
-#define MOCK_MODULE_H
+#ifndef MOCK_MODULE_STATE_H
+#define MOCK_MODULE_STATE_H
 
-#include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Dataflow/Network/ModuleFactory.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {
@@ -39,35 +37,25 @@ namespace SCIRun {
     namespace Networks {
       namespace Mocks
       {
-        class MockModule : public ModuleInterface
+        class MockModuleState : public ModuleStateInterface
         {
         public:
-          MOCK_METHOD0(execute, void());
-          MOCK_METHOD0(get_state, ModuleStateHandle());
-          MOCK_METHOD2(send_output_handle, void(size_t, SCIRun::Domain::Datatypes::DatatypeHandle));
-          MOCK_METHOD1(get_input_handle, SCIRun::Domain::Datatypes::DatatypeHandleOption(size_t));
-          MOCK_CONST_METHOD0(get_module_name, std::string());
-          MOCK_CONST_METHOD1(get_output_port, OutputPortHandle(size_t));
-          MOCK_CONST_METHOD1(get_input_port, InputPortHandle(size_t));
-          MOCK_CONST_METHOD0(num_input_ports, size_t());
-          MOCK_CONST_METHOD0(num_output_ports, size_t());
-          MOCK_CONST_METHOD0(get_id, std::string());
-          MOCK_CONST_METHOD0(has_ui, bool());
+          virtual boost::any& operator[](const std::string& p)
+          {
+            return operator_bracker(p);
+          }
+          MOCK_METHOD1(operator_bracker, boost::any&(const std::string&));
         };
 
-        typedef boost::shared_ptr<MockModule> MockModulePtr;
+        typedef boost::shared_ptr<MockModuleState> MockModuleStatePtr;
 
-        class MockModuleFactory : public ModuleFactory
+        class MockModuleStateFactory : public ModuleStateInterfaceFactory
         {
         public:
-          MockModuleFactory() : moduleCounter_(0) {}
-          virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
-          virtual ModuleHandle create(const ModuleDescription& info);
-          virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
-        private:
-          size_t moduleCounter_;
-          ModuleStateFactoryHandle stateFactory_;
-          std::map<MockModulePtr, ModuleStateHandle> stateMap_;
+          virtual ModuleStateInterface* make_state(const std::string& name) const
+          {
+            return new ::testing::NiceMock<MockModuleState>;
+          }
         };
       }
     }

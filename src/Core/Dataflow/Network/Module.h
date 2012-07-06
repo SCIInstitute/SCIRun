@@ -69,8 +69,7 @@ namespace Networks {
 
     void do_execute();
     virtual void execute() = 0;
-    virtual const ModuleStateInterface& get_state() const;
-    virtual ModuleStateInterface& get_state();
+    virtual ModuleStateHandle get_state();
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data);

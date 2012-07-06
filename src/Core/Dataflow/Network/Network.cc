@@ -39,15 +39,14 @@
 
 using namespace SCIRun::Domain::Networks;
 
-Network::Network(ModuleFactoryHandle moduleFactory)
-  : moduleFactory_(moduleFactory)
+Network::Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory)
 {
-
+  moduleFactory_->setStateFactory(stateFactory_);
 }
 
 Network::~Network()
 {
-
 }
 
 ModuleHandle Network::add_module(const ModuleLookupInfo& info)

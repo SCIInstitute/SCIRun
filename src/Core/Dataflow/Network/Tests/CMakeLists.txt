@@ -31,6 +31,7 @@ SET(Core_Dataflow_Network_Tests_SRCS
   InputPortTest.cc
   ModuleTests.cc
   MockModuleFactory.cc
+  MockModuleStateFactory.cc
   NetworkTests.cc
   OutputPortTest.cc
   PortTests.cc
@@ -39,6 +40,7 @@ SET(Core_Dataflow_Network_Tests_SRCS
 
 SET(Core_Dataflow_Network_Tests_HEADERS
   MockModule.h
+  MockModuleState.h
   MockPorts.h
 )
 

@@ -31,17 +31,24 @@
 
 #include <map>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>
+#include <Engine/State/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace State {
   //TODO DAN
-  class SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
+  class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
   {
   public:
     virtual boost::any& operator[](const std::string& parameterName);
   private:
     std::map<std::string, boost::any> stateMap_;
+  };
+
+  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory
+  {
+  public:
+    virtual SCIRun::Domain::Networks::ModuleStateInterface* make_state(const std::string& name) const;
   };
 
 }}}

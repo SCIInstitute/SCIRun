@@ -39,10 +39,10 @@ using namespace SCIRun;
 using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf)
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf)
 {
   //TODO should this class own or just keep a reference?
-  theNetwork_.reset(new Network(mf));
+  theNetwork_.reset(new Network(mf, sf));
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network)

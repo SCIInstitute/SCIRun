@@ -32,6 +32,7 @@
 #include <Core/Dataflow/Network/Tests/MockModule.h>
 #include <Core/Dataflow/Network/Tests/MockPorts.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
@@ -73,6 +74,19 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   }
   
   EXPECT_CALL(*module, get_id()).WillRepeatedly(Return("module" + boost::lexical_cast<std::string>(++moduleCounter_)));
+
+  if (stateFactory_)
+  {
+    ModuleStateHandle state(stateFactory_->make_state(info.lookupInfo_.module_name_));
+    stateMap_[module] = state;
+    EXPECT_CALL(*module, get_state()).WillRepeatedly(Return(state));
+  }
+
   return module;
+}
+
+void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
+{
+  stateFactory_ = stateFactory;
 }
 

@@ -42,6 +42,9 @@ namespace SCIRun {
         HardCodedModuleFactory();
         virtual SCIRun::Domain::Networks::ModuleDescription lookupDescription(const SCIRun::Domain::Networks::ModuleLookupInfo& info);
         virtual SCIRun::Domain::Networks::ModuleHandle create(const SCIRun::Domain::Networks::ModuleDescription& info);
+        virtual void setStateFactory(SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory);
+      private:
+        SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory_;
       };
     }
   }

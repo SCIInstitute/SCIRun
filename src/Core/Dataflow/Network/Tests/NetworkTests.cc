@@ -33,6 +33,7 @@
 #include <Core/Dataflow/Network/Connection.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Tests/MockModule.h>
+#include <Core/Dataflow/Network/Tests/MockModuleState.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
@@ -41,7 +42,8 @@ using namespace boost::assign;
 TEST(NetworkTests, CanAddAndRemoveModules)
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  Network network(moduleFactory);
+  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
+  Network network(moduleFactory, sf);
  
   EXPECT_EQ(0, network.nmodules());
 
@@ -62,7 +64,8 @@ TEST(NetworkTests, CanAddAndRemoveModules)
 TEST(NetworkTests, CanAddAndRemoveConnections)
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  Network network(moduleFactory);
+  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
+  Network network(moduleFactory, sf);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -86,7 +89,8 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
 TEST(NetworkTests, CannotMakeSameConnectionTwice)
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  Network network(moduleFactory);
+  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
+  Network network(moduleFactory, sf);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";

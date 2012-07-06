@@ -31,6 +31,7 @@
 
 #include <string>
 #include <boost/any.hpp>
+#include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {

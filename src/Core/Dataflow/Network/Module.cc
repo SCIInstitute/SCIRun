@@ -173,14 +173,9 @@ void Module::do_execute()
   //Logger::Instance->log("MODULE FINISHED: " + id_);  
 }
 
-const ModuleStateInterface& Module::get_state() const
+ModuleStateHandle Module::get_state() 
 {
-  return *state_;
-}
-
-ModuleStateInterface& Module::get_state() 
-{
-  return *state_;
+  return state_;
 }
 
 void Module::add_input_port(InputPortHandle h)
