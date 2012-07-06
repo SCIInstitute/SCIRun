@@ -209,6 +209,21 @@
            <string>ComputeSVD</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>EvaluateLinearAlgebraBinary</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>EvaluateLinearAlgebraUnary</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ReportMatrixInfo</string>
+          </property>
+         </item>
         </item>
         <item>
          <property name="text">

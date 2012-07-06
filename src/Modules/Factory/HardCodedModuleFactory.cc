@@ -106,8 +106,8 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   d.lookupInfo_ = info;
   if (name.find("ComputeSVD") != std::string::npos)
   {
-    d.input_ports_ += InputPortDescription("Input1", "Matrix", "blue");
-    d.output_ports_ += OutputPortDescription("Output1", "Matrix", "blue"), OutputPortDescription("Output2", "Matrix", "blue"), OutputPortDescription("Output2", "Matrix", "blue");
+    d.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    d.output_ports_ += OutputPortDescription("U", "Matrix", "blue"), OutputPortDescription("S", "Matrix", "blue"), OutputPortDescription("V", "Matrix", "blue");
   }
   else if (name.find("ReadMatrix") != std::string::npos)
   {

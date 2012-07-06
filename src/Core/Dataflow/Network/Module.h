@@ -119,6 +119,36 @@ namespace Networks {
     static int instanceCount_;
   };
 
+
+#if 0
+  template <class PortTypeTag>
+  class HasInputPort
+  {
+  public:
+    InputPortDescription description() const;
+  };
+
+  struct MatrixPortTag {};
+
+  template <>
+  class HasInputPort<MatrixPortTag>
+  {
+  public:
+    InputPortDescription description() const
+    {
+      return InputPortDescription(????, "Matrix", "blue"); 
+    }
+  };
+
+  template <class ModuleType, int PortNumber>
+  struct PortTraits
+  {
+    static const char* name;
+  };
+
+  //const char* PortName<ReportMatrixInfo, 0>::name = "Hello int";
+#endif
+
 }}}
 
 #endif

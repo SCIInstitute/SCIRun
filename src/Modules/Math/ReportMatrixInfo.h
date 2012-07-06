@@ -37,6 +37,8 @@ namespace Modules {
 namespace Math {
   //TODO DAN
   class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
+    //,
+    //public HasInputPorts<MatrixPort>
   {
   public:
     ReportMatrixInfoModule();
