@@ -36,21 +36,15 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
   //TODO DAN
-  class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module
-    ,
-    public SCIRun::Domain::Networks::HasInputPorts<SCIRun::Domain::Networks::MatrixPortTag>
+  class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
+    public Has1InputPort<MatrixPortTag>
   {
   public:
     ReportMatrixInfoModule();
     virtual void execute();
   };
-
-}}}
-
-namespace SCIRun {
-  namespace Domain {
-    namespace Networks {
-      const char* SCIRun::Domain::Networks::PortTraits<SCIRun::Modules::Math::ReportMatrixInfoModule, 0>::name = "Input_VIA_TEMPLATE";
-    }}}
+}
+  const char* PortTraits<Math::ReportMatrixInfoModule, 0>::name = "Input_VIA_TEMPLATE";
+}}
 
 #endif

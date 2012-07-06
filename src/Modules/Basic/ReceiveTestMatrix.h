@@ -37,7 +37,8 @@ namespace SCIRun {
   namespace Modules {
     namespace Basic {
 
-      class SCISHARE ReceiveTestMatrixModule : public SCIRun::Domain::Networks::Module
+      class SCISHARE ReceiveTestMatrixModule : public SCIRun::Domain::Networks::Module,
+        public Has1InputPort<MatrixPortTag>
       {
       public:
         ReceiveTestMatrixModule();
@@ -46,7 +47,8 @@ namespace SCIRun {
       private:
         SCIRun::Domain::Datatypes::DenseMatrixHandle latestValue_;
       };
-
-}}}
+}
+    const char* PortTraits<Basic::ReceiveTestMatrixModule, 0>::name = "Input";
+}}
 
 #endif

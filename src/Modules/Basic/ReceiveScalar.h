@@ -36,7 +36,8 @@ namespace SCIRun {
   namespace Modules {
     namespace Basic {
 
-      class SCISHARE ReceiveScalarModule : public SCIRun::Domain::Networks::Module
+      class SCISHARE ReceiveScalarModule : public SCIRun::Domain::Networks::Module,
+        public Has1InputPort<ScalarPortTag>
       {
       public:
         ReceiveScalarModule();
@@ -46,6 +47,8 @@ namespace SCIRun {
         double latestValue_;
       };
 
-}}}
+}
+  const char* PortTraits<Basic::ReceiveScalarModule, 0>::name = "Input";
+}}
 
 #endif

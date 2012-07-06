@@ -118,24 +118,53 @@ namespace Networks {
     PortManager<InputPortHandle> iports_;
     static int instanceCount_;
   };
+  
+}}
 
+
+namespace Modules
+{
 
   template <class PortTypeTag>
-  class HasInputPorts
+  class Has1InputPort
   {
   public:
-    static InputPortDescription description(const std::string& name);
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& name);
+  };
+
+  template <class PortTypeTag1, class PortTypeTag2>
+  class Has2InputPorts
+  {
+  public:
+    static std::vector<SCIRun::Domain::Networks::InputPortDescription> inputPortDescription(const std::string& name1, const std::string& name2)
+    {
+      std::vector<SCIRun::Domain::Networks::InputPortDescription> ports;
+      ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(name1));
+      ports.push_back(Has1InputPort<PortTypeTag2>::inputPortDescription(name2));
+      return ports;
+    }
   };
 
   struct MatrixPortTag {};
+  struct ScalarPortTag {};
 
   template <>
-  class HasInputPorts<MatrixPortTag>
+  class Has1InputPort<MatrixPortTag>
   {
   public:
-    static InputPortDescription description(const std::string& name)
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& name)
     {
-      return InputPortDescription(name, "Matrix", "blue"); 
+      return SCIRun::Domain::Networks::InputPortDescription(name, "Matrix", "blue"); 
+    }
+  };
+
+  template <>
+  class Has1InputPort<ScalarPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& name)
+    {
+      return SCIRun::Domain::Networks::InputPortDescription(name, "Scalar", "cyan"); 
     }
   };
 
@@ -145,9 +174,7 @@ namespace Networks {
     static const char* name;
   };
 
-  //const char* PortName<ReportMatrixInfo, 0>::name = "Hello int";
-
-
-}}}
+}
+}
 
 #endif
