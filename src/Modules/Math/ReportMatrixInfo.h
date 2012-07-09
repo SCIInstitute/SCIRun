@@ -37,14 +37,13 @@ namespace Modules {
 namespace Math {
   //TODO DAN
   class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
-    public Has1InputPort<MatrixPortTag>
+    public Has1InputPort<MatrixPortTag, ReportMatrixInfoModule>
   {
   public:
     ReportMatrixInfoModule();
     virtual void execute();
+    static std::string inputPortNames[Has1InputPort::NUM_PORTS];
   };
-}
-  const char* PortTraits<Math::ReportMatrixInfoModule, 0>::name = "Input_VIA_TEMPLATE";
-}}
+}}}
 
 #endif

@@ -34,6 +34,8 @@
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
 
+std::string ReceiveScalarModule::inputPortNames[] = {"Input"};
+
 ReceiveScalarModule::ReceiveScalarModule()
   : Module("ReceiveScalar"),
   latestValue_(-1)

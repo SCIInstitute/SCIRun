@@ -116,7 +116,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("ReceiveScalar") != std::string::npos)
   {
-    description.input_ports_ += ReceiveScalarModule::inputPortDescription(PortTraits<ReceiveScalarModule, 0>::name);
+    description.input_ports_ += ReceiveScalarModule::inputPortDescription();
     description.maker_ = boost::factory<ReceiveScalarModule*>();
   }
   else if (name.find("SendTestMatrix") != std::string::npos)
@@ -126,12 +126,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("ReceiveTestMatrix") != std::string::npos)
   {
-    description.input_ports_ += ReceiveTestMatrixModule::inputPortDescription(PortTraits<ReceiveTestMatrixModule, 0>::name);
+    description.input_ports_ += ReceiveTestMatrixModule::inputPortDescription();
     description.maker_ = boost::factory<ReceiveTestMatrixModule*>();
   }
   else if (name.find("ReportMatrixInfo") != std::string::npos)
   {
-    description.input_ports_ += ReportMatrixInfoModule::inputPortDescription(PortTraits<ReportMatrixInfoModule, 0>::name);
+    description.input_ports_ += ReportMatrixInfoModule::inputPortDescription();
     description.maker_ = boost::factory<ReportMatrixInfoModule*>();
   }
   else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
@@ -142,10 +142,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("EvaluateLinearAlgebraBinary") != std::string::npos)
   {
-    description.input_ports_ = EvaluateLinearAlgebraBinaryModule::inputPortDescription(
-      PortTraits<EvaluateLinearAlgebraBinaryModule, 0>::name,
-      PortTraits<EvaluateLinearAlgebraBinaryModule, 1>::name);
-      //InputPortDescription("InputLHS", "Matrix", "blue"), InputPortDescription("InputRHS", "Matrix", "blue");
+    description.input_ports_ = EvaluateLinearAlgebraBinaryModule::inputPortDescription();
     description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
     description.maker_ = boost::factory<EvaluateLinearAlgebraBinaryModule*>();
   }

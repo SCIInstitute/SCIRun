@@ -42,8 +42,11 @@ using namespace SCIRun::Domain::Networks;
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
 Module("EvaluateLinearAlgebraBinary")
 {
-
 }
+
+
+std::string EvaluateLinearAlgebraBinaryModule::inputPortNames[] = {"InputLHS_VIA_TEMPLATE_REC", "InputRHS_VIA_TEMPLATE_REC"};
+
 
 void EvaluateLinearAlgebraBinaryModule::execute()
 {

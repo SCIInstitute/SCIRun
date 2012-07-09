@@ -38,17 +38,16 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE ReceiveTestMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has1InputPort<MatrixPortTag>
+        public Has1InputPort<MatrixPortTag, ReceiveTestMatrixModule>
       {
       public:
         ReceiveTestMatrixModule();
         virtual void execute();
         SCIRun::Domain::Datatypes::DenseMatrixHandle latestReceivedMatrix() const { return latestValue_; }
+        static std::string inputPortNames[Has1InputPort::NUM_PORTS];
       private:
         SCIRun::Domain::Datatypes::DenseMatrixHandle latestValue_;
       };
-}
-    const char* PortTraits<Basic::ReceiveTestMatrixModule, 0>::name = "Input";
-}}
+}}}
 
 #endif

@@ -37,18 +37,16 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE ReceiveScalarModule : public SCIRun::Domain::Networks::Module,
-        public Has1InputPort<ScalarPortTag>
+        public Has1InputPort<ScalarPortTag, ReceiveScalarModule>
       {
       public:
         ReceiveScalarModule();
         virtual void execute();
         double latestReceivedValue() const { return latestValue_; }
+        static std::string inputPortNames[Has1InputPort::NUM_PORTS];
       private:
         double latestValue_;
       };
-
-}
-  const char* PortTraits<Basic::ReceiveScalarModule, 0>::name = "Input";
-}}
+ }}}
 
 #endif
