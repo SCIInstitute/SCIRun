@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,25 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_MATRIX_H
-#define MODULES_DATAIO_READ_MATRIX_H
 
-#include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+#ifndef MODULES_DATAIO_SHARE_H
+#define MODULES_DATAIO_SHARE_H 
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-  
-  //TODO DAN
-  class SCISHARE ReadMatrix : public SCIRun::Domain::Networks::Module
-  {
-  public:
-    virtual void execute();
-  private:
-    std::string filename_;
-  };
+#undef SCISHARE
 
-}}}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_DataIO
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
 
 #endif

@@ -27,4 +27,16 @@
 */
 
 #include <iostream>
+#include <Modules/DataIO/WriteMatrix.h>
+
+using namespace SCIRun::Modules::DataIO;
+
+void WriteMatrix::execute()
+{
+
+}
+
+
+
+
 //TODO DAN
