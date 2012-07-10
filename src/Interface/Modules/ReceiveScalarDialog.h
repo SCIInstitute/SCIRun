@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SEND_SCALAR_H
-#define INTERFACE_MODULES_SEND_SCALAR_H
+#ifndef INTERFACE_MODULES_RECEIVE_SCALAR_H
+#define INTERFACE_MODULES_RECEIVE_SCALAR_H
 
-#include "Interface/Modules/ui_SendScalar.h"
+#include "Interface/Modules/ui_ReceiveScalar.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/ModuleDialogGeneric.h>
@@ -40,14 +40,14 @@ namespace Gui {
   
   //TODO DAN
 
-class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
+class SCISHARE ReceiveScalarDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::SendScalar
+  public Ui::ReceiveScalar
 {
 	Q_OBJECT
 	
 public:
-  SendScalarDialog(const std::string& name, QWidget* parent = 0);
+  ReceiveScalarDialog(const std::string& name, QWidget* parent = 0);
   virtual int moduleExecutionTime();
 
   double scalarValue();

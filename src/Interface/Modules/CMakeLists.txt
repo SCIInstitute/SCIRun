@@ -37,11 +37,14 @@ SET(Interface_Modules_HEADERS
   SendScalarDialog.h
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
+  ReceiveScalarDialog.h
   Share.h
 )
 
 SET(Interface_Modules_SOURCES 
   ModuleDialogBasic.cc
+  ReceiveScalarDialog.cc
+  SendScalarDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})

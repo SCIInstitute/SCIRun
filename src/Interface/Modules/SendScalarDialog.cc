@@ -26,35 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SEND_SCALAR_H
-#define INTERFACE_MODULES_SEND_SCALAR_H
+#include <Interface/Modules/SendScalarDialog.h>
+#include <Interface/Application/Logger.h>
 
-#include "Interface/Modules/ui_SendScalar.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
+using namespace SCIRun::Gui;
 
-namespace SCIRun {
-namespace Gui {
-  
-  //TODO DAN
-
-class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::SendScalar
+SendScalarDialog::SendScalarDialog(const std::string& name, QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(parent)
 {
-	Q_OBJECT
-	
-public:
-  SendScalarDialog(const std::string& name, QWidget* parent = 0);
-  virtual int moduleExecutionTime();
-
-  double scalarValue();
-  void setScalarValue(double value);
-};
-
-}
+  setupUi(this);
+  setModal(false);
+  setWindowTitle(to_QString(name) + " HELLO THIS IS A DIFFERENT DIALOG TYPE");
+  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
+  //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
 }
 
-#endif
+int SendScalarDialog::moduleExecutionTime()
+{
+  return 2000;
+}

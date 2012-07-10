@@ -38,6 +38,8 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
 #include <Interface/Modules/ModuleDialogBasic.h>
+#include <Interface/Modules/SendScalarDialog.h>
+#include <Interface/Modules/ReceiveScalarDialog.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -198,11 +200,26 @@ void ModuleWidget::setExecutionTime(int milliseconds)
   setPercentComplete(0);
 }
 
+//TODO move obviously
+class ModuleDialogFactory
+{
+public:
+  static ModuleDialogGeneric* makeDialog(const std::string& moduleId, int executionTime)
+  {
+    if (moduleId.find("SendScalar") != std::string::npos)
+      return new SendScalarDialog(moduleId, SCIRunMainWindow::Instance());
+    if (moduleId.find("ReceiveScalar") != std::string::npos)
+      return new ReceiveScalarDialog(moduleId, SCIRunMainWindow::Instance());
+    else
+      return new ModuleDialogBasic(moduleId, executionTime, SCIRunMainWindow::Instance());
+  }
+};
+
 void ModuleWidget::openOptionsDialog()
 {
   if (!dialog_)
   {
-    dialog_.reset(new ModuleDialogBasic(moduleId_, executionTime_, SCIRunMainWindow::Instance()));
+    dialog_.reset(ModuleDialogFactory::makeDialog(moduleId_, executionTime_));
     connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
   }
   dialog_->show();
