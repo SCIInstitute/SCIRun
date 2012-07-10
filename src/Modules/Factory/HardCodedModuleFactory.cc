@@ -116,7 +116,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("ReceiveScalar") != std::string::npos)
   {
-    description.input_ports_ += ReceiveScalarModule::inputPortDescription();
+    description.input_ports_ += ReceiveScalarModule::inputPortDescription(ReceiveScalarModule::inputPort0Name());
     description.maker_ = boost::factory<ReceiveScalarModule*>();
   }
   else if (name.find("SendTestMatrix") != std::string::npos)
@@ -126,12 +126,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("ReceiveTestMatrix") != std::string::npos)
   {
-    description.input_ports_ += ReceiveTestMatrixModule::inputPortDescription();
+    description.input_ports_ += ReceiveTestMatrixModule::inputPortDescription(ReceiveTestMatrixModule::inputPort0Name());
     description.maker_ = boost::factory<ReceiveTestMatrixModule*>();
   }
   else if (name.find("ReportMatrixInfo") != std::string::npos)
   {
-    description.input_ports_ += ReportMatrixInfoModule::inputPortDescription();
+    description.input_ports_ += ReportMatrixInfoModule::inputPortDescription(ReportMatrixInfoModule::inputPort0Name());
     description.maker_ = boost::factory<ReportMatrixInfoModule*>();
   }
   else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
@@ -142,7 +142,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("EvaluateLinearAlgebraBinary") != std::string::npos)
   {
-    description.input_ports_ = EvaluateLinearAlgebraBinaryModule::inputPortDescription();
+    description.input_ports_ = EvaluateLinearAlgebraBinaryModule::inputPortDescription(EvaluateLinearAlgebraBinaryModule::inputPort0Name(), EvaluateLinearAlgebraBinaryModule::inputPort1Name());
     description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
     description.maker_ = boost::factory<EvaluateLinearAlgebraBinaryModule*>();
   }

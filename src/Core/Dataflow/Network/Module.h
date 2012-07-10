@@ -124,29 +124,22 @@ namespace Networks {
 
 namespace Modules
 {
-  class Has1InputPortBase
+  template <class PortTypeTag>
+  class Has1InputPort
   {
   public:
-    enum { NUM_PORTS = 1 };
-  };
-  
-  template <class PortTypeTag, class ModuleType, int PortNumber = 0>
-  class Has1InputPort : public Has1InputPortBase
-  {
-  public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription();
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name);
   };
 
-  template <class PortTypeTag1, class PortTypeTag2, class ModuleType>
+  template <class PortTypeTag0, class PortTypeTag1>
   class Has2InputPorts
   {
   public:
-    enum { NUM_PORTS = 2 };
-    static std::vector<SCIRun::Domain::Networks::InputPortDescription> inputPortDescription()
+    static std::vector<SCIRun::Domain::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
       std::vector<SCIRun::Domain::Networks::InputPortDescription> ports;
-      ports.push_back(Has1InputPort<PortTypeTag1, ModuleType, 0>::inputPortDescription());
-      ports.push_back(Has1InputPort<PortTypeTag2, ModuleType, 1>::inputPortDescription());
+      ports.push_back(Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name));
+      ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name));
       return ports;
     }
   };
@@ -154,23 +147,23 @@ namespace Modules
   struct MatrixPortTag {};
   struct ScalarPortTag {};
 
-  template <class ModuleType, int PortNumber>
-  class Has1InputPort<MatrixPortTag, ModuleType, PortNumber> : public Has1InputPortBase
+  template <>
+  class Has1InputPort<MatrixPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription()
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
-      return SCIRun::Domain::Networks::InputPortDescription(ModuleType::inputPortNames[PortNumber], "Matrix", "blue"); 
+      return SCIRun::Domain::Networks::InputPortDescription(port0Name, "Matrix", "blue"); 
     }
   };
 
-  template <class ModuleType, int PortNumber>
-  class Has1InputPort<ScalarPortTag, ModuleType, PortNumber> : public Has1InputPortBase
+  template <>
+  class Has1InputPort<ScalarPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription()
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
-      return SCIRun::Domain::Networks::InputPortDescription(ModuleType::inputPortNames[PortNumber], "Scalar", "cyan"); 
+      return SCIRun::Domain::Networks::InputPortDescription(port0Name, "Scalar", "cyan"); 
     }
   };
 }

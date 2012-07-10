@@ -44,10 +44,6 @@ Module("EvaluateLinearAlgebraBinary")
 {
 }
 
-
-std::string EvaluateLinearAlgebraBinaryModule::inputPortNames[] = {"InputLHS_VIA_TEMPLATE_REC", "InputRHS_VIA_TEMPLATE_REC"};
-
-
 void EvaluateLinearAlgebraBinaryModule::execute()
 {
   DatatypeHandleOption lhs = get_input_handle(0);

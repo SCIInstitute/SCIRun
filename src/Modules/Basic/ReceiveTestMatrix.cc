@@ -33,8 +33,6 @@
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
 
-std::string ReceiveTestMatrixModule::inputPortNames[] = {"Input"};
-
 ReceiveTestMatrixModule::ReceiveTestMatrixModule()
   : Module("ReceiveTestMatrix")
 {

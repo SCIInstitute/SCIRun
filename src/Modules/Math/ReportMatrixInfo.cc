@@ -36,8 +36,6 @@ using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
 //TODO DAN
 
-std::string ReportMatrixInfoModule::inputPortNames[] = {"Input!!!"};
-
 ReportMatrixInfoModule::ReportMatrixInfoModule() : Module("ReportMatrixInfo") {}
 
 void ReportMatrixInfoModule::execute()

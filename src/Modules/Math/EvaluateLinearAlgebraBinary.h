@@ -37,13 +37,14 @@ namespace SCIRun {
     namespace Math {
       //TODO DAN
       class SCISHARE EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, MatrixPortTag, EvaluateLinearAlgebraBinaryModule>
+        public Has2InputPorts<MatrixPortTag, MatrixPortTag>
       {
       public:
         EvaluateLinearAlgebraBinaryModule();
         virtual void execute();
 
-        static std::string inputPortNames[Has2InputPorts::NUM_PORTS];
+        static std::string inputPort0Name() { return "InputLHS"; }
+        static std::string inputPort1Name() { return "InputRHS"; }
       };
 
 }
