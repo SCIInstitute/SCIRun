@@ -32,8 +32,10 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Algorithms/DataIO/ReadMatrix.h>
 
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::DataIO;
 
 //TODO DAN
 
@@ -52,7 +54,7 @@ namespace
     DenseMatrix m (3, 4);
     for (size_t i = 0; i < m.nrows(); ++ i)
       for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.0 * i + j;
+        m(i, j) = 3.5 * i + j;
     return m;
   }
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
@@ -83,4 +85,14 @@ TEST(ReadMatrixTests, RoundTripViaString)
   istr >> m2;
 
   EXPECT_EQ(m, m2);
+}
+
+TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
+
+  DenseMatrixConstHandle matrix = algo.run(filename);
+
+  EXPECT_EQ(matrixNonSquare(), *matrix);
 }

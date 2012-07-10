@@ -26,11 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Core/Datatypes/Datatype.h>
+#include <fstream>
+#include <Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <boost/filesystem.hpp>
 
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
 
 //TODO DAN
+
+ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
+{
+  if (!boost::filesystem3::exists(filename))
+    return Outputs();
+  
+  std::ifstream reader(filename);
+  DenseMatrixHandle matrix(new DenseMatrix);
+  reader >> *matrix;
+  return matrix;
+}
