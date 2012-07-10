@@ -32,6 +32,7 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <ostream>
+#include <istream>
 
 namespace SCIRun {
 namespace Domain {
@@ -50,6 +51,46 @@ namespace Datatypes {
       o << "\n";
     }
     return o;
+  }
+
+  template <typename T>
+  std::istream& operator>>(std::istream& istr, DenseMatrixGeneric<T>& m)
+  {
+    std::vector<std::vector<T> > values;
+
+    std::string line;
+
+    while (!std::getline(istr, line, '\n').eof()) 
+    {
+      std::istringstream reader(line);
+
+      std::vector<T> lineData;
+
+      while(!reader.eof()) 
+      {
+        T val;
+        reader >> val;
+
+        if(reader.fail())
+          break;
+
+        lineData.push_back(val);
+      }
+
+      values.push_back(lineData);
+    }
+
+    m.clear();
+    m.resize(values.size(), values[0].size());
+    for (size_t i = 0; i < m.nrows(); ++i)
+    {
+      for (size_t j = 0; j < m.ncols(); ++j)
+      {
+        m(i,j) = values[i][j];
+      }
+    }
+
+    return istr;
   }
 
   template <typename T>

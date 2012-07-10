@@ -66,6 +66,8 @@ namespace Datatypes {
 
     DenseMatrixGeneric* make_transpose() const;
     void transpose_in_place();
+    void clear();
+    void resize(size_t nrows, size_t ncols);
 
     virtual DenseMatrixGeneric* clone() const;
     
