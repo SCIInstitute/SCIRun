@@ -29,10 +29,74 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-//using namespace SCIRun;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Algorithms/DataIO/WriteMatrix.h>
+#include <Algorithms/DataIO/ReadMatrix.h>
+
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::DataIO;
 
 //TODO DAN
+
+namespace
+{
+  DenseMatrix matrix1()
+  {
+    DenseMatrix m (3, 3);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.0 * i + j + 1;
+    return m;
+  }
+  DenseMatrix matrixNonSquare()
+  {
+    DenseMatrix m (3, 4);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.5 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+}
+
+TEST(WriteMatrixTests, CanWriteToStream)
+{
+  const std::string matrixString = "1 2 3 \n4 5 6 \n7 8 9 \n";
+
+  std::ostringstream ostr;
+
+  DenseMatrix out = matrix1();
+
+  ostr << out;
+
+  EXPECT_EQ(matrixString, ostr.str());
+}
+
+TEST(WriteMatrixAlgorithmTest, TestToRealTextFile)
+{
+  WriteMatrixAlgorithm algo;
+  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1Out.txt";
+
+  DenseMatrixHandle m1(matrix1().clone());
+  algo.run(m1, filename);
+
+  //EXPECT_TRUE(false);
+}
+
+TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
+{
+  WriteMatrixAlgorithm write;
+  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1Out.txt";
+
+  DenseMatrixHandle m1(matrix1().clone());
+  write.run(m1, filename);
+
+  ReadMatrixAlgorithm read;
+  DenseMatrixConstHandle roundTrip = read.run(filename);
+
+  EXPECT_EQ(*m1, *roundTrip);
+
+  //EXPECT_TRUE(false);
+}

@@ -29,15 +29,23 @@
 #ifndef ALGORITHMS_DATAIO_WRITEMATRIX_H
 #define ALGORITHMS_DATAIO_WRITEMATRIX_H
 
-//TODO DAN
-
+#include <string>
 #include <Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Algorithms/DataIO/Share.h>
 
 namespace SCIRun {
   namespace Algorithms {
     namespace DataIO {
-      class WriteMatrixAlgorithm : public AlgorithmBase
+
+      class SCISHARE WriteMatrixAlgorithm : public AlgorithmBase
       {
+      public:
+        typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+        typedef std::string Parameters; 
+        typedef void Outputs;
+
+        Outputs run(const Inputs& input, const Parameters& filename) const;
       };
 }}}
 

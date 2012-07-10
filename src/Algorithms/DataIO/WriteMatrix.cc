@@ -26,11 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Datatype.h>
-#include <Modules/Basic/SendScalar.h>
+#include <fstream>
+#include <Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
 
 //TODO DAN
+
+WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
+{
+  if (!inputMatrix)
+    return;
+
+  std::ofstream writer(filename);
+  writer << *inputMatrix;
+}
