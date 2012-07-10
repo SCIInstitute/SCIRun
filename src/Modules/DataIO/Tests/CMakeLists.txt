@@ -46,4 +46,5 @@ Engine_State
 gtest_main
 gtest
 gmock
+${Boost_LIBRARIES}
 )

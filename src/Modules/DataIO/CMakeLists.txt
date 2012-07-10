@@ -49,6 +49,7 @@ TARGET_LINK_LIBRARIES(Modules_DataIO
 Core_Dataflow_Network
 Core_Datatypes
 Algorithms_DataIO
+${Boost_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)

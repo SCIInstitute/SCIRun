@@ -27,13 +27,29 @@
 */
 
 #include <iostream>
+#include <boost/filesystem.hpp>
 #include <Modules/DataIO/ReadMatrix.h>
+#include <Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Algorithms::DataIO;
+using namespace SCIRun::Domain::Datatypes;
 
-void ReadMatrix::execute()
+ReadMatrixModule::ReadMatrixModule() : Module("ReadMatrix") {}
+
+void ReadMatrixModule::execute()
 {
+  filename_ = boost::any_cast<std::string>((*get_state())["FileName"]);
+  if (!boost::filesystem3::exists(filename_))
+  {
+    //error()
+    return;
+  }
 
+  ReadMatrixAlgorithm algo;
+  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
+  send_output_handle(0, matrix);
 }
 
 

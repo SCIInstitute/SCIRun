@@ -36,6 +36,8 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
+#include <Modules/DataIO/ReadMatrix.h>
+#include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
@@ -45,10 +47,12 @@
 #include <Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Dataflow/Network/Tests/MockModuleState.h>
 #include <Engine/State/SimpleMapModuleState.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
@@ -112,8 +116,14 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   (*send->get_state())["MatrixToSend"] = input;
 
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\moduleTestMatrix.txt";
+  boost::filesystem3::remove(filename);
+
   (*write->get_state())["FileName"] = filename;
+  WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
+  ASSERT_TRUE(writeModule != 0);
   (*read->get_state())["FileName"] = filename;
+  ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
+  ASSERT_TRUE(readModule != 0);
 
   //manually execute the network, in the correct order.
   send->execute();
@@ -126,7 +136,4 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   ASSERT_TRUE(receiveModule->latestReceivedMatrix());
 
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
-
-
-  EXPECT_TRUE(false);
 }

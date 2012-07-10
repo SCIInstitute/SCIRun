@@ -37,9 +37,10 @@ namespace Modules {
 namespace DataIO {
   
   //TODO DAN
-  class SCISHARE ReadMatrix : public SCIRun::Domain::Networks::Module
+  class SCISHARE ReadMatrixModule : public SCIRun::Domain::Networks::Module
   {
   public:
+    ReadMatrixModule();
     virtual void execute();
   private:
     std::string filename_;

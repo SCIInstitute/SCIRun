@@ -37,9 +37,10 @@ namespace SCIRun {
     namespace DataIO {
 
       //TODO DAN
-      class SCISHARE WriteMatrix : public SCIRun::Domain::Networks::Module
+      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module
       {
       public:
+        WriteMatrixModule();
         virtual void execute();
       private:
         std::string filename_;

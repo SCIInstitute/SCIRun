@@ -43,6 +43,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
 Core_Dataflow_Network
 Modules_Math
 Modules_Basic
+Modules_DataIO
 )
 
 IF(BUILD_SHARED_LIBS)
