@@ -53,10 +53,10 @@ public:
     return dummy_;
   }
 
-  virtual boost::signals::connection connect_state_changed_signal(state_changed_sig_t::slot_function_type subscriber)
-  {
-    return boost::signals::connection();
-  }
+  //virtual boost::signals::connection connect_state_changed_signal(state_changed_sig_t::slot_function_type subscriber)
+  //{
+  //  return boost::signals::connection();
+  //}
 private:
   boost::any dummy_;
 };

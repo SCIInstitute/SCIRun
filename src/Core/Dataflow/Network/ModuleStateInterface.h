@@ -31,7 +31,7 @@
 
 #include <string>
 #include <boost/any.hpp>
-#include <boost/signal.hpp>
+//#include <boost/signal.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 
@@ -46,9 +46,9 @@ namespace Networks {
     
     virtual boost::any& operator[](const std::string& parameterName) = 0;
 
-    typedef boost::signal<void()> state_changed_sig_t;
+    //typedef boost::signal<void()> state_changed_sig_t;
 
-    virtual boost::signals::connection connect_state_changed_signal(state_changed_sig_t::slot_function_type subscriber) = 0;
+    //virtual boost::signals::connection connect_state_changed_signal(state_changed_sig_t::slot_function_type subscriber) = 0;
   };
 
   class SCISHARE ModuleStateInterfaceFactory

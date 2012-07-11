@@ -41,7 +41,7 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
   setWindowTitle(to_QString(name) + " --Receive");
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
-  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
+  //connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
 }
 
 int ReceiveScalarDialog::moduleExecutionTime()
