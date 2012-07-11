@@ -33,9 +33,15 @@
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;
 
+boost::any SimpleMapModuleState::get(const std::string& parameterName) const
+{
+  StateMap::const_iterator i = stateMap_.find(parameterName);
+  return i != stateMap_.end() ? *i : boost::any();
+}
 boost::any& SimpleMapModuleState::operator[](const std::string& parameterName)
 {
   sig_();  //TODO: reorder
+  std::cout << "STATE: emitted state change signal" << std::endl;
   return stateMap_[parameterName];
 }
 
@@ -46,5 +52,6 @@ boost::signals::connection SimpleMapModuleState::connect_state_changed(state_cha
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const
 {
+  std::cout << "STATE FACTORY: returning new SimpleMapState" << std::endl;
   return new SimpleMapModuleState;
 }

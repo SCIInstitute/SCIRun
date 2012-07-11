@@ -64,6 +64,7 @@ HardCodedModuleFactory::HardCodedModuleFactory()
 void HardCodedModuleFactory::setStateFactory(SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
+  Module::defaultStateFactory_ = stateFactory_;
 }
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)

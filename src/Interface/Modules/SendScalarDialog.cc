@@ -42,7 +42,8 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(to_QString(name));
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
-  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
+  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
 }
 
 int SendScalarDialog::moduleExecutionTime()
@@ -52,6 +53,7 @@ int SendScalarDialog::moduleExecutionTime()
 
 void SendScalarDialog::pushScalarValueToState(const QString& str) 
 {
+  std::cout << "SSD::push called" << std::endl;
   double value = str.toDouble();
   (*state_)["ValueToSend"] = value;
 }

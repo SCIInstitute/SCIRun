@@ -48,7 +48,7 @@ namespace Networks {
   public:
     //TODO replace params with ModuleLookupInfo
     Module(const std::string& name, 
-      ModuleStateFactoryHandle stateMaker = ModuleStateFactoryHandle(),
+      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       bool hasUi = true, 
       const std::string& cat = "unknown", 
       const std::string& pack = "unknown", 
@@ -96,6 +96,9 @@ namespace Networks {
       static SourceMaker source_maker_;
     };
 
+    //TODO: yuck
+    static ModuleStateFactoryHandle defaultStateFactory_;
+
   protected:
 
     void set_modulename(const std::string& name)   { info_.module_name_ = name; }
@@ -113,7 +116,7 @@ namespace Networks {
     void add_output_port(OutputPortHandle);
     bool has_ui_;
    
-    boost::shared_ptr<ModuleStateInterface> state_;
+    ModuleStateHandle state_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
     static int instanceCount_;

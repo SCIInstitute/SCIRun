@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>435</width>
+    <width>548</width>
     <height>172</height>
    </rect>
   </property>
@@ -113,6 +113,19 @@
    </property>
    <property name="tickPosition">
     <enum>QSlider::TicksBelow</enum>
+   </property>
+  </widget>
+  <widget class="QCommandLinkButton" name="executeButton_">
+   <property name="geometry">
+    <rect>
+     <x>440</x>
+     <y>60</y>
+     <width>185</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Execute</string>
    </property>
   </widget>
  </widget>

@@ -48,7 +48,12 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 class NullModuleState : public ModuleStateInterface
 {
 public:
-  virtual boost::any& operator[](const std::string& parameterName)
+  virtual boost::any& operator[](const std::string&)
+  {
+    return dummy_;
+  }
+
+  virtual boost::any get(const std::string&) const
   {
     return dummy_;
   }
@@ -63,10 +68,10 @@ private:
 
 
 Module::Module(const std::string& name, 
-  ModuleStateFactoryHandle stateMaker,
+  ModuleStateFactoryHandle stateFactory,
   bool hasUi,
   const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
-  : has_ui_(hasUi), executionTime_(1.0), state_(stateMaker ? stateMaker->make_state(name) : new NullModuleState)
+  : has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(name) : new NullModuleState)
 {
   set_modulename(name);
   id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
@@ -78,6 +83,8 @@ Module::~Module()
 {
   instanceCount_--;
 }
+
+ModuleStateFactoryHandle Module::defaultStateFactory_;
 
 OutputPortHandle Module::get_output_port(size_t idx) const
 {

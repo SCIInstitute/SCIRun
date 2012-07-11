@@ -44,6 +44,8 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
   //connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
+  
+  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
 
   state_->connect_state_changed(boost::bind(&ReceiveScalarDialog::pullScalarValueFromState, this));
 }
@@ -55,6 +57,7 @@ int ReceiveScalarDialog::moduleExecutionTime()
 
 void ReceiveScalarDialog::pullScalarValueFromState() 
 {
-  double value = any_cast_or_default<double>((*state_)["ReceivedValue"]);
+  std::cout << "RSDialog pull called" << std::endl;
+  double value = any_cast_or_default<double>(state_->get("ReceivedValue"));
   scalarValueReceived_->setText(QString::number(value));
 }

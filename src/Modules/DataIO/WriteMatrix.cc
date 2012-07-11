@@ -50,7 +50,7 @@ void WriteMatrixModule::execute()
 
   DenseMatrixHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*data);
 
-  filename_ = any_cast_or_default<std::string>((*get_state())["FileName"]);
+  filename_ = any_cast_or_default<std::string>(get_state()->get("FileName"));
 
   WriteMatrixAlgorithm algo;
   algo.run(matrix, filename_);

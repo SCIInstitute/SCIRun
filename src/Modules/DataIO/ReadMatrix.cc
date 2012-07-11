@@ -41,7 +41,7 @@ ReadMatrixModule::ReadMatrixModule() : Module("ReadMatrix") {}
 
 void ReadMatrixModule::execute()
 {
-  filename_ = any_cast_or_default<std::string>((*get_state())["FileName"]);
+  filename_ = any_cast_or_default<std::string>(get_state()->get("FileName"));
   if (!boost::filesystem3::exists(filename_))
   {
     //error()

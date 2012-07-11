@@ -45,6 +45,7 @@ namespace SCIRun {
             return operator_bracket(p);
           }
           MOCK_METHOD1(operator_bracket, boost::any&(const std::string&));
+          MOCK_CONST_METHOD1(get, boost::any(const std::string&));
           MOCK_METHOD1(connect_state_changed, boost::signals::connection(state_changed_sig_t::slot_function_type));
         };
 

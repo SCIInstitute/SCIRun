@@ -50,9 +50,10 @@ void ReceiveScalarModule::execute()
     const Double* doubleData = (*data)->as<Double>();
     if (doubleData)
     {
-      std::cout << "doubleData non-null" << std::endl;
+      std::cout << "...doubleData non-null" << std::endl;
       latestValue_ = doubleData->getValue();
       (*get_state())["ReceivedValue"] = latestValue_;
+      std::cout << "...Set latestValue_ to " << latestValue_ << std::endl;
     }
   }
 }

@@ -198,11 +198,11 @@ void ModuleWidget::execute()
     std::cout << e.what() << std::endl;
   }
 
-  std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
-  {
-    FakeExecutionRunner runner(this);
-    boost::thread execution = boost::thread(runner);
-  }
+  //std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
+  //{
+  //  FakeExecutionRunner runner(this);
+  //  boost::thread execution = boost::thread(runner);
+  //}
   std::cout << "Done executing." << std::endl;
 }
 
@@ -233,6 +233,7 @@ void ModuleWidget::openOptionsDialog()
   {
     dialog_.reset(ModuleDialogFactory::makeDialog(moduleId_, theModule_->get_state(), executionTime_));
     connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
+    connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
   }
   dialog_->show();
 }

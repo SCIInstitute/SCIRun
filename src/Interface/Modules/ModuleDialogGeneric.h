@@ -46,10 +46,12 @@ namespace Gui {
     //TODO: how to genericize this?  do we need to?
   Q_SIGNALS:
     void executionTimeChanged(int time);
+    void executeButtonPressed();
   protected:
     explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) 
     {
       setModal(false);
+      
     }
   };
 
