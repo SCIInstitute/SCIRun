@@ -52,9 +52,8 @@ public:
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
 
-private Q_SLOTS:
-    void pullScalarValueFromState(const QString& str);
 private:
+  void pullScalarValueFromState();
   SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 

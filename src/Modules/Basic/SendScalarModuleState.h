@@ -29,7 +29,7 @@
 #ifndef ENGINE_STATE_SENDSCALARMODULESTATE_H
 #define ENGINE_STATE_SENDSCALARMODULESTATE_H
 
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
 namespace State {

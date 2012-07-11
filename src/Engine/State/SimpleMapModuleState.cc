@@ -35,7 +35,13 @@ using namespace SCIRun::Domain::Networks;
 
 boost::any& SimpleMapModuleState::operator[](const std::string& parameterName)
 {
+  sig_();  //TODO: reorder
   return stateMap_[parameterName];
+}
+
+boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+{
+  return sig_.connect(subscriber);
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

@@ -42,9 +42,10 @@ namespace SCIRun {
         public:
           virtual boost::any& operator[](const std::string& p)
           {
-            return operator_bracker(p);
+            return operator_bracket(p);
           }
-          MOCK_METHOD1(operator_bracker, boost::any&(const std::string&));
+          MOCK_METHOD1(operator_bracket, boost::any&(const std::string&));
+          MOCK_METHOD1(connect_state_changed, boost::signals::connection(state_changed_sig_t::slot_function_type));
         };
 
         typedef boost::shared_ptr<MockModuleState> MockModuleStatePtr;

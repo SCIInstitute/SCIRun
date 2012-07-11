@@ -26,7 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <boost/bind.hpp>
 #include <Interface/Modules/ReceiveScalarDialog.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Application/Logger.h>
 
 using namespace SCIRun::Gui;
@@ -42,6 +44,8 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
   //connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
+
+  state_->connect_state_changed(boost::bind(&ReceiveScalarDialog::pullScalarValueFromState, this));
 }
 
 int ReceiveScalarDialog::moduleExecutionTime()
@@ -49,8 +53,8 @@ int ReceiveScalarDialog::moduleExecutionTime()
   return 2000;
 }
 
-void ReceiveScalarDialog::pullScalarValueFromState(const QString& str) 
+void ReceiveScalarDialog::pullScalarValueFromState() 
 {
-  double value = str.toDouble();
-  (*state_)["ValueToSend"] = value;
+  double value = any_cast_or_default<double>((*state_)["ReceivedValue"]);
+  scalarValueReceived_->setText(QString::number(value));
 }
