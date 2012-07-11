@@ -44,13 +44,18 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 
 /*static*/ int Module::instanceCount_ = 0;
 
-//TODO NEW FILE BEING LAZY NOW
+//TODO MAKE NEW FILE 
 class NullModuleState : public ModuleStateInterface
 {
 public:
   virtual boost::any& operator[](const std::string& parameterName)
   {
     return dummy_;
+  }
+
+  virtual boost::signals::connection connect_state_changed_signal(state_changed_sig_t::slot_function_type subscriber)
+  {
+    return boost::signals::connection();
   }
 private:
   boost::any dummy_;

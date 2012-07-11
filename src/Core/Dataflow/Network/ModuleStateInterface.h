@@ -31,6 +31,7 @@
 
 #include <string>
 #include <boost/any.hpp>
+#include <boost/signal.hpp>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 
@@ -44,6 +45,10 @@ namespace Networks {
     virtual ~ModuleStateInterface();
     
     virtual boost::any& operator[](const std::string& parameterName) = 0;
+
+    typedef boost::signal<void()> state_changed_sig_t;
+
+    virtual boost::signals::connection connect_state_changed_signal(state_changed_sig_t::slot_function_type subscriber) = 0;
   };
 
   class SCISHARE ModuleStateInterfaceFactory
@@ -52,6 +57,21 @@ namespace Networks {
     virtual ~ModuleStateInterfaceFactory();
     virtual ModuleStateInterface* make_state(const std::string& name) const = 0;
   };
+
+  //TODO split
+  template <class T>
+  T any_cast_or_default(boost::any& x)
+  {
+    try
+    {
+      return boost::any_cast<T>(x);
+    }
+    catch (boost::bad_any_cast&)
+    {
+    	std::cout << "Attempted any_cast failed, returning default value." << std::endl;
+      return T();
+    }
+  }
 
 }}}
 

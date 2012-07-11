@@ -32,6 +32,7 @@
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 
 SendTestMatrixModule::SendTestMatrixModule()
   : Module("SendTestMatrix")
@@ -40,7 +41,7 @@ SendTestMatrixModule::SendTestMatrixModule()
 
 void SendTestMatrixModule::execute()
 {
-  data_ = boost::any_cast<DenseMatrixHandle>((*get_state())["MatrixToSend"]);
+  data_ = any_cast_or_default<DenseMatrixHandle>((*get_state())["MatrixToSend"]);
 
   send_output_handle(0, data_);
 }

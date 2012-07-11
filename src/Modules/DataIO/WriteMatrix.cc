@@ -34,7 +34,7 @@
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
-
+using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::DataIO;
 
 WriteMatrixModule::WriteMatrixModule() : Module("WriteMatrix") {}
@@ -43,11 +43,14 @@ void WriteMatrixModule::execute()
 {
   DatatypeHandleOption data = get_input_handle(0);
   if (!data)
+  {
+    std::cout << "Required input not present, this check should go in the module base class!!!" << std::endl;
     return;
+  }
 
   DenseMatrixHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*data);
 
-  filename_ = boost::any_cast<std::string>((*get_state())["FileName"]);
+  filename_ = any_cast_or_default<std::string>((*get_state())["FileName"]);
 
   WriteMatrixAlgorithm algo;
   algo.run(matrix, filename_);

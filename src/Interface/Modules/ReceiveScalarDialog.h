@@ -47,11 +47,15 @@ class SCISHARE ReceiveScalarDialog : public ModuleDialogGeneric,
 	Q_OBJECT
 	
 public:
-  ReceiveScalarDialog(const std::string& name, QWidget* parent = 0);
+  ReceiveScalarDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
   virtual int moduleExecutionTime();
 
-  double scalarValue();
-  void setScalarValue(double value);
+private Q_SLOTS:
+    void pullScalarValueFromState(const QString& str);
+private:
+  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

@@ -30,18 +30,27 @@
 #include <Interface/Application/Logger.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
 
-ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent)
+ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(parent),
+  state_(state)
 {
   setupUi(this);
-  setModal(false);
-  setWindowTitle(to_QString(name) + " HELLO THIS IS A DIFFERENT DIALOG TYPE--Receive");
+  setWindowTitle(to_QString(name) + " --Receive");
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
+  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
 }
 
 int ReceiveScalarDialog::moduleExecutionTime()
 {
   return 2000;
+}
+
+void ReceiveScalarDialog::pullScalarValueFromState(const QString& str) 
+{
+  double value = str.toDouble();
+  (*state_)["ValueToSend"] = value;
 }

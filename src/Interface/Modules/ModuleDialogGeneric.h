@@ -47,7 +47,10 @@ namespace Gui {
   Q_SIGNALS:
     void executionTimeChanged(int time);
   protected:
-    explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) {}
+    explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) 
+    {
+      setModal(false);
+    }
   };
 
 }

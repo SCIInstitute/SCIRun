@@ -42,12 +42,12 @@
     </rect>
    </property>
    <property name="title">
-    <string>Scalar Value Input</string>
+    <string>Scalar Value Received</string>
    </property>
    <property name="checkable">
     <bool>false</bool>
    </property>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="scalarValueReceived_">
     <property name="geometry">
      <rect>
       <x>30</x>

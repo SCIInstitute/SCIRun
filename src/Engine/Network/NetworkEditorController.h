@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Engine {
   
-  typedef boost::signals2::signal<void (const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)> ModuleAddedSignalType;
+  typedef boost::signals2::signal<void (const std::string&, SCIRun::Domain::Networks::ModuleHandle)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionId&)> ConnectionAddedSignalType;
 

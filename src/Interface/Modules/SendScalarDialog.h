@@ -47,11 +47,15 @@ class SCISHARE SendScalarDialog : public ModuleDialogGeneric,
 	Q_OBJECT
 	
 public:
-  SendScalarDialog(const std::string& name, QWidget* parent = 0);
+  SendScalarDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
   virtual int moduleExecutionTime();
 
-  double scalarValue();
-  void setScalarValue(double value);
+private Q_SLOTS:
+  void pushScalarValueToState(const QString& str);
+private:
+  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

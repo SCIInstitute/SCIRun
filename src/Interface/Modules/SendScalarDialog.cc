@@ -28,20 +28,30 @@
 
 #include <Interface/Modules/SendScalarDialog.h>
 #include <Interface/Application/Logger.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
 
-SendScalarDialog::SendScalarDialog(const std::string& name, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent)
+SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(parent),
+  state_(state)
 {
   setupUi(this);
-  setModal(false);
-  setWindowTitle(to_QString(name) + " HELLO THIS IS A DIFFERENT DIALOG TYPE");
+  setWindowTitle(to_QString(name));
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-  //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
+  
+  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
 }
 
 int SendScalarDialog::moduleExecutionTime()
 {
   return 2000;
+}
+
+void SendScalarDialog::pushScalarValueToState(const QString& str) 
+{
+  double value = str.toDouble();
+  (*state_)["ValueToSend"] = value;
 }

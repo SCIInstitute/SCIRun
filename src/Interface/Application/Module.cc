@@ -54,10 +54,11 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider, QWidget* parent /* = 0 */)
+ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
-  moduleId_(moduleInfoProvider.get_id()),
-  executionTime_(0)
+  moduleId_(theModule->get_id()),
+  executionTime_(0),
+  theModule_(theModule)
 {
   setupUi(this);
   titleLabel_->setText("<b><h2>" + name + "</h2></b>");
@@ -66,7 +67,7 @@ ModuleWidget::ModuleWidget(const QString& name, const SCIRun::Domain::Networks::
   progressBar_->setValue(0);
   
   addPortLayouts();
-  addPorts(moduleInfoProvider);
+  addPorts(*theModule);
 
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(openOptionsDialog()));
 }
@@ -185,7 +186,18 @@ void ModuleWidget::FakeExecutionRunner::operator()()
 
 void ModuleWidget::execute()
 {
-  std::cout << "Executing " << moduleId_ << std::endl;
+  std::cout << "Executing Actual Module." << moduleId_ << std::endl;
+
+  try
+  {
+    theModule_->execute();
+  }
+  catch (std::exception& e)
+  {
+    std::cout << "Caught exception from module execution:" << std::endl;
+    std::cout << e.what() << std::endl;
+  }
+
   std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
   {
     FakeExecutionRunner runner(this);
@@ -204,12 +216,12 @@ void ModuleWidget::setExecutionTime(int milliseconds)
 class ModuleDialogFactory
 {
 public:
-  static ModuleDialogGeneric* makeDialog(const std::string& moduleId, int executionTime)
+  static ModuleDialogGeneric* makeDialog(const std::string& moduleId, ModuleStateHandle state, int executionTime)
   {
     if (moduleId.find("SendScalar") != std::string::npos)
-      return new SendScalarDialog(moduleId, SCIRunMainWindow::Instance());
+      return new SendScalarDialog(moduleId, state, SCIRunMainWindow::Instance());
     if (moduleId.find("ReceiveScalar") != std::string::npos)
-      return new ReceiveScalarDialog(moduleId, SCIRunMainWindow::Instance());
+      return new ReceiveScalarDialog(moduleId, state, SCIRunMainWindow::Instance());
     else
       return new ModuleDialogBasic(moduleId, executionTime, SCIRunMainWindow::Instance());
   }
@@ -219,7 +231,7 @@ void ModuleWidget::openOptionsDialog()
 {
   if (!dialog_)
   {
-    dialog_.reset(ModuleDialogFactory::makeDialog(moduleId_, executionTime_));
+    dialog_.reset(ModuleDialogFactory::makeDialog(moduleId_, theModule_->get_state(), executionTime_));
     connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
   }
   dialog_->show();

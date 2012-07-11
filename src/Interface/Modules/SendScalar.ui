@@ -42,9 +42,9 @@
     </rect>
    </property>
    <property name="title">
-    <string>Scalar Value Output</string>
+    <string>Scalar Value To Send</string>
    </property>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="scalarValueToSend_">
     <property name="geometry">
      <rect>
       <x>30</x>

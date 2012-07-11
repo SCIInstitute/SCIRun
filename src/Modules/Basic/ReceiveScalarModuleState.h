@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SENDSCALARMODULESTATE_H
-#define ENGINE_STATE_SENDSCALARMODULESTATE_H
+#ifndef ENGINE_STATE_RECEIVESCALARMODULESTATE_H
+#define ENGINE_STATE_RECEIVESCALARMODULESTATE_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 
 namespace SCIRun {
 namespace State {

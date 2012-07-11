@@ -55,7 +55,7 @@ void NetworkEditorController::addModule(const std::string& moduleName)
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
-  /*emit*/ moduleAdded_(moduleName, *realModule);
+  /*emit*/ moduleAdded_(moduleName, realModule);
   printNetwork();
 }
 

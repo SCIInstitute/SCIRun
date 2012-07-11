@@ -32,6 +32,7 @@
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 
 SendScalarModule::SendScalarModule()
   : Module("SendScalar"),
@@ -42,6 +43,9 @@ SendScalarModule::SendScalarModule()
 
 void SendScalarModule::execute()
 {
+  std::cout << "SSM executing..." << std::endl;
+
+  data_ = any_cast_or_default<double>((*get_state())["ValueToSend"]);
   DatatypeHandle output(new Double(data_));
   send_output_handle(0, output);
 }
