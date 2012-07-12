@@ -45,7 +45,7 @@ void SendScalarModule::execute()
 {
   std::cout << "SSM executing..." << std::endl;
 
-  data_ = any_cast_or_default<double>((*get_state())["ValueToSend"]);
+  data_ = any_cast_or_default<double>(get_state()->getValue("ValueToSend"));
   DatatypeHandle output(new Double(data_));
   send_output_handle(0, output);
   std::cout << "SSM sent " << data_ << std::endl;

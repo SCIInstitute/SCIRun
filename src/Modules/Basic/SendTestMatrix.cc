@@ -41,7 +41,7 @@ SendTestMatrixModule::SendTestMatrixModule()
 
 void SendTestMatrixModule::execute()
 {
-  data_ = any_cast_or_default<DenseMatrixHandle>((*get_state())["MatrixToSend"]);
+  data_ = any_cast_or_default<DenseMatrixHandle>(get_state()->getValue("MatrixToSend"));
 
   send_output_handle(0, data_);
 }

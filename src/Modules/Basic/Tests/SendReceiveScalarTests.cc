@@ -51,6 +51,8 @@ using ::testing::Return;
 
 TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
 {
+  DefaultValue<boost::any>::Set(boost::any());
+
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new MockModuleStateFactory);
   Network firstBasicNetwork(mf, sf);

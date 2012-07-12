@@ -60,7 +60,7 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 
   ModuleStateHandle state = get_state();
   
-  EvaluateLinearAlgebraUnaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraUnaryAlgorithm::Parameters>((*state)["Operation"]);
+  EvaluateLinearAlgebraUnaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraUnaryAlgorithm::Parameters>(state->getValue("Operation"));
   EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO DAN inject
   DenseMatrixHandle output = algo.run(denseInput, oper);  //TODO DAN
   send_output_handle(0, output);

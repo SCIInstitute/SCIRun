@@ -36,7 +36,7 @@ set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 set(Boost_DIR "E:/boost_1_49_0")
-set(BOOST_LIBRARYDIR "E:/git/scirunguiprototype/src/Externals/x64")
+set(BOOST_LIBRARYDIR "E:/git/scirunguiprototype/src/Externals/x64/Release")
 
 find_package( Boost 1.49.0 REQUIRED COMPONENTS thread date_time filesystem system signals)
   if(Boost_FOUND)

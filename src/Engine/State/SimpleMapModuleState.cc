@@ -29,20 +29,31 @@
 //TODO DAN
 
 #include <Engine/State/SimpleMapModuleState.h>
+#include <boost/scope_exit.hpp>
 
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;
 
-boost::any SimpleMapModuleState::get(const std::string& parameterName) const
+boost::any SimpleMapModuleState::getValue(const std::string& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);
-  return i != stateMap_.end() ? *i : boost::any();
+  if (i == stateMap_.end())
+  {
+    std::cout << "~~~value not found for key: " << parameterName << std::endl;
+  }
+  else
+  {
+    std::cout << "~~~State map returning value of type " << i->second.type().name() << " for key " << parameterName << std::endl;
+  }
+  return i != stateMap_.end() ? i->second : boost::any();
 }
-boost::any& SimpleMapModuleState::operator[](const std::string& parameterName)
+
+void SimpleMapModuleState::setValue(const std::string& parameterName, boost::any value)
 {
-  sig_();  //TODO: reorder
+  stateMap_[parameterName] = value;
+
   std::cout << "STATE: emitted state change signal" << std::endl;
-  return stateMap_[parameterName];
+  sig_();
 }
 
 boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)

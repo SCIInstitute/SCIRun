@@ -57,7 +57,9 @@ int ReceiveScalarDialog::moduleExecutionTime()
 
 void ReceiveScalarDialog::pullScalarValueFromState() 
 {
-  std::cout << "RSDialog pull called" << std::endl;
-  double value = any_cast_or_default<double>(state_->get("ReceivedValue"));
+  std::cout << "___RSDialog pull called" << std::endl;
+  std::cout << "___STate pointer value: " << state_.get() << std::endl;
+  double value = any_cast_or_default<double>(state_->getValue("ReceivedValue"));
+  std::cout << "___Setting text to value: " << value << std::endl;
   scalarValueReceived_->setText(QString::number(value));
 }

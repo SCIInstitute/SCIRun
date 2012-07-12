@@ -52,8 +52,9 @@ void ReceiveScalarModule::execute()
     {
       std::cout << "...doubleData non-null" << std::endl;
       latestValue_ = doubleData->getValue();
-      (*get_state())["ReceivedValue"] = latestValue_;
       std::cout << "...Set latestValue_ to " << latestValue_ << std::endl;
+      get_state()->setValue("ReceivedValue", latestValue_);
+      std::cout << "...STate pointer value: " << get_state().get() << std::endl;
     }
   }
 }

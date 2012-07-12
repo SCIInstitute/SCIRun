@@ -40,8 +40,8 @@ namespace State {
   class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
   {
   public:
-    virtual boost::any get(const std::string& parameterName) const;
-    virtual boost::any& operator[](const std::string& parameterName);
+    virtual boost::any getValue(const std::string& parameterName) const;
+    virtual void setValue(const std::string& parameterName, boost::any value);
     virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
   private:
     typedef std::map<std::string, boost::any> StateMap;

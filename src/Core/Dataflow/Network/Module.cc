@@ -48,22 +48,19 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 class NullModuleState : public ModuleStateInterface
 {
 public:
-  virtual boost::any& operator[](const std::string&)
+  virtual void setValue(const std::string&, boost::any)
   {
-    return dummy_;
   }
 
-  virtual boost::any get(const std::string&) const
+  virtual boost::any getValue(const std::string&) const
   {
-    return dummy_;
+    return boost::any();
   }
 
   virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
   {
     return boost::signals::connection();
   }
-private:
-  boost::any dummy_;
 };
 
 

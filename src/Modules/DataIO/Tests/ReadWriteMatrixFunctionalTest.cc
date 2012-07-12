@@ -113,15 +113,15 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
 
   DenseMatrixHandle input = matrix1();
-  (*send->get_state())["MatrixToSend"] = input;
+  send->get_state()->setValue("MatrixToSend", input);
 
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\moduleTestMatrix.txt";
   boost::filesystem3::remove(filename);
 
-  (*write->get_state())["FileName"] = filename;
+  write->get_state()->setValue("FileName", filename);
   WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
   ASSERT_TRUE(writeModule != 0);
-  (*read->get_state())["FileName"] = filename;
+  read->get_state()->setValue("FileName", filename);
   ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
   ASSERT_TRUE(readModule != 0);
 

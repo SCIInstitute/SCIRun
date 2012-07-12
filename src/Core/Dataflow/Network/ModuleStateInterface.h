@@ -45,8 +45,8 @@ namespace Networks {
   public:
     virtual ~ModuleStateInterface();
     
-    virtual boost::any get(const std::string& parameterName) const = 0;
-    virtual boost::any& operator[](const std::string& parameterName) = 0;
+    virtual boost::any getValue(const std::string& parameterName) const = 0;
+    virtual void setValue(const std::string& parameterName, boost::any value) = 0;
 
     typedef boost::signal<void()> state_changed_sig_t;
 

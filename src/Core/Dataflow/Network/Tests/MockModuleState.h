@@ -40,12 +40,8 @@ namespace SCIRun {
         class MockModuleState : public ModuleStateInterface
         {
         public:
-          virtual boost::any& operator[](const std::string& p)
-          {
-            return operator_bracket(p);
-          }
-          MOCK_METHOD1(operator_bracket, boost::any&(const std::string&));
-          MOCK_CONST_METHOD1(get, boost::any(const std::string&));
+          MOCK_METHOD2(setValue, void(const std::string&, boost::any));
+          MOCK_CONST_METHOD1(getValue, boost::any(const std::string&));
           MOCK_METHOD1(connect_state_changed, boost::signals::connection(state_changed_sig_t::slot_function_type));
         };
 

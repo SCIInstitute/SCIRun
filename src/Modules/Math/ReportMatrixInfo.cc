@@ -53,7 +53,7 @@ void ReportMatrixInfoModule::execute()
 
   ReportMatrixInfoAlgorithm algo;
   ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  (*get_state())["ReportedInfo"] = output;
+  get_state()->setValue("ReportedInfo", output);
 
   std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
 }
