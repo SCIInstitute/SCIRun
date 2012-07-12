@@ -41,7 +41,7 @@ namespace Basic {
   public:
     SendScalarModule();
     virtual void execute();
-    void setScalar(double data) { data_ = data; }
+    void setScalar(double data);
   private:
     double data_;
   };

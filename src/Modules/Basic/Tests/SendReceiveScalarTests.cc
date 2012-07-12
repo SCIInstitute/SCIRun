@@ -36,12 +36,14 @@
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Core/Dataflow/Network/Tests/MockModuleState.h>
+#include <Engine/State/SimpleMapModuleState.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Domain::State;
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -54,7 +56,7 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
   DefaultValue<boost::any>::Set(boost::any());
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   Network firstBasicNetwork(mf, sf);
 
   ModuleLookupInfo sendInfo;

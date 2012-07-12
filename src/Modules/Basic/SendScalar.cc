@@ -41,6 +41,12 @@ SendScalarModule::SendScalarModule()
 
 }
 
+void SendScalarModule::setScalar(double data)
+{
+  data_ = data; 
+  get_state()->setValue("ValueToSend", data_);
+}
+
 void SendScalarModule::execute()
 {
   std::cout << "SSM executing..." << std::endl;
