@@ -29,6 +29,7 @@
 
 SET(Interface_Modules_FORMS
   ModuleDialogBasic.ui
+  ReadMatrix.ui
   ReceiveScalar.ui
   SendScalar.ui
 )
@@ -37,12 +38,14 @@ SET(Interface_Modules_HEADERS
   SendScalarDialog.h
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
+  ReadMatrixDialog.h
   ReceiveScalarDialog.h
   Share.h
 )
 
 SET(Interface_Modules_SOURCES 
   ModuleDialogBasic.cc
+  ReadMatrixDialog.cc
   ReceiveScalarDialog.cc
   SendScalarDialog.cc
 )
