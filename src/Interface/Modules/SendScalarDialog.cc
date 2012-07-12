@@ -53,7 +53,6 @@ int SendScalarDialog::moduleExecutionTime()
 
 void SendScalarDialog::pushScalarValueToState(const QString& str) 
 {
-  std::cout << "SSD::push called" << std::endl;
   double value = str.toDouble();
   state_->setValue("ValueToSend", value);
 }

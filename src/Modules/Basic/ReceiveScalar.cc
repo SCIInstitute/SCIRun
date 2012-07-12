@@ -42,19 +42,14 @@ ReceiveScalarModule::ReceiveScalarModule()
 
 void ReceiveScalarModule::execute()
 {
-  std::cout << "RSM executing..." << std::endl;
   DatatypeHandleOption data = get_input_handle(0);
   if (data)
   {
-    std::cout << "...Processing data handle" << std::endl;
     const Double* doubleData = (*data)->as<Double>();
     if (doubleData)
     {
-      std::cout << "...doubleData non-null" << std::endl;
       latestValue_ = doubleData->getValue();
-      std::cout << "...Set latestValue_ to " << latestValue_ << std::endl;
       get_state()->setValue("ReceivedValue", latestValue_);
-      std::cout << "...STate pointer value: " << get_state().get() << std::endl;
     }
   }
 }
