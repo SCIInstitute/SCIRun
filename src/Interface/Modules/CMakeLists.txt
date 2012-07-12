@@ -32,6 +32,7 @@ SET(Interface_Modules_FORMS
   ReadMatrix.ui
   ReceiveScalar.ui
   SendScalar.ui
+  WriteMatrix.ui
 )
 
 SET(Interface_Modules_HEADERS
@@ -41,6 +42,7 @@ SET(Interface_Modules_HEADERS
   ReadMatrixDialog.h
   ReceiveScalarDialog.h
   Share.h
+  WriteMatrixDialog.h
 )
 
 SET(Interface_Modules_SOURCES 
@@ -48,6 +50,7 @@ SET(Interface_Modules_SOURCES
   ReadMatrixDialog.cc
   ReceiveScalarDialog.cc
   SendScalarDialog.cc
+  WriteMatrixDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
