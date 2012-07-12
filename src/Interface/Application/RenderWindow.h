@@ -2,6 +2,9 @@
 #define RENDERWINDOW_H
 
 #include <QDialog>
+#include <QVTKWidget.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 
 namespace Ui {
 class RenderWindow;
@@ -17,6 +20,9 @@ public:
     
 private:
     Ui::RenderWindow *ui;
+    QVTKWidget* mVtkWidget;
+    vtkRenderer* mRen;
+
 };
 
 #endif // RENDERWINDOW_H
