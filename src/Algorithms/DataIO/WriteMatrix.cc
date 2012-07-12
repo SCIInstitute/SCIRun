@@ -41,6 +41,6 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
   if (!inputMatrix)
     return;
 
-  std::ofstream writer(filename);
+  std::ofstream writer(filename.c_str());
   writer << *inputMatrix;
 }
