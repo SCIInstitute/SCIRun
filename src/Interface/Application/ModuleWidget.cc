@@ -32,7 +32,7 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
-#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
@@ -176,6 +176,17 @@ void ModuleWidget::FakeExecutionRunner::operator()()
 {
   const int numIncrements = 20;
   const int increment = module_->executionTime_ / numIncrements;
+  
+  try
+  {
+    module_->theModule_->execute();
+  }
+  catch (std::exception& e)
+  {
+    std::cout << "Caught exception from module execution:" << std::endl;
+    std::cout << e.what() << std::endl;
+  }
+
   for (int i = 0; i < numIncrements; ++i)
   {
      boost::this_thread::sleep(boost::posix_time::milliseconds(increment));
@@ -188,21 +199,11 @@ void ModuleWidget::execute()
 {
   std::cout << "Executing Actual Module." << moduleId_ << std::endl;
 
-  try
-  {
-    theModule_->execute();
-  }
-  catch (std::exception& e)
-  {
-    std::cout << "Caught exception from module execution:" << std::endl;
-    std::cout << e.what() << std::endl;
-  }
-
   //std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
-  //{
-  //  FakeExecutionRunner runner(this);
-  //  boost::thread execution = boost::thread(runner);
-  //}
+  {
+    FakeExecutionRunner runner(this);
+    boost::thread execution = boost::thread(runner);
+  }
   std::cout << "Done executing." << std::endl;
 }
 

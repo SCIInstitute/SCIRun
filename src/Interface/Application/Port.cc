@@ -34,7 +34,7 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleWidget.h>
 
 using namespace SCIRun::Gui;
 

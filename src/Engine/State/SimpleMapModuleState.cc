@@ -37,14 +37,6 @@ using namespace SCIRun::Domain::Networks;
 boost::any SimpleMapModuleState::getValue(const std::string& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);
-  if (i == stateMap_.end())
-  {
-    std::cout << "~~~value not found for key: " << parameterName << std::endl;
-  }
-  else
-  {
-    std::cout << "~~~State map returning value of type " << i->second.type().name() << " for key " << parameterName << std::endl;
-  }
   return i != stateMap_.end() ? i->second : boost::any();
 }
 
@@ -52,7 +44,6 @@ void SimpleMapModuleState::setValue(const std::string& parameterName, boost::any
 {
   stateMap_[parameterName] = value;
 
-  std::cout << "STATE: emitted state change signal" << std::endl;
   sig_();
 }
 
@@ -63,6 +54,5 @@ boost::signals::connection SimpleMapModuleState::connect_state_changed(state_cha
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const
 {
-  std::cout << "STATE FACTORY: returning new SimpleMapState" << std::endl;
   return new SimpleMapModuleState;
 }

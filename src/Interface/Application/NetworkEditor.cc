@@ -32,7 +32,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
-#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
