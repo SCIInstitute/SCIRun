@@ -42,7 +42,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   if (!boost::filesystem3::exists(filename))
     return Outputs();
   
-  std::ifstream reader(filename);
+  std::ifstream reader(filename.c_str());
   DenseMatrixHandle matrix(new DenseMatrix);
   reader >> *matrix;
   return matrix;
