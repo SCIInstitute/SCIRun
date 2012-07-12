@@ -62,7 +62,7 @@ namespace Networks {
 
   //TODO split
   template <class T>
-  T any_cast_or_default(boost::any& x)
+  T any_cast_or_default(const boost::any& x)
   {
     try
     {
