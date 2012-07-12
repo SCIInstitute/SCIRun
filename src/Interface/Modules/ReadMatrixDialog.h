@@ -54,6 +54,7 @@ public:
 
 private Q_SLOTS:
   void pushFileNameToState(const QString& str);
+  void openFile();
 private:
   SCIRun::Domain::Networks::ModuleStateHandle state_;
 };

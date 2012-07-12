@@ -29,6 +29,7 @@
 #include <Interface/Modules/ReadMatrixDialog.h>
 #include <Interface/Application/Logger.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
@@ -43,6 +44,7 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
 
@@ -53,5 +55,11 @@ int ReadMatrixDialog::moduleExecutionTime()
 
 void ReadMatrixDialog::pushFileNameToState(const QString& str) 
 {
+  std::cout << "filename set on state object" << std::endl;
   state_->setValue("FileName", str.toStdString());
+}
+
+void ReadMatrixDialog::openFile()
+{
+  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Matrix Text File", ".", "*.txt"));
 }
