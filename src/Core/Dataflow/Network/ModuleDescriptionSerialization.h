@@ -31,6 +31,7 @@
 #define CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H 
 
 #include <Core/Dataflow/Network/ModuleDescription.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -52,7 +53,18 @@ namespace Networks {
     }
   };
 
-
+  class ConnectionDescriptionXML : public ConnectionDescription
+  {
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(moduleId1_);
+      ar & BOOST_SERIALIZATION_NVP(port1_);
+      ar & BOOST_SERIALIZATION_NVP(moduleId2_);
+      ar & BOOST_SERIALIZATION_NVP(port2_);
+    }
+  };
 
 }}}
 

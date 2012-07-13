@@ -39,6 +39,7 @@ namespace Networks {
 
   struct SCISHARE ConnectionDescription
   {
+    ConnectionDescription() : port1_(-1), port2_(-1) {}
     ConnectionDescription(const std::string& id1, size_t p1, const std::string& id2, size_t p2)
       : moduleId1_(id1), port1_(p1), moduleId2_(id2), port2_(p2) {}
     std::string moduleId1_;

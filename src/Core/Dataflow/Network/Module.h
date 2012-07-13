@@ -59,6 +59,11 @@ namespace Networks {
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
     std::string get_id() const { return id_; }
+
+    //TODO for serialization
+    ModuleLookupInfo get_info() const { return info_; }
+    void set_id(const std::string& id) { id_ = id; }
+
     bool has_ui() const { return has_ui_; }
     size_t num_input_ports() const;
     size_t num_output_ports() const;

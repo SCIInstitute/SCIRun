@@ -71,6 +71,8 @@ Module::Module(const std::string& name,
   : has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(name) : new NullModuleState)
 {
   set_modulename(name);
+  set_categoryname(cat);
+  set_packagename(pack);
   id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);
