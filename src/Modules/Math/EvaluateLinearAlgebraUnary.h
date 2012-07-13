@@ -42,8 +42,6 @@ namespace Math {
   public:
     EvaluateLinearAlgebraUnaryModule();
     virtual void execute();
-
-    //void set_operation(const SCIRun::Algorithms::Math::EvaluateLinearAlgebraUnaryAlgorithmParameters&) {}
   };
 
 }}}

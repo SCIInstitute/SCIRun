@@ -46,6 +46,7 @@ SET(Core_Dataflow_Network_HEADERS
   Module.h
   ModuleFactory.h
   ModuleDescription.h
+  ModuleDescriptionSerialization.h
   ModuleInterface.h
   ModuleStateInterface.h
   Network.h

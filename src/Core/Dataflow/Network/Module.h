@@ -127,6 +127,8 @@ namespace Networks {
 
 namespace Modules
 {
+  //TODO DAN Finish this for input/output ports.s
+
   template <class PortTypeTag>
   class Has1InputPort
   {
