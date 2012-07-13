@@ -177,3 +177,21 @@ std::string Network::toString() const
   std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), GetConnectionIds());
   return ostr.str();
 }
+
+NetworkState::NetworkState() {}
+NetworkState::~NetworkState() {}
+
+struct Describe
+{
+  ConnectionDescription operator()(const NetworkState::Connections::value_type& p) const
+  {
+    return p.first.describe();
+  }
+};
+
+NetworkState::ConnectionDescriptionList NetworkState::connections() const
+{
+  ConnectionDescriptionList conns;
+  std::transform(connections_.begin(), connections_.end(), std::back_inserter(conns), Describe());
+  return conns;
+}

@@ -53,6 +53,7 @@ namespace Networks {
     ConnectionId(const char* s) : id_(s) {}
     ConnectionId(const std::string& s) : id_(s) {}
     static ConnectionId create(const ConnectionDescription& desc);
+    ConnectionDescription describe() const;
 
     std::string id_;
     operator std::string() const { return id_; }

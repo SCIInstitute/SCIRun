@@ -51,6 +51,11 @@ namespace Networks {
       ar & BOOST_SERIALIZATION_NVP(category_name_);
       ar & BOOST_SERIALIZATION_NVP(module_name_);
     }
+
+  public:
+    ModuleLookupInfoXML() {}
+    ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs) : ModuleLookupInfo(rhs) {}
+    ModuleLookupInfoXML(const ModuleLookupInfo& rhs) : ModuleLookupInfo(rhs) {}
   };
 
   class ConnectionDescriptionXML : public ConnectionDescription

@@ -120,7 +120,6 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   connections += conn, conn2;
   //save_info(connections, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\connections.xml", "connections");
 
-
   ModuleLookupInfoXML info1;
   info1.module_name_ = "ComputeSVD";  
   info1.category_name_ = "Math";
@@ -130,6 +129,9 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   info2.module_name_ = "CreateMatrix";  
   info2.category_name_ = "Math";
   info2.package_name_ = "SCIRun";
+
+  ModuleLookupInfo copy(info1);
+  ModuleLookupInfoXML x(copy);
 
   ModuleMapXML mods;
   mods["ComputeSVD1"] = info1;

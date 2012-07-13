@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <boost/regex.hpp>
 #include <sstream>
 #include <Core/Dataflow/Network/ConnectionId.h>
 
@@ -41,10 +42,16 @@ bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const Connect
   return !(lhs == rhs);
 }
 
-
 /*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
 {
   std::ostringstream cid;
-  cid << desc.moduleId1_ << "_p" << desc.port1_ << "_to_" << desc.moduleId2_ << "_p" << desc.port2_;
+  cid << desc.moduleId1_ << "_p#" << desc.port1_ << "_@to@_" << desc.moduleId2_ << "_p#" << desc.port2_;
   return ConnectionId(cid.str());
+}
+
+ConnectionDescription ConnectionId::describe() const
+{
+  //Todo: test
+  boost::regex r("");
+  return ConnectionDescription();
 }

@@ -42,7 +42,24 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class SCISHARE Network : public NetworkInterface, boost::noncopyable
+  class SCISHARE NetworkState 
+  {
+  public:
+    typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
+    typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
+    typedef std::vector<ModuleHandle> Modules;
+    
+    NetworkState();
+    ~NetworkState();
+
+    ConnectionDescriptionList connections() const;
+    
+  protected:
+    Modules modules_;
+    Connections connections_;
+  };
+
+  class SCISHARE Network : public NetworkInterface, public NetworkState, boost::noncopyable
   {
   public:
     Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory);
@@ -58,14 +75,9 @@ namespace Networks {
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);
     virtual std::string toString() const;
-
-    typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
-    typedef std::vector<ModuleHandle> Modules;
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
-    Connections connections_;
-    Modules modules_;
   };
 
 }}}
