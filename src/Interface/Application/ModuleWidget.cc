@@ -37,12 +37,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
-#include <Interface/Modules/ModuleDialogBasic.h>
-#include <Interface/Modules/SendScalarDialog.h>
-#include <Interface/Modules/ReceiveScalarDialog.h>
-#include <Interface/Modules/ReadMatrixDialog.h>
-#include <Interface/Modules/WriteMatrixDialog.h>
-#include <Interface/Modules/EvaluateLinearAlgebraUnaryDialog.h>
+#include <Interface/Modules/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -216,32 +211,16 @@ void ModuleWidget::setExecutionTime(int milliseconds)
   setPercentComplete(0);
 }
 
-//TODO move obviously
-class ModuleDialogFactory
-{
-public:
-  static ModuleDialogGeneric* makeDialog(const std::string& moduleId, ModuleStateHandle state, int executionTime)
-  {
-    if (moduleId.find("SendScalar") != std::string::npos)
-      return new SendScalarDialog(moduleId, state, SCIRunMainWindow::Instance());
-    if (moduleId.find("ReceiveScalar") != std::string::npos)
-      return new ReceiveScalarDialog(moduleId, state, SCIRunMainWindow::Instance());
-    if (moduleId.find("ReadMatrix") != std::string::npos)
-      return new ReadMatrixDialog(moduleId, state, SCIRunMainWindow::Instance());
-    if (moduleId.find("WriteMatrix") != std::string::npos)
-      return new WriteMatrixDialog(moduleId, state, SCIRunMainWindow::Instance());
-    if (moduleId.find("EvaluateLinearAlgebraUnary") != std::string::npos)
-      return new EvaluateLinearAlgebraUnaryDialog(moduleId, state, SCIRunMainWindow::Instance());
-    else
-      return new ModuleDialogBasic(moduleId, executionTime, SCIRunMainWindow::Instance());
-  }
-};
+boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
 void ModuleWidget::openOptionsDialog()
 {
   if (!dialog_)
   {
-    dialog_.reset(ModuleDialogFactory::makeDialog(moduleId_, theModule_->get_state(), executionTime_));
+    if (!dialogFactory_)
+      dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
+
+    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state(), executionTime_));
     connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
     connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
   }

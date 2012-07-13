@@ -94,6 +94,8 @@ private:
   boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
   int executionTime_;
 
+  static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
+
   class FakeExecutionRunner
   {
   public:
