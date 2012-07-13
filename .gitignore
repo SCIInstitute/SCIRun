@@ -5,7 +5,7 @@
 *.idb
 *.swp
 *.vcxproj*
-bin/*/*
+bin*/*/*
 doc/*
 src/Doxyfile
 *.dylib
@@ -16,5 +16,7 @@ CMakeFiles
 Makefile
 cmake_install.cmake
 install_manifest.txt
+CTestTestfile.cmake
+DartConfiguration.tcl
 Doxyfile
 doxygen
