@@ -28,6 +28,7 @@
 #
 
 SET(Interface_Modules_FORMS
+  EvaluateLinearAlgebraUnary.ui
   ModuleDialogBasic.ui
   ReadMatrix.ui
   ReceiveScalar.ui
@@ -36,6 +37,7 @@ SET(Interface_Modules_FORMS
 )
 
 SET(Interface_Modules_HEADERS
+  EvaluateLinearAlgebraUnaryDialog.h
   SendScalarDialog.h
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
@@ -46,6 +48,7 @@ SET(Interface_Modules_HEADERS
 )
 
 SET(Interface_Modules_SOURCES 
+  EvaluateLinearAlgebraUnaryDialog.cc
   ModuleDialogBasic.cc
   ReadMatrixDialog.cc
   ReceiveScalarDialog.cc

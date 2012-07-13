@@ -42,6 +42,7 @@
 #include <Interface/Modules/ReceiveScalarDialog.h>
 #include <Interface/Modules/ReadMatrixDialog.h>
 #include <Interface/Modules/WriteMatrixDialog.h>
+#include <Interface/Modules/EvaluateLinearAlgebraUnaryDialog.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -229,6 +230,8 @@ public:
       return new ReadMatrixDialog(moduleId, state, SCIRunMainWindow::Instance());
     if (moduleId.find("WriteMatrix") != std::string::npos)
       return new WriteMatrixDialog(moduleId, state, SCIRunMainWindow::Instance());
+    if (moduleId.find("EvaluateLinearAlgebraUnary") != std::string::npos)
+      return new EvaluateLinearAlgebraUnaryDialog(moduleId, state, SCIRunMainWindow::Instance());
     else
       return new ModuleDialogBasic(moduleId, executionTime, SCIRunMainWindow::Instance());
   }
