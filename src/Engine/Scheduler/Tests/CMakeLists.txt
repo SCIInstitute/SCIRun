@@ -27,6 +27,7 @@
 #
 
 SET(Engine_Scheduler_Tests_SRCS
+  BoostGraphExampleTests.cc
   SchedulerBehavioralTests.cc
 )
 
@@ -39,11 +40,11 @@ SCIRUN_ADD_UNIT_TEST(Engine_Scheduler_Tests
 ${Engine_Scheduler_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
-Core_Dataflow_Network
-Engine_Network
-#Engine_Scheduler
-Algorithms_Math
-gtest_main
-gtest
-gmock
+  Core_Dataflow_Network
+  Engine_Network
+  #Engine_Scheduler
+  gtest_main
+  gtest
+  gmock
+  ${Boost_LIBRARIES}
 )
