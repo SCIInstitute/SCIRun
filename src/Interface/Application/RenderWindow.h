@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -31,9 +31,13 @@
 
 #include <QDialog>
 #include <vtkSmartPointer.h>
+#include <vtkVector.h>
 
 class QVTKWidget;
 class vtkRenderer;
+class vtkArrowSource;
+class vtkPolyDataMapper;
+class vtkMatrix4x4;
 
 namespace Ui {
 class RenderWindow;
@@ -41,18 +45,36 @@ class RenderWindow;
 
 class RenderWindow : public QDialog
 {
-    Q_OBJECT
+  Q_OBJECT
     
 public:
-    explicit RenderWindow(QWidget *parent = 0);
-    ~RenderWindow();
+  explicit RenderWindow(QWidget *parent = 0);
+  ~RenderWindow();
     
 private:
-    Ui::RenderWindow*             ui;
 
-    // VTK
-    QVTKWidget*                   mVtkWidget;
-    vtkSmartPointer<vtkRenderer>  mRen;
+  /// Sets up a default static vector field.
+  void setupVectorField();
+
+  /// Sets up a helix vector field.
+  void setupHelixVectorField();
+
+  /// This function constructs a 3x3 rotation matrix from an 'at' vector.
+  /// While we have no control over the rotation about the given vector,
+  /// in many cases, we don't care. If you want fine grained control of the
+  /// rotation, two vectors must be provided and their cross product calculated.
+  /// A 4x4 homogeneous vtk matrix is returned instead of a 3x3 rotation.
+  /// The last column is (0,0,0,1)
+  static vtkSmartPointer<vtkMatrix4x4> matFromVec(const vtkVector3d& v);
+
+  Ui::RenderWindow*               ui;
+
+  // VTK
+  QVTKWidget*                         mVtkWidget;
+  vtkSmartPointer<vtkRenderer>        mRen;
+  vtkSmartPointer<vtkArrowSource>     mArrowSource;
+  vtkSmartPointer<vtkPolyDataMapper>  mArrowMapper;
+
 };
 
 #endif // RENDERWINDOW_H
