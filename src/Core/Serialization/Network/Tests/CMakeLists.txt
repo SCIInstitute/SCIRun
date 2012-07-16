@@ -26,30 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Dataflow_Network_Tests_SRCS
-  ConnectionTests.cc
-  InputPortTest.cc
-  ModuleTests.cc
-  MockModuleFactory.cc
-  MockModuleStateFactory.cc
-  NetworkTests.cc
-  OutputPortTest.cc
-  PortTests.cc
-  PortManagerTests.cc
+SET(Core_Serialization_Network_Tests_SRCS
+  ModuleSerializationTests.cc
 )
 
-SET(Core_Dataflow_Network_Tests_HEADERS
-  MockModule.h
-  MockModuleState.h
-  MockPorts.h
+SET(Core_Serialization_Network_Tests_HEADERS
+
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Dataflow_Network_Tests 
-${Core_Dataflow_Network_Tests_HEADERS}
-${Core_Dataflow_Network_Tests_SRCS})
+SCIRUN_ADD_UNIT_TEST(Core_Serialization_Network_Tests 
+${Core_Serialization_Network_Tests_HEADERS}
+${Core_Serialization_Network_Tests_SRCS})
 
-TARGET_LINK_LIBRARIES(Core_Dataflow_Network_Tests
+TARGET_LINK_LIBRARIES(Core_Serialization_Network_Tests
 Core_Dataflow_Network
+Core_Serialization_Network
 Core_Datatypes
 gtest_main
 gtest

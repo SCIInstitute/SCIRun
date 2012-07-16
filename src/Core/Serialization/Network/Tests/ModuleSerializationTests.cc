@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Dataflow/Network/ModuleDescriptionSerialization.h>
+#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -118,7 +118,6 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
 
   ConnectionsXML connections;
   connections += conn, conn2;
-  //save_info(connections, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\connections.xml", "connections");
 
   ModuleLookupInfoXML info1;
   info1.module_name_ = "ComputeSVD";  
@@ -136,7 +135,6 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   ModuleMapXML mods;
   mods["ComputeSVD1"] = info1;
   mods["CreateMatrix2"] = info2;
-  //save_info(mods, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\mods.xml", "modules");
 
   NetworkXML network;
   network.connections = connections;

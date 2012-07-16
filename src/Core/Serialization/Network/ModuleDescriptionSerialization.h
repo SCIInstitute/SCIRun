@@ -27,21 +27,21 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H
-#define CORE_DATAFLOW_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H 
+#ifndef CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H
+#define CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H 
 
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <Core/Dataflow/Network/Share.h>
+#include <Core/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class ModuleLookupInfoXML : public ModuleLookupInfo
+  class SCISHARE ModuleLookupInfoXML : public ModuleLookupInfo
   {
     friend class boost::serialization::access;
     template <class Archive>
@@ -53,12 +53,12 @@ namespace Networks {
     }
 
   public:
-    ModuleLookupInfoXML() {}
-    ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs) : ModuleLookupInfo(rhs) {}
-    ModuleLookupInfoXML(const ModuleLookupInfo& rhs) : ModuleLookupInfo(rhs) {}
+    ModuleLookupInfoXML();
+    ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs);
+    ModuleLookupInfoXML(const ModuleLookupInfo& rhs);
   };
 
-  class ConnectionDescriptionXML : public ConnectionDescription
+  class SCISHARE ConnectionDescriptionXML : public ConnectionDescription
   {
     friend class boost::serialization::access;
     template <class Archive>
