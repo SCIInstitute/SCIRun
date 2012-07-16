@@ -158,5 +158,19 @@ SCIRunMainWindow::SCIRunMainWindow()
   QStringList result = visitTree(moduleSelectorTreeWidget_);
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance), _1));
 
+  // Build render window.
+  renderWindow_ = new RenderWindow();
+  renderWindow_->setEnabled(false);
+  renderWindow_->setVisible(false);
+
+  connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
+
   //connect(this, SIGNAL(closed()), this, SLOT(...));
 }
+
+void SCIRunMainWindow::ToggleRenderer()
+{
+  renderWindow_->setEnabled(true);
+  renderWindow_->setVisible(true);
+}
+

@@ -35,12 +35,16 @@ RenderWindow::RenderWindow(QWidget *parent) :
   mVtkWidget(new QVTKWidget(this, QFlag(0)))
 {
   ui->setupUi(this);
+
+  // Add VTK widget to vertical layout.
   ui->verticalLayout->addWidget(mVtkWidget);
   ui->verticalLayout->update();
+
+  // Create renderer
   mRen = vtkRenderer::New();
   mVtkWidget->GetRenderWindow()->AddRenderer(mRen);
   mRen->SetBackground(1.0,0.0,0.0);
-  mRen->Render();
+  //mRen->Render();
 }
 
 RenderWindow::~RenderWindow()

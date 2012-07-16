@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>821</width>
-         <height>662</height>
+         <width>812</width>
+         <height>629</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -110,6 +110,7 @@
     </property>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
+    <addaction name="actionRenderer"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuModules_"/>
@@ -128,7 +129,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>220</width>
+     <width>224</width>
      <height>200</height>
     </size>
    </property>
@@ -306,8 +307,8 @@
            <rect>
             <x>20</x>
             <y>20</y>
-            <width>226</width>
-            <height>46</height>
+            <width>283</width>
+            <height>56</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -471,7 +472,7 @@
                 <x>20</x>
                 <y>30</y>
                 <width>241</width>
-                <height>25</height>
+                <height>34</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="dataSetHorizontalLayout_">
@@ -623,6 +624,11 @@
    </property>
    <property name="text">
     <string>Module Selector</string>
+   </property>
+  </action>
+  <action name="actionRenderer">
+   <property name="text">
+    <string>Renderer</string>
    </property>
   </action>
  </widget>

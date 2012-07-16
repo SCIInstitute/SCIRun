@@ -31,6 +31,7 @@
 
 #include <QDialog>
 #include "ui_SCIRunMainWindow.h"
+#include "RenderWindow.h"
 
 namespace SCIRun {
 namespace Gui {
@@ -42,10 +43,13 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 	Q_OBJECT
 public:
 	static SCIRunMainWindow* Instance();
+protected Q_SLOTS:
+  void ToggleRenderer();
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+  RenderWindow* renderWindow_;
 };
 
 }
