@@ -29,6 +29,10 @@
 #include "RenderWindow.h"
 #include "ui_RenderWindow.h"
 
+#include <QVTKWidget.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+
 RenderWindow::RenderWindow(QWidget *parent) :
   QDialog(parent),
   ui(new Ui::RenderWindow),
@@ -41,11 +45,11 @@ RenderWindow::RenderWindow(QWidget *parent) :
   ui->verticalLayout->update();
 
   // Create renderer
-  mRen = vtkRenderer::New();
+  mRen = vtkSmartPointer<vtkRenderer>::New();
   mVtkWidget->GetRenderWindow()->AddRenderer(mRen);
   mRen->SetBackground(1.0,0.0,0.0);
-  //mRen->Render();
 }
+
 
 RenderWindow::~RenderWindow()
 {

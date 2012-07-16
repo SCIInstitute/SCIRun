@@ -30,9 +30,10 @@
 #define RENDERWINDOW_H
 
 #include <QDialog>
-#include <QVTKWidget.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
+#include <vtkSmartPointer.h>
+
+class QVTKWidget;
+class vtkRenderer;
 
 namespace Ui {
 class RenderWindow;
@@ -47,10 +48,11 @@ public:
     ~RenderWindow();
     
 private:
-    Ui::RenderWindow*   ui;
-    QVTKWidget*         mVtkWidget;
-    vtkRenderer*        mRen;
+    Ui::RenderWindow*             ui;
 
+    // VTK
+    QVTKWidget*                   mVtkWidget;
+    vtkSmartPointer<vtkRenderer>  mRen;
 };
 
 #endif // RENDERWINDOW_H
