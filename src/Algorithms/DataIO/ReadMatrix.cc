@@ -37,7 +37,7 @@ using namespace SCIRun::Domain::Datatypes;
 
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
-  if (!boost::filesystem3::exists(filename))
+  if (!boost::filesystem::exists(filename))
     return Outputs();
   
   std::ifstream reader(filename.c_str());
