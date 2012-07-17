@@ -206,22 +206,22 @@
          </property>
          <item>
           <property name="text">
-           <string>ReadMatrix</string>
+           <string>ReadMatrix*</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ReceiveScalar</string>
+           <string>ReceiveScalar*</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>SendScalar</string>
+           <string>SendScalar*</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>WriteMatrix</string>
+           <string>WriteMatrix*</string>
           </property>
          </item>
         </item>
@@ -231,32 +231,32 @@
          </property>
          <item>
           <property name="text">
-           <string>AppendMatrix</string>
+           <string>AppendMatrix_TODO</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ComputeSVD</string>
+           <string>ComputeSVD_TODO</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>CreateMatrix</string>
+           <string>CreateMatrix_TODO</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>EvaluateLinearAlgebraBinary</string>
+           <string>EvaluateLinearAlgebraBinary*</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>EvaluateLinearAlgebraUnary</string>
+           <string>EvaluateLinearAlgebraUnary*</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ReportMatrixInfo</string>
+           <string>ReportMatrixInfo_TODO</string>
           </property>
          </item>
         </item>
@@ -266,7 +266,7 @@
          </property>
          <item>
           <property name="text">
-           <string>ViewScene</string>
+           <string>ViewScene_TODO</string>
           </property>
          </item>
         </item>
@@ -276,7 +276,7 @@
          </property>
          <item>
           <property name="text">
-           <string>CreateString</string>
+           <string>CreateString_TODO</string>
           </property>
          </item>
         </item>
@@ -286,12 +286,12 @@
          </property>
          <item>
           <property name="text">
-           <string>MatrixAsVectorField</string>
+           <string>MatrixAsVectorField_TODO</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ShowString</string>
+           <string>ShowString_TODO</string>
           </property>
          </item>
         </item>
