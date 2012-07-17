@@ -46,8 +46,19 @@ NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, Modu
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   NetworkHandle network(new Network(moduleFactory_, stateFactory_));
-  //BOOST_FOREACH(const ConnectionDescriptionXML&)
 
+  BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
+  {
+    ModuleHandle module = network->add_module(modPair.second);
+    module->set_id(modPair.first);
+  }
+
+  BOOST_FOREACH(const ConnectionDescriptionXML& conn, data.connections)
+  {
+    ModuleHandle from = network->lookupModule(conn.moduleId1_);
+    ModuleHandle to = network->lookupModule(conn.moduleId2_);
+    network->connect(from, conn.port1_, to, conn.port2_);
+  }
 
   return network;
 }

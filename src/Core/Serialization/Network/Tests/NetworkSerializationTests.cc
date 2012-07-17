@@ -42,37 +42,40 @@ using namespace boost::assign;
 
 NetworkXML exampleNet()
 {
-  ConnectionDescriptionXML conn;
-  conn.moduleId1_ = "module1";
-  conn.moduleId2_ = "module2";
-  conn.port1_ = 0;
-  conn.port2_ = 1;
-
-  ConnectionDescriptionXML conn2;
-  conn2.moduleId1_ = "module1a";
-  conn2.moduleId2_ = "module2a";
-  conn2.port1_ = 1;
-  conn2.port2_ = 2;
-
-  ConnectionsXML connections;
-  connections += conn, conn2;
-
   ModuleLookupInfoXML info1;
-  info1.module_name_ = "ComputeSVD";  
+  info1.module_name_ = "EvaluateLinearAlgebraUnary";  
   info1.category_name_ = "Math";
   info1.package_name_ = "SCIRun";
 
   ModuleLookupInfoXML info2;
-  info2.module_name_ = "CreateMatrix";  
-  info2.category_name_ = "Math";
+  info2.module_name_ = "ReadMatrix";  
+  info2.category_name_ = "DataIO";
   info2.package_name_ = "SCIRun";
 
-  ModuleLookupInfo copy(info1);
-  ModuleLookupInfoXML x(copy);
+  ModuleLookupInfoXML info3;
+  info3.module_name_ = "WriteMatrix";  
+  info3.category_name_ = "DataIO";
+  info3.package_name_ = "SCIRun";
+
+  ConnectionDescriptionXML conn;
+  conn.moduleId1_ = "ReadMatrix2";
+  conn.moduleId2_ = "EvaluateLinearAlgebraUnary1";
+  conn.port1_ = 0;
+  conn.port2_ = 0;
+
+  ConnectionDescriptionXML conn2;
+  conn2.moduleId1_ = "EvaluateLinearAlgebraUnary1";
+  conn2.moduleId2_ = "WriteMatrix3";
+  conn2.port1_ = 0;
+  conn2.port2_ = 0;
+
+  ConnectionsXML connections;
+  connections += conn, conn2;
 
   ModuleMapXML mods;
-  mods["ComputeSVD1"] = info1;
-  mods["CreateMatrix2"] = info2;
+  mods["EvaluateLinearAlgebraUnary1"] = info1;
+  mods["ReadMatrix2"] = info2;
+  mods["WriteMatrix3"] = info3;
 
   NetworkXML network;
   network.connections = connections;
@@ -119,6 +122,8 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
   std::ostringstream ostr2;
   serializer.save_xml(*xml2, ostr2);
+
+  std::cout << ostr2.str() << std::endl;
 
   EXPECT_EQ(ostr1.str(), ostr2.str());
 

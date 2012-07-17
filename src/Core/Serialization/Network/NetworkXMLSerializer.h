@@ -53,6 +53,7 @@ namespace Networks {
     ModuleStateFactoryHandle stateFactory_;
   };
 
+  //TODO: make generic
   class SCISHARE NetworkXMLSerializer : boost::noncopyable
   {
   public:
