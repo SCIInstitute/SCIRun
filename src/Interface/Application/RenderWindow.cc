@@ -104,20 +104,40 @@ void RenderWindow::setupVectorField()
   // Need to construct 3x3 rotation matrices from orientation vector.
   for (int i = 0; i < numVecs; i++)
   {
-    vtkSmartPointer<vtkMatrix4x4> orient = matFromVec(vtkVector3d(vod[0][i], 
-          vod[1][i], vod[2][i]));
+    //vtkSmartPointer<vtkMatrix4x4> orient = matFromVec(vtkVector3d(vod[0][i],
+    //      vod[1][i], vod[2][i]));
+    vtkSmartPointer<vtkMatrix4x4> orient = vtkSmartPointer<vtkMatrix4x4>::New();
+    orient->Identity();
+    std::cout << orient->GetReferenceCount() << std::endl;
 
-    // Populate right most vector with position data.
-    *orient[3][0] = vpd[0][i];
-    *orient[3][1] = vpd[1][i];
-    *orient[3][2] = vpd[2][i];
+    //// Populate right most vector with position data.
+    //*orient[0][3] = vpd[0][i];
+    //*orient[1][3] = vpd[1][i];
+    //*orient[2][3] = vpd[2][i];
+
+    std::cout << orient->GetReferenceCount() << std::endl;
+
+    std::cout << " " << *orient[0][0] << " " << *orient[0][1] << " " << *orient[0][2] << " " << *orient[0][3] << std::endl;
+    std::cout << " " << *orient[1][0] << " " << *orient[1][1] << " " << *orient[1][2] << " " << *orient[1][3] << std::endl;
+    std::cout << " " << *orient[2][0] << " " << *orient[2][1] << " " << *orient[2][2] << " " << *orient[2][3] << std::endl;
+    std::cout << " " << *orient[3][0] << " " << *orient[3][1] << " " << *orient[3][2] << " " << *orient[3][3] << std::endl;
+
+    std::cout << orient->GetReferenceCount() << std::endl;
 
     // Now we have appropriate transformation data, build actor.
     vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+    std::cout << actor->GetReferenceCount() << std::endl;
     actor->SetMapper(mArrowMapper);
+    std::cout << mArrowMapper->GetReferenceCount() << std::endl;
+    std::cout << orient->GetReferenceCount() << std::endl;
     actor->SetUserMatrix(orient); // NOTE: Requesting a pointer!
                                   // Make it a smart pointer if it is.
+    std::cout << orient->GetReferenceCount() << std::endl;
     mRen->AddActor(actor);
+    std::cout << actor->GetReferenceCount() << std::endl;
+
+
+
   }
 
 
@@ -165,11 +185,37 @@ vtkSmartPointer<vtkMatrix4x4> RenderWindow::matFromVec(const vtkVector3d& v)
   vtkVector3d up = at.Cross(right);
   up.Normalize();
 
-  vtkSmartPointer<vtkMatrix4x4> r = vtkMatrix4x4::New();
-  *r[0][0] = right[0]; *r[0][1] = right[1]; *r[0][2] = right[2];
-  *r[1][0] = up   [0]; *r[1][1] = up   [1]; *r[1][2] = up   [2];
-  *r[2][0] = at   [0]; *r[2][1] = at   [1]; *r[2][2] = at   [2];
+  vtkSmartPointer<vtkMatrix4x4> r = vtkSmartPointer<vtkMatrix4x4>::New();
+  vtkMatrix4x4::Identity(&r->Element[0][0]);
+  r->Identity();
 
+  *r[0][0] = 1.0; *r[0][1] = 0.0; *r[0][2] = 0.0; *r[0][3] = 0.0;
+  *r[1][0] = 0.0; *r[1][1] = 1.0; *r[1][2] = 0.0; *r[1][3] = 0.0;
+  *r[2][0] = 0.0; *r[2][1] = 0.0; *r[2][2] = 1.0; *r[2][3] = 0.0;
+  *r[3][0] = 0.0; *r[3][1] = 0.0; *r[3][2] = 0.0; *r[3][3] = 1.0;
+
+  *r[0][0] = right[0]; *r[0][1] = up   [0]; *r[0][2] = at   [0];
+
+  //std::cout << " " << *r[0][0] << " " << *r[0][1] << " " << *r[0][2] << " " << *r[0][3] << std::endl;
+  //std::cout << " " << *r[1][0] << " " << *r[1][1] << " " << *r[1][2] << " " << *r[1][3] << std::endl;
+  //std::cout << " " << *r[2][0] << " " << *r[2][1] << " " << *r[2][2] << " " << *r[2][3] << std::endl;
+  //std::cout << " " << *r[3][0] << " " << *r[3][1] << " " << *r[3][2] << " " << *r[3][3] << std::endl;
+
+  *r[1][0] = right[1]; *r[1][1] = up   [1]; *r[1][2] = at   [1];
+
+  //std::cout << " " << *r[0][0] << " " << *r[0][1] << " " << *r[0][2] << " " << *r[0][3] << std::endl;
+  //std::cout << " " << *r[1][0] << " " << *r[1][1] << " " << *r[1][2] << " " << *r[1][3] << std::endl;
+  //std::cout << " " << *r[2][0] << " " << *r[2][1] << " " << *r[2][2] << " " << *r[2][3] << std::endl;
+  //std::cout << " " << *r[3][0] << " " << *r[3][1] << " " << *r[3][2] << " " << *r[3][3] << std::endl;
+
+  *r[2][0] = right[2]; *r[2][1] = up   [2]; *r[2][2] = at   [2];
+
+  std::cout << std::endl;
+  std::cout << " " << *r[0][0] << " " << *r[0][1] << " " << *r[0][2] << " " << *r[0][3] << std::endl;
+  std::cout << " " << *r[1][0] << " " << *r[1][1] << " " << *r[1][2] << " " << *r[1][3] << std::endl;
+  std::cout << " " << *r[2][0] << " " << *r[2][1] << " " << *r[2][2] << " " << *r[2][3] << std::endl;
+  std::cout << " " << *r[3][0] << " " << *r[3][1] << " " << *r[3][2] << " " << *r[3][3] << std::endl;
+  std::cout << std::endl;
   return r;
 }
 
