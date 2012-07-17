@@ -29,6 +29,7 @@
 #include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Serialization/Network/NetworkXMLSerializer.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -109,7 +110,8 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
   std::cout << ostr1.str() << std::endl;
   
-  NetworkXMLConverter converter;
+  ModuleFactoryHandle mf(new SCIRun::Modules::Factory::HardCodedModuleFactory);
+  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network);
   NetworkXMLHandle xml2 = converter.to_xml_data(network);

@@ -32,6 +32,7 @@
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <iosfwd>
+#include <boost/noncopyable.hpp>
 #include <Core/Serialization/Network/Share.h>
 
 namespace SCIRun {
@@ -41,7 +42,7 @@ namespace Networks {
   class NetworkXML;
   typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
 
-  class SCISHARE NetworkXMLConverter
+  class SCISHARE NetworkXMLConverter : boost::noncopyable
   {
   public:
     NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory);
@@ -52,7 +53,7 @@ namespace Networks {
     ModuleStateFactoryHandle stateFactory_;
   };
 
-  class SCISHARE NetworkXMLSerializer
+  class SCISHARE NetworkXMLSerializer : boost::noncopyable
   {
   public:
     void save_xml(const NetworkXML& data, const std::string& filename);

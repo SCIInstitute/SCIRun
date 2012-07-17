@@ -38,6 +38,11 @@
 
 using namespace SCIRun::Domain::Networks;
 
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory)
+{
+}
+
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   NetworkHandle network(new Network(moduleFactory_, stateFactory_));
