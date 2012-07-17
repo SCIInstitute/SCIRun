@@ -32,9 +32,10 @@
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 
 ReceiveTestMatrixModule::ReceiveTestMatrixModule()
-  : Module("ReceiveTestMatrix")
+  : Module(ModuleLookupInfo("ReceiveTestMatrix", "Math", "SCIRun"))
 {
 }
 

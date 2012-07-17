@@ -70,7 +70,7 @@ NetworkXML exampleNet()
   conn2.port2_ = 0;
 
   ConnectionsXML connections;
-  connections += conn, conn2;
+  connections += conn2, conn;
 
   ModuleMapXML mods;
   mods["EvaluateLinearAlgebraUnary1"] = info1;
@@ -126,6 +126,4 @@ TEST(SerializeNetworkTest, RoundTripObject)
   std::cout << ostr2.str() << std::endl;
 
   EXPECT_EQ(ostr1.str(), ostr2.str());
-
-  EXPECT_TRUE(false);
 }

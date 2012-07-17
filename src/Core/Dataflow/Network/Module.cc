@@ -64,16 +64,16 @@ public:
 };
 
 
-Module::Module(const std::string& name, 
+Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   bool hasUi,
-  const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
-  : has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(name) : new NullModuleState)
+  const std::string& version/* ="1.0" */)
+  : info_(info), has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
 {
-  set_modulename(name);
-  set_categoryname(cat);
-  set_packagename(pack);
-  id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
+  //set_modulename(name);
+  //set_categoryname(cat);
+  //set_packagename(pack);
+  id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);
 }
@@ -234,7 +234,7 @@ Module::Builder::SourceMaker Module::Builder::source_maker_;
 class DummyModule : public Module
 {
 public:
-  explicit DummyModule(const std::string& name) : Module(name) {}
+  explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
   virtual void execute() 
   {
     std::cout << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
@@ -244,7 +244,11 @@ public:
 Module::Builder& Module::Builder::with_name(const std::string& name)
 {
   if (!module_)
-    module_.reset(new DummyModule(name));
+  {
+    ModuleLookupInfo info;
+    info.module_name_ = name;
+    module_.reset(new DummyModule(info));
+  }
   return *this;
 }
 

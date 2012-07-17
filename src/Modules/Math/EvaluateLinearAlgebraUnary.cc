@@ -40,7 +40,7 @@ using namespace SCIRun::Domain::Networks;
 //TODO DAN
 
 EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
-  Module("EvaluateLinearAlgebraUnary")
+  Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
 {
 
 }

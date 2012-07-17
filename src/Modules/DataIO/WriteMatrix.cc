@@ -37,7 +37,7 @@ using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::DataIO;
 
-WriteMatrixModule::WriteMatrixModule() : Module("WriteMatrix") {}
+WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun")) {}
 
 void WriteMatrixModule::execute()
 {

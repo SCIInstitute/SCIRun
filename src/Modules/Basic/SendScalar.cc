@@ -35,7 +35,7 @@ using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 
 SendScalarModule::SendScalarModule()
-  : Module("SendScalar"),
+  : Module(ModuleLookupInfo("SendScalar", "Math", "SCIRun")),
   data_(-1)
 {
 

@@ -34,9 +34,10 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Domain::Networks;
 //TODO DAN
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module("ReportMatrixInfo") {}
+ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
 
 void ReportMatrixInfoModule::execute()
 {

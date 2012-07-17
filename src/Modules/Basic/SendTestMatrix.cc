@@ -35,7 +35,7 @@ using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 
 SendTestMatrixModule::SendTestMatrixModule()
-  : Module("SendTestMatrix")
+  : Module(ModuleLookupInfo("SendTestMatrix", "Math", "SCIRun"))
 {
 }
 

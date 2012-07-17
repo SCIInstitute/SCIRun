@@ -37,3 +37,9 @@ ModuleDescription::ModuleDescription()
 ModuleDescription::~ModuleDescription()
 {
 }
+
+ModuleLookupInfo::ModuleLookupInfo() {}
+
+ModuleLookupInfo::ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack)
+  : package_name_(pack), category_name_(cat), module_name_(mod) 
+{}

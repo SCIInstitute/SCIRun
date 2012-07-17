@@ -46,12 +46,9 @@ namespace Networks {
   class SCISHARE Module : public ModuleInterface, boost::noncopyable
   {
   public:
-    //TODO replace params with ModuleLookupInfo
-    Module(const std::string& name, 
+    Module(const ModuleLookupInfo& info, 
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       bool hasUi = true, 
-      const std::string& cat = "unknown", 
-      const std::string& pack = "unknown", 
       const std::string& version = "1.0");
     virtual ~Module();
 
@@ -106,9 +103,9 @@ namespace Networks {
 
   protected:
 
-    void set_modulename(const std::string& name)   { info_.module_name_ = name; }
-    void set_categoryname(const std::string& name) { info_.category_name_ = name; }
-    void set_packagename(const std::string& name)  { info_.package_name_ = name; }
+    //void set_modulename(const std::string& name)   { info_.module_name_ = name; }
+    //void set_categoryname(const std::string& name) { info_.category_name_ = name; }
+    //void set_packagename(const std::string& name)  { info_.package_name_ = name; }
 
     ModuleLookupInfo info_;
 

@@ -32,10 +32,11 @@
 #include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Datatypes;
 
 ReceiveScalarModule::ReceiveScalarModule()
-  : Module("ReceiveScalar"),
+  : Module(ModuleLookupInfo("ReceiveScalar", "Math", "SCIRun")),
   latestValue_(-1)
 {
 }

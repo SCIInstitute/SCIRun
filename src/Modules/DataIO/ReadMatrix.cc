@@ -37,7 +37,7 @@ using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 
-ReadMatrixModule::ReadMatrixModule() : Module("ReadMatrix") {}
+ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
 
 void ReadMatrixModule::execute()
 {

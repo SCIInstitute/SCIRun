@@ -40,7 +40,7 @@ using namespace SCIRun::Domain::Networks;
 //TODO DAN
 
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
-Module("EvaluateLinearAlgebraBinary")
+Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 {
 }
 
