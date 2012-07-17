@@ -38,6 +38,7 @@ class vtkRenderer;
 class vtkArrowSource;
 class vtkPolyDataMapper;
 class vtkMatrix4x4;
+class vtkTransform;
 
 namespace Ui {
 class RenderWindow;
@@ -65,9 +66,9 @@ private:
   /// rotation, two vectors must be provided and their cross product calculated.
   /// A 4x4 homogeneous vtk matrix is returned instead of a 3x3 rotation.
   /// The last column is (0,0,0,1)
-  static vtkSmartPointer<vtkMatrix4x4> matFromVec(const vtkVector3d& v);
+  static vtkSmartPointer<vtkTransform> matFromVec(const vtkVector3d& v);
 
-  Ui::RenderWindow*               ui;
+  Ui::RenderWindow*                   ui;
 
   // VTK
   QVTKWidget*                         mVtkWidget;

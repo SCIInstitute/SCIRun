@@ -104,23 +104,19 @@ void RenderWindow::setupVectorField()
   // Need to construct 3x3 rotation matrices from orientation vector.
   for (int i = 0; i < numVecs; i++)
   {
-    //vtkSmartPointer<vtkMatrix4x4> orient = matFromVec(vtkVector3d(vod[0][i],
-    //      vod[1][i], vod[2][i]));
-    vtkSmartPointer<vtkMatrix4x4> orient = vtkSmartPointer<vtkMatrix4x4>::New();
-    orient->Identity();
-    std::cout << orient->GetReferenceCount() << std::endl;
+    vtkSmartPointer<vtkTransform> orient = matFromVec(vtkVector3d(
+          vod[0][i], vod[1][i], vod[2][i]));
+    //vtkSmartPointer<vtkTransform> orient = vtkSmartPointer<vtkTransform>::New();
+
 
     //// Populate right most vector with position data.
     //*orient[0][3] = vpd[0][i];
     //*orient[1][3] = vpd[1][i];
     //*orient[2][3] = vpd[2][i];
 
-    std::cout << orient->GetReferenceCount() << std::endl;
-
-    std::cout << " " << *orient[0][0] << " " << *orient[0][1] << " " << *orient[0][2] << " " << *orient[0][3] << std::endl;
-    std::cout << " " << *orient[1][0] << " " << *orient[1][1] << " " << *orient[1][2] << " " << *orient[1][3] << std::endl;
-    std::cout << " " << *orient[2][0] << " " << *orient[2][1] << " " << *orient[2][2] << " " << *orient[2][3] << std::endl;
-    std::cout << " " << *orient[3][0] << " " << *orient[3][1] << " " << *orient[3][2] << " " << *orient[3][3] << std::endl;
+    vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
+    orient->GetMatrix(m);
+    m->Print(std::cout);
 
     std::cout << orient->GetReferenceCount() << std::endl;
 
@@ -130,20 +126,18 @@ void RenderWindow::setupVectorField()
     actor->SetMapper(mArrowMapper);
     std::cout << mArrowMapper->GetReferenceCount() << std::endl;
     std::cout << orient->GetReferenceCount() << std::endl;
-    actor->SetUserMatrix(orient); // NOTE: Requesting a pointer!
-                                  // Make it a smart pointer if it is.
+    //actor->SetUserMatrix(orient); // NOTE: Requesting a pointer!
+    //                              // Make it a smart pointer if it is.
+    actor->SetUserTransform(orient);
     std::cout << orient->GetReferenceCount() << std::endl;
+    actor->SetPosition(vpd[0][i], vpd[1][i], vpd[2][i]);
     mRen->AddActor(actor);
     std::cout << actor->GetReferenceCount() << std::endl;
-
-
-
   }
-
 
 }
 
-vtkSmartPointer<vtkMatrix4x4> RenderWindow::matFromVec(const vtkVector3d& v)
+vtkSmartPointer<vtkTransform> RenderWindow::matFromVec(const vtkVector3d& v)
 {
   // Find the maximal component in the vector. The construct a normal vector
   // which has a zero for the maximal component.
@@ -178,44 +172,36 @@ vtkSmartPointer<vtkMatrix4x4> RenderWindow::matFromVec(const vtkVector3d& v)
   gen.Normalize();
 
   vtkVector3d at = v;
+  at.Normalize();
 
   // Cross generated vector with 'at' vector.
   vtkVector3d right = gen.Cross(at);
-  right.Normalize(); // Only need to do this if at is non-normal.
+  right.Normalize();
   vtkVector3d up = at.Cross(right);
   up.Normalize();
 
-  vtkSmartPointer<vtkMatrix4x4> r = vtkSmartPointer<vtkMatrix4x4>::New();
-  vtkMatrix4x4::Identity(&r->Element[0][0]);
-  r->Identity();
+  //double m[4][4];
+  double m[16];
 
-  *r[0][0] = 1.0; *r[0][1] = 0.0; *r[0][2] = 0.0; *r[0][3] = 0.0;
-  *r[1][0] = 0.0; *r[1][1] = 1.0; *r[1][2] = 0.0; *r[1][3] = 0.0;
-  *r[2][0] = 0.0; *r[2][1] = 0.0; *r[2][2] = 1.0; *r[2][3] = 0.0;
-  *r[3][0] = 0.0; *r[3][1] = 0.0; *r[3][2] = 0.0; *r[3][3] = 1.0;
 
-  *r[0][0] = right[0]; *r[0][1] = up   [0]; *r[0][2] = at   [0];
+  //vtkSmartPointer<vtkMatrix4x4> r = vtkSmartPointer<vtkMatrix4x4>::New();
+  //r->Identity();
 
-  //std::cout << " " << *r[0][0] << " " << *r[0][1] << " " << *r[0][2] << " " << *r[0][3] << std::endl;
-  //std::cout << " " << *r[1][0] << " " << *r[1][1] << " " << *r[1][2] << " " << *r[1][3] << std::endl;
-  //std::cout << " " << *r[2][0] << " " << *r[2][1] << " " << *r[2][2] << " " << *r[2][3] << std::endl;
-  //std::cout << " " << *r[3][0] << " " << *r[3][1] << " " << *r[3][2] << " " << *r[3][3] << std::endl;
+  // Assuming the matrix is row major. Although, this doesn't matter for
+  // the identity (I^T = I)
+  m[0 ] = 1.0; m[1 ] = 0.0; m[2 ] = 0.0; m[3 ] = 0.0;
+  m[4 ] = 0.0; m[5 ] = 1.0; m[6 ] = 0.0; m[7 ] = 0.0;
+  m[8 ] = 0.0; m[9 ] = 0.0; m[10] = 1.0; m[11] = 0.0;
+  m[12] = 0.0; m[13] = 0.0; m[14] = 0.0; m[15] = 1.0;
 
-  *r[1][0] = right[1]; *r[1][1] = up   [1]; *r[1][2] = at   [1];
+  // Populate rotation.  
+  m[0 ] = right[0]; m[1 ] = up[0]; m[2 ] = at[0];
+  m[4 ] = right[1]; m[5 ] = up[1]; m[6 ] = at[1];
+  m[8 ] = right[2]; m[9 ] = up[2]; m[10] = at[2];
 
-  //std::cout << " " << *r[0][0] << " " << *r[0][1] << " " << *r[0][2] << " " << *r[0][3] << std::endl;
-  //std::cout << " " << *r[1][0] << " " << *r[1][1] << " " << *r[1][2] << " " << *r[1][3] << std::endl;
-  //std::cout << " " << *r[2][0] << " " << *r[2][1] << " " << *r[2][2] << " " << *r[2][3] << std::endl;
-  //std::cout << " " << *r[3][0] << " " << *r[3][1] << " " << *r[3][2] << " " << *r[3][3] << std::endl;
+  vtkSmartPointer<vtkTransform> t = vtkSmartPointer<vtkTransform>::New();
+  t->SetMatrix(m);
 
-  *r[2][0] = right[2]; *r[2][1] = up   [2]; *r[2][2] = at   [2];
-
-  std::cout << std::endl;
-  std::cout << " " << *r[0][0] << " " << *r[0][1] << " " << *r[0][2] << " " << *r[0][3] << std::endl;
-  std::cout << " " << *r[1][0] << " " << *r[1][1] << " " << *r[1][2] << " " << *r[1][3] << std::endl;
-  std::cout << " " << *r[2][0] << " " << *r[2][1] << " " << *r[2][2] << " " << *r[2][3] << std::endl;
-  std::cout << " " << *r[3][0] << " " << *r[3][1] << " " << *r[3][2] << " " << *r[3][3] << std::endl;
-  std::cout << std::endl;
-  return r;
+  return t;
 }
 
