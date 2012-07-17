@@ -38,7 +38,10 @@
 #include <vtkMatrix3x3.h>
 #include <vtkMatrix4x4.h>
 #include <vtkTransform.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
 
+//-----------------------------------------------------------------------------
 RenderWindow::RenderWindow(QWidget *parent) :
   QDialog(parent),
   ui(new Ui::RenderWindow),
@@ -72,17 +75,20 @@ RenderWindow::RenderWindow(QWidget *parent) :
   //// Add the actor to the renderer.
   //mRen->AddActor(actor);
   setupVectorField();
+
+  setupText("This is a vector field!");
 }
 
 
+//-----------------------------------------------------------------------------
 RenderWindow::~RenderWindow()
 {
-  mRen->Delete();
   delete mVtkWidget;
   delete ui;
 }
 
 
+//-----------------------------------------------------------------------------
 void RenderWindow::setupVectorField()
 {
   // Read matrix and build scene with appropriate actors.
@@ -118,9 +124,24 @@ void RenderWindow::setupVectorField()
     actor->SetPosition(vpd[0][i], vpd[1][i], vpd[2][i]);
     mRen->AddActor(actor);
   }
-
 }
 
+//-----------------------------------------------------------------------------
+void RenderWindow::setupText(const char* output)
+{
+  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New();
+  txt->ScaledTextOn();
+  txt->SetDisplayPosition(90, 50);
+  txt->SetInput(output);
+
+  vtkTextProperty* txtProp = txt->GetTextProperty();
+  txtProp->SetFontSize(18);
+  txtProp->BoldOn();
+
+  mRen->AddActor2D(txt);
+}
+
+//-----------------------------------------------------------------------------
 vtkSmartPointer<vtkTransform> RenderWindow::matFromVec(const vtkVector3d& v)
 {
   // Find the maximal component in the vector. The construct a normal vector

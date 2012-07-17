@@ -57,6 +57,9 @@ private:
   /// Sets up a default static vector field.
   void setupVectorField();
 
+  /// Sets up basic text.
+  void setupText(const char* output);
+
   /// Sets up a helix vector field.
   void setupHelixVectorField();
 
