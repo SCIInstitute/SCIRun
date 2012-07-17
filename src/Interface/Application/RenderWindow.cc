@@ -106,33 +106,17 @@ void RenderWindow::setupVectorField()
   {
     vtkSmartPointer<vtkTransform> orient = matFromVec(vtkVector3d(
           vod[0][i], vod[1][i], vod[2][i]));
-    //vtkSmartPointer<vtkTransform> orient = vtkSmartPointer<vtkTransform>::New();
-
-
-    //// Populate right most vector with position data.
-    //*orient[0][3] = vpd[0][i];
-    //*orient[1][3] = vpd[1][i];
-    //*orient[2][3] = vpd[2][i];
 
     vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
     orient->GetMatrix(m);
-    m->Print(std::cout);
-
-    std::cout << orient->GetReferenceCount() << std::endl;
+    //m->Print(std::cout);
 
     // Now we have appropriate transformation data, build actor.
     vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
-    std::cout << actor->GetReferenceCount() << std::endl;
     actor->SetMapper(mArrowMapper);
-    std::cout << mArrowMapper->GetReferenceCount() << std::endl;
-    std::cout << orient->GetReferenceCount() << std::endl;
-    //actor->SetUserMatrix(orient); // NOTE: Requesting a pointer!
-    //                              // Make it a smart pointer if it is.
     actor->SetUserTransform(orient);
-    std::cout << orient->GetReferenceCount() << std::endl;
     actor->SetPosition(vpd[0][i], vpd[1][i], vpd[2][i]);
     mRen->AddActor(actor);
-    std::cout << actor->GetReferenceCount() << std::endl;
   }
 
 }
@@ -180,13 +164,9 @@ vtkSmartPointer<vtkTransform> RenderWindow::matFromVec(const vtkVector3d& v)
   vtkVector3d up = at.Cross(right);
   up.Normalize();
 
-  //double m[4][4];
   double m[16];
 
-
-  //vtkSmartPointer<vtkMatrix4x4> r = vtkSmartPointer<vtkMatrix4x4>::New();
-  //r->Identity();
-
+  /// @todo Combine two matrices below.
   // Assuming the matrix is row major. Although, this doesn't matter for
   // the identity (I^T = I)
   m[0 ] = 1.0; m[1 ] = 0.0; m[2 ] = 0.0; m[3 ] = 0.0;
