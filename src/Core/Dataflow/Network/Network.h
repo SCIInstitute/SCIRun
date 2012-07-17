@@ -31,9 +31,6 @@
 #define CORE_DATAFLOW_NETWORK_NETWORK_H 
 
 #include <boost/noncopyable.hpp>
-#include <string>
-#include <vector>
-#include <map>
 #include <Core/Dataflow/Network/NetworkInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Share.h>
@@ -42,26 +39,12 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class SCISHARE NetworkState 
+  class SCISHARE Network : public NetworkInterface, boost::noncopyable
   {
   public:
     typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
-    typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
     typedef std::vector<ModuleHandle> Modules;
-    
-    NetworkState();
-    ~NetworkState();
 
-    ConnectionDescriptionList connections() const;
-    
-  protected:
-    Modules modules_;
-    Connections connections_;
-  };
-
-  class SCISHARE Network : public NetworkInterface, public NetworkState, boost::noncopyable
-  {
-  public:
     Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory);
     ~Network();
 
@@ -74,10 +57,13 @@ namespace Networks {
     virtual bool disconnect(const ConnectionId&);
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);
+    virtual ConnectionDescriptionList connections() const;
     virtual std::string toString() const;
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
+    Modules modules_;
+    Connections connections_;
   };
 
 }}}

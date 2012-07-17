@@ -61,8 +61,8 @@ namespace Networks {
     std::string get_id() const { return id_; }
 
     //TODO for serialization
-    ModuleLookupInfo get_info() const { return info_; }
-    void set_id(const std::string& id) { id_ = id; }
+    virtual ModuleLookupInfo get_info() const { return info_; }
+    virtual void set_id(const std::string& id) { id_ = id; }
 
     bool has_ui() const { return has_ui_; }
     size_t num_input_ports() const;

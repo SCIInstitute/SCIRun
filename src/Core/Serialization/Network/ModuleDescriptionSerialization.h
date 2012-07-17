@@ -69,6 +69,10 @@ namespace Networks {
       ar & BOOST_SERIALIZATION_NVP(moduleId2_);
       ar & BOOST_SERIALIZATION_NVP(port2_);
     }
+  public:
+    ConnectionDescriptionXML();
+    ConnectionDescriptionXML(const ConnectionDescriptionXML& rhs);
+    ConnectionDescriptionXML(const ConnectionDescription& rhs);
   };
 
 }}}

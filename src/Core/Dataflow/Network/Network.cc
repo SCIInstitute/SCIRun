@@ -178,18 +178,15 @@ std::string Network::toString() const
   return ostr.str();
 }
 
-NetworkState::NetworkState() {}
-NetworkState::~NetworkState() {}
-
 struct Describe
 {
-  ConnectionDescription operator()(const NetworkState::Connections::value_type& p) const
+  ConnectionDescription operator()(const Network::Connections::value_type& p) const
   {
     return p.first.describe();
   }
 };
 
-NetworkState::ConnectionDescriptionList NetworkState::connections() const
+NetworkInterface::ConnectionDescriptionList Network::connections() const
 {
   ConnectionDescriptionList conns;
   std::transform(connections_.begin(), connections_.end(), std::back_inserter(conns), Describe());

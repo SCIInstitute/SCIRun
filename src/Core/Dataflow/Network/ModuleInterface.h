@@ -49,6 +49,9 @@ namespace Networks {
     virtual bool has_ui() const = 0;
     virtual std::string get_module_name() const = 0;
     virtual std::string get_id() const = 0;
+
+    virtual ModuleLookupInfo get_info() const = 0;
+    
   };
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
@@ -60,6 +63,8 @@ namespace Networks {
 
     virtual void execute() = 0;
     virtual ModuleStateHandle get_state() = 0;
+
+    virtual void set_id(const std::string& id) = 0;
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data) = 0;

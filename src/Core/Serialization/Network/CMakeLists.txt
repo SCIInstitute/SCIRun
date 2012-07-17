@@ -28,10 +28,14 @@
 
 SET(Core_Serialization_Network_SRCS
   ModuleDescriptionSerialization.cc
+  NetworkDescriptionSerialization.cc
+  NetworkXMLSerializer.cc
 )
 
 SET(Core_Serialization_Network_HEADERS
   ModuleDescriptionSerialization.h
+  NetworkDescriptionSerialization.h
+  NetworkXMLSerializer.h
   Share.h
 )
 

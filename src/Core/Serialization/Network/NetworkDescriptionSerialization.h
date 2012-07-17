@@ -26,18 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
+#ifndef CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H
+#define CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H 
+
 #include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+#include <Core/Serialization/Network/Share.h>
 
-using namespace SCIRun::Domain::Networks;
+namespace SCIRun {
+namespace Domain {
+namespace Networks {
 
-ModuleLookupInfoXML::ModuleLookupInfoXML() {}
+  typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;
+  typedef std::map<std::string, ModuleLookupInfoXML> ModuleMapXML;
 
-ModuleLookupInfoXML::ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs) : ModuleLookupInfo(rhs) {}
+  class SCISHARE NetworkXML
+  {
+  public:
+    ModuleMapXML modules;
+    ConnectionsXML connections;
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(modules);
+      ar & BOOST_SERIALIZATION_NVP(connections);
+    }
+  };
 
-ModuleLookupInfoXML::ModuleLookupInfoXML(const ModuleLookupInfo& rhs) : ModuleLookupInfo(rhs) {}
+}}}
 
-ConnectionDescriptionXML::ConnectionDescriptionXML() {}
-
-ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescriptionXML& rhs) : ConnectionDescription(rhs) {}
-
-ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescription& rhs) : ConnectionDescription(rhs) {}
+#endif

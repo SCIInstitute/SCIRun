@@ -26,18 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
 
-using namespace SCIRun::Domain::Networks;
+#ifndef CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
+#define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
 
-ModuleLookupInfoXML::ModuleLookupInfoXML() {}
+#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <iosfwd>
+#include <Core/Serialization/Network/Share.h>
 
-ModuleLookupInfoXML::ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs) : ModuleLookupInfo(rhs) {}
+namespace SCIRun {
+namespace Domain {
+namespace Networks {
 
-ModuleLookupInfoXML::ModuleLookupInfoXML(const ModuleLookupInfo& rhs) : ModuleLookupInfo(rhs) {}
+  class NetworkXML;
+  typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
 
-ConnectionDescriptionXML::ConnectionDescriptionXML() {}
+  class SCISHARE NetworkXMLConverter
+  {
+  public:
+    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory);
+    NetworkHandle from_xml_data(const NetworkXML& data);
+    NetworkXMLHandle to_xml_data(const NetworkHandle& network);
+  private:
+    ModuleFactoryHandle moduleFactory_;
+    ModuleStateFactoryHandle stateFactory_;
+  };
 
-ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescriptionXML& rhs) : ConnectionDescription(rhs) {}
+  class SCISHARE NetworkXMLSerializer
+  {
+  public:
+    void save_xml(const NetworkXML& data, const std::string& filename);
+    void save_xml(const NetworkXML& data, std::ostream& ostr);
+    NetworkXMLHandle load_xml(const std::string& filename);
+    NetworkXMLHandle load_xml(std::istream& istr);
+  };
 
-ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescription& rhs) : ConnectionDescription(rhs) {}
+}}}
+
+#endif

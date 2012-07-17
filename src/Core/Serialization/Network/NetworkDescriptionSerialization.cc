@@ -26,18 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
+#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
 
 using namespace SCIRun::Domain::Networks;
-
-ModuleLookupInfoXML::ModuleLookupInfoXML() {}
-
-ModuleLookupInfoXML::ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs) : ModuleLookupInfo(rhs) {}
-
-ModuleLookupInfoXML::ModuleLookupInfoXML(const ModuleLookupInfo& rhs) : ModuleLookupInfo(rhs) {}
-
-ConnectionDescriptionXML::ConnectionDescriptionXML() {}
-
-ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescriptionXML& rhs) : ConnectionDescription(rhs) {}
-
-ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescription& rhs) : ConnectionDescription(rhs) {}

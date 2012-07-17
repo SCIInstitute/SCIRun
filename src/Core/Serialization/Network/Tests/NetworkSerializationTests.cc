@@ -28,58 +28,18 @@
 
 #include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Core/Serialization/Network/NetworkXMLSerializer.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 #include <stdexcept>
 #include <fstream>
 #include <boost/assign.hpp>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
 
 using namespace SCIRun::Domain::Networks;
 using namespace boost::assign;
 
-template <class Serializable>
-void save_info(const Serializable& s, const char * filename, const std::string& name = "object")
-{
-  std::ofstream ofs(filename);
-  assert(ofs.good());
-  boost::archive::xml_oarchive oa(ofs);
-  oa << boost::serialization::make_nvp(name.c_str(), s);
-}
-
-void restore_info(ModuleLookupInfoXML& s, const char * filename)
-{
-  std::ifstream ifs(filename);
-  assert(ifs.good());
-  boost::archive::xml_iarchive ia(ifs);
-
-  ia >> BOOST_SERIALIZATION_NVP(s);
-}
-
-TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
-{
-  ModuleLookupInfoXML info;
-  info.module_name_ = "ComputeSVD";  
-  info.category_name_ = "Math";
-  info.package_name_ = "SCIRun";
-
-  std::string filename("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\");
-  filename += "info.xml";
-
-  save_info(info, filename.c_str());
-
-  ModuleLookupInfoXML newInfo;
-
-  restore_info(newInfo, filename.c_str());
-
-  EXPECT_EQ(info.module_name_, newInfo.module_name_);
-  EXPECT_EQ(info.category_name_, newInfo.category_name_);
-  EXPECT_EQ(info.package_name_, newInfo.package_name_);
-}
-
-TEST(SerializeNetworkTest, WhatDoWeNeed)
+NetworkXML exampleNet()
 {
   ConnectionDescriptionXML conn;
   conn.moduleId1_ = "module1";
@@ -116,5 +76,49 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   NetworkXML network;
   network.connections = connections;
   network.modules = mods;
-  save_info(network, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\network.srn", "network");
+
+  return network;
+}
+
+TEST(SerializeNetworkTest, RoundTripData)
+{
+  NetworkXML networkXML = exampleNet();
+  NetworkXMLSerializer serializer;
+  std::ostringstream ostr1;
+  serializer.save_xml(networkXML, ostr1);
+  const std::string xml1 = ostr1.str();
+
+  std::istringstream istr(xml1);
+  NetworkXMLHandle readIn = serializer.load_xml(istr);
+  ASSERT_TRUE(readIn);
+  std::ostringstream ostr2;
+  serializer.save_xml(*readIn, ostr2);
+  const std::string xml2 = ostr2.str();
+
+  EXPECT_EQ(xml1, xml2);
+}
+
+TEST(SerializeNetworkTest, RoundTripObject)
+{
+  NetworkXML networkXML = exampleNet();
+
+  NetworkXMLSerializer serializer;
+  std::ostringstream ostr1;
+
+  serializer.save_xml(networkXML, ostr1);
+
+  std::cout << ostr1.str() << std::endl;
+  
+  NetworkXMLConverter converter;
+  NetworkHandle network = converter.from_xml_data(networkXML);
+  ASSERT_TRUE(network);
+  NetworkXMLHandle xml2 = converter.to_xml_data(network);
+  ASSERT_TRUE(xml2);
+
+  std::ostringstream ostr2;
+  serializer.save_xml(*xml2, ostr2);
+
+  EXPECT_EQ(ostr1.str(), ostr2.str());
+
+  EXPECT_TRUE(false);
 }

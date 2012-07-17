@@ -28,10 +28,10 @@
 
 SET(Core_Serialization_Network_Tests_SRCS
   ModuleSerializationTests.cc
+  NetworkSerializationTests.cc
 )
 
 SET(Core_Serialization_Network_Tests_HEADERS
-
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Serialization_Network_Tests 
