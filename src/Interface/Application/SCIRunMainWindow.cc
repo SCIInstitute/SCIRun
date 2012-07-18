@@ -170,7 +170,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 #ifdef BUILD_VTK_SUPPORT
   // Build render window.
-  renderWindow_ = new RenderWindow();
+  renderWindow_ = new RenderWindow(this);
   renderWindow_->setEnabled(false);
   renderWindow_->setVisible(false);
 

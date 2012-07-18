@@ -34,6 +34,12 @@
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
+#include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
+#include <Interface/Modules/Math/CreateMatrixDialog.h>
+#include <Interface/Modules/Math/AppendMatrixDialog.h>
+#include <Interface/Modules/String/CreateStringDialog.h>
+#include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
+#include <Interface/Modules/Visualization/ShowStringDialog.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
@@ -54,6 +60,18 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new EvaluateLinearAlgebraUnaryDialog(moduleId, state, parentToUse_);
   if (moduleId.find("EvaluateLinearAlgebraBinary") != std::string::npos)
     return new EvaluateLinearAlgebraBinaryDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ShowString") != std::string::npos)
+    return new ShowStringDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("AppendMatrix") != std::string::npos)
+    return new AppendMatrixDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CreateMatrix") != std::string::npos)
+    return new CreateMatrixDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CreateString") != std::string::npos)
+    return new CreateStringDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ReportMatrixInfo") != std::string::npos)
+    return new ReportMatrixInfoDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("MatrixAsVectorField") != std::string::npos)
+    return new MatrixAsVectorFieldDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, executionTime, parentToUse_);
 }
