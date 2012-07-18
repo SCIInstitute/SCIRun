@@ -26,36 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/bind.hpp>
-#include <Interface/Modules/ReceiveScalarDialog.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
+#include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 
-ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
+ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(parent),
   state_(state)
 {
   setupUi(this);
-  setWindowTitle(to_QString(name) + " --Receive");
+  setWindowTitle(to_QString(name));
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-  //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
-  //connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-
-  state_->connect_state_changed(boost::bind(&ReceiveScalarDialog::pullScalarValueFromState, this));
+  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
 
-int ReceiveScalarDialog::moduleExecutionTime()
+int ReportMatrixInfoDialog::moduleExecutionTime()
 {
   return 2000;
 }
 
-void ReceiveScalarDialog::pullScalarValueFromState() 
-{
-  double value = any_cast_or_default<double>(state_->getValue("ReceivedValue"));
-  scalarValueReceived_->setText(QString::number(value));
-}
+//void ReportMatrixInfoDialog::pushFileNameToState(const QString& str) 
+//{
+//  std::cout << "filename set on state object" << std::endl;
+//  state_->setValue("FileName", str.toStdString());
+//}
+//
+//void ReportMatrixInfoDialog::saveFile()
+//{
+//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
+//}

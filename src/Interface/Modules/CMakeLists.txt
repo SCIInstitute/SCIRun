@@ -28,37 +28,58 @@
 #
 
 SET(Interface_Modules_FORMS
-  EvaluateLinearAlgebraBinary.ui
-  EvaluateLinearAlgebraUnary.ui
+  Math/AppendMatrix.ui
+  Math/CreateMatrix.ui
+  Math/EvaluateLinearAlgebraBinary.ui
+  Math/EvaluateLinearAlgebraUnary.ui
+  Math/ReportMatrixInfo.ui
   ModuleDialogBasic.ui
-  ReadMatrix.ui
-  ReceiveScalar.ui
-  SendScalar.ui
-  WriteMatrix.ui
+  DataIO/ReadMatrix.ui
+  Basic/ReceiveScalar.ui
+  Basic/SendScalar.ui
+  DataIO/WriteMatrix.ui
+  Render/ViewScene.ui
+  String/CreateString.ui
+  Visualization/MatrixAsVectorField.ui
+  Visualization/ShowString.ui
 )
 
 SET(Interface_Modules_HEADERS
-  EvaluateLinearAlgebraBinaryDialog.h
-  EvaluateLinearAlgebraUnaryDialog.h
-  SendScalarDialog.h
+  Math/AppendMatrixDialog.h
+  Math/CreateMatrixDialog.h
+  Math/EvaluateLinearAlgebraBinaryDialog.h
+  Math/EvaluateLinearAlgebraUnaryDialog.h
+  Math/ReportMatrixInfoDialog.h
+  Basic/SendScalarDialog.h
   ModuleDialogBasic.h
   ModuleDialogFactory.h
   ModuleDialogGeneric.h
-  ReadMatrixDialog.h
-  ReceiveScalarDialog.h
+  DataIO/ReadMatrixDialog.h
+  Basic/ReceiveScalarDialog.h
   Share.h
-  WriteMatrixDialog.h
+  DataIO/WriteMatrixDialog.h
+  Render/ViewScene.h
+  String/CreateStringDialog.h
+  Visualization/MatrixAsVectorFieldDialog.h
+  Visualization/ShowStringDialog.h
 )
 
 SET(Interface_Modules_SOURCES 
-  EvaluateLinearAlgebraBinaryDialog.cc
-  EvaluateLinearAlgebraUnaryDialog.cc
+  Math/AppendMatrixDialog.cc
+  Math/CreateMatrixDialog.cc
+  Math/EvaluateLinearAlgebraBinaryDialog.cc
+  Math/EvaluateLinearAlgebraUnaryDialog.cc
+  Math/ReportMatrixInfoDialog.cc
   ModuleDialogBasic.cc
   ModuleDialogFactory.cc
-  ReadMatrixDialog.cc
-  ReceiveScalarDialog.cc
-  SendScalarDialog.cc
-  WriteMatrixDialog.cc
+  DataIO/ReadMatrixDialog.cc
+  Basic/ReceiveScalarDialog.cc
+  Basic/SendScalarDialog.cc
+  DataIO/WriteMatrixDialog.cc
+  Render/ViewScene.cc
+  String/CreateStringDialog.cc
+  Visualization/MatrixAsVectorFieldDialog.cc
+  Visualization/ShowStringDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})

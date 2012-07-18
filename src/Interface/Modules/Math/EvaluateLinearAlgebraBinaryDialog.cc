@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/EvaluateLinearAlgebraUnaryDialog.h>
-#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Algorithms::Math;
 
-EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::string& name, ModuleStateHandle state,
+EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(parent),
   state_(state)
@@ -44,39 +44,31 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  connect(negateRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  connect(scalarMultiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  connect(scalarLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushOperationToState(const QString&)));
+  connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+  connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+  connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
 }
 
-int EvaluateLinearAlgebraUnaryDialog::moduleExecutionTime()
+int EvaluateLinearAlgebraBinaryDialog::moduleExecutionTime()
 {
   return 2000;
 }
 
-int EvaluateLinearAlgebraUnaryDialog::getSelectedOperator() const
+int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const
 {
-  if (transposeRadioButton_->isChecked())
-    return (int)EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE;
-  if (negateRadioButton_->isChecked())
-    return (int)EvaluateLinearAlgebraUnaryAlgorithm::NEGATE;
-  if (scalarMultiplyRadioButton_->isChecked())
-    return (int)EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY;
+  if (addRadioButton_->isChecked())
+    return (int)EvaluateLinearAlgebraBinaryAlgorithm::ADD;
+  if (subtractRadioButton_->isChecked())
+    return (int)EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT;
+  if (multiplyRadioButton_->isChecked())
+    return (int)EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY;
   else
     return -1;
 }
 
-void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str) 
+void EvaluateLinearAlgebraBinaryDialog::pushOperationToState() 
 {
-  double value = str.toDouble();
-  EvaluateLinearAlgebraUnaryAlgorithm::Operator op = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) getSelectedOperator();
+  EvaluateLinearAlgebraBinaryAlgorithm::Operator op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
 
-  state_->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(op, value));
-}
-
-void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
-{
-  pushOperationToState("");
+  state_->setValue("Operation", op);
 }

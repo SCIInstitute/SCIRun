@@ -26,39 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/ReadMatrixDialog.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#ifndef INTERFACE_MODULES_SHOW_STRING_H
+#define INTERFACE_MODULES_SHOW_STRING_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+#include "Interface/Modules/ui_ShowString.h"
+#include <boost/shared_ptr.hpp>
+#include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/ModuleDialogGeneric.h>
+#include <Interface/Modules/Share.h>
 
-ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent),
-  state_(state)
-{
-  setupUi(this);
-  setWindowTitle(to_QString(name));
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
+namespace SCIRun {
+namespace Gui {
   
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  //TODO DAN
+
+class SCISHARE ShowStringDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::ShowString
+{
+	Q_OBJECT
+	
+public:
+  ShowStringDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+
+private Q_SLOTS:
+  //void pushFileNameToState(const QString& str);
+  //void saveFile();
+private:
+  SCIRun::Domain::Networks::ModuleStateHandle state_;
+};
+
+}
 }
 
-int ReadMatrixDialog::moduleExecutionTime()
-{
-  return 2000;
-}
-
-void ReadMatrixDialog::pushFileNameToState(const QString& str) 
-{
-  std::cout << "filename set on state object" << std::endl;
-  state_->setValue("FileName", str.toStdString());
-}
-
-void ReadMatrixDialog::openFile()
-{
-  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Matrix Text File", ".", "*.txt"));
-}
+#endif

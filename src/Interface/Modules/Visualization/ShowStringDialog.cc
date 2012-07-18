@@ -26,14 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/WriteMatrixDialog.h>
+#include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 
-WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle state,
+ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(parent),
   state_(state)
@@ -43,22 +43,22 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
 
-int WriteMatrixDialog::moduleExecutionTime()
+int ShowStringDialog::moduleExecutionTime()
 {
   return 2000;
 }
-
-void WriteMatrixDialog::pushFileNameToState(const QString& str) 
-{
-  std::cout << "filename set on state object" << std::endl;
-  state_->setValue("FileName", str.toStdString());
-}
-
-void WriteMatrixDialog::saveFile()
-{
-  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
-}
+//
+//void WriteMatrixDialog::pushFileNameToState(const QString& str) 
+//{
+//  std::cout << "filename set on state object" << std::endl;
+//  state_->setValue("FileName", str.toStdString());
+//}
+//
+//void WriteMatrixDialog::saveFile()
+//{
+//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
+//}

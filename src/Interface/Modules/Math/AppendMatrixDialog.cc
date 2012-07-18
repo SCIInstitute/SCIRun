@@ -26,15 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/EvaluateLinearAlgebraBinaryDialog.h>
-#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Algorithms::Math;
 
-EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::string& name, ModuleStateHandle state,
+AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(parent),
   state_(state)
@@ -44,31 +43,22 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
 
-int EvaluateLinearAlgebraBinaryDialog::moduleExecutionTime()
+int AppendMatrixDialog::moduleExecutionTime()
 {
   return 2000;
 }
 
-int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const
-{
-  if (addRadioButton_->isChecked())
-    return (int)EvaluateLinearAlgebraBinaryAlgorithm::ADD;
-  if (subtractRadioButton_->isChecked())
-    return (int)EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT;
-  if (multiplyRadioButton_->isChecked())
-    return (int)EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY;
-  else
-    return -1;
-}
-
-void EvaluateLinearAlgebraBinaryDialog::pushOperationToState() 
-{
-  EvaluateLinearAlgebraBinaryAlgorithm::Operator op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
-
-  state_->setValue("Operation", op);
-}
+//void AppendMatrixDialog::pushFileNameToState(const QString& str) 
+//{
+//  std::cout << "filename set on state object" << std::endl;
+//  state_->setValue("FileName", str.toStdString());
+//}
+//
+//void AppendMatrixDialog::saveFile()
+//{
+//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
+//}

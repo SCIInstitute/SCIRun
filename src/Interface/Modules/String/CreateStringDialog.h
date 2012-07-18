@@ -26,32 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/SendScalarDialog.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#ifndef INTERFACE_MODULES_CREATE_STRING_H
+#define INTERFACE_MODULES_CREATE_STRING_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+#include "Interface/Modules/ui_CreateString.h"
+#include <boost/shared_ptr.hpp>
+#include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/ModuleDialogGeneric.h>
+#include <Interface/Modules/Share.h>
 
-SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent),
-  state_(state)
-{
-  setupUi(this);
-  setWindowTitle(to_QString(name));
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
+namespace SCIRun {
+namespace Gui {
   
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
+  //TODO DAN
+
+class SCISHARE CreateStringDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::CreateString
+{
+	Q_OBJECT
+	
+public:
+  CreateStringDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+
+private Q_SLOTS:
+  //void pushFileNameToState(const QString& str);
+  //void saveFile();
+private:
+  SCIRun::Domain::Networks::ModuleStateHandle state_;
+};
+
+}
 }
 
-int SendScalarDialog::moduleExecutionTime()
-{
-  return 2000;
-}
-
-void SendScalarDialog::pushScalarValueToState(const QString& str) 
-{
-  double value = str.toDouble();
-  state_->setValue("ValueToSend", value);
-}
+#endif

@@ -28,12 +28,12 @@
 
 #include <Interface/Modules/ModuleDialogFactory.h>
 #include <Interface/Modules/ModuleDialogBasic.h>
-#include <Interface/Modules/SendScalarDialog.h>
-#include <Interface/Modules/ReceiveScalarDialog.h>
-#include <Interface/Modules/ReadMatrixDialog.h>
-#include <Interface/Modules/WriteMatrixDialog.h>
-#include <Interface/Modules/EvaluateLinearAlgebraUnaryDialog.h>
-#include <Interface/Modules/EvaluateLinearAlgebraBinaryDialog.h>
+#include <Interface/Modules/Basic/SendScalarDialog.h>
+#include <Interface/Modules/Basic/ReceiveScalarDialog.h>
+#include <Interface/Modules/DataIO/ReadMatrixDialog.h>
+#include <Interface/Modules/DataIO/WriteMatrixDialog.h>
+#include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
+#include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
