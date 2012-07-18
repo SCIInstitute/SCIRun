@@ -683,10 +683,6 @@
   <action name="actionRenderer">
    <property name="text">
     <string>Renderer</string>
-	   </property>
-  <action name="actionRenderer">
-   <property name="text">
-    <string>Renderer</string>
    </property>
   </action>
  </widget>
