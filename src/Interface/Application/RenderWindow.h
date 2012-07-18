@@ -41,6 +41,7 @@ class vtkArrowSource;
 class vtkPolyDataMapper;
 class vtkMatrix4x4;
 class vtkTransform;
+class vtkTextActor;
 namespace SCIRun{ namespace Domain { namespace Datatypes {
   template <typename T> class DenseMatrixGeneric;
 }}}
@@ -92,7 +93,7 @@ private:
   vtkSmartPointer<vtkRenderer>        mRen;
   vtkSmartPointer<vtkArrowSource>     mArrowSource;
   vtkSmartPointer<vtkPolyDataMapper>  mArrowMapper;
-
+  vtkSmartPointer<vtkTextActor>       mTxt;
 };
 
 #endif // RENDERWINDOW_H

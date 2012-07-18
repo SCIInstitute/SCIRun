@@ -41,7 +41,9 @@
 #include <vtkTransform.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
+
 #include <math.h>
+#include <stdexcept>
 
 using namespace SCIRun::Domain::Datatypes;
 
@@ -73,8 +75,16 @@ RenderWindow::RenderWindow(QWidget *parent) :
   mArrowMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mArrowMapper->SetInputConnection(mArrowSource->GetOutputPort());
 
-  //setupDefaultVectorField();
   setupHelixVectorField();
+
+  mTxt = vtkSmartPointer<vtkTextActor>::New();
+  mTxt->SetDisplayPosition(90, 50);
+
+  vtkTextProperty* txtProp = mTxt->GetTextProperty();
+  txtProp->SetFontSize(18);
+  txtProp->BoldOn();
+
+  mRen->AddActor2D(mTxt);
 
   setText("This is a vector field!");
 }
@@ -114,15 +124,14 @@ void RenderWindow::setupDefaultVectorField()
         vtkVector3d(vod[0][i], vod[1][i], vod[2][i]),
         vtkVector3d(vpd[0][i], vpd[1][i], vpd[2][i]));
 
-    vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
-    orient->GetMatrix(m);
+    //vtkSmartPointer<vtkMatrix4x4> m = vtkSmartPointer<vtkMatrix4x4>::New();
+    //orient->GetMatrix(m);
     //m->Print(std::cout);
 
     // Now we have appropriate transformation data, build actor.
     vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
     actor->SetMapper(mArrowMapper);
     actor->SetUserTransform(orient);
-    //actor->SetPosition(vpd[0][i], vpd[1][i], vpd[2][i]);
     mRen->AddActor(actor);
   }
 }
@@ -175,15 +184,7 @@ void RenderWindow::setupHelixVectorField()
 //-----------------------------------------------------------------------------
 void RenderWindow::setText(const char* output)
 {
-  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New();
-  txt->SetDisplayPosition(90, 50);
-  txt->SetInput(output);
-
-  vtkTextProperty* txtProp = txt->GetTextProperty();
-  txtProp->SetFontSize(18);
-  txtProp->BoldOn();
-
-  mRen->AddActor2D(txt);
+  mTxt->SetInput(output);
 }
 
 //-----------------------------------------------------------------------------
