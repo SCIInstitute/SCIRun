@@ -38,7 +38,10 @@
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Engine/State/SimpleMapModuleState.h>
+
+#ifdef BUILD_VTK_SUPPORT
 #include "RenderWindow.h"
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -162,19 +165,23 @@ SCIRunMainWindow::SCIRunMainWindow()
   QStringList result = visitTree(moduleSelectorTreeWidget_);
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance), _1));
 
+#ifdef BUILD_VTK_SUPPORT
   // Build render window.
   renderWindow_ = new RenderWindow();
   renderWindow_->setEnabled(false);
   renderWindow_->setVisible(false);
 
   connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
+#endif
 
   //connect(this, SIGNAL(closed()), this, SLOT(...));
 }
 
 void SCIRunMainWindow::ToggleRenderer()
 {
+#ifdef BUILD_VTK_SUPPORT
   renderWindow_->setEnabled(true);
   renderWindow_->setVisible(true);
+#endif
 }
 

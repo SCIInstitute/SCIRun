@@ -27,8 +27,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-FIND_PACKAGE(VTK REQUIRED)
-INCLUDE(${VTK_USE_FILE})
+IF(VTK_SUPPORT)
+  FIND_PACKAGE(VTK REQUIRED)
+  INCLUDE(${VTK_USE_FILE})
+  SET(GUI_VTK_SOURCES
+    RenderWindow.cc)
+  SET(GUI_VTK_HEADERS
+    RenderWindow.h)
+  SET(GUI_VTK_LINK_LIBRARIES
+    QVTK)
+ENDIF(VTK_SUPPORT)
 
 ##################################################
 # Set sources
@@ -45,7 +53,7 @@ SET(SCIRunGUIPrototype_SOURCES
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
-  RenderWindow.cc
+  ${GUI_VTK_SOURCES}
 )
 
 SET(SCIRunGUIPrototype_HEADERS
@@ -58,7 +66,7 @@ SET(SCIRunGUIPrototype_HEADERS
   Port.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
-  RenderWindow.h
+  ${GUI_VTK_HEADERS}
 )
 
 SET(SCIRunGUIPrototype_FORMS
@@ -93,7 +101,7 @@ TARGET_LINK_LIBRARIES(SCIRunGUIPrototype
   Engine_State
   Modules_Factory
   Interface_Modules
-  QVTK
+  ${GUI_VTK_LINK_LIBRARIES}
   ${Boost_LIBRARIES}
   ${QT_LIBRARIES})
 
