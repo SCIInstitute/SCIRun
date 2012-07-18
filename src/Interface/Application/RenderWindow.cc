@@ -41,6 +41,7 @@
 #include <vtkTransform.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
+#include <math.h>
 
 using namespace SCIRun::Domain::Datatypes;
 
