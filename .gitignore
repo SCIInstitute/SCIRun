@@ -3,6 +3,7 @@
 *.ilk
 *.exe
 *.idb
+*.swp
 *.vcxproj*
 bin/*/*
 doc/*

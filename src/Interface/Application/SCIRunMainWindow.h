@@ -35,6 +35,10 @@
 namespace SCIRun {
 namespace Gui {
 
+#ifdef BUILD_VTK_SUPPORT
+class RenderWindow;
+#endif
+
 class NetworkEditor;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
@@ -42,10 +46,15 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 	Q_OBJECT
 public:
 	static SCIRunMainWindow* Instance();
+protected Q_SLOTS:
+  void ToggleRenderer();
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+#ifdef BUILD_VTK_SUPPORT
+  RenderWindow* renderWindow_;
+#endif
 private Q_SLOTS:
   void saveNetwork();
 };

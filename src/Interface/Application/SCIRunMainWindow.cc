@@ -39,6 +39,10 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Engine/State/SimpleMapModuleState.h>
 
+#ifdef BUILD_VTK_SUPPORT
+#include "RenderWindow.h"
+#endif
+
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Engine;
@@ -163,10 +167,27 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   //connect(this, SIGNAL(closed()), this, SLOT(...));
+
+#ifdef BUILD_VTK_SUPPORT
+  // Build render window.
+  renderWindow_ = new RenderWindow();
+  renderWindow_->setEnabled(false);
+  renderWindow_->setVisible(false);
+
+  connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
+#endif
 }
 
 void SCIRunMainWindow::saveNetwork()
 {
   QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn");
   networkEditor_->controller_->saveNetwork(filename.toStdString());
+}
+
+void SCIRunMainWindow::ToggleRenderer()
+{
+#ifdef BUILD_VTK_SUPPORT
+  renderWindow_->setEnabled(true);
+  renderWindow_->setVisible(true);
+#endif
 }
