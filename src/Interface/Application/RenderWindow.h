@@ -33,12 +33,17 @@
 #include <vtkSmartPointer.h>
 #include <vtkVector.h>
 
+#include "Core/Dataflow/Network/Module.h"
+
 class QVTKWidget;
 class vtkRenderer;
 class vtkArrowSource;
 class vtkPolyDataMapper;
 class vtkMatrix4x4;
 class vtkTransform;
+namespace SCIRun{ namespace Domain { namespace Datatypes {
+  template <typename T> class DenseMatrixGeneric;
+}}}
 
 namespace Ui {
 class RenderWindow;
@@ -51,14 +56,19 @@ class RenderWindow : public QDialog
 public:
   explicit RenderWindow(QWidget *parent = 0);
   ~RenderWindow();
+
+  // Hack: Accepts a 6xn matrix whose format is as follows.
+  //  rows 1..3 - direction of vectors.
+  //  rows 4..6 - position of vectors in 3D space.
+  void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>& m);
+
+  // Change default text output
+  void setText(const char* text);
     
 private:
 
   /// Sets up a default static vector field.
-  void setupVectorField();
-
-  /// Sets up basic text.
-  void setupText(const char* output);
+  void setupDefaultVectorField();
 
   /// Sets up a helix vector field.
   void setupHelixVectorField();
@@ -69,7 +79,11 @@ private:
   /// rotation, two vectors must be provided and their cross product calculated.
   /// A 4x4 homogeneous vtk matrix is returned instead of a 3x3 rotation.
   /// The last column is (0,0,0,1)
-  static vtkSmartPointer<vtkTransform> matFromVec(const vtkVector3d& v);
+  static vtkSmartPointer<vtkTransform> matFromVec(const vtkVector3d& v,
+                                                  const vtkVector3d& pos);
+  /// Same as above, but uses the input vector as the 'x' instead of the 'z'.
+  static vtkSmartPointer<vtkTransform> matFromVecR(const vtkVector3d& x,
+                                                   const vtkVector3d& pos);
 
   Ui::RenderWindow*                   ui;
 
