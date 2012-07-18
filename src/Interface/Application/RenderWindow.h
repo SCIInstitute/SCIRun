@@ -33,8 +33,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkVector.h>
 
-#include "Core/Dataflow/Network/Module.h"
-
 class QVTKWidget;
 class vtkRenderer;
 class vtkArrowSource;
@@ -49,6 +47,9 @@ namespace SCIRun{ namespace Domain { namespace Datatypes {
 namespace Ui {
 class RenderWindow;
 }
+
+namespace SCIRun {
+namespace Gui {
 
 class RenderWindow : public QDialog
 {
@@ -95,5 +96,8 @@ private:
   vtkSmartPointer<vtkPolyDataMapper>  mArrowMapper;
   vtkSmartPointer<vtkTextActor>       mTxt;
 };
+
+}
+}
 
 #endif // RENDERWINDOW_H

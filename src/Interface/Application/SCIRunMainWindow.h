@@ -31,11 +31,11 @@
 
 #include <QDialog>
 #include "ui_SCIRunMainWindow.h"
-#include "RenderWindow.h"
 
 namespace SCIRun {
 namespace Gui {
 
+class RenderWindow;
 class NetworkEditor;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow

@@ -38,6 +38,7 @@
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Engine/State/SimpleMapModuleState.h>
+#include "RenderWindow.h"
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;

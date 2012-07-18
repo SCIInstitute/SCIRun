@@ -45,6 +45,7 @@
 #include <math.h>
 #include <stdexcept>
 
+using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Datatypes;
 
 //-----------------------------------------------------------------------------
