@@ -161,7 +161,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   QStringList result = visitTree(moduleSelectorTreeWidget_);
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance()), _1));
 
-  connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
+  connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   //connect(this, SIGNAL(closed()), this, SLOT(...));
 }
 
