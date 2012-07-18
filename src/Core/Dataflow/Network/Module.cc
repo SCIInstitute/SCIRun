@@ -110,7 +110,7 @@ void Module::do_execute()
   //abort_flag_=0;
 
   //TODO: soon
-  //Logger::Instance->log("STARTING MODULE: "+id_);
+  //Logger::Instance()->log("STARTING MODULE: "+id_);
 
   // Reset all of the ports.
   oports_.resetAll();
@@ -181,7 +181,7 @@ void Module::do_execute()
   oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   //TODO: soon
-  //Logger::Instance->log("MODULE FINISHED: " + id_);  
+  //Logger::Instance()->log("MODULE FINISHED: " + id_);  
 }
 
 ModuleStateHandle Module::get_state() 

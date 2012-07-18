@@ -69,6 +69,8 @@ public:
   typedef std::vector<PortWidget*> Ports;
   const Ports& getInputPorts() const { return inputPorts_; }
   const Ports& getOutputPorts() const { return outputPorts_; }
+
+  std::string getModuleId() const { return moduleId_; }
   
 public Q_SLOTS:
   //for testing signal/slot of Execute

@@ -57,3 +57,8 @@ void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Domain::Net
 {
   controller_->removeConnection(id);
 }
+
+void NetworkEditorControllerGuiProxy::saveNetwork(const std::string& filename)
+{
+  controller_->saveNetwork(filename);
+}

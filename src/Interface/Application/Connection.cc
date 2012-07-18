@@ -69,7 +69,7 @@ ConnectionLine::~ConnectionLine()
     toPort_->turn_off_light();
   }
   Q_EMIT deleted(id_);
-  Logger::Instance->log("Connection deleted.");
+  Logger::Instance()->log("Connection deleted.");
 }
 
 void ConnectionLine::setColor(const QColor& color)

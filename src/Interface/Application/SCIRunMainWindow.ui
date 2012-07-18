@@ -84,6 +84,7 @@
     <property name="title">
      <string>&amp;Modules</string>
     </property>
+    <addaction name="actionDump_positions"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
     <property name="title">
@@ -671,6 +672,11 @@
    </property>
    <property name="text">
     <string>Module Selector</string>
+   </property>
+  </action>
+  <action name="actionDump_positions">
+   <property name="text">
+    <string>Dump positions</string>
    </property>
   </action>
  </widget>

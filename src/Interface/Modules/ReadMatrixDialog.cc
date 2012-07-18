@@ -27,7 +27,6 @@
 */
 
 #include <Interface/Modules/ReadMatrixDialog.h>
-#include <Interface/Application/Logger.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 

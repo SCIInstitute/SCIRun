@@ -46,6 +46,8 @@ private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+private Q_SLOTS:
+  void saveNetwork();
 };
 
 }

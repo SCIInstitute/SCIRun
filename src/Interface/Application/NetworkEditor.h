@@ -31,6 +31,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
+#include <map>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 
 class QMenu;
@@ -62,6 +63,7 @@ namespace Gui {
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
     void addActions(QWidget* widget);
     void setExecuteAction(QAction* action) { executeAction_ = action; }
+    void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
   protected:
     virtual void dropEvent(QDropEvent* event);
@@ -81,9 +83,11 @@ namespace Gui {
     void sendToBack();
     void properties();
     void updateActions();
+    void dumpModulePositions();
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
+    friend class SCIRunMainWindow; //TODO
     void createActions();
     //void createMenus();
     //void createToolBars();
@@ -93,6 +97,7 @@ namespace Gui {
     ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
+    
     //QMenu* fileMenu_;
     //QMenu* editMenu_;
     //QToolBar* editToolBar_;
@@ -106,6 +111,7 @@ namespace Gui {
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     QAction* executeAction_;
+    QAction* moduleDumpAction_;
 
     QGraphicsScene* scene_;
   
@@ -117,6 +123,8 @@ namespace Gui {
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
+
+    std::map<std::string, std::pair<double,double> > modulePositions_;
   };
 
 }

@@ -49,9 +49,14 @@ namespace Engine {
     void removeModule(const std::string& id);
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
+
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
+
+    void saveNetwork(const std::string& filename) const;
+    void loadNetwork(const std::string& filename);
+
   private:
     void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;

@@ -28,7 +28,6 @@
 
 #include <QtGui>
 #include <Interface/Modules/ModuleDialogBasic.h>
-#include <Interface/Application/Logger.h>
 
 using namespace SCIRun::Gui;
 

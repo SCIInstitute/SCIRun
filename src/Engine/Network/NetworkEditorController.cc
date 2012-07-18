@@ -34,6 +34,7 @@
 #include <Core/Dataflow/Network/Network.h>
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
+#include <Core/Serialization/Network/NetworkXMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Engine;
@@ -52,6 +53,7 @@ NetworkEditorController::NetworkEditorController(SCIRun::Domain::Networks::Netwo
 
 void NetworkEditorController::addModule(const std::string& moduleName)
 {
+  //TODO: should pass in entire info struct
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
@@ -100,4 +102,13 @@ boost::signals2::connection NetworkEditorController::connectModuleRemoved(const 
 boost::signals2::connection NetworkEditorController::connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber)
 {
   return connectionAdded_.connect(subscriber);
+}
+
+void NetworkEditorController::saveNetwork(const std::string& filename) const
+{
+  std::cout << "??? how to get the window position info????" << std::endl;
+  NetworkToXML conv;
+  NetworkXMLHandle xml = conv.to_xml_data(theNetwork_);
+  NetworkXMLSerializer serializer;
+  serializer.save_xml(*xml, filename);
 }

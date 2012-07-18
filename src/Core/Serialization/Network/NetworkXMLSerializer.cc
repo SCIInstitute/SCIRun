@@ -63,7 +63,14 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   return network;
 }
 
+NetworkToXML::NetworkToXML() {}
+
 NetworkXMLHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
+{
+  return NetworkToXML().to_xml_data(network);
+}
+
+NetworkXMLHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {
   NetworkXMLHandle xmlData(new NetworkXML);
   Network::ConnectionDescriptionList conns = network->connections();

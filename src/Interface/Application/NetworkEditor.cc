@@ -27,6 +27,7 @@
 */
 
 #include <sstream>
+#include <fstream>
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/NetworkEditor.h>
@@ -38,16 +39,23 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <Interface/Modules/ModuleDialogGeneric.h> //TODO
+
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/serialization/nvp.hpp>//TODO
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/serialization.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 
-boost::shared_ptr<Logger> Logger::Instance;
+boost::shared_ptr<Logger> Logger::instance_;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
-  executeAction_(0)
+  executeAction_(0),
+  moduleDumpAction_(0)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
   scene_->setBackgroundBrush(Qt::darkGray);
@@ -133,7 +141,7 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   proxy->setSelected(true);
   bringToFront();
 
-  Logger::Instance->log("Module added.");
+  Logger::Instance()->log("Module added.");
 }
 
 void NetworkEditor::bringToFront()
@@ -359,6 +367,13 @@ void NetworkEditor::createActions()
     this, SLOT(properties()));
 }
 
+void NetworkEditor::setModuleDumpAction(QAction* action)
+{
+  moduleDumpAction_ = action; 
+  if (moduleDumpAction_)
+    connect(moduleDumpAction_, SIGNAL(triggered()), this, SLOT(dumpModulePositions()));
+}
+
 void NetworkEditor::addActions(QWidget* widget)
 {
   //widget->addAction(addNodeAction_);
@@ -378,7 +393,6 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   {
     lastModulePosition_ = mapToScene(event->pos());
     controller_->addModule(moduleSelectionGetter_->text().toStdString());
-    //addModule(moduleSelectionGetter_->text(), mapToScene());
   }
 }
 
@@ -392,39 +406,27 @@ void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
 }
 
-/*
-void DiagramWindow::createMenus()
+void NetworkEditor::dumpModulePositions()
 {
-  fileMenu_ = menuBar()->addMenu(tr("&File"));
-  fileMenu_->addAction(exitAction_);
+  Logger::Instance()->log("########### module positions:\n");
+  modulePositions_.clear();
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    std::ostringstream ostr;
+    ostr << item->type() << " : " << "[" << item->scenePos().x() << ", " << item->scenePos().y() << "]";
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      modulePositions_[w->getModule()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      ostr << " moduleId: " << w->getModule()->getModuleId();
+    }
+    Logger::Instance()->log(ostr.str().c_str());
+  }
 
-  editMenu_ = menuBar()->addMenu(tr("&Edit"));
-  editMenu_->addAction(addNodeAction_);
-  editMenu_->addAction(addLinkAction_);
-  editMenu_->addAction(deleteAction_);
-  editMenu_->addSeparator();
-  editMenu_->addAction(cutAction_);
-  editMenu_->addAction(copyAction_);
-  editMenu_->addAction(pasteAction_);
-  editMenu_->addSeparator();
-  editMenu_->addAction(bringToFrontAction_);
-  editMenu_->addAction(sendToBackAction_);
-  editMenu_->addSeparator();
-  editMenu_->addAction(propertiesAction_);
+  //void save_info(const Serializable& s, const char * filename, const std::string& name = "object")
+  {
+    std::ofstream oxml("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\modulePositions.xml");
+    boost::archive::xml_oarchive oa(oxml);
+    oa << boost::serialization::make_nvp("modulePositions", modulePositions_);
+    //Logger::Instance()->log(oxml.str().c_str());
+  }
 }
-
-void NetworkEditor::createToolBars()
-{
-  editToolBar_ = addToolBar(tr("Edit"));
-  editToolBar_->addAction(addNodeAction_);
-  editToolBar_->addAction(addLinkAction_);
-  editToolBar_->addAction(deleteAction_);
-  editToolBar_->addSeparator();
-  editToolBar_->addAction(cutAction_);
-  editToolBar_->addAction(copyAction_);
-  editToolBar_->addAction(pasteAction_);
-  editToolBar_->addSeparator();
-  editToolBar_->addAction(bringToFrontAction_);
-  editToolBar_->addAction(sendToBackAction_);
-}
-*/

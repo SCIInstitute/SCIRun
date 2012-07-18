@@ -103,17 +103,17 @@ SCIRunMainWindow::SCIRunMainWindow()
 	setupUi(this);
 
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-  Logger::Instance.reset(new LogAppender(logTextBrowser_));
+  Logger::set_instance(new LogAppender(logTextBrowser_));
   networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setExecuteAction(actionExecute_All_);
+  networkEditor_->setModuleDumpAction(actionDump_positions);
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
 
-  //actionExecute_All_->setShortcuts("Ctrl+E");
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
 
   ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
@@ -159,7 +159,14 @@ SCIRunMainWindow::SCIRunMainWindow()
 	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 
   QStringList result = visitTree(moduleSelectorTreeWidget_);
-  std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance), _1));
+  std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance()), _1));
 
+  connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   //connect(this, SIGNAL(closed()), this, SLOT(...));
+}
+
+void SCIRunMainWindow::saveNetwork()
+{
+  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn");
+  networkEditor_->controller_->saveNetwork(filename.toStdString());
 }

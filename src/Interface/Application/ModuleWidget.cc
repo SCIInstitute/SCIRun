@@ -132,7 +132,7 @@ ModuleWidget::~ModuleWidget()
 {
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
-  Logger::Instance->log("Module deleted.");
+  Logger::Instance()->log("Module deleted.");
   dialog_.reset();
   Q_EMIT removeModule(moduleId_);
 }

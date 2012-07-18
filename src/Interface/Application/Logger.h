@@ -36,10 +36,6 @@ namespace SCIRun {
 namespace Gui {
 
   //TODO move to separate header
-  inline QString to_QString(const std::string& str)
-  {
-    return QString::fromUtf8(str.c_str());
-  }
 
   inline QColor to_color(const std::string& str)
   {
@@ -60,8 +56,10 @@ namespace Gui {
   public:
     virtual ~Logger() {}
     virtual void log(const QString& message) const = 0;
-
-    static boost::shared_ptr<Logger> Instance;
+    static boost::shared_ptr<Logger> Instance() { return instance_; }
+    static void set_instance(Logger* p) { instance_.reset(p); }
+  private:
+    static boost::shared_ptr<Logger> instance_;
   };
 
 }

@@ -186,7 +186,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
   {
     if (canBeConnected(port))
     {
-      Logger::Instance->log("Connection made.");
+      //Logger::Instance()->log("Connection made.");
 
       PortWidget* start = isInput() ? port : this;
       PortWidget* end = isInput() ? this : port;
