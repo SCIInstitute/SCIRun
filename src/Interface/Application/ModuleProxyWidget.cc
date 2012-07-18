@@ -30,7 +30,7 @@
 #include <boost/range/join.hpp>
 #include <iostream>
 #include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>

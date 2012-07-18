@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>435</width>
-    <height>75</height>
+    <width>535</width>
+    <height>91</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -77,6 +77,19 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QCommandLinkButton" name="executeButton_">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>10</y>
+     <width>91</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Execute</string>
+   </property>
   </widget>
  </widget>
  <resources/>

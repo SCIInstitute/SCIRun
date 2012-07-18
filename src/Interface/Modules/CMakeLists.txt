@@ -28,20 +28,37 @@
 #
 
 SET(Interface_Modules_FORMS
+  EvaluateLinearAlgebraBinary.ui
+  EvaluateLinearAlgebraUnary.ui
   ModuleDialogBasic.ui
+  ReadMatrix.ui
   ReceiveScalar.ui
   SendScalar.ui
+  WriteMatrix.ui
 )
 
 SET(Interface_Modules_HEADERS
+  EvaluateLinearAlgebraBinaryDialog.h
+  EvaluateLinearAlgebraUnaryDialog.h
   SendScalarDialog.h
   ModuleDialogBasic.h
+  ModuleDialogFactory.h
   ModuleDialogGeneric.h
+  ReadMatrixDialog.h
+  ReceiveScalarDialog.h
   Share.h
+  WriteMatrixDialog.h
 )
 
 SET(Interface_Modules_SOURCES 
+  EvaluateLinearAlgebraBinaryDialog.cc
+  EvaluateLinearAlgebraUnaryDialog.cc
   ModuleDialogBasic.cc
+  ModuleDialogFactory.cc
+  ReadMatrixDialog.cc
+  ReceiveScalarDialog.cc
+  SendScalarDialog.cc
+  WriteMatrixDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})

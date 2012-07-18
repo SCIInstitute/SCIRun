@@ -44,27 +44,36 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 
 /*static*/ int Module::instanceCount_ = 0;
 
-//TODO NEW FILE BEING LAZY NOW
+//TODO MAKE NEW FILE 
 class NullModuleState : public ModuleStateInterface
 {
 public:
-  virtual boost::any& operator[](const std::string& parameterName)
+  virtual void setValue(const std::string&, boost::any)
   {
-    return dummy_;
   }
-private:
-  boost::any dummy_;
+
+  virtual boost::any getValue(const std::string&) const
+  {
+    return boost::any();
+  }
+
+  virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+  {
+    return boost::signals::connection();
+  }
 };
 
 
-Module::Module(const std::string& name, 
-  ModuleStateFactoryHandle stateMaker,
+Module::Module(const ModuleLookupInfo& info,
+  ModuleStateFactoryHandle stateFactory,
   bool hasUi,
-  const std::string& cat/* ="unknown" */, const std::string& pack/* ="unknown" */, const std::string& version/* ="1.0" */)
-  : has_ui_(hasUi), executionTime_(1.0), state_(stateMaker ? stateMaker->make_state(name) : new NullModuleState)
+  const std::string& version/* ="1.0" */)
+  : info_(info), has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
 {
-  set_modulename(name);
-  id_ = name + boost::lexical_cast<std::string>(instanceCount_++);
+  //set_modulename(name);
+  //set_categoryname(cat);
+  //set_packagename(pack);
+  id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);
 }
@@ -73,6 +82,8 @@ Module::~Module()
 {
   instanceCount_--;
 }
+
+ModuleStateFactoryHandle Module::defaultStateFactory_;
 
 OutputPortHandle Module::get_output_port(size_t idx) const
 {
@@ -223,7 +234,7 @@ Module::Builder::SourceMaker Module::Builder::source_maker_;
 class DummyModule : public Module
 {
 public:
-  explicit DummyModule(const std::string& name) : Module(name) {}
+  explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
   virtual void execute() 
   {
     std::cout << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
@@ -233,7 +244,11 @@ public:
 Module::Builder& Module::Builder::with_name(const std::string& name)
 {
   if (!module_)
-    module_.reset(new DummyModule(name));
+  {
+    ModuleLookupInfo info;
+    info.module_name_ = name;
+    module_.reset(new DummyModule(info));
+  }
   return *this;
 }
 

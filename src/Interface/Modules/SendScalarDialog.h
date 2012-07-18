@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_SEND_SCALAR_H
 #define INTERFACE_MODULES_SEND_SCALAR_H
 
-#include "ui_SendScalar.h"
+#include "Interface/Modules/ui_SendScalar.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/ModuleDialogGeneric.h>
@@ -47,9 +47,15 @@ class SCISHARE SendScalarDialog : public ModuleDialogGeneric,
 	Q_OBJECT
 	
 public:
-  explicit SendScalarDialog(const std::string& name, int executionTime, QWidget* parent = 0);
+  SendScalarDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
   virtual int moduleExecutionTime();
-  virtual int scalarValue();
+
+private Q_SLOTS:
+  void pushScalarValueToState(const QString& str);
+private:
+  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

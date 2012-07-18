@@ -36,7 +36,7 @@ INCLUDE(${VTK_USE_FILE})
 
 
 SET(SCIRunGUIPrototype_SOURCES 
-  Module.cc
+  ModuleWidget.cc
   ModuleProxyWidget.cc
   scirunMain.cc 
   SCIRunMainWindow.cc
@@ -50,7 +50,7 @@ SET(SCIRunGUIPrototype_SOURCES
 
 SET(SCIRunGUIPrototype_HEADERS
   Logger.h
-  Module.h
+  ModuleWidget.h
   ModuleProxyWidget.h
   SCIRunMainWindow.h
   Node.h

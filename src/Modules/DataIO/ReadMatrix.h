@@ -26,20 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BASIC_SEND_SCALAR_H
-#define MODULES_BASIC_SEND_SCALAR_H
+#ifndef MODULES_DATAIO_READ_MATRIX_H
+#define MODULES_DATAIO_READ_MATRIX_H
 
 #include <Core/Dataflow/Network/Module.h>
+#include <Modules/DataIO/Share.h>
 
 namespace SCIRun {
 namespace Modules {
 namespace DataIO {
   
   //TODO DAN
-  class ReadMatrix : public SCIRun::Domain::Networks::Module
+  class SCISHARE ReadMatrixModule : public SCIRun::Domain::Networks::Module
   {
   public:
+    ReadMatrixModule();
     virtual void execute();
+  private:
+    std::string filename_;
   };
 
 }}}

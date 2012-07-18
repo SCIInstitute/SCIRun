@@ -46,7 +46,7 @@ class SlotClassForNetworkEditorController
 {
 public:
   virtual ~SlotClassForNetworkEditorController() {}
-  virtual void moduleAddedSlot(const std::string&, const ModuleInfoProvider&) = 0;
+  virtual void moduleAddedSlot(const std::string&, ModuleHandle) = 0;
   virtual void moduleRemovedSlot(const std::string& id) = 0;
   virtual void connectionAddedSlot(const ConnectionId&) = 0;
 };
@@ -54,7 +54,7 @@ public:
 class DummySlotClassForNetworkEditorController : public SlotClassForNetworkEditorController
 {
 public:
-  MOCK_METHOD2(moduleAddedSlot, void(const std::string&, const ModuleInfoProvider&));
+  MOCK_METHOD2(moduleAddedSlot, void(const std::string&, ModuleHandle));
   MOCK_METHOD1(moduleRemovedSlot, void(const std::string&));
   MOCK_METHOD1(connectionAddedSlot, void(const ConnectionId&));
 };

@@ -29,13 +29,27 @@
 //TODO DAN
 
 #include <Engine/State/SimpleMapModuleState.h>
+#include <boost/scope_exit.hpp>
 
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;
 
-boost::any& SimpleMapModuleState::operator[](const std::string& parameterName)
+boost::any SimpleMapModuleState::getValue(const std::string& parameterName) const
 {
-  return stateMap_[parameterName];
+  StateMap::const_iterator i = stateMap_.find(parameterName);
+  return i != stateMap_.end() ? i->second : boost::any();
+}
+
+void SimpleMapModuleState::setValue(const std::string& parameterName, boost::any value)
+{
+  stateMap_[parameterName] = value;
+
+  sig_();
+}
+
+boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+{
+  return sig_.connect(subscriber);
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

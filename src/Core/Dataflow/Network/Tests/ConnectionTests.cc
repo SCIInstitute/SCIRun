@@ -110,3 +110,18 @@ TEST_F(ConnectionTests, DtorDisconnectsSelfFromPorts)
   EXPECT_CALL(*dummyInputPort, detach(&c));
   EXPECT_CALL(*dummyOutputPort, detach(&c));
 }
+
+std::ostream& operator<<(std::ostream& o, const ConnectionDescription& desc)
+{
+  return o << ConnectionId::create(desc).id_;
+}
+
+TEST(ConnectionIdTests, CanParseConnectionIdString)
+{
+  ConnectionDescription desc("mod1", 2, "mod2", 1);
+  ConnectionId id = ConnectionId::create(desc);
+  std::cout << id.id_ << std::endl;
+  EXPECT_EQ("mod1_p#2_@to@_mod2_p#1", id.id_);
+  ConnectionDescription descParsed = id.describe();
+  EXPECT_EQ(desc, descParsed);
+}

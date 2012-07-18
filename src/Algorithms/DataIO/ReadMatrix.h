@@ -31,14 +31,23 @@
 
 //TODO DAN
 
+#include <string>
 #include <Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Algorithms/DataIO/Share.h>
 
 namespace SCIRun {
   namespace Algorithms {
     namespace DataIO {
 
-      class ReadMatrixAlgorithm : public AlgorithmBase
+      class SCISHARE ReadMatrixAlgorithm : public AlgorithmBase
       {
+      public:
+        typedef void Inputs;
+        typedef std::string Parameters; 
+        typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
+
+        Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
       };
 
 }}}

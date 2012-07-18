@@ -30,18 +30,110 @@
 #include <gmock/gmock.h>
 #include <Core/Dataflow/Network/Network.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/ConnectionId.h>
 #include <Core/Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <Modules/DataIO/ReadMatrix.h>
+#include <Modules/DataIO/WriteMatrix.h>
+#include <Modules/Basic/SendTestMatrix.h>
+#include <Modules/Basic/ReceiveTestMatrix.h>
+#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Dataflow/Network/Tests/MockModuleState.h>
+#include <Engine/State/SimpleMapModuleState.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Modules::Factory;
+using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Domain::State;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
 //TODO DAN
+
+namespace
+{
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++i)
+      for (size_t j = 0; j < m->ncols(); ++j)
+        (*m)(i, j) = 3.0 * i + j;
+    return m;
+  }
+  DenseMatrixHandle matrix2()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++i)
+      for (size_t j = 0; j < m->ncols(); ++j)
+        (*m)(i, j) = -2.0 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+
+  ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
+  {
+    ModuleLookupInfo info;
+    info.module_name_ = moduleName;
+    return network.add_module(info);
+  }
+}
+
+TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  Network writeReadMatrixNetwork(mf, sf);
+
+  ModuleHandle send = addModuleToNetwork(writeReadMatrixNetwork, "SendTestMatrix");
+  ModuleHandle write = addModuleToNetwork(writeReadMatrixNetwork, "WriteMatrix");
+  ModuleHandle read = addModuleToNetwork(writeReadMatrixNetwork, "ReadMatrix");
+  ModuleHandle receive = addModuleToNetwork(writeReadMatrixNetwork, "ReceiveTestMatrix");
+
+  EXPECT_EQ(4, writeReadMatrixNetwork.nmodules());
+
+  writeReadMatrixNetwork.connect(send, 0, write, 0);
+  EXPECT_EQ(1, writeReadMatrixNetwork.nconnections());
+  writeReadMatrixNetwork.connect(read, 0, receive, 0);
+  EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
+
+  DenseMatrixHandle input = matrix1();
+  send->get_state()->setValue("MatrixToSend", input);
+
+  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\moduleTestMatrix.txt";
+  boost::filesystem3::remove(filename);
+
+  write->get_state()->setValue("FileName", filename);
+  WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
+  ASSERT_TRUE(writeModule != 0);
+  read->get_state()->setValue("FileName", filename);
+  ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
+  ASSERT_TRUE(readModule != 0);
+
+  //manually execute the network, in the correct order.
+  send->execute();
+  write->execute();
+  read->execute();
+  receive->execute();
+
+  ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
+  ASSERT_TRUE(receiveModule != 0);
+  ASSERT_TRUE(receiveModule->latestReceivedMatrix());
+
+  EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
+}

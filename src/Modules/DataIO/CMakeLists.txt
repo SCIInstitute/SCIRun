@@ -36,6 +36,7 @@ SET(Modules_DataIO_SRCS
 SET(Modules_DataIO_HEADERS
   ReadMatrix.h
   ReadMatrixState.h
+  Share.h
   WriteMatrix.h
   WriteMatrixState.h
 )
@@ -43,6 +44,17 @@ SET(Modules_DataIO_HEADERS
 ADD_LIBRARY(Modules_DataIO 
 ${Modules_DataIO_HEADERS}
 ${Modules_DataIO_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_DataIO
+Core_Dataflow_Network
+Core_Datatypes
+Algorithms_DataIO
+${Boost_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_DataIO)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

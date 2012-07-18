@@ -31,6 +31,9 @@
 #define CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <string>
+#include <vector>
+#include <map>
 #include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
@@ -40,16 +43,21 @@ namespace Networks {
   class SCISHARE NetworkInterface
   {
   public:
+    typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
+
     virtual ~NetworkInterface() {}
     virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
     virtual bool remove_module(const std::string& id) = 0;
     virtual size_t nmodules() const = 0;
     virtual ModuleHandle module(size_t i) const = 0;
     virtual ModuleHandle lookupModule(const std::string& id) const = 0;
+
     virtual ConnectionId connect(ModuleHandle, size_t, ModuleHandle, size_t) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;
     virtual void disable_connection(const ConnectionId&) = 0;
+    virtual ConnectionDescriptionList connections() const = 0;
+
     virtual std::string toString() const = 0;
   };
 }}}

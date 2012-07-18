@@ -32,7 +32,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/Node.h>
 #include <Interface/Application/Connection.h>
-#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
@@ -76,8 +76,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_) 
   {
-    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
-      this, SLOT(addModule(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
+      this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
 
     disconnect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
       controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
@@ -90,8 +90,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   
   if (controller_) 
   {
-    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)), 
-      this, SLOT(addModule(const std::string&, const SCIRun::Domain::Networks::ModuleInfoProvider&)));
+    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
+      this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
 
     //TODO: flip this
     connect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
@@ -102,10 +102,10 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   }
 }
 
-void NetworkEditor::addModule(const std::string& name, const ModuleInfoProvider& moduleInfoProvider)
+void NetworkEditor::addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module)
 {
-  ModuleWidget* module = new ModuleWidget(to_QString(name), moduleInfoProvider);
-  setupModule(module);
+  ModuleWidget* moduleWidget = new ModuleWidget(to_QString(name), module);
+  setupModule(moduleWidget);
 }
 
 void NetworkEditor::setupModule(ModuleWidget* module)

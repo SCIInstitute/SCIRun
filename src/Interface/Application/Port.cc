@@ -34,7 +34,7 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/Module.h>
+#include <Interface/Application/ModuleWidget.h>
 
 using namespace SCIRun::Gui;
 
@@ -188,7 +188,10 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
     {
       Logger::Instance->log("Connection made.");
 
-      SCIRun::Domain::Networks::ConnectionDescription cd(moduleId_.toStdString(), index_, port->moduleId_.toStdString(), port->index_);
+      PortWidget* start = isInput() ? port : this;
+      PortWidget* end = isInput() ? this : port;
+
+      SCIRun::Domain::Networks::ConnectionDescription cd(start->moduleId_.toStdString(), start->index_, end->moduleId_.toStdString(), end->index_);
       ConnectionLine* c = new ConnectionLine(this, port, SCIRun::Domain::Networks::ConnectionId::create(cd));
       TheScene->addItem(c);
       connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));

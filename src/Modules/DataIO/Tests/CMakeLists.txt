@@ -40,8 +40,11 @@ SCIRUN_ADD_UNIT_TEST(Modules_DataIO_Tests
 ${Modules_DataIO_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_DataIO_Tests
-#Modules_DataIO
+Modules_DataIO
+Modules_Factory
+Engine_State
 gtest_main
 gtest
 gmock
+${Boost_LIBRARIES}
 )

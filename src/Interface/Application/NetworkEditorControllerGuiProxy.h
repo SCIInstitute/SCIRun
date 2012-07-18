@@ -52,7 +52,7 @@ namespace Gui {
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
   Q_SIGNALS:
-    void moduleAdded(const std::string& name, const SCIRun::Domain::Networks::ModuleInfoProvider& portInfoProvider);
+    void moduleAdded(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
   private:
     boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller_;
   };

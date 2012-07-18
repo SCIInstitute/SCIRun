@@ -39,6 +39,7 @@ namespace Networks {
 
   struct SCISHARE ConnectionDescription
   {
+    ConnectionDescription() : port1_(-1), port2_(-1) {}
     ConnectionDescription(const std::string& id1, size_t p1, const std::string& id2, size_t p2)
       : moduleId1_(id1), port1_(p1), moduleId2_(id2), port2_(p2) {}
     std::string moduleId1_;
@@ -52,6 +53,7 @@ namespace Networks {
     ConnectionId(const char* s) : id_(s) {}
     ConnectionId(const std::string& s) : id_(s) {}
     static ConnectionId create(const ConnectionDescription& desc);
+    ConnectionDescription describe() const;
 
     std::string id_;
     operator std::string() const { return id_; }
@@ -59,6 +61,8 @@ namespace Networks {
 
   SCISHARE bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
   SCISHARE bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
+  SCISHARE bool operator==(const ConnectionDescription& lhs, const ConnectionDescription& rhs);
+  SCISHARE bool operator!=(const ConnectionDescription& lhs, const ConnectionDescription& rhs);
 
   struct SCISHARE OrderedByConnectionId
   {

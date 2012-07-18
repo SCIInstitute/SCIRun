@@ -27,4 +27,36 @@
 */
 
 #include <iostream>
+#include <Modules/DataIO/WriteMatrix.h>
+#include <Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+
+using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Algorithms::DataIO;
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::DataIO;
+
+WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun")) {}
+
+void WriteMatrixModule::execute()
+{
+  DatatypeHandleOption data = get_input_handle(0);
+  if (!data)
+  {
+    std::cout << "Required input not present, this check should go in the module base class!!!" << std::endl;
+    return;
+  }
+
+  DenseMatrixHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*data);
+
+  filename_ = any_cast_or_default<std::string>(get_state()->getValue("FileName"));
+
+  WriteMatrixAlgorithm algo;
+  algo.run(matrix, filename_);
+}
+
+
+
+
 //TODO DAN

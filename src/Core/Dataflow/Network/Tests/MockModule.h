@@ -32,6 +32,7 @@
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/ModuleFactory.h>
+#include <Core/Dataflow/Network/ModuleDescription.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {
@@ -53,6 +54,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(num_output_ports, size_t());
           MOCK_CONST_METHOD0(get_id, std::string());
           MOCK_CONST_METHOD0(has_ui, bool());
+          MOCK_METHOD1(set_id, void(const std::string&));
+          MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

@@ -46,12 +46,9 @@ namespace Networks {
   class SCISHARE Module : public ModuleInterface, boost::noncopyable
   {
   public:
-    //TODO replace params with ModuleLookupInfo
-    Module(const std::string& name, 
-      ModuleStateFactoryHandle stateMaker = ModuleStateFactoryHandle(),
+    Module(const ModuleLookupInfo& info, 
+      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       bool hasUi = true, 
-      const std::string& cat = "unknown", 
-      const std::string& pack = "unknown", 
       const std::string& version = "1.0");
     virtual ~Module();
 
@@ -59,6 +56,11 @@ namespace Networks {
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
     std::string get_id() const { return id_; }
+
+    //TODO for serialization
+    virtual const ModuleLookupInfo& get_info() const { return info_; }
+    virtual void set_id(const std::string& id) { id_ = id; }
+
     bool has_ui() const { return has_ui_; }
     size_t num_input_ports() const;
     size_t num_output_ports() const;
@@ -96,11 +98,14 @@ namespace Networks {
       static SourceMaker source_maker_;
     };
 
+    //TODO: yuck
+    static ModuleStateFactoryHandle defaultStateFactory_;
+
   protected:
 
-    void set_modulename(const std::string& name)   { info_.module_name_ = name; }
-    void set_categoryname(const std::string& name) { info_.category_name_ = name; }
-    void set_packagename(const std::string& name)  { info_.package_name_ = name; }
+    //void set_modulename(const std::string& name)   { info_.module_name_ = name; }
+    //void set_categoryname(const std::string& name) { info_.category_name_ = name; }
+    //void set_packagename(const std::string& name)  { info_.package_name_ = name; }
 
     ModuleLookupInfo info_;
 
@@ -113,7 +118,7 @@ namespace Networks {
     void add_output_port(OutputPortHandle);
     bool has_ui_;
    
-    boost::shared_ptr<ModuleStateInterface> state_;
+    ModuleStateHandle state_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
     static int instanceCount_;
@@ -124,6 +129,8 @@ namespace Networks {
 
 namespace Modules
 {
+  //TODO DAN Finish this for input/output ports.s
+
   template <class PortTypeTag>
   class Has1InputPort
   {

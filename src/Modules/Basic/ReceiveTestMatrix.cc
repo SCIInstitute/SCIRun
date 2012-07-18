@@ -32,9 +32,10 @@
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 
 ReceiveTestMatrixModule::ReceiveTestMatrixModule()
-  : Module("ReceiveTestMatrix")
+  : Module(ModuleLookupInfo("ReceiveTestMatrix", "Math", "SCIRun"))
 {
 }
 
@@ -44,6 +45,6 @@ void ReceiveTestMatrixModule::execute()
   if (data)
   {
     latestValue_ = boost::dynamic_pointer_cast<DenseMatrix>(*data);
-    (*get_state())["ReceivedMatrix"] = latestValue_;
+    get_state()->setValue("ReceivedMatrix", latestValue_);
   }
 }

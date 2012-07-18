@@ -32,16 +32,24 @@
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
 
 SendScalarModule::SendScalarModule()
-  : Module("SendScalar"),
+  : Module(ModuleLookupInfo("SendScalar", "Math", "SCIRun")),
   data_(-1)
 {
 
 }
 
+void SendScalarModule::setScalar(double data)
+{
+  data_ = data; 
+  get_state()->setValue("ValueToSend", data_);
+}
+
 void SendScalarModule::execute()
 {
+  data_ = any_cast_or_default<double>(get_state()->getValue("ValueToSend"));
   DatatypeHandle output(new Double(data_));
   send_output_handle(0, output);
 }

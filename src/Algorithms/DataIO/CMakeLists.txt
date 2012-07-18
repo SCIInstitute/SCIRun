@@ -41,5 +41,15 @@ ADD_LIBRARY(Algorithms_DataIO
 ${Algorithms_DataIO_HEADERS}
 ${Algorithms_DataIO_SRCS})
 
+TARGET_LINK_LIBRARIES(Algorithms_DataIO
+Core_Datatypes
+Algorithms_Base
+${Boost_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_DataIO)
+ENDIF(BUILD_SHARED_LIBS)
+
 ADD_SUBDIRECTORY(Tests)
 

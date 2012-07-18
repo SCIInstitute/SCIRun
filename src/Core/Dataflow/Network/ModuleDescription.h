@@ -62,6 +62,8 @@ namespace Networks {
 
   struct SCISHARE ModuleLookupInfo
   {
+    ModuleLookupInfo();
+    ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack);
     std::string package_name_;
     std::string category_name_;
     std::string module_name_;

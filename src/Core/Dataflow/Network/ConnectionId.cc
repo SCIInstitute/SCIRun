@@ -26,6 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 #include <sstream>
 #include <Core/Dataflow/Network/ConnectionId.h>
 
@@ -41,10 +44,34 @@ bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const Connect
   return !(lhs == rhs);
 }
 
+bool SCIRun::Domain::Networks::operator==(const ConnectionDescription& lhs, const ConnectionDescription& rhs)
+{
+  return lhs.moduleId1_ == rhs.moduleId1_
+    && lhs.moduleId2_ == rhs.moduleId2_
+    && lhs.port1_ == rhs.port1_
+    && lhs.port2_== rhs.port2_;
+}
+
+bool SCIRun::Domain::Networks::operator!=(const ConnectionDescription& lhs, const ConnectionDescription& rhs)
+{
+  return !(lhs == rhs);
+}
+
 
 /*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
 {
   std::ostringstream cid;
-  cid << desc.moduleId1_ << "_p" << desc.port1_ << "_to_" << desc.moduleId2_ << "_p" << desc.port2_;
+  cid << desc.moduleId1_ << "_p#" << desc.port1_ << "_@to@_" << desc.moduleId2_ << "_p#" << desc.port2_;
   return ConnectionId(cid.str());
+}
+
+ConnectionDescription ConnectionId::describe() const
+{
+  static boost::regex r("(.+)_p#(\\d+)_@to@_(.+)_p#(\\d+)");
+  boost::smatch what;
+  regex_match(id_, what, r);
+  return ConnectionDescription(what[1], 
+    boost::lexical_cast<size_t>((std::string)what[2]), 
+    what[3], 
+    boost::lexical_cast<size_t>((std::string)what[4]));
 }

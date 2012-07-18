@@ -40,7 +40,7 @@ using namespace SCIRun::Domain::Networks;
 //TODO DAN
 
 EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
-  Module("EvaluateLinearAlgebraUnary")
+  Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
 {
 
 }
@@ -60,15 +60,9 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 
   ModuleStateHandle state = get_state();
   
-  try
-  {
-    EvaluateLinearAlgebraUnaryAlgorithm::Parameters oper = boost::any_cast<EvaluateLinearAlgebraUnaryAlgorithm::Parameters>((*state)["Operation"]);
-    EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO DAN inject
-    DenseMatrixHandle output = algo.run(denseInput, oper);  //TODO DAN
-    send_output_handle(0, output);
-  }
-  catch (boost::bad_any_cast& e) //TODO abstract
-  {
-    std::cout << e.what() << std::endl;
-  }
+  EvaluateLinearAlgebraUnaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraUnaryAlgorithm::Parameters>(state->getValue("Operation"));
+  EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO DAN inject
+  DenseMatrixHandle output = algo.run(denseInput, oper);  //TODO DAN
+  send_output_handle(0, output);
+  
 }

@@ -41,6 +41,8 @@
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
+#include <Modules/DataIO/ReadMatrix.h>
+#include <Modules/DataIO/WriteMatrix.h>
 
 //TODO
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
@@ -50,6 +52,7 @@ using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::DataIO;
 using namespace boost::assign;
 
 HardCodedModuleFactory::HardCodedModuleFactory()
@@ -61,6 +64,7 @@ HardCodedModuleFactory::HardCodedModuleFactory()
 void HardCodedModuleFactory::setStateFactory(SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
+  Module::defaultStateFactory_ = stateFactory_;
 }
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
@@ -102,12 +106,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     description.input_ports_ += InputPortDescription("Input1", "String", "darkGreen");
     description.output_ports_ += OutputPortDescription("Output1", "Matrix", "blue"), OutputPortDescription("Output2", "String", "darkGreen");
-    description.maker_ = 0;
+    description.maker_ = boost::factory<ReadMatrixModule*>();
   }
   else if (name.find("WriteMatrix") != std::string::npos)
   {
     description.input_ports_ += InputPortDescription("Input1", "Matrix", "blue"), InputPortDescription("Input2", "String", "darkGreen");
-    description.maker_ = 0;
+    description.maker_ = boost::factory<WriteMatrixModule*>();
   }
   else if (name.find("SendScalar") != std::string::npos)
   {

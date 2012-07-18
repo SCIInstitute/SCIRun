@@ -154,6 +154,18 @@ DenseMatrixGeneric<T>* DenseMatrixGeneric<T>::make_transpose() const
 }
 
 template <typename T>
+void DenseMatrixGeneric<T>::resize(size_t nrows, size_t ncols)
+{
+  matrix_.resize(nrows, ncols);
+}
+
+template <typename T>
+void DenseMatrixGeneric<T>::clear()
+{
+  matrix_.clear();
+}
+
+template <typename T>
 void DenseMatrixGeneric<T>::transpose_in_place()
 {
   matrix_ = trans(matrix_);

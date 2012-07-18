@@ -34,9 +34,10 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Domain::Networks;
 //TODO DAN
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module("ReportMatrixInfo") {}
+ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
 
 void ReportMatrixInfoModule::execute()
 {
@@ -53,7 +54,7 @@ void ReportMatrixInfoModule::execute()
 
   ReportMatrixInfoAlgorithm algo;
   ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  (*get_state())["ReportedInfo"] = output;
+  get_state()->setValue("ReportedInfo", output);
 
   std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
 }

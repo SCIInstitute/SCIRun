@@ -32,10 +32,11 @@
 #include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Datatypes;
 
 ReceiveScalarModule::ReceiveScalarModule()
-  : Module("ReceiveScalar"),
+  : Module(ModuleLookupInfo("ReceiveScalar", "Math", "SCIRun")),
   latestValue_(-1)
 {
 }
@@ -44,5 +45,12 @@ void ReceiveScalarModule::execute()
 {
   DatatypeHandleOption data = get_input_handle(0);
   if (data)
-    latestValue_ = (*data)->as<Double>()->getValue();
+  {
+    const Double* doubleData = (*data)->as<Double>();
+    if (doubleData)
+    {
+      latestValue_ = doubleData->getValue();
+      get_state()->setValue("ReceivedValue", latestValue_);
+    }
+  }
 }

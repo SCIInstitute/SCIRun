@@ -69,4 +69,5 @@ ADD_SUBDIRECTORY(Tests)
 
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network
   Core_Datatypes
+  ${Boost_LIBRARIES}
 )

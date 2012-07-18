@@ -29,13 +29,70 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-//using namespace SCIRun;
-//using namespace SCIRun::Modules::Basic;
-//using namespace SCIRun::Domain::Networks;
-//using namespace SCIRun::Domain::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Algorithms/DataIO/ReadMatrix.h>
+
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::DataIO;
 
 //TODO DAN
+
+namespace
+{
+  DenseMatrix matrix1()
+  {
+    DenseMatrix m (3, 3);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.0 * i + j + 1;
+    return m;
+  }
+  DenseMatrix matrixNonSquare()
+  {
+    DenseMatrix m (3, 4);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.5 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+}
+
+TEST(ReadMatrixTests, CanReadFromStream)
+{
+  const std::string matrixString = "1 2 3\n4 5 6\n7 8 9\n";
+
+  std::istringstream istr(matrixString);
+
+  DenseMatrix in;
+
+  istr >> in;
+
+  EXPECT_EQ(matrix1(), in);
+}
+
+TEST(ReadMatrixTests, RoundTripViaString)
+{
+  DenseMatrix m = matrix1();
+
+  std::ostringstream ostr;
+  ostr << m;
+  std::string str = ostr.str();
+  std::istringstream istr(str);
+  DenseMatrix m2;
+  istr >> m2;
+
+  EXPECT_EQ(m, m2);
+}
+
+TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
+
+  DenseMatrixConstHandle matrix = algo.run(filename);
+
+  EXPECT_EQ(matrixNonSquare(), *matrix);
+}

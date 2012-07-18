@@ -113,6 +113,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
 
+  //actionExecute_All_->setShortcuts("Ctrl+E");
+  actionExecute_All_->setStatusTip(tr("Execute all modules"));
+
   ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   boost::shared_ptr<NetworkEditorController> controller(new NetworkEditorController(moduleFactory, sf));
