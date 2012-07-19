@@ -37,11 +37,16 @@ namespace Modules {
 namespace DataIO {
   
   //TODO DAN
-  class SCISHARE ReadMatrixModule : public SCIRun::Domain::Networks::Module
+  class SCISHARE ReadMatrixModule : public SCIRun::Domain::Networks::Module,
+    public Has1InputPort<StringPortTag>,
+    public Has2OutputPorts<MatrixPortTag, StringPortTag>
   {
   public:
     ReadMatrixModule();
     virtual void execute();
+    static std::string inputPort0Name() { return "Filename"; }
+    static std::string outputPort0Name() { return "Matrix"; }
+    static std::string outputPort1Name() { return inputPort0Name(); }
   private:
     std::string filename_;
   };

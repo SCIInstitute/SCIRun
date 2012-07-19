@@ -26,29 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_WRITE_MATRIX_H
-#define MODULES_DATAIO_WRITE_MATRIX_H
+#ifndef MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
+#define MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
 
 #include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+#include <Modules/Visualization/Share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
-
-      //TODO DAN
-      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
-      {
-      public:
-        WriteMatrixModule();
-        virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
-      private:
-        std::string filename_;
-      };
-
-    }}}
+namespace Modules {
+namespace Visualization {
+  //TODO DAN
+  //class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
+  //  public Has1InputPort<MatrixPortTag>
+  //{
+  //public:
+  //  ReportMatrixInfoModule();
+  //  virtual void execute();
+  //  static std::string inputPort0Name() { return "Input"; }
+  //};
+}}}
 
 #endif

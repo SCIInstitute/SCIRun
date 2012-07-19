@@ -26,29 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_WRITE_MATRIX_H
-#define MODULES_DATAIO_WRITE_MATRIX_H
+#include <iostream>
+//#include <Modules/Math/ReportMatrixInfo.h>
+//#include <Algorithms/Math/ReportMatrixInfo.h>
+//#include <Core/Datatypes/DenseMatrix.h>
 
-#include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
-
-      //TODO DAN
-      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
-      {
-      public:
-        WriteMatrixModule();
-        virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
-      private:
-        std::string filename_;
-      };
-
-    }}}
-
-#endif
+//using namespace SCIRun::Modules::Math;
+//using namespace SCIRun::Domain::Datatypes;
+//using namespace SCIRun::Algorithms::Math;
+//using namespace SCIRun::Domain::Networks;
+//TODO DAN
+//
+//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
+//
+//void ReportMatrixInfoModule::execute()
+//{
+//  DatatypeHandleOption input = get_input_handle(0);
+//  if (!input)
+//    throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
+//
+//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
+//  if (!matrix)
+//  {
+//    //TODO DAN log error? send null? check standard practice.
+//    return;
+//  }
+//
+//  ReportMatrixInfoAlgorithm algo;
+//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
+//  get_state()->setValue("ReportedInfo", output);
+//
+//  std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
+//}

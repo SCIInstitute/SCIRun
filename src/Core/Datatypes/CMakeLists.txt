@@ -28,18 +28,22 @@
 
 SET(Core_Datatypes_SRCS
   Datatype.cc
+  Geometry.cc
   Matrix.cc
   Scalar.cc
+  String.cc
 )
 
 SET(Core_Datatypes_HEADERS
   Datatype.h
   DenseMatrix.h
+  Geometry.h
   Matrix.h
   MatrixComparison.h
   MatrixIO.h
   Scalar.h
   Share.h
+  String.h
 )
 
 ADD_LIBRARY(Core_Datatypes 

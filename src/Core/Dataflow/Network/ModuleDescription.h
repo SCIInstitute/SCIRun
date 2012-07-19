@@ -40,25 +40,37 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  struct SCISHARE InputPortDescription
+  struct SCISHARE PortDescription
   {
-    InputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
-      name(n), datatype(d), color(c) {}
+    PortDescription(const std::string& n, const std::string& d, const std::string& c) : 
+  name(n), datatype(d), color(c) {}
     std::string name;
     std::string datatype;
     std::string color;
-    //iport_maker maker;
   };
 
-  struct SCISHARE OutputPortDescription
-  {
-    OutputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
-      name(n), datatype(d), color(c) {}
-    std::string name;
-    std::string datatype;
-    std::string color;
-    //oport_maker maker;
-  };
+  typedef PortDescription InputPortDescription;
+  typedef PortDescription OutputPortDescription;
+
+//   struct SCISHARE InputPortDescription
+//   {
+//     InputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
+//       name(n), datatype(d), color(c) {}
+//     std::string name;
+//     std::string datatype;
+//     std::string color;
+//     //iport_maker maker;
+//   };
+// 
+//   struct SCISHARE OutputPortDescription
+//   {
+//     OutputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
+//       name(n), datatype(d), color(c) {}
+//     std::string name;
+//     std::string datatype;
+//     std::string color;
+//     //oport_maker maker;
+//   };
 
   struct SCISHARE ModuleLookupInfo
   {

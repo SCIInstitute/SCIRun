@@ -27,12 +27,14 @@
 #
 
 SET(Algorithms_Math_SRCS
+  AppendMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
   ReportMatrixInfo.cc
 )
 
 SET(Algorithms_Math_HEADERS
+  AppendMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
   ReportMatrixInfo.h

@@ -26,29 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_WRITE_MATRIX_H
-#define MODULES_DATAIO_WRITE_MATRIX_H
+#include <gtest/gtest.h>
 
-#include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
 
-namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
 
-      //TODO DAN
-      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
-      {
-      public:
-        WriteMatrixModule();
-        virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
-      private:
-        std::string filename_;
-      };
+namespace
+{
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 4));
+    for (size_t i = 0; i < m->nrows(); ++ i)
+      for (size_t j = 0; j < m->ncols(); ++ j)
+        (*m)(i, j) = 3.0 * i + j - 5;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+}
 
-    }}}
+TEST(AppendMatrixAlgorithmTests, A)
+{
+  ASSERT_TRUE(false);
+  ReportMatrixInfoAlgorithm algo;
 
-#endif
+  DenseMatrixHandle m(matrix1());
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+  EXPECT_EQ(-5, result.get<4>());
+  EXPECT_EQ(4, result.get<5>());
+}
+
+TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
+{
+  ASSERT_TRUE(false);
+  ReportMatrixInfoAlgorithm algo;
+
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(DenseMatrixHandle());
+  EXPECT_EQ("<null>", result.get<0>());
+  EXPECT_EQ(0, result.get<1>());
+  EXPECT_EQ(0, result.get<2>());
+  EXPECT_EQ(0, result.get<3>());
+  EXPECT_EQ(0, result.get<4>());
+  EXPECT_EQ(0, result.get<5>());
+}

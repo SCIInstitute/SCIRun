@@ -153,6 +153,28 @@ namespace Modules
 
   struct MatrixPortTag {};
   struct ScalarPortTag {};
+  struct StringPortTag {};
+  struct GeometryPortTag {};
+
+  inline SCIRun::Domain::Networks::PortDescription MakeMatrixPort(const std::string& name)
+  {
+    return SCIRun::Domain::Networks::PortDescription(name, "Matrix", "blue"); 
+  }
+
+  inline SCIRun::Domain::Networks::PortDescription MakeScalarPort(const std::string& name)
+  {
+    return SCIRun::Domain::Networks::PortDescription(name, "Scalar", "black"); 
+  }
+
+  inline SCIRun::Domain::Networks::PortDescription MakeStringPort(const std::string& name)
+  {
+    return SCIRun::Domain::Networks::PortDescription(name, "String", "darkGreen"); 
+  }
+
+  inline SCIRun::Domain::Networks::PortDescription MakeGeometryPort(const std::string& name)
+  {
+    return SCIRun::Domain::Networks::PortDescription(name, "Geometry", "magenta"); 
+  }
 
   template <>
   class Has1InputPort<MatrixPortTag>
@@ -160,7 +182,7 @@ namespace Modules
   public:
     static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
-      return SCIRun::Domain::Networks::InputPortDescription(port0Name, "Matrix", "blue"); 
+      return MakeMatrixPort(port0Name); 
     }
   };
 
@@ -170,7 +192,89 @@ namespace Modules
   public:
     static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
-      return SCIRun::Domain::Networks::InputPortDescription(port0Name, "Scalar", "cyan"); 
+      return MakeScalarPort(port0Name); 
+    }
+  };
+
+  template <>
+  class Has1InputPort<StringPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+    {
+      return MakeStringPort(port0Name); 
+    }
+  };
+
+  template <>
+  class Has1InputPort<GeometryPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+    {
+      return MakeGeometryPort(port0Name); 
+    }
+  };
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  template <class PortTypeTag>
+  class Has1OutputPort
+  {
+  public:
+    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name);
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1>
+  class Has2OutputPorts
+  {
+  public:
+    static std::vector<SCIRun::Domain::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
+    {
+      std::vector<SCIRun::Domain::Networks::OutputPortDescription> ports;
+      ports.push_back(Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name));
+      ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name));
+      return ports;
+    }
+  };
+
+  template <>
+  class Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    {
+      return MakeMatrixPort(port0Name); 
+    }
+  };
+
+  template <>
+  class Has1OutputPort<ScalarPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    {
+      return MakeScalarPort(port0Name); 
+    }
+  };
+  
+  template <>
+  class Has1OutputPort<StringPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    {
+      return MakeStringPort(port0Name); 
+    }
+  };
+
+  template <>
+  class Has1OutputPort<GeometryPortTag>
+  {
+  public:
+    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    {
+      return MakeGeometryPort(port0Name); 
     }
   };
 }

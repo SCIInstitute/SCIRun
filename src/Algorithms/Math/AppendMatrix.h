@@ -26,29 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_WRITE_MATRIX_H
-#define MODULES_DATAIO_WRITE_MATRIX_H
+#ifndef ALGORITHMS_MATH_APPENDMATRIX_H
+#define ALGORITHMS_MATH_APPENDMATRIX_H
 
-#include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+#include <Algorithms/Base/AlgorithmBase.h>
+#include <Algorithms/Math/AlgorithmFwd.h>
+#include <Algorithms/Math/Share.h>
+
+//TODO DAN
 
 namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
+namespace Algorithms {
+namespace Math {
+  //
+  //class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
+  //{
+  //public:
+  //  typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+  //  typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
+  //  typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
-      //TODO DAN
-      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
-      {
-      public:
-        WriteMatrixModule();
-        virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
-      private:
-        std::string filename_;
-      };
+  //  Outputs run(const Inputs& input, const Parameters& params = 0) const;
+  //};
 
-    }}}
+}}}
 
 #endif

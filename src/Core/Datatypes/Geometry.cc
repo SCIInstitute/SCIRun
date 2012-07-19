@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_WRITE_MATRIX_H
-#define MODULES_DATAIO_WRITE_MATRIX_H
+#include <sstream>
+#include <Core/Datatypes/Datatype.h>
 
-#include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+using namespace SCIRun::Domain::Datatypes;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
-
-      //TODO DAN
-      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
-      {
-      public:
-        WriteMatrixModule();
-        virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
-      private:
-        std::string filename_;
-      };
-
-    }}}
-
-#endif
+//TODO DAN

@@ -26,29 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_WRITE_MATRIX_H
-#define MODULES_DATAIO_WRITE_MATRIX_H
-
-#include <Core/Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace DataIO {
-
-      //TODO DAN
-      class SCISHARE WriteMatrixModule : public SCIRun::Domain::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
-      {
-      public:
-        WriteMatrixModule();
-        virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
-      private:
-        std::string filename_;
-      };
-
-    }}}
-
-#endif
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+//#include <Core/Dataflow/Network/Network.h>
+//#include <Core/Dataflow/Network/ModuleInterface.h>
+//#include <Core/Dataflow/Network/ConnectionId.h>
+//#include <Core/Dataflow/Network/Tests/MockNetwork.h>
+//#include <Modules/Basic/ReceiveScalar.h>
+//#include <Modules/Basic/SendScalar.h>
+//
+//using namespace SCIRun;
+//using namespace SCIRun::Modules::Basic;
+//using namespace SCIRun::Domain::Networks;
+//using namespace SCIRun::Domain::Networks::Mocks;
+//using ::testing::_;
+//using ::testing::NiceMock;
+//using ::testing::DefaultValue;
+//using ::testing::Return;
+//
+////TODO DAN

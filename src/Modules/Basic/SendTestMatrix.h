@@ -37,12 +37,14 @@ namespace SCIRun {
 namespace Modules {
 namespace Basic {
   
-  class SCISHARE SendTestMatrixModule : public SCIRun::Domain::Networks::Module
+  class SCISHARE SendTestMatrixModule : public SCIRun::Domain::Networks::Module,
+    public Has1OutputPort<MatrixPortTag>
   {
   public:
     SendTestMatrixModule();
     virtual void execute();
     void setMatrix(SCIRun::Domain::Datatypes::DenseMatrixHandle data) { data_ = data; }
+    static std::string outputPort0Name() { return "TestMatrix"; }
   private:
     SCIRun::Domain::Datatypes::DenseMatrixHandle data_;
   };

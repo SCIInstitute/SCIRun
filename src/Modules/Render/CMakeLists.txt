@@ -26,24 +26,27 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_Math_Tests_SRCS
-  AppendMatrixTests.cc
-  ReportMatrixInfoTests.cc
-  EvaluateLinearAlgebraUnaryTests.cc
-  EvaluateLinearAlgebraBinaryTests.cc
+SET(Modules_Render_SRCS
+  ViewScene.cc
 )
 
-#SET(Engine_Network_Tests_HEADERS
-#  NetworkEditorControllerTests_.h
-#)
+SET(Modules_Render_HEADERS
+  ViewScene.h
+  Share.h
+)
 
-SCIRUN_ADD_UNIT_TEST(Algorithms_Math_Tests
-${Algorithms_Math_Tests_SRCS})
+ADD_LIBRARY(Modules_Render 
+${Modules_Render_HEADERS}
+${Modules_Render_SRCS})
 
-TARGET_LINK_LIBRARIES(Algorithms_Math_Tests
-Algorithms_Math
+TARGET_LINK_LIBRARIES(Modules_Render
+Core_Dataflow_Network
 Core_Datatypes
-gtest_main
-gtest
-gmock
 )
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Render)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
+
