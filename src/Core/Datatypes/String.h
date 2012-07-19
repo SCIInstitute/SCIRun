@@ -31,10 +31,21 @@
 #define CORE_DATATYPES_STRING_H 
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
+
+  class SCISHARE String : public Datatype
+  {
+  public:
+    explicit String(const std::string& s = "");
+  private:
+    std::string value_;
+  };
+
+  typedef boost::shared_ptr<String> StringHandle;
 
 }}}
 

@@ -34,16 +34,19 @@
 
 namespace SCIRun {
 namespace Modules {
-namespace String {
-  //TODO DAN
-  //class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
-  //  public Has1InputPort<MatrixPortTag>
-  //{
-  //public:
-  //  ReportMatrixInfoModule();
-  //  virtual void execute();
-  //  static std::string inputPort0Name() { return "Input"; }
-  //};
+namespace StringProcessing {
+  
+  class SCISHARE CreateStringModule : public SCIRun::Domain::Networks::Module,
+    public Has1OutputPort<StringPortTag>
+  {
+  public:
+    CreateStringModule();
+    virtual void execute();
+    static std::string outputPort0Name() { return "String"; }
+  private:
+    std::string stringValue_;
+  };
+
 }}}
 
 #endif

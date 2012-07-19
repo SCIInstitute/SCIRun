@@ -27,8 +27,8 @@
 */
 
 #include <sstream>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
+String::String(const std::string& s /* = "" */) : value_(s) {}
