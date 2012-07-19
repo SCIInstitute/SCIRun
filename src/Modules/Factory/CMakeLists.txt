@@ -44,6 +44,9 @@ Core_Dataflow_Network
 Modules_Math
 Modules_Basic
 Modules_DataIO
+Modules_String
+Modules_Render
+Modules_Visualization
 )
 
 IF(BUILD_SHARED_LIBS)

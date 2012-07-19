@@ -41,6 +41,8 @@ namespace Datatypes {
   {
   public:
     explicit String(const std::string& s = "");
+
+    const std::string& value() const { return value_; }
   private:
     std::string value_;
   };

@@ -27,34 +27,27 @@
 */
 
 #include <iostream>
-//#include <Modules/Math/ReportMatrixInfo.h>
-//#include <Algorithms/Math/ReportMatrixInfo.h>
-//#include <Core/Datatypes/DenseMatrix.h>
-//
-//using namespace SCIRun::Modules::Math;
-//using namespace SCIRun::Domain::Datatypes;
-//using namespace SCIRun::Algorithms::Math;
-//using namespace SCIRun::Domain::Networks;
-////TODO DAN
-//
-//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
-//
-//void ReportMatrixInfoModule::execute()
-//{
-//  DatatypeHandleOption input = get_input_handle(0);
-//  if (!input)
-//    throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
-//
-//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
-//  if (!matrix)
-//  {
-//    //TODO DAN log error? send null? check standard practice.
-//    return;
-//  }
-//
-//  ReportMatrixInfoAlgorithm algo;
-//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-//  get_state()->setValue("ReportedInfo", output);
-//
-//  std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
-//}
+#include <Modules/Visualization/ShowString.h>
+#include <Core/Datatypes/String.h>
+
+using namespace SCIRun::Modules::Visualization;
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
+
+ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Visualization", "SCIRun")) {}
+
+void ShowStringModule::execute()
+{
+  DatatypeHandleOption input = get_input_handle(0);
+  if (!input)
+    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
+
+  StringHandle str = boost::dynamic_pointer_cast<String>(*input); //TODO : clean
+  if (!str)
+  {
+    //TODO log error? send null? check standard practice.
+    return;
+  }
+
+  std::cout << "String value received: " << str->value() << std::endl;
+}

@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>812</width>
-         <height>629</height>
+         <width>821</width>
+         <height>662</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -278,7 +278,7 @@
          </property>
          <item>
           <property name="text">
-           <string>CreateString_TODO</string>
+           <string>CreateString*</string>
           </property>
          </item>
         </item>
@@ -678,7 +678,7 @@
   <action name="actionDump_positions">
    <property name="text">
     <string>Dump positions</string>
-	   </property>
+   </property>
   </action>
   <action name="actionRenderer">
    <property name="text">

@@ -44,6 +44,8 @@
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
+#include <Modules/String/CreateString.h>
+#include <Modules/Visualization/ShowString.h>
 
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <Modules/Factory/Share.h>
@@ -53,6 +55,8 @@ using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::DataIO;
+using namespace SCIRun::Modules::StringProcessing;
+using namespace SCIRun::Modules::Visualization;
 using namespace boost::assign;
 
 HardCodedModuleFactory::HardCodedModuleFactory()
@@ -171,14 +175,14 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("CreateString") != std::string::npos)
   {
-    //description.output_ports_ += OutputPortDescription("Result", "String", "????");
-    //description.maker_ = boost::factory<CreateStringModule*>();
+    description.output_ports_ += CreateStringModule::outputPortDescription(CreateStringModule::outputPort0Name());
+    description.maker_ = boost::factory<CreateStringModule*>();
   }
   else if (name.find("ShowString") != std::string::npos)
   {
-    //description.input_ports_ = EvaluateLinearAlgebraBinaryModule::inputPortDescription(EvaluateLinearAlgebraBinaryModule::inputPort0Name(), EvaluateLinearAlgebraBinaryModule::inputPort1Name());
-    //description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
-    //description.maker_ = boost::factory<ShowStringModule*>();
+    description.input_ports_ += ShowStringModule::inputPortDescription(ShowStringModule::inputPort0Name());
+    description.output_ports_ += ShowStringModule::outputPortDescription(ShowStringModule::outputPort0Name());
+    description.maker_ = boost::factory<ShowStringModule*>();
   }
   else if (name.find("MatrixAsVectorField") != std::string::npos)
   {
