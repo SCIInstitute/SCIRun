@@ -29,8 +29,6 @@
 #ifndef ALGORITHMS_DATAIO_READMATRIX_H
 #define ALGORITHMS_DATAIO_READMATRIX_H
 
-//TODO DAN
-
 #include <string>
 #include <Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>

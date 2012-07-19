@@ -64,8 +64,6 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-//TODO DAN
-
 namespace
 {
   DenseMatrixHandle matrix1()

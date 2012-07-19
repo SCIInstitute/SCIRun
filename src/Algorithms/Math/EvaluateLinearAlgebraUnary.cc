@@ -41,7 +41,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 
   Operator oper = params.get<0>();
 
-  //TODO DAN: absolutely need matrix move semantics here!!!!!!!
+  //TODO: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
   case NEGATE:

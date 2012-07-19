@@ -35,7 +35,7 @@
 namespace SCIRun {
   namespace Modules {
     namespace Math {
-      //TODO DAN
+      
       class SCISHARE EvaluateLinearAlgebraBinaryModule : public SCIRun::Domain::Networks::Module,
         public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
         public Has1OutputPort<MatrixPortTag>

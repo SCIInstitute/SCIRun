@@ -67,12 +67,9 @@ public:
 Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   bool hasUi,
-  const std::string& version/* ="1.0" */)
+  const std::string& version)
   : info_(info), has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
 {
-  //set_modulename(name);
-  //set_categoryname(cat);
-  //set_packagename(pack);
   id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);

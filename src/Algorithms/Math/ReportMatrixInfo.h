@@ -33,8 +33,6 @@
 #include <Algorithms/Math/AlgorithmFwd.h>
 #include <Algorithms/Math/Share.h>
 
-//TODO DAN
-
 namespace SCIRun {
 namespace Algorithms {
 namespace Math {

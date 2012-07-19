@@ -43,12 +43,12 @@ using namespace SCIRun::Domain::Networks;
 //{
 //  DatatypeHandleOption input = get_input_handle(0);
 //  if (!input)
-//    throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
+//    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
 //
-//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
+//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO: clean
 //  if (!matrix)
 //  {
-//    //TODO DAN log error? send null? check standard practice.
+//    //TODO log error? send null? check standard practice.
 //    return;
 //  }
 //

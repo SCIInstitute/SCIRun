@@ -45,7 +45,6 @@
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 
-//TODO
 #include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <Modules/Factory/Share.h>
 
@@ -152,8 +151,10 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
   {
-    description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
-    description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
+    description.input_ports_ += EvaluateLinearAlgebraUnaryModule::inputPortDescription(EvaluateLinearAlgebraUnaryModule::inputPort0Name());
+      //InputPortDescription("Input", "Matrix", "blue");
+    description.output_ports_ += EvaluateLinearAlgebraUnaryModule::outputPortDescription(EvaluateLinearAlgebraUnaryModule::outputPort0Name());
+      //OutputPortDescription("Result", "Matrix", "blue");
     description.maker_ = boost::factory<EvaluateLinearAlgebraUnaryModule*>();
   }
   else if (name.find("EvaluateLinearAlgebraBinary") != std::string::npos)

@@ -38,8 +38,6 @@
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::DataIO;
 
-//TODO DAN
-
 namespace
 {
   DenseMatrix matrix1()

@@ -30,7 +30,6 @@
 #define ALGORITHMS_BASE_ALGORITHMBASE_H
 
 #include <Algorithms/Base/Share.h>
-//TODO DAN
 
 namespace SCIRun {
 namespace Algorithms {
@@ -41,7 +40,7 @@ public:
   virtual ~AlgorithmBase();
   
   /*
-    idea: make it mockable
+    TODO idea: make it mockable
   
   virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
 

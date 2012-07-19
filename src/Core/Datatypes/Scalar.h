@@ -37,7 +37,6 @@ namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
 
-//TODO DAN
   template <typename T>
   class Scalar : public Datatype
   {
@@ -50,42 +49,7 @@ namespace Datatypes {
 
   typedef Scalar<int> Int32;
   typedef Scalar<double> Double;
-
-  //class SCISHARE Int32 : public Scalar
-  //{
-  //public:
-  //  explicit Int32(int val);
-  //  int getValue() const;
-  //private:
-  //  int val_;
-  //};
-
-  //class SCISHARE UInt32 : public Scalar
-  //{
-
-  //};
-
-  //class SCISHARE Int64 : public Scalar
-  //{
-
-  //};
-
-  //class SCISHARE UInt64 : public Scalar
-  //{
-
-  //};
-
-  //class SCISHARE Float : public Scalar
-  //{
-
-  //};
-
-  //class SCISHARE Double : public Scalar
-  //{
-
-  //};
-
-
+  
 }}}
 
 

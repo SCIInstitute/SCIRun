@@ -31,13 +31,12 @@
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/DenseMatrix.h> //TODO DAN: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
+#include <Core/Datatypes/DenseMatrix.h> //TODO: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Algorithms::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
-//TODO DAN
 
 EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
   Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
@@ -49,20 +48,20 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 {
   DatatypeHandleOption input = get_input_handle(0);
   if (!input)
-    throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
+    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
 
-  DenseMatrixConstHandle denseInput = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
+  DenseMatrixConstHandle denseInput = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO: clean
   if (!denseInput)
   {
-    //TODO DAN log error? send null? check standard practice.
+    //TODO log error? send null? check standard practice.
     return;
   }
 
   ModuleStateHandle state = get_state();
   
   EvaluateLinearAlgebraUnaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraUnaryAlgorithm::Parameters>(state->getValue("Operation"));
-  EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO DAN inject
-  DenseMatrixHandle output = algo.run(denseInput, oper);  //TODO DAN
+  EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO inject
+  DenseMatrixHandle output = algo.run(denseInput, oper);  //TODO
   send_output_handle(0, output);
   
 }

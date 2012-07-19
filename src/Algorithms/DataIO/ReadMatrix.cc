@@ -35,8 +35,6 @@
 using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
-
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
   if (!boost::filesystem3::exists(filename))

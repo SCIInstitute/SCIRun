@@ -36,12 +36,16 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
-  //TODO DAN
-  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module
+  
+  class SCISHARE EvaluateLinearAlgebraUnaryModule : public SCIRun::Domain::Networks::Module,
+    public Has1InputPort<MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
   {
   public:
     EvaluateLinearAlgebraUnaryModule();
     virtual void execute();
+    static std::string inputPort0Name() { return "Input"; }
+    static std::string outputPort0Name() { return "Result"; }
   };
 
 }}}

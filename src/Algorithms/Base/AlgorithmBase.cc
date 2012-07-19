@@ -29,8 +29,6 @@
 #include <iostream>
 #include <Algorithms/Base/AlgorithmBase.h>
 
-//TODO DAN
-
 using namespace SCIRun::Algorithms;
 
 AlgorithmBase::~AlgorithmBase() {}

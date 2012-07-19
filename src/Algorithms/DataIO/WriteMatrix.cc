@@ -34,8 +34,6 @@
 using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
-
 WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
 {
   if (!inputMatrix)

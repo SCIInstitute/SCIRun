@@ -26,10 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO DAN
-
 #include <Engine/State/SimpleMapModuleState.h>
-#include <boost/scope_exit.hpp>
 
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;

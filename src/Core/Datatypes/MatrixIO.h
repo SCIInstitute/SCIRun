@@ -37,7 +37,6 @@
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
-  //TODO DAN
 
   template <typename T>
   std::ostream& operator<<(std::ostream& o, const DenseMatrixGeneric<T>& m)

@@ -53,7 +53,3 @@ void ReadMatrixModule::execute()
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
   send_output_handle(0, matrix);
 }
-
-
-
-//TODO DAN

@@ -57,7 +57,7 @@ namespace Networks {
     std::string get_packagename() const { return info_.package_name_; }
     std::string get_id() const { return id_; }
 
-    //TODO for serialization
+    //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
     virtual void set_id(const std::string& id) { id_ = id; }
 
@@ -129,8 +129,6 @@ namespace Networks {
 
 namespace Modules
 {
-  //TODO DAN Finish this for input/output ports.s
-
   template <class PortTypeTag>
   class Has1InputPort
   {

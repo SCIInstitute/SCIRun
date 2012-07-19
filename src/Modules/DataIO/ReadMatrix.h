@@ -36,7 +36,6 @@ namespace SCIRun {
 namespace Modules {
 namespace DataIO {
   
-  //TODO DAN
   class SCISHARE ReadMatrixModule : public SCIRun::Domain::Networks::Module,
     public Has1InputPort<StringPortTag>,
     public Has2OutputPorts<MatrixPortTag, StringPortTag>

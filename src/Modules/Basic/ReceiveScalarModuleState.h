@@ -33,7 +33,7 @@
 
 namespace SCIRun {
 namespace State {
-  //TODO DAN
+  //TODO 
   class ReceiveScalarState //: public AbstractModuleState...
   {
   public:

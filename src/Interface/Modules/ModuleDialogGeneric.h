@@ -34,7 +34,7 @@
 
 namespace SCIRun {
 namespace Gui {
-  //TODO DAN
+  
   class SCISHARE ModuleDialogGeneric : public QDialog
   {
     Q_OBJECT

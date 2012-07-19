@@ -44,7 +44,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
   Operator oper = params;
 
-  //TODO DAN: absolutely need matrix move semantics here!!!!!!!
+  //TODO: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
   case ADD:

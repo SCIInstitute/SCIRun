@@ -36,7 +36,7 @@
 namespace SCIRun {
 namespace Domain {
 namespace State {
-  //TODO DAN
+  
   class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
   {
   public:

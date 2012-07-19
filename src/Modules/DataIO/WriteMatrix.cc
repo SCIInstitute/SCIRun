@@ -55,8 +55,3 @@ void WriteMatrixModule::execute()
   WriteMatrixAlgorithm algo;
   algo.run(matrix, filename_);
 }
-
-
-
-
-//TODO DAN

@@ -31,13 +31,12 @@
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/DenseMatrix.h> //TODO DAN: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
+#include <Core/Datatypes/DenseMatrix.h> //TODO: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Algorithms::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
-//TODO DAN
 
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
 Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
@@ -48,23 +47,23 @@ void EvaluateLinearAlgebraBinaryModule::execute()
 {
   DatatypeHandleOption lhs = get_input_handle(0);
   if (!lhs)
-    throw std::logic_error("TODO DAN Input data (lhs) required, need to move this check to Module base class!");
+    throw std::logic_error("TODO Input data (lhs) required, need to move this check to Module base class!");
   DatatypeHandleOption rhs = get_input_handle(1);
   if (!rhs)
-    throw std::logic_error("TODO DAN Input data (rhs) required, need to move this check to Module base class!");
+    throw std::logic_error("TODO Input data (rhs) required, need to move this check to Module base class!");
 
-  DenseMatrixHandle lhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO DAN: clean
-  DenseMatrixHandle rhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO DAN: clean
+  DenseMatrixHandle lhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO: clean
+  DenseMatrixHandle rhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO: clean
   if (!lhsInput || !rhsInput)
   {
-    //TODO DAN log error? send null? check standard practice.
+    //TODO log error? send null? check standard practice.
     return;
   }
 
   ModuleStateHandle state = get_state();
   EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraBinaryAlgorithm::Parameters>(state->getValue("Operation"));
 
-  EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO DAN inject
+  EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO inject
   DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhsInput, rhsInput), oper); 
 
   send_output_handle(0, output);
