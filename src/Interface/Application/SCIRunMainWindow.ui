@@ -253,7 +253,7 @@
          </item>
          <item>
           <property name="text">
-           <string>ReportMatrixInfo_TODO</string>
+           <string>ReportMatrixInfo</string>
           </property>
          </item>
         </item>
@@ -263,7 +263,7 @@
          </property>
          <item>
           <property name="text">
-           <string>ViewScene_TODO</string>
+           <string>ViewScene</string>
           </property>
          </item>
         </item>

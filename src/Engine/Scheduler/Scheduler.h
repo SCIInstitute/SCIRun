@@ -35,7 +35,6 @@
 
 namespace SCIRun {
 namespace Engine {
-  //TODO DAN
 
   class SCISHARE ModuleExecutionOrder
   {
@@ -62,7 +61,7 @@ namespace Engine {
   {
   public:
     virtual ~NetworkExecutor();
-    virtual void executeAll(const SCIRun::Domain::Networks::NetworkInterface& network, const ModuleExecutionOrder& order) = 0;
+    virtual void executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order) = 0;
   };
 
 }

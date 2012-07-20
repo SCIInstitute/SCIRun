@@ -119,6 +119,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->horizontalScrollBar()->setValue(0);
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
+  connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
 
   ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);

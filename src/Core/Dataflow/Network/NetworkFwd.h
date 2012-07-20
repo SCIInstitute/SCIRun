@@ -53,6 +53,7 @@ struct ConnectionDescription;
 class DatatypeSourceInterface;
 class DatatypeSinkInterface;
 class RendererInterface;
+class ModuleLookup;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

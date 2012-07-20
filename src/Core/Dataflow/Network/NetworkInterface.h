@@ -40,7 +40,14 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class SCISHARE NetworkInterface
+  class SCISHARE ModuleLookup
+  {
+  public:
+    virtual ~ModuleLookup() {}
+    virtual ModuleHandle lookupModule(const std::string& id) const = 0; 
+  };
+
+  class SCISHARE NetworkInterface : public ModuleLookup
   {
   public:
     typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
@@ -50,8 +57,7 @@ namespace Networks {
     virtual bool remove_module(const std::string& id) = 0;
     virtual size_t nmodules() const = 0;
     virtual ModuleHandle module(size_t i) const = 0;
-    virtual ModuleHandle lookupModule(const std::string& id) const = 0;
-
+    
     virtual ConnectionId connect(ModuleHandle, size_t, ModuleHandle, size_t) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;

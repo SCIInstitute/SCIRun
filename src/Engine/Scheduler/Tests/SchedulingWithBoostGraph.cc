@@ -285,10 +285,10 @@ public:
 class LinearSerialNetworkExecutor : public NetworkExecutor
 {
 public:
-  virtual void executeAll(const SCIRun::Domain::Networks::NetworkInterface& network, const ModuleExecutionOrder& order)
+  virtual void executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order)
   {
     BOOST_FOREACH(const std::string& id, order)
-      network.lookupModule(id)->execute();
+      moduleLookup.lookupModule(id)->execute();
   }
 };
 
@@ -367,17 +367,6 @@ TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
   executor.executeAll(matrixMathNetwork, order);
-
-  //execute all manually, in order
-  //matrix1Send->execute();
-  //matrix2Send->execute();
-  //transpose->execute();
-  //scalar->execute();
-  //negate->execute();
-  //multiply->execute();
-  //add->execute();
-  //report->execute();
-  //receive->execute();
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = boost::any_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getValue("ReportedInfo"));

@@ -33,6 +33,7 @@
 #include <QGraphicsView>
 #include <map>
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/NetworkInterface.h>
 
 class QMenu;
 class QToolBar;
@@ -55,7 +56,7 @@ namespace Gui {
   class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
-  class NetworkEditor : public QGraphicsView
+  class NetworkEditor : public QGraphicsView, public SCIRun::Domain::Networks::ModuleLookup
   {
 	  Q_OBJECT
 	
@@ -65,12 +66,14 @@ namespace Gui {
     void setExecuteAction(QAction* action) { executeAction_ = action; }
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
+    virtual SCIRun::Domain::Networks::ModuleHandle lookupModule(const std::string& id) const; 
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
   public Q_SLOTS:
     void addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
+    void executeAll();
   Q_SIGNALS:
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);

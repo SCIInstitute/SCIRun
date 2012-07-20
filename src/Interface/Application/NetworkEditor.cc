@@ -430,3 +430,22 @@ void NetworkEditor::dumpModulePositions()
     //Logger::Instance()->log(oxml.str().c_str());
   }
 }
+
+void NetworkEditor::executeAll()
+{
+  std::cout << "Execute all pressed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+
+}
+
+ModuleHandle NetworkEditor::lookupModule(const std::string& id) const
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      if (id == w->getModule()->getModuleId())
+        return w->getModule();
+    }
+  }
+  return ModuleHandle();
+}

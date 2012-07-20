@@ -98,10 +98,10 @@ private:
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 
-  class FakeExecutionRunner
+  class ModuleExecutionRunner
   {
   public:
-    explicit FakeExecutionRunner(ModuleWidget* module) : module_(module) {}
+    explicit ModuleExecutionRunner(ModuleWidget* module) : module_(module) {}
     void operator()();
   private:
     ModuleWidget* module_;

@@ -170,7 +170,7 @@ void ModuleWidget::setPercentComplete(double p)
   }
 }
 
-void ModuleWidget::FakeExecutionRunner::operator()()
+void ModuleWidget::ModuleExecutionRunner::operator()()
 {
   const int numIncrements = 20;
   const int increment = module_->executionTime_ / numIncrements;
@@ -199,7 +199,7 @@ void ModuleWidget::execute()
 
   //std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
   {
-    FakeExecutionRunner runner(this);
+    ModuleExecutionRunner runner(this);
     boost::thread execution = boost::thread(runner);
   }
   std::cout << "Done executing." << std::endl;
