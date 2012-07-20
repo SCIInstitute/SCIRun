@@ -46,6 +46,7 @@
 #include <Core/Dataflow/Network/Tests/MockModuleState.h>
 #include <Engine/State/SimpleMapModuleState.h>
 #include <Engine/Scheduler/BoostGraphSerialScheduler.h>
+#include <Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
 
 #include <iostream>
@@ -241,15 +242,7 @@ TEST(BoostGraphExampleTest, FileDependencyExample)
 #endif
 
 
-class LinearSerialNetworkExecutor : public NetworkExecutor
-{
-public:
-  virtual void executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order)
-  {
-    BOOST_FOREACH(const std::string& id, order)
-      moduleLookup.lookupModule(id)->execute();
-  }
-};
+
 
 TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
 {

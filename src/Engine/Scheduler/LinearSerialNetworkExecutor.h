@@ -26,16 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_SCHEDULER_H
-#define ENGINE_SCHEDULER_SCHEDULER_H
+#ifndef ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
+#define ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
 
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <list>
+#include <Engine/Scheduler/SchedulerInterfaces.h>
 #include <Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Engine {
 
+  class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor
+  {
+  public:
+    virtual void executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order);
+  };
 
 }
 }
