@@ -49,8 +49,10 @@ namespace Gui {
       return Qt::cyan;
     if (str == "magenta")
       return Qt::magenta;
-    else
+    if (str == "white")
       return Qt::white;
+    else
+      return Qt::black;
   }
 
   class Logger

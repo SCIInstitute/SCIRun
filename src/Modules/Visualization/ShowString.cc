@@ -29,6 +29,7 @@
 #include <iostream>
 #include <Modules/Visualization/ShowString.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Domain::Datatypes;
@@ -50,4 +51,7 @@ void ShowStringModule::execute()
   }
 
   std::cout << "String value received: " << str->value() << std::endl;
+
+  GeometryHandle geom(new GeometryObject(str));
+  send_output_handle(0, geom);
 }

@@ -173,6 +173,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   renderWindow_ = new RenderWindow(this);
   renderWindow_->setEnabled(false);
   renderWindow_->setVisible(false);
+  moduleFactory->setRenderer(renderWindow_);
 
   connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
 #endif

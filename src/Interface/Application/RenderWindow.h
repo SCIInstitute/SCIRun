@@ -32,6 +32,7 @@
 #include <QDialog>
 #include <vtkSmartPointer.h>
 #include <vtkVector.h>
+#include <Core/Dataflow/Network/RendererInterface.h>
 
 class QVTKWidget;
 class vtkRenderer;
@@ -40,9 +41,6 @@ class vtkPolyDataMapper;
 class vtkMatrix4x4;
 class vtkTransform;
 class vtkTextActor;
-namespace SCIRun{ namespace Domain { namespace Datatypes {
-  template <typename T> class DenseMatrixGeneric;
-}}}
 
 namespace Ui {
 class RenderWindow;
@@ -51,7 +49,7 @@ class RenderWindow;
 namespace SCIRun {
 namespace Gui {
 
-class RenderWindow : public QDialog
+class RenderWindow : public QDialog, public SCIRun::Domain::Networks::RendererInterface
 {
   Q_OBJECT
     
@@ -62,10 +60,10 @@ public:
   // Hack: Accepts a 6xn matrix whose format is as follows.
   //  rows 1..3 - direction of vectors.
   //  rows 4..6 - position of vectors in 3D space.
-  void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>& m);
+  virtual void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>& m);
 
   // Change default text output
-  void setText(const char* text);
+  virtual void setText(const char* text);
     
 private:
 

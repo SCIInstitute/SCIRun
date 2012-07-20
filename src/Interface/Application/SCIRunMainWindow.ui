@@ -208,22 +208,22 @@
          </property>
          <item>
           <property name="text">
-           <string>ReadMatrix*</string>
+           <string>ReadMatrix</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ReceiveScalar*</string>
+           <string>ReceiveScalar</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>SendScalar*</string>
+           <string>SendScalar</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>WriteMatrix*</string>
+           <string>WriteMatrix</string>
           </property>
          </item>
         </item>
@@ -238,22 +238,17 @@
          </item>
          <item>
           <property name="text">
-           <string>ComputeSVD_TODO</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>CreateMatrix_TODO</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>EvaluateLinearAlgebraBinary*</string>
+           <string>EvaluateLinearAlgebraBinary</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>EvaluateLinearAlgebraUnary*</string>
+           <string>EvaluateLinearAlgebraUnary</string>
           </property>
          </item>
          <item>
@@ -278,7 +273,7 @@
          </property>
          <item>
           <property name="text">
-           <string>CreateString*</string>
+           <string>CreateString</string>
           </property>
          </item>
         </item>
@@ -288,12 +283,12 @@
          </property>
          <item>
           <property name="text">
-           <string>MatrixAsVectorField_TODO</string>
+           <string>MatrixAsVectorField</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ShowString_TODO</string>
+           <string>ShowString</string>
           </property>
          </item>
         </item>

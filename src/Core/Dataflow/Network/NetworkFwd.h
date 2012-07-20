@@ -52,6 +52,7 @@ class ModuleInfoProvider;
 struct ConnectionDescription;
 class DatatypeSourceInterface;
 class DatatypeSinkInterface;
+class RendererInterface;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
@@ -64,7 +65,6 @@ typedef boost::shared_ptr<OutputPortInterface> OutputPortHandle;
 typedef boost::shared_ptr<ModuleFactory> ModuleFactoryHandle;
 typedef boost::shared_ptr<DatatypeSinkInterface> DatatypeSinkInterfaceHandle;
 typedef boost::shared_ptr<DatatypeSourceInterface> DatatypeSourceInterfaceHandle;
-
 
 }}}
 

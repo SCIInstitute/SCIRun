@@ -90,3 +90,6 @@ void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
   stateFactory_ = stateFactory;
 }
 
+void MockModuleFactory::setRenderer(SCIRun::Domain::Networks::RendererInterface* renderer)
+{
+}

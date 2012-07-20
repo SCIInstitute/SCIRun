@@ -35,15 +35,22 @@
 namespace SCIRun {
 namespace Modules {
 namespace Render {
-  //TODO DAN
-  //class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
-  //  public Has1InputPort<MatrixPortTag>
-  //{
-  //public:
-  //  ReportMatrixInfoModule();
-  //  virtual void execute();
-  //  static std::string inputPort0Name() { return "Input"; }
-  //};
+
+  class SCISHARE ViewScene : public SCIRun::Domain::Networks::Module,
+    public Has2InputPorts<GeometryPortTag, GeometryPortTag>
+  {
+  public:
+    ViewScene();
+    virtual void execute();
+
+    void setRenderer(SCIRun::Domain::Networks::RendererInterface* r);
+
+    static std::string inputPort0Name() { return "RenderedString"; }
+    static std::string inputPort1Name() { return "RenderedMatrixAsVectorField"; }
+
+  private:
+    SCIRun::Domain::Networks::RendererInterface* renderer_;
+  };
 }}}
 
 #endif

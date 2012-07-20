@@ -27,34 +27,61 @@
 */
 
 #include <iostream>
-//#include <Modules/Math/ReportMatrixInfo.h>
-//#include <Algorithms/Math/ReportMatrixInfo.h>
-//#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/Render/ViewScene.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Dataflow/Network/RendererInterface.h>
 
-//using namespace SCIRun::Modules::Math;
-//using namespace SCIRun::Domain::Datatypes;
-//using namespace SCIRun::Algorithms::Math;
-//using namespace SCIRun::Domain::Networks;
-//TODO DAN
-//
-//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
-//
-//void ReportMatrixInfoModule::execute()
-//{
-//  DatatypeHandleOption input = get_input_handle(0);
-//  if (!input)
-//    throw std::logic_error("TODO DAN Input data required, need to move this check to Module base class!");
-//
-//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO DAN: clean
-//  if (!matrix)
-//  {
-//    //TODO DAN log error? send null? check standard practice.
-//    return;
-//  }
-//
-//  ReportMatrixInfoAlgorithm algo;
-//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-//  get_state()->setValue("ReportedInfo", output);
-//
-//  std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
-//}
+using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
+
+ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun")),
+  renderer_(0)
+{}
+
+void ViewScene::setRenderer(SCIRun::Domain::Networks::RendererInterface* r)
+{
+  renderer_ = r;
+}
+
+void ViewScene::execute()
+{
+  DatatypeHandleOption strInput = get_input_handle(0);
+  DatatypeHandleOption matrixInput = get_input_handle(1);
+
+  if (renderer_)
+  {
+    std::cout << "Renderer set! Attempting to visualize some data." << std::endl;
+    if (strInput)
+    {
+      GeometryHandle str = boost::dynamic_pointer_cast<GeometryObject>(*strInput); //TODO : clean
+      if (str)
+        renderer_->setText(str->get_underlying()->as<String>()->value().c_str());
+      else
+        renderer_->setText("<null>");
+    }
+    else
+      renderer_->setText("No string input to ViewScene!");
+
+    if (matrixInput)
+    {
+      GeometryHandle mat = boost::dynamic_pointer_cast<GeometryObject>(*matrixInput); //TODO : clean
+      if (mat)
+      {
+        const DenseMatrix* dm = mat->get_underlying()->as<DenseMatrix>();
+        if (dm)
+          renderer_->setVectorField(*dm);
+      }
+      else
+        std::cout << "No vector field data available." << std::endl;
+    }
+    else
+      std::cout << "No vector field input to ViewScene!" << std::endl;
+  }
+  else
+  {
+    std::cout << "Renderer not set, nothing to do here!" << std::endl;
+  }
+}

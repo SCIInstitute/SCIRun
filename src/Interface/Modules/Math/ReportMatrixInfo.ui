@@ -44,7 +44,7 @@
    <property name="title">
     <string>Matrix Info</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -109,6 +109,9 @@
      </item>
      <item>
       <widget class="QPlainTextEdit" name="matrixInfoTextEdit_">
+       <property name="lineWrapMode">
+        <enum>QPlainTextEdit::NoWrap</enum>
+       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>

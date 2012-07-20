@@ -27,11 +27,13 @@
 */
 
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
+#include <Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Algorithms::Math;
 
 ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,8 +45,7 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  connect(executeButton_, SIGNAL(clicked()), this, SLOT(pullAndDisplayInfo()));
 }
 
 int ReportMatrixInfoDialog::moduleExecutionTime()
@@ -52,13 +53,15 @@ int ReportMatrixInfoDialog::moduleExecutionTime()
   return 2000;
 }
 
-//void ReportMatrixInfoDialog::pushFileNameToState(const QString& str) 
-//{
-//  std::cout << "filename set on state object" << std::endl;
-//  state_->setValue("FileName", str.toStdString());
-//}
-//
-//void ReportMatrixInfoDialog::saveFile()
-//{
-//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
-//}
+void ReportMatrixInfoDialog::pullAndDisplayInfo() 
+{
+  ReportMatrixInfoAlgorithm::Outputs info = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getValue("ReportedInfo"));
+  std::ostringstream ostr;
+  ostr << info.get<0>() << "\n"
+    << info.get<1>() << "\n"
+    << info.get<2>() << "\n"
+    << info.get<3>() << "\n"
+    << info.get<4>() << "\n"
+    << info.get<5>();
+  matrixInfoTextEdit_->setPlainText(ostr.str().c_str());
+}

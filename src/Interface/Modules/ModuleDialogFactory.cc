@@ -40,6 +40,7 @@
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
+#include <Interface/Modules/Render/ViewScene.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
@@ -72,6 +73,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new ReportMatrixInfoDialog(moduleId, state, parentToUse_);
   if (moduleId.find("MatrixAsVectorField") != std::string::npos)
     return new MatrixAsVectorFieldDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ViewScene") != std::string::npos)
+    return new ViewSceneDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, executionTime, parentToUse_);
 }

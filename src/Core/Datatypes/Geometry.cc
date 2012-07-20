@@ -27,8 +27,15 @@
 */
 
 #include <sstream>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Domain::Datatypes;
 
-//TODO DAN
+GeometryObject::GeometryObject(DatatypeHandle dh) : data_(dh)
+{
+}
+
+DatatypeHandle GeometryObject::get_underlying() const
+{
+  return data_;
+}

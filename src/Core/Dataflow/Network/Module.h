@@ -161,7 +161,7 @@ namespace Modules
 
   inline SCIRun::Domain::Networks::PortDescription MakeScalarPort(const std::string& name)
   {
-    return SCIRun::Domain::Networks::PortDescription(name, "Scalar", "black"); 
+    return SCIRun::Domain::Networks::PortDescription(name, "Scalar", "white"); 
   }
 
   inline SCIRun::Domain::Networks::PortDescription MakeStringPort(const std::string& name)

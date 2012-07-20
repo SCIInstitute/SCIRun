@@ -31,6 +31,7 @@
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Algorithms::DataIO;
@@ -52,4 +53,6 @@ void ReadMatrixModule::execute()
   ReadMatrixAlgorithm algo;
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
   send_output_handle(0, matrix);
+  StringHandle file(new String(filename_));
+  send_output_handle(1, file);
 }

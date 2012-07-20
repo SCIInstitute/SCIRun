@@ -25,40 +25,29 @@
 //   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //   DEALINGS IN THE SOFTWARE.
 //*/
-//
-//#include <Interface/Modules/Render/ViewScene.h>
+
+#include <Interface/Modules/Render/ViewScene.h>
 //#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-//#include <QFileDialog>
-//
-//using namespace SCIRun::Gui;
-//using namespace SCIRun::Domain::Networks;
-//
-//ViewScene::ViewScene(const std::string& name, ModuleStateHandle state,
-//  QWidget* parent /* = 0 */)
-//  : //ModuleDialogGeneric(parent),
-//  state_(state)
-//{
-//  //setupUi(this);
-//  //setWindowTitle(to_QString(name));
-//  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-//  
-//  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-//  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-//  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
-//}
-//
-//int ViewScene::moduleExecutionTime()
-//{
-//  return 2000;
-//}
-////
-////void WriteMatrixDialog::pushFileNameToState(const QString& str) 
-////{
-////  std::cout << "filename set on state object" << std::endl;
-////  state_->setValue("FileName", str.toStdString());
-////}
-////
-////void WriteMatrixDialog::saveFile()
-////{
-////  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
-////}
+#include <QFileDialog>
+
+using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
+
+ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(parent),
+  state_(state)
+{
+  setupUi(this);
+  setWindowTitle(to_QString(name));
+  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
+  
+  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
+  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+}
+
+int ViewSceneDialog::moduleExecutionTime()
+{
+  return 2000;
+}

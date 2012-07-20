@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef CORE_DATAFLOW_NETWORK_RENDERERINTERFACE_H
+#define CORE_DATAFLOW_NETWORK_RENDERERINTERFACE_H 
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
-using namespace SCIRun::Domain::Networks;
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Dataflow/Network/Share.h>
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
+namespace SCIRun {
+  namespace Domain {
+    namespace Networks {
 
-void ReportMatrixInfoModule::execute()
-{
-  DatatypeHandleOption input = get_input_handle(0);
-  if (!input)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
+      //TODO: not sure where this should go, probably a new library.  plop it here for now.
 
-  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
-  if (!matrix)
-  {
-    std::cout << "Matrix was null." << std::endl;
-    //TODO log error? send null? check standard practice.
-    return;
-  }
+      class SCISHARE RendererInterface
+      {
+      public:
+        virtual ~RendererInterface() {}
+        virtual void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrix& m) = 0;
+        virtual void setText(const char* text) = 0;
+      };
 
-  ReportMatrixInfoAlgorithm algo;
-  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  get_state()->setValue("ReportedInfo", output);
-}
+}}}
+
+
+#endif 

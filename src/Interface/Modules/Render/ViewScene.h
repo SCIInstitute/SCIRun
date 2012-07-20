@@ -42,23 +42,21 @@ namespace Gui {
   
   //TODO DAN
 
-class SCISHARE ViewScene : //public ModuleDialogGeneric, 
+class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::ViewSceneModule
+  public Ui::ViewScene
 {
-//	Q_OBJECT
-//	
-//public:
-//  ViewScene(const std::string& name, 
-//    SCIRun::Domain::Networks::ModuleStateHandle state,
-//    QWidget* parent = 0);
-//  virtual int moduleExecutionTime();
-//
-//private Q_SLOTS:
-//  //void pushFileNameToState(const QString& str);
-//  //void saveFile();
-//private:
-//  SCIRun::Domain::Networks::ModuleStateHandle state_;
+	Q_OBJECT
+	
+public:
+  ViewSceneDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+
+private Q_SLOTS:
+private:
+  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

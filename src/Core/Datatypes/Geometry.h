@@ -31,11 +31,22 @@
 #define CORE_DATATYPES_GEOMETRY_H 
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Datatypes {
 
+  class SCISHARE GeometryObject : public Datatype
+  {
+  public:
+    explicit GeometryObject(DatatypeHandle dh);
+    DatatypeHandle get_underlying() const;
+  private:
+    DatatypeHandle data_;
+  };
+
+  typedef boost::shared_ptr<GeometryObject> GeometryHandle;
 
 }}}
 

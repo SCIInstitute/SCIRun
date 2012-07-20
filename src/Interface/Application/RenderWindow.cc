@@ -28,7 +28,8 @@
 
 #include "RenderWindow.h"
 #include "ui_RenderWindow.h"
-#include "Core/Datatypes/DenseMatrix.h"
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 
 #include <QVTKWidget.h>
 #include <vtkRenderer.h>
@@ -186,6 +187,7 @@ void RenderWindow::setupHelixVectorField()
 void RenderWindow::setText(const char* output)
 {
   mTxt->SetInput(output);
+  update();
 }
 
 //-----------------------------------------------------------------------------
