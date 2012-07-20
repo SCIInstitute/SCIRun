@@ -55,7 +55,7 @@ void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
   pressedSubWidget_ = widget()->childAt(event->pos().toPoint());
 }
 
-ModuleWidget* ModuleProxyWidget::getModule()
+ModuleWidget* ModuleProxyWidget::getModuleWidget()
 {
   return module_;
 }

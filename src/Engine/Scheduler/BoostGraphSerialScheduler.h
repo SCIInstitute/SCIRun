@@ -26,30 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <iostream>
-//
-#include <Engine/Scheduler/Scheduler.h>
+#ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
+#define ENGINE_SCHEDULER_SERIALSCHEDULER_H
 
-using namespace SCIRun::Engine;
+#include <Engine/Scheduler/SchedulerInterfaces.h>
+#include <Engine/Scheduler/Share.h>
 
-Scheduler::~Scheduler()
-{
+namespace SCIRun {
+namespace Engine {
+
+  class SCISHARE BoostGraphSerialScheduler : public Scheduler
+  {
+  public:
+    virtual ModuleExecutionOrder schedule(const SCIRun::Domain::Networks::NetworkInterface& network);
+  };
+}
 }
 
-NetworkExecutor::~NetworkExecutor() 
-{
-}
-
-ModuleExecutionOrder::ModuleExecutionOrder(const ModuleExecutionOrder::ModuleIdList& list) : list_(list)
-{
-}
-
-ModuleExecutionOrder::const_iterator ModuleExecutionOrder::begin() const
-{
-  return list_.begin();
-}
-
-ModuleExecutionOrder::const_iterator ModuleExecutionOrder::end() const
-{
-  return list_.end();
-}
+#endif

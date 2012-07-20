@@ -45,7 +45,7 @@
 #include <Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Dataflow/Network/Tests/MockModuleState.h>
 #include <Engine/State/SimpleMapModuleState.h>
-#include <Engine/Scheduler/Scheduler.h>
+#include <Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
 
 #include <iostream>
@@ -240,47 +240,6 @@ TEST(BoostGraphExampleTest, FileDependencyExample)
 }
 #endif
 
-class BoostGraphScheduler : public Scheduler
-{
-public:
-  virtual ModuleExecutionOrder schedule(const NetworkInterface& network)
-  {
-    std::map<int, std::string> idModuleLookup;
-    std::map<std::string, int> moduleIdLookup;
-
-    for (int i = 0; i < network.nmodules(); ++i)
-    {
-      idModuleLookup[i] = network.module(i)->get_id();
-      moduleIdLookup[idModuleLookup[i]] = i;
-    }
-
-    typedef pair<int,int> Edge;
-
-    std::vector<Edge> edges;
-      
-    BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
-    {
-      edges.push_back(std::make_pair(moduleIdLookup[cd.moduleId1_], moduleIdLookup[cd.moduleId2_]));
-    }
-
-    typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
-    Graph g(edges.begin(), edges.end(), network.nmodules());
-
-    typedef graph_traits<Graph>::vertex_descriptor Vertex;
-    typedef list<Vertex> MakeOrder;
-    MakeOrder order;
-    topological_sort(g, std::front_inserter(order));
-
-    ModuleExecutionOrder::ModuleIdList list;
-    for (MakeOrder::iterator i = order.begin(); i != order.end(); ++i) 
-    {
-      //cout << idModuleLookup[*i] << std::endl;
-      list.push_back(idModuleLookup[*i]);
-    }
-
-    return ModuleExecutionOrder(list);
-  }
-};
 
 class LinearSerialNetworkExecutor : public NetworkExecutor
 {
@@ -363,7 +322,7 @@ TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   multiply->get_state()->setValue("Operation", EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
   add->get_state()->setValue("Operation", EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
 
-  BoostGraphScheduler scheduler;
+  BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
   executor.executeAll(matrixMathNetwork, order);

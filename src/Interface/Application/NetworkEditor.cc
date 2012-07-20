@@ -416,8 +416,8 @@ void NetworkEditor::dumpModulePositions()
     ostr << item->type() << " : " << "[" << item->scenePos().x() << ", " << item->scenePos().y() << "]";
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      modulePositions_[w->getModule()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
-      ostr << " moduleId: " << w->getModule()->getModuleId();
+      modulePositions_[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
+      ostr << " moduleId: " << w->getModuleWidget()->getModuleId();
     }
     Logger::Instance()->log(ostr.str().c_str());
   }
@@ -443,8 +443,8 @@ ModuleHandle NetworkEditor::lookupModule(const std::string& id) const
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      if (id == w->getModule()->getModuleId())
-        return w->getModule();
+      if (id == w->getModuleWidget()->getModuleId())
+        return w->getModuleWidget()->getModule();
     }
   }
   return ModuleHandle();

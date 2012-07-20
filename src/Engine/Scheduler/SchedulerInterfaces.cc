@@ -26,45 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
-#define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
+//#include <iostream>
+//
+#include <Engine/Scheduler/SchedulerInterfaces.h>
 
-#include <QGraphicsProxyWidget>
+using namespace SCIRun::Engine;
 
-namespace SCIRun
+Scheduler::~Scheduler()
 {
-  namespace Gui
-  {
-    class ModuleWidget;
-
-    class ModuleProxyWidget : public QGraphicsProxyWidget
-    {
-	    Q_OBJECT
-	
-    public:
-      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
-      void createPortPositionProviders();
-      ModuleWidget* getModuleWidget();
-    public Q_SLOTS:
-      void highlightIfSelected();
-    Q_SIGNALS:
-      void selected();
-    protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-    private:
-      bool isSubwidget(QWidget* alienWidget) const;
-      void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-      void addPort();
-  
-      ModuleWidget* module_;
-      bool grabbedByWidget_;
-      QWidget* pressedSubWidget_;
-    };
-
-  }
 }
 
-#endif
+NetworkExecutor::~NetworkExecutor() 
+{
+}
+
+ModuleExecutionOrder::ModuleExecutionOrder(const ModuleExecutionOrder::ModuleIdList& list) : list_(list)
+{
+}
+
+ModuleExecutionOrder::const_iterator ModuleExecutionOrder::begin() const
+{
+  return list_.begin();
+}
+
+ModuleExecutionOrder::const_iterator ModuleExecutionOrder::end() const
+{
+  return list_.end();
+}

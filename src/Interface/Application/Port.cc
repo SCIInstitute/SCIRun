@@ -161,7 +161,7 @@ void PortWidget::makeConnection(const QPointF& pos)
   {
     if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      ModuleWidget* overModule = mpw->getModule();
+      ModuleWidget* overModule = mpw->getModuleWidget();
       if (overModule != moduleParent_)
       {
         const ModuleWidget::Ports& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();

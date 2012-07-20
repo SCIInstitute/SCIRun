@@ -27,17 +27,25 @@
 #
 
 SET(Engine_Scheduler_SRCS
-  Scheduler.cc
+  BoostGraphSerialScheduler.cc
+  LinearSerialNetworkExecutor.cc
+  SchedulerInterfaces.cc
 )
 
 SET(Engine_Scheduler_HEADERS
-  Scheduler.h
+  BoostGraphSerialScheduler.h
+  LinearSerialNetworkExecutor.h
+  SchedulerInterfaces.h
   Share.h
 )
 
 ADD_LIBRARY(Engine_Scheduler 
 ${Engine_Scheduler_HEADERS}
 ${Engine_Scheduler_SRCS})
+
+TARGET_LINK_LIBRARIES(Engine_Scheduler
+Core_Dataflow_Network
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Scheduler)

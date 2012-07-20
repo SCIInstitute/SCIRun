@@ -26,45 +26,49 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
-#define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
+#ifndef ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
+#define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
-#include <QGraphicsProxyWidget>
+#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <list>
+#include <Engine/Scheduler/Share.h>
 
-namespace SCIRun
-{
-  namespace Gui
+namespace SCIRun {
+namespace Engine {
+
+  //Serial
+  class SCISHARE ModuleExecutionOrder
   {
-    class ModuleWidget;
+  public:
+    typedef std::list<std::string> ModuleIdList;
+    typedef ModuleIdList::iterator iterator;
+    typedef ModuleIdList::const_iterator const_iterator;
 
-    class ModuleProxyWidget : public QGraphicsProxyWidget
-    {
-	    Q_OBJECT
-	
-    public:
-      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
-      void createPortPositionProviders();
-      ModuleWidget* getModuleWidget();
-    public Q_SLOTS:
-      void highlightIfSelected();
-    Q_SIGNALS:
-      void selected();
-    protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-    private:
-      bool isSubwidget(QWidget* alienWidget) const;
-      void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-      void addPort();
-  
-      ModuleWidget* module_;
-      bool grabbedByWidget_;
-      QWidget* pressedSubWidget_;
-    };
+    explicit ModuleExecutionOrder(const ModuleIdList& list);
+    const_iterator begin() const;
+    const_iterator end() const;
+  private:
+    ModuleIdList list_;
+  };
 
-  }
+  //Serial
+  class SCISHARE Scheduler
+  {
+  public:
+    virtual ~Scheduler();
+    virtual ModuleExecutionOrder schedule(const SCIRun::Domain::Networks::NetworkInterface& network) = 0;
+  };
+
+  //TODO: types for ParallelScheduler, etc
+
+  class SCISHARE NetworkExecutor
+  {
+  public:
+    virtual ~NetworkExecutor();
+    virtual void executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order) = 0;
+  };
+
+}
 }
 
 #endif

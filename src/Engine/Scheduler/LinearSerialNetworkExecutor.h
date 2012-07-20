@@ -36,33 +36,6 @@
 namespace SCIRun {
 namespace Engine {
 
-  class SCISHARE ModuleExecutionOrder
-  {
-  public:
-    typedef std::list<std::string> ModuleIdList;
-    typedef ModuleIdList::iterator iterator;
-    typedef ModuleIdList::const_iterator const_iterator;
-
-    explicit ModuleExecutionOrder(const ModuleIdList& list);
-    const_iterator begin() const;
-    const_iterator end() const;
-  private:
-    ModuleIdList list_;
-  };
-
-  class SCISHARE Scheduler
-  {
-  public:
-    virtual ~Scheduler();
-    virtual ModuleExecutionOrder schedule(const SCIRun::Domain::Networks::NetworkInterface& network) = 0;
-  };
-
-  class SCISHARE NetworkExecutor
-  {
-  public:
-    virtual ~NetworkExecutor();
-    virtual void executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order) = 0;
-  };
 
 }
 }

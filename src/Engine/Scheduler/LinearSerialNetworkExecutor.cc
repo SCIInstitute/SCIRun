@@ -26,45 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
-#define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
+//#include <Engine/Scheduler/Scheduler.h>
 
-#include <QGraphicsProxyWidget>
+//using namespace SCIRun::Engine;
 
-namespace SCIRun
-{
-  namespace Gui
-  {
-    class ModuleWidget;
-
-    class ModuleProxyWidget : public QGraphicsProxyWidget
-    {
-	    Q_OBJECT
-	
-    public:
-      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
-      void createPortPositionProviders();
-      ModuleWidget* getModuleWidget();
-    public Q_SLOTS:
-      void highlightIfSelected();
-    Q_SIGNALS:
-      void selected();
-    protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-    private:
-      bool isSubwidget(QWidget* alienWidget) const;
-      void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-      void addPort();
-  
-      ModuleWidget* module_;
-      bool grabbedByWidget_;
-      QWidget* pressedSubWidget_;
-    };
-
-  }
-}
-
-#endif

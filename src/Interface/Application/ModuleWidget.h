@@ -71,6 +71,7 @@ public:
   const Ports& getOutputPorts() const { return outputPorts_; }
 
   std::string getModuleId() const { return moduleId_; }
+  SCIRun::Domain::Networks::ModuleHandle getModule() const { return theModule_; }
   
 public Q_SLOTS:
   //for testing signal/slot of Execute
