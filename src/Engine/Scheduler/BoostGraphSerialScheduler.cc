@@ -38,19 +38,19 @@
 //#include <boost/graph/dijkstra_shortest_paths.hpp>
 //#include <boost/graph/visitors.hpp>
 #include <boost/foreach.hpp>
+#include <boost/bimap.hpp>
 
 using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
 
 ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface& network)
 {
-  std::map<int, std::string> idModuleLookup;
-  std::map<std::string, int> moduleIdLookup;
+  //std::map<int, std::string> idModuleLookup;
+  boost::bimap<std::string, int> moduleIdLookup;
 
   for (int i = 0; i < network.nmodules(); ++i)
   {
-    idModuleLookup[i] = network.module(i)->get_id();
-    moduleIdLookup[idModuleLookup[i]] = i;
+    moduleIdLookup.left.insert(std::make_pair(network.module(i)->get_id(), i));
   }
 
   typedef std::pair<int,int> Edge;
@@ -59,23 +59,21 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
 
   BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
   {
-    edges.push_back(std::make_pair(moduleIdLookup[cd.moduleId1_], moduleIdLookup[cd.moduleId2_]));
+    edges.push_back(std::make_pair(moduleIdLookup.left.at(cd.moduleId1_), moduleIdLookup.left.at(cd.moduleId2_)));
   }
 
   typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
   Graph g(edges.begin(), edges.end(), network.nmodules());
 
   typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
-  typedef std::list<Vertex> MakeOrder;
-  MakeOrder order;
+  typedef std::list<Vertex> ExecutionOrder;
+  ExecutionOrder order;
   boost::topological_sort(g, std::front_inserter(order));
 
   ModuleExecutionOrder::ModuleIdList list;
-  //std::cout << "execution list:" << std::endl;
-  for (MakeOrder::iterator i = order.begin(); i != order.end(); ++i) 
+  for (ExecutionOrder::iterator i = order.begin(); i != order.end(); ++i) 
   {
-    //std::cout << idModuleLookup[*i] << std::endl;
-    list.push_back(idModuleLookup[*i]);
+    list.push_back(moduleIdLookup.right.at(*i));
   }
 
   return ModuleExecutionOrder(list);
