@@ -56,17 +56,16 @@ namespace Gui {
   class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
-  class NetworkEditor : public QGraphicsView, public SCIRun::Domain::Networks::ModuleLookup
+  class NetworkEditor : public QGraphicsView, public SCIRun::Domain::Networks::ExecutableLookup
   {
 	  Q_OBJECT
 	
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
     void addActions(QWidget* widget);
-    void setExecuteAction(QAction* action) { executeAction_ = action; }
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
-    virtual SCIRun::Domain::Networks::ModuleHandle lookupModule(const std::string& id) const; 
+    virtual SCIRun::Domain::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
@@ -113,7 +112,7 @@ namespace Gui {
     QAction* bringToFrontAction_;
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
-    QAction* executeAction_;
+    //QAction* executeAction_;
     QAction* moduleDumpAction_;
 
     QGraphicsScene* scene_;

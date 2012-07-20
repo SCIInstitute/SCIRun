@@ -153,6 +153,11 @@ ModuleHandle Network::lookupModule(const std::string& id) const
   return i == modules_.end() ? ModuleHandle() : *i;
 }
 
+ExecutableObject* Network::lookupExecutable(const std::string& id) const
+{
+  return lookupModule(id).get();
+}
+
 size_t Network::nconnections() const
 {
   return connections_.size();

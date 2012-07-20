@@ -113,7 +113,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->setExecuteAction(actionExecute_All_);
   networkEditor_->setModuleDumpAction(actionDump_positions);
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);

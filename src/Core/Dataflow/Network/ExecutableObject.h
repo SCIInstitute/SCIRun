@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -27,49 +27,23 @@
 */
 
 
-#ifndef CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
+#ifndef CORE_DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
+#define CORE_DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H 
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Dataflow/Network/ModuleInterface.h>
-#include <string>
-#include <vector>
-#include <map>
 #include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  //TODO: hacky duplication...
-  class SCISHARE ExecutableLookup
+  class SCISHARE ExecutableObject
   {
   public:
-    virtual ~ExecutableLookup() {}
-    virtual ExecutableObject* lookupExecutable(const std::string& id) const = 0; 
+    ~ExecutableObject() {}
+    virtual void execute() = 0;
   };
 
-  class SCISHARE NetworkInterface : public ExecutableLookup
-  {
-  public:
-    typedef std::vector<ConnectionDescription> ConnectionDescriptionList;
-
-    virtual ~NetworkInterface() {}
-    virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
-    virtual bool remove_module(const std::string& id) = 0;
-    virtual size_t nmodules() const = 0;
-    virtual ModuleHandle module(size_t i) const = 0;
-    virtual ModuleHandle lookupModule(const std::string& id) const = 0; 
-    
-    virtual ConnectionId connect(ModuleHandle, size_t, ModuleHandle, size_t) = 0;
-    virtual bool disconnect(const ConnectionId&) = 0;
-    virtual size_t nconnections() const = 0;
-    virtual void disable_connection(const ConnectionId&) = 0;
-    virtual ConnectionDescriptionList connections() const = 0;
-
-    virtual std::string toString() const = 0;
-  };
 }}}
-
 
 #endif

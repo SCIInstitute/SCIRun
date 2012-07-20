@@ -195,7 +195,7 @@ void ModuleWidget::ModuleExecutionRunner::operator()()
 
 void ModuleWidget::execute()
 {
-  std::cout << "Executing Actual Module." << moduleId_ << std::endl;
+  std::cout << "Executing Module: " << moduleId_ << std::endl;
 
   //std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
   {

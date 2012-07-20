@@ -54,6 +54,8 @@ namespace Engine {
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
 
+    void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup);
+
     void saveNetwork(const std::string& filename) const;
     void loadNetwork(const std::string& filename);
 

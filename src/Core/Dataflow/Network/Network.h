@@ -52,6 +52,7 @@ namespace Networks {
     virtual bool remove_module(const std::string& id);
     virtual size_t nmodules() const;
     virtual ModuleHandle module(size_t i) const;
+    virtual ExecutableObject* lookupExecutable(const std::string& id) const;
     virtual ModuleHandle lookupModule(const std::string& id) const;
     virtual ConnectionId connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_t p2);
     virtual bool disconnect(const ConnectionId&);

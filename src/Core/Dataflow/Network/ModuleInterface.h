@@ -32,6 +32,7 @@
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Dataflow/Network/ExecutableObject.h>
 #include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
@@ -54,12 +55,11 @@ namespace Networks {
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
   
-  class SCISHARE ModuleInterface : public ModuleInfoProvider
+  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ExecutableObject
   {
   public:
     virtual ~ModuleInterface();
 
-    virtual void execute() = 0;
     virtual ModuleStateHandle get_state() = 0;
 
     virtual void set_id(const std::string& id) = 0;

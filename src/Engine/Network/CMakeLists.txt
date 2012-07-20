@@ -42,6 +42,7 @@ ${Engine_Network_SRCS})
 TARGET_LINK_LIBRARIES(Engine_Network
 Core_Dataflow_Network
 Core_Serialization_Network
+Engine_Scheduler
 )
 
 IF(BUILD_SHARED_LIBS)

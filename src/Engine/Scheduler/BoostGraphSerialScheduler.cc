@@ -71,9 +71,10 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
   boost::topological_sort(g, std::front_inserter(order));
 
   ModuleExecutionOrder::ModuleIdList list;
+  //std::cout << "execution list:" << std::endl;
   for (MakeOrder::iterator i = order.begin(); i != order.end(); ++i) 
   {
-    //cout << idModuleLookup[*i] << std::endl;
+    //std::cout << idModuleLookup[*i] << std::endl;
     list.push_back(idModuleLookup[*i]);
   }
 

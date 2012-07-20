@@ -47,6 +47,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(nmodules, size_t());
           MOCK_CONST_METHOD1(module, ModuleHandle(size_t));
           MOCK_CONST_METHOD1(lookupModule, ModuleHandle(const std::string&));
+          MOCK_CONST_METHOD1(lookupExecutable, ExecutableObject*(const std::string&));
           MOCK_METHOD4(connect, ConnectionId(ModuleHandle, size_t, ModuleHandle, size_t));
           MOCK_METHOD1(disconnect, bool(const ConnectionId&));
           MOCK_CONST_METHOD0(nconnections, size_t());

@@ -37,6 +37,7 @@
 #include <Interface/Application/PositionProvider.h>
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/ExecutableObject.h>
 
 class QGraphicsProxyWidget;
 
@@ -48,7 +49,7 @@ class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
 
-class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public Ui::Module
+class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public SCIRun::Domain::Networks::ExecutableObject, public Ui::Module
 {
 	Q_OBJECT
 	
@@ -74,9 +75,7 @@ public:
   SCIRun::Domain::Networks::ModuleHandle getModule() const { return theModule_; }
   
 public Q_SLOTS:
-  //for testing signal/slot of Execute
-  //void incrementProgressFake();
-  void execute();
+  virtual void execute();
   void openOptionsDialog();
   void setExecutionTime(int milliseconds);
 Q_SIGNALS:

@@ -26,15 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/NetworkInterface.h>
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Engine;
+using namespace SCIRun::Domain::Networks;
 
-void LinearSerialNetworkExecutor::executeAll(const SCIRun::Domain::Networks::ModuleLookup& moduleLookup, const ModuleExecutionOrder& order)
+void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
 {
   BOOST_FOREACH(const std::string& id, order)
-    moduleLookup.lookupModule(id)->execute();
+  {
+    ExecutableObject* obj = lookup.lookupExecutable(id);
+    if (obj)
+    {
+      obj->execute();
+    }
+  }
 }

@@ -54,7 +54,6 @@ boost::shared_ptr<Logger> Logger::instance_;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
-  executeAction_(0),
   moduleDumpAction_(0)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
@@ -119,7 +118,6 @@ void NetworkEditor::addModule(const std::string& name, SCIRun::Domain::Networks:
 void NetworkEditor::setupModule(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
-  connect(executeAction_, SIGNAL(triggered()), module, SLOT(execute()));
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
   connect(module, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
     this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
@@ -422,7 +420,6 @@ void NetworkEditor::dumpModulePositions()
     Logger::Instance()->log(ostr.str().c_str());
   }
 
-  //void save_info(const Serializable& s, const char * filename, const std::string& name = "object")
   {
     std::ofstream oxml("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\modulePositions.xml");
     boost::archive::xml_oarchive oa(oxml);
@@ -433,19 +430,18 @@ void NetworkEditor::dumpModulePositions()
 
 void NetworkEditor::executeAll()
 {
-  std::cout << "Execute all pressed!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-
+  controller_->executeAll(*this);
 }
 
-ModuleHandle NetworkEditor::lookupModule(const std::string& id) const
+ExecutableObject* NetworkEditor::lookupExecutable(const std::string& id) const
 {
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
       if (id == w->getModuleWidget()->getModuleId())
-        return w->getModuleWidget()->getModule();
+        return w->getModuleWidget();
     }
   }
-  return ModuleHandle();
+  return 0;
 }

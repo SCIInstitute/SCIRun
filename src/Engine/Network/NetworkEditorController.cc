@@ -35,6 +35,8 @@
 #include <Core/Dataflow/Network/ModuleDescription.h>
 #include <Core/Dataflow/Network/Module.h>
 #include <Core/Serialization/Network/NetworkXMLSerializer.h>
+#include <Engine/Scheduler/BoostGraphSerialScheduler.h>
+#include <Engine/Scheduler/LinearSerialNetworkExecutor.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Engine;
@@ -111,4 +113,11 @@ void NetworkEditorController::saveNetwork(const std::string& filename) const
   NetworkXMLHandle xml = conv.to_xml_data(theNetwork_);
   NetworkXMLSerializer serializer;
   serializer.save_xml(*xml, filename);
+}
+
+void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)
+{
+  BoostGraphSerialScheduler scheduler;
+  LinearSerialNetworkExecutor executor;
+  executor.executeAll(lookup, scheduler.schedule(*theNetwork_));
 }

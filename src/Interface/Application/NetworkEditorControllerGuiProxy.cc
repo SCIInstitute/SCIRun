@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Engine/Network/NetworkEditorController.h>
 
@@ -61,4 +62,9 @@ void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Domain::Net
 void NetworkEditorControllerGuiProxy::saveNetwork(const std::string& filename)
 {
   controller_->saveNetwork(filename);
+}
+
+void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)
+{
+  controller_->executeAll(lookup);
 }

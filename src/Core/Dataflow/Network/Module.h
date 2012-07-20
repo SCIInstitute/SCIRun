@@ -71,7 +71,6 @@ namespace Networks {
     InputPortHandle get_input_port(size_t idx) const;
 
     void do_execute();
-    virtual void execute() = 0;
     virtual ModuleStateHandle get_state();
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
