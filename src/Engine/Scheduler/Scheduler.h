@@ -29,21 +29,40 @@
 #ifndef ENGINE_SCHEDULER_SCHEDULER_H
 #define ENGINE_SCHEDULER_SCHEDULER_H
 
-//#include <boost/signals2.hpp>
-//#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <list>
 #include <Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Engine {
   //TODO DAN
 
+  class SCISHARE ModuleExecutionOrder
+  {
+  public:
+    typedef std::list<std::string> ModuleIdList;
+    typedef ModuleIdList::iterator iterator;
+    typedef ModuleIdList::const_iterator const_iterator;
+
+    explicit ModuleExecutionOrder(const ModuleIdList& list);
+    const_iterator begin() const;
+    const_iterator end() const;
+  private:
+    ModuleIdList list_;
+  };
+
   class SCISHARE Scheduler
   {
   public:
     virtual ~Scheduler();
-    //virtual void setNetwork(SCIRun::Domain::Networks::Network* network) = 0;
-    virtual void schedule() = 0;
-    virtual void executeAll() = 0;
+    virtual ModuleExecutionOrder schedule(const SCIRun::Domain::Networks::NetworkInterface& network) = 0;
+  };
+
+  class SCISHARE NetworkExecutor
+  {
+  public:
+    virtual ~NetworkExecutor();
+    virtual void executeAll(const SCIRun::Domain::Networks::NetworkInterface& network, const ModuleExecutionOrder& order) = 0;
   };
 
 }

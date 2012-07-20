@@ -243,61 +243,53 @@ TEST(BoostGraphExampleTest, FileDependencyExample)
 class BoostGraphScheduler : public Scheduler
 {
 public:
-  void setNetwork(Network* network)
+  virtual ModuleExecutionOrder schedule(const NetworkInterface& network)
   {
-    network_ = network;
-  }
+    std::map<int, std::string> idModuleLookup;
+    std::map<std::string, int> moduleIdLookup;
 
-  virtual void schedule()
-  {
-    if (network_)
+    for (int i = 0; i < network.nmodules(); ++i)
     {
-      moduleIdsInOrder_.clear();
-
-      std::map<int, std::string> idModuleLookup;
-      std::map<std::string, int> moduleIdLookup;
-
-      for (int i = 0; i < network_->nmodules(); ++i)
-      {
-        idModuleLookup[i] = network_->module(i)->get_id();
-        moduleIdLookup[idModuleLookup[i]] = i;
-      }
-
-      typedef pair<int,int> Edge;
-
-      std::vector<Edge> edges;
-      
-      BOOST_FOREACH(const ConnectionDescription& cd, network_->connections())
-      {
-        edges.push_back(std::make_pair(moduleIdLookup[cd.moduleId1_], moduleIdLookup[cd.moduleId2_]));
-      }
-
-      typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
-      Graph g(edges.begin(), edges.end(), network_->nmodules());
-
-      typedef graph_traits<Graph>::vertex_descriptor Vertex;
-      typedef list<Vertex> MakeOrder;
-      MakeOrder order;
-      topological_sort(g, std::front_inserter(order));
-
-      cout << "make ordering: ";
-      for (MakeOrder::iterator i = order.begin(); i != order.end(); ++i) 
-      {
-        cout << idModuleLookup[*i] << std::endl;
-        moduleIdsInOrder_.push_back(idModuleLookup[*i]);
-      }
-
+      idModuleLookup[i] = network.module(i)->get_id();
+      moduleIdLookup[idModuleLookup[i]] = i;
     }
-  }
 
-  virtual void executeAll()
-  {
-    BOOST_FOREACH(std::string& id, moduleIdsInOrder_)
-      network_->lookupModule(id)->execute();
+    typedef pair<int,int> Edge;
+
+    std::vector<Edge> edges;
+      
+    BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
+    {
+      edges.push_back(std::make_pair(moduleIdLookup[cd.moduleId1_], moduleIdLookup[cd.moduleId2_]));
+    }
+
+    typedef adjacency_list<vecS, vecS, bidirectionalS> Graph;
+    Graph g(edges.begin(), edges.end(), network.nmodules());
+
+    typedef graph_traits<Graph>::vertex_descriptor Vertex;
+    typedef list<Vertex> MakeOrder;
+    MakeOrder order;
+    topological_sort(g, std::front_inserter(order));
+
+    ModuleExecutionOrder::ModuleIdList list;
+    for (MakeOrder::iterator i = order.begin(); i != order.end(); ++i) 
+    {
+      //cout << idModuleLookup[*i] << std::endl;
+      list.push_back(idModuleLookup[*i]);
+    }
+
+    return ModuleExecutionOrder(list);
   }
-private:
-  Network* network_;
-  std::vector<std::string> moduleIdsInOrder_;
+};
+
+class LinearSerialNetworkExecutor : public NetworkExecutor
+{
+public:
+  virtual void executeAll(const SCIRun::Domain::Networks::NetworkInterface& network, const ModuleExecutionOrder& order)
+  {
+    BOOST_FOREACH(const std::string& id, order)
+      network.lookupModule(id)->execute();
+  }
 };
 
 TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
@@ -372,9 +364,9 @@ TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   add->get_state()->setValue("Operation", EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
 
   BoostGraphScheduler scheduler;
-  scheduler.setNetwork(&matrixMathNetwork);
-  scheduler.schedule();
-  scheduler.executeAll();
+  ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
+  LinearSerialNetworkExecutor executor;
+  executor.executeAll(matrixMathNetwork, order);
 
   //execute all manually, in order
   //matrix1Send->execute();
