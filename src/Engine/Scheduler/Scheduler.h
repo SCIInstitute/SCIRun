@@ -26,15 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
-#define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
+#ifndef ENGINE_SCHEDULER_SCHEDULER_H
+#define ENGINE_SCHEDULER_SCHEDULER_H
 
-#include <boost/signals2.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+//#include <boost/signals2.hpp>
+//#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Engine {
   //TODO DAN
+
+  class SCISHARE Scheduler
+  {
+  public:
+    virtual ~Scheduler();
+    //virtual void setNetwork(SCIRun::Domain::Networks::Network* network) = 0;
+    virtual void schedule() = 0;
+    virtual void executeAll() = 0;
+  };
 
 }
 }

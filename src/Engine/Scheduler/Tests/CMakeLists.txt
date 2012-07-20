@@ -29,6 +29,7 @@
 SET(Engine_Scheduler_Tests_SRCS
   BoostGraphExampleTests.cc
   SchedulerBehavioralTests.cc
+  SchedulingWithBoostGraph.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
@@ -42,7 +43,13 @@ ${Engine_Scheduler_Tests_SRCS})
 TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
   Core_Dataflow_Network
   Engine_Network
-  #Engine_Scheduler
+  Modules_Math
+  Modules_Factory
+  Algorithms_Math
+  Core_Datatypes
+  Core_Dataflow_Network
+  Engine_State
+  Engine_Scheduler
   gtest_main
   gtest
   gmock
