@@ -68,7 +68,14 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
   typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
   typedef std::list<Vertex> ExecutionOrder;
   ExecutionOrder order;
-  boost::topological_sort(g, std::front_inserter(order));
+  try
+  {
+    boost::topological_sort(g, std::front_inserter(order));
+  }
+  catch (std::invalid_argument& e)
+  {
+  	throw NetworkHasCyclesException(e.what());
+  }
 
   ModuleExecutionOrder::ModuleIdList list;
   for (ExecutionOrder::iterator i = order.begin(); i != order.end(); ++i) 
@@ -77,4 +84,9 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
   }
 
   return ModuleExecutionOrder(list);
+}
+
+NetworkHasCyclesException::NetworkHasCyclesException(const char* str)
+  : std::invalid_argument(str) 
+{
 }

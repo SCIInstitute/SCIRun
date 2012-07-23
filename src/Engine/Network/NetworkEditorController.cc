@@ -119,5 +119,13 @@ void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::Executa
 {
   BoostGraphSerialScheduler scheduler;
   LinearSerialNetworkExecutor executor;
-  executor.executeAll(lookup, scheduler.schedule(*theNetwork_));
+  try
+  {
+    executor.executeAll(lookup, scheduler.schedule(*theNetwork_));
+  }
+  catch (NetworkHasCyclesException&)
+  {
+    std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+  }
+  
 }

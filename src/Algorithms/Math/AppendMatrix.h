@@ -38,16 +38,17 @@
 namespace SCIRun {
 namespace Algorithms {
 namespace Math {
-  //
-  //class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
-  //{
-  //public:
-  //  typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
-  //  typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
-  //  typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
+  
+  class SCISHARE AppendMatrixAlgorithm : public AlgorithmBase
+  {
+  public:
+    enum Option { ROWS, COLUMNS};
+    typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
+    typedef Option Parameters;  
+    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Outputs;
 
-  //  Outputs run(const Inputs& input, const Parameters& params = 0) const;
-  //};
+    Outputs run(const Inputs& input, const Parameters& params) const;
+  };
 
 }}}
 

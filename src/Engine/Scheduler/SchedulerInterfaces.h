@@ -31,6 +31,7 @@
 
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <list>
+#include <stdexcept>
 #include <Engine/Scheduler/Share.h>
 
 namespace SCIRun {
@@ -49,6 +50,12 @@ namespace Engine {
     const_iterator end() const;
   private:
     ModuleIdList list_;
+  };
+
+  class NetworkHasCyclesException : public std::invalid_argument
+  {
+  public:
+    explicit NetworkHasCyclesException(const char* str);
   };
 
   //Serial
