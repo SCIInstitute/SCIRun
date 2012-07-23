@@ -57,13 +57,16 @@ public:
   explicit RenderWindow(QWidget *parent = 0);
   ~RenderWindow();
 
-  // Hack: Accepts a 6xn matrix whose format is as follows.
-  //  rows 1..3 - direction of vectors.
-  //  rows 4..6 - position of vectors in 3D space.
+  /// Hack: Accepts a 6xn matrix whose format is as follows.
+  ///  rows 1..3 - direction of vectors.
+  ///  rows 4..6 - position of vectors in 3D space.
   virtual void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>& m);
 
-  // Change default text output
+  /// Change default text output
   virtual void setText(const char* text);
+
+  /// Clear the scene of all actors.
+  virtual void clearScene();
 
   virtual void bringToFront();
     
