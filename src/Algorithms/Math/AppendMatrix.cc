@@ -27,11 +27,44 @@
 */
 
 #include <Algorithms/Math/AppendMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Domain::Datatypes;
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
 {
+  DenseMatrixConstHandle lhs = input.get<0>();
+  DenseMatrixConstHandle rhs = input.get<1>();
+  if (!lhs || !rhs)
+    return Outputs(); //TODO: error
 
-  return AppendMatrixAlgorithm::Outputs();
+  if (params == ROWS)
+  {
+    if (lhs->ncols() != rhs->ncols())
+      return Outputs(); //TODO: error
+
+    DenseMatrixHandle output(new DenseMatrix(lhs->nrows() + rhs->nrows(), lhs->ncols()));
+    for (int i = 0; i < lhs->nrows(); ++i)
+      for (int j = 0; j < lhs->ncols(); ++j)
+        (*output)(i,j) = (*lhs)(i,j);
+    for (int i = 0; i < rhs->nrows(); ++i)
+      for (int j = 0; j < rhs->ncols(); ++j)
+        (*output)(i + lhs->nrows(), j) = (*rhs)(i,j);
+    return output;
+  }
+  else // columns
+  {
+    if (lhs->nrows() != rhs->nrows())
+      return Outputs(); //TODO: error
+
+    DenseMatrixHandle output(new DenseMatrix(lhs->nrows(), lhs->ncols() + rhs->ncols()));
+    for (int i = 0; i < lhs->nrows(); ++i)
+      for (int j = 0; j < lhs->ncols(); ++j)
+        (*output)(i,j) = (*lhs)(i,j);
+    for (int i = 0; i < rhs->nrows(); ++i)
+      for (int j = 0; j < rhs->ncols(); ++j)
+        (*output)(i, j + lhs->ncols()) = (*rhs)(i,j);
+    return output;
+  }
 }

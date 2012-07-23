@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_MATRIX_COMPARISON_H 
 
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 
 namespace SCIRun {
 namespace Domain {

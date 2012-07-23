@@ -32,6 +32,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
+
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
 
@@ -56,9 +57,10 @@ TEST(AppendMatrixAlgorithmTests, CanAppendRows)
   DenseMatrixHandle m2(matrix1());
   AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
 
+  EXPECT_EQ(6, result->nrows());
+  EXPECT_EQ(4, result->ncols());
 
-
-  ASSERT_TRUE(false);
+  std::cout << *result << std::endl;
 }
 
 TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
@@ -69,9 +71,22 @@ TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
   DenseMatrixHandle m2(matrix1());
   AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
 
+  EXPECT_EQ(3, result->nrows());
+  EXPECT_EQ(8, result->ncols());
 
+  std::cout << *result << std::endl;
+}
 
-  ASSERT_TRUE(false);
+TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
+{
+  //TODO: should return with error.
+  AppendMatrixAlgorithm algo;
+
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(Zero.clone());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+
+  ASSERT_FALSE(result);
 }
 
 TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
