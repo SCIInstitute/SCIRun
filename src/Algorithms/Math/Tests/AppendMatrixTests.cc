@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 
-#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
@@ -48,27 +48,36 @@ namespace
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
-TEST(AppendMatrixAlgorithmTests, A)
+TEST(AppendMatrixAlgorithmTests, CanAppendRows)
 {
-  ASSERT_TRUE(false);
-  ReportMatrixInfoAlgorithm algo;
+  AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
-  EXPECT_EQ(-5, result.get<4>());
-  EXPECT_EQ(4, result.get<5>());
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(matrix1());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+
+
+
+  ASSERT_TRUE(false);
+}
+
+TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
+{
+  AppendMatrixAlgorithm algo;
+
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(matrix1());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
+
+
+
+  ASSERT_TRUE(false);
 }
 
 TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
 {
-  ASSERT_TRUE(false);
-  ReportMatrixInfoAlgorithm algo;
+  AppendMatrixAlgorithm algo;
 
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(DenseMatrixHandle());
-  EXPECT_EQ("<null>", result.get<0>());
-  EXPECT_EQ(0, result.get<1>());
-  EXPECT_EQ(0, result.get<2>());
-  EXPECT_EQ(0, result.get<3>());
-  EXPECT_EQ(0, result.get<4>());
-  EXPECT_EQ(0, result.get<5>());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
+  EXPECT_FALSE(result);
 }

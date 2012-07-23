@@ -64,6 +64,8 @@ public:
 
   // Change default text output
   virtual void setText(const char* text);
+
+  virtual void bringToFront();
     
 private:
 

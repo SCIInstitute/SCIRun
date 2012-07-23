@@ -187,7 +187,6 @@ void RenderWindow::setupHelixVectorField()
 void RenderWindow::setText(const char* output)
 {
   mTxt->SetInput(output);
-  update();
 }
 
 //-----------------------------------------------------------------------------
@@ -351,3 +350,9 @@ vtkSmartPointer<vtkTransform> RenderWindow::matFromVecR(const vtkVector3d& x,
   return t;
 }
 
+void RenderWindow::bringToFront()
+{
+  //QDialog::setActiveWindow();
+  QDialog::raise();
+  QDialog::setFocus();
+}

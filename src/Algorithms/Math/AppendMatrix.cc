@@ -27,3 +27,11 @@
 */
 
 #include <Algorithms/Math/AppendMatrix.h>
+
+using namespace SCIRun::Algorithms::Math;
+
+AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
+{
+
+  return AppendMatrixAlgorithm::Outputs();
+}

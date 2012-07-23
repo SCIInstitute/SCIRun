@@ -79,6 +79,8 @@ void ViewScene::execute()
     }
     else
       std::cout << "No vector field input to ViewScene!" << std::endl;
+
+    renderer_->bringToFront();
   }
   else
   {
