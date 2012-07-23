@@ -45,7 +45,7 @@ namespace Math {
     enum Option { ROWS, COLUMNS};
     typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
     typedef Option Parameters;  
-    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Outputs;
+    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
   };

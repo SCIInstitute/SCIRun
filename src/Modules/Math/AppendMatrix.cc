@@ -27,34 +27,45 @@
 */
 
 #include <iostream>
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Modules/Math/AppendMatrix.h>
+#include <Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
 using namespace SCIRun::Domain::Networks;
-//TODO DAN
-//
-//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
-//
-//void ReportMatrixInfoModule::execute()
-//{
-//  DatatypeHandleOption input = get_input_handle(0);
-//  if (!input)
-//    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-//
-//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO: clean
-//  if (!matrix)
-//  {
-//    //TODO log error? send null? check standard practice.
-//    return;
-//  }
-//
-//  ReportMatrixInfoAlgorithm algo;
-//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-//  get_state()->setValue("ReportedInfo", output);
-//
-//  std::cout << "nothing outputted yet in ReportMatrixInfo...check state variable ReportedInfo" << std::endl;
-//}
+
+AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun")) {}
+
+void AppendMatrixModule::execute()
+{
+  DatatypeHandleOption lhs = get_input_handle(0);
+  if (!lhs)
+    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
+
+  DenseMatrixConstHandle matrixLHS = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO: clean
+  if (!matrixLHS)
+  {
+    //TODO log error? send null? check standard practice.
+    return;
+  }
+
+  DatatypeHandleOption rhs = get_input_handle(1);
+  if (!rhs)
+    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
+
+  DenseMatrixConstHandle matrixRHS = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO: clean
+  if (!matrixRHS)
+  {
+    //TODO log error? send null? check standard practice.
+    return;
+  }
+
+  AppendMatrixAlgorithm::Parameters param = any_cast_or_default<AppendMatrixAlgorithm::Parameters>(get_state()->getValue("AppendOption"));
+
+  AppendMatrixAlgorithm algo;
+  AppendMatrixAlgorithm::Outputs output = algo.run(AppendMatrixAlgorithm::Inputs(matrixLHS, matrixRHS), param);
+
+  send_output_handle(0, output);
+}

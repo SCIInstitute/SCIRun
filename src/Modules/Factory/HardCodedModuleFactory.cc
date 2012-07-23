@@ -157,9 +157,9 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("AppendMatrix") != std::string::npos)
   {
-    //description.input_ports_ = AppendMatrixModule::inputPortDescription(AppendMatrixModule::inputPort0Name(), AppendMatrixModule::inputPort1Name());
-    //description.output_ports_ += AppendMatrixModule::outputPortDescription(AppendMatrixModule::outputPort0Name());
-    //description.maker_ = boost::factory<AppendMatrixModule*>();
+    description.input_ports_ = AppendMatrixModule::inputPortDescription(AppendMatrixModule::inputPort0Name(), AppendMatrixModule::inputPort1Name());
+    description.output_ports_ += AppendMatrixModule::outputPortDescription(AppendMatrixModule::outputPort0Name());
+    description.maker_ = boost::factory<AppendMatrixModule*>();
   }
   else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
   {

@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_REPORTMATRIXINFO_H
-#define MODULES_MATH_REPORTMATRIXINFO_H
+#ifndef MODULES_MATH_APPENDMATRIX_H
+#define MODULES_MATH_APPENDMATRIX_H
 
 #include <Core/Dataflow/Network/Module.h>
 #include <Modules/Math/Share.h>
@@ -35,15 +35,18 @@
 namespace SCIRun {
 namespace Modules {
 namespace Math {
-  //TODO DAN
-  //class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
-  //  public Has1InputPort<MatrixPortTag>
-  //{
-  //public:
-  //  ReportMatrixInfoModule();
-  //  virtual void execute();
-  //  static std::string inputPort0Name() { return "Input"; }
-  //};
+
+  class SCISHARE AppendMatrixModule : public SCIRun::Domain::Networks::Module,
+    public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    AppendMatrixModule();
+    virtual void execute();
+    static std::string inputPort0Name() { return "Left/Top Matrix"; }
+    static std::string inputPort1Name() { return "Right/Bottom Matrix"; }
+    static std::string outputPort0Name() { return "ResultMatrix"; }
+  };
 }}}
 
 #endif

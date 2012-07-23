@@ -53,8 +53,8 @@ public:
   virtual int moduleExecutionTime();
 
 private Q_SLOTS:
-//  void pushFileNameToState(const QString& str);
-//  void saveFile();
+  void isRows();
+  void isCols();
 private:
   SCIRun::Domain::Networks::ModuleStateHandle state_;
 };

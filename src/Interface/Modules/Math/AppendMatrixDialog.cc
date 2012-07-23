@@ -28,10 +28,11 @@
 
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#include <Algorithms/Math/AppendMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Algorithms::Math;
 
 AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,8 +44,8 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
+  connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
 }
 
 int AppendMatrixDialog::moduleExecutionTime()
@@ -52,13 +53,12 @@ int AppendMatrixDialog::moduleExecutionTime()
   return 2000;
 }
 
-//void AppendMatrixDialog::pushFileNameToState(const QString& str) 
-//{
-//  std::cout << "filename set on state object" << std::endl;
-//  state_->setValue("FileName", str.toStdString());
-//}
-//
-//void AppendMatrixDialog::saveFile()
-//{
-//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
-//}
+void AppendMatrixDialog::isRows()
+{
+  state_->setValue("AppendOption", AppendMatrixAlgorithm::ROWS);
+}
+
+void AppendMatrixDialog::isCols()
+{
+  state_->setValue("AppendOption", AppendMatrixAlgorithm::COLUMNS);
+}
