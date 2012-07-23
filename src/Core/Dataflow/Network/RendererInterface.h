@@ -44,6 +44,7 @@ namespace SCIRun {
         virtual ~RendererInterface() {}
         virtual void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrix& m) = 0;
         virtual void setText(const char* text) = 0;
+        virtual void clearScene() = 0;
       };
 
 }}}

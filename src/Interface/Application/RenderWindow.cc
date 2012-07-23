@@ -77,8 +77,6 @@ RenderWindow::RenderWindow(QWidget *parent) :
   mArrowMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
   mArrowMapper->SetInputConnection(mArrowSource->GetOutputPort());
 
-  setupHelixVectorField();
-
   mTxt = vtkSmartPointer<vtkTextActor>::New();
   mTxt->SetDisplayPosition(90, 50);
 
@@ -87,8 +85,6 @@ RenderWindow::RenderWindow(QWidget *parent) :
   txtProp->BoldOn();
 
   mRen->AddActor2D(mTxt);
-
-  setText("This is a vector field!");
 }
 
 
@@ -188,6 +184,22 @@ void RenderWindow::setText(const char* output)
 {
   mTxt->SetInput(output);
   update();
+}
+
+//-----------------------------------------------------------------------------
+void RenderWindow::clearScene()
+{
+  mRen->GetViewProps()->RemoveAllItems();
+
+  // Rebuild text actor.
+  mTxt = vtkSmartPointer<vtkTextActor>::New();
+  mTxt->SetDisplayPosition(90, 50);
+
+  vtkTextProperty* txtProp = mTxt->GetTextProperty();
+  txtProp->SetFontSize(18);
+  txtProp->BoldOn();
+
+  mRen->AddActor2D(mTxt);
 }
 
 //-----------------------------------------------------------------------------
