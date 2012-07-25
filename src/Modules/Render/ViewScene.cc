@@ -53,6 +53,7 @@ void ViewScene::execute()
 
   if (renderer_)
   {
+    renderer_->clearScene();
     std::cout << "Renderer set! Attempting to visualize some data." << std::endl;
     if (strInput)
     {

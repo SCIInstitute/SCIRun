@@ -52,6 +52,7 @@ void ReadMatrixModule::execute()
 
   ReadMatrixAlgorithm algo;
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
+  std::cout << "ReadMatrixAlgorithm complete." << std::endl;
   send_output_handle(0, matrix);
   StringHandle file(new String(filename_));
   send_output_handle(1, file);

@@ -181,7 +181,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 void SCIRunMainWindow::saveNetwork()
 {
-  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn");
+  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
   networkEditor_->controller_->saveNetwork(filename.toStdString());
 }
 

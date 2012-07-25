@@ -31,18 +31,34 @@
 #include <Core/Dataflow/Network/ModuleInterface.h>
 #include <Core/Dataflow/Network/NetworkInterface.h>
 #include <boost/foreach.hpp>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
+struct LinearExecution
 {
-  BOOST_FOREACH(const std::string& id, order)
+  LinearExecution(const ExecutableLookup& lookup, ModuleExecutionOrder order) : lookup_(lookup), order_(order)
   {
-    ExecutableObject* obj = lookup.lookupExecutable(id);
-    if (obj)
+  }
+  void operator()() const
+  {
+    BOOST_FOREACH(const std::string& id, order_)
     {
-      obj->execute();
+      ExecutableObject* obj = lookup_.lookupExecutable(id);
+      if (obj)
+      {
+        obj->execute();
+      }
     }
   }
+  const ExecutableLookup& lookup_;
+  ModuleExecutionOrder order_;
+};
+
+void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order)
+{
+  LinearExecution runner(lookup, order);
+  //runner();
+  boost::thread execution = boost::thread(runner);
 }

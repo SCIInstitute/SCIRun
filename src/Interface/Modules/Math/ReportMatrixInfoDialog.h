@@ -51,7 +51,7 @@ public:
     SCIRun::Domain::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
-
+  virtual void moduleExecuted() { pullAndDisplayInfo(); }
 private Q_SLOTS:
   void pullAndDisplayInfo();
 private:

@@ -82,6 +82,7 @@ Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
+  void moduleExecuted();
 private:
   Ports inputPorts_;
   Ports outputPorts_;

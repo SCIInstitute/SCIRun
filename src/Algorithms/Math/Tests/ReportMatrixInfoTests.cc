@@ -28,9 +28,11 @@
 
 #include <gtest/gtest.h>
 
+#include <fstream>
 #include <Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
@@ -105,4 +107,42 @@ TEST(ReportMatrixInfoAlgorithmTests, NullInputReturnsDummyValues)
   EXPECT_EQ(0, result.get<3>());
   EXPECT_EQ(0, result.get<4>());
   EXPECT_EQ(0, result.get<5>());
+}
+
+TEST(BigVectorFieldFile, DISABLED_MakeIt)
+{
+  const size_t dim = 10;
+  const size_t cols = 3 * dim * dim * dim;
+  DenseMatrix m(6, cols);
+  size_t col = 0;
+  for (int d = 0; d < 3; ++d)
+  {
+    for (size_t i = 0; i < dim; ++i)
+    {
+      for (size_t j = 0; j < dim; ++j)
+      {
+        for (size_t k = 0; k < dim; ++k)
+        {
+          m(0, col) = (col % 3) == 0;
+          m(1, col) = (col % 3) == 1;
+          m(2, col) = (col % 3) == 2;
+          m(3, col) = i;
+          m(4, col) = j;
+          m(5, col) = k;
+          col++;
+        }
+      }
+    }
+  }
+  std::ofstream file("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\danBigMatrix.txt");
+  file << m;
+}
+
+TEST(BigVectorFieldFile, DISABLED_ReadIt)
+{
+  std::ifstream file("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\danBigMatrix.txt");
+  DenseMatrix m;
+  file >> m;
+  EXPECT_EQ(6, m.nrows());
+  EXPECT_EQ(3000, m.ncols());
 }

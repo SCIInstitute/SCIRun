@@ -44,6 +44,8 @@ namespace Gui {
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
     virtual int moduleExecutionTime() = 0;
     //TODO: how to genericize this?  do we need to?
+  public Q_SLOTS:
+    virtual void moduleExecuted() {}
   Q_SIGNALS:
     void executionTimeChanged(int time);
     void executeButtonPressed();
@@ -51,7 +53,6 @@ namespace Gui {
     explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) 
     {
       setModal(false);
-      
     }
   };
 
