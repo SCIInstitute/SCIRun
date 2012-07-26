@@ -51,7 +51,8 @@ namespace Gui {
     void removeModule(const std::string& id);
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
-    void saveNetwork(const std::string& filename);
+    SCIRun::Domain::Networks::NetworkXMLHandle saveNetwork() const;
+    void loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml);
     void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup);
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);

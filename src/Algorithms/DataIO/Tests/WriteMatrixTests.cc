@@ -79,8 +79,6 @@ TEST(WriteMatrixAlgorithmTest, TestToRealTextFile)
 
   DenseMatrixHandle m1(matrix1().clone());
   algo.run(m1, filename);
-
-  //EXPECT_TRUE(false);
 }
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
@@ -95,6 +93,4 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
   DenseMatrixConstHandle roundTrip = read.run(filename);
 
   EXPECT_EQ(*m1, *roundTrip);
-
-  //EXPECT_TRUE(false);
 }

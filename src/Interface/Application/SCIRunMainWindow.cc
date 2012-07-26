@@ -39,6 +39,9 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Engine/State/SimpleMapModuleState.h>
 
+#include <Core/Serialization/Network/NetworkXMLSerializer.h>
+#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+
 #ifdef BUILD_VTK_SUPPORT
 #include "RenderWindow.h"
 #endif
@@ -166,7 +169,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance()), _1));
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
-  //connect(this, SIGNAL(closed()), this, SLOT(...));
 
 #ifdef BUILD_VTK_SUPPORT
   // Build render window.
@@ -179,10 +181,35 @@ SCIRunMainWindow::SCIRunMainWindow()
 #endif
 }
 
+struct NetworkFile 
+{
+  NetworkXMLHandle network;
+  ModulePositions::Data modulePositions;
+  //todo: state;
+private:
+  friend class boost::serialization::access;
+  template <class Archive>
+  void serialize(Archive& ar, const unsigned int version)
+  {
+    ar & boost::serialization::make_nvp("networkInfo", *network);
+    ar & BOOST_SERIALIZATION_NVP(modulePositions);
+  }
+};
+
 void SCIRunMainWindow::saveNetwork()
 {
   QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
-  networkEditor_->controller_->saveNetwork(filename.toStdString());
+  NetworkXMLHandle data = networkEditor_->controller_->saveNetwork();
+
+  ModulePositions positions = networkEditor_->dumpModulePositions();
+
+  NetworkFile file;
+  file.network = data;
+  file.modulePositions = positions.modulePositions;
+
+  NetworkXMLSerializer serializer;
+  serializer.save_xml(file, filename.toStdString());
+  std::cout << "file save done." << std::endl;
 }
 
 void SCIRunMainWindow::ToggleRenderer()

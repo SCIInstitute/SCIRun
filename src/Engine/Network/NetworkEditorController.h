@@ -56,12 +56,14 @@ namespace Engine {
 
     void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup);
 
-    void saveNetwork(const std::string& filename) const;
-    void loadNetwork(const std::string& filename);
+    SCIRun::Domain::Networks::NetworkXMLHandle saveNetwork() const;
+    void loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml);
 
   private:
     void printNetwork() const;
     SCIRun::Domain::Networks::NetworkHandle theNetwork_;
+    SCIRun::Domain::Networks::ModuleFactoryHandle moduleFactory_;
+    SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory_;
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;

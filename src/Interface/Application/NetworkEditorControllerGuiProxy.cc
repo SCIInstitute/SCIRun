@@ -32,6 +32,7 @@
 
 using namespace SCIRun::Engine;
 using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
   
 NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller)
   : controller_(controller)
@@ -59,9 +60,14 @@ void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Domain::Net
   controller_->removeConnection(id);
 }
 
-void NetworkEditorControllerGuiProxy::saveNetwork(const std::string& filename)
+NetworkXMLHandle NetworkEditorControllerGuiProxy::saveNetwork() const
 {
-  controller_->saveNetwork(filename);
+  return controller_->saveNetwork();
+}
+
+void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml)
+{
+  return controller_->loadNetwork(xml);
 }
 
 void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)

@@ -42,7 +42,7 @@ using namespace SCIRun;
 using namespace SCIRun::Engine;
 using namespace SCIRun::Domain::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf)
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf) : moduleFactory_(mf), stateFactory_(sf)
 {
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
@@ -106,13 +106,16 @@ boost::signals2::connection NetworkEditorController::connectConnectionAdded(cons
   return connectionAdded_.connect(subscriber);
 }
 
-void NetworkEditorController::saveNetwork(const std::string& filename) const
+NetworkXMLHandle NetworkEditorController::saveNetwork() const
 {
-  std::cout << "??? how to get the window position info????" << std::endl;
   NetworkToXML conv;
-  NetworkXMLHandle xml = conv.to_xml_data(theNetwork_);
-  NetworkXMLSerializer serializer;
-  serializer.save_xml(*xml, filename);
+  return conv.to_xml_data(theNetwork_);
+}
+
+void NetworkEditorController::loadNetwork(const NetworkXML& xml)
+{
+  NetworkXMLConverter conv(moduleFactory_, stateFactory_);
+  theNetwork_ = conv.from_xml_data(xml);
 }
 
 void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)
