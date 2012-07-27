@@ -42,6 +42,7 @@ namespace State {
   public:
     virtual boost::any getValue(const std::string& parameterName) const;
     virtual void setValue(const std::string& parameterName, boost::any value);
+    virtual std::vector<std::string> getKeys() const;
     virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
   private:
     typedef std::map<std::string, boost::any> StateMap;

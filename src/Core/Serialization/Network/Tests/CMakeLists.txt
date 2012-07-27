@@ -29,6 +29,7 @@
 SET(Core_Serialization_Network_Tests_SRCS
   ModuleSerializationTests.cc
   NetworkSerializationTests.cc
+  StateSerializationTests.cc
 )
 
 SET(Core_Serialization_Network_Tests_HEADERS
@@ -43,6 +44,7 @@ Core_Dataflow_Network
 Core_Serialization_Network
 Core_Datatypes
 Modules_Factory
+Engine_State
 gtest_main
 gtest
 gmock

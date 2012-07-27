@@ -30,6 +30,7 @@
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Core/Dataflow/Network/Network.h> //TODO: need network factory??
 #include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Serialization/Network/XMLSerializer.h>
 #include <fstream>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
@@ -87,19 +88,22 @@ NetworkXMLHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 }
 
 
+void NetworkXMLSerializer::save_xml(const NetworkXML& data, const std::string& filename)
+{
+  XMLSerializer::save_xml(data, filename, "network");
+}
+
+void NetworkXMLSerializer::save_xml(const NetworkXML& data, std::ostream& ostr)
+{
+  XMLSerializer::save_xml(data, ostr, "network");
+}
 
 NetworkXMLHandle NetworkXMLSerializer::load_xml(const std::string& filename)
 {
-  std::ifstream ifs(filename.c_str());
-  return load_xml(ifs);
+  return XMLSerializer::load_xml<NetworkXML>(filename);
 }
 
 NetworkXMLHandle NetworkXMLSerializer::load_xml(std::istream& istr)
 {
-  if (!istr.good())
-    return NetworkXMLHandle();
-  boost::archive::xml_iarchive ia(istr);
-  NetworkXMLHandle nh(new NetworkXML);
-  ia >> BOOST_SERIALIZATION_NVP(*nh);
-  return nh;
+  return XMLSerializer::load_xml<NetworkXML>(istr);
 }

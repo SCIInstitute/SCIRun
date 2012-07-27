@@ -39,7 +39,7 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Engine/State/SimpleMapModuleState.h>
 
-#include <Core/Serialization/Network/NetworkXMLSerializer.h>
+#include <Core/Serialization/Network/XMLSerializer.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #ifdef BUILD_VTK_SUPPORT
@@ -194,8 +194,7 @@ void SCIRunMainWindow::saveNetwork()
   file.network = data;
   file.modulePositions = positions;
 
-  NetworkXMLSerializer serializer;
-  serializer.save_xml(file, filename.toStdString());
+  XMLSerializer::save_xml(file, filename.toStdString(), "networkFile");
   std::cout << "file save done." << std::endl;
 }
 

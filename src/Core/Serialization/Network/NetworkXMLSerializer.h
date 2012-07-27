@@ -34,10 +34,6 @@
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
 #include <Core/Serialization/Network/Share.h>
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/foreach.hpp>
 
 namespace SCIRun {
 namespace Domain {
@@ -64,35 +60,14 @@ namespace Networks {
     ModuleStateFactoryHandle stateFactory_;
   };
 
-  //TODO: make generic
   class SCISHARE NetworkXMLSerializer : boost::noncopyable
   {
   public:
-    template <class Serializable>
-    void save_xml(const Serializable& data, const std::string& filename);
-    template <class Serializable>
-    void save_xml(const Serializable& data, std::ostream& ostr);
-
+    void save_xml(const NetworkXML& data, const std::string& filename);
+    void save_xml(const NetworkXML& data, std::ostream& ostr);
     NetworkXMLHandle load_xml(const std::string& filename);
     NetworkXMLHandle load_xml(std::istream& istr);
   };
-
-  template <class Serializable>
-  void NetworkXMLSerializer::save_xml(const Serializable& data, const std::string& filename)
-  {
-    std::ofstream ofs(filename.c_str());
-    save_xml(data, ofs);
-  }
-
-  template <class Serializable>
-  void NetworkXMLSerializer::save_xml(const Serializable& data, std::ostream& ostr)
-  {
-    if (!ostr.good())
-      return;
-    boost::archive::xml_oarchive oa(ostr);
-    oa << boost::serialization::make_nvp("network", data);
-  }
-
 }}}
 
 #endif

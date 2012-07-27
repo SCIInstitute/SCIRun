@@ -42,6 +42,7 @@ namespace SCIRun {
         public:
           MOCK_METHOD2(setValue, void(const std::string&, boost::any));
           MOCK_CONST_METHOD1(getValue, boost::any(const std::string&));
+          MOCK_CONST_METHOD0(getKeys, std::vector<std::string>());
           MOCK_METHOD1(connect_state_changed, boost::signals::connection(state_changed_sig_t::slot_function_type));
         };
 

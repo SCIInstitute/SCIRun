@@ -27,6 +27,7 @@
 */
 
 #include <Engine/State/SimpleMapModuleState.h>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;
@@ -47,6 +48,14 @@ void SimpleMapModuleState::setValue(const std::string& parameterName, boost::any
 boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
 {
   return sig_.connect(subscriber);
+}
+
+std::vector<std::string> SimpleMapModuleState::getKeys() const
+{
+  std::vector<std::string> keys;
+  BOOST_FOREACH(const StateMap::value_type& p, stateMap_)
+    keys.push_back(p.first);
+  return keys;
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

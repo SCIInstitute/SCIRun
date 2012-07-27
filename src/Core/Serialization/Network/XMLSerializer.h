@@ -26,56 +26,58 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H
-#define CORE_DATAFLOW_NETWORK_MODULE_STATE_INTERFACE_H 
 
-#include <string>
-#include <iostream>
-#include <boost/any.hpp>
-#include <boost/signal.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Dataflow/Network/Share.h>
+#ifndef CORE_SERIALIZATION_NETWORK_XML_SERIALIZER_H
+#define CORE_SERIALIZATION_NETWORK_XML_SERIALIZER_H 
+
+#include <boost/noncopyable.hpp>
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/foreach.hpp>
+
+#include <Core/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  class SCISHARE ModuleStateInterface
+  namespace XMLSerializer 
   {
-  public:
-    virtual ~ModuleStateInterface();
-    
-    virtual boost::any getValue(const std::string& parameterName) const = 0;
-    virtual void setValue(const std::string& parameterName, boost::any value) = 0;
-    virtual std::vector<std::string> getKeys() const = 0;
-
-    typedef boost::signal<void()> state_changed_sig_t;
-
-    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber) = 0;
-  };
-
-  class SCISHARE ModuleStateInterfaceFactory
-  {
-  public:
-    virtual ~ModuleStateInterfaceFactory();
-    virtual ModuleStateInterface* make_state(const std::string& name) const = 0;
-  };
-
-  //TODO split
-  template <class T>
-  T any_cast_or_default(const boost::any& x)
-  {
-    try
+    template <class Serializable>
+    void save_xml(const Serializable& data, const std::string& filename, const std::string& rootName)
     {
-      return boost::any_cast<T>(x);
+      std::ofstream ofs(filename.c_str());
+      save_xml(data, ofs, rootName);
     }
-    catch (boost::bad_any_cast&)
+
+    template <class Serializable>
+    void save_xml(const Serializable& data, std::ostream& ostr, const std::string& rootName)
     {
-    	std::cout << "Attempted any_cast failed, returning default value." << std::endl;
-      return T();
+      if (!ostr.good())
+        return;
+      boost::archive::xml_oarchive oa(ostr);
+      oa << boost::serialization::make_nvp(rootName.c_str(), data);
+    }
+
+    template <class Serializable>
+    boost::shared_ptr<Serializable> load_xml(const std::string& filename)
+    {
+      std::ifstream ifs(filename.c_str());
+      return load_xml<Serializable>(ifs);
+    }
+
+    template <class Serializable>
+    boost::shared_ptr<Serializable> load_xml(std::istream& istr)
+    {
+      if (!istr.good())
+        return boost::shared_ptr<Serializable>();
+      boost::archive::xml_iarchive ia(istr);
+      boost::shared_ptr<Serializable> nh(new Serializable);
+      ia >> BOOST_SERIALIZATION_NVP(*nh);
+      return nh;
     }
   }
-
 }}}
 
 #endif

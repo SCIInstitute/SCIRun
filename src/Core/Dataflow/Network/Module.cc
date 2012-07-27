@@ -57,6 +57,11 @@ public:
     return boost::any();
   }
 
+  virtual std::vector<std::string> getKeys() const
+  {
+    return std::vector<std::string>();
+  }
+
   virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
   {
     return boost::signals::connection();

@@ -36,6 +36,7 @@ SET(Core_Serialization_Network_HEADERS
   ModuleDescriptionSerialization.h
   NetworkDescriptionSerialization.h
   NetworkXMLSerializer.h
+  XMLSerializer.h
   Share.h
 )
 
