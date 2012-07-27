@@ -40,6 +40,7 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Modules/ModuleDialogGeneric.h> //TODO
+#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/serialization/nvp.hpp>//TODO
@@ -404,28 +405,18 @@ void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
 }
 
-void NetworkEditor::dumpModulePositions()
+SCIRun::Domain::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions()
 {
-  Logger::Instance()->log("########### module positions:\n");
-  modulePositions_.clear();
+  ModulePositionsHandle positions(new ModulePositions);
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
-    std::ostringstream ostr;
-    ostr << item->type() << " : " << "[" << item->scenePos().x() << ", " << item->scenePos().y() << "]";
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
     {
-      modulePositions_[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
-      ostr << " moduleId: " << w->getModuleWidget()->getModuleId();
+      positions->modulePositions[w->getModuleWidget()->getModuleId()] = std::make_pair(item->scenePos().x(), item->scenePos().y());
     }
-    Logger::Instance()->log(ostr.str().c_str());
   }
 
-  {
-    std::ofstream oxml("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\modulePositions.xml");
-    boost::archive::xml_oarchive oa(oxml);
-    oa << boost::serialization::make_nvp("modulePositions", modulePositions_);
-    //Logger::Instance()->log(oxml.str().c_str());
-  }
+  return positions;
 }
 
 void NetworkEditor::executeAll()

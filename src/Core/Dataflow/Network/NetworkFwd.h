@@ -56,6 +56,7 @@ class RendererInterface;
 class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
+struct ModulePositions;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;
@@ -69,6 +70,7 @@ typedef boost::shared_ptr<ModuleFactory> ModuleFactoryHandle;
 typedef boost::shared_ptr<DatatypeSinkInterface> DatatypeSinkInterfaceHandle;
 typedef boost::shared_ptr<DatatypeSourceInterface> DatatypeSourceInterfaceHandle;
 typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
+typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
 
 }}}
 

@@ -82,22 +82,11 @@ NetworkXMLHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
     xmlData->modules[module->get_id()] = module->get_info();
   }
 
+  std::cout << "returning NetworkToXML::.." << std::endl;
   return xmlData;
 }
 
-void NetworkXMLSerializer::save_xml(const NetworkXML& data, const std::string& filename)
-{
-  std::ofstream ofs(filename.c_str());
-  save_xml(data, ofs);
-}
 
-void NetworkXMLSerializer::save_xml(const NetworkXML& data, std::ostream& ostr)
-{
-  if (!ostr.good())
-    return;
-  boost::archive::xml_oarchive oa(ostr);
-  oa << boost::serialization::make_nvp("network", data);
-}
 
 NetworkXMLHandle NetworkXMLSerializer::load_xml(const std::string& filename)
 {

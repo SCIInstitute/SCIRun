@@ -170,6 +170,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
 
+  moduleSelectorTreeWidget_->expandAll();
+
 #ifdef BUILD_VTK_SUPPORT
   // Build render window.
   renderWindow_ = new RenderWindow(this);
@@ -181,31 +183,16 @@ SCIRunMainWindow::SCIRunMainWindow()
 #endif
 }
 
-struct NetworkFile 
-{
-  NetworkXMLHandle network;
-  ModulePositions::Data modulePositions;
-  //todo: state;
-private:
-  friend class boost::serialization::access;
-  template <class Archive>
-  void serialize(Archive& ar, const unsigned int version)
-  {
-    ar & boost::serialization::make_nvp("networkInfo", *network);
-    ar & BOOST_SERIALIZATION_NVP(modulePositions);
-  }
-};
-
 void SCIRunMainWindow::saveNetwork()
 {
   QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
   NetworkXMLHandle data = networkEditor_->controller_->saveNetwork();
 
-  ModulePositions positions = networkEditor_->dumpModulePositions();
+  ModulePositionsHandle positions = networkEditor_->dumpModulePositions();
 
   NetworkFile file;
   file.network = data;
-  file.modulePositions = positions.modulePositions;
+  file.modulePositions = positions;
 
   NetworkXMLSerializer serializer;
   serializer.save_xml(file, filename.toStdString());

@@ -54,6 +54,27 @@ namespace Networks {
     {
       ar & BOOST_SERIALIZATION_NVP(modules);
       ar & BOOST_SERIALIZATION_NVP(connections);
+    } 
+  };
+
+  struct ModulePositions
+  {
+    typedef std::map<std::string, std::pair<double,double> > Data;
+    Data modulePositions;
+  };
+
+  struct SCISHARE NetworkFile 
+  {
+    NetworkXMLHandle network;
+    ModulePositionsHandle modulePositions;
+    //todo: state;
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("networkInfo", *network);
+      ar & boost::serialization::make_nvp("modulePositions", modulePositions->modulePositions);
     }
   };
 

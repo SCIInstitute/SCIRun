@@ -73,6 +73,8 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
     void executeAll();
+    //TODO: break out, unit test
+    SCIRun::Domain::Networks::ModulePositionsHandle dumpModulePositions();
   Q_SIGNALS:
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
@@ -85,7 +87,6 @@ namespace Gui {
     void sendToBack();
     void properties();
     void updateActions();
-    void dumpModulePositions();
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
@@ -125,8 +126,6 @@ namespace Gui {
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
-
-    std::map<std::string, std::pair<double,double> > modulePositions_;
   };
 
 }

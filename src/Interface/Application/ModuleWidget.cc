@@ -67,6 +67,12 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::Module
   addPortLayouts();
   addPorts(*theModule);
 
+  //TODO: this code should be used to set the correct sizes.
+  //int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
+  //titleLabel_->setMinimumWidth(pixelWidth + 10);
+
+  //setMinimumSize(pixelWidth + 10, this->minimumHeight());
+
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(openOptionsDialog()));
 }
 

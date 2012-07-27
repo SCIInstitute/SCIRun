@@ -185,9 +185,15 @@
        <property name="selectionMode">
         <enum>QAbstractItemView::SingleSelection</enum>
        </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
        <property name="animated">
         <bool>true</bool>
        </property>
+       <attribute name="headerMinimumSectionSize">
+        <number>50</number>
+       </attribute>
        <column>
         <property name="text">
          <string>Name</string>
@@ -204,66 +210,16 @@
         </property>
         <item>
          <property name="text">
-          <string>DataIO</string>
+          <string>Visualization</string>
          </property>
          <item>
           <property name="text">
-           <string>ReadMatrix</string>
+           <string>ShowString</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ReceiveScalar</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SendScalar</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>WriteMatrix</string>
-          </property>
-         </item>
-        </item>
-        <item>
-         <property name="text">
-          <string>Math</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>AppendMatrix</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>CreateMatrix_TODO</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>EvaluateLinearAlgebraBinary</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>EvaluateLinearAlgebraUnary</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ReportMatrixInfo</string>
-          </property>
-         </item>
-        </item>
-        <item>
-         <property name="text">
-          <string>Render</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>ViewScene</string>
+           <string>MatrixAsVectorField</string>
           </property>
          </item>
         </item>
@@ -279,16 +235,66 @@
         </item>
         <item>
          <property name="text">
-          <string>Visualization</string>
+          <string>Render</string>
          </property>
          <item>
           <property name="text">
-           <string>MatrixAsVectorField</string>
+           <string>ViewScene</string>
+          </property>
+         </item>
+        </item>
+        <item>
+         <property name="text">
+          <string>Math</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>ReportMatrixInfo</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ShowString</string>
+           <string>EvaluateLinearAlgebraUnary</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>EvaluateLinearAlgebraBinary</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CreateMatrix_TODO</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>AppendMatrix</string>
+          </property>
+         </item>
+        </item>
+        <item>
+         <property name="text">
+          <string>DataIO</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>WriteMatrix</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SendScalar</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ReceiveScalar</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ReadMatrix</string>
           </property>
          </item>
         </item>
