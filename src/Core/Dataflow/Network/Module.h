@@ -101,11 +101,6 @@ namespace Networks {
     static ModuleStateFactoryHandle defaultStateFactory_;
 
   protected:
-
-    //void set_modulename(const std::string& name)   { info_.module_name_ = name; }
-    //void set_categoryname(const std::string& name) { info_.category_name_ = name; }
-    //void set_packagename(const std::string& name)  { info_.package_name_ = name; }
-
     ModuleLookupInfo info_;
 
     double executionTime_;
@@ -148,10 +143,10 @@ namespace Modules
     }
   };
 
-  struct MatrixPortTag {};
-  struct ScalarPortTag {};
-  struct StringPortTag {};
-  struct GeometryPortTag {};
+  struct SCISHARE MatrixPortTag {};
+  struct SCISHARE ScalarPortTag {};
+  struct SCISHARE StringPortTag {};
+  struct SCISHARE GeometryPortTag {};
 
   inline SCIRun::Domain::Networks::PortDescription MakeMatrixPort(const std::string& name)
   {

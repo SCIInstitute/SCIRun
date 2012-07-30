@@ -33,12 +33,15 @@
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Algorithms;
+
+AlgorithmParameterName CreateStringModule::InputString("InputString");
 
 CreateStringModule::CreateStringModule() : Module(ModuleLookupInfo("CreateString", "String", "SCIRun")) {}
 
 void CreateStringModule::execute()
 {
-  stringValue_ = any_cast_or_default<std::string>(get_state()->getValue("InputString"));
+  stringValue_ = get_state()->getValue(CreateStringModule::InputString).getString();
 
   StringHandle s(new String(stringValue_));
   send_output_handle(0, s);

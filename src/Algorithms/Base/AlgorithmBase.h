@@ -29,26 +29,56 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
 #define ALGORITHMS_BASE_ALGORITHMBASE_H
 
+#include <string>
+#include <boost/variant.hpp>
 #include <Algorithms/Base/Share.h>
 
 namespace SCIRun {
 namespace Algorithms {
 
-class SCISHARE AlgorithmBase
-{
-public:
-  virtual ~AlgorithmBase();
-  
-  /*
-    TODO idea: make it mockable
-  
-  virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
+  struct SCISHARE AlgorithmParameterName
+  {
+    AlgorithmParameterName() : name_("<unspecified>") {}
+    explicit AlgorithmParameterName(const std::string& name) : name_(name) {}
+    std::string name_;
+    bool operator<(const AlgorithmParameterName& rhs) const
+    {
+      return name_ < rhs.name_;
+    }
+  };
 
-    ModuleParameterState: essentially a map of GuiVars. but need hooks for undo/redo and serialization
-    Input: tuple/heterogeneous vector of Datatypes
-    Output: tuple of Datatypes, possibly delay-executed
-  */
-};
+  class SCISHARE AlgorithmParameter
+  {
+  public:
+    typedef boost::variant<int,double,std::string> Value;
+
+    AlgorithmParameter() {}
+    AlgorithmParameter(const AlgorithmParameterName& name, const Value& value) : name_(name), value_(value) {}
+
+    AlgorithmParameterName name_;
+    Value value_;
+
+    int getInt() const;
+    double getDouble() const;
+    std::string getString() const;
+    //etc
+  };
+
+  class SCISHARE AlgorithmBase
+  {
+  public:
+    virtual ~AlgorithmBase();
+  
+    /*
+      TODO idea: make it mockable
+  
+    virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
+
+      ModuleParameterState: essentially a map of GuiVars. but need hooks for undo/redo and serialization
+      Input: tuple/heterogeneous vector of Datatypes
+      Output: tuple of Datatypes, possibly delay-executed
+    */
+  };
 
 }}
 

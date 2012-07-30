@@ -27,10 +27,13 @@
 */
 
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
+#include <Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <iostream>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Networks;
 
 WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle state,
@@ -55,7 +58,7 @@ int WriteMatrixDialog::moduleExecutionTime()
 void WriteMatrixDialog::pushFileNameToState(const QString& str) 
 {
   std::cout << "filename set on state object" << std::endl;
-  state_->setValue("FileName", str.toStdString());
+  state_->setValue(WriteMatrixAlgorithm::FileName, str.toStdString());
 }
 
 void WriteMatrixDialog::saveFile()

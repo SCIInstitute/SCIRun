@@ -70,5 +70,5 @@ void EvaluateLinearAlgebraBinaryDialog::pushOperationToState()
 {
   EvaluateLinearAlgebraBinaryAlgorithm::Operator op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
 
-  state_->setValue("Operation", op);
+  state_->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, op);
 }

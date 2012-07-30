@@ -32,3 +32,21 @@
 using namespace SCIRun::Algorithms;
 
 AlgorithmBase::~AlgorithmBase() {}
+
+int AlgorithmParameter::getInt() const
+{
+  const int* v = boost::get<int>(&value_);
+  return v ? *v : 0;
+}
+
+double AlgorithmParameter::getDouble() const
+{
+  const double* v = boost::get<double>(&value_);
+  return v ? *v : 0;
+}
+
+std::string AlgorithmParameter::getString() const
+{
+  const std::string* v = boost::get<std::string>(&value_);
+  return v ? *v : "";
+}

@@ -46,6 +46,9 @@ namespace Math {
       SCALAR_MULTIPLY
     };
 
+    static AlgorithmParameterName OperatorName;
+    static AlgorithmParameterName ScalarValue;
+
     typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
     typedef boost::tuple<Operator, boost::optional<double> > Parameters;
     typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;

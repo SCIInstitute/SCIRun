@@ -55,7 +55,7 @@ int ReportMatrixInfoDialog::moduleExecutionTime()
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 
 {
-  ReportMatrixInfoAlgorithm::Outputs info = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getValue("ReportedInfo"));
+  ReportMatrixInfoAlgorithm::Outputs info = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
   std::ostringstream ostr;
   ostr << info.get<0>() << "\n"
     << info.get<1>() << "\n"

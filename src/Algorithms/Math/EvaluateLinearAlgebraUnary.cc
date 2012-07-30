@@ -31,6 +31,10 @@
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Algorithms;
+
+AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::OperatorName("Operator");
+AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue("Scalar");
 
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {

@@ -29,8 +29,11 @@
 #include <Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
+using namespace SCIRun::Algorithms;
 using namespace SCIRun::Algorithms::Math;
 using namespace SCIRun::Domain::Datatypes;
+
+AlgorithmParameterName AppendMatrixAlgorithm::OptionName("RowsOrColumns");
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
 {

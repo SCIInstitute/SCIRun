@@ -31,12 +31,15 @@
 #include <Core/Serialization/Network/NetworkXMLSerializer.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Engine/State/SimpleMapModuleState.h>
+#include <Core/Serialization/Network/XMLSerializer.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
 #include <stdexcept>
 #include <fstream>
 #include <boost/assign.hpp>
+
+#include <boost/serialization/map.hpp>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::State;
@@ -86,6 +89,23 @@ NetworkXML exampleNet2()
   return network;
 }
 
+class SimpleMapModuleStateXML : public SimpleMapModuleState
+{
+public:
+  explicit SimpleMapModuleStateXML(const SimpleMapModuleState& state) : state_(state)
+  {
+  }
+private:
+  const SimpleMapModuleState& state_;
+
+  friend class boost::serialization::access;
+  template <class Archive>
+  void serialize(Archive& ar, const unsigned int version)
+  {
+    //ar & BOOST_SERIALIZATION_NVP(stateMap);
+  } 
+};
+
 TEST(SerializeStateTest, RoundTripData)
 {
   SimpleMapModuleState state;
@@ -96,21 +116,22 @@ TEST(SerializeStateTest, RoundTripData)
   state.setValue("string", s);
 
 
-  //SimpleMapModuleStateXML xml(state);
-  /*
-  NetworkXMLSerializer serializer;
+  SimpleMapModuleStateXML xml(state);
+  
   std::ostringstream ostr1;
-  serializer.save_xml(networkXML, ostr1);
+  XMLSerializer::save_xml(xml, ostr1, "state");
   const std::string xml1 = ostr1.str();
 
-  std::istringstream istr(xml1);
-  NetworkXMLHandle readIn = serializer.load_xml(istr);
-  ASSERT_TRUE(readIn);
-  std::ostringstream ostr2;
-  serializer.save_xml(*readIn, ostr2);
-  const std::string xml2 = ostr2.str();
+  std::cout << xml1 << std::endl;
 
-  EXPECT_EQ(xml1, xml2);*/
+  //std::istringstream istr(xml1);
+  //NetworkXMLHandle readIn = serializer.load_xml(istr);
+  //ASSERT_TRUE(readIn);
+  //std::ostringstream ostr2;
+  //serializer.save_xml(*readIn, ostr2);
+  //const std::string xml2 = ostr2.str();
+
+  //EXPECT_EQ(xml1, xml2);
 
 
   EXPECT_TRUE(false);
@@ -118,28 +139,28 @@ TEST(SerializeStateTest, RoundTripData)
 
 TEST(SerializeStateTest, RoundTripObject)
 {
-  NetworkXML networkXML = exampleNet2();
+  //NetworkXML networkXML = exampleNet2();
 
-  NetworkXMLSerializer serializer;
-  std::ostringstream ostr1;
+  //NetworkXMLSerializer serializer;
+  //std::ostringstream ostr1;
 
-  serializer.save_xml(networkXML, ostr1);
+  //serializer.save_xml(networkXML, ostr1);
 
-  std::cout << ostr1.str() << std::endl;
-  
-  ModuleFactoryHandle mf(new SCIRun::Modules::Factory::HardCodedModuleFactory);
-  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
-  NetworkHandle network = converter.from_xml_data(networkXML);
-  ASSERT_TRUE(network);
-  NetworkXMLHandle xml2 = converter.to_xml_data(network);
-  ASSERT_TRUE(xml2);
+  //std::cout << ostr1.str() << std::endl;
+  //
+  //ModuleFactoryHandle mf(new SCIRun::Modules::Factory::HardCodedModuleFactory);
+  //NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
+  //NetworkHandle network = converter.from_xml_data(networkXML);
+  //ASSERT_TRUE(network);
+  //NetworkXMLHandle xml2 = converter.to_xml_data(network);
+  //ASSERT_TRUE(xml2);
 
-  std::ostringstream ostr2;
-  serializer.save_xml(*xml2, ostr2);
+  //std::ostringstream ostr2;
+  //serializer.save_xml(*xml2, ostr2);
 
-  std::cout << ostr2.str() << std::endl;
+  //std::cout << ostr2.str() << std::endl;
 
-  EXPECT_EQ(ostr1.str(), ostr2.str());
+  //EXPECT_EQ(ostr1.str(), ostr2.str());
 
   EXPECT_TRUE(false);
 }

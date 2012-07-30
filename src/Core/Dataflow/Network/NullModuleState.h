@@ -26,40 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
-#define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
+#ifndef ENGINE_STATE_NULLMODULESTATE_H
+#define ENGINE_STATE_NULLMODULESTATE_H
 
-#include <map>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>
-#include <Engine/State/Share.h>
+#include <Core/Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Engine {
 namespace State {
   
-  class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
+  class SCISHARE NullModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
   {
   public:
-    virtual const Value getValue(const Name& name) const;
-    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value);
+    virtual void setValue(const Name&, const SCIRun::Algorithms::AlgorithmParameter::Value&);
+    virtual const Value getValue(const Name&) const;
     virtual Keys getKeys() const;
-    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
-
     virtual const TransientValue getTransientValue(const std::string& name) const;
     virtual void setTransientValue(const std::string& name, const TransientValue& value);
-
-  private:
-    typedef std::map<Name, Value> StateMap;
-    StateMap stateMap_;
-    typedef std::map<std::string, TransientValue> TransientStateMap;
-    TransientStateMap transientStateMap_;
-    state_changed_sig_t sig_;
-  };
-
-  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory
-  {
-  public:
-    virtual SCIRun::Domain::Networks::ModuleStateInterface* make_state(const std::string& name) const;
+    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
   };
 
 }}}

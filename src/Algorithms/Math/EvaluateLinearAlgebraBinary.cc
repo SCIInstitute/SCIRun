@@ -29,8 +29,11 @@
 #include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
+using namespace SCIRun::Algorithms;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
+
+AlgorithmParameterName EvaluateLinearAlgebraBinaryAlgorithm::OperatorName("Operator");
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
 {

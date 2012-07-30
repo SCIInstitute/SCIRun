@@ -27,11 +27,13 @@
 */
 
 #include <Interface/Modules/String/CreateStringDialog.h>
+#include <Modules/String/CreateString.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::StringProcessing;
 
 CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -43,7 +45,6 @@ CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandl
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(stringInput_, SIGNAL(textChanged(const QString&)), this, SLOT(pushStringToState(const QString&)));
 }
 
@@ -54,5 +55,5 @@ int CreateStringDialog::moduleExecutionTime()
 
 void CreateStringDialog::pushStringToState(const QString& str) 
 {
-  state_->setValue("InputString", str.toStdString());
+  state_->setValue(CreateStringModule::InputString, str.toStdString());
 }

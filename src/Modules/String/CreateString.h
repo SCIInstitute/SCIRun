@@ -43,6 +43,7 @@ namespace StringProcessing {
     CreateStringModule();
     virtual void execute();
     static std::string outputPort0Name() { return "String"; }
+    static Algorithms::AlgorithmParameterName InputString;
   private:
     std::string stringValue_;
   };

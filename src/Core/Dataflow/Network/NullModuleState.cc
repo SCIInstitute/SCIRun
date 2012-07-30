@@ -26,42 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
-#define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
+#include <Core/Dataflow/Network/NullModuleState.h>
 
-#include <map>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
-#include <Engine/State/Share.h>
-
-namespace SCIRun {
-namespace Domain {
-namespace State {
+using namespace SCIRun::Engine::State;
   
-  class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
-  {
-  public:
-    virtual const Value getValue(const Name& name) const;
-    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value);
-    virtual Keys getKeys() const;
-    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
+void NullModuleState::setValue(const Name&, const SCIRun::Algorithms::AlgorithmParameter::Value&)
+{
+}
 
-    virtual const TransientValue getTransientValue(const std::string& name) const;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value);
+const NullModuleState::Value NullModuleState::getValue(const Name&) const
+{
+  return Value();
+}
 
-  private:
-    typedef std::map<Name, Value> StateMap;
-    StateMap stateMap_;
-    typedef std::map<std::string, TransientValue> TransientStateMap;
-    TransientStateMap transientStateMap_;
-    state_changed_sig_t sig_;
-  };
+NullModuleState::Keys NullModuleState::getKeys() const
+{
+  return Keys();
+}
 
-  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory
-  {
-  public:
-    virtual SCIRun::Domain::Networks::ModuleStateInterface* make_state(const std::string& name) const;
-  };
+boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+{
+  return boost::signals::connection();
+}
 
-}}}
+const NullModuleState::TransientValue NullModuleState::getTransientValue(const std::string& name) const
+{
+  return TransientValue();
+}
 
-#endif
+void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+{
+}

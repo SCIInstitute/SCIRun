@@ -30,12 +30,15 @@
 #include <memory>
 #include <boost/lexical_cast.hpp>
 #include <boost/bind.hpp>
-#include <Core/Dataflow/Network/Module.h>
+
 #include <Core/Dataflow/Network/PortManager.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Dataflow/Network/DataflowInterfaces.h>
+#include <Core/Dataflow/Network/Module.h>
+#include <Core/Dataflow/Network/NullModuleState.h>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Engine::State;
 
 std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -43,31 +46,6 @@ std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
 }
 
 /*static*/ int Module::instanceCount_ = 0;
-
-//TODO MAKE NEW FILE 
-class NullModuleState : public ModuleStateInterface
-{
-public:
-  virtual void setValue(const std::string&, boost::any)
-  {
-  }
-
-  virtual boost::any getValue(const std::string&) const
-  {
-    return boost::any();
-  }
-
-  virtual std::vector<std::string> getKeys() const
-  {
-    return std::vector<std::string>();
-  }
-
-  virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
-  {
-    return boost::signals::connection();
-  }
-};
-
 
 Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,

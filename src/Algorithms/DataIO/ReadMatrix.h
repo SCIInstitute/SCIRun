@@ -45,6 +45,8 @@ namespace SCIRun {
         typedef std::string Parameters; 
         typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
+        static AlgorithmParameterName Filename;
+
         Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
       };
 

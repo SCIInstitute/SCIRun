@@ -31,16 +31,17 @@
 
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Algorithms;
 
-boost::any SimpleMapModuleState::getValue(const std::string& parameterName) const
+const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);
-  return i != stateMap_.end() ? i->second : boost::any();
+  return i != stateMap_.end() ? i->second : Value(AlgorithmParameterName(""), -1);
 }
 
-void SimpleMapModuleState::setValue(const std::string& parameterName, boost::any value)
+void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Algorithms::AlgorithmParameter::Value& value)
 {
-  stateMap_[parameterName] = value;
+  stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
 
   sig_();
 }
@@ -50,12 +51,25 @@ boost::signals::connection SimpleMapModuleState::connect_state_changed(state_cha
   return sig_.connect(subscriber);
 }
 
-std::vector<std::string> SimpleMapModuleState::getKeys() const
+ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
 {
-  std::vector<std::string> keys;
+  Keys keys;
   BOOST_FOREACH(const StateMap::value_type& p, stateMap_)
     keys.push_back(p.first);
   return keys;
+}
+
+const SimpleMapModuleState::TransientValue SimpleMapModuleState::getTransientValue(const std::string& name) const
+{
+  TransientStateMap::const_iterator i = transientStateMap_.find(name);
+  return i != transientStateMap_.end() ? i->second : TransientValue();
+}
+
+void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value)
+{
+  transientStateMap_[name] = value;
+
+  sig_();  //TODO: ???
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

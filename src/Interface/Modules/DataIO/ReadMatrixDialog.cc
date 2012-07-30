@@ -27,9 +27,12 @@
 */
 
 #include <Interface/Modules/DataIO/ReadMatrixDialog.h>
+#include <Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <iostream>
 #include <QFileDialog>
 
+using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 
@@ -54,8 +57,7 @@ int ReadMatrixDialog::moduleExecutionTime()
 
 void ReadMatrixDialog::pushFileNameToState(const QString& str) 
 {
-  std::cout << "filename set on state object" << std::endl;
-  state_->setValue("FileName", str.toStdString());
+  state_->setValue(ReadMatrixAlgorithm::Filename, str.toStdString());
 }
 
 void ReadMatrixDialog::openFile()

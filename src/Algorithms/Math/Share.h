@@ -26,10 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CORE_DATATYPES_SHARE_H
-#define CORE_DATATYPES_SHARE_H 
-
 #undef SCISHARE
 
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
@@ -40,6 +36,4 @@
 #endif
 #else
 #define SCISHARE
-#endif
-
 #endif

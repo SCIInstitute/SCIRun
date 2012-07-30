@@ -27,11 +27,13 @@
 */
 
 #include <boost/bind.hpp>
+#include <Modules/Basic/ReceiveScalar.h>
 #include <Interface/Modules/Basic/ReceiveScalarDialog.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Basic;
 
 ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
   QWidget* parent /* = 0 */)
@@ -41,8 +43,6 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
   setupUi(this);
   setWindowTitle(to_QString(name) + " --Receive");
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-  //connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
-  //connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SIGNAL(scalarValue(const QString&)));
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
 
@@ -56,6 +56,6 @@ int ReceiveScalarDialog::moduleExecutionTime()
 
 void ReceiveScalarDialog::pullScalarValueFromState() 
 {
-  double value = any_cast_or_default<double>(state_->getValue("ReceivedValue"));
+  double value = state_->getValue(ReceiveScalarModule::ReceivedValue).getDouble();
   scalarValueReceived_->setText(QString::number(value));
 }

@@ -27,10 +27,12 @@
 */
 
 #include <Interface/Modules/Basic/SendScalarDialog.h>
+#include <Modules/Basic/SendScalar.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Basic;
 
 SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -53,5 +55,5 @@ int SendScalarDialog::moduleExecutionTime()
 void SendScalarDialog::pushScalarValueToState(const QString& str) 
 {
   double value = str.toDouble();
-  state_->setValue("ValueToSend", value);
+  state_->setValue(SendScalarModule::ValueToSend, value);
 }

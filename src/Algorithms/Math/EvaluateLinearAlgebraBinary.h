@@ -45,6 +45,7 @@ namespace Math {
       SUBTRACT,
       MULTIPLY
     };
+    static AlgorithmParameterName OperatorName;
         
     typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
     typedef Operator Parameters;

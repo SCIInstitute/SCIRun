@@ -34,6 +34,9 @@
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms;
+
+AlgorithmParameterName ReceiveScalarModule::ReceivedValue("ReceivedValue");
 
 ReceiveScalarModule::ReceiveScalarModule()
   : Module(ModuleLookupInfo("ReceiveScalar", "Math", "SCIRun")),
@@ -50,7 +53,7 @@ void ReceiveScalarModule::execute()
     if (doubleData)
     {
       latestValue_ = doubleData->getValue();
-      get_state()->setValue("ReceivedValue", latestValue_);
+      get_state()->setValue(ReceivedValue, latestValue_);
     }
   }
 }

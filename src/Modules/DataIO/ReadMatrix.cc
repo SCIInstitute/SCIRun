@@ -42,7 +42,7 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
 
 void ReadMatrixModule::execute()
 {
-  filename_ = any_cast_or_default<std::string>(get_state()->getValue("FileName"));
+  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
   if (!boost::filesystem3::exists(filename_))
   {
     //error()
@@ -52,7 +52,6 @@ void ReadMatrixModule::execute()
 
   ReadMatrixAlgorithm algo;
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  std::cout << "ReadMatrixAlgorithm complete." << std::endl;
   send_output_handle(0, matrix);
   StringHandle file(new String(filename_));
   send_output_handle(1, file);

@@ -31,8 +31,9 @@
 
 #include <string>
 #include <iostream>
-#include <boost/any.hpp>
 #include <boost/signal.hpp>
+#include <boost/any.hpp>
+#include <Algorithms/Base/AlgorithmBase.h>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 
@@ -45,9 +46,19 @@ namespace Networks {
   public:
     virtual ~ModuleStateInterface();
     
-    virtual boost::any getValue(const std::string& parameterName) const = 0;
-    virtual void setValue(const std::string& parameterName, boost::any value) = 0;
-    virtual std::vector<std::string> getKeys() const = 0;
+    typedef std::vector<SCIRun::Algorithms::AlgorithmParameterName> Keys;
+    typedef SCIRun::Algorithms::AlgorithmParameterName Name;
+    typedef SCIRun::Algorithms::AlgorithmParameter Value;
+
+    //serialized state
+    virtual const Value getValue(const Name& name) const = 0;
+    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value) = 0;
+    virtual Keys getKeys() const = 0;
+
+    //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
+    typedef boost::any TransientValue;
+    virtual const TransientValue getTransientValue(const std::string& name) const = 0;
+    virtual void setTransientValue(const std::string& name, const TransientValue& value) = 0;
 
     typedef boost::signal<void()> state_changed_sig_t;
 
@@ -71,7 +82,7 @@ namespace Networks {
     }
     catch (boost::bad_any_cast&)
     {
-    	std::cout << "Attempted any_cast failed, returning default value." << std::endl;
+      std::cout << "Attempted any_cast failed, returning default value." << std::endl;
       return T();
     }
   }

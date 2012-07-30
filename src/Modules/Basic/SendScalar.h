@@ -44,6 +44,7 @@ namespace Basic {
     virtual void execute();
     void setScalar(double data);
     static std::string outputPort0Name() { return "Scalar"; }
+    static Algorithms::AlgorithmParameterName ValueToSend;
   private:
     double data_;
   };

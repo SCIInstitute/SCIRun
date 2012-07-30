@@ -44,7 +44,6 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(negateRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(scalarMultiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
@@ -73,7 +72,8 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
   double value = str.toDouble();
   EvaluateLinearAlgebraUnaryAlgorithm::Operator op = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) getSelectedOperator();
 
-  state_->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(op, value));
+  state_->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, op);
+  state_->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, value);
 }
 
 void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()

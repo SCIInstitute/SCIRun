@@ -55,10 +55,10 @@ int AppendMatrixDialog::moduleExecutionTime()
 
 void AppendMatrixDialog::isRows()
 {
-  state_->setValue("AppendOption", AppendMatrixAlgorithm::ROWS);
+  state_->setValue(AppendMatrixAlgorithm::OptionName, AppendMatrixAlgorithm::ROWS);
 }
 
 void AppendMatrixDialog::isCols()
 {
-  state_->setValue("AppendOption", AppendMatrixAlgorithm::COLUMNS);
+  state_->setValue(AppendMatrixAlgorithm::OptionName, AppendMatrixAlgorithm::COLUMNS);
 }

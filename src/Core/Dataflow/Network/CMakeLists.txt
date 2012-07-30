@@ -35,6 +35,7 @@ SET(Core_Dataflow_Network_SRCS
   ModuleInterface.cc
   ModuleStateInterface.cc
   Network.cc
+  NullModuleState.cc
   Port.cc
   PortInterface.cc
 )
@@ -51,6 +52,7 @@ SET(Core_Dataflow_Network_HEADERS
   Network.h
   NetworkFwd.h
   NetworkInterface.h
+  NullModuleState.h
   Port.h
   PortInterface.h
   PortManager.h
@@ -69,5 +71,6 @@ ADD_SUBDIRECTORY(Tests)
 
 TARGET_LINK_LIBRARIES(Core_Dataflow_Network
   Core_Datatypes
+  Algorithms_Base
   ${Boost_LIBRARIES}
 )

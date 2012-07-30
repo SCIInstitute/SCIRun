@@ -32,14 +32,18 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <boost/filesystem.hpp>
 
+using namespace SCIRun::Algorithms;
 using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
+
+AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
   if (!boost::filesystem3::exists(filename))
     return Outputs();
   
+  //TODO: push logging up hierarchy
   std::cout << "Algorithm start." << std::endl;
   std::ifstream reader(filename.c_str());
   DenseMatrixHandle matrix(new DenseMatrix);
