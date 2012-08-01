@@ -26,42 +26,51 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
-#define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
 
-#include <map>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
-#include <Engine/State/Share.h>
+#ifndef CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H
+#define CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H 
+
+#include <Engine/State/SimpleMapModuleState.h>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/variant.hpp>
+#include <Core/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace State {
-  
-  class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
+
+  class SimpleMapModuleStateXML : public SimpleMapModuleState
   {
-  public:
-    virtual const Value getValue(const Name& name) const;
-    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value);
-    virtual Keys getKeys() const;
-    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
-
-    virtual const TransientValue getTransientValue(const std::string& name) const;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value);
-
-  protected:
-    typedef std::map<Name, Value> StateMap;
-    StateMap stateMap_;
-    typedef std::map<std::string, TransientValue> TransientStateMap;
-    TransientStateMap transientStateMap_;
-    state_changed_sig_t sig_;
-  };
-
-  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory
-  {
-  public:
-    virtual SCIRun::Domain::Networks::ModuleStateInterface* make_state(const std::string& name) const;
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("stateMap", stateMap_);
+    } 
   };
 
 }}}
+
+namespace boost {
+  namespace serialization {
+
+    template<class Archive>
+    void serialize(Archive& ar, SCIRun::Algorithms::AlgorithmParameterName& apn, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("name", apn.name_);
+    }
+
+    template<class Archive>
+    void serialize(Archive& ar, SCIRun::Algorithms::AlgorithmParameter& ap, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("name", ap.name_.name_);
+      ar & boost::serialization::make_nvp("value", ap.value_);
+    }
+  }
+}
 
 #endif

@@ -30,6 +30,7 @@ SET(Core_Serialization_Network_SRCS
   ModuleDescriptionSerialization.cc
   NetworkDescriptionSerialization.cc
   NetworkXMLSerializer.cc
+  StateSerialization.cc
 )
 
 SET(Core_Serialization_Network_HEADERS
@@ -38,6 +39,7 @@ SET(Core_Serialization_Network_HEADERS
   NetworkXMLSerializer.h
   XMLSerializer.h
   Share.h
+  StateSerialization.h
 )
 
 ADD_LIBRARY(Core_Serialization_Network 

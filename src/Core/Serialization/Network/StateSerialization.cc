@@ -26,42 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
-#define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
+#include <Core/Serialization/Network/StateSerialization.h>
 
-#include <map>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
-#include <Engine/State/Share.h>
-
-namespace SCIRun {
-namespace Domain {
-namespace State {
-  
-  class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
-  {
-  public:
-    virtual const Value getValue(const Name& name) const;
-    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value);
-    virtual Keys getKeys() const;
-    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
-
-    virtual const TransientValue getTransientValue(const std::string& name) const;
-    virtual void setTransientValue(const std::string& name, const TransientValue& value);
-
-  protected:
-    typedef std::map<Name, Value> StateMap;
-    StateMap stateMap_;
-    typedef std::map<std::string, TransientValue> TransientStateMap;
-    TransientStateMap transientStateMap_;
-    state_changed_sig_t sig_;
-  };
-
-  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory
-  {
-  public:
-    virtual SCIRun::Domain::Networks::ModuleStateInterface* make_state(const std::string& name) const;
-  };
-
-}}}
-
-#endif
+//using namespace SCIRun::Domain::Networks;

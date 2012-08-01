@@ -26,11 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
-#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Serialization/Network/NetworkXMLSerializer.h>
-#include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Engine/State/SimpleMapModuleState.h>
 #include <Core/Serialization/Network/XMLSerializer.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -39,72 +34,56 @@
 #include <fstream>
 #include <boost/assign.hpp>
 
-#include <boost/serialization/map.hpp>
+#include <Core/Serialization/Network/StateSerialization.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::State;
+
 using namespace boost::assign;
 
-NetworkXML exampleNet2()
-{
-  ModuleLookupInfoXML info1;
-  info1.module_name_ = "EvaluateLinearAlgebraUnary";  
-  info1.category_name_ = "Math";
-  info1.package_name_ = "SCIRun";
-
-  ModuleLookupInfoXML info2;
-  info2.module_name_ = "ReadMatrix";  
-  info2.category_name_ = "DataIO";
-  info2.package_name_ = "SCIRun";
-
-  ModuleLookupInfoXML info3;
-  info3.module_name_ = "WriteMatrix";  
-  info3.category_name_ = "DataIO";
-  info3.package_name_ = "SCIRun";
-
-  ConnectionDescriptionXML conn;
-  conn.moduleId1_ = "ReadMatrix2";
-  conn.moduleId2_ = "EvaluateLinearAlgebraUnary1";
-  conn.port1_ = 0;
-  conn.port2_ = 0;
-
-  ConnectionDescriptionXML conn2;
-  conn2.moduleId1_ = "EvaluateLinearAlgebraUnary1";
-  conn2.moduleId2_ = "WriteMatrix3";
-  conn2.port1_ = 0;
-  conn2.port2_ = 0;
-
-  ConnectionsXML connections;
-  connections += conn2, conn;
-
-  ModuleMapXML mods;
-  mods["EvaluateLinearAlgebraUnary1"] = info1;
-  mods["ReadMatrix2"] = info2;
-  mods["WriteMatrix3"] = info3;
-
-  NetworkXML network;
-  network.connections = connections;
-  network.modules = mods;
-
-  return network;
-}
-
-class SimpleMapModuleStateXML : public SimpleMapModuleState
-{
-public:
-  explicit SimpleMapModuleStateXML(const SimpleMapModuleState& state) : state_(state)
-  {
-  }
-private:
-  const SimpleMapModuleState& state_;
-
-  friend class boost::serialization::access;
-  template <class Archive>
-  void serialize(Archive& ar, const unsigned int version)
-  {
-    //ar & BOOST_SERIALIZATION_NVP(stateMap);
-  } 
-};
+//NetworkXML exampleNet2()
+//{
+//  ModuleLookupInfoXML info1;
+//  info1.module_name_ = "EvaluateLinearAlgebraUnary";  
+//  info1.category_name_ = "Math";
+//  info1.package_name_ = "SCIRun";
+//
+//  ModuleLookupInfoXML info2;
+//  info2.module_name_ = "ReadMatrix";  
+//  info2.category_name_ = "DataIO";
+//  info2.package_name_ = "SCIRun";
+//
+//  ModuleLookupInfoXML info3;
+//  info3.module_name_ = "WriteMatrix";  
+//  info3.category_name_ = "DataIO";
+//  info3.package_name_ = "SCIRun";
+//
+//  ConnectionDescriptionXML conn;
+//  conn.moduleId1_ = "ReadMatrix2";
+//  conn.moduleId2_ = "EvaluateLinearAlgebraUnary1";
+//  conn.port1_ = 0;
+//  conn.port2_ = 0;
+//
+//  ConnectionDescriptionXML conn2;
+//  conn2.moduleId1_ = "EvaluateLinearAlgebraUnary1";
+//  conn2.moduleId2_ = "WriteMatrix3";
+//  conn2.port1_ = 0;
+//  conn2.port2_ = 0;
+//
+//  ConnectionsXML connections;
+//  connections += conn2, conn;
+//
+//  ModuleMapXML mods;
+//  mods["EvaluateLinearAlgebraUnary1"] = info1;
+//  mods["ReadMatrix2"] = info2;
+//  mods["WriteMatrix3"] = info3;
+//
+//  NetworkXML network;
+//  network.connections = connections;
+//  network.modules = mods;
+//
+//  return network;
+//}
 
 namespace 
 {
@@ -114,61 +93,34 @@ namespace
   AlgorithmParameterName stringName("string");
 }
 
-TEST(SerializeStateTest, RoundTripData)
+TEST(SerializeStateTest, RoundTrip)
 {
-  SimpleMapModuleState state;
+  SimpleMapModuleStateXML state;
 
   state.setValue(intName, 4);
   state.setValue(doubleName, 3.14);
   const std::string s = "hello";
   state.setValue(stringName, s);
 
-
-  SimpleMapModuleStateXML xml(state);
-  
   std::ostringstream ostr1;
-  XMLSerializer::save_xml(xml, ostr1, "state");
+  const std::string root = "state";
+  XMLSerializer::save_xml(state, ostr1, root);
   const std::string xml1 = ostr1.str();
 
   std::cout << xml1 << std::endl;
 
-  //std::istringstream istr(xml1);
-  //NetworkXMLHandle readIn = serializer.load_xml(istr);
-  //ASSERT_TRUE(readIn);
-  //std::ostringstream ostr2;
-  //serializer.save_xml(*readIn, ostr2);
-  //const std::string xml2 = ostr2.str();
+  std::istringstream istr(xml1);
+  boost::shared_ptr<SimpleMapModuleStateXML> readIn = XMLSerializer::load_xml<SimpleMapModuleStateXML>(istr);
+  ASSERT_TRUE(readIn);
+  std::ostringstream ostr2;
+  XMLSerializer::save_xml(*readIn, ostr2, root);
+  const std::string xml2 = ostr2.str();
 
-  //EXPECT_EQ(xml1, xml2);
+  std::cout << xml2 << std::endl;
 
+  EXPECT_EQ(xml1, xml2);
 
-  EXPECT_TRUE(false);
-}
-
-TEST(SerializeStateTest, RoundTripObject)
-{
-  //NetworkXML networkXML = exampleNet2();
-
-  //NetworkXMLSerializer serializer;
-  //std::ostringstream ostr1;
-
-  //serializer.save_xml(networkXML, ostr1);
-
-  //std::cout << ostr1.str() << std::endl;
-  //
-  //ModuleFactoryHandle mf(new SCIRun::Modules::Factory::HardCodedModuleFactory);
-  //NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
-  //NetworkHandle network = converter.from_xml_data(networkXML);
-  //ASSERT_TRUE(network);
-  //NetworkXMLHandle xml2 = converter.to_xml_data(network);
-  //ASSERT_TRUE(xml2);
-
-  //std::ostringstream ostr2;
-  //serializer.save_xml(*xml2, ostr2);
-
-  //std::cout << ostr2.str() << std::endl;
-
-  //EXPECT_EQ(ostr1.str(), ostr2.str());
-
-  EXPECT_TRUE(false);
+  EXPECT_EQ(4, readIn->getValue(intName).getInt());
+  EXPECT_EQ(3.14, readIn->getValue(doubleName).getDouble());
+  EXPECT_EQ(s, readIn->getValue(stringName).getString());
 }
