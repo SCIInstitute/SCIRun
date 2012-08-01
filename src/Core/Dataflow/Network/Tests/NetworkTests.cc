@@ -80,7 +80,7 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
 
   ConnectionId connId = network.connect(m1, 0, m2, 1);
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
+  EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
@@ -101,7 +101,7 @@ TEST(NetworkTests, CannotMakeSameConnectionTwice)
   
   ConnectionId connId = network.connect(m1, 0, m2, 1);
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
+  EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 
   ConnectionId connIdEmpty = network.connect(m1, 0, m2, 1);
   EXPECT_EQ(1, network.nconnections());
@@ -113,5 +113,5 @@ TEST(NetworkTests, CannotMakeSameConnectionTwice)
 
   connId = network.connect(m1, 0, m2, 1);
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p0_to_module2_p1", connId.id_);
+  EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 }

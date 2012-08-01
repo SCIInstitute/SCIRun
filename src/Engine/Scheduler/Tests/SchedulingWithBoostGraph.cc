@@ -61,6 +61,7 @@
 #include <boost/graph/dijkstra_shortest_paths.hpp>
 #include <boost/graph/visitors.hpp>
 #include <boost/foreach.hpp>
+#include <boost/thread.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
@@ -193,6 +194,9 @@ TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
   executor.executeAll(matrixMathNetwork, order);
+
+  //TODO: let executor thread finish.  should be an event generated or something.
+  boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 
   //grab reporting module state
   ReportMatrixInfoAlgorithm::Outputs reportOutput = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));

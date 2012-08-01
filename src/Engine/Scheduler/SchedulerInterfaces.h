@@ -73,6 +73,8 @@ namespace Engine {
   public:
     virtual ~NetworkExecutor();
     virtual void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
+    //TODO
+    // virtual void connectNetworkFinishedListener()...
   };
 
 }
