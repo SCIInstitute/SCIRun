@@ -45,6 +45,6 @@ void ReceiveTestMatrixModule::execute()
   if (data)
   {
     latestValue_ = boost::dynamic_pointer_cast<DenseMatrix>(*data);
-    get_state()->setValue("ReceivedMatrix", latestValue_);
+    get_state()->setTransientValue("ReceivedMatrix", latestValue_);
   }
 }

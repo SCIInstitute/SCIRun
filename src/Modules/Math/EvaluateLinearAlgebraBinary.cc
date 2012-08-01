@@ -61,7 +61,7 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   }
 
   ModuleStateHandle state = get_state();
-  EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraBinaryAlgorithm::Parameters>(state->getValue("Operation"));
+  EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = (EvaluateLinearAlgebraBinaryAlgorithm::Parameters)state->getValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName).getInt();
 
   EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO inject
   DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhsInput, rhsInput), oper); 

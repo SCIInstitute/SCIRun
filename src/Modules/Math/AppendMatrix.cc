@@ -62,7 +62,7 @@ void AppendMatrixModule::execute()
     return;
   }
 
-  AppendMatrixAlgorithm::Parameters param = any_cast_or_default<AppendMatrixAlgorithm::Parameters>(get_state()->getValue("AppendOption"));
+  AppendMatrixAlgorithm::Parameters param = (AppendMatrixAlgorithm::Parameters) get_state()->getValue(AppendMatrixAlgorithm::OptionName).getInt();
 
   AppendMatrixAlgorithm algo;
   AppendMatrixAlgorithm::Outputs output = algo.run(AppendMatrixAlgorithm::Inputs(matrixLHS, matrixRHS), param);

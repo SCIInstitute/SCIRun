@@ -113,9 +113,9 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   ASSERT_TRUE(evalModule != 0);
 
   DenseMatrixHandle input = matrix1();
-  sendModule->get_state()->setValue("MatrixToSend", input);
+  sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
-  process->get_state()->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::NEGATE));
+  process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   //manually execute the network, in the correct order.
   send->execute();
   process->execute();
@@ -127,12 +127,13 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
-  process->get_state()->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE));
+  process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
   EXPECT_EQ(transpose(*input), *receiveModule->latestReceivedMatrix());
 
-  process->get_state()->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.0));
+  process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 2.0);
   process->execute();
   receive->execute();
   EXPECT_EQ(2.0 * *input, *receiveModule->latestReceivedMatrix());
@@ -202,13 +203,14 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
   //Set module parameters.
-  matrix1Send->get_state()->setValue("MatrixToSend", matrix1());
-  matrix2Send->get_state()->setValue("MatrixToSend", matrix2());
-  transpose->get_state()->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE));
-  negate->get_state()->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::NEGATE));
-  scalar->get_state()->setValue("Operation", EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 4.0));
-  multiply->get_state()->setValue("Operation", EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY));
-  add->get_state()->setValue("Operation", EvaluateLinearAlgebraBinaryAlgorithm::Parameters(EvaluateLinearAlgebraBinaryAlgorithm::ADD));
+  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
+  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
+  transpose->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  negate->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 4.0);
+  multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+  add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
   
   //execute all manually, in order
   matrix1Send->execute();
@@ -222,8 +224,8 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   receive->execute();
 
   //grab reporting module state
-  ReportMatrixInfoAlgorithm::Outputs reportOutput = boost::any_cast<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getValue("ReportedInfo"));
-  DenseMatrixHandle receivedMatrix = boost::any_cast<DenseMatrixHandle>(receive->get_state()->getValue("ReceivedMatrix"));
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  DenseMatrixHandle receivedMatrix = any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
   ASSERT_TRUE(receivedMatrix);
   //verify results

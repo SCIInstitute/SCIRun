@@ -54,5 +54,5 @@ void ReportMatrixInfoModule::execute()
 
   ReportMatrixInfoAlgorithm algo;
   ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  get_state()->setValue("ReportedInfo", output);
+  get_state()->setTransientValue("ReportedInfo", output);
 }

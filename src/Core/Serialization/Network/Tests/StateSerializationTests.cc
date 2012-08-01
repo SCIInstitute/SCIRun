@@ -106,14 +106,22 @@ private:
   } 
 };
 
+namespace 
+{
+  using namespace SCIRun::Algorithms;
+  AlgorithmParameterName intName("int");
+  AlgorithmParameterName doubleName("double");
+  AlgorithmParameterName stringName("string");
+}
+
 TEST(SerializeStateTest, RoundTripData)
 {
   SimpleMapModuleState state;
 
-  state.setValue("int", 4);
-  state.setValue("double", 3.14);
+  state.setValue(intName, 4);
+  state.setValue(doubleName, 3.14);
   const std::string s = "hello";
-  state.setValue("string", s);
+  state.setValue(stringName, s);
 
 
   SimpleMapModuleStateXML xml(state);

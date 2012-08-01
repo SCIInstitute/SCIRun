@@ -27,6 +27,7 @@
 */
 
 #include <Core/Dataflow/Network/PortInterface.h>
+#include <Core/Dataflow/Network/RendererInterface.h>
 
 using namespace SCIRun::Domain::Networks;
 
@@ -39,5 +40,9 @@ InputPortInterface::~InputPortInterface()
 }
 
 OutputPortInterface::~OutputPortInterface()
+{
+}
+
+RendererInterface::~RendererInterface() 
 {
 }

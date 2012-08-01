@@ -59,9 +59,13 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 
   ModuleStateHandle state = get_state();
   
-  EvaluateLinearAlgebraUnaryAlgorithm::Parameters oper = any_cast_or_default<EvaluateLinearAlgebraUnaryAlgorithm::Parameters>(state->getValue("Operation"));
+  EvaluateLinearAlgebraUnaryAlgorithm::Operator oper = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) 
+    state->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt();
+  double scalar = state->getValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue).getDouble();
+
+  EvaluateLinearAlgebraUnaryAlgorithm::Parameters params(oper, scalar);
   EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO inject
-  DenseMatrixHandle output = algo.run(denseInput, oper);  //TODO
+  DenseMatrixHandle output = algo.run(denseInput, params);  //TODO
   send_output_handle(0, output);
   
 }

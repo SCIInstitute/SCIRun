@@ -40,9 +40,11 @@ namespace SCIRun {
         class MockModuleState : public ModuleStateInterface
         {
         public:
-          MOCK_METHOD2(setValue, void(const std::string&, boost::any));
-          MOCK_CONST_METHOD1(getValue, boost::any(const std::string&));
-          MOCK_CONST_METHOD0(getKeys, std::vector<std::string>());
+          MOCK_METHOD2(setValue, void(const Name&, const SCIRun::Algorithms::AlgorithmParameter::Value&));
+          MOCK_CONST_METHOD1(getValue, const Value(const Name&));
+          MOCK_CONST_METHOD0(getKeys, Keys());
+          MOCK_CONST_METHOD1(getTransientValue, const TransientValue(const std::string&));
+          MOCK_METHOD2(setTransientValue, void(const std::string&, const TransientValue&));
           MOCK_METHOD1(connect_state_changed, boost::signals::connection(state_changed_sig_t::slot_function_type));
         };
 

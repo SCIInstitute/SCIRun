@@ -45,11 +45,13 @@
 #include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Dataflow/Network/Tests/MockModuleState.h>
 #include <Engine/State/SimpleMapModuleState.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::DataIO;
@@ -111,15 +113,15 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
 
   DenseMatrixHandle input = matrix1();
-  send->get_state()->setValue("MatrixToSend", input);
+  send->get_state()->setTransientValue("MatrixToSend", input);
 
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\moduleTestMatrix.txt";
   boost::filesystem3::remove(filename);
 
-  write->get_state()->setValue("FileName", filename);
+  write->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename);
   WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
   ASSERT_TRUE(writeModule != 0);
-  read->get_state()->setValue("FileName", filename);
+  read->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename);
   ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
   ASSERT_TRUE(readModule != 0);
 

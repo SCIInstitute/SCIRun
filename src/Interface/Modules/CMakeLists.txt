@@ -98,6 +98,8 @@ ${Interface_Modules_SOURCES}
 TARGET_LINK_LIBRARIES(Interface_Modules 
   Algorithms_Math
   Algorithms_DataIO
+  Modules_Basic
+  Modules_String
   ${Boost_LIBRARIES}
   ${QT_LIBRARIES})
 
