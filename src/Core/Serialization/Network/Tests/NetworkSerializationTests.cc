@@ -254,7 +254,4 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ASSERT_TRUE(trans2);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
   EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());
-
-
-  ASSERT_TRUE(false);
 }
