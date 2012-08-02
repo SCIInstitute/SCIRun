@@ -8,24 +8,40 @@
 		<item class_id="2" tracking_level="0" version="0">
 			<first>ComputeSVD1</first>
 			<second class_id="3" tracking_level="0" version="0">
-				<package_name_>SCIRun</package_name_>
-				<category_name_>Math</category_name_>
-				<module_name_>ComputeSVD</module_name_>
+				<module class_id="4" tracking_level="0" version="0">
+					<package_name_>SCIRun</package_name_>
+					<category_name_>Math</category_name_>
+					<module_name_>ComputeSVD</module_name_>
+				</module>
+				<state class_id="5" tracking_level="0" version="0">
+					<stateMap class_id="6" tracking_level="0" version="0">
+						<count>0</count>
+						<item_version>0</item_version>
+					</stateMap>
+				</state>
 			</second>
 		</item>
 		<item>
 			<first>CreateMatrix2</first>
 			<second>
-				<package_name_>SCIRun</package_name_>
-				<category_name_>Math</category_name_>
-				<module_name_>CreateMatrix</module_name_>
+				<module>
+					<package_name_>SCIRun</package_name_>
+					<category_name_>Math</category_name_>
+					<module_name_>CreateMatrix</module_name_>
+				</module>
+				<state>
+					<stateMap>
+						<count>0</count>
+						<item_version>0</item_version>
+					</stateMap>
+				</state>
 			</second>
 		</item>
 	</modules>
-	<connections class_id="4" tracking_level="0" version="0">
+	<connections class_id="7" tracking_level="0" version="0">
 		<count>2</count>
 		<item_version>0</item_version>
-		<item class_id="5" tracking_level="0" version="0">
+		<item class_id="8" tracking_level="0" version="0">
 			<moduleId1_>module1</moduleId1_>
 			<port1_>0</port1_>
 			<moduleId2_>module2</moduleId2_>

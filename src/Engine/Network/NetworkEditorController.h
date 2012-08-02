@@ -45,7 +45,7 @@ namespace Engine {
   public:
     explicit NetworkEditorController(SCIRun::Domain::Networks::ModuleFactoryHandle mf, SCIRun::Domain::Networks::ModuleStateFactoryHandle sf);
     explicit NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network);
-    void addModule(const std::string& moduleName);
+    SCIRun::Domain::Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
     void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
@@ -58,6 +58,8 @@ namespace Engine {
 
     SCIRun::Domain::Networks::NetworkXMLHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml);
+
+    SCIRun::Domain::Networks::NetworkHandle getNetwork() const;
 
   private:
     void printNetwork() const;

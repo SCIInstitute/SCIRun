@@ -39,7 +39,7 @@ SimpleMapModuleStateXML::SimpleMapModuleStateXML(const SimpleMapModuleState& sta
 {
 }
 
-boost::shared_ptr<SimpleMapModuleStateXML> make_state_xml(SCIRun::Domain::Networks::ModuleStateHandle state)
+boost::shared_ptr<SimpleMapModuleStateXML> SCIRun::Domain::State::make_state_xml(SCIRun::Domain::Networks::ModuleStateHandle state)
 {
   boost::shared_ptr<SimpleMapModuleState> mapState = boost::dynamic_pointer_cast<SimpleMapModuleState>(state);
   if (mapState)

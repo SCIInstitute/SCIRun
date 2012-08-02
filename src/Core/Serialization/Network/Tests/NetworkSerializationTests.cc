@@ -32,6 +32,36 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <Core/Dataflow/Network/Network.h>
+#include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Dataflow/Network/ConnectionId.h>
+#include <Core/Dataflow/Network/Tests/MockNetwork.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <Modules/Basic/SendTestMatrix.h>
+#include <Modules/Basic/ReceiveTestMatrix.h>
+#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Dataflow/Network/Tests/MockModuleState.h>
+#include <Engine/State/SimpleMapModuleState.h>
+#include <Engine/Network/NetworkEditorController.h>
+#include <Core/Serialization/Network/XMLSerializer.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Engine;
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::Factory;
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Domain::State;
 
 #include <stdexcept>
 #include <fstream>
@@ -40,48 +70,79 @@
 using namespace SCIRun::Domain::Networks;
 using namespace boost::assign;
 
-NetworkXML exampleNet()
+
+//TODO 
+
+namespace
 {
-  ModuleLookupInfoXML info1;
-  info1.module_name_ = "EvaluateLinearAlgebraUnary";  
-  info1.category_name_ = "Math";
-  info1.package_name_ = "SCIRun";
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++i)
+      for (size_t j = 0; j < m->ncols(); ++j)
+        (*m)(i, j) = 3.0 * i + j;
+    return m;
+  }
+  DenseMatrixHandle matrix2()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (size_t i = 0; i < m->nrows(); ++i)
+      for (size_t j = 0; j < m->ncols(); ++j)
+        (*m)(i, j) = -2.0 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 
-  ModuleLookupInfoXML info2;
-  info2.module_name_ = "ReadMatrix";  
-  info2.category_name_ = "DataIO";
-  info2.package_name_ = "SCIRun";
+  //ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
+  //{
+  //  ModuleLookupInfo info;
+  //  info.module_name_ = moduleName;
+  //  return network.add_module(info);
+  //}
 
-  ModuleLookupInfoXML info3;
-  info3.module_name_ = "WriteMatrix";  
-  info3.category_name_ = "DataIO";
-  info3.package_name_ = "SCIRun";
+  NetworkXML exampleNet()
+  {
+    ModuleLookupInfoXML info1;
+    info1.module_name_ = "EvaluateLinearAlgebraUnary";  
+    info1.category_name_ = "Math";
+    info1.package_name_ = "SCIRun";
 
-  ConnectionDescriptionXML conn;
-  conn.moduleId1_ = "ReadMatrix2";
-  conn.moduleId2_ = "EvaluateLinearAlgebraUnary1";
-  conn.port1_ = 0;
-  conn.port2_ = 0;
+    ModuleLookupInfoXML info2;
+    info2.module_name_ = "ReadMatrix";  
+    info2.category_name_ = "DataIO";
+    info2.package_name_ = "SCIRun";
 
-  ConnectionDescriptionXML conn2;
-  conn2.moduleId1_ = "EvaluateLinearAlgebraUnary1";
-  conn2.moduleId2_ = "WriteMatrix3";
-  conn2.port1_ = 0;
-  conn2.port2_ = 0;
+    ModuleLookupInfoXML info3;
+    info3.module_name_ = "WriteMatrix";  
+    info3.category_name_ = "DataIO";
+    info3.package_name_ = "SCIRun";
 
-  ConnectionsXML connections;
-  connections += conn2, conn;
+    ConnectionDescriptionXML conn;
+    conn.moduleId1_ = "ReadMatrix2";
+    conn.moduleId2_ = "EvaluateLinearAlgebraUnary1";
+    conn.port1_ = 0;
+    conn.port2_ = 0;
 
-  ModuleMapXML mods;
-  mods["EvaluateLinearAlgebraUnary1"] = info1;
-  mods["ReadMatrix2"] = info2;
-  mods["WriteMatrix3"] = info3;
+    ConnectionDescriptionXML conn2;
+    conn2.moduleId1_ = "EvaluateLinearAlgebraUnary1";
+    conn2.moduleId2_ = "WriteMatrix3";
+    conn2.port1_ = 0;
+    conn2.port2_ = 0;
 
-  NetworkXML network;
-  network.connections = connections;
-  network.modules = mods;
+    ConnectionsXML connections;
+    connections += conn2, conn;
 
-  return network;
+    ModuleMapXML mods;
+    mods["EvaluateLinearAlgebraUnary1"] = info1;
+    mods["ReadMatrix2"] = info2;
+    mods["WriteMatrix3"] = info3;
+
+    NetworkXML network;
+    network.connections = connections;
+    network.modules = mods;
+
+    return network;
+  }
 }
 
 TEST(SerializeNetworkTest, RoundTripData)
@@ -126,4 +187,74 @@ TEST(SerializeNetworkTest, RoundTripObject)
   //std::cout << ostr2.str() << std::endl;
 
   EXPECT_EQ(ostr1.str(), ostr2.str());
+}
+
+
+TEST(SerializeNetworkTest, FullTestWithModuleState)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf);
+  
+  ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
+  ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
+
+  ModuleHandle transpose = controller.addModule("EvaluateLinearAlgebraUnary");
+  ModuleHandle negate = controller.addModule("EvaluateLinearAlgebraUnary");
+  ModuleHandle scalar = controller.addModule("EvaluateLinearAlgebraUnary");
+
+  ModuleHandle multiply = controller.addModule("EvaluateLinearAlgebraBinary");
+  ModuleHandle add = controller.addModule("EvaluateLinearAlgebraBinary");
+
+  ModuleHandle report = controller.addModule("ReportMatrixInfo");
+  ModuleHandle receive = controller.addModule("ReceiveTestMatrix");
+
+  NetworkHandle matrixMathNetwork = controller.getNetwork();
+  EXPECT_EQ(9, matrixMathNetwork->nmodules());
+
+  EXPECT_EQ(0, matrixMathNetwork->nconnections());
+  matrixMathNetwork->connect(matrix1Send, 0, transpose, 0);
+  matrixMathNetwork->connect(matrix1Send, 0, negate, 0);
+  matrixMathNetwork->connect(matrix2Send, 0, scalar, 0);
+  matrixMathNetwork->connect(negate, 0, multiply, 0);
+  matrixMathNetwork->connect(scalar, 0, multiply, 1);
+  matrixMathNetwork->connect(transpose, 0, add, 0);
+  matrixMathNetwork->connect(multiply, 0, add, 1);
+  matrixMathNetwork->connect(add, 0, report, 0);
+  matrixMathNetwork->connect(add, 0, receive, 0);
+  EXPECT_EQ(9, matrixMathNetwork->nconnections());
+
+  //Set module parameters.
+  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
+  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
+  transpose->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  negate->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 4.0);
+  multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+  add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+
+  NetworkXMLHandle xml = controller.saveNetwork();
+
+  std::ostringstream ostr;
+  XMLSerializer::save_xml(*xml, ostr, "network");
+  std::cout << ostr.str() << std::endl;
+
+  NetworkEditorController controller2(mf, sf);
+  controller2.loadNetwork(*xml);
+
+  NetworkHandle deserialized = controller2.getNetwork();
+  ASSERT_TRUE(deserialized);
+
+  EXPECT_EQ(9, deserialized->nconnections());
+  EXPECT_EQ(9, deserialized->nmodules());
+  EXPECT_NE(matrixMathNetwork.get(), deserialized.get());
+
+  ModuleHandle trans2 = deserialized->lookupModule("EvaluateLinearAlgebraUnary2");
+  ASSERT_TRUE(trans2);
+  EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
+  EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());
+
+
+  ASSERT_TRUE(false);
 }

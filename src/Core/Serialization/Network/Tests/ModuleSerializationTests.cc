@@ -28,6 +28,7 @@
 
 #include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Core/Serialization/Network/XMLSerializer.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -38,25 +39,8 @@
 #include <boost/archive/xml_oarchive.hpp>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::State;
 using namespace boost::assign;
-
-template <class Serializable>
-void save_info(const Serializable& s, const char * filename, const std::string& name = "object")
-{
-  std::ofstream ofs(filename);
-  assert(ofs.good());
-  boost::archive::xml_oarchive oa(ofs);
-  oa << boost::serialization::make_nvp(name.c_str(), s);
-}
-
-void restore_info(ModuleLookupInfoXML& s, const char * filename)
-{
-  std::ifstream ifs(filename);
-  assert(ifs.good());
-  boost::archive::xml_iarchive ia(ifs);
-
-  ia >> BOOST_SERIALIZATION_NVP(s);
-}
 
 TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
 {
@@ -68,11 +52,11 @@ TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
   std::string filename("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\");
   filename += "info.xml";
 
-  save_info(info, filename.c_str());
+  XMLSerializer::save_xml(info, filename, "moduleInfo");
 
   ModuleLookupInfoXML newInfo;
 
-  restore_info(newInfo, filename.c_str());
+  newInfo = *XMLSerializer::load_xml<ModuleLookupInfoXML>(filename);
 
   EXPECT_EQ(info.module_name_, newInfo.module_name_);
   EXPECT_EQ(info.category_name_, newInfo.category_name_);
@@ -116,5 +100,5 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   NetworkXML network;
   network.connections = connections;
   network.modules = mods;
-  save_info(network, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\network.srn", "network");
+  XMLSerializer::save_xml(network, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\network.srn", "network");
 }

@@ -78,7 +78,6 @@ namespace Datatypes {
 
       if (!lineData.empty())
         values.push_back(lineData);
-      std::cout << "lines read: " << values.size() << std::endl;
     }
 
     m.clear();

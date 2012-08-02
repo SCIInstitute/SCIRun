@@ -160,13 +160,18 @@ void Module::do_execute()
   iports_.apply(boost::bind(&PortInterface::finish, _1));
   oports_.apply(boost::bind(&PortInterface::finish, _1));
 
-  //TODO: soon
+  //TODO
   //Logger::Instance()->log("MODULE FINISHED: " + id_);  
 }
 
 ModuleStateHandle Module::get_state() 
 {
   return state_;
+}
+
+void Module::set_state(ModuleStateHandle state) 
+{
+  state_ = state;
 }
 
 void Module::add_input_port(InputPortHandle h)

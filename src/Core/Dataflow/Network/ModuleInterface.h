@@ -62,7 +62,9 @@ namespace Networks {
 
     virtual ModuleStateHandle get_state() = 0;
 
+    //TODO for deserialization
     virtual void set_id(const std::string& id) = 0;
+    virtual void set_state(ModuleStateHandle state) = 0;
 
     virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
     virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data) = 0;

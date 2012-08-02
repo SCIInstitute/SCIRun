@@ -53,7 +53,7 @@ NetworkEditorController::NetworkEditorController(SCIRun::Domain::Networks::Netwo
 {
 }
 
-void NetworkEditorController::addModule(const std::string& moduleName)
+ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
 {
   //TODO: should pass in entire info struct
   ModuleLookupInfo info;
@@ -61,6 +61,7 @@ void NetworkEditorController::addModule(const std::string& moduleName)
   ModuleHandle realModule = theNetwork_->add_module(info);
   /*emit*/ moduleAdded_(moduleName, realModule);
   printNetwork();
+  return realModule;
 }
 
 void NetworkEditorController::removeModule(const std::string& id)
@@ -129,6 +130,10 @@ void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::Executa
   catch (NetworkHasCyclesException&)
   {
     std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
-  }
-  
+  }  
+}
+
+NetworkHandle NetworkEditorController::getNetwork() const 
+{
+  return theNetwork_;
 }

@@ -31,6 +31,7 @@
 #define CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H 
 
 #include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
+#include <Core/Serialization/Network/StateSerialization.h>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <Core/Serialization/Network/Share.h>
@@ -40,7 +41,23 @@ namespace Domain {
 namespace Networks {
 
   typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;
-  typedef std::map<std::string, ModuleLookupInfoXML> ModuleMapXML;
+
+  struct ModuleWithState 
+  {
+    ModuleLookupInfoXML module;
+    State::SimpleMapModuleStateXML state;
+    ModuleWithState(const ModuleLookupInfoXML& m = ModuleLookupInfoXML(), const State::SimpleMapModuleStateXML& s = State::SimpleMapModuleStateXML()) : module(m), state(s) {}
+  private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(module);
+      ar & BOOST_SERIALIZATION_NVP(state);
+    } 
+  };
+
+  typedef std::map<std::string, ModuleWithState> ModuleMapXML;
 
   class SCISHARE NetworkXML
   {
@@ -67,7 +84,6 @@ namespace Networks {
   {
     NetworkXMLHandle network;
     ModulePositionsHandle modulePositions;
-    //todo: state;
   private:
     friend class boost::serialization::access;
     template <class Archive>

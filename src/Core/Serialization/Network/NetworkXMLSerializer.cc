@@ -38,6 +38,7 @@
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::State;
 
 NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
   : moduleFactory_(moduleFactory), stateFactory_(stateFactory)
@@ -50,8 +51,10 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
   {
-    ModuleHandle module = network->add_module(modPair.second);
+    ModuleHandle module = network->add_module(modPair.second.module);
     module->set_id(modPair.first);
+    ModuleStateHandle state(new SimpleMapModuleState(modPair.second.state));
+    module->set_state(state);
   }
 
   BOOST_FOREACH(const ConnectionDescriptionXML& conn, data.connections)
@@ -81,7 +84,8 @@ NetworkXMLHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
   {
     ModuleHandle module = network->module(i);
     ModuleStateHandle state = module->get_state();
-    xmlData->modules[module->get_id()] = module->get_info();
+    boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
+    xmlData->modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
   }
   return xmlData;
 }
