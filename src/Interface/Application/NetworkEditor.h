@@ -73,6 +73,8 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
     void executeAll();
+    void clear();
+
     //TODO: break out, unit test
     SCIRun::Domain::Networks::ModulePositionsHandle dumpModulePositions();
   Q_SIGNALS:

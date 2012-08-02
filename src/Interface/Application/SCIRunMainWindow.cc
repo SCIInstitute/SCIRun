@@ -122,6 +122,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
+  connect(actionClear_Network_, SIGNAL(triggered()), networkEditor_, SLOT(clear()));
 
   ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
@@ -169,6 +170,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance()), _1));
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
+  connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
 
   moduleSelectorTreeWidget_->expandAll();
 
@@ -196,6 +198,32 @@ void SCIRunMainWindow::saveNetwork()
 
   XMLSerializer::save_xml(file, filename.toStdString(), "networkFile");
   std::cout << "file save done." << std::endl;
+}
+
+void SCIRunMainWindow::loadNetwork()
+{
+  QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
+  
+  std::cout << "Attempting load of " << filename.toStdString() << std::endl;
+  
+  try
+  {
+    boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename.toStdString());
+
+    if (xml)
+      if (xml->network)
+        networkEditor_->controller_->loadNetwork(*xml->network);
+      else
+        std::cout << "File load failed." << std::endl;
+    else
+      std::cout << "File load failed." << std::endl;
+
+    std::cout << "File load done." << std::endl;
+  }
+  catch (...)
+  {
+    std::cout << "File load failed." << std::endl;
+  }
 }
 
 void SCIRunMainWindow::ToggleRenderer()

@@ -57,6 +57,7 @@ private:
 #endif
 private Q_SLOTS:
   void saveNetwork();
+  void loadNetwork();
 };
 
 }
