@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Serialization/Network/StateSerialization.h>
 #include <Core/Serialization/Network/XMLSerializer.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -33,8 +34,6 @@
 #include <stdexcept>
 #include <fstream>
 #include <boost/assign.hpp>
-
-#include <Core/Serialization/Network/StateSerialization.h>
 
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Domain::State;

@@ -28,4 +28,21 @@
 
 #include <Core/Serialization/Network/StateSerialization.h>
 
-//using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Domain::State;
+using namespace SCIRun::Domain::Networks;
+
+SimpleMapModuleStateXML::SimpleMapModuleStateXML()
+{
+}
+
+SimpleMapModuleStateXML::SimpleMapModuleStateXML(const SimpleMapModuleState& state) : SimpleMapModuleState(state)
+{
+}
+
+boost::shared_ptr<SimpleMapModuleStateXML> make_state_xml(SCIRun::Domain::Networks::ModuleStateHandle state)
+{
+  boost::shared_ptr<SimpleMapModuleState> mapState = boost::dynamic_pointer_cast<SimpleMapModuleState>(state);
+  if (mapState)
+    return boost::shared_ptr<SimpleMapModuleStateXML>(new SimpleMapModuleStateXML(*mapState));
+  return boost::shared_ptr<SimpleMapModuleStateXML>();
+}

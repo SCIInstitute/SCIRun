@@ -42,8 +42,11 @@ namespace SCIRun {
 namespace Domain {
 namespace State {
 
-  class SimpleMapModuleStateXML : public SimpleMapModuleState
+  class SCISHARE SimpleMapModuleStateXML : public SimpleMapModuleState
   {
+  public:
+    SimpleMapModuleStateXML();
+    explicit SimpleMapModuleStateXML(const SimpleMapModuleState& state);
   private:
     friend class boost::serialization::access;
     template <class Archive>
@@ -52,6 +55,8 @@ namespace State {
       ar & boost::serialization::make_nvp("stateMap", stateMap_);
     } 
   };
+
+  SCISHARE boost::shared_ptr<SimpleMapModuleStateXML> make_state_xml(SCIRun::Domain::Networks::ModuleStateHandle state);
 
 }}}
 

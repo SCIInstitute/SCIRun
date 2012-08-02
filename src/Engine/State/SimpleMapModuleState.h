@@ -40,6 +40,9 @@ namespace State {
   class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
   {
   public:
+    SimpleMapModuleState();
+    SimpleMapModuleState(const SimpleMapModuleState& rhs);
+    SimpleMapModuleState& operator=(const SimpleMapModuleState& rhs);
     virtual const Value getValue(const Name& name) const;
     virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value);
     virtual Keys getKeys() const;

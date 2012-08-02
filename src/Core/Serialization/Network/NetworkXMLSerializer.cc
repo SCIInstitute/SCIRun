@@ -80,10 +80,9 @@ NetworkXMLHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
   for (size_t i = 0; i < network->nmodules(); ++i)
   {
     ModuleHandle module = network->module(i);
+    ModuleStateHandle state = module->get_state();
     xmlData->modules[module->get_id()] = module->get_info();
   }
-
-  std::cout << "returning NetworkToXML::.." << std::endl;
   return xmlData;
 }
 

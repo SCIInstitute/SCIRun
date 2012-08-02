@@ -33,6 +33,27 @@ using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Algorithms;
 
+SimpleMapModuleState::SimpleMapModuleState()
+{
+}
+
+SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
+  : stateMap_(rhs.stateMap_), transientStateMap_(rhs.transientStateMap_)
+{
+}
+
+SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState& rhs)
+{
+  if (&rhs != this)
+  {
+    stateMap_ = rhs.stateMap_;
+    transientStateMap_ = rhs.transientStateMap_;
+    //TODO??
+    //sig_.disconnect_all_slots();
+  }
+  return *this;
+}
+
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);
