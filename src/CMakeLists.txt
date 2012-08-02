@@ -31,6 +31,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 PROJECT(SCIRun5Prototype)
 
 ########################################################################
+# Build shared libraries by default
+
+OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
+MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
+
+########################################################################
 # SCIRUN version number.
 
 SET(SCIRUN_VERSION_MAJOR "5")
@@ -38,6 +44,14 @@ SET(SCIRUN_VERSION_MINOR "0")
 SET(SCIRUN_VERSION_PATCH "0")
 
 SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+
+########################################################################
+# Standard tests
+
+INCLUDE(CMakeBackwardCompatibilityC)
+INCLUDE(CMakeBackwardCompatibilityCXX)
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(CheckCXXSourceCompiles)
 
 ########################################################################
 # Configure test support
@@ -48,7 +62,9 @@ INCLUDE( CTest )
 IF(BUILD_TESTING)
   ENABLE_TESTING()
 
-  SET(BUILDNAME "${BUILDNAME}" CACHE STRING "Name of build on the dashboard")
+  # Hack BUILDNAME to differentiate from regular SCIRun builds
+  # TODO: remove when transitioning to production code
+  SET(BUILDNAME "${BUILDNAME_SCIRun5Prototype}" CACHE STRING "Name of build on the dashboard")
   MARK_AS_ADVANCED(BUILDNAME)
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
@@ -78,6 +94,16 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 # Find and configure Boost
 
 SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.49" "1.49.0")
+
+#IF(CMAKE_COMPILER_IS_GNUCC AND NOT APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+#  # For 64-bit linux builds, static libraries need to be compiled with -fPIC
+#  # (default on OS X), which doesn't seem to be the case for Boost static libs.
+#  # Using shared object libraries seems to be the easier solution for now.
+#  SET(Boost_USE_STATIC_LIBS OFF)
+#ELSE()
+#  SET(Boost_USE_STATIC_LIBS ON)
+#ENDIF()
+
 SET(Boost_USE_STATIC_LIBS ON)
 SET(Boost_USE_MULTITHREADED ON)
 SET(Boost_USE_STATIC_RUNTIME OFF)
@@ -89,9 +115,9 @@ IF(WIN32 AND MSVC)
 ENDIF()
 
 # TODO: eventually replace with CMake project
-FIND_PACKAGE( Boost 1.49.0
-                          REQUIRED
-                          COMPONENTS thread date_time filesystem system signals
+FIND_PACKAGE(Boost 1.49.0
+               REQUIRED
+               COMPONENTS date_time filesystem regex system signals serialization thread
 )
 
 IF(Boost_FOUND)
