@@ -82,23 +82,17 @@ namespace Networks {
 
   struct SCISHARE NetworkFile 
   {
-    NetworkXMLHandle network;
-    ModulePositionsHandle modulePositions;
+    NetworkXML network;
+    ModulePositions modulePositions;
   private:
     friend class boost::serialization::access;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
       std::cout << "NetworkFile::network" << std::endl;
-      if (!network)
-        std::cout << "...network null" << std::endl;
-      else
-        ar & boost::serialization::make_nvp("networkInfo", *network);
+      ar & boost::serialization::make_nvp("networkInfo", network);
       std::cout << "NetworkFile::modulePositions" << std::endl;
-      if (!modulePositions)
-        std::cout << "...modulePositions null" << std::endl;
-      else
-        ar & boost::serialization::make_nvp("modulePositions", modulePositions->modulePositions);
+      ar & boost::serialization::make_nvp("modulePositions", modulePositions.modulePositions);
     }
   };
 

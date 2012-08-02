@@ -193,8 +193,8 @@ void SCIRunMainWindow::saveNetwork()
   ModulePositionsHandle positions = networkEditor_->dumpModulePositions();
 
   NetworkFile file;
-  file.network = data;
-  file.modulePositions = positions;
+  file.network = *data;
+  file.modulePositions = *positions;
 
   XMLSerializer::save_xml(file, filename.toStdString(), "networkFile");
   std::cout << "file save done." << std::endl;
@@ -211,10 +211,7 @@ void SCIRunMainWindow::loadNetwork()
     boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename.toStdString());
 
     if (xml)
-      if (xml->network)
-        networkEditor_->controller_->loadNetwork(*xml->network);
-      else
-        std::cout << "File load failed." << std::endl;
+      networkEditor_->controller_->loadNetwork(xml->network);
     else
       std::cout << "File load failed." << std::endl;
 
