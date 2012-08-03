@@ -56,14 +56,3 @@ void CreateMatrixDialog::pull()
   std::cout << "TODO::pull()" << std::endl;
   //fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
 }
-
-//void CreateMatrixDialog::pushFileNameToState(const QString& str) 
-//{
-//  std::cout << "filename set on state object" << std::endl;
-//  state_->setValue("FileName", str.toStdString());
-//}
-//
-//void CreateMatrixDialog::saveFile()
-//{
-//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
-//}
