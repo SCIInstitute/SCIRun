@@ -53,10 +53,6 @@ public:
     SCIRun::Domain::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
-
-private Q_SLOTS:
-private:
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

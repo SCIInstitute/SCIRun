@@ -87,9 +87,6 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
     disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
       this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
 
-    /*disconnect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-      controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
-*/
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Domain::Networks::ConnectionId&)));
   }
@@ -100,11 +97,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   {
     connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
       this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
-
-    //TODO: flip this
-    //connect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-    //  controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
-
+    
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Domain::Networks::ConnectionId&)));
   }
@@ -114,24 +107,27 @@ void NetworkEditor::addModule(const std::string& name, SCIRun::Domain::Networks:
 {
   ModuleWidget* moduleWidget = new ModuleWidget(to_QString(name), module);
   setupModule(moduleWidget);
+  Q_EMIT modified();
 }
 
 void NetworkEditor::needConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd)
 {
-  //std::cout << "NetworkEditor::needConnection slot called with " << ConnectionId::create(cd).id_ << std::endl;
   controller_->addConnection(cd);
+  Q_EMIT modified();
 }
 
 void NetworkEditor::setupModule(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
+  connect(module, SIGNAL(removeModule(const std::string&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
     this, SLOT(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), 
     module, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+  connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(modified()));
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);
@@ -239,6 +235,7 @@ void NetworkEditor::del()
     }
   }
   qDeleteAll(items);
+  Q_EMIT modified();
 }
 
 void NetworkEditor::properties()
@@ -400,6 +397,7 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   {
     lastModulePosition_ = mapToScene(event->pos());
     controller_->addModule(moduleSelectionGetter_->text().toStdString());
+    Q_EMIT modified();
   }
 }
 
@@ -430,6 +428,7 @@ SCIRun::Domain::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositio
 void NetworkEditor::executeAll()
 {
   controller_->executeAll(*this);
+  Q_EMIT modified();
 }
 
 ExecutableObject* NetworkEditor::lookupExecutable(const std::string& id) const
@@ -451,4 +450,18 @@ void NetworkEditor::clear()
   //TODO: this (unwritten) method does not need to be called here.  the dtors of all the module widgets get called when the scene_ is cleared, which triggered removal from the underlying network.
   // we'll need a similar hook when programming the scripting interface (moduleWidgets<->modules).
   //controller_->clear();
+  Q_EMIT modified();
+}
+
+void NetworkEditor::moveModules(const ModulePositions& modulePositions)
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      ModulePositions::Data::const_iterator posIter = modulePositions.modulePositions.find(w->getModuleWidget()->getModuleId());
+      if (posIter != modulePositions.modulePositions.end())
+        w->setPos(posIter->second.first, posIter->second.second);
+    }
+  }
 }

@@ -35,8 +35,7 @@ using namespace SCIRun::Domain::Networks;
 
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent),
-  state_(state)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(to_QString(name));

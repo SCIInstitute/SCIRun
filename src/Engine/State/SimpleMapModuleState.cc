@@ -49,7 +49,7 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
     stateMap_ = rhs.stateMap_;
     transientStateMap_ = rhs.transientStateMap_;
     //TODO??
-    //sig_.disconnect_all_slots();
+    //stateChangedSignal_.disconnect_all_slots();
   }
   return *this;
 }
@@ -64,12 +64,12 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Alg
 {
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
 
-  sig_();
+  stateChangedSignal_();
 }
 
 boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
 {
-  return sig_.connect(subscriber);
+  return stateChangedSignal_.connect(subscriber);
 }
 
 ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
@@ -90,7 +90,7 @@ void SimpleMapModuleState::setTransientValue(const std::string& name, const Tran
 {
   transientStateMap_[name] = value;
 
-  sig_();  //TODO: ???
+  stateChangedSignal_();  //TODO: ???
 }
 
 ModuleStateInterface* SimpleMapModuleStateFactory::make_state(const std::string& name) const

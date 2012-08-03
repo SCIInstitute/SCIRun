@@ -53,8 +53,6 @@ public:
 private Q_SLOTS:
   void pushFileNameToState(const QString& str);
   void saveFile();
-private:
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

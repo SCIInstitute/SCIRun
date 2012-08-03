@@ -54,8 +54,6 @@ public:
 
 private Q_SLOTS:
   void pushStringToState(const QString& str);
-private:
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

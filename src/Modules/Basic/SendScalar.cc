@@ -51,7 +51,7 @@ void SendScalarModule::setScalar(double data)
 
 void SendScalarModule::execute()
 {
-  data_ = any_cast_or_default<double>(get_state()->getTransientValue("ValueToSend"));
+  data_ = get_state()->getValue(ValueToSend).getDouble();
   DatatypeHandle output(new Double(data_));
   send_output_handle(0, output);
 }

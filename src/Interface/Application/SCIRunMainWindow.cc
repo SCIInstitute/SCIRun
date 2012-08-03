@@ -122,7 +122,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
-  connect(actionClear_Network_, SIGNAL(triggered()), networkEditor_, SLOT(clear()));
+  connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
+  connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
 
   ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
@@ -169,8 +170,12 @@ SCIRunMainWindow::SCIRunMainWindow()
   QStringList result = visitTree(moduleSelectorTreeWidget_);
   std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance()), _1));
 
-  connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
+  connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
+  connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
+
+  //connect(actionQuit_, SIGNAL(triggered()), this, SLOT());
+  setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
 
@@ -187,7 +192,20 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 void SCIRunMainWindow::saveNetwork()
 {
+  if (currentFile_.isEmpty())
+    saveNetworkAs();
+  else
+    saveNetworkFile(currentFile_);
+}
+
+void SCIRunMainWindow::saveNetworkAs()
+{
   QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
+  saveNetworkFile(filename);
+}
+
+void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
+{
   NetworkXMLHandle data = networkEditor_->controller_->saveNetwork();
 
   ModulePositionsHandle positions = networkEditor_->dumpModulePositions();
@@ -196,31 +214,110 @@ void SCIRunMainWindow::saveNetwork()
   file.network = *data;
   file.modulePositions = *positions;
 
-  XMLSerializer::save_xml(file, filename.toStdString(), "networkFile");
+  XMLSerializer::save_xml(file, fileName.toStdString(), "networkFile");
+  setCurrentFile(fileName);
+
+  statusBar()->showMessage(tr("File saved"), 2000);
   std::cout << "file save done." << std::endl;
+  setWindowModified(false);
 }
 
 void SCIRunMainWindow::loadNetwork()
 {
-  QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
-  
-  std::cout << "Attempting load of " << filename.toStdString() << std::endl;
-  
-  try
+  if (okToContinue())
   {
-    boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename.toStdString());
+    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
 
-    if (xml)
-      networkEditor_->controller_->loadNetwork(xml->network);
-    else
-      std::cout << "File load failed." << std::endl;
+    if (!filename.isEmpty())
+    {
+      std::cout << "Attempting load of " << filename.toStdString() << std::endl;
 
-    std::cout << "File load done." << std::endl;
+      try
+      {
+        boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename.toStdString());
+
+        if (xml)
+        {
+          networkEditor_->controller_->loadNetwork(xml->network);
+          networkEditor_->moveModules(xml->modulePositions);
+        }
+        else
+          std::cout << "File load failed." << std::endl;
+
+        std::cout << "File load done." << std::endl;
+      }
+      catch (...)
+      {
+        std::cout << "File load failed." << std::endl;
+      }
+
+      setCurrentFile(filename);
+      statusBar()->showMessage(tr("File loaded"), 2000);
+    }
   }
-  catch (...)
+}
+
+void SCIRunMainWindow::clearNetwork()
+{
+  if (okToContinue())
   {
-    std::cout << "File load failed." << std::endl;
+    networkEditor_->clear();
+    setCurrentFile("");
   }
+}
+
+void SCIRunMainWindow::setCurrentFile(const QString& fileName)
+{
+  currentFile_ = fileName;
+  setWindowModified(false);
+  QString shownName = tr("Untitled");
+  if (!currentFile_.isEmpty())
+  {
+    shownName = strippedName(currentFile_);
+    //recentFiles.removeAll(curFile);
+    //recentFiles.prepend(curFile);
+    //updateRecentFileActions();
+  }
+  setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun 5 Prototype")));
+}
+
+QString SCIRunMainWindow::strippedName(const QString& fullFileName)
+{
+  return QFileInfo(fullFileName).fileName();
+}
+
+void SCIRunMainWindow::closeEvent(QCloseEvent* event)
+{
+  if (okToContinue())
+  {
+    //writeSettings();
+    event->accept();
+  }
+  else
+    event->ignore();
+}
+
+bool SCIRunMainWindow::okToContinue()
+{
+  if (isWindowModified())
+  {
+    int r = QMessageBox::warning(this, tr("Spreadsheet"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
+      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+    if (QMessageBox::Yes == r)
+    { 
+      saveNetwork();
+      return true;
+    }
+    else if (QMessageBox::Cancel == r)
+      return false;
+  }
+  return true;
+}
+
+void SCIRunMainWindow::networkModified()
+{
+  setWindowModified(true);
+  //updateStatusBar();
 }
 
 void SCIRunMainWindow::ToggleRenderer()

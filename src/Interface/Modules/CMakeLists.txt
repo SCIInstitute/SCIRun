@@ -72,6 +72,7 @@ SET(Interface_Modules_SOURCES
   Math/ReportMatrixInfoDialog.cc
   ModuleDialogBasic.cc
   ModuleDialogFactory.cc
+  ModuleDialogGeneric.cc
   DataIO/ReadMatrixDialog.cc
   Basic/ReceiveScalarDialog.cc
   Basic/SendScalarDialog.cc

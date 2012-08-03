@@ -49,10 +49,7 @@ public:
     SCIRun::Domain::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
-
-private:
-  void pullScalarValueFromState();
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
+  virtual void pull();
 };
 
 }

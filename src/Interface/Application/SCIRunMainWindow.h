@@ -48,16 +48,31 @@ public:
 	static SCIRunMainWindow* Instance();
 protected Q_SLOTS:
   void ToggleRenderer();
+protected:
+  virtual void closeEvent(QCloseEvent* event);
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+  
 #ifdef BUILD_VTK_SUPPORT
   RenderWindow* renderWindow_;
 #endif
+
+private:
+  bool okToContinue();
+  //bool loadFile(const QString& fileName);
+  void saveNetworkFile(const QString& fileName);
+  void setCurrentFile(const QString& fileName);
+  void updateRecentFileActions();
+  QString strippedName(const QString& fillFileName);
+  QString currentFile_;
 private Q_SLOTS:
+  void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
+  void clearNetwork();
+  void networkModified();
 };
 
 }

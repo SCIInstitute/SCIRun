@@ -49,11 +49,9 @@ public:
     SCIRun::Domain::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
-
+  virtual void pull();
 private Q_SLOTS:
   void pushScalarValueToState(const QString& str);
-private:
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

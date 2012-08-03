@@ -36,8 +36,7 @@ using namespace SCIRun::Algorithms::Math;
 
 EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent),
-  state_(state)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(to_QString(name));

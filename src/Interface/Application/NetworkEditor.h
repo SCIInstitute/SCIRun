@@ -66,6 +66,7 @@ namespace Gui {
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     virtual SCIRun::Domain::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
+    void moveModules(const SCIRun::Domain::Networks::ModulePositions& modulePositions);
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
@@ -81,6 +82,7 @@ namespace Gui {
   Q_SIGNALS:
     void addConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
+    void modified();
   private Q_SLOTS:
     void del();
     void cut();

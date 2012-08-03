@@ -55,8 +55,6 @@ public:
 private Q_SLOTS:
   void isRows();
   void isCols();
-private:
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

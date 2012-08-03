@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
 #include <QDialog>
+#include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Interface/Modules/Share.h>
 
 namespace SCIRun {
@@ -46,14 +47,13 @@ namespace Gui {
     //TODO: how to genericize this?  do we need to?
   public Q_SLOTS:
     virtual void moduleExecuted() {}
+    virtual void pull() {}
   Q_SIGNALS:
     void executionTimeChanged(int time);
     void executeButtonPressed();
   protected:
-    explicit ModuleDialogGeneric(QWidget* parent = 0) : QDialog(parent) 
-    {
-      setModal(false);
-    }
+    explicit ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle state, QWidget* parent = 0);
+    SCIRun::Domain::Networks::ModuleStateHandle state_;
   };
 
   inline QString to_QString(const std::string& str)

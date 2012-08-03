@@ -36,8 +36,7 @@ using namespace SCIRun::Modules::Basic;
 
 SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent),
-  state_(state)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(to_QString(name));
@@ -56,4 +55,9 @@ void SendScalarDialog::pushScalarValueToState(const QString& str)
 {
   double value = str.toDouble();
   state_->setValue(SendScalarModule::ValueToSend, value);
+}
+
+void SendScalarDialog::pull()
+{
+  scalarValueToSend_->setText(QString::number(state_->getValue(SendScalarModule::ValueToSend).getDouble()));
 }

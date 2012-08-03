@@ -26,37 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_REPORT_MATRIX_INFO_H
-#define INTERFACE_MODULES_REPORT_MATRIX_INFO_H
-
-#include "Interface/Modules/ui_ReportMatrixInfo.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
+#include <boost/bind.hpp>
+#include <Core/Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
 
-namespace SCIRun {
-namespace Gui {
-  
-  //TODO DAN
+using namespace SCIRun::Gui;
 
-class SCISHARE ReportMatrixInfoDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::ReportMatrixInfo
+ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
+  state_(state)
 {
-	Q_OBJECT
-	
-public:
-  ReportMatrixInfoDialog(const std::string& name, 
-    SCIRun::Domain::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual int moduleExecutionTime();
-  virtual void moduleExecuted() { pullAndDisplayInfo(); }
-private Q_SLOTS:
-  void pullAndDisplayInfo();
-};
-
+  setModal(false);
+  if (state_)
+    state_->connect_state_changed(boost::bind(&ModuleDialogGeneric::pull, this));
 }
-}
-
-#endif

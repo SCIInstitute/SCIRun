@@ -54,7 +54,6 @@ private Q_SLOTS:
   void pushOperationToState();
 private:
   int getSelectedOperator() const;
-  SCIRun::Domain::Networks::ModuleStateHandle state_;
 };
 
 }

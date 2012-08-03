@@ -81,17 +81,25 @@
     <addaction name="actionQuit_"/>
    </widget>
    <widget class="QMenu" name="menuModules_">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>&amp;Modules</string>
     </property>
-    <addaction name="actionDump_positions"/>
    </widget>
    <widget class="QMenu" name="menuSubnets_">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>&amp;Subnets</string>
     </property>
    </widget>
    <widget class="QMenu" name="menuToolkits_">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="title">
      <string>&amp;Toolkits</string>
     </property>
@@ -586,6 +594,9 @@
    </property>
   </action>
   <action name="actionInsert_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Insert...</string>
    </property>
@@ -606,6 +617,9 @@
    </property>
   </action>
   <action name="actionSelect_All_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Select All</string>
    </property>
@@ -619,6 +633,9 @@
    </property>
   </action>
   <action name="actionCreate_Module_Skeleton_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Create Module Skeleton...</string>
    </property>
@@ -635,21 +652,33 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Show Tooltips</string>
    </property>
   </action>
   <action name="actionAbout_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>About...</string>
    </property>
   </action>
   <action name="actionCredits_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Credits...</string>
    </property>
   </action>
   <action name="actionLicense_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>License...</string>
    </property>

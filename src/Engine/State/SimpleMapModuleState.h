@@ -56,7 +56,7 @@ namespace State {
     StateMap stateMap_;
     typedef std::map<std::string, TransientValue> TransientStateMap;
     TransientStateMap transientStateMap_;
-    state_changed_sig_t sig_;
+    state_changed_sig_t stateChangedSignal_;
   };
 
   class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory

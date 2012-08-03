@@ -37,16 +37,13 @@ using namespace SCIRun::Modules::Basic;
 
 ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(parent),
-  state_(state)
+  : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(to_QString(name) + " --Receive");
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-
-  state_->connect_state_changed(boost::bind(&ReceiveScalarDialog::pullScalarValueFromState, this));
 }
 
 int ReceiveScalarDialog::moduleExecutionTime()
@@ -54,7 +51,7 @@ int ReceiveScalarDialog::moduleExecutionTime()
   return 2000;
 }
 
-void ReceiveScalarDialog::pullScalarValueFromState() 
+void ReceiveScalarDialog::pull() 
 {
   double value = state_->getValue(ReceiveScalarModule::ReceivedValue).getDouble();
   scalarValueReceived_->setText(QString::number(value));

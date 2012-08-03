@@ -122,7 +122,6 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
     ModuleHandle module = theNetwork_->module(i);
     moduleAdded_(module->get_module_name(), module);
   }
-  std::cout << "creating connections:" << std::endl;
   BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
   {
     ConnectionId id = ConnectionId::create(cd);

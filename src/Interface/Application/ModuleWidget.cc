@@ -230,6 +230,7 @@ void ModuleWidget::openOptionsDialog()
       dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
 
     dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state(), executionTime_));
+    dialog_->pull();
     connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
     connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
     connect(this, SIGNAL(moduleExecuted()), dialog_.get(), SLOT(moduleExecuted()));
