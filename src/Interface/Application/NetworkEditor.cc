@@ -42,10 +42,7 @@
 #include <Interface/Modules/ModuleDialogGeneric.h> //TODO
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
 
-#include <boost/archive/xml_oarchive.hpp>
-#include <boost/serialization/nvp.hpp>//TODO
-#include <boost/serialization/map.hpp>
-#include <boost/serialization/serialization.hpp>
+#include <boost/bind.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -128,6 +125,8 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(modified()));
+  module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
+
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
   proxy->setSelected(true);

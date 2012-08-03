@@ -65,6 +65,22 @@ int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const
     return -1;
 }
 
+void EvaluateLinearAlgebraBinaryDialog::setSelectedOperator(int op) 
+{
+  switch (op)
+  {
+  case (int)EvaluateLinearAlgebraBinaryAlgorithm::ADD:
+    addRadioButton_->setChecked(true);
+    break;
+  case (int)EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT:
+    subtractRadioButton_->setChecked(true);
+    break;
+  case(int)EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY:
+    multiplyRadioButton_->setChecked(true);
+    break;
+  }
+}
+
 void EvaluateLinearAlgebraBinaryDialog::pushOperationToState() 
 {
   EvaluateLinearAlgebraBinaryAlgorithm::Operator op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
@@ -74,6 +90,5 @@ void EvaluateLinearAlgebraBinaryDialog::pushOperationToState()
 
 void EvaluateLinearAlgebraBinaryDialog::pull()
 {
-  std::cout << "TODO" << std::endl;
-  //fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+  setSelectedOperator(state_->getValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName).getInt());
 }

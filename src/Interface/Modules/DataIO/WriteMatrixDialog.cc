@@ -61,7 +61,6 @@ void WriteMatrixDialog::pull()
 
 void WriteMatrixDialog::pushFileNameToState(const QString& str) 
 {
-  std::cout << "filename set on state object" << std::endl;
   state_->setValue(WriteMatrixAlgorithm::Filename, str.toStdString());
 }
 
