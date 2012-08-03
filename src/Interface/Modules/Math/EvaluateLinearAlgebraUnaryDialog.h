@@ -56,6 +56,7 @@ private Q_SLOTS:
   void pushOperationToState();
 private:
   int getSelectedOperator() const;
+  void setSelectedOperator(int op);
 };
 
 }
