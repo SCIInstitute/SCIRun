@@ -64,5 +64,8 @@ void AppendMatrixDialog::isCols()
 
 void AppendMatrixDialog::pull()
 {
-  appendRowsButton_->setEnabled(AppendMatrixAlgorithm::ROWS == state_->getValue(AppendMatrixAlgorithm::OptionName).getInt());
+  if (AppendMatrixAlgorithm::ROWS == state_->getValue(AppendMatrixAlgorithm::OptionName).getInt())
+    appendRowsButton_->setChecked(true);
+  else
+    appendColumnsButton_->setChecked(true);
 }
