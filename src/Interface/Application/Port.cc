@@ -202,8 +202,6 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 
       Q_EMIT needConnection(cd);
 
-      MakeTheConnection(cd);
-
       return true;
     }
     else
