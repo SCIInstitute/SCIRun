@@ -46,6 +46,7 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(negateRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(scalarMultiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+  //TODO: crucial: need better sig/slot connection.
   //connect(scalarLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushOperationToState(const QString&)));
 }
 
@@ -84,18 +85,15 @@ void EvaluateLinearAlgebraUnaryDialog::setSelectedOperator(int op)
 
 void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str) 
 {
-  std::cout << "EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)" << std::endl;
   EvaluateLinearAlgebraUnaryAlgorithm::Operator op = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) getSelectedOperator();
 
   if (state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt() != op)
     state_->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, op);
   
   bool ok;
-  std::cout << "ELAUD str = " << str.toStdString() << std::endl;
   double value = str.toDouble(&ok);
   if (ok && state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue).getDouble() != value)
   {
-    std::cout << "setting scalar value to " << value << std::endl;
     state_->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, value);
   }
 }
@@ -107,7 +105,6 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 
 void EvaluateLinearAlgebraUnaryDialog::pull()
 {
-  std::cout << "EvaluateLinearAlgebraUnaryDialog::pull()" << std::endl;
   setSelectedOperator(state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());
   scalarLineEdit_->setText(QString::number(state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue).getDouble()));
 }
