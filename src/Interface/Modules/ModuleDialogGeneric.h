@@ -47,7 +47,7 @@ namespace Gui {
     //TODO: how to genericize this?  do we need to?
   public Q_SLOTS:
     virtual void moduleExecuted() {}
-    virtual void pull() {}
+    virtual void pull() = 0;
   Q_SIGNALS:
     void executionTimeChanged(int time);
     void executeButtonPressed();

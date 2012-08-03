@@ -71,3 +71,9 @@ void EvaluateLinearAlgebraBinaryDialog::pushOperationToState()
 
   state_->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, op);
 }
+
+void EvaluateLinearAlgebraBinaryDialog::pull()
+{
+  std::cout << "TODO" << std::endl;
+  //fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+}

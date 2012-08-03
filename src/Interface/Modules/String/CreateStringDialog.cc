@@ -56,3 +56,8 @@ void CreateStringDialog::pushStringToState(const QString& str)
 {
   state_->setValue(CreateStringModule::InputString, str.toStdString());
 }
+
+void CreateStringDialog::pull()
+{
+  stringInput_->setText(to_QString(state_->getValue(CreateStringModule::InputString).getString()));
+}

@@ -49,6 +49,11 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
 
+void ReadMatrixDialog::pull()
+{
+  fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+}
+
 int ReadMatrixDialog::moduleExecutionTime()
 {
   return 2000;

@@ -49,6 +49,7 @@ public:
     SCIRun::Domain::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
+  virtual void pull();
 
 private Q_SLOTS:
   void pushOperationToState(const QString& str);

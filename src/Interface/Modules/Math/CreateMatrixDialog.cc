@@ -51,6 +51,12 @@ int CreateMatrixDialog::moduleExecutionTime()
   return 2000;
 }
 
+void CreateMatrixDialog::pull()
+{
+  std::cout << "TODO" << std::endl;
+  //fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+}
+
 //void CreateMatrixDialog::pushFileNameToState(const QString& str) 
 //{
 //  std::cout << "filename set on state object" << std::endl;

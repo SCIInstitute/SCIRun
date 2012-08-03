@@ -54,6 +54,11 @@ int WriteMatrixDialog::moduleExecutionTime()
   return 2000;
 }
 
+void WriteMatrixDialog::pull()
+{
+  fileNameLineEdit_->setText(to_QString(state_->getValue(WriteMatrixAlgorithm::Filename).getString()));
+}
+
 void WriteMatrixDialog::pushFileNameToState(const QString& str) 
 {
   std::cout << "filename set on state object" << std::endl;

@@ -43,6 +43,7 @@ namespace Gui {
   public:
     explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
     virtual int moduleExecutionTime();
+    virtual void pull() {}
   };
 
 }

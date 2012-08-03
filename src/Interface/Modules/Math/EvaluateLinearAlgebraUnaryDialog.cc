@@ -79,3 +79,9 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 {
   pushOperationToState("");
 }
+
+void EvaluateLinearAlgebraUnaryDialog::pull()
+{
+  std::cout << "TODO" << std::endl;
+  //fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+}

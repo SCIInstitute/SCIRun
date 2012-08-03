@@ -61,3 +61,8 @@ void AppendMatrixDialog::isCols()
 {
   state_->setValue(AppendMatrixAlgorithm::OptionName, AppendMatrixAlgorithm::COLUMNS);
 }
+
+void AppendMatrixDialog::pull()
+{
+  appendRowsButton_->setEnabled(AppendMatrixAlgorithm::ROWS == state_->getValue(AppendMatrixAlgorithm::OptionName).getInt());
+}
