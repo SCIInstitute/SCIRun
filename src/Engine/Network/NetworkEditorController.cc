@@ -117,6 +117,19 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
 {
   NetworkXMLConverter conv(moduleFactory_, stateFactory_);
   theNetwork_ = conv.from_xml_data(xml);
+  for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
+  {
+    ModuleHandle module = theNetwork_->module(i);
+    moduleAdded_(module->get_module_name(), module);
+  }
+  std::cout << "creating connections:" << std::endl;
+  BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+  {
+    ConnectionId id = ConnectionId::create(cd);
+    std::cout << id.id_ << std::endl;
+    connectionAdded_(id);
+  }
+  //TODO: update state
 }
 
 void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)
