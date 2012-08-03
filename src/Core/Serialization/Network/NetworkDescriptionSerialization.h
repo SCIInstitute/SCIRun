@@ -89,9 +89,7 @@ namespace Networks {
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
-      std::cout << "NetworkFile::network" << std::endl;
       ar & boost::serialization::make_nvp("networkInfo", network);
-      std::cout << "NetworkFile::modulePositions" << std::endl;
       ar & boost::serialization::make_nvp("modulePositions", modulePositions.modulePositions);
     }
   };

@@ -174,7 +174,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
 
-  //connect(actionQuit_, SIGNAL(triggered()), this, SLOT());
+  connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
@@ -301,7 +301,7 @@ bool SCIRunMainWindow::okToContinue()
 {
   if (isWindowModified())
   {
-    int r = QMessageBox::warning(this, tr("Spreadsheet"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
+    int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
     if (QMessageBox::Yes == r)
     { 
