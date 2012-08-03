@@ -135,16 +135,22 @@ SCIRunMainWindow::SCIRunMainWindow()
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
 	moduleSearchAction->setDefaultWidget(new QLineEdit(this));
-	moduleSearchAction->setVisible(true);
 
-	QToolBar* f = addToolBar(tr("&Search"));
-	
-	QWidgetAction* showModuleLabel = new QWidgetAction(this);
-	showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
-	showModuleLabel->setVisible(true);
-	
-	f->addAction(showModuleLabel);
-	f->addAction(moduleSearchAction);
+#if 0
+  {
+    //TODO!!!!
+    moduleSearchAction->setVisible(true);
+
+    QToolBar* f = addToolBar(tr("&Search"));
+
+    QWidgetAction* showModuleLabel = new QWidgetAction(this);
+    showModuleLabel->setDefaultWidget(new QLabel("Module Search:", this));
+    showModuleLabel->setVisible(true);
+    
+    f->addAction(showModuleLabel);
+    f->addAction(moduleSearchAction);
+  }
+#endif
 	
 	QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);

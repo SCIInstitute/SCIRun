@@ -158,7 +158,7 @@
        <item>
         <widget class="QLabel" name="moduleFilterLabel_">
          <property name="text">
-          <string>Filter:</string>
+          <string>Filter:*</string>
          </property>
         </widget>
        </item>
@@ -336,18 +336,18 @@
         <enum>QTabWidget::Triangular</enum>
        </property>
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="networkEditorTab_">
         <attribute name="title">
-         <string>Network Editor</string>
+         <string>Network Editor*</string>
         </attribute>
         <widget class="QGroupBox" name="layoutOptionsGroupBox_">
          <property name="geometry">
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>261</width>
+           <width>311</width>
            <height>81</height>
           </rect>
          </property>

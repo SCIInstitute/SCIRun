@@ -428,7 +428,8 @@ SCIRun::Domain::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositio
 void NetworkEditor::executeAll()
 {
   controller_->executeAll(*this);
-  Q_EMIT modified();
+  //TODO: not sure about this right now.
+  //Q_EMIT modified();
 }
 
 ExecutableObject* NetworkEditor::lookupExecutable(const std::string& id) const
