@@ -56,6 +56,7 @@ namespace Gui {
     void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup);
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
+    void connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription& cd);
   private:
     boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller_;
   };

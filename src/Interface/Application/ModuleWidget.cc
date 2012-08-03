@@ -102,6 +102,7 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
     InputPortWidget* w = new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
     hookUpSignals(w);
+    connect(this, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
     addPort(w);
   }
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
@@ -116,8 +117,8 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
 
 void ModuleWidget::hookUpSignals(PortWidget* port) const
 {
-  connect(port, SIGNAL(connectionMade(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-    this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+  connect(port, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+    this, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
   connect(port, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
 }

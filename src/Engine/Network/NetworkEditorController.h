@@ -38,7 +38,7 @@ namespace Engine {
   
   typedef boost::signals2::signal<void (const std::string&, SCIRun::Domain::Networks::ModuleHandle)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
-  typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionId&)> ConnectionAddedSignalType;
+  typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionDescription&)> ConnectionAddedSignalType;
 
   class SCISHARE NetworkEditorController 
   {

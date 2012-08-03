@@ -80,7 +80,8 @@ public Q_SLOTS:
   void setExecutionTime(int milliseconds);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
-  void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
+  void needConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
+  void connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
   void moduleExecuted();
 private:

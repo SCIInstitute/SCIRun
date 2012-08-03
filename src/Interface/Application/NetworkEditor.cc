@@ -87,9 +87,9 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
     disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
       this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
 
-    disconnect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+    /*disconnect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
       controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
-
+*/
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Domain::Networks::ConnectionId&)));
   }
@@ -102,8 +102,8 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
       this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
 
     //TODO: flip this
-    connect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-      controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+    //connect(this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+    //  controller_.get(), SLOT(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
 
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Domain::Networks::ConnectionId&)));
@@ -116,12 +116,20 @@ void NetworkEditor::addModule(const std::string& name, SCIRun::Domain::Networks:
   setupModule(moduleWidget);
 }
 
+void NetworkEditor::needConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd)
+{
+  //std::cout << "NetworkEditor::needConnection slot called with " << ConnectionId::create(cd).id_ << std::endl;
+  controller_->addConnection(cd);
+}
+
 void NetworkEditor::setupModule(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
-  connect(module, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-    this, SIGNAL(addConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+  connect(module, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+    this, SLOT(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+  connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), 
+    module, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
   proxy->setZValue(maxZ_);

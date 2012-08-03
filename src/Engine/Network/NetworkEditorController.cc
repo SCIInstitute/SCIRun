@@ -82,7 +82,7 @@ void NetworkEditorController::addConnection(const SCIRun::Domain::Networks::Conn
 {
   ConnectionId id = theNetwork_->connect(theNetwork_->lookupModule(desc.moduleId1_), desc.port1_, theNetwork_->lookupModule(desc.moduleId2_), desc.port2_);
   if (!id.id_.empty())
-    connectionAdded_(id);
+    connectionAdded_(desc);
   printNetwork();
 }
 
@@ -127,7 +127,7 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
   {
     ConnectionId id = ConnectionId::create(cd);
     std::cout << id.id_ << std::endl;
-    connectionAdded_(id);
+    connectionAdded_(cd);
   }
   //TODO: update state
 }

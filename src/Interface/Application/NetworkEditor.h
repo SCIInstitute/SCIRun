@@ -72,6 +72,7 @@ namespace Gui {
     virtual void dragMoveEvent(QDragMoveEvent* event);
   public Q_SLOTS:
     void addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
+    void needConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
     void executeAll();
     void clear();
 

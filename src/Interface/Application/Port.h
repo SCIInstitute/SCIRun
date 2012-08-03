@@ -30,6 +30,8 @@
 #define INTERFACE_APPLICATION_PORTWIDGET_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
 #include <QGraphicsWidget>
 #include <QWidget>
 #include <QColor>
@@ -51,6 +53,7 @@ class PortWidget : public QWidget, public NeedsScenePositionProvider
   Q_OBJECT
 public:
   PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, bool isInput, QWidget* parent = 0);
+  ~PortWidget();
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
@@ -78,8 +81,10 @@ public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
+public Q_SLOTS:
+  void MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd);
 Q_SIGNALS:
-  void connectionMade(const SCIRun::Domain::Networks::ConnectionDescription& desc);
+  void needConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
 protected:
   void mousePressEvent(QMouseEvent* event);
@@ -104,6 +109,10 @@ private:
   ConnectionInProgress* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
+
+  //TODO
+  typedef boost::tuple<std::string, size_t, bool> Key;
+  static std::map<Key, PortWidget*> portWidgetMap_;
 };
 
 class InputPortWidget : public PortWidget 

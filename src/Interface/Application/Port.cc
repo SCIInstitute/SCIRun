@@ -39,6 +39,7 @@
 using namespace SCIRun::Gui;
 
 QGraphicsScene* PortWidget::TheScene = 0;
+std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index,
   bool isInput, QWidget* parent /* = 0 */)
@@ -49,6 +50,12 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const QString& 
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(name_);
+  portWidgetMap_[boost::make_tuple(moduleId_.toStdString(), index_, isInput_)] = this;
+}
+
+PortWidget::~PortWidget()
+{
+  portWidgetMap_[boost::make_tuple(moduleId_.toStdString(), index_, isInput_)] = 0;
 }
 
 QSize PortWidget::sizeHint() const
@@ -192,10 +199,10 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
       PortWidget* end = isInput() ? this : port;
 
       SCIRun::Domain::Networks::ConnectionDescription cd(start->moduleId_.toStdString(), start->index_, end->moduleId_.toStdString(), end->index_);
-      ConnectionLine* c = new ConnectionLine(this, port, SCIRun::Domain::Networks::ConnectionId::create(cd));
-      TheScene->addItem(c);
-      connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
-      Q_EMIT connectionMade(cd);
+
+      Q_EMIT needConnection(cd);
+
+      MakeTheConnection(cd);
 
       return true;
     }
@@ -205,6 +212,16 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
     }
   }
   return false;
+}
+
+void PortWidget::MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd) 
+{
+  PortWidget* start = portWidgetMap_[boost::make_tuple(cd.moduleId1_, cd.port1_, false)];
+  PortWidget* end = portWidgetMap_[boost::make_tuple(cd.moduleId2_, cd.port2_, true)];
+  SCIRun::Domain::Networks::ConnectionId id = SCIRun::Domain::Networks::ConnectionId::create(cd);
+  ConnectionLine* c = new ConnectionLine(start, end, id);
+  TheScene->addItem(c);
+  connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
 }
 
 //TODO: push this verification down to the domain layer!  make this layer as dumb as possible
@@ -271,4 +288,5 @@ OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, con
   : PortWidget(name, color, moduleId, index, false, parent)
 {
 }
+
 
