@@ -125,10 +125,8 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
   BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
   {
     ConnectionId id = ConnectionId::create(cd);
-    std::cout << id.id_ << std::endl;
     connectionAdded_(cd);
   }
-  //TODO: update state
 }
 
 void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)

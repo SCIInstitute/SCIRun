@@ -76,7 +76,7 @@ public:
   
 public Q_SLOTS:
   virtual void execute();
-  void openOptionsDialog();
+  void showOptionsDialog();
   void setExecutionTime(int milliseconds);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
@@ -96,6 +96,7 @@ private:
   void hookUpSignals(PortWidget* port) const;
   std::string moduleId_;
   boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
+  void makeOptionsDialog();
   int executionTime_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;

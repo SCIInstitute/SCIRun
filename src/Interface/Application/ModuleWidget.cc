@@ -73,7 +73,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::Module
 
   //setMinimumSize(pixelWidth + 10, this->minimumHeight());
 
-  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(openOptionsDialog()));
+  connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
+  makeOptionsDialog();
 }
 
 void ModuleWidget::addPortLayouts()
@@ -222,7 +223,7 @@ void ModuleWidget::setExecutionTime(int milliseconds)
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
 
-void ModuleWidget::openOptionsDialog()
+void ModuleWidget::makeOptionsDialog()
 {
   if (!dialog_)
   {
@@ -235,6 +236,11 @@ void ModuleWidget::openOptionsDialog()
     connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
     connect(this, SIGNAL(moduleExecuted()), dialog_.get(), SLOT(moduleExecuted()));
   }
+}
+
+void ModuleWidget::showOptionsDialog()
+{
+  makeOptionsDialog();
   dialog_->show();
 }
 
