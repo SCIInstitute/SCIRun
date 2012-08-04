@@ -116,7 +116,7 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   send->get_state()->setTransientValue("MatrixToSend", input);
 
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\moduleTestMatrix.txt";
-  boost::filesystem3::remove(filename);
+  boost::filesystem::remove(filename);
 
   write->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename);
   WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());

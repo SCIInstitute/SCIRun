@@ -29,23 +29,108 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
 
 PROJECT(SCIRun5Prototype)
+
+########################################################################
+# Build shared libraries by default
+
+OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
+MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
+
+########################################################################
+# SCIRUN version number.
+
+SET(SCIRUN_VERSION_MAJOR "5")
+SET(SCIRUN_VERSION_MINOR "0")
+SET(SCIRUN_VERSION_PATCH "0")
+
+SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+
+########################################################################
+# Standard tests
+
+INCLUDE(CMakeBackwardCompatibilityC)
+INCLUDE(CMakeBackwardCompatibilityCXX)
+INCLUDE(CheckCSourceCompiles)
+INCLUDE(CheckCXXSourceCompiles)
+
+########################################################################
+# Configure test support
+
+INCLUDE( CTest )
+
+# ON by default
+IF(BUILD_TESTING)
+  ENABLE_TESTING()
+
+  # Hack BUILDNAME to differentiate from regular SCIRun builds
+  # TODO: remove when transitioning to production code
+  SET(BUILDNAME "${BUILDNAME_SCIRun5Prototype}" CACHE STRING "Name of build on the dashboard")
+  MARK_AS_ADVANCED(BUILDNAME)
+
+  OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
+ENDIF()
+
+
+########################################################################
+# Find and configure Qt
+
+SET(QT_MIN_VERSION "4.7.0")
 FIND_PACKAGE(Qt4 REQUIRED)
 
-set(Boost_ADDITIONAL_VERSIONS "1.42" "1.49" "1.49.0")
-set(Boost_USE_STATIC_LIBS        ON)
-set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME    OFF)
-set(Boost_DIR "E:/boost_1_49_0")
-set(BOOST_LIBRARYDIR "E:/git/scirunguiprototype/src/Externals/x64/Release")
+IF(QT_FOUND)
+  # TODO: configure Qt OpenGL?
+  # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
+  # build issues haven't been corrected in CMake 2.8.7 and newer
 
-find_package( Boost 1.49.0 REQUIRED COMPONENTS thread date_time filesystem system signals serialization regex graph)
-  if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-    MESSAGE(STATUS "Boost")
-    MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
-    set(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
-  endif()
+  INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+ELSE()
+  MESSAGE(FATAL_ERROR "QT 4.7 or greater is required to build SCIRun5Prototype")
+ENDIF()
 
+ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
+
+
+########################################################################
+# Find and configure Boost
+
+SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.49" "1.49.0")
+
+#IF(CMAKE_COMPILER_IS_GNUCC AND NOT APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+#  # For 64-bit linux builds, static libraries need to be compiled with -fPIC
+#  # (default on OS X), which doesn't seem to be the case for Boost static libs.
+#  # Using shared object libraries seems to be the easier solution for now.
+#  SET(Boost_USE_STATIC_LIBS OFF)
+#ELSE()
+#  SET(Boost_USE_STATIC_LIBS ON)
+#ENDIF()
+
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_MULTITHREADED ON)
+SET(Boost_USE_STATIC_RUNTIME OFF)
+
+IF(WIN32 AND MSVC)
+  # Test directives only - remove when Boost is added to CMake build
+  SET(Boost_DIR "E:/boost_1_49_0")
+  SET(BOOST_LIBRARYDIR "E:/git/scirunguiprototype/src/Externals/x64/Release")
+ENDIF()
+
+# TODO: eventually replace with CMake project
+FIND_PACKAGE(Boost 1.49.0
+               REQUIRED
+               COMPONENTS date_time filesystem regex system signals serialization thread
+)
+
+IF(Boost_FOUND)
+  INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+  MESSAGE(STATUS "Boost")
+  MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
+  SET(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
+ELSE()
+  MESSAGE(FATAL_ERROR "Boost 1.49 or greater is required to build SCIRun5Prototype")
+ENDIF()
+
+
+INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/
@@ -65,17 +150,23 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 SET(SCIRUN_CORE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 ########################################################################
-# Output directories.
-
-SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for building all libraries.")
-SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR} CACHE INTERNAL "Single output directory for building all executables.")
-MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+# Macros
 
 MACRO(SCIRUN_ADD_UNIT_TEST test)
   ADD_EXECUTABLE(${test} ${ARGN})
   LIST(APPEND tmp ${test} ${UNIT_TEST_LIST})
   SET(UNIT_TEST_LIST ${tmp} CACHE INTERNAL "List of unit tests." FORCE)
 ENDMACRO(SCIRUN_ADD_UNIT_TEST)
+
+
+########################################################################
+# Output directories.
+
+SET(SCIRUN_CORE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+SET (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR}/lib CACHE INTERNAL "Single output directory for building all libraries.")
+SET (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${SCIRUN_CORE_BINARY_DIR} CACHE INTERNAL "Single output directory for building all executables.")
+MARK_AS_ADVANCED(CMAKE_LIBRARY_OUTPUT_DIRECTORY CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 SET(BUILD_FROM_TOP_LEVEL 1)
 
@@ -87,9 +178,9 @@ ADD_SUBDIRECTORY(Modules)
 ADD_SUBDIRECTORY(Externals)
 
 
-#
+########################################################################
 # Organize projects into folders
-#
+
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 
 SET_PROPERTY(TARGET Algorithms_Base         PROPERTY FOLDER "Algorithms")
@@ -135,14 +226,13 @@ SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualizati
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
-OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
 
-ENABLE_TESTING()
+########################################################################
+# Configure test support
+# TODO: eventually move to a Testing directory along with regression test support
 
 IF(RUN_UNIT_TESTS)
   FOREACH(test ${UNIT_TEST_LIST})
     ADD_TEST("${test}" "${EXE_DIRPATH}/${test}")
   ENDFOREACH(test ${UNIT_TEST_LIST})
-ENDIF(RUN_UNIT_TESTS)
-
-
+ENDIF()

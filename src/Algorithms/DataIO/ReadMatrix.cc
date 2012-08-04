@@ -40,7 +40,7 @@ AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
-  if (!boost::filesystem3::exists(filename))
+  if (!boost::filesystem::exists(filename))
     return Outputs();
   
   //TODO: push logging up hierarchy
