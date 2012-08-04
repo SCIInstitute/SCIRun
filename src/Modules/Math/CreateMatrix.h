@@ -26,39 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/String/CreateStringDialog.h>
-#include <Modules/String/CreateString.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#ifndef MODULES_MATH_CREATEMATRIXMODULE_H
+#define MODULES_MATH_CREATEMATRIXMODULE_H
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Modules::StringProcessing;
+#include <Core/Dataflow/Network/Module.h>
+#include <Modules/Math/Share.h>
 
-CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(to_QString(name));
-  executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-  
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(stringInput_, SIGNAL(textChanged(const QString&)), this, SLOT(pushStringToState(const QString&)));
-}
+namespace SCIRun {
+namespace Modules {
+namespace Math {
 
-int CreateStringDialog::moduleExecutionTime()
-{
-  return 2000;
-}
+  class SCISHARE CreateMatrixModule : public SCIRun::Domain::Networks::Module,
+    public Has1OutputPort<MatrixPortTag>
+  {
+  public:
+    CreateMatrixModule();
+    virtual void execute();
+    static std::string outputPort0Name() { return "EnteredMatrix"; }
+    static Algorithms::AlgorithmParameterName TextEntry;
+  };
+}}}
 
-void CreateStringDialog::pushStringToState(const QString& str) 
-{
-  state_->setValue(CreateStringModule::InputString, str.toStdString());
-}
-
-void CreateStringDialog::pull()
-{
-  stringInput_->setText(to_QString(state_->getValue(CreateStringModule::InputString).getString()));
-}
+#endif

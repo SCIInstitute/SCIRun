@@ -40,6 +40,7 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
 {
   setupUi(this);
   setWindowTitle(to_QString(name));
+  executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));

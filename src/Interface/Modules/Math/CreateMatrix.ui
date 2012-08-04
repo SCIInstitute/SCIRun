@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="title">
-    <string>Type matrix, one row per line, space-delimited</string>
+    <string>Type matrix, one row per line, space-delimited. Click OK when done.</string>
    </property>
    <widget class="QPlainTextEdit" name="matrixTextEdit_">
     <property name="geometry">

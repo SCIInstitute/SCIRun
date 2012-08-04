@@ -27,11 +27,13 @@
 */
 
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
+#include <Modules/Math/CreateMatrix.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Math;
 
 CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -39,11 +41,12 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
 {
   setupUi(this);
   setWindowTitle(to_QString(name));
+  executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  //TODO: here is where to start on standardizing module dialog buttons.
+  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
 }
 
 int CreateMatrixDialog::moduleExecutionTime()
@@ -51,8 +54,12 @@ int CreateMatrixDialog::moduleExecutionTime()
   return 2000;
 }
 
+void CreateMatrixDialog::pushMatrixToState()
+{
+  state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+}
+
 void CreateMatrixDialog::pull()
 {
-  std::cout << "TODO::pull()" << std::endl;
-  //fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+  matrixTextEdit_->setPlainText(to_QString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }

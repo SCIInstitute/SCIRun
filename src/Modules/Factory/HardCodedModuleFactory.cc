@@ -42,6 +42,7 @@
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/AppendMatrix.h>
+#include <Modules/Math/CreateMatrix.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/String/CreateString.h>
@@ -175,8 +176,8 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("CreateMatrix") != std::string::npos)
   {
-    //description.output_ports_ += OutputPortDescription("Result", "Matrix", "blue");
-    //description.maker_ = boost::factory<CreateMatrixModule*>();
+    description.output_ports_ += CreateMatrixModule::outputPortDescription(CreateMatrixModule::outputPort0Name());
+    description.maker_ = boost::factory<CreateMatrixModule*>();
   }
   else if (name.find("CreateString") != std::string::npos)
   {

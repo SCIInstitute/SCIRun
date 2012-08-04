@@ -40,12 +40,15 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
 {
   setupUi(this);
   setWindowTitle(to_QString(name));
+  executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(negateRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(scalarMultiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
+  //TODO: here is where to start on standardizing module dialog buttons.
+  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   //TODO: crucial: need better sig/slot connection.
   //connect(scalarLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushOperationToState(const QString&)));
 }

@@ -26,39 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/String/CreateStringDialog.h>
-#include <Modules/String/CreateString.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#include <iostream>
+#include <Modules/Math/CreateMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 
-using namespace SCIRun::Gui;
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Modules::StringProcessing;
 
-CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandle state,
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(to_QString(name));
-  executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-  
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(stringInput_, SIGNAL(textChanged(const QString&)), this, SLOT(pushStringToState(const QString&)));
-}
+SCIRun::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
 
-int CreateStringDialog::moduleExecutionTime()
-{
-  return 2000;
-}
+CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) {}
 
-void CreateStringDialog::pushStringToState(const QString& str) 
+void CreateMatrixModule::execute()
 {
-  state_->setValue(CreateStringModule::InputString, str.toStdString());
-}
+  DenseMatrixHandle matrix(new DenseMatrix);
+  try
+  {
+	  std::string matrixString = get_state()->getValue(TextEntry).getString();
+	
+    if (!matrixString.empty())
+    {
+      matrixString += "\n";
+      std::istringstream reader(matrixString);
 
-void CreateStringDialog::pull()
-{
-  stringInput_->setText(to_QString(state_->getValue(CreateStringModule::InputString).getString()));
+      reader >> *matrix;
+    }
+  }
+  catch (...)
+  {
+  	std::cout << "Matrix parsing failed." << std::endl;
+  }
+
+  send_output_handle(0, matrix);
 }

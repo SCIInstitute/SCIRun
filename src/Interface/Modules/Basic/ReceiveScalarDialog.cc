@@ -41,6 +41,7 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
 {
   setupUi(this);
   setWindowTitle(to_QString(name) + " --Receive");
+  executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));

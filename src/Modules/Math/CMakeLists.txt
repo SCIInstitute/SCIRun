@@ -28,6 +28,7 @@
 
 SET(Modules_Math_SRCS
   AppendMatrix.cc
+  CreateMatrix.cc
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraUnaryState.cc
   EvaluateLinearAlgebraBinary.cc
@@ -38,6 +39,7 @@ SET(Modules_Math_SRCS
 
 SET(Modules_Math_HEADERS
   AppendMatrix.h
+  CreateMatrix.h
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraUnaryState.h
   EvaluateLinearAlgebraBinary.h
