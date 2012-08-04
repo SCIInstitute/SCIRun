@@ -33,6 +33,7 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Algorithms/DataIO/ReadMatrix.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::DataIO;
@@ -89,8 +90,12 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
 {
   ReadMatrixAlgorithm algo;
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
+  if (boost::filesystem3::exists(filename))
+  {
+    DenseMatrixConstHandle matrix = algo.run(filename);
 
-  DenseMatrixConstHandle matrix = algo.run(filename);
-
-  EXPECT_EQ(matrixNonSquare(), *matrix);
+    EXPECT_EQ(matrixNonSquare(), *matrix);
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
 }
