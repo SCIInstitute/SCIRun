@@ -46,7 +46,7 @@ SendScalarModule::SendScalarModule()
 void SendScalarModule::setScalar(double data)
 {
   data_ = data; 
-  get_state()->setTransientValue("ValueToSend", data_);
+  get_state()->setValue(ValueToSend, data_);
 }
 
 void SendScalarModule::execute()
