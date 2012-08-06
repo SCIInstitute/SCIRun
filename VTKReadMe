@@ -26,13 +26,4 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-This repository is for the development of a Qt version of SCIRun's GUI, to be released with SCIRun v5.
-
-Some new user interactions worth mentioning:
-* To add modules to the network, use drag-and-drop from the "module selector" tree on the left hand side of the window.
-* To make connections, use the left mouse button to drag between desired ports.
-* To execute a network, click the "Execute All" button or use the Ctrl-E hotkey.
-* Execution of individual modules (rather than the entire network) is disabled for now.
-* Saving and loading of network files is enabled. The file format is xml, but it is not compatible with SCIRun 4, so a *.srn5 extension is used. 
-* SCIRun v4 networks are not compatible yet, either. This feature will be implemented in a later milestone release.
-* There are many menu options and GUI elements that do nothing yet. They are either grayed out or have an asterisk next to their name.
+This release of SCIRun 5 Prototype ("Artemis") has limited viewied capabilities powered by VTK.  To take use this feature, VTK must be built with Qt support turned on.  Then, build SCIRunGUIPrototype with VTK support turned on.  Once this is done, a render window option becomes available in the Window menu.  To view a vector field, one must hook up a set of modules as shown in the src/ExampleNets/helixWithVTK.srn5 network file.  The matrix format for the vector field and underlying implementation of the modules is very special, and if you want to try it out with your own data, please contact Dan at dwhite@sci.utah.edu, with [SCIRunPrototype] in the subject line.
