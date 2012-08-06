@@ -42,9 +42,9 @@
     </rect>
    </property>
    <property name="title">
-    <string>Choose matrix operation</string>
+    <string>Choose matrix operation. Click OK when done.</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>30</x>
