@@ -43,7 +43,7 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
 void ReadMatrixModule::execute()
 {
   filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
-  if (!boost::filesystem3::exists(filename_))
+  if (!boost::filesystem::exists(filename_))
   {
     //error()
     std::cout << "File not found: " << filename_ << std::endl;

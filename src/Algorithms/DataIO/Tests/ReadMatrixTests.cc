@@ -90,7 +90,7 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
 {
   ReadMatrixAlgorithm algo;
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
-  if (boost::filesystem3::exists(filename))
+  if (boost::filesystem::exists(filename))
   {
     DenseMatrixConstHandle matrix = algo.run(filename);
 
