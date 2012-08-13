@@ -29,7 +29,7 @@
 #ifndef MODULES_BASIC_SEND_SCALAR_H
 #define MODULES_BASIC_SEND_SCALAR_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Modules/Basic/Share.h>
 
 namespace SCIRun {

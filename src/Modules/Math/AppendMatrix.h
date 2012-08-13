@@ -29,7 +29,7 @@
 #ifndef MODULES_MATH_APPENDMATRIX_H
 #define MODULES_MATH_APPENDMATRIX_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Modules/Math/Share.h>
 
 namespace SCIRun {

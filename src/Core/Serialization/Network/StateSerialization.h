@@ -30,7 +30,7 @@
 #ifndef CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H
 #define CORE_SERIALIZATION_NETWORK_STATE_SERIALIZATION_H 
 
-#include <Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/Engine/State/SimpleMapModuleState.h>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>

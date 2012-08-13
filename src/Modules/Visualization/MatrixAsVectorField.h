@@ -29,7 +29,7 @@
 #ifndef MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
 #define MODULES_VISUALIZATION_MATRIX_AS_VECTOR_FIELD_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/Share.h>
 
 namespace SCIRun {

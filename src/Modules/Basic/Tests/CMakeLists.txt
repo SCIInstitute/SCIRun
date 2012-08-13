@@ -39,7 +39,7 @@ SCIRUN_ADD_UNIT_TEST(Modules_Basic_Tests
 ${Modules_Basic_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_Basic_Tests
-Core_Dataflow_Network
+Dataflow_Network
 Core_Datatypes
 Modules_Basic
 Modules_Factory

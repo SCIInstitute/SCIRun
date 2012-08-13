@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Modules/Math/CreateMatrix.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;

@@ -54,7 +54,7 @@ ${Modules_Math_HEADERS}
 ${Modules_Math_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_Math
-Core_Dataflow_Network
+Dataflow_Network
 Core_Datatypes
 Algorithms_Math
 )

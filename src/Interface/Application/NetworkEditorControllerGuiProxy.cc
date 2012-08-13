@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
-#include <Engine/Network/NetworkEditorController.h>
+#include <Dataflow/Engine/Network/NetworkEditorController.h>
 
 using namespace SCIRun::Engine;
 using namespace SCIRun::Gui;

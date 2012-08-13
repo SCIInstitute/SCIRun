@@ -40,7 +40,7 @@ ${Modules_String_HEADERS}
 ${Modules_String_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_String
-Core_Dataflow_Network
+Dataflow_Network
 Core_Datatypes
 Algorithms_Base
 )

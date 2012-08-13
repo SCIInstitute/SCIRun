@@ -40,7 +40,7 @@ ${Modules_Render_HEADERS}
 ${Modules_Render_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_Render
-Core_Dataflow_Network
+Dataflow_Network
 Core_Datatypes
 )
 

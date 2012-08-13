@@ -33,11 +33,11 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-#include <Engine/Network/NetworkEditorController.h>
+#include <Dataflow/Engine/Network/NetworkEditorController.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/Engine/State/SimpleMapModuleState.h>
 
 #include <Core/Serialization/Network/XMLSerializer.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>

@@ -46,7 +46,7 @@ ${Modules_DataIO_HEADERS}
 ${Modules_DataIO_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_DataIO
-Core_Dataflow_Network
+Dataflow_Network
 Core_Datatypes
 Algorithms_DataIO
 ${Boost_LIBRARIES}

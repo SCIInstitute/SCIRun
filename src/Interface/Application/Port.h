@@ -37,7 +37,7 @@
 #include <QColor>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
-#include <Core/Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/ConnectionId.h>
 
 class QGraphicsScene;
 

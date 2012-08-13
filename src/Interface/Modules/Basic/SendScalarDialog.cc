@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Basic/SendScalarDialog.h>
 #include <Modules/Basic/SendScalar.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;

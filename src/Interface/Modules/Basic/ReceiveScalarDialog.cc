@@ -29,7 +29,7 @@
 #include <boost/bind.hpp>
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Interface/Modules/Basic/ReceiveScalarDialog.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;

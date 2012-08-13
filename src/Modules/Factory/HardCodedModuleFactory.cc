@@ -31,8 +31,8 @@
 #include <boost/foreach.hpp>
 #include <boost/functional/factory.hpp>
 #include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Core/Dataflow/Network/ModuleDescription.h>
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Network/Module.h>
 
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
@@ -50,7 +50,7 @@
 #include <Modules/Visualization/MatrixAsVectorField.h>
 #include <Modules/Render/ViewScene.h>
 
-#include <Core/Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <Modules/Factory/Share.h>
 
 using namespace SCIRun::Domain::Networks;

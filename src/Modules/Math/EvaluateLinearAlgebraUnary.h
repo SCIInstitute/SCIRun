@@ -29,7 +29,7 @@
 #ifndef MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
 #define MODULES_MATH_EVALUATELINEARALGEBRAUNARYMODULE_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Modules/Math/Share.h>
 

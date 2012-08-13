@@ -30,7 +30,7 @@
 #define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
 #include <QDialog>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Interface/Modules/Share.h>
 
 namespace SCIRun {

@@ -31,7 +31,7 @@
 
 #include <QObject>
 #include <boost/shared_ptr.hpp>
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
   namespace Engine

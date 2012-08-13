@@ -32,7 +32,7 @@
 #include <QDialog>
 #include <vtkSmartPointer.h>
 #include <vtkVector.h>
-#include <Core/Dataflow/Network/RendererInterface.h>
+#include <Dataflow/Network/RendererInterface.h>
 
 class QVTKWidget;
 class vtkRenderer;

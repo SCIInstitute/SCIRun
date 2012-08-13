@@ -30,7 +30,7 @@
 #define INTERFACE_APPLICATION_CONNECTION_H
 
 #include <QGraphicsLineItem>
-#include <Core/Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/ConnectionId.h>
 
 namespace SCIRun {
 namespace Gui {

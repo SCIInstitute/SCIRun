@@ -41,7 +41,7 @@ TARGET_LINK_LIBRARIES(Modules_String_Tests
 Modules_String
 Modules_Factory
 Core_Datatypes
-Core_Dataflow_Network
+Dataflow_Network
 Engine_State
 gtest_main
 gtest

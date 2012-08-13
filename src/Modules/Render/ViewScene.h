@@ -29,7 +29,7 @@
 #ifndef MODULES_RENDER_VIEWSCENE_H
 #define MODULES_RENDER_VIEWSCENE_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Modules/Render/Share.h>
 
 namespace SCIRun {

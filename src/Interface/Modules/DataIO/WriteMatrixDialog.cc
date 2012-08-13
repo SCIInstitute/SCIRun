@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
 

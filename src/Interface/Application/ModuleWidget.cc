@@ -42,7 +42,7 @@
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;

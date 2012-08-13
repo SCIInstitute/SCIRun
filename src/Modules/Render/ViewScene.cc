@@ -31,7 +31,7 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Dataflow/Network/RendererInterface.h>
+#include <Dataflow/Network/RendererInterface.h>
 
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Domain::Datatypes;

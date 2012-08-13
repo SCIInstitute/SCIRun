@@ -40,7 +40,7 @@ ${Core_Serialization_Network_Tests_HEADERS}
 ${Core_Serialization_Network_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Serialization_Network_Tests
-Core_Dataflow_Network
+Dataflow_Network
 Core_Serialization_Network
 Core_Datatypes
 Modules_Factory

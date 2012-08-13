@@ -38,7 +38,7 @@ Modules_Render
 Modules_Factory
 Algorithms_Math
 Core_Datatypes
-Core_Dataflow_Network
+Dataflow_Network
 Engine_State
 gtest_main
 gtest

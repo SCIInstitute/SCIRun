@@ -32,8 +32,8 @@
 #include <boost/shared_ptr.hpp>
 #include <QGraphicsView>
 #include <map>
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Dataflow/Network/NetworkInterface.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkInterface.h>
 
 class QMenu;
 class QToolBar;

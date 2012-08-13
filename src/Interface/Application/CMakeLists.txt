@@ -96,7 +96,7 @@ ADD_EXECUTABLE(SCIRunGUIPrototype
   ${SCIRunGUIPrototype_RESOURCES_RCC})
 
 TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
-  Core_Dataflow_Network
+  Dataflow_Network
   Engine_Network
   Engine_State
   Modules_Factory

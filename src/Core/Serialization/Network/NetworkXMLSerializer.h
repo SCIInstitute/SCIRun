@@ -30,7 +30,7 @@
 #ifndef CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
 #define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
 
-#include <Core/Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
 #include <Core/Serialization/Network/Share.h>

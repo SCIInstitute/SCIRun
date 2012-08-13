@@ -28,11 +28,11 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Dataflow/Network/Network.h>
-#include <Core/Dataflow/Network/ModuleInterface.h>
-#include <Core/Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Dataflow/Network/ConnectionId.h>
-#include <Core/Dataflow/Network/Tests/MockNetwork.h>
+#include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -43,8 +43,8 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Dataflow/Network/Tests/MockModuleState.h>
-#include <Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/Network/Tests/MockModuleState.h>
+#include <Dataflow/Engine/State/SimpleMapModuleState.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;

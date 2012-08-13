@@ -29,7 +29,7 @@
 #ifndef MODULES_VISUALIZATION_SHOW_STRING_H
 #define MODULES_VISUALIZATION_SHOW_STRING_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/Share.h>
 
 namespace SCIRun {

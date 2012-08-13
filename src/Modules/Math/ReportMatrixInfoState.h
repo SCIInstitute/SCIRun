@@ -29,7 +29,7 @@
 #ifndef MODULES_MATH_REPORTMATRIXINFOSTATE_H
 #define MODULES_MATH_REPORTMATRIXINFOSTATE_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
 namespace Modules {

@@ -42,7 +42,7 @@ ${Modules_Visualization_HEADERS}
 ${Modules_Visualization_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_Visualization
-Core_Dataflow_Network
+Dataflow_Network
 Core_Datatypes
 )
 

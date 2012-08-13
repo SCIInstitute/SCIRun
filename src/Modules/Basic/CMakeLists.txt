@@ -51,7 +51,7 @@ ${Modules_Basic_SRCS})
 
 TARGET_LINK_LIBRARIES(Modules_Basic
 Core_Datatypes
-Core_Dataflow_Network
+Dataflow_Network
 )
 
 IF(BUILD_SHARED_LIBS)

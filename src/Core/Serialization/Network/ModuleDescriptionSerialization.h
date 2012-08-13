@@ -30,8 +30,8 @@
 #ifndef CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H
 #define CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H 
 
-#include <Core/Dataflow/Network/ModuleDescription.h>
-#include <Core/Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Network/ConnectionId.h>
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>

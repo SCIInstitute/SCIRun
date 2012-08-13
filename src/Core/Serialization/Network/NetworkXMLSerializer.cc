@@ -28,8 +28,8 @@
 
 #include <Core/Serialization/Network/NetworkXMLSerializer.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Dataflow/Network/Network.h> //TODO: need network factory??
-#include <Core/Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/Network.h> //TODO: need network factory??
+#include <Dataflow/Network/ModuleInterface.h>
 #include <Core/Serialization/Network/XMLSerializer.h>
 #include <fstream>
 #include <boost/archive/xml_iarchive.hpp>

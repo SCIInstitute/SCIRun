@@ -29,7 +29,7 @@
 #ifndef MODULES_STRING_CREATE_STRING_H
 #define MODULES_STRING_CREATE_STRING_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Modules/String/Share.h>
 
 namespace SCIRun {

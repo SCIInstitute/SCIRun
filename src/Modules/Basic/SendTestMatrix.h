@@ -29,7 +29,7 @@
 #ifndef MODULES_BASIC_SEND_TEST_MATRIX_H
 #define MODULES_BASIC_SEND_TEST_MATRIX_H
 
-#include <Core/Dataflow/Network/Module.h>
+#include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Modules/Basic/Share.h>
 

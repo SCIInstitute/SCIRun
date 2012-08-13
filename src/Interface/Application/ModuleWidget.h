@@ -36,8 +36,8 @@
 #include <set>
 #include <Interface/Application/PositionProvider.h>
 
-#include <Core/Dataflow/Network/NetworkFwd.h>
-#include <Core/Dataflow/Network/ExecutableObject.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/ExecutableObject.h>
 
 class QGraphicsProxyWidget;
 
