@@ -44,7 +44,7 @@ Modules_Factory
 Algorithms_Math
 Core_Datatypes
 Dataflow_Network
-Engine_State
+Dataflow_State
 gtest_main
 gtest
 gmock

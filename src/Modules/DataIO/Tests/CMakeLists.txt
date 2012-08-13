@@ -42,7 +42,7 @@ ${Modules_DataIO_Tests_SRCS})
 TARGET_LINK_LIBRARIES(Modules_DataIO_Tests
 Modules_DataIO
 Modules_Factory
-Engine_State
+Dataflow_State
 gtest_main
 gtest
 gmock

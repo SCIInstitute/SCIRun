@@ -43,7 +43,7 @@ Dataflow_Network
 Core_Datatypes
 Modules_Basic
 Modules_Factory
-Engine_State
+Dataflow_State
 gtest_main
 gtest
 gmock

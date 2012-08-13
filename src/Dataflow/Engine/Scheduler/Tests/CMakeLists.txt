@@ -48,7 +48,7 @@ TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
   Algorithms_Math
   Core_Datatypes
   Dataflow_Network
-  Engine_State
+  Dataflow_State
   Engine_Scheduler
   gtest_main
   gtest

@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_NULLMODULESTATE_H
-#define ENGINE_STATE_NULLMODULESTATE_H
+#ifndef DATAFLOW_STATE_NULLMODULESTATE_H
+#define DATAFLOW_STATE_NULLMODULESTATE_H
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/Share.h>

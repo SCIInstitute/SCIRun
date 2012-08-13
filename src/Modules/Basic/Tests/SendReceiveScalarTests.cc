@@ -36,7 +36,7 @@
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
-#include <Dataflow/Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;

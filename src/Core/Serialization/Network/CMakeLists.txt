@@ -55,6 +55,6 @@ ADD_SUBDIRECTORY(Tests)
 TARGET_LINK_LIBRARIES(Core_Serialization_Network
   Dataflow_Network
   Core_Datatypes
-  Engine_State
+  Dataflow_State
   ${Boost_LIBRARIES}
 )

@@ -48,8 +48,8 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
-#include <Dataflow/Engine/State/SimpleMapModuleState.h>
-#include <Dataflow/Engine/Network/NetworkEditorController.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;

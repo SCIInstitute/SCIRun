@@ -26,26 +26,22 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Engine_State_SRCS
-  SimpleMapModuleState.cc
+SET(Dataflow_State_Tests_SRCS
+  ModuleStateBaseTests.cc
 )
 
-SET(Engine_State_HEADERS
-  SimpleMapModuleState.h
-  Share.h
-)
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
 
-ADD_LIBRARY(Engine_State 
-${Engine_State_HEADERS}
-${Engine_State_SRCS})
+SCIRUN_ADD_UNIT_TEST(Dataflow_State_Tests
+#${Engine_Network_Tests_HEADERS}
+${Dataflow_State_Tests_SRCS})
 
-TARGET_LINK_LIBRARIES(Engine_State
+TARGET_LINK_LIBRARIES(Dataflow_State_Tests
 Dataflow_Network
+#Dataflow_State
+gtest_main
+gtest
+gmock
 )
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Engine_State)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(Tests)
-

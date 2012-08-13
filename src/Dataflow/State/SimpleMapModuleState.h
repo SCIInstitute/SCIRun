@@ -26,12 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_STATE_SIMPLEMAPMODULESTATE_H
-#define ENGINE_STATE_SIMPLEMAPMODULESTATE_H
+#ifndef DATAFLOW_STATE_SIMPLEMAPMODULESTATE_H
+#define DATAFLOW_STATE_SIMPLEMAPMODULESTATE_H
 
 #include <map>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Engine/State/Share.h>
+#include <Dataflow/State/Share.h>
 
 namespace SCIRun {
 namespace Domain {

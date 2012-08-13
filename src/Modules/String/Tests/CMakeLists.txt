@@ -42,7 +42,7 @@ Modules_String
 Modules_Factory
 Core_Datatypes
 Dataflow_Network
-Engine_State
+Dataflow_State
 gtest_main
 gtest
 gmock

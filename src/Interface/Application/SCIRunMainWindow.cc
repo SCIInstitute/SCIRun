@@ -33,11 +33,11 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-#include <Dataflow/Engine/Network/NetworkEditorController.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Dataflow/Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 
 #include <Core/Serialization/Network/XMLSerializer.h>
 #include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -53,46 +53,49 @@ using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Domain::State;
 
-void visitTree(QStringList& list, QTreeWidgetItem* item){
-  list << item->text(0) + "," + QString::number(item->childCount());
-  if (item->childCount() != 0)
-    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-  for (int i = 0; i < item->childCount(); ++i)
-    visitTree(list, item->child(i));
-}
-
-QStringList visitTree(QTreeWidget* tree) {
-  QStringList list;
-  for (int i = 0; i < tree->topLevelItemCount(); ++i)
-    visitTree(list, tree->topLevelItem(i));
-  return list;
-}
-
-struct LogAppender : public Logger
+namespace
 {
-  explicit LogAppender(QTextEdit* text) : text_(text) {}
-  void log(const QString& message) const 
-  {
-    text_->append(message);
+  void visitTree(QStringList& list, QTreeWidgetItem* item){
+    list << item->text(0) + "," + QString::number(item->childCount());
+    if (item->childCount() != 0)
+      item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    for (int i = 0; i < item->childCount(); ++i)
+      visitTree(list, item->child(i));
   }
-  QTextEdit* text_;
-};
 
-class TreeViewModuleGetter : public CurrentModuleSelection
-{
-public:
-  explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-  virtual QString text() const
-  {
-    return tree_.currentItem()->text(0);
+  QStringList visitTree(QTreeWidget* tree) {
+    QStringList list;
+    for (int i = 0; i < tree->topLevelItemCount(); ++i)
+      visitTree(list, tree->topLevelItem(i));
+    return list;
   }
-  virtual bool isModule() const
+
+  struct LogAppender : public Logger
   {
-    return tree_.currentItem()->childCount() == 0;
-  }
-private:
-  QTreeWidget& tree_;
-};
+    explicit LogAppender(QTextEdit* text) : text_(text) {}
+    void log(const QString& message) const 
+    {
+      text_->append(message);
+    }
+    QTextEdit* text_;
+  };
+
+  class TreeViewModuleGetter : public CurrentModuleSelection
+  {
+  public:
+    explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
+    virtual QString text() const
+    {
+      return tree_.currentItem()->text(0);
+    }
+    virtual bool isModule() const
+    {
+      return tree_.currentItem()->childCount() == 0;
+    }
+  private:
+    QTreeWidget& tree_;
+  };
+}
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
 

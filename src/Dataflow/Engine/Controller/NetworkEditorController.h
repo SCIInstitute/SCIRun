@@ -31,7 +31,7 @@
 
 #include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Network/Share.h>
+#include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
 namespace Engine {

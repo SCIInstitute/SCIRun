@@ -44,7 +44,7 @@ Dataflow_Network
 Core_Serialization_Network
 Core_Datatypes
 Modules_Factory
-Engine_State
+Dataflow_State
 Engine_Network
 gtest_main
 gtest

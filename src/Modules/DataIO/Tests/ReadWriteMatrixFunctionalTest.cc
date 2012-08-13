@@ -47,7 +47,7 @@
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
-#include <Dataflow/Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun;

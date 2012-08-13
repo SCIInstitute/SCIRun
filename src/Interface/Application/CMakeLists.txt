@@ -98,7 +98,7 @@ ADD_EXECUTABLE(SCIRunGUIPrototype
 TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
   Dataflow_Network
   Engine_Network
-  Engine_State
+  Dataflow_State
   Modules_Factory
   Interface_Modules
   ${GUI_VTK_LINK_LIBRARIES}

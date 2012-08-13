@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/State/SimpleMapModuleState.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Domain::State;
