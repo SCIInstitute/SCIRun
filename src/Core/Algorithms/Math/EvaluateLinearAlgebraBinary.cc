@@ -26,30 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_APPENDMATRIX_H
-#define ALGORITHMS_MATH_APPENDMATRIX_H
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-#include <Algorithms/Base/AlgorithmBase.h>
-#include <Algorithms/Math/AlgorithmFwd.h>
-#include <Algorithms/Math/Share.h>
+using namespace SCIRun::Algorithms;
+using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
 
-namespace SCIRun {
-namespace Algorithms {
-namespace Math {
-  
-  class SCISHARE AppendMatrixAlgorithm : public AlgorithmBase
+AlgorithmParameterName EvaluateLinearAlgebraBinaryAlgorithm::OperatorName("Operator");
+
+EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
+{
+  DenseMatrixHandle result;
+  DenseMatrixConstHandle lhs = inputs.get<0>();
+  DenseMatrixConstHandle rhs = inputs.get<1>();
+  if (!lhs || !rhs)
   {
-  public:
-    enum Option { ROWS, COLUMNS };
-    static AlgorithmParameterName OptionName;
+    return result;
+  }
 
-    typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef Option Parameters;  
-    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
+  Operator oper = params;
 
-    Outputs run(const Inputs& input, const Parameters& params) const;
-  };
+  //TODO: absolutely need matrix move semantics here!!!!!!!
+  switch (oper)
+  {
+  case ADD:
+    result.reset(lhs->clone());
+    *result += *rhs;
+    break;
+  case SUBTRACT:
+    result.reset(lhs->clone());
+    *result -= *rhs;
+    break;
+  case MULTIPLY:
+    result.reset(lhs->clone());
+    *result *= *rhs;
+    break;
+  default:
+    std::cout << "ERROR: unknown binary operation" << std::endl;
+    break;
+  }
 
-}}}
-
-#endif
+  return result;
+}

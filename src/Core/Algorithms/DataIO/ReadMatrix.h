@@ -26,44 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef ALGORITHMS_DATAIO_READMATRIX_H
+#define ALGORITHMS_DATAIO_READMATRIX_H
 
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
-using namespace SCIRun::Algorithms;
+#include <string>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/DataIO/Share.h>
 
-AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::OperatorName("Operator");
-AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue("Scalar");
+namespace SCIRun {
+  namespace Algorithms {
+    namespace DataIO {
 
-EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
-{
-  DenseMatrixHandle result;
+      class SCISHARE ReadMatrixAlgorithm : public AlgorithmBase
+      {
+      public:
+        typedef void Inputs;
+        typedef std::string Parameters; 
+        typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
-  if (!matrix)
-    return result;
+        static AlgorithmParameterName Filename;
 
-  Operator oper = params.get<0>();
+        Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
+      };
 
-  //TODO: absolutely need matrix move semantics here!!!!!!!
-  switch (oper)
-  {
-  case NEGATE:
-    result.reset(matrix->clone());
-    (*result) *= -1;
-    break;
-  case TRANSPOSE:
-    result.reset(matrix->make_transpose()); 
-    break;
-  case SCALAR_MULTIPLY:
-    boost::optional<double> scalarOption = params.get<1>();
-    if (!scalarOption)
-      throw std::invalid_argument("No scalar value available to multiply!");
-    double scalar = scalarOption.get();
-    result.reset(matrix->clone());
-    (*result) *= scalar;
-    break;
-  }
+}}}
 
-  return result;
-}
+#endif

@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <Modules/Math/AppendMatrix.h>
-#include <Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;

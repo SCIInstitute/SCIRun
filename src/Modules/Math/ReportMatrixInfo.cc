@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <Modules/Math/ReportMatrixInfo.h>
-#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;

@@ -29,9 +29,9 @@
 #ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRAUNARY_H
 #define ALGORITHMS_MATH_EVALUATELINEARALGEBRAUNARY_H
 
-#include <Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Algorithms/Math/Share.h>
+#include <Core/Algorithms/Math/Share.h>
 
 /** \addtogroup Algorithms_Math
   * @{

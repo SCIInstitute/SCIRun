@@ -26,22 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef ALGORITHMS_MATH_REPORTMATRIXINFO_H
+#define ALGORITHMS_MATH_REPORTMATRIXINFO_H
 
-using namespace SCIRun::Algorithms::Math;
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/AlgorithmFwd.h>
+#include <Core/Algorithms/Math/Share.h>
 
-ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
-{
-  if (!input)
-    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
+namespace SCIRun {
+namespace Algorithms {
+namespace Math {
+  
+  class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
+  {
+  public:
+    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
+    typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
-  const std::string type = typeid(*input).name();
+    Outputs run(const Inputs& input, const Parameters& params = 0) const;
+  };
 
-  return Outputs(type, 
-    input->nrows(), 
-    input->ncols(), 
-    input->nrows() * input->ncols(), 
-    input->min(), 
-    input->max());
-}
+}}}
+
+#endif

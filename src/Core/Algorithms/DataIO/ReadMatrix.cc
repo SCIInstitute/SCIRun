@@ -26,27 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Algorithms/Base/AlgorithmBase.h>
+#include <fstream>
+#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Algorithms;
+using namespace SCIRun::Algorithms::DataIO;
+using namespace SCIRun::Domain::Datatypes;
 
-AlgorithmBase::~AlgorithmBase() {}
+AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
-int AlgorithmParameter::getInt() const
+ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
-  const int* v = boost::get<int>(&value_);
-  return v ? *v : 0;
-}
-
-double AlgorithmParameter::getDouble() const
-{
-  const double* v = boost::get<double>(&value_);
-  return v ? *v : 0;
-}
-
-std::string AlgorithmParameter::getString() const
-{
-  const std::string* v = boost::get<std::string>(&value_);
-  return v ? *v : "";
+  if (!boost::filesystem::exists(filename))
+    return Outputs();
+  
+  //TODO: push logging up hierarchy
+  std::cout << "Algorithm start." << std::endl;
+  std::ifstream reader(filename.c_str());
+  DenseMatrixHandle matrix(new DenseMatrix);
+  reader >> *matrix;
+  std::cout << "Algorithm returning." << std::endl;
+  return matrix;
 }

@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
-#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 

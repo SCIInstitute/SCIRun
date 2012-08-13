@@ -28,71 +28,66 @@
 
 #include <gtest/gtest.h>
 
-#include <Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
-
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
 
 namespace
 {
-  DenseMatrixHandle matrix1()
+  DenseMatrix matrix1()
   {
-    DenseMatrixHandle m(new DenseMatrix(3, 4));
-    for (size_t i = 0; i < m->nrows(); ++ i)
-      for (size_t j = 0; j < m->ncols(); ++ j)
-        (*m)(i, j) = 3.0 * i + j - 5;
+    DenseMatrix m (3, 3);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.0 * i + j;
+    return m;
+  }
+  DenseMatrix matrixNonSquare()
+  {
+    DenseMatrix m (3, 4);
+    for (size_t i = 0; i < m.nrows(); ++ i)
+      for (size_t j = 0; j < m.ncols(); ++ j)
+        m(i, j) = 3.0 * i + j;
     return m;
   }
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
-TEST(AppendMatrixAlgorithmTests, CanAppendRows)
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegate)
 {
-  AppendMatrixAlgorithm algo;
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(matrix1());
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
-
-  EXPECT_EQ(6, result->nrows());
-  EXPECT_EQ(4, result->ncols());
-
-  std::cout << *result << std::endl;
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  EXPECT_EQ(-*m, *result);
 }
 
-TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanTranspose)
 {
-  AppendMatrixAlgorithm algo;
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(matrix1());
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
-
-  EXPECT_EQ(3, result->nrows());
-  EXPECT_EQ(8, result->ncols());
-
-  std::cout << *result << std::endl;
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  DenseMatrixHandle expected(m->make_transpose());
+  EXPECT_EQ(*expected, *result);
 }
 
-TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiply)
 {
-  //TODO: should return with error.
-  AppendMatrixAlgorithm algo;
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  DenseMatrixHandle m1(matrix1());
-  DenseMatrixHandle m2(Zero.clone());
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
-
-  ASSERT_FALSE(result);
+  DenseMatrixHandle m(matrix1().clone());
+  DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::Parameters(EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY, 2.5));
+  EXPECT_EQ(2.5* *m, *result);
 }
 
-TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, NullInputReturnsNull)
 {
-  AppendMatrixAlgorithm algo;
+  EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
+  DenseMatrixHandle result = algo.run(DenseMatrixHandle(), EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   EXPECT_FALSE(result);
 }

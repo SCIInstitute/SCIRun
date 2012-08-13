@@ -26,44 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Algorithms;
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Algorithms;
 
-AlgorithmParameterName EvaluateLinearAlgebraBinaryAlgorithm::OperatorName("Operator");
+AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::OperatorName("Operator");
+AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue("Scalar");
 
-EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
+EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
   DenseMatrixHandle result;
-  DenseMatrixConstHandle lhs = inputs.get<0>();
-  DenseMatrixConstHandle rhs = inputs.get<1>();
-  if (!lhs || !rhs)
-  {
-    return result;
-  }
 
-  Operator oper = params;
+  if (!matrix)
+    return result;
+
+  Operator oper = params.get<0>();
 
   //TODO: absolutely need matrix move semantics here!!!!!!!
   switch (oper)
   {
-  case ADD:
-    result.reset(lhs->clone());
-    *result += *rhs;
+  case NEGATE:
+    result.reset(matrix->clone());
+    (*result) *= -1;
     break;
-  case SUBTRACT:
-    result.reset(lhs->clone());
-    *result -= *rhs;
+  case TRANSPOSE:
+    result.reset(matrix->make_transpose()); 
     break;
-  case MULTIPLY:
-    result.reset(lhs->clone());
-    *result *= *rhs;
-    break;
-  default:
-    std::cout << "ERROR: unknown binary operation" << std::endl;
+  case SCALAR_MULTIPLY:
+    boost::optional<double> scalarOption = params.get<1>();
+    if (!scalarOption)
+      throw std::invalid_argument("No scalar value available to multiply!");
+    double scalar = scalarOption.get();
+    result.reset(matrix->clone());
+    (*result) *= scalar;
     break;
   }
 

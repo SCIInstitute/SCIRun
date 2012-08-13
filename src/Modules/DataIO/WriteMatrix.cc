@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <Modules/DataIO/WriteMatrix.h>
-#include <Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::DataIO;

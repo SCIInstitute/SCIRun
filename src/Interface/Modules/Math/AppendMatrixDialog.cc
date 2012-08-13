@@ -28,7 +28,7 @@
 
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/AppendMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;

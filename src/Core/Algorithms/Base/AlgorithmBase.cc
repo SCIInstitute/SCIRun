@@ -26,27 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_REPORTMATRIXINFO_H
-#define ALGORITHMS_MATH_REPORTMATRIXINFO_H
+#include <iostream>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-#include <Algorithms/Base/AlgorithmBase.h>
-#include <Algorithms/Math/AlgorithmFwd.h>
-#include <Algorithms/Math/Share.h>
+using namespace SCIRun::Algorithms;
 
-namespace SCIRun {
-namespace Algorithms {
-namespace Math {
-  
-  class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
-  {
-  public:
-    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
-    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
-    typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
+AlgorithmBase::~AlgorithmBase() {}
 
-    Outputs run(const Inputs& input, const Parameters& params = 0) const;
-  };
+int AlgorithmParameter::getInt() const
+{
+  const int* v = boost::get<int>(&value_);
+  return v ? *v : 0;
+}
 
-}}}
+double AlgorithmParameter::getDouble() const
+{
+  const double* v = boost::get<double>(&value_);
+  return v ? *v : 0;
+}
 
-#endif
+std::string AlgorithmParameter::getString() const
+{
+  const std::string* v = boost::get<std::string>(&value_);
+  return v ? *v : "";
+}

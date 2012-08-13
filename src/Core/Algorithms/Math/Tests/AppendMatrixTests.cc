@@ -28,10 +28,10 @@
 
 #include <gtest/gtest.h>
 
-#include <Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
-#include <Core/Datatypes/MatrixIO.h>
+
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::Math;
@@ -40,48 +40,59 @@ namespace
 {
   DenseMatrixHandle matrix1()
   {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    DenseMatrixHandle m(new DenseMatrix(3, 4));
     for (size_t i = 0; i < m->nrows(); ++ i)
       for (size_t j = 0; j < m->ncols(); ++ j)
-        (*m)(i, j) = 3.0 * i + j;
+        (*m)(i, j) = 3.0 * i + j - 5;
     return m;
   }
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanAdd)
+TEST(AppendMatrixAlgorithmTests, CanAppendRows)
 {
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
+  AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
-  EXPECT_EQ(2 * *m, *result);
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(matrix1());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+
+  EXPECT_EQ(6, result->nrows());
+  EXPECT_EQ(4, result->ncols());
+
+  std::cout << *result << std::endl;
 }
 
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanSubtract)
+TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
 {
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
+  AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::SUBTRACT);
-  EXPECT_EQ(Zero, *result);
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(matrix1());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
+
+  EXPECT_EQ(3, result->nrows());
+  EXPECT_EQ(8, result->ncols());
+
+  std::cout << *result << std::endl;
 }
 
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiply)
+TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
 {
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
+  //TODO: should return with error.
+  AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(m, m), EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-  EXPECT_EQ(*m * *m, *result);
+  DenseMatrixHandle m1(matrix1());
+  DenseMatrixHandle m2(Zero.clone());
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
+
+  ASSERT_FALSE(result);
 }
 
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, NullInputReturnsNull)
+TEST(AppendMatrixAlgorithmTests, NullInputReturnsDummyValues)
 {
-  EvaluateLinearAlgebraBinaryAlgorithm algo;
+  AppendMatrixAlgorithm algo;
 
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), matrix1()), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
-  EXPECT_FALSE(result);
-  result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(matrix1(), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(), AppendMatrixAlgorithm::ROWS);
   EXPECT_FALSE(result);
 }

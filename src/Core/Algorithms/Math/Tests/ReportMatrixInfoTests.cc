@@ -25,11 +25,11 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+ 
 #include <gtest/gtest.h>
 
 #include <fstream>
-#include <Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>

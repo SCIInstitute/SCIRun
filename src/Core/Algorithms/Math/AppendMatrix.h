@@ -26,60 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_BASE_ALGORITHMBASE_H
-#define ALGORITHMS_BASE_ALGORITHMBASE_H
+#ifndef ALGORITHMS_MATH_APPENDMATRIX_H
+#define ALGORITHMS_MATH_APPENDMATRIX_H
 
-#include <string>
-#include <boost/variant.hpp>
-#include <Algorithms/Base/Share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/AlgorithmFwd.h>
+#include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
 namespace Algorithms {
-
-  struct SCISHARE AlgorithmParameterName
-  {
-    AlgorithmParameterName() : name_("<unspecified>") {}
-    explicit AlgorithmParameterName(const std::string& name) : name_(name) {}
-    std::string name_;
-    bool operator<(const AlgorithmParameterName& rhs) const
-    {
-      return name_ < rhs.name_;
-    }
-  };
-
-  class SCISHARE AlgorithmParameter
+namespace Math {
+  
+  class SCISHARE AppendMatrixAlgorithm : public AlgorithmBase
   {
   public:
-    typedef boost::variant<int,double,std::string> Value;
+    enum Option { ROWS, COLUMNS };
+    static AlgorithmParameterName OptionName;
 
-    AlgorithmParameter() {}
-    AlgorithmParameter(const AlgorithmParameterName& name, const Value& value) : name_(name), value_(value) {}
+    typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
+    typedef Option Parameters;  
+    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
-    AlgorithmParameterName name_;
-    Value value_;
-
-    int getInt() const;
-    double getDouble() const;
-    std::string getString() const;
-    //etc
+    Outputs run(const Inputs& input, const Parameters& params) const;
   };
 
-  class SCISHARE AlgorithmBase
-  {
-  public:
-    virtual ~AlgorithmBase();
-  
-    /*
-      TODO idea: make it mockable
-  
-    virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
-
-      ModuleParameterState: essentially a map of GuiVars. but need hooks for undo/redo and serialization
-      Input: tuple/heterogeneous vector of Datatypes
-      Output: tuple of Datatypes, possibly delay-executed
-    */
-  };
-
-}}
+}}}
 
 #endif

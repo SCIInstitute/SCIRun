@@ -27,27 +27,21 @@
 */
 
 #include <fstream>
-#include <Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
-#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Algorithms;
 using namespace SCIRun::Algorithms::DataIO;
 using namespace SCIRun::Domain::Datatypes;
 
-AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
+AlgorithmParameterName WriteMatrixAlgorithm::Filename("Filename");
 
-ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
+WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
 {
-  if (!boost::filesystem::exists(filename))
-    return Outputs();
-  
-  //TODO: push logging up hierarchy
-  std::cout << "Algorithm start." << std::endl;
-  std::ifstream reader(filename.c_str());
-  DenseMatrixHandle matrix(new DenseMatrix);
-  reader >> *matrix;
-  std::cout << "Algorithm returning." << std::endl;
-  return matrix;
+  if (!inputMatrix)
+    return;
+
+  std::ofstream writer(filename.c_str());
+  writer << *inputMatrix;
 }

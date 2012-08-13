@@ -33,7 +33,7 @@
 #include <iostream>
 #include <boost/signal.hpp>
 #include <boost/any.hpp>
-#include <Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Dataflow/Network/NetworkFwd.h>
 #include <Core/Dataflow/Network/Share.h>
 

@@ -32,8 +32,8 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
-#include <Algorithms/DataIO/WriteMatrix.h>
-#include <Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <boost/filesystem.hpp>
 
 using namespace SCIRun::Domain::Datatypes;
 using namespace SCIRun::Algorithms::DataIO;
@@ -59,38 +59,43 @@ namespace
   const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
-TEST(WriteMatrixTests, CanWriteToStream)
+TEST(ReadMatrixTests, CanReadFromStream)
 {
-  const std::string matrixString = "1 2 3 \n4 5 6 \n7 8 9 \n";
+  const std::string matrixString = "1 2 3\n4 5 6\n7 8 9\n";
+
+  std::istringstream istr(matrixString);
+
+  DenseMatrix in;
+
+  istr >> in;
+
+  EXPECT_EQ(matrix1(), in);
+}
+
+TEST(ReadMatrixTests, RoundTripViaString)
+{
+  DenseMatrix m = matrix1();
 
   std::ostringstream ostr;
+  ostr << m;
+  std::string str = ostr.str();
+  std::istringstream istr(str);
+  DenseMatrix m2;
+  istr >> m2;
 
-  DenseMatrix out = matrix1();
-
-  ostr << out;
-
-  EXPECT_EQ(matrixString, ostr.str());
+  EXPECT_EQ(m, m2);
 }
 
-TEST(WriteMatrixAlgorithmTest, TestToRealTextFile)
+TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
 {
-  WriteMatrixAlgorithm algo;
-  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1Out.txt";
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
+  if (boost::filesystem::exists(filename))
+  {
+    DenseMatrixConstHandle matrix = algo.run(filename);
 
-  DenseMatrixHandle m1(matrix1().clone());
-  algo.run(m1, filename);
-}
-
-TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
-{
-  WriteMatrixAlgorithm write;
-  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1Out.txt";
-
-  DenseMatrixHandle m1(matrix1().clone());
-  write.run(m1, filename);
-
-  ReadMatrixAlgorithm read;
-  DenseMatrixConstHandle roundTrip = read.run(filename);
-
-  EXPECT_EQ(*m1, *roundTrip);
+    EXPECT_EQ(matrixNonSquare(), *matrix);
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
 }

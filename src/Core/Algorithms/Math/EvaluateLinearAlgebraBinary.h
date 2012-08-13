@@ -26,30 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_DATAIO_READMATRIX_H
-#define ALGORITHMS_DATAIO_READMATRIX_H
+#ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
+#define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
 
-#include <string>
-#include <Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Algorithms/DataIO/Share.h>
+#include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
-  namespace Algorithms {
-    namespace DataIO {
+namespace Algorithms {
+namespace Math {
+  class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
+  {
+  public:
+    enum Operator
+    {
+      ADD,
+      SUBTRACT,
+      MULTIPLY
+    };
+    static AlgorithmParameterName OperatorName;
+        
+    typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
+    typedef Operator Parameters;
+    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
 
-      class SCISHARE ReadMatrixAlgorithm : public AlgorithmBase
-      {
-      public:
-        typedef void Inputs;
-        typedef std::string Parameters; 
-        typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
-
-        static AlgorithmParameterName Filename;
-
-        Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
-      };
-
+    Outputs run(const Inputs& inputs, const Parameters& params) const;
+  };
 }}}
 
 #endif

@@ -26,22 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <fstream>
-#include <Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
 
-using namespace SCIRun::Algorithms;
-using namespace SCIRun::Algorithms::DataIO;
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Algorithms::Math;
 
-AlgorithmParameterName WriteMatrixAlgorithm::Filename("Filename");
-
-WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
+ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
 {
-  if (!inputMatrix)
-    return;
+  if (!input)
+    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
 
-  std::ofstream writer(filename.c_str());
-  writer << *inputMatrix;
+  const std::string type = typeid(*input).name();
+
+  return Outputs(type, 
+    input->nrows(), 
+    input->ncols(), 
+    input->nrows() * input->ncols(), 
+    input->min(), 
+    input->max());
 }

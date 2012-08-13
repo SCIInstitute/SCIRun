@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
-#include <Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;

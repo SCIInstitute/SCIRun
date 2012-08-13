@@ -29,7 +29,7 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <Modules/DataIO/ReadMatrix.h>
-#include <Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/String.h>
 
