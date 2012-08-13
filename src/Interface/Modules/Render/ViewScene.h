@@ -40,8 +40,6 @@
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
 class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
   public Ui::ViewScene

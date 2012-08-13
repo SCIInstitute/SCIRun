@@ -57,7 +57,6 @@ TARGET_LINK_LIBRARIES(Modules_Math
 Core_Dataflow_Network
 Core_Datatypes
 Algorithms_Math
-Algorithms_Base
 )
 
 IF(BUILD_SHARED_LIBS)

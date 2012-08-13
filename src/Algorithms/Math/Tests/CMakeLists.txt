@@ -31,6 +31,7 @@ SET(Algorithms_Math_Tests_SRCS
   ReportMatrixInfoTests.cc
   EvaluateLinearAlgebraUnaryTests.cc
   EvaluateLinearAlgebraBinaryTests.cc
+  EigenSVDTest.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
@@ -42,6 +43,7 @@ ${Algorithms_Math_Tests_SRCS})
 
 TARGET_LINK_LIBRARIES(Algorithms_Math_Tests
 Algorithms_Math
+Algorithms_DataIO
 Core_Datatypes
 gtest_main
 gtest
