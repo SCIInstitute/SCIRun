@@ -43,10 +43,10 @@ ENDIF(VTK_SUPPORT)
 ##################################################
 
 
-SET(SCIRunGUIPrototype_SOURCES 
+SET(Interface_Application_SOURCES 
+  GuiApplication.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
-  scirunMain.cc 
   SCIRunMainWindow.cc
   Node.cc
   Port.cc
@@ -56,7 +56,8 @@ SET(SCIRunGUIPrototype_SOURCES
   ${GUI_VTK_SOURCES}
 )
 
-SET(SCIRunGUIPrototype_HEADERS
+SET(Interface_Application_HEADERS
+  GuiApplication.h
   Logger.h
   ModuleWidget.h
   ModuleProxyWidget.h
@@ -69,33 +70,33 @@ SET(SCIRunGUIPrototype_HEADERS
   ${GUI_VTK_HEADERS}
 )
 
-SET(SCIRunGUIPrototype_FORMS
+SET(Interface_Application_FORMS
   Module.ui
   SCIRunMainWindow.ui
   RenderWindow.ui
 )
 
-SET(SCIRunGUIPrototype_RESOURCES
+SET(Interface_Application_RESOURCES
 #Interface/Application/scirun-icon-small.ico
 #Interface/Application/scirun-icon-large.ico
 #Interface/Application/lin_agt_wrench-32.png
 )
 
-QT4_WRAP_UI(SCIRunGUIPrototype_FORMS_HEADERS ${SCIRunGUIPrototype_FORMS})
-QT4_WRAP_CPP(SCIRunGUIPrototype_HEADERS_MOC ${SCIRunGUIPrototype_HEADERS})
-QT4_ADD_RESOURCES(SCIRunGUIPrototype_RESOURCES_RCC ${SCIRunGUIPrototype_RESOURCES})
+QT4_WRAP_UI(Interface_Application_FORMS_HEADERS ${Interface_Application_FORMS})
+QT4_WRAP_CPP(Interface_Application_HEADERS_MOC ${Interface_Application_HEADERS})
+QT4_ADD_RESOURCES(Interface_Application_RESOURCES_RCC ${Interface_Application_RESOURCES})
 
 INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
-ADD_EXECUTABLE(SCIRunGUIPrototype
-  ${SCIRunGUIPrototype_SOURCES}
-  ${SCIRunGUIPrototype_HEADERS}
-  ${SCIRunGUIPrototype_HEADERS_MOC}
-  ${SCIRunGUIPrototype_FORMS_HEADERS}
-  ${SCIRunGUIPrototype_RESOURCES_RCC})
+ADD_LIBRARY(Interface_Application
+  ${Interface_Application_SOURCES}
+  ${Interface_Application_HEADERS}
+  ${Interface_Application_HEADERS_MOC}
+  ${Interface_Application_FORMS_HEADERS}
+  ${Interface_Application_RESOURCES_RCC})
 
-TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
+TARGET_LINK_LIBRARIES(Interface_Application 
   Dataflow_Network
   Engine_Network
   Dataflow_State
@@ -106,5 +107,9 @@ TARGET_LINK_LIBRARIES(SCIRunGUIPrototype
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Application)
+ENDIF(BUILD_SHARED_LIBS)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

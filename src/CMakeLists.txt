@@ -174,6 +174,7 @@ ADD_SUBDIRECTORY(Interface)
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
+ADD_SUBDIRECTORY(Main)
 ADD_SUBDIRECTORY(Externals)
 
 
@@ -210,6 +211,7 @@ SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
 
 SET_PROPERTY(TARGET Interface_Modules   PROPERTY FOLDER "Interface/Modules")
+SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Application")
 
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Basic_Tests   PROPERTY FOLDER "Modules/Basic")

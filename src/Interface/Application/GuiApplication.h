@@ -26,13 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <Interface/Application/SCIRunMainWindow.h>
+#ifndef INTERFACE_APPLICATION_GUIAPPLICATION_H
+#define INTERFACE_APPLICATION_GUIAPPLICATION_H
 
-int main(int argc, char* argv[])
-{
-	QApplication app(argc, argv);
-	SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-	mainWin->show();
-	return app.exec();
+#include <Interface/Application/Share.h>
+
+namespace SCIRun {
+namespace Gui {
+
+  class SCISHARE Application
+  {
+  public:
+    static int run(int argc, char* argv[]);
+  private:
+    Application();
+  };
 }
+}
+
+#endif
