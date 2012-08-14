@@ -26,11 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/NetworkXMLSerializer.h>
-#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Network/Network.h> //TODO: need network factory??
 #include <Dataflow/Network/ModuleInterface.h>
-#include <Core/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <fstream>
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>

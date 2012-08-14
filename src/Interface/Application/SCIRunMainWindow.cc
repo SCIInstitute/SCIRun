@@ -39,8 +39,8 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 
-#include <Core/Serialization/Network/XMLSerializer.h>
-#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #ifdef BUILD_VTK_SUPPORT
 #include "RenderWindow.h"

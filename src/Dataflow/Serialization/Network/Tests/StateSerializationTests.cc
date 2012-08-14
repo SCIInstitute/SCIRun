@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/StateSerialization.h>
-#include <Core/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Serialization/Network/StateSerialization.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 

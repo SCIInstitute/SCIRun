@@ -40,7 +40,7 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Modules/ModuleDialogGeneric.h> //TODO
-#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <boost/bind.hpp>
 

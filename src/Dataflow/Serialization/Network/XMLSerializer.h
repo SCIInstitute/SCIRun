@@ -37,7 +37,7 @@
 #include <boost/foreach.hpp>
 #include <fstream>
 
-#include <Core/Serialization/Network/Share.h>
+#include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {

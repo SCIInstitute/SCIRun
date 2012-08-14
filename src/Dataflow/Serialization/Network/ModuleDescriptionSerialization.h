@@ -27,71 +27,52 @@
 */
 
 
-#ifndef CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H
-#define CORE_SERIALIZATION_NETWORK_NETWORK_DESCRIPTION_SERIALIZATION_H 
+#ifndef CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H
+#define CORE_SERIALIZATION_NETWORK_MODULE_DESCRIPTION_SERIALIZATION_H 
 
-#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
-#include <Core/Serialization/Network/StateSerialization.h>
-#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
-#include <Core/Serialization/Network/Share.h>
+#include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
-  typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;
-
-  struct ModuleWithState 
+  class SCISHARE ModuleLookupInfoXML : public ModuleLookupInfo
   {
-    ModuleLookupInfoXML module;
-    State::SimpleMapModuleStateXML state;
-    ModuleWithState(const ModuleLookupInfoXML& m = ModuleLookupInfoXML(), const State::SimpleMapModuleStateXML& s = State::SimpleMapModuleStateXML()) : module(m), state(s) {}
-  private:
     friend class boost::serialization::access;
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
-      ar & BOOST_SERIALIZATION_NVP(module);
-      ar & BOOST_SERIALIZATION_NVP(state);
-    } 
-  };
-
-  typedef std::map<std::string, ModuleWithState> ModuleMapXML;
-
-  class SCISHARE NetworkXML
-  {
-  public:
-    ModuleMapXML modules;
-    ConnectionsXML connections;
-  private:
-    friend class boost::serialization::access;
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-      ar & BOOST_SERIALIZATION_NVP(modules);
-      ar & BOOST_SERIALIZATION_NVP(connections);
-    } 
-  };
-
-  struct ModulePositions
-  {
-    typedef std::map<std::string, std::pair<double,double> > Data;
-    Data modulePositions;
-  };
-
-  struct SCISHARE NetworkFile 
-  {
-    NetworkXML network;
-    ModulePositions modulePositions;
-  private:
-    friend class boost::serialization::access;
-    template <class Archive>
-    void serialize(Archive& ar, const unsigned int version)
-    {
-      ar & boost::serialization::make_nvp("networkInfo", network);
-      ar & boost::serialization::make_nvp("modulePositions", modulePositions.modulePositions);
+      ar & BOOST_SERIALIZATION_NVP(package_name_);
+      ar & BOOST_SERIALIZATION_NVP(category_name_);
+      ar & BOOST_SERIALIZATION_NVP(module_name_);
     }
+
+  public:
+    ModuleLookupInfoXML();
+    ModuleLookupInfoXML(const ModuleLookupInfoXML& rhs);
+    ModuleLookupInfoXML(const ModuleLookupInfo& rhs);
+  };
+
+  class SCISHARE ConnectionDescriptionXML : public ConnectionDescription
+  {
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+      ar & BOOST_SERIALIZATION_NVP(moduleId1_);
+      ar & BOOST_SERIALIZATION_NVP(port1_);
+      ar & BOOST_SERIALIZATION_NVP(moduleId2_);
+      ar & BOOST_SERIALIZATION_NVP(port2_);
+    }
+  public:
+    ConnectionDescriptionXML();
+    ConnectionDescriptionXML(const ConnectionDescriptionXML& rhs);
+    ConnectionDescriptionXML(const ConnectionDescription& rhs);
   };
 
 }}}

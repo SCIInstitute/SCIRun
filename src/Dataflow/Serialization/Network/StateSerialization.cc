@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/StateSerialization.h>
+#include <Dataflow/Serialization/Network/StateSerialization.h>
 
 using namespace SCIRun::Domain::State;
 using namespace SCIRun::Domain::Networks;

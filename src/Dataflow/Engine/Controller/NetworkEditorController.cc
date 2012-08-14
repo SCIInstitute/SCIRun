@@ -34,7 +34,7 @@
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
-#include <Core/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 

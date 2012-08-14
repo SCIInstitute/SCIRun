@@ -26,6 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 using namespace SCIRun::Domain::Networks;

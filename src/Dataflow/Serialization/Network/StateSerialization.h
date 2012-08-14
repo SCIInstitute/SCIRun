@@ -36,7 +36,7 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/variant.hpp>
-#include <Core/Serialization/Network/Share.h>
+#include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Domain {

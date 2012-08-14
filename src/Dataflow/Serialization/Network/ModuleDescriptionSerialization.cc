@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 
 using namespace SCIRun::Domain::Networks;
 

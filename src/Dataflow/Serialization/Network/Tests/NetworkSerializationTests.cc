@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Serialization/Network/ModuleDescriptionSerialization.h>
-#include <Core/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Core/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -50,7 +50,7 @@
 #include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Core/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Engine;
