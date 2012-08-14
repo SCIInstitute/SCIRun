@@ -30,5 +30,6 @@
 
 int main(int argc, char* argv[])
 {
+  //TODO: need to check for mode (GUI/interactive/script)
 	return SCIRun::Gui::Application::run(argc, argv);
 }
