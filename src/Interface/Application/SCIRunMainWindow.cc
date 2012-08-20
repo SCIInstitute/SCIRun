@@ -233,7 +233,7 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 
 void SCIRunMainWindow::loadNetwork()
 {
-  if (okToContinue())
+  if (clearNetwork())
   {
     QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
 
@@ -266,13 +266,15 @@ void SCIRunMainWindow::loadNetwork()
   }
 }
 
-void SCIRunMainWindow::clearNetwork()
+bool SCIRunMainWindow::clearNetwork()
 {
   if (okToContinue())
   {
     networkEditor_->clear();
     setCurrentFile("");
+    return true;
   }
+  return false;
 }
 
 void SCIRunMainWindow::setCurrentFile(const QString& fileName)

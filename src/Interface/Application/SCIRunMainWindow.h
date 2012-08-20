@@ -71,7 +71,7 @@ private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
-  void clearNetwork();
+  bool clearNetwork();
   void networkModified();
 };
 
