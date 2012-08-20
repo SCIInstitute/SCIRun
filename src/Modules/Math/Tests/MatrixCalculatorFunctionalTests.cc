@@ -102,9 +102,9 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   EXPECT_EQ(3, matrixUnaryNetwork.nmodules());
 
-  matrixUnaryNetwork.connect(send, 0, process, 0);
+  matrixUnaryNetwork.connect(ConnectionOutputPort(send, 0), ConnectionInputPort(process, 0));
   EXPECT_EQ(1, matrixUnaryNetwork.nconnections());
-  matrixUnaryNetwork.connect(process, 0, receive, 0);
+  matrixUnaryNetwork.connect(ConnectionOutputPort(process, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, matrixUnaryNetwork.nconnections());
 
   SendTestMatrixModule* sendModule = dynamic_cast<SendTestMatrixModule*>(send.get());
@@ -191,15 +191,15 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   //}
 
   EXPECT_EQ(0, matrixMathNetwork.nconnections());
-  matrixMathNetwork.connect(matrix1Send, 0, transpose, 0);
-  matrixMathNetwork.connect(matrix1Send, 0, negate, 0);
-  matrixMathNetwork.connect(matrix2Send, 0, scalar, 0);
-  matrixMathNetwork.connect(negate, 0, multiply, 0);
-  matrixMathNetwork.connect(scalar, 0, multiply, 1);
-  matrixMathNetwork.connect(transpose, 0, add, 0);
-  matrixMathNetwork.connect(multiply, 0, add, 1);
-  matrixMathNetwork.connect(add, 0, report, 0);
-  matrixMathNetwork.connect(add, 0, receive, 0);
+  matrixMathNetwork.connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(transpose, 0));
+  matrixMathNetwork.connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(negate, 0));
+  matrixMathNetwork.connect(ConnectionOutputPort(matrix2Send, 0), ConnectionInputPort(scalar, 0));
+  matrixMathNetwork.connect(ConnectionOutputPort(negate, 0), ConnectionInputPort(multiply, 0));
+  matrixMathNetwork.connect(ConnectionOutputPort(scalar, 0), ConnectionInputPort(multiply, 1));
+  matrixMathNetwork.connect(ConnectionOutputPort(transpose, 0), ConnectionInputPort(add, 0));
+  matrixMathNetwork.connect(ConnectionOutputPort(multiply, 0), ConnectionInputPort(add, 1));
+  matrixMathNetwork.connect(ConnectionOutputPort(add, 0), ConnectionInputPort(report, 0));
+  matrixMathNetwork.connect(ConnectionOutputPort(add, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(9, matrixMathNetwork.nconnections());
 
   //Set module parameters.

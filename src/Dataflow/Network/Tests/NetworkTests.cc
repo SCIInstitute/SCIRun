@@ -78,7 +78,7 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
   EXPECT_EQ(m1, network.module(0));
   EXPECT_EQ(m2, network.module(1));
 
-  ConnectionId connId = network.connect(m1, 0, m2, 1);
+  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 
@@ -99,11 +99,11 @@ TEST(NetworkTests, CannotMakeSameConnectionTwice)
   mli2.module_name_ = "Module2";
   ModuleHandle m2 = network.add_module(mli2);
   
-  ConnectionId connId = network.connect(m1, 0, m2, 1);
+  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 
-  ConnectionId connIdEmpty = network.connect(m1, 0, m2, 1);
+  ConnectionId connIdEmpty = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
   //not sure what to return here.
   EXPECT_EQ("", connIdEmpty.id_);
@@ -111,7 +111,7 @@ TEST(NetworkTests, CannotMakeSameConnectionTwice)
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
 
-  connId = network.connect(m1, 0, m2, 1);
+  connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 }

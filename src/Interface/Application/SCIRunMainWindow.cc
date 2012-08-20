@@ -233,12 +233,13 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 
 void SCIRunMainWindow::loadNetwork()
 {
-  if (clearNetwork())
+  if (okToContinue())
   {
     QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
 
     if (!filename.isEmpty())
     {
+      networkEditor_->clear();
       std::cout << "Attempting load of " << filename.toStdString() << std::endl;
 
       try

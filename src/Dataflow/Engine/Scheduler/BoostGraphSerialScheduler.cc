@@ -59,7 +59,7 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
 
   BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
   {
-    edges.push_back(std::make_pair(moduleIdLookup.left.at(cd.moduleId1_), moduleIdLookup.left.at(cd.moduleId2_)));
+    edges.push_back(std::make_pair(moduleIdLookup.left.at(cd.out_.moduleId_), moduleIdLookup.left.at(cd.in_.moduleId_)));
   }
 
   typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;

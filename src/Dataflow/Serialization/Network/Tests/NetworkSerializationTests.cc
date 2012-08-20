@@ -118,16 +118,16 @@ namespace
     info3.package_name_ = "SCIRun";
 
     ConnectionDescriptionXML conn;
-    conn.moduleId1_ = "ReadMatrix2";
-    conn.moduleId2_ = "EvaluateLinearAlgebraUnary1";
-    conn.port1_ = 0;
-    conn.port2_ = 0;
+    conn.out_.moduleId_ = "ReadMatrix2";
+    conn.in_.moduleId_ = "EvaluateLinearAlgebraUnary1";
+    conn.out_.port_ = 0;
+    conn.in_.port_ = 0;
 
     ConnectionDescriptionXML conn2;
-    conn2.moduleId1_ = "EvaluateLinearAlgebraUnary1";
-    conn2.moduleId2_ = "WriteMatrix3";
-    conn2.port1_ = 0;
-    conn2.port2_ = 0;
+    conn2.out_.moduleId_ = "EvaluateLinearAlgebraUnary1";
+    conn2.in_.moduleId_ = "WriteMatrix3";
+    conn2.out_.port_ = 0;
+    conn2.in_.port_ = 0;
 
     ConnectionsXML connections;
     connections += conn2, conn;
@@ -213,15 +213,15 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ(9, matrixMathNetwork->nmodules());
 
   EXPECT_EQ(0, matrixMathNetwork->nconnections());
-  matrixMathNetwork->connect(matrix1Send, 0, transpose, 0);
-  matrixMathNetwork->connect(matrix1Send, 0, negate, 0);
-  matrixMathNetwork->connect(matrix2Send, 0, scalar, 0);
-  matrixMathNetwork->connect(negate, 0, multiply, 0);
-  matrixMathNetwork->connect(scalar, 0, multiply, 1);
-  matrixMathNetwork->connect(transpose, 0, add, 0);
-  matrixMathNetwork->connect(multiply, 0, add, 1);
-  matrixMathNetwork->connect(add, 0, report, 0);
-  matrixMathNetwork->connect(add, 0, receive, 0);
+  matrixMathNetwork->connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(transpose, 0));
+  matrixMathNetwork->connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(negate, 0));
+  matrixMathNetwork->connect(ConnectionOutputPort(matrix2Send, 0), ConnectionInputPort(scalar, 0));
+  matrixMathNetwork->connect(ConnectionOutputPort(negate, 0), ConnectionInputPort(multiply, 0));
+  matrixMathNetwork->connect(ConnectionOutputPort(scalar, 0), ConnectionInputPort(multiply, 1));
+  matrixMathNetwork->connect(ConnectionOutputPort(transpose, 0), ConnectionInputPort(add, 0));
+  matrixMathNetwork->connect(ConnectionOutputPort(multiply, 0), ConnectionInputPort(add, 1));
+  matrixMathNetwork->connect(ConnectionOutputPort(add, 0), ConnectionInputPort(report, 0));
+  matrixMathNetwork->connect(ConnectionOutputPort(add, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(9, matrixMathNetwork->nconnections());
 
   //Set module parameters.

@@ -64,10 +64,10 @@ namespace Networks {
     template <class Archive>
     void serialize(Archive& ar, const unsigned int version)
     {
-      ar & BOOST_SERIALIZATION_NVP(moduleId1_);
-      ar & BOOST_SERIALIZATION_NVP(port1_);
-      ar & BOOST_SERIALIZATION_NVP(moduleId2_);
-      ar & BOOST_SERIALIZATION_NVP(port2_);
+      ar & boost::serialization::make_nvp("moduleId1_", out_.moduleId_);
+      ar & boost::serialization::make_nvp("port1_", out_.port_);
+      ar & boost::serialization::make_nvp("moduleId2_", in_.moduleId_);
+      ar & boost::serialization::make_nvp("port2_", in_.port_);
     }
   public:
     ConnectionDescriptionXML();

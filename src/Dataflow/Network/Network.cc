@@ -67,9 +67,14 @@ bool Network::remove_module(const std::string& id)
   return false;
 }
 
-ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_t p2)
+ConnectionId Network::connect(ConnectionOutputPort out, ConnectionInputPort in)
 {
-  if (!m1 || !m2)
+  ModuleHandle outputModule = out.first;
+  ModuleHandle inputModule = in.first;
+  size_t outputPortIndex = out.second;
+  size_t inputPortIndex = in.second;
+
+  if (!outputModule || !inputModule)
     throw std::invalid_argument("cannot connect null modules");
   // assure that the ports are not altered while connecting
   //m1->oports_.lock();
@@ -80,18 +85,20 @@ ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_
   //  p2 = m2->iports_.size() - 1;
   //}
 
-  if (p1 >= m1->num_output_ports() || p2 >= m2->num_input_ports())
+  if (outputPortIndex >= outputModule->num_output_ports() || inputPortIndex >= inputModule->num_input_ports())
   {
     std::cout << "TODO: ERROR OR NOT?: connection not available, ports do not exist!" << std::endl;
     return ConnectionId("");
   }
 
-  ConnectionId id = ConnectionId::create(ConnectionDescription(m1->get_id(), p1, m2->get_id(), p2));
+  ConnectionId id = ConnectionId::create(ConnectionDescription(
+    OutgoingConnectionDescription(outputModule->get_id(), outputPortIndex), 
+    IncomingConnectionDescription(inputModule->get_id(), inputPortIndex)));
   if (connections_.find(id) == connections_.end())
   {
     try
     {
-      ConnectionHandle conn(new Connection(m1, p1, m2, p2, id));
+      ConnectionHandle conn(new Connection(outputModule, outputPortIndex, inputModule, inputPortIndex, id));
 
       //lock.lock();
 

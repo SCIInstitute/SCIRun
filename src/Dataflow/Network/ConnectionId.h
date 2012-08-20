@@ -37,15 +37,31 @@ namespace SCIRun {
 namespace Domain {
 namespace Networks {
 
+  struct SCISHARE OutgoingConnectionDescription
+  {
+    OutgoingConnectionDescription() : port_(-1) {}
+    OutgoingConnectionDescription(const std::string& id, size_t p)
+      : moduleId_(id), port_(p) {}
+    std::string moduleId_;
+    size_t port_;
+  };
+
+  struct SCISHARE IncomingConnectionDescription
+  {
+    IncomingConnectionDescription() : port_(-1) {}
+    IncomingConnectionDescription(const std::string& id, size_t p)
+      : moduleId_(id), port_(p) {}
+    std::string moduleId_;
+    size_t port_;
+  };
+
   struct SCISHARE ConnectionDescription
   {
-    ConnectionDescription() : port1_(-1), port2_(-1) {}
-    ConnectionDescription(const std::string& id1, size_t p1, const std::string& id2, size_t p2)
-      : moduleId1_(id1), port1_(p1), moduleId2_(id2), port2_(p2) {}
-    std::string moduleId1_;
-    size_t port1_;
-    std::string moduleId2_;
-    size_t port2_;
+    ConnectionDescription() {}
+    ConnectionDescription(const OutgoingConnectionDescription& out, const IncomingConnectionDescription& in)
+      : out_(out), in_(in) {}
+    OutgoingConnectionDescription out_;
+    IncomingConnectionDescription in_;
   };
 
   struct SCISHARE ConnectionId
@@ -61,6 +77,10 @@ namespace Networks {
 
   SCISHARE bool operator==(const ConnectionId& lhs, const ConnectionId& rhs);
   SCISHARE bool operator!=(const ConnectionId& lhs, const ConnectionId& rhs);
+  SCISHARE bool operator==(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs);
+  SCISHARE bool operator!=(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs);
+  SCISHARE bool operator==(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs);
+  SCISHARE bool operator!=(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs);
   SCISHARE bool operator==(const ConnectionDescription& lhs, const ConnectionDescription& rhs);
   SCISHARE bool operator!=(const ConnectionDescription& lhs, const ConnectionDescription& rhs);
 

@@ -96,6 +96,7 @@ private:
   bool canBeConnected(PortWidget* other) const;
   void makeConnection(const QPointF& pos);
   bool tryConnectPort(const QPointF& pos, PortWidget* port);
+  bool matches(const SCIRun::Domain::Networks::ConnectionDescription& cd) const;
 
   const QString name_;
   const QString moduleId_; 

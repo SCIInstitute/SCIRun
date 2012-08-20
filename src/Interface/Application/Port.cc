@@ -195,10 +195,12 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
     {
       //Logger::Instance()->log("Connection made.");
 
-      PortWidget* start = isInput() ? port : this;
-      PortWidget* end = isInput() ? this : port;
+      PortWidget* out = this->isInput() ? port : this;
+      PortWidget* in = this->isInput() ? this : port;
 
-      SCIRun::Domain::Networks::ConnectionDescription cd(start->moduleId_.toStdString(), start->index_, end->moduleId_.toStdString(), end->index_);
+      SCIRun::Domain::Networks::ConnectionDescription cd(
+        SCIRun::Domain::Networks::OutgoingConnectionDescription(out->moduleId_.toStdString(), out->index_), 
+        SCIRun::Domain::Networks::IncomingConnectionDescription(in->moduleId_.toStdString(), in->index_));
 
       Q_EMIT needConnection(cd);
 
@@ -214,12 +216,22 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 
 void PortWidget::MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd) 
 {
-  PortWidget* start = portWidgetMap_[boost::make_tuple(cd.moduleId1_, cd.port1_, false)];
-  PortWidget* end = portWidgetMap_[boost::make_tuple(cd.moduleId2_, cd.port2_, true)];
-  SCIRun::Domain::Networks::ConnectionId id = SCIRun::Domain::Networks::ConnectionId::create(cd);
-  ConnectionLine* c = new ConnectionLine(start, end, id);
-  TheScene->addItem(c);
-  connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+  if (matches(cd))
+  {
+    PortWidget* out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
+    PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
+    SCIRun::Domain::Networks::ConnectionId id = SCIRun::Domain::Networks::ConnectionId::create(cd);
+    ConnectionLine* c = new ConnectionLine(out, in, id);
+    //std::cout << "--------> adding ConnectionLine to scene: " << id.id_ << "\n cxn*= " << c << "\n port* = " << this << std::endl;
+    TheScene->addItem(c);
+    connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+  }
+}
+
+bool PortWidget::matches(const SCIRun::Domain::Networks::ConnectionDescription& cd) const
+{
+  return (isInput() && cd.in_.moduleId_ == moduleId_.toStdString() && cd.in_.port_ == index_)
+    || (!isInput() && cd.out_.moduleId_ == moduleId_.toStdString() && cd.out_.port_ == index_);
 }
 
 //TODO: push this verification down to the domain layer!  make this layer as dumb as possible

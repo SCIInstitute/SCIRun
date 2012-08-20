@@ -59,9 +59,9 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 
   BOOST_FOREACH(const ConnectionDescriptionXML& conn, data.connections)
   {
-    ModuleHandle from = network->lookupModule(conn.moduleId1_);
-    ModuleHandle to = network->lookupModule(conn.moduleId2_);
-    network->connect(from, conn.port1_, to, conn.port2_);
+    ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
+    ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
+    network->connect(ConnectionOutputPort(from, conn.out_.port_), ConnectionInputPort(to, conn.in_.port_));
   }
 
   return network;

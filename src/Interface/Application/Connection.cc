@@ -61,6 +61,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
 ConnectionLine::~ConnectionLine()
 {
+  //std::cout << "~~~~~~~~~~~~~~~~~~~ConnectionLine " << id_.id_ << "\n  " << this << std::endl;
   if (fromPort_ && toPort_)
   {
     fromPort_->removeConnection(this);

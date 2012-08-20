@@ -118,7 +118,7 @@ std::ostream& operator<<(std::ostream& o, const ConnectionDescription& desc)
 
 TEST(ConnectionIdTests, CanParseConnectionIdString)
 {
-  ConnectionDescription desc("mod1", 2, "mod2", 1);
+  ConnectionDescription desc(OutgoingConnectionDescription("mod1", 2), IncomingConnectionDescription("mod2", 1));
   ConnectionId id = ConnectionId::create(desc);
   std::cout << id.id_ << std::endl;
   EXPECT_EQ("mod1_p#2_@to@_mod2_p#1", id.id_);

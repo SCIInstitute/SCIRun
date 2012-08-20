@@ -68,7 +68,7 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
 
   EXPECT_EQ(2, firstBasicNetwork.nmodules());
 
-  firstBasicNetwork.connect(send, 0, receive, 0);
+  firstBasicNetwork.connect(ConnectionOutputPort(send, 0), ConnectionInputPort(receive, 0));
   EXPECT_EQ(1, firstBasicNetwork.nconnections());
 
   const double dataToSend = 3.14;

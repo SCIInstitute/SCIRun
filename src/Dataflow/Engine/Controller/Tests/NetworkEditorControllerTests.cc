@@ -95,8 +95,8 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
   controller.connectConnectionAdded(boost::bind(&SlotClassForNetworkEditorController::connectionAddedSlot, &slots_, _1));
 
   EXPECT_CALL(slots_, connectionAddedSlot(_)).Times(1);
-  EXPECT_CALL(*mockNetwork_, connect(_,_,_,_)).Times(1).WillOnce(Return(ConnectionId("non empty string")));
-  controller.addConnection(ConnectionDescription("m1", 1, "m2", 2));
+  EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(1).WillOnce(Return(ConnectionId("non empty string")));
+  controller.addConnection(ConnectionDescription(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2)));
 
 
   //TODO

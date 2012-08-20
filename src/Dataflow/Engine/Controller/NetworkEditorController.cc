@@ -80,7 +80,8 @@ void NetworkEditorController::printNetwork() const
 
 void NetworkEditorController::addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc)
 {
-  ConnectionId id = theNetwork_->connect(theNetwork_->lookupModule(desc.moduleId1_), desc.port1_, theNetwork_->lookupModule(desc.moduleId2_), desc.port2_);
+  ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.port_),
+    ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.port_));
   if (!id.id_.empty())
     connectionAdded_(desc);
   printNetwork();

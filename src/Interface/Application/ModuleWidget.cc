@@ -103,6 +103,7 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
     InputPortWidget* w = new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
     hookUpSignals(w);
+    //std::cout << "@@@ connecting " << moduleId << " moduleWidget to port " << port->get_portname() << "\n " << w << std::endl;
     connect(this, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
     addPort(w);
   }
