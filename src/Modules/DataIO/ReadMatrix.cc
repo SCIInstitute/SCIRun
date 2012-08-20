@@ -43,6 +43,7 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
 void ReadMatrixModule::execute()
 {
   filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+  //TODO: error should come from algorithm layer
   if (!boost::filesystem::exists(filename_))
   {
     //error()

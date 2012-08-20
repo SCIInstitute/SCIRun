@@ -80,10 +80,9 @@ ConnectionId Network::connect(ModuleHandle m1, size_t p1, ModuleHandle m2, size_
   //  p2 = m2->iports_.size() - 1;
   //}
 
-  // TODO: release ports lock here?
   if (p1 >= m1->num_output_ports() || p2 >= m2->num_input_ports())
   {
-    std::cout << "ERROR OR NOT?: connection not available, ports do not exist!" << std::endl;
+    std::cout << "TODO: ERROR OR NOT?: connection not available, ports do not exist!" << std::endl;
     return ConnectionId("");
   }
 

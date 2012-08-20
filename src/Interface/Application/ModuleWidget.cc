@@ -209,7 +209,6 @@ void ModuleWidget::execute()
   {
     ModuleExecutionRunner runner(this);
     runner();
-    //boost::thread execution = boost::thread(runner);
   }
   Q_EMIT moduleExecuted();
   std::cout << "Done executing." << std::endl;

@@ -38,6 +38,7 @@ namespace SCIRun
   {
     namespace Networks
     {
+      //TODO move to production...
       class SimpleSink : public DatatypeSinkInterface
       {
       public:

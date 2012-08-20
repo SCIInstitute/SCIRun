@@ -6,6 +6,7 @@
 *.swp
 *.vcxproj*
 bin*/*/*
+bin64/*
 doc/*
 src/Doxyfile
 *.dylib

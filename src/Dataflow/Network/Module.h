@@ -70,6 +70,7 @@ namespace Networks {
     OutputPortHandle get_output_port(size_t idx) const;
     InputPortHandle get_input_port(size_t idx) const;
 
+    //TODO: execute signal here.
     void do_execute();
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
