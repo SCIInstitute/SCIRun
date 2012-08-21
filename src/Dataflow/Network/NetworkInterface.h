@@ -49,9 +49,15 @@ namespace Networks {
     virtual ExecutableObject* lookupExecutable(const std::string& id) const = 0; 
   };
 
-  //TODO: distinguish with compiler error
-  typedef std::pair<ModuleHandle, size_t> ConnectionOutputPort;
-  typedef std::pair<ModuleHandle, size_t> ConnectionInputPort;
+  typedef std::pair<ModuleHandle, size_t> ModulePortIndexPair;
+  struct ConnectionOutputPort : public ModulePortIndexPair 
+  {
+    ConnectionOutputPort(ModuleHandle m, size_t p) : ModulePortIndexPair(m,p) {}
+  };
+  struct ConnectionInputPort : public ModulePortIndexPair 
+  {
+    ConnectionInputPort(ModuleHandle m, size_t p) : ModulePortIndexPair(m,p) {}
+  };
 
   class SCISHARE NetworkInterface : public ExecutableLookup
   {
@@ -65,7 +71,7 @@ namespace Networks {
     virtual ModuleHandle module(size_t i) const = 0;
     virtual ModuleHandle lookupModule(const std::string& id) const = 0; 
     
-    virtual ConnectionId connect(ConnectionOutputPort, ConnectionInputPort) = 0;
+    virtual ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;
     virtual void disable_connection(const ConnectionId&) = 0;

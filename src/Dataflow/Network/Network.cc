@@ -67,7 +67,7 @@ bool Network::remove_module(const std::string& id)
   return false;
 }
 
-ConnectionId Network::connect(ConnectionOutputPort out, ConnectionInputPort in)
+ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionInputPort& in)
 {
   ModuleHandle outputModule = out.first;
   ModuleHandle inputModule = in.first;
