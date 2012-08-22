@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <iostream>
-//
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 
 using namespace SCIRun::Engine;

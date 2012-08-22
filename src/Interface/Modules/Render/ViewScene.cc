@@ -27,7 +27,6 @@
 //*/
 
 #include <Interface/Modules/Render/ViewScene.h>
-//#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
@@ -43,8 +42,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
 
 int ViewSceneDialog::moduleExecutionTime()

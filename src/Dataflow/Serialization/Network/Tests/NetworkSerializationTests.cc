@@ -172,8 +172,6 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
   serializer.save_xml(networkXML, ostr1);
 
-  //std::cout << ostr1.str() << std::endl;
-  
   ModuleFactoryHandle mf(new SCIRun::Modules::Factory::HardCodedModuleFactory);
   NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
   NetworkHandle network = converter.from_xml_data(networkXML);
@@ -183,8 +181,6 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
   std::ostringstream ostr2;
   serializer.save_xml(*xml2, ostr2);
-
-  //std::cout << ostr2.str() << std::endl;
 
   EXPECT_EQ(ostr1.str(), ostr2.str());
 }

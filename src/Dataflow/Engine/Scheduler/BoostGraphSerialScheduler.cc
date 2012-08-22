@@ -34,9 +34,6 @@
 #include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/topological_sort.hpp>
-//#include <boost/graph/depth_first_search.hpp>
-//#include <boost/graph/dijkstra_shortest_paths.hpp>
-//#include <boost/graph/visitors.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bimap.hpp>
 
@@ -45,7 +42,6 @@ using namespace SCIRun::Domain::Networks;
 
 ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface& network)
 {
-  //std::map<int, std::string> idModuleLookup;
   boost::bimap<std::string, int> moduleIdLookup;
 
   for (int i = 0; i < network.nmodules(); ++i)

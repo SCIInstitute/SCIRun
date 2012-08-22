@@ -142,11 +142,6 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
 TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
 {
-  //std::cout << "m1" << std::endl;
-  //std::cout << *matrix1() << std::endl;
-  //std::cout << "m2" << std::endl;
-  //std::cout << *matrix2() << std::endl;
-  //std::cout << "(-m1 * 4m2) + trans(m1)" << std::endl;
   DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + transpose(*matrix1());
 
   //Test network:

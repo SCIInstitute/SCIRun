@@ -28,20 +28,5 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-//#include <Dataflow/Network/Network.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
-//#include <Modules/Basic/ReceiveScalar.h>
-//#include <Modules/Basic/SendScalar.h>
-//
-//using namespace SCIRun;
-//using namespace SCIRun::Modules::Basic;
-//using namespace SCIRun::Domain::Networks;
-//using namespace SCIRun::Domain::Networks::Mocks;
-//using ::testing::_;
-//using ::testing::NiceMock;
-//using ::testing::DefaultValue;
-//using ::testing::Return;
 
 //TODO

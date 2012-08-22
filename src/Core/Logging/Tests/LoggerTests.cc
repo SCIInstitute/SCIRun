@@ -29,10 +29,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-//using namespace SCIRun;
-//using namespace SCIRun::Modules::Basic;
-//using namespace SCIRun::Domain::Networks;
-//using namespace SCIRun::Domain::Networks::Mocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;

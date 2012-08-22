@@ -39,7 +39,6 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
-//#include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <boost/bind.hpp>

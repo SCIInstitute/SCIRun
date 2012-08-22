@@ -60,16 +60,12 @@ TEST(SerializeStateTest, RoundTrip)
   XMLSerializer::save_xml(state, ostr1, root);
   const std::string xml1 = ostr1.str();
 
-  //std::cout << xml1 << std::endl;
-
   std::istringstream istr(xml1);
   boost::shared_ptr<SimpleMapModuleStateXML> readIn = XMLSerializer::load_xml<SimpleMapModuleStateXML>(istr);
   ASSERT_TRUE(readIn);
   std::ostringstream ostr2;
   XMLSerializer::save_xml(*readIn, ostr2, root);
   const std::string xml2 = ostr2.str();
-
-  //std::cout << xml2 << std::endl;
 
   EXPECT_EQ(xml1, xml2);
 

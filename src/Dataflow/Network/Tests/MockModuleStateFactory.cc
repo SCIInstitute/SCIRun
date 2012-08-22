@@ -26,11 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <Dataflow/Network/Tests/MockModuleState.h>
 //
-//using namespace SCIRun::Domain::Networks;
-//using namespace SCIRun::Domain::Networks::Mocks;
-//using ::testing::NiceMock;
 //
 //ModuleStateInterface* MockModuleStateFactory::make_state(const std::string& name) const
 //
