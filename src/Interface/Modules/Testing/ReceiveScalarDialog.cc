@@ -26,39 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Basic/SendScalarDialog.h>
-#include <Modules/Basic/SendScalar.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <boost/bind.hpp>
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Interface/Modules/Testing/ReceiveScalarDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Domain::Networks;
 using namespace SCIRun::Modules::Basic;
 
-SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
+ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
-  setWindowTitle(to_QString(name));
+  setWindowTitle(QString::fromStdString(name) + " --Receive");
   executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
 }
 
-int SendScalarDialog::moduleExecutionTime()
+int ReceiveScalarDialog::moduleExecutionTime()
 {
   return 2000;
 }
 
-void SendScalarDialog::pushScalarValueToState(const QString& str) 
+void ReceiveScalarDialog::pull() 
 {
-  double value = str.toDouble();
-  state_->setValue(SendScalarModule::ValueToSend, value);
-}
-
-void SendScalarDialog::pull()
-{
-  scalarValueToSend_->setText(QString::number(state_->getValue(SendScalarModule::ValueToSend).getDouble()));
+  double value = state_->getValue(ReceiveScalarModule::ReceivedValue).getDouble();
+  scalarValueReceived_->setText(QString::number(value));
 }

@@ -26,37 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_APPEND_MATRIX_H
-#define INTERFACE_MODULES_APPEND_MATRIX_H
+#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
+#define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
 
-#include "Interface/Modules/ui_AppendMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/Share.h>
+#include <QDialog>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Interface/Modules/Base/Share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
-class SCISHARE AppendMatrixDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::AppendMatrix
-{
-	Q_OBJECT
-	
-public:
-  AppendMatrixDialog(const std::string& name, 
-    SCIRun::Domain::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual int moduleExecutionTime();
-  virtual void pull();
-
-private Q_SLOTS:
-  void isRows();
-  void isCols();
-};
+  class SCISHARE ModuleDialogGeneric : public QDialog
+  {
+    Q_OBJECT
+  public:
+    virtual ~ModuleDialogGeneric() {}
+    //TODO: input state hookup?
+    //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
+    virtual int moduleExecutionTime() = 0;
+    //TODO: how to genericize this?  do we need to?
+  public Q_SLOTS:
+    virtual void moduleExecuted() {}
+    virtual void pull() = 0;
+  Q_SIGNALS:
+    void executionTimeChanged(int time);
+    void executeButtonPressed();
+  protected:
+    explicit ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle state, QWidget* parent = 0);
+    SCIRun::Domain::Networks::ModuleStateHandle state_;
+  };
 
 }
 }

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SEND_SCALAR_H
-#define INTERFACE_MODULES_SEND_SCALAR_H
+#undef SCISHARE
 
-#include "Interface/Modules/ui_SendScalar.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
-
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::SendScalar
-{
-	Q_OBJECT
-	
-public:
-  SendScalarDialog(const std::string& name, 
-    SCIRun::Domain::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual int moduleExecutionTime();
-  virtual void pull();
-private Q_SLOTS:
-  void pushScalarValueToState(const QString& str);
-};
-
-}
-}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_Factory
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

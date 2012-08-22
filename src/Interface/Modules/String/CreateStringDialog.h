@@ -32,8 +32,8 @@
 #include "Interface/Modules/ui_CreateString.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/String/Share.h>
 
 namespace SCIRun {
 namespace Gui {

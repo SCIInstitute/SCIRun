@@ -101,7 +101,8 @@ TARGET_LINK_LIBRARIES(Interface_Application
   Engine_Network
   Dataflow_State
   Modules_Factory
-  Interface_Modules
+  Interface_Modules_Base
+  Interface_Modules_Factory
   ${GUI_VTK_LINK_LIBRARIES}
   ${Boost_LIBRARIES}
   ${QT_LIBRARIES}

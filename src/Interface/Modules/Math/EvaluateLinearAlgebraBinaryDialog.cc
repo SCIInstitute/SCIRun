@@ -39,7 +39,7 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
-  setWindowTitle(to_QString(name));
+  setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   

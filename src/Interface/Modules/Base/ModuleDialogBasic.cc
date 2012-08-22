@@ -26,42 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_GENERIC_H
+#include <QtGui>
+#include <Interface/Modules/Base/ModuleDialogBasic.h>
 
-#include <QDialog>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Interface/Modules/Share.h>
+using namespace SCIRun::Gui;
 
-namespace SCIRun {
-namespace Gui {
-  
-  class SCISHARE ModuleDialogGeneric : public QDialog
-  {
-    Q_OBJECT
-  public:
-    virtual ~ModuleDialogGeneric() {}
-    //TODO: input state hookup?
-    //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
-    virtual int moduleExecutionTime() = 0;
-    //TODO: how to genericize this?  do we need to?
-  public Q_SLOTS:
-    virtual void moduleExecuted() {}
-    virtual void pull() = 0;
-  Q_SIGNALS:
-    void executionTimeChanged(int time);
-    void executeButtonPressed();
-  protected:
-    explicit ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle state, QWidget* parent = 0);
-    SCIRun::Domain::Networks::ModuleStateHandle state_;
-  };
-
-  inline QString to_QString(const std::string& str)
-  {
-    return QString::fromUtf8(str.c_str());
-  }
-
-}
+ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle(), parent)
+{
+  setupUi(this);
+  setModal(false);
+  setWindowTitle(QString::fromStdString(name));
+  executionTimeHorizontalSlider_->setValue(executionTime);
+  connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
 }
 
-#endif
+int ModuleDialogBasic::moduleExecutionTime()
+{
+  return executionTimeHorizontalSlider_->value();
+}

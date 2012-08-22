@@ -27,11 +27,53 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Testing)
-ADD_SUBDIRECTORY(Visualization)
+SET(Interface_Modules_Math_FORMS
+  AppendMatrix.ui
+  CreateMatrix.ui
+  EvaluateLinearAlgebraBinary.ui
+  EvaluateLinearAlgebraUnary.ui
+  ReportMatrixInfo.ui
+)
+
+SET(Interface_Modules_Math_HEADERS
+  AppendMatrixDialog.h
+  CreateMatrixDialog.h
+  EvaluateLinearAlgebraBinaryDialog.h
+  EvaluateLinearAlgebraUnaryDialog.h
+  ReportMatrixInfoDialog.h
+  Share.h
+)
+
+SET(Interface_Modules_Math_SOURCES 
+  AppendMatrixDialog.cc
+  CreateMatrixDialog.cc
+  EvaluateLinearAlgebraBinaryDialog.cc
+  EvaluateLinearAlgebraUnaryDialog.cc
+  ReportMatrixInfoDialog.cc
+)
+
+QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC ${Interface_Modules_Math_HEADERS})
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+ADD_LIBRARY(Interface_Modules_Math
+${Interface_Modules_Math_HEADERS}
+${Interface_Modules_Math_FORMS_HEADERS}
+${Interface_Modules_Math_HEADERS_MOC}
+${Interface_Modules_Math_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Math 
+  Algorithms_Math
+  Modules_Math
+  Interface_Modules_Base
+  ${Boost_LIBRARIES}
+  ${QT_LIBRARIES})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Math)
+ENDIF(BUILD_SHARED_LIBS)
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

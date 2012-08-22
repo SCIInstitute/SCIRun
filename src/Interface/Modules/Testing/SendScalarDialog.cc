@@ -26,27 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
-#define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
+#include <Interface/Modules/Testing/SendScalarDialog.h>
+#include <Modules/Basic/SendScalar.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include "Interface/Modules/ui_ModuleDialogBasic.h"
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Modules::Basic;
 
-namespace SCIRun {
-namespace Gui {
+SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  executeButton_->setEnabled(false);
+  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
-  class SCISHARE ModuleDialogBasic : public ModuleDialogGeneric, public Ui::ModuleDialogBasic
-  {
-    Q_OBJECT
-
-  public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
-    virtual int moduleExecutionTime();
-    virtual void pull() {}
-  };
-
-}
+  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
 }
 
-#endif
+int SendScalarDialog::moduleExecutionTime()
+{
+  return 2000;
+}
+
+void SendScalarDialog::pushScalarValueToState(const QString& str) 
+{
+  double value = str.toDouble();
+  state_->setValue(SendScalarModule::ValueToSend, value);
+}
+
+void SendScalarDialog::pull()
+{
+  scalarValueToSend_->setText(QString::number(state_->getValue(SendScalarModule::ValueToSend).getDouble()));
+}

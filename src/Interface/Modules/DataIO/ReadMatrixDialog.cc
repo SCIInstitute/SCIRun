@@ -41,7 +41,7 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
-  setWindowTitle(to_QString(name));
+  setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
@@ -52,7 +52,7 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
 
 void ReadMatrixDialog::pull()
 {
-  fileNameLineEdit_->setText(to_QString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
 }
 
 int ReadMatrixDialog::moduleExecutionTime()

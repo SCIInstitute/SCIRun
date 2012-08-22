@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/ModuleDialogFactory.h>
-#include <Interface/Modules/ModuleDialogBasic.h>
-#include <Interface/Modules/Basic/SendScalarDialog.h>
-#include <Interface/Modules/Basic/ReceiveScalarDialog.h>
+#include <Interface/Modules/Factory/ModuleDialogFactory.h>
+#include <Interface/Modules/Base/ModuleDialogBasic.h>
+#include <Interface/Modules/Testing/SendScalarDialog.h>
+#include <Interface/Modules/Testing/ReceiveScalarDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>

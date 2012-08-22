@@ -26,29 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_MODULEDIALOGFACTORY_H
-#define INTERFACE_MODULES_MODULEDIALOGFACTORY_H
+#ifndef INTERFACE_MODULES_RECEIVE_SCALAR_H
+#define INTERFACE_MODULES_RECEIVE_SCALAR_H
 
-#include <QWidget>
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Interface/Modules/Share.h>
+#include "Interface/Modules/ui_ReceiveScalar.h"
+#include <boost/shared_ptr.hpp>
+#include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Testing/Share.h>
 
-namespace SCIRun
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE ReceiveScalarDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::ReceiveScalar
 {
-  namespace Gui
-  {
-    class ModuleDialogGeneric;
+	Q_OBJECT
+	
+public:
+  ReceiveScalarDialog(const std::string& name, 
+    SCIRun::Domain::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+  virtual void pull();
+};
 
-    class SCISHARE ModuleDialogFactory
-    {
-    public:
-      explicit ModuleDialogFactory(QWidget* parentToUse);
-      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Domain::Networks::ModuleStateHandle state, int executionTime);
-    private:
-      QWidget* parentToUse_;
-    };
-  }
+}
 }
 
 #endif

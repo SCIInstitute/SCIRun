@@ -40,7 +40,7 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
-  setWindowTitle(to_QString(name));
+  setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
@@ -61,5 +61,5 @@ void CreateMatrixDialog::pushMatrixToState()
 
 void CreateMatrixDialog::pull()
 {
-  matrixTextEdit_->setPlainText(to_QString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }

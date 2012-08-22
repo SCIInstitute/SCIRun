@@ -39,7 +39,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
-#include <Interface/Modules/ModuleDialogGeneric.h> //TODO
+//#include <Interface/Modules/Base/ModuleDialogGeneric.h> //TODO
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <boost/bind.hpp>
@@ -102,7 +102,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
 void NetworkEditor::addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module)
 {
-  ModuleWidget* moduleWidget = new ModuleWidget(to_QString(name), module);
+  ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   setupModule(moduleWidget);
   Q_EMIT modified();
 }

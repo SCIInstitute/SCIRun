@@ -41,7 +41,7 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
-  setWindowTitle(to_QString(name));
+  setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
   executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
@@ -57,7 +57,7 @@ int WriteMatrixDialog::moduleExecutionTime()
 
 void WriteMatrixDialog::pull()
 {
-  fileNameLineEdit_->setText(to_QString(state_->getValue(WriteMatrixAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(WriteMatrixAlgorithm::Filename).getString()));
 }
 
 void WriteMatrixDialog::pushFileNameToState(const QString& str) 

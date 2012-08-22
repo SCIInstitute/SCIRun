@@ -27,11 +27,40 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Testing)
-ADD_SUBDIRECTORY(Visualization)
+SET(Interface_Modules_String_FORMS
+  CreateString.ui
+)
+
+SET(Interface_Modules_String_HEADERS
+  Share.h
+  CreateStringDialog.h
+)
+
+SET(Interface_Modules_String_SOURCES 
+  CreateStringDialog.cc
+)
+
+QT4_WRAP_UI(Interface_Modules_String_FORMS_HEADERS ${Interface_Modules_String_FORMS})
+QT4_WRAP_CPP(Interface_Modules_String_HEADERS_MOC ${Interface_Modules_String_HEADERS})
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+ADD_LIBRARY(Interface_Modules_String 
+${Interface_Modules_String_HEADERS}
+${Interface_Modules_String_FORMS_HEADERS}
+${Interface_Modules_String_HEADERS_MOC}
+${Interface_Modules_String_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_String 
+  Modules_String
+  Interface_Modules_Base
+  ${Boost_LIBRARIES}
+  ${QT_LIBRARIES})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_String)
+ENDIF(BUILD_SHARED_LIBS)
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

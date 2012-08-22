@@ -26,36 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_APPEND_MATRIX_H
-#define INTERFACE_MODULES_APPEND_MATRIX_H
+#ifndef INTERFACE_MODULES_SEND_SCALAR_H
+#define INTERFACE_MODULES_SEND_SCALAR_H
 
-#include "Interface/Modules/ui_AppendMatrix.h"
+#include "Interface/Modules/ui_SendScalar.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/Share.h>
+#include <Interface/Modules/Testing/Share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
-class SCISHARE AppendMatrixDialog : public ModuleDialogGeneric, 
+class SCISHARE SendScalarDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::AppendMatrix
+  public Ui::SendScalar
 {
 	Q_OBJECT
 	
 public:
-  AppendMatrixDialog(const std::string& name, 
+  SendScalarDialog(const std::string& name, 
     SCIRun::Domain::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
   virtual void pull();
-
 private Q_SLOTS:
-  void isRows();
-  void isCols();
+  void pushScalarValueToState(const QString& str);
 };
 
 }

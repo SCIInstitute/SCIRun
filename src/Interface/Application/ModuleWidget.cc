@@ -37,7 +37,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Logger.h>
-#include <Interface/Modules/ModuleDialogFactory.h>
+#include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -101,7 +101,7 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    InputPortWidget* w = new InputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, this);
     hookUpSignals(w);
     //std::cout << "@@@ connecting " << moduleId << " moduleWidget to port " << port->get_portname() << "\n " << w << std::endl;
     connect(this, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
@@ -110,7 +110,7 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    OutputPortWidget* w = new OutputPortWidget(to_QString(port->get_portname()), to_color(port->get_colorname()), to_QString(moduleId), i, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, this);
     hookUpSignals(w);
     addPort(w);
   }

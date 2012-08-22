@@ -32,8 +32,8 @@
 #include "Interface/Modules/ui_ViewScene.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/ModuleDialogGeneric.h>
-#include <Interface/Modules/Share.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Render/Share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 

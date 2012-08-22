@@ -27,11 +27,42 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Testing)
-ADD_SUBDIRECTORY(Visualization)
+SET(Interface_Modules_Visualization_FORMS
+  MatrixAsVectorField.ui
+  ShowString.ui
+)
+
+SET(Interface_Modules_Visualization_HEADERS
+  Share.h
+  MatrixAsVectorFieldDialog.h
+  ShowStringDialog.h
+)
+
+SET(Interface_Modules_Visualization_SOURCES 
+  MatrixAsVectorFieldDialog.cc
+  ShowStringDialog.cc
+)
+
+QT4_WRAP_UI(Interface_Modules_Visualization_FORMS_HEADERS ${Interface_Modules_Visualization_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Visualization_HEADERS_MOC ${Interface_Modules_Visualization_HEADERS})
+
+INCLUDE(${QT_USE_FILE})
+ADD_DEFINITIONS(${QT_DEFINITIONS})
+
+ADD_LIBRARY(Interface_Modules_Visualization 
+${Interface_Modules_Visualization_HEADERS}
+${Interface_Modules_Visualization_FORMS_HEADERS}
+${Interface_Modules_Visualization_HEADERS_MOC}
+${Interface_Modules_Visualization_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_Visualization 
+  Interface_Modules_Base
+  ${Boost_LIBRARIES}
+  ${QT_LIBRARIES})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Visualization)
+ENDIF(BUILD_SHARED_LIBS)
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

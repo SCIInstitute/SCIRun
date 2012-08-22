@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/bind.hpp>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Interface/Modules/Basic/ReceiveScalarDialog.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
+#undef SCISHARE
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Modules::Basic;
-
-ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 
-  QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
-{
-  setupUi(this);
-  setWindowTitle(to_QString(name) + " --Receive");
-  executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-  
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-}
-
-int ReceiveScalarDialog::moduleExecutionTime()
-{
-  return 2000;
-}
-
-void ReceiveScalarDialog::pull() 
-{
-  double value = state_->getValue(ReceiveScalarModule::ReceivedValue).getDouble();
-  scalarValueReceived_->setText(QString::number(value));
-}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_Math
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif
