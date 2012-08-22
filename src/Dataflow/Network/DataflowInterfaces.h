@@ -30,13 +30,12 @@
 #ifndef DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H
 #define DATAFLOW_NETWORK_DATAFLOW_INTERFACES_H 
 
-#include <boost/optional.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   //template <class Receiver> switch to run-time compatibility checking...
@@ -44,7 +43,7 @@ namespace Networks {
   {
   public:
     virtual ~DatatypeSourceInterface() {}
-    virtual void send(DatatypeSinkInterfaceHandle receiver, Datatypes::DatatypeHandle data) = 0;
+    virtual void send(DatatypeSinkInterfaceHandle receiver, Core::Datatypes::DatatypeHandle data) = 0;
   };
 
   class SCISHARE DatatypeSinkInterface
@@ -52,7 +51,7 @@ namespace Networks {
   public:
     virtual ~DatatypeSinkInterface() {}
     virtual void waitForData() = 0;
-    virtual Datatypes::DatatypeHandleOption receive() = 0;
+    virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
   };
 
 }}}

@@ -32,47 +32,47 @@
 #include <sstream>
 #include <Dataflow/Network/ConnectionId.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
-bool SCIRun::Domain::Networks::operator==(const ConnectionId& lhs, const ConnectionId& rhs)
+bool SCIRun::Dataflow::Networks::operator==(const ConnectionId& lhs, const ConnectionId& rhs)
 {
   return lhs.id_ == rhs.id_;
 }
 
-bool SCIRun::Domain::Networks::operator!=(const ConnectionId& lhs, const ConnectionId& rhs)
+bool SCIRun::Dataflow::Networks::operator!=(const ConnectionId& lhs, const ConnectionId& rhs)
 {
   return !(lhs == rhs);
 }
 
-bool SCIRun::Domain::Networks::operator==(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs)
+bool SCIRun::Dataflow::Networks::operator==(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs)
 {
   return lhs.moduleId_ == rhs.moduleId_
     && lhs.port_ == rhs.port_;
 }
 
-bool SCIRun::Domain::Networks::operator!=(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs)
+bool SCIRun::Dataflow::Networks::operator!=(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs)
 {
   return !(lhs == rhs);
 }
 
-bool SCIRun::Domain::Networks::operator==(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs)
+bool SCIRun::Dataflow::Networks::operator==(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs)
 {
   return lhs.moduleId_ == rhs.moduleId_
     && lhs.port_== rhs.port_;
 }
 
-bool SCIRun::Domain::Networks::operator!=(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs)
+bool SCIRun::Dataflow::Networks::operator!=(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs)
 {
   return !(lhs == rhs);
 }
 
-bool SCIRun::Domain::Networks::operator==(const ConnectionDescription& lhs, const ConnectionDescription& rhs)
+bool SCIRun::Dataflow::Networks::operator==(const ConnectionDescription& lhs, const ConnectionDescription& rhs)
 {
   return lhs.in_ == rhs.in_
     && lhs.out_ == rhs.out_;
 }
 
-bool SCIRun::Domain::Networks::operator!=(const ConnectionDescription& lhs, const ConnectionDescription& rhs)
+bool SCIRun::Dataflow::Networks::operator!=(const ConnectionDescription& lhs, const ConnectionDescription& rhs)
 {
   return !(lhs == rhs);
 }

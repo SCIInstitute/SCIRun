@@ -49,12 +49,12 @@ class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
 
-class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public SCIRun::Domain::Networks::ExecutableObject, public Ui::Module
+class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
 {
 	Q_OBJECT
 	
 public:
-  ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle theModule, QWidget* parent = 0);
+  ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();
@@ -72,7 +72,7 @@ public:
   const Ports& getOutputPorts() const { return outputPorts_; }
 
   std::string getModuleId() const { return moduleId_; }
-  SCIRun::Domain::Networks::ModuleHandle getModule() const { return theModule_; }
+  SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
   
 public Q_SLOTS:
   virtual void execute();
@@ -80,17 +80,17 @@ public Q_SLOTS:
   void setExecutionTime(int milliseconds);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
-  void needConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
-  void connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription& desc);
-  void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
+  void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+  void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+  void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
 private:
   Ports inputPorts_;
   Ports outputPorts_;
 
-  SCIRun::Domain::Networks::ModuleHandle theModule_;
+  SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 
-  void addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
   void hookUpSignals(PortWidget* port) const;

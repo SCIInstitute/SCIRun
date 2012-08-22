@@ -32,7 +32,7 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 
 namespace
 {

@@ -32,8 +32,8 @@
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Math;
 
 ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)

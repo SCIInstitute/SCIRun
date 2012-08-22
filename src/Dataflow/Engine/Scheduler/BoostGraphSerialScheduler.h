@@ -38,7 +38,7 @@ namespace Engine {
   class SCISHARE BoostGraphSerialScheduler : public Scheduler
   {
   public:
-    virtual ModuleExecutionOrder schedule(const SCIRun::Domain::Networks::NetworkInterface& network);
+    virtual ModuleExecutionOrder schedule(const SCIRun::Dataflow::Networks::NetworkInterface& network);
   };
 }
 }

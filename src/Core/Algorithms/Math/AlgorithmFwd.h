@@ -34,11 +34,12 @@
 //TODO DAN
 
 namespace SCIRun {
+namespace Core {
 namespace Algorithms {
 namespace Math {
 
   struct EvaluateLinearAlgebraUnaryAlgorithmParameters;
 
-}}}
+}}}}
 
 #endif

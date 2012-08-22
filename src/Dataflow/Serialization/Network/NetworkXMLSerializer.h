@@ -36,7 +36,7 @@
 #include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   class SCISHARE NetworkXMLConverter : boost::noncopyable

@@ -28,6 +28,6 @@
 
 #include <Dataflow/Network/PortManager.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 //TODO: test this easy class

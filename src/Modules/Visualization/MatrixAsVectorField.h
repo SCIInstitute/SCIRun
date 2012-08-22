@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-  class SCISHARE MatrixAsVectorFieldModule : public SCIRun::Domain::Networks::Module,
+  class SCISHARE MatrixAsVectorFieldModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {

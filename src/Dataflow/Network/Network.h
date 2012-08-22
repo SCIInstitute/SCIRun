@@ -36,7 +36,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   class SCISHARE Network : public NetworkInterface, boost::noncopyable

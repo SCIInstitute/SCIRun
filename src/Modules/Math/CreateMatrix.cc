@@ -32,10 +32,10 @@
 #include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-SCIRun::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
+SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
 
 CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) {}
 

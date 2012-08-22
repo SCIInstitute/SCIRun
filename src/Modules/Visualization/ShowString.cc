@@ -32,8 +32,8 @@
 #include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Modules::Visualization;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Visualization", "SCIRun")) {}
 

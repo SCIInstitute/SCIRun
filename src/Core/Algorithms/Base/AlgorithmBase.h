@@ -34,6 +34,7 @@
 #include <Core/Algorithms/Base/Share.h>
 
 namespace SCIRun {
+namespace Core {
 namespace Algorithms {
 
   struct SCISHARE AlgorithmParameterName
@@ -80,6 +81,6 @@ namespace Algorithms {
     */
   };
 
-}}
+}}}
 
 #endif

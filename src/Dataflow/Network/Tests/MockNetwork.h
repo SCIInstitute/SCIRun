@@ -35,7 +35,7 @@
 #include <gmock/gmock.h>
 
 namespace SCIRun {
-  namespace Domain {
+  namespace Dataflow {
     namespace Networks {
       namespace Mocks
       {

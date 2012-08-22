@@ -31,8 +31,8 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 ReceiveTestMatrixModule::ReceiveTestMatrixModule()
   : Module(ModuleLookupInfo("ReceiveTestMatrix", "Math", "SCIRun"))

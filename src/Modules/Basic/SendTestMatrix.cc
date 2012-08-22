@@ -31,8 +31,8 @@
 #include <Modules/Basic/SendTestMatrix.h>
 
 using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 SendTestMatrixModule::SendTestMatrixModule()
   : Module(ModuleLookupInfo("SendTestMatrix", "Math", "SCIRun"))

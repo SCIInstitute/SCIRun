@@ -29,9 +29,9 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
-using namespace SCIRun::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::OperatorName("Operator");
 AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue("Scalar");

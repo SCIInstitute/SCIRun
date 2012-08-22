@@ -35,7 +35,7 @@
 #include <boost/tuple/tuple.hpp>
 
 namespace SCIRun {
-namespace Domain {
+namespace Core {
 namespace Datatypes {
 
   template <typename T>

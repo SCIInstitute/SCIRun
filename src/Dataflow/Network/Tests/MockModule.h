@@ -36,7 +36,7 @@
 #include <gmock/gmock.h>
 
 namespace SCIRun {
-  namespace Domain {
+  namespace Dataflow {
     namespace Networks {
       namespace Mocks
       {
@@ -46,8 +46,8 @@ namespace SCIRun {
           MOCK_METHOD0(execute, void());
           MOCK_METHOD0(get_state, ModuleStateHandle());
           MOCK_METHOD1(set_state, void(ModuleStateHandle));
-          MOCK_METHOD2(send_output_handle, void(size_t, SCIRun::Domain::Datatypes::DatatypeHandle));
-          MOCK_METHOD1(get_input_handle, SCIRun::Domain::Datatypes::DatatypeHandleOption(size_t));
+          MOCK_METHOD2(send_output_handle, void(size_t, SCIRun::Core::Datatypes::DatatypeHandle));
+          MOCK_METHOD1(get_input_handle, SCIRun::Core::Datatypes::DatatypeHandleOption(size_t));
           MOCK_CONST_METHOD0(get_module_name, std::string());
           MOCK_CONST_METHOD1(get_output_port, OutputPortHandle(size_t));
           MOCK_CONST_METHOD1(get_input_port, InputPortHandle(size_t));
@@ -68,7 +68,7 @@ namespace SCIRun {
           virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
           virtual ModuleHandle create(const ModuleDescription& info);
           virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
-          virtual void setRenderer(SCIRun::Domain::Networks::RendererInterface* renderer);
+          virtual void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer);
         private:
           size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;

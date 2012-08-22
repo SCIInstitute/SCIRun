@@ -28,7 +28,7 @@
 
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleLookupInfoXML::ModuleLookupInfoXML() {}
 

@@ -36,10 +36,10 @@ namespace SCIRun {
 namespace Engine {
 namespace State {
   
-  class SCISHARE NullModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
+  class SCISHARE NullModuleState : public SCIRun::Dataflow::Networks::ModuleStateInterface
   {
   public:
-    virtual void setValue(const Name&, const SCIRun::Algorithms::AlgorithmParameter::Value&);
+    virtual void setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&);
     virtual const Value getValue(const Name&) const;
     virtual Keys getKeys() const;
     virtual const TransientValue getTransientValue(const std::string& name) const;

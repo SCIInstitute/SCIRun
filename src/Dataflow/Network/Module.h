@@ -40,7 +40,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
   
   class SCISHARE Module : public ModuleInterface, boost::noncopyable
@@ -75,8 +75,8 @@ namespace Networks {
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 
-    virtual SCIRun::Domain::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
-    virtual void send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data);
+    virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
+    virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -89,8 +89,8 @@ namespace Networks {
       Builder& disable_ui();
       ModuleHandle build();
 
-      typedef boost::function<SCIRun::Domain::Networks::DatatypeSinkInterface*()> SinkMaker;
-      typedef boost::function<SCIRun::Domain::Networks::DatatypeSourceInterface*()> SourceMaker;
+      typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSinkInterface*()> SinkMaker;
+      typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSourceInterface*()> SourceMaker;
       static void use_sink_type(SinkMaker func);
       static void use_source_type(SourceMaker func);
     private:
@@ -129,16 +129,16 @@ namespace Modules
   class Has1InputPort
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name);
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name);
   };
 
   template <class PortTypeTag0, class PortTypeTag1>
   class Has2InputPorts
   {
   public:
-    static std::vector<SCIRun::Domain::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      std::vector<SCIRun::Domain::Networks::InputPortDescription> ports;
+      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;
       ports.push_back(Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name));
       ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name));
       return ports;
@@ -150,31 +150,31 @@ namespace Modules
   struct SCISHARE StringPortTag {};
   struct SCISHARE GeometryPortTag {};
 
-  inline SCIRun::Domain::Networks::PortDescription MakeMatrixPort(const std::string& name)
+  inline SCIRun::Dataflow::Networks::PortDescription MakeMatrixPort(const std::string& name)
   {
-    return SCIRun::Domain::Networks::PortDescription(name, "Matrix", "blue"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Matrix", "blue"); 
   }
 
-  inline SCIRun::Domain::Networks::PortDescription MakeScalarPort(const std::string& name)
+  inline SCIRun::Dataflow::Networks::PortDescription MakeScalarPort(const std::string& name)
   {
-    return SCIRun::Domain::Networks::PortDescription(name, "Scalar", "white"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Scalar", "white"); 
   }
 
-  inline SCIRun::Domain::Networks::PortDescription MakeStringPort(const std::string& name)
+  inline SCIRun::Dataflow::Networks::PortDescription MakeStringPort(const std::string& name)
   {
-    return SCIRun::Domain::Networks::PortDescription(name, "String", "darkGreen"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "String", "darkGreen"); 
   }
 
-  inline SCIRun::Domain::Networks::PortDescription MakeGeometryPort(const std::string& name)
+  inline SCIRun::Dataflow::Networks::PortDescription MakeGeometryPort(const std::string& name)
   {
-    return SCIRun::Domain::Networks::PortDescription(name, "Geometry", "magenta"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Geometry", "magenta"); 
   }
 
   template <>
   class Has1InputPort<MatrixPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
       return MakeMatrixPort(port0Name); 
     }
@@ -184,7 +184,7 @@ namespace Modules
   class Has1InputPort<ScalarPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
       return MakeScalarPort(port0Name); 
     }
@@ -194,7 +194,7 @@ namespace Modules
   class Has1InputPort<StringPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
       return MakeStringPort(port0Name); 
     }
@@ -204,7 +204,7 @@ namespace Modules
   class Has1InputPort<GeometryPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
     {
       return MakeGeometryPort(port0Name); 
     }
@@ -216,16 +216,16 @@ namespace Modules
   class Has1OutputPort
   {
   public:
-    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name);
+    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name);
   };
 
   template <class PortTypeTag0, class PortTypeTag1>
   class Has2OutputPorts
   {
   public:
-    static std::vector<SCIRun::Domain::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      std::vector<SCIRun::Domain::Networks::OutputPortDescription> ports;
+      std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;
       ports.push_back(Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name));
       ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name));
       return ports;
@@ -236,7 +236,7 @@ namespace Modules
   class Has1OutputPort<MatrixPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
     {
       return MakeMatrixPort(port0Name); 
     }
@@ -246,7 +246,7 @@ namespace Modules
   class Has1OutputPort<ScalarPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
     {
       return MakeScalarPort(port0Name); 
     }
@@ -256,7 +256,7 @@ namespace Modules
   class Has1OutputPort<StringPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
     {
       return MakeStringPort(port0Name); 
     }
@@ -266,7 +266,7 @@ namespace Modules
   class Has1OutputPort<GeometryPortTag>
   {
   public:
-    static SCIRun::Domain::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
     {
       return MakeGeometryPort(port0Name); 
     }

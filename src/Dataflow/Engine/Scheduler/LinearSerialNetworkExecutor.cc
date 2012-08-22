@@ -34,7 +34,7 @@
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Engine;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 struct LinearExecution
 {

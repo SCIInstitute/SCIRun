@@ -40,7 +40,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Engine;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf) : moduleFactory_(mf), stateFactory_(sf)
 {
@@ -48,7 +48,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   theNetwork_.reset(new Network(mf, sf));
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network)
   : theNetwork_(network)
 {
 }
@@ -78,7 +78,7 @@ void NetworkEditorController::printNetwork() const
     std::cout << theNetwork_->toString() << std::endl;
 }
 
-void NetworkEditorController::addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc)
+void NetworkEditorController::addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc)
 {
   ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.port_),
     ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.port_));
@@ -130,7 +130,7 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
   }
 }
 
-void NetworkEditorController::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)
+void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup)
 {
   BoostGraphSerialScheduler scheduler;
   LinearSerialNetworkExecutor executor;

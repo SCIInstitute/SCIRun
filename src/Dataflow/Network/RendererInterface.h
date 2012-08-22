@@ -33,7 +33,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-  namespace Domain {
+  namespace Dataflow {
     namespace Networks {
 
       //TODO: not sure where this should go, probably a new library.  plop it here for now.
@@ -42,7 +42,7 @@ namespace SCIRun {
       {
       public:
         virtual ~RendererInterface();
-        virtual void setVectorField(const SCIRun::Domain::Datatypes::DenseMatrix& m) = 0;
+        virtual void setVectorField(const SCIRun::Core::Datatypes::DenseMatrix& m) = 0;
         virtual void setText(const char* text) = 0;
         virtual void clearScene() = 0;
         virtual void bringToFront() = 0;

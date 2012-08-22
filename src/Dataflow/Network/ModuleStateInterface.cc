@@ -28,7 +28,7 @@
 
 #include <Dataflow/Network/ModuleStateInterface.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleStateInterface::~ModuleStateInterface()
 {

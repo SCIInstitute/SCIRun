@@ -33,14 +33,14 @@
 #include <gmock/gmock.h>
 
 namespace SCIRun {
-  namespace Domain {
+  namespace Dataflow {
     namespace Networks {
       namespace Mocks
       {
         class MockModuleState : public ModuleStateInterface
         {
         public:
-          MOCK_METHOD2(setValue, void(const Name&, const SCIRun::Algorithms::AlgorithmParameter::Value&));
+          MOCK_METHOD2(setValue, void(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
           MOCK_CONST_METHOD1(getValue, const Value(const Name&));
           MOCK_CONST_METHOD0(getKeys, Keys());
           MOCK_CONST_METHOD1(getTransientValue, const TransientValue(const std::string&));

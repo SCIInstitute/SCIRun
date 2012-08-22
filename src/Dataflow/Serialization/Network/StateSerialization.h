@@ -39,7 +39,7 @@
 #include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace State {
 
   class SCISHARE SimpleMapModuleStateXML : public SimpleMapModuleState
@@ -56,7 +56,7 @@ namespace State {
     } 
   };
 
-  SCISHARE boost::shared_ptr<SimpleMapModuleStateXML> make_state_xml(SCIRun::Domain::Networks::ModuleStateHandle state);
+  SCISHARE boost::shared_ptr<SimpleMapModuleStateXML> make_state_xml(SCIRun::Dataflow::Networks::ModuleStateHandle state);
 
 }}}
 
@@ -64,13 +64,13 @@ namespace boost {
   namespace serialization {
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Algorithms::AlgorithmParameterName& apn, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameterName& apn, const unsigned int version)
     {
       ar & boost::serialization::make_nvp("name", apn.name_);
     }
 
     template<class Archive>
-    void serialize(Archive& ar, SCIRun::Algorithms::AlgorithmParameter& ap, const unsigned int version)
+    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameter& ap, const unsigned int version)
     {
       ar & boost::serialization::make_nvp("name", ap.name_.name_);
       ar & boost::serialization::make_nvp("value", ap.value_);

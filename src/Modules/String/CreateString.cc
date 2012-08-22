@@ -31,9 +31,9 @@
 #include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::StringProcessing;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 AlgorithmParameterName CreateStringModule::InputString("InputString");
 

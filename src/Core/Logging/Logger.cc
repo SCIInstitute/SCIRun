@@ -29,5 +29,5 @@
 #include <sstream>
 #include <Core/Datatypes/Datatype.h>
 
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 //TODO 

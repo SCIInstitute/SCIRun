@@ -52,8 +52,8 @@ namespace Gui {
     void executionTimeChanged(int time);
     void executeButtonPressed();
   protected:
-    explicit ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle state, QWidget* parent = 0);
-    SCIRun::Domain::Networks::ModuleStateHandle state_;
+    explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
   };
 
 }

@@ -29,7 +29,7 @@
 #include <sstream>
 #include <Core/Datatypes/Geometry.h>
 
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 
 GeometryObject::GeometryObject(DatatypeHandle dh) : data_(dh)
 {

@@ -63,7 +63,7 @@ namespace Engine {
   {
   public:
     virtual ~Scheduler();
-    virtual ModuleExecutionOrder schedule(const SCIRun::Domain::Networks::NetworkInterface& network) = 0;
+    virtual ModuleExecutionOrder schedule(const SCIRun::Dataflow::Networks::NetworkInterface& network) = 0;
   };
 
   //TODO: types for ParallelScheduler, etc
@@ -72,7 +72,7 @@ namespace Engine {
   {
   public:
     virtual ~NetworkExecutor();
-    virtual void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
+    virtual void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
     //TODO
     // virtual void connectNetworkFinishedListener()...
   };

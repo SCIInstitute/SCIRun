@@ -38,8 +38,8 @@
 #include <boost/archive/xml_iarchive.hpp>
 #include <boost/archive/xml_oarchive.hpp>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::State;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::State;
 using namespace boost::assign;
 
 TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)

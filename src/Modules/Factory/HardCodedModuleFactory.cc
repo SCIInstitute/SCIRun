@@ -53,7 +53,7 @@
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <Modules/Factory/Share.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
@@ -69,13 +69,13 @@ HardCodedModuleFactory::HardCodedModuleFactory() : renderer_(0)
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
 }
 
-void HardCodedModuleFactory::setStateFactory(SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory)
+void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
   Module::defaultStateFactory_ = stateFactory_;
 }
 
-void HardCodedModuleFactory::setRenderer(SCIRun::Domain::Networks::RendererInterface* renderer)
+void HardCodedModuleFactory::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer)
 {
   renderer_ = renderer;
 }

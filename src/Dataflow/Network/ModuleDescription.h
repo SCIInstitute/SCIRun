@@ -37,7 +37,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   struct SCISHARE PortDescription

@@ -35,20 +35,21 @@
 #include <Core/Algorithms/DataIO/Share.h>
 
 namespace SCIRun {
-  namespace Algorithms {
-    namespace DataIO {
+  namespace Core {
+    namespace Algorithms {
+      namespace DataIO {
 
       class SCISHARE WriteMatrixAlgorithm : public AlgorithmBase
       {
       public:
-        typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+        typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
         typedef std::string Parameters; 
         typedef void Outputs;
         static AlgorithmParameterName Filename;
 
         Outputs run(const Inputs& input, const Parameters& filename) const;
       };
-}}}
+}}}}
 
 
 #endif

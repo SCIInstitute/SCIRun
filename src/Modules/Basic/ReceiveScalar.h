@@ -36,7 +36,7 @@ namespace SCIRun {
   namespace Modules {
     namespace Basic {
 
-      class SCISHARE ReceiveScalarModule : public SCIRun::Domain::Networks::Module,
+      class SCISHARE ReceiveScalarModule : public SCIRun::Dataflow::Networks::Module,
         public Has1InputPort<ScalarPortTag>
       {
       public:
@@ -44,7 +44,7 @@ namespace SCIRun {
         virtual void execute();
         double latestReceivedValue() const { return latestValue_; }
         static std::string inputPort0Name() { return "Input"; }
-        static Algorithms::AlgorithmParameterName ReceivedValue;
+        static Core::Algorithms::AlgorithmParameterName ReceivedValue;
       private:
         double latestValue_;
       };

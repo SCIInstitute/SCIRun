@@ -28,7 +28,7 @@
 
 #include <Dataflow/Network/ModuleDescription.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleDescription::ModuleDescription()
 {

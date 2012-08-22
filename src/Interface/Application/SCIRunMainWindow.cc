@@ -49,9 +49,9 @@
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Engine;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
-using namespace SCIRun::Domain::State;
+using namespace SCIRun::Dataflow::State;
 
 namespace
 {

@@ -37,8 +37,8 @@
 #include <boost/serialization/nvp.hpp>
 #include <boost/foreach.hpp>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::State;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::State;
 
 NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
   : moduleFactory_(moduleFactory), stateFactory_(stateFactory)

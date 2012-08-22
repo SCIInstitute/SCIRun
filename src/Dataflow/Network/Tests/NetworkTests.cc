@@ -35,8 +35,8 @@
 #include <Dataflow/Network/Tests/MockModule.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
 
 TEST(NetworkTests, CanAddAndRemoveModules)

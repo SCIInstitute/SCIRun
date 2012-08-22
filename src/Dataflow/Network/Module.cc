@@ -37,10 +37,10 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 
-std::string SCIRun::Domain::Networks::to_string(const ModuleInfoProvider& m)
+std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
   return m.get_module_name() + " [" + m.get_id() + "]";
 }
@@ -184,7 +184,7 @@ void Module::add_output_port(OutputPortHandle h)
   oports_.add(h);
 }
 
-SCIRun::Domain::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
+SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
 {
   //TODO test...
   if (idx >= iports_.size())
@@ -195,7 +195,7 @@ SCIRun::Domain::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t 
   return iports_[idx]->getData();
 }
 
-void Module::send_output_handle(size_t idx, SCIRun::Domain::Datatypes::DatatypeHandle data)
+void Module::send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data)
 {
   //TODO test...
   if (idx >= oports_.size())

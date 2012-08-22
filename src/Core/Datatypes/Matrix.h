@@ -35,7 +35,7 @@
 #include <Core/Datatypes/MatrixFwd.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Core {
 namespace Datatypes {
 
   template <typename T>

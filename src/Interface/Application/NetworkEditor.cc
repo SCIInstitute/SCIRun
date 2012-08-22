@@ -45,7 +45,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 boost::shared_ptr<Logger> Logger::instance_;
 
@@ -80,33 +80,33 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 
   if (controller_) 
   {
-    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
-      this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
+    disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
+      this, SLOT(addModule(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 
-    disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
-      controller_.get(), SLOT(removeConnection(const SCIRun::Domain::Networks::ConnectionId&)));
+    disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+      controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
   
   controller_ = controller;
   
   if (controller_) 
   {
-    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Domain::Networks::ModuleHandle)), 
-      this, SLOT(addModule(const std::string&, SCIRun::Domain::Networks::ModuleHandle)));
+    connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
+      this, SLOT(addModule(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
     
-    connect(this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
-      controller_.get(), SLOT(removeConnection(const SCIRun::Domain::Networks::ConnectionId&)));
+    connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+      controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }
 
-void NetworkEditor::addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module)
+void NetworkEditor::addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   setupModule(moduleWidget);
   Q_EMIT modified();
 }
 
-void NetworkEditor::needConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd)
+void NetworkEditor::needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
   controller_->addConnection(cd);
   Q_EMIT modified();
@@ -117,13 +117,13 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
   connect(module, SIGNAL(removeModule(const std::string&)), this, SIGNAL(modified()));
-  connect(module, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-    this, SLOT(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
-  connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-    module, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)));
-  connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
-    this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
-  connect(module, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(modified()));
+  connect(module, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
+    this, SLOT(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
+    module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+    this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
+  connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
 
   proxy->setZValue(maxZ_);
@@ -409,7 +409,7 @@ void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
 }
 
-SCIRun::Domain::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions()
+SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions()
 {
   ModulePositionsHandle positions(new ModulePositions);
   Q_FOREACH(QGraphicsItem* item, scene_->items())

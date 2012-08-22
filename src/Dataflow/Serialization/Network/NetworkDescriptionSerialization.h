@@ -37,7 +37,7 @@
 #include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   typedef std::vector<ConnectionDescriptionXML> ConnectionsXML;

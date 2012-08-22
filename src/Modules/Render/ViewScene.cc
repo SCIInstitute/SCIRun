@@ -34,14 +34,14 @@
 #include <Dataflow/Network/RendererInterface.h>
 
 using namespace SCIRun::Modules::Render;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun")),
   renderer_(0)
 {}
 
-void ViewScene::setRenderer(SCIRun::Domain::Networks::RendererInterface* r)
+void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
 {
   renderer_ = r;
 }

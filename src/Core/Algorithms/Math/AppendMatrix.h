@@ -34,6 +34,7 @@
 #include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
+namespace Core {
 namespace Algorithms {
 namespace Math {
   
@@ -43,13 +44,13 @@ namespace Math {
     enum Option { ROWS, COLUMNS };
     static AlgorithmParameterName OptionName;
 
-    typedef boost::tuple<SCIRun::Domain::Datatypes::DenseMatrixConstHandle, SCIRun::Domain::Datatypes::DenseMatrixConstHandle> Inputs;
+    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
     typedef Option Parameters;  
-    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
+    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
   };
 
-}}}
+}}}}
 
 #endif

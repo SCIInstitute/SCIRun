@@ -38,7 +38,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   class SCISHARE ModuleStateInterface
@@ -46,13 +46,13 @@ namespace Networks {
   public:
     virtual ~ModuleStateInterface();
     
-    typedef std::vector<SCIRun::Algorithms::AlgorithmParameterName> Keys;
-    typedef SCIRun::Algorithms::AlgorithmParameterName Name;
-    typedef SCIRun::Algorithms::AlgorithmParameter Value;
+    typedef std::vector<SCIRun::Core::Algorithms::AlgorithmParameterName> Keys;
+    typedef SCIRun::Core::Algorithms::AlgorithmParameterName Name;
+    typedef SCIRun::Core::Algorithms::AlgorithmParameter Value;
 
     //serialized state
     virtual const Value getValue(const Name& name) const = 0;
-    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value) = 0;
+    virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value) = 0;
     virtual Keys getKeys() const = 0;
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any

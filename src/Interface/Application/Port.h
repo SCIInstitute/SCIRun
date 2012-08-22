@@ -82,10 +82,10 @@ public:
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
 public Q_SLOTS:
-  void MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd);
+  void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
 Q_SIGNALS:
-  void needConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
-  void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
+  void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+  void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
@@ -96,7 +96,7 @@ private:
   bool canBeConnected(PortWidget* other) const;
   void makeConnection(const QPointF& pos);
   bool tryConnectPort(const QPointF& pos, PortWidget* port);
-  bool matches(const SCIRun::Domain::Networks::ConnectionDescription& cd) const;
+  bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;
   const QString moduleId_; 

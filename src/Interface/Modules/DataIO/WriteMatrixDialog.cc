@@ -33,8 +33,8 @@
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Algorithms::DataIO;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Dataflow::Networks;
 
 WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)

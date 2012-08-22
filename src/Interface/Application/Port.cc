@@ -198,9 +198,9 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
       PortWidget* out = this->isInput() ? port : this;
       PortWidget* in = this->isInput() ? this : port;
 
-      SCIRun::Domain::Networks::ConnectionDescription cd(
-        SCIRun::Domain::Networks::OutgoingConnectionDescription(out->moduleId_.toStdString(), out->index_), 
-        SCIRun::Domain::Networks::IncomingConnectionDescription(in->moduleId_.toStdString(), in->index_));
+      SCIRun::Dataflow::Networks::ConnectionDescription cd(
+        SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->moduleId_.toStdString(), out->index_), 
+        SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->moduleId_.toStdString(), in->index_));
 
       Q_EMIT needConnection(cd);
 
@@ -214,21 +214,21 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
   return false;
 }
 
-void PortWidget::MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription& cd) 
+void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) 
 {
   if (matches(cd))
   {
     PortWidget* out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
     PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
-    SCIRun::Domain::Networks::ConnectionId id = SCIRun::Domain::Networks::ConnectionId::create(cd);
+    SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     ConnectionLine* c = new ConnectionLine(out, in, id);
     //std::cout << "--------> adding ConnectionLine to scene: " << id.id_ << "\n cxn*= " << c << "\n port* = " << this << std::endl;
     TheScene->addItem(c);
-    connect(c, SIGNAL(deleted(const SCIRun::Domain::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+    connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }
 
-bool PortWidget::matches(const SCIRun::Domain::Networks::ConnectionDescription& cd) const
+bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const
 {
   return (isInput() && cd.in_.moduleId_ == moduleId_.toStdString() && cd.in_.port_ == index_)
     || (!isInput() && cd.out_.moduleId_ == moduleId_.toStdString() && cd.out_.port_ == index_);

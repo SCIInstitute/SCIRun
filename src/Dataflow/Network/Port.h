@@ -37,7 +37,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
   
 class SCISHARE Port : virtual public PortInterface, boost::noncopyable
@@ -87,7 +87,7 @@ class SCISHARE InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual Datatypes::DatatypeHandleOption getData();
+  virtual Core::Datatypes::DatatypeHandleOption getData();
   virtual void attach(Connection* conn);
   virtual DatatypeSinkInterfaceHandle sink();
 private:
@@ -100,7 +100,7 @@ class SCISHARE OutputPort : public Port, public OutputPortInterface
 public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
-  virtual void sendData(Datatypes::DatatypeHandle data);
+  virtual void sendData(Core::Datatypes::DatatypeHandle data);
 private:
   DatatypeSourceInterfaceHandle source_;
 };

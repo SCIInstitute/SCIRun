@@ -31,7 +31,7 @@
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 MatrixAsVectorFieldDialog::MatrixAsVectorFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)

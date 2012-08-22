@@ -29,7 +29,7 @@
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 
 ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
 {

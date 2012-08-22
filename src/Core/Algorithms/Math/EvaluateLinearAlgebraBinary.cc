@@ -29,9 +29,9 @@
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Algorithms;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 
 AlgorithmParameterName EvaluateLinearAlgebraBinaryAlgorithm::OperatorName("Operator");
 

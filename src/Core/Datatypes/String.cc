@@ -29,6 +29,6 @@
 #include <sstream>
 #include <Core/Datatypes/String.h>
 
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 
 String::String(const std::string& s /* = "" */) : value_(s) {}

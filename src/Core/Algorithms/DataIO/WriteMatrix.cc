@@ -31,9 +31,9 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
-using namespace SCIRun::Algorithms;
-using namespace SCIRun::Algorithms::DataIO;
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName WriteMatrixAlgorithm::Filename("Filename");
 

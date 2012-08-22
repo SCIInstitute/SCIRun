@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Matrix.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Core {
 namespace Datatypes {
 
 template <typename T>

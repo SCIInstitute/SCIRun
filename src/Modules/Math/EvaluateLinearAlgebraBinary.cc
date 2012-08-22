@@ -34,9 +34,9 @@
 #include <Core/Datatypes/DenseMatrix.h> //TODO: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Algorithms::Math;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
 Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))

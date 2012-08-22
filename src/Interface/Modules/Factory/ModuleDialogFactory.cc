@@ -43,7 +43,7 @@
 #include <Interface/Modules/Render/ViewScene.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse) {}
 

@@ -36,14 +36,14 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
 
-  class SCISHARE CreateMatrixModule : public SCIRun::Domain::Networks::Module,
+  class SCISHARE CreateMatrixModule : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
     CreateMatrixModule();
     virtual void execute();
     static std::string outputPort0Name() { return "EnteredMatrix"; }
-    static Algorithms::AlgorithmParameterName TextEntry;
+    static Core::Algorithms::AlgorithmParameterName TextEntry;
   };
 }}}
 

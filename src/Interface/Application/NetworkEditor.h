@@ -56,7 +56,7 @@ namespace Gui {
   class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
-  class NetworkEditor : public QGraphicsView, public SCIRun::Domain::Networks::ExecutableLookup
+  class NetworkEditor : public QGraphicsView, public SCIRun::Dataflow::Networks::ExecutableLookup
   {
 	  Q_OBJECT
 	
@@ -65,23 +65,23 @@ namespace Gui {
     void addActions(QWidget* widget);
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
-    virtual SCIRun::Domain::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
-    void moveModules(const SCIRun::Domain::Networks::ModulePositions& modulePositions);
+    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
+    void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
   public Q_SLOTS:
-    void addModule(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
-    void needConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
+    void addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void executeAll();
     void clear();
 
     //TODO: break out, unit test
-    SCIRun::Domain::Networks::ModulePositionsHandle dumpModulePositions();
+    SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
   Q_SIGNALS:
-    void addConnection(const SCIRun::Domain::Networks::ConnectionDescription&);
-    void connectionDeleted(const SCIRun::Domain::Networks::ConnectionId& id);
+    void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
+    void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void modified();
   private Q_SLOTS:
     void del();

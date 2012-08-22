@@ -49,14 +49,14 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
-    void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
-    void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
-    SCIRun::Domain::Networks::NetworkXMLHandle saveNetwork() const;
-    void loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml);
-    void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup);
+    void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+    void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
+    SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork() const;
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
+    void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
   Q_SIGNALS:
-    void moduleAdded(const std::string& name, SCIRun::Domain::Networks::ModuleHandle module);
-    void connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription& cd);
+    void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   private:
     boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller_;
   };

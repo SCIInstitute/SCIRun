@@ -37,7 +37,7 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleFactory.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 Network::Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
   : moduleFactory_(moduleFactory), stateFactory_(stateFactory)

@@ -29,9 +29,9 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <boost/foreach.hpp>
 
-using namespace SCIRun::Domain::State;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Algorithms;
+using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 SimpleMapModuleState::SimpleMapModuleState()
 {
@@ -60,7 +60,7 @@ const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& par
   return i != stateMap_.end() ? i->second : Value(AlgorithmParameterName(""), -1);
 }
 
-void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Algorithms::AlgorithmParameter::Value& value)
+void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
 

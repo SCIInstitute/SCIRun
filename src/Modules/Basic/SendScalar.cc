@@ -31,10 +31,10 @@
 #include <Modules/Basic/SendScalar.h>
 
 using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-SCIRun::Algorithms::AlgorithmParameterName SendScalarModule::ValueToSend("ValueToSend");
+SCIRun::Core::Algorithms::AlgorithmParameterName SendScalarModule::ValueToSend("ValueToSend");
 
 SendScalarModule::SendScalarModule()
   : Module(ModuleLookupInfo("SendScalar", "Math", "SCIRun")),

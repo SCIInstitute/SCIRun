@@ -32,7 +32,7 @@
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::StringProcessing;
 
 CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandle state,

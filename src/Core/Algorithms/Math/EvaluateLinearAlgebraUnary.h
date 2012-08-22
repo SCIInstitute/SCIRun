@@ -38,6 +38,7 @@
   */
 
 namespace SCIRun {
+namespace Core {
 namespace Algorithms {
 namespace Math {
 
@@ -89,13 +90,13 @@ namespace Math {
     static AlgorithmParameterName OperatorName;
     static AlgorithmParameterName ScalarValue;
 
-    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+    typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
     typedef boost::tuple<Operator, boost::optional<double> > Parameters;
-    typedef SCIRun::Domain::Datatypes::DenseMatrixHandle Outputs;
+    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
     Outputs run(const Inputs& matrix, const Parameters& params) const;
   };
-}}}
+}}}}
 
 
 /*! @} End of Doxygen Groups*/

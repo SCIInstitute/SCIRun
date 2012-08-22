@@ -32,7 +32,7 @@
 
 using namespace SCIRun::Gui;
 
-ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
+ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent) : QDialog(parent),
   state_(state)
 {
   setModal(false);

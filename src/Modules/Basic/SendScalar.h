@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Basic {
   
-  class SCISHARE SendScalarModule : public SCIRun::Domain::Networks::Module,
+  class SCISHARE SendScalarModule : public SCIRun::Dataflow::Networks::Module,
     public Has1OutputPort<ScalarPortTag>
   {
   public:
@@ -44,7 +44,7 @@ namespace Basic {
     virtual void execute();
     void setScalar(double data);
     static std::string outputPort0Name() { return "Scalar"; }
-    static Algorithms::AlgorithmParameterName ValueToSend;
+    static Core::Algorithms::AlgorithmParameterName ValueToSend;
   private:
     double data_;
   };

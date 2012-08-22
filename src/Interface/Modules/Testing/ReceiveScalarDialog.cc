@@ -32,7 +32,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Basic;
 
 ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHandle state, 

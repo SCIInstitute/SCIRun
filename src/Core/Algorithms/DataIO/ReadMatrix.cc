@@ -32,9 +32,9 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <boost/filesystem.hpp>
 
-using namespace SCIRun::Algorithms;
-using namespace SCIRun::Algorithms::DataIO;
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 

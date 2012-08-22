@@ -34,19 +34,20 @@
 #include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
+namespace Core {
 namespace Algorithms {
 namespace Math {
   
   class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
   {
   public:
-    typedef SCIRun::Domain::Datatypes::DenseMatrixConstHandle Inputs;
+    typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
     typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
     typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
   };
 
-}}}
+}}}}
 
 #endif

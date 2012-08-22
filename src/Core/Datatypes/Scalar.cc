@@ -29,7 +29,7 @@
 #include <sstream>
 #include <Core/Datatypes/Scalar.h>
 
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Core::Datatypes;
 
 template class Scalar<int>;
 template class Scalar<double>;

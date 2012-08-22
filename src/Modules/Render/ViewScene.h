@@ -36,20 +36,20 @@ namespace SCIRun {
 namespace Modules {
 namespace Render {
 
-  class SCISHARE ViewScene : public SCIRun::Domain::Networks::Module,
+  class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::Module,
     public Has2InputPorts<GeometryPortTag, GeometryPortTag>
   {
   public:
     ViewScene();
     virtual void execute();
 
-    void setRenderer(SCIRun::Domain::Networks::RendererInterface* r);
+    void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r);
 
     static std::string inputPort0Name() { return "RenderedString"; }
     static std::string inputPort1Name() { return "RenderedMatrixAsVectorField"; }
 
   private:
-    SCIRun::Domain::Networks::RendererInterface* renderer_;
+    SCIRun::Dataflow::Networks::RendererInterface* renderer_;
   };
 }}}
 

@@ -32,9 +32,9 @@
 #include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
 AlgorithmParameterName ReceiveScalarModule::ReceivedValue("ReceivedValue");
 

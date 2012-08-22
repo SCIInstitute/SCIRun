@@ -34,17 +34,17 @@
 #include <Dataflow/State/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace State {
   
-  class SCISHARE SimpleMapModuleState : public SCIRun::Domain::Networks::ModuleStateInterface
+  class SCISHARE SimpleMapModuleState : public SCIRun::Dataflow::Networks::ModuleStateInterface
   {
   public:
     SimpleMapModuleState();
     SimpleMapModuleState(const SimpleMapModuleState& rhs);
     SimpleMapModuleState& operator=(const SimpleMapModuleState& rhs);
     virtual const Value getValue(const Name& name) const;
-    virtual void setValue(const Name& name, const SCIRun::Algorithms::AlgorithmParameter::Value& value);
+    virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value);
     virtual Keys getKeys() const;
     virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
 
@@ -59,10 +59,10 @@ namespace State {
     state_changed_sig_t stateChangedSignal_;
   };
 
-  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Domain::Networks::ModuleStateInterfaceFactory
+  class SCISHARE SimpleMapModuleStateFactory : public SCIRun::Dataflow::Networks::ModuleStateInterfaceFactory
   {
   public:
-    virtual SCIRun::Domain::Networks::ModuleStateInterface* make_state(const std::string& name) const;
+    virtual SCIRun::Dataflow::Networks::ModuleStateInterface* make_state(const std::string& name) const;
   };
 
 }}}

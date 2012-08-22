@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
   
-  class SCISHARE ReportMatrixInfoModule : public SCIRun::Domain::Networks::Module,
+  class SCISHARE ReportMatrixInfoModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>
   {
   public:

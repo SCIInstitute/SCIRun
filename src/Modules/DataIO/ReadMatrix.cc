@@ -34,9 +34,9 @@
 #include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Algorithms::DataIO;
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
 

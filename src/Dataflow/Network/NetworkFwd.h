@@ -33,7 +33,7 @@
 #include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
 class NetworkInterface;

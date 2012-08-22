@@ -35,12 +35,12 @@
 #include <fstream>
 #include <boost/assign.hpp>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::State;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::State;
 
 namespace 
 {
-  using namespace SCIRun::Algorithms;
+  using namespace SCIRun::Core::Algorithms;
   AlgorithmParameterName intName("int");
   AlgorithmParameterName doubleName("double");
   AlgorithmParameterName stringName("string");

@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Core {
 namespace Datatypes {
 
   class SCISHARE GeometryObject : public Datatype

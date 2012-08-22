@@ -32,7 +32,7 @@
 
 using namespace SCIRun::Engine;
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
   
 NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller)
   : controller_(controller)
@@ -51,12 +51,12 @@ void NetworkEditorControllerGuiProxy::removeModule(const std::string& id)
   controller_->removeModule(id);
 }
 
-void NetworkEditorControllerGuiProxy::addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc)
+void NetworkEditorControllerGuiProxy::addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc)
 {
   controller_->addConnection(desc);
 }
 
-void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Domain::Networks::ConnectionId& id)
+void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
   controller_->removeConnection(id);
 }
@@ -66,12 +66,12 @@ NetworkXMLHandle NetworkEditorControllerGuiProxy::saveNetwork() const
   return controller_->saveNetwork();
 }
 
-void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml)
+void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml)
 {
   return controller_->loadNetwork(xml);
 }
 
-void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup)
+void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup)
 {
   controller_->executeAll(lookup);
 }

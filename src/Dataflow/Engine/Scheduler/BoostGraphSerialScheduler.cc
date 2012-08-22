@@ -38,7 +38,7 @@
 #include <boost/bimap.hpp>
 
 using namespace SCIRun::Engine;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface& network)
 {

@@ -34,7 +34,7 @@
 
 namespace SCIRun
 {
-  namespace Domain
+  namespace Dataflow
   {
     namespace Networks
     {
@@ -47,23 +47,23 @@ namespace SCIRun
           //do nothing
         }
 
-        virtual SCIRun::Domain::Datatypes::DatatypeHandleOption receive()
+        virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive()
         {
           return data_;
         }
 
-        void setData(SCIRun::Domain::Datatypes::DatatypeHandle data)
+        void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
         {
           data_ = data;
         }
       private:
-        SCIRun::Domain::Datatypes::DatatypeHandle data_;
+        SCIRun::Core::Datatypes::DatatypeHandle data_;
       };
 
       class SimpleSource : public DatatypeSourceInterface
       {
       public:
-        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Domain::Datatypes::DatatypeHandle data)
+        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)
         {
           SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
           if (!sink)

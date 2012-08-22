@@ -31,7 +31,7 @@
 
 #include <stdexcept>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id)
   : omod_(omod), imod_(imod), id_(id)

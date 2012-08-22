@@ -35,8 +35,8 @@
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::DataIO;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::DataIO;
 
 namespace
 {

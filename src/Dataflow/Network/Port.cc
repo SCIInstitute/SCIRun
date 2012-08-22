@@ -35,8 +35,8 @@
 
 #include <stdexcept>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
   : module_(module), typeName_(params.type_name), portName_(params.port_name), colorName_(params.color_name)

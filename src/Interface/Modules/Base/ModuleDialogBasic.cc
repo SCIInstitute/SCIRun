@@ -32,7 +32,7 @@
 using namespace SCIRun::Gui;
 
 ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(SCIRun::Domain::Networks::ModuleStateHandle(), parent)
+  : ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle(), parent)
 {
   setupUi(this);
   setModal(false);

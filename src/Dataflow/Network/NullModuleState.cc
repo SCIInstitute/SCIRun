@@ -30,7 +30,7 @@
 
 using namespace SCIRun::Engine::State;
   
-void NullModuleState::setValue(const Name&, const SCIRun::Algorithms::AlgorithmParameter::Value&)
+void NullModuleState::setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&)
 {
 }
 

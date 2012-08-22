@@ -34,8 +34,8 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
 using ::testing::Return;
 using ::testing::NiceMock;
@@ -90,6 +90,6 @@ void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
   stateFactory_ = stateFactory;
 }
 
-void MockModuleFactory::setRenderer(SCIRun::Domain::Networks::RendererInterface* renderer)
+void MockModuleFactory::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer)
 {
 }

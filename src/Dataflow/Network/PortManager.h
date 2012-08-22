@@ -41,7 +41,7 @@
 #include <map>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
 template<class T> 

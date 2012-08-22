@@ -38,7 +38,7 @@ namespace Engine {
   class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor
   {
   public:
-    virtual void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order);
+    virtual void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order);
   };
 
 }

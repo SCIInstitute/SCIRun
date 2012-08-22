@@ -34,8 +34,8 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
 
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 
 namespace
 {
@@ -57,7 +57,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
   DenseMatrixHandle m(matrix1());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
 #ifdef WIN32
-  const std::string expectedType = "class SCIRun::Domain::Datatypes::DenseMatrixGeneric<double>";
+  const std::string expectedType = "class SCIRun::Core::Datatypes::DenseMatrixGeneric<double>";
   EXPECT_EQ(expectedType, result.get<0>());
 #else
   const std::string expectedType = ""; //fill this in later

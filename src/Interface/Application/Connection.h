@@ -42,7 +42,7 @@ class ConnectionLine : public QObject, public QGraphicsLineItem
   Q_OBJECT
 
 public:
-  ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Domain::Networks::ConnectionId& id);
+  ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id);
   ~ConnectionLine();
 
   void setColor(const QColor& color);
@@ -50,11 +50,11 @@ public:
 
   void trackNodes();
 Q_SIGNALS:
-  void deleted(const SCIRun::Domain::Networks::ConnectionId& id);
+  void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
-  SCIRun::Domain::Networks::ConnectionId id_;
+  SCIRun::Dataflow::Networks::ConnectionId id_;
 };
 
 class ConnectionInProgress : public QGraphicsLineItem

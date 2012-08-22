@@ -29,7 +29,7 @@
 #include <Dataflow/Network/Module.h>
 #include <gtest/gtest.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 TEST(ModuleTests, CanBuildWithPorts)
 {

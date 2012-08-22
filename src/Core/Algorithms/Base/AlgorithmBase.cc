@@ -29,7 +29,7 @@
 #include <iostream>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
-using namespace SCIRun::Algorithms;
+using namespace SCIRun::Core::Algorithms;
 
 AlgorithmBase::~AlgorithmBase() {}
 

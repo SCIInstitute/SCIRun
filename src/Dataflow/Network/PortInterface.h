@@ -36,7 +36,7 @@
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
-namespace Domain {
+namespace Dataflow {
 namespace Networks {
 
   class SCISHARE PortInterface
@@ -58,7 +58,7 @@ namespace Networks {
   {
   public:
     virtual ~InputPortInterface();
-    virtual Datatypes::DatatypeHandleOption getData() = 0;
+    virtual Core::Datatypes::DatatypeHandleOption getData() = 0;
     virtual DatatypeSinkInterfaceHandle sink() = 0;
   };
   
@@ -66,7 +66,7 @@ namespace Networks {
   {
   public:
     virtual ~OutputPortInterface();
-    virtual void sendData(Datatypes::DatatypeHandle data) = 0;
+    virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
   };
 }}}
 

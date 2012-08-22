@@ -34,8 +34,8 @@
 
 #include <stdexcept>
 
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::Return;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;

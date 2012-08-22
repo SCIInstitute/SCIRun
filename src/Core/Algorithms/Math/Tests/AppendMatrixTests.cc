@@ -33,8 +33,8 @@
 #include <Core/Datatypes/MatrixComparison.h>
 
 
-using namespace SCIRun::Domain::Datatypes;
-using namespace SCIRun::Algorithms::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
 
 namespace
 {

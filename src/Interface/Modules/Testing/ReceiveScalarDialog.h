@@ -46,7 +46,7 @@ class SCISHARE ReceiveScalarDialog : public ModuleDialogGeneric,
 	
 public:
   ReceiveScalarDialog(const std::string& name, 
-    SCIRun::Domain::Networks::ModuleStateHandle state,
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
   virtual void pull();

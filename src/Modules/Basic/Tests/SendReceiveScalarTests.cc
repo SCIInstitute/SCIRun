@@ -41,9 +41,9 @@
 using namespace SCIRun;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Factory;
-using namespace SCIRun::Domain::Networks;
-using namespace SCIRun::Domain::Networks::Mocks;
-using namespace SCIRun::Domain::State;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Dataflow::State;
 
 using ::testing::_;
 using ::testing::NiceMock;

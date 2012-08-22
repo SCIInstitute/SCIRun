@@ -36,39 +36,39 @@
 namespace SCIRun {
 namespace Engine {
   
-  typedef boost::signals2::signal<void (const std::string&, SCIRun::Domain::Networks::ModuleHandle)> ModuleAddedSignalType;
+  typedef boost::signals2::signal<void (const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
-  typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionDescription&)> ConnectionAddedSignalType;
+  typedef boost::signals2::signal<void (const SCIRun::Dataflow::Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   //TODO..needed for provenance.
-  typedef boost::signals2::signal<void (const SCIRun::Domain::Networks::ConnectionDescription&)> ConnectionRemovedSignalType;
+  typedef boost::signals2::signal<void (const SCIRun::Dataflow::Networks::ConnectionDescription&)> ConnectionRemovedSignalType;
 
 
   class SCISHARE NetworkEditorController 
   {
   public:
-    explicit NetworkEditorController(SCIRun::Domain::Networks::ModuleFactoryHandle mf, SCIRun::Domain::Networks::ModuleStateFactoryHandle sf);
-    explicit NetworkEditorController(SCIRun::Domain::Networks::NetworkHandle network);
-    SCIRun::Domain::Networks::ModuleHandle addModule(const std::string& moduleName);
+    explicit NetworkEditorController(SCIRun::Dataflow::Networks::ModuleFactoryHandle mf, SCIRun::Dataflow::Networks::ModuleStateFactoryHandle sf);
+    explicit NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network);
+    SCIRun::Dataflow::Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
-    void addConnection(const SCIRun::Domain::Networks::ConnectionDescription& desc);
-    void removeConnection(const SCIRun::Domain::Networks::ConnectionId& id);
+    void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+    void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
 
-    void executeAll(const SCIRun::Domain::Networks::ExecutableLookup& lookup);
+    void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
 
-    SCIRun::Domain::Networks::NetworkXMLHandle saveNetwork() const;
-    void loadNetwork(const SCIRun::Domain::Networks::NetworkXML& xml);
+    SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork() const;
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
 
-    SCIRun::Domain::Networks::NetworkHandle getNetwork() const;
+    SCIRun::Dataflow::Networks::NetworkHandle getNetwork() const;
 
   private:
     void printNetwork() const;
-    SCIRun::Domain::Networks::NetworkHandle theNetwork_;
-    SCIRun::Domain::Networks::ModuleFactoryHandle moduleFactory_;
-    SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory_;
+    SCIRun::Dataflow::Networks::NetworkHandle theNetwork_;
+    SCIRun::Dataflow::Networks::ModuleFactoryHandle moduleFactory_;
+    SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;

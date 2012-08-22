@@ -36,17 +36,17 @@ namespace SCIRun {
   namespace Modules {
     namespace Factory {
       
-      class SCISHARE HardCodedModuleFactory : public SCIRun::Domain::Networks::ModuleFactory
+      class SCISHARE HardCodedModuleFactory : public SCIRun::Dataflow::Networks::ModuleFactory
       {
       public:
         HardCodedModuleFactory();
-        virtual SCIRun::Domain::Networks::ModuleDescription lookupDescription(const SCIRun::Domain::Networks::ModuleLookupInfo& info);
-        virtual SCIRun::Domain::Networks::ModuleHandle create(const SCIRun::Domain::Networks::ModuleDescription& info);
-        virtual void setStateFactory(SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory);
-        virtual void setRenderer(SCIRun::Domain::Networks::RendererInterface* renderer);
+        virtual SCIRun::Dataflow::Networks::ModuleDescription lookupDescription(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info);
+        virtual SCIRun::Dataflow::Networks::ModuleHandle create(const SCIRun::Dataflow::Networks::ModuleDescription& info);
+        virtual void setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory);
+        virtual void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer);
       private:
-        SCIRun::Domain::Networks::ModuleStateFactoryHandle stateFactory_;
-        SCIRun::Domain::Networks::RendererInterface* renderer_;
+        SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
+        SCIRun::Dataflow::Networks::RendererInterface* renderer_;
       };
     }
   }

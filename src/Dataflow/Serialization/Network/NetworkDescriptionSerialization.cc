@@ -28,4 +28,4 @@
 
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;

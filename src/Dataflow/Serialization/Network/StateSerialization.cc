@@ -28,8 +28,8 @@
 
 #include <Dataflow/Serialization/Network/StateSerialization.h>
 
-using namespace SCIRun::Domain::State;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Dataflow::Networks;
 
 SimpleMapModuleStateXML::SimpleMapModuleStateXML()
 {
@@ -39,7 +39,7 @@ SimpleMapModuleStateXML::SimpleMapModuleStateXML(const SimpleMapModuleState& sta
 {
 }
 
-boost::shared_ptr<SimpleMapModuleStateXML> SCIRun::Domain::State::make_state_xml(SCIRun::Domain::Networks::ModuleStateHandle state)
+boost::shared_ptr<SimpleMapModuleStateXML> SCIRun::Dataflow::State::make_state_xml(SCIRun::Dataflow::Networks::ModuleStateHandle state)
 {
   boost::shared_ptr<SimpleMapModuleState> mapState = boost::dynamic_pointer_cast<SimpleMapModuleState>(state);
   if (mapState)

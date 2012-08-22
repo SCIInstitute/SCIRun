@@ -45,14 +45,14 @@
 #include <Dataflow/Network/Module.h>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Domain::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 QPointF ProxyWidgetPosition::currentPosition() const
 {
   return widget_->pos() + offset_;
 }
 
-ModuleWidget::ModuleWidget(const QString& name, SCIRun::Domain::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
+ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
   moduleId_(theModule->get_id()),
   executionTime_(0),
@@ -95,7 +95,7 @@ void ModuleWidget::addPortLayouts()
   verticalLayout_2->insertLayout(0, inputRowLayout);
 }
 
-void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& moduleInfoProvider)
+void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
   const std::string moduleId = moduleInfoProvider.get_id();
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
@@ -104,7 +104,7 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, this);
     hookUpSignals(w);
     //std::cout << "@@@ connecting " << moduleId << " moduleWidget to port " << port->get_portname() << "\n " << w << std::endl;
-    connect(this, SIGNAL(connectionAdded(const SCIRun::Domain::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
+    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
   }
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
@@ -119,10 +119,10 @@ void ModuleWidget::addPorts(const SCIRun::Domain::Networks::ModuleInfoProvider& 
 
 void ModuleWidget::hookUpSignals(PortWidget* port) const
 {
-  connect(port, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)), 
-    this, SIGNAL(needConnection(const SCIRun::Domain::Networks::ConnectionDescription&)));
-  connect(port, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)), 
-    this, SIGNAL(connectionDeleted(const SCIRun::Domain::Networks::ConnectionId&)));
+  connect(port, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
+    this, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+    this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
 }
 
 void ModuleWidget::addPort(OutputPortWidget* port)

@@ -36,7 +36,7 @@
 
 using namespace SCIRun::Gui;
 
-ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Domain::Networks::ConnectionId& id)
+ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id)
   : fromPort_(fromPort), toPort_(toPort), id_(id)
 {
   if (fromPort_)

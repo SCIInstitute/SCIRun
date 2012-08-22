@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-  class SCISHARE ShowStringModule : public SCIRun::Domain::Networks::Module,
+  class SCISHARE ShowStringModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<StringPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
