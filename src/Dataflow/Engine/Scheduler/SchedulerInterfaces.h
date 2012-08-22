@@ -35,6 +35,7 @@
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
+namespace Dataflow {
 namespace Engine {
 
   //Serial
@@ -63,7 +64,7 @@ namespace Engine {
   {
   public:
     virtual ~Scheduler();
-    virtual ModuleExecutionOrder schedule(const SCIRun::Dataflow::Networks::NetworkInterface& network) = 0;
+    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network) = 0;
   };
 
   //TODO: types for ParallelScheduler, etc
@@ -72,12 +73,12 @@ namespace Engine {
   {
   public:
     virtual ~NetworkExecutor();
-    virtual void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
     //TODO
     // virtual void connectNetworkFinishedListener()...
   };
 
 }
-}
+}}
 
 #endif

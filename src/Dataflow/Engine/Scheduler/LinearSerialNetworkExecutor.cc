@@ -33,7 +33,7 @@
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
 struct LinearExecution

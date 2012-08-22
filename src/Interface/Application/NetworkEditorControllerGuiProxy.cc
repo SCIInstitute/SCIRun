@@ -30,11 +30,11 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
   
-NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller)
+NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_ptr<NetworkEditorController> controller)
   : controller_(controller)
 {
   controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2));

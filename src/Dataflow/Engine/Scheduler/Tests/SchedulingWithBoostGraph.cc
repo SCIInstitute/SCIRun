@@ -72,7 +72,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;

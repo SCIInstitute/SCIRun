@@ -28,7 +28,7 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 
 Scheduler::~Scheduler()
 {

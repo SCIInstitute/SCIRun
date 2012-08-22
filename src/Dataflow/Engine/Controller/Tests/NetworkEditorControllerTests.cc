@@ -34,7 +34,7 @@
 #include <Dataflow/Network/Tests/MockNetwork.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;

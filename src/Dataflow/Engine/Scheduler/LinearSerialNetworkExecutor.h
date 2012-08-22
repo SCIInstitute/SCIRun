@@ -33,15 +33,15 @@
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
+namespace Dataflow {
 namespace Engine {
 
   class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor
   {
   public:
-    virtual void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, ModuleExecutionOrder order);
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order);
   };
 
-}
-}
+}}}
 
 #endif

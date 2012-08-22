@@ -33,14 +33,15 @@
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
+namespace Dataflow {
 namespace Engine {
 
   class SCISHARE BoostGraphSerialScheduler : public Scheduler
   {
   public:
-    virtual ModuleExecutionOrder schedule(const SCIRun::Dataflow::Networks::NetworkInterface& network);
+    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network);
   };
-}
-}
+
+}}}
 
 #endif

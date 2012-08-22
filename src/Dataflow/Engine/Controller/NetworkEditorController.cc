@@ -39,7 +39,7 @@
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf) : moduleFactory_(mf), stateFactory_(sf)

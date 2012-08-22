@@ -34,10 +34,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
-  namespace Engine
-  {
-    class NetworkEditorController;
-  }
+  namespace Dataflow { namespace Engine { class NetworkEditorController; }}
 
 namespace Gui {
   
@@ -45,7 +42,7 @@ namespace Gui {
   {
     Q_OBJECT
   public:
-    explicit NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller);
+    explicit NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
@@ -58,7 +55,7 @@ namespace Gui {
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   private:
-    boost::shared_ptr<SCIRun::Engine::NetworkEditorController> controller_;
+    boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   };
 
 }

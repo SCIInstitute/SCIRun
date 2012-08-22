@@ -53,7 +53,7 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Engine;
+using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Factory;
