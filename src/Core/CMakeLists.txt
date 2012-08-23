@@ -27,5 +27,7 @@
 #
 
 ADD_SUBDIRECTORY(Algorithms)
+ADD_SUBDIRECTORY(CommandLine)
 ADD_SUBDIRECTORY(Datatypes)
 ADD_SUBDIRECTORY(Logging)
+

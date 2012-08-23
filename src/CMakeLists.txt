@@ -117,7 +117,7 @@ ENDIF()
 # TODO: eventually replace with CMake project
 FIND_PACKAGE(Boost 1.49.0
                REQUIRED
-               COMPONENTS date_time filesystem regex system signals serialization thread
+               COMPONENTS date_time filesystem regex system signals serialization thread program_options
 )
 
 IF(Boost_FOUND)
@@ -196,6 +196,8 @@ SET_PROPERTY(TARGET Core_Datatypes         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Tests   PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Logging_Tests   PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_CommandLine         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_CommandLine_Tests   PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
