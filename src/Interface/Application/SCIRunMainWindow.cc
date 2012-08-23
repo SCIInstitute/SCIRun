@@ -55,7 +55,8 @@ using namespace SCIRun::Dataflow::State;
 
 namespace
 {
-  void visitTree(QStringList& list, QTreeWidgetItem* item){
+  void visitTree(QStringList& list, QTreeWidgetItem* item)
+  {
     list << item->text(0) + "," + QString::number(item->childCount());
     if (item->childCount() != 0)
       item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -63,7 +64,8 @@ namespace
       visitTree(list, item->child(i));
   }
 
-  QStringList visitTree(QTreeWidget* tree) {
+  QStringList visitTree(QTreeWidget* tree) 
+  {
     QStringList list;
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
       visitTree(list, tree->topLevelItem(i));
