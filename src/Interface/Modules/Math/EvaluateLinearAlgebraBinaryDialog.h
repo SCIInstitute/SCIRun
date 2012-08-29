@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_EVALUATELINEARALGEBRABINARYDIALOG_H
 #define INTERFACE_MODULES_EVALUATELINEARALGEBRABINARYDIALOG_H
 
-#include "Interface/Modules/ui_EvaluateLinearAlgebraBinary.h"
+#include "Interface/Modules/Math/ui_EvaluateLinearAlgebraBinary.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

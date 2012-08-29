@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_CREATE_MATRIX_H
 #define INTERFACE_MODULES_CREATE_MATRIX_H
 
-#include "Interface/Modules/ui_CreateMatrix.h"
+#include "Interface/Modules/Math/ui_CreateMatrix.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

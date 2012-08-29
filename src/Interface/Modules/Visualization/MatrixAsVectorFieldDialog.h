@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_MATRIX_AS_VECTOR_FIELD_H
 #define INTERFACE_MODULES_MATRIX_AS_VECTOR_FIELD_H
 
-#include "Interface/Modules/ui_MatrixAsVectorField.h"
+#include "Interface/Modules/Visualization/ui_MatrixAsVectorField.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

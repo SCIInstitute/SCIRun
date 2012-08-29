@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_RECEIVE_SCALAR_H
 #define INTERFACE_MODULES_RECEIVE_SCALAR_H
 
-#include "Interface/Modules/ui_ReceiveScalar.h"
+#include "Interface/Modules/Testing/ui_ReceiveScalar.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

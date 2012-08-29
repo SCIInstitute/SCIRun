@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_APPEND_MATRIX_H
 #define INTERFACE_MODULES_APPEND_MATRIX_H
 
-#include "Interface/Modules/ui_AppendMatrix.h"
+#include "Interface/Modules/Math/ui_AppendMatrix.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

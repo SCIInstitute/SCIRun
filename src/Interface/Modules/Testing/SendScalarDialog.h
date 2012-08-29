@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_SEND_SCALAR_H
 #define INTERFACE_MODULES_SEND_SCALAR_H
 
-#include "Interface/Modules/ui_SendScalar.h"
+#include "Interface/Modules/Testing/ui_SendScalar.h"
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Testing/Share.h>

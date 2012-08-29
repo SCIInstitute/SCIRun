@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_REPORT_MATRIX_INFO_H
 #define INTERFACE_MODULES_REPORT_MATRIX_INFO_H
 
-#include "Interface/Modules/ui_ReportMatrixInfo.h"
+#include "Interface/Modules/Math/ui_ReportMatrixInfo.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

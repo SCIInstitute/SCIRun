@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_READ_MATRIX_H
 #define INTERFACE_MODULES_READ_MATRIX_H
 
-#include "Interface/Modules/ui_ReadMatrix.h"
+#include "Interface/Modules/DataIO/ui_ReadMatrix.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

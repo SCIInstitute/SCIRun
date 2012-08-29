@@ -117,7 +117,7 @@ ENDIF()
 # TODO: eventually replace with CMake project
 FIND_PACKAGE(Boost 1.50.0
                REQUIRED
-               COMPONENTS date_time filesystem regex system signals serialization thread program_options
+               COMPONENTS date_time filesystem regex system signals serialization thread program_options chrono
 )
 
 IF(Boost_FOUND)

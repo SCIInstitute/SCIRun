@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 #define INTERFACE_APPLICATION_MODULE_DIALOG_BASIC_H
 
-#include "Interface/Modules/ui_ModuleDialogBasic.h"
+#include "Interface/Modules/Base/ui_ModuleDialogBasic.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/Share.h>
 
