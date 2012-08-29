@@ -33,29 +33,16 @@
 using namespace SCIRun::Core::CommandLine;
 namespace po = boost::program_options;
 
-//class CommandLineData
-//{
-//public:
-//  CommandLineData(int argc, char* argv[])
-//  {
-//    commandLine_.assign(argv, argv + argc);
-//  }
-//  
-//  int argc() const
-//  {
-//    return static_cast<int>(commandLine_.size());
-//  }
-//
-//  const char* const* argv() const
-//  {
-//    if (commandLine_.empty())
-//      return 0;
-//    return &commandLine_[0];
-//  }
-//
-//private:
-//  std::vector<char*> commandLine_;
-//};
+namespace
+{
+  po::variables_map readCommandLine(int argc, char* argv[], const po::options_description& desc)
+  {
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);    
+    return vm;
+  }
+}
 
 TEST(CommandLineSpecTest, BoostExampleCode)
 {
@@ -66,32 +53,48 @@ TEST(CommandLineSpecTest, BoostExampleCode)
     ("compression", po::value<int>(), "set compression level")
     ;
 
-  
-  char* argv[] = {"scirun.exe", "--help", "--compression", "4"};
-  const int argc = sizeof(argv)/sizeof(char*);
-
-  po::variables_map vm;
-  po::store(po::parse_command_line(argc, argv, desc), vm);
-  po::notify(vm);    
-
-  if (vm.count("help")) 
   {
-    std::cout << "help was selected" << std::endl;
-    std::cout << desc << "\n";
+    char* argv[] = {"dummy.exe", "--help", "--compression", "4"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    po::variables_map vm = readCommandLine(argc, argv, desc);
+
+    EXPECT_EQ(1, vm.count("help"));
+    EXPECT_EQ(1, vm.count("compression"));
+    EXPECT_EQ(4, vm["compression"].as<int>());
   }
 
-  if (vm.count("compression")) 
   {
-    std::cout << "Compression level was set to " 
-      << vm["compression"].as<int>() << ".\n";
-  } 
-  else 
-  {
-    std::cout << "Compression level was not set.\n";
+    char* argv[] = {"dummy.exe", "--compression", "7"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    po::variables_map vm = readCommandLine(argc, argv, desc);
+
+    EXPECT_EQ(0, vm.count("help"));
+    EXPECT_EQ(1, vm.count("compression"));
+    EXPECT_EQ(7, vm["compression"].as<int>());
   }
 
+  {
+    char* argv[] = {"dummy.exe", "--help"};
+    int argc = sizeof(argv)/sizeof(char*);
 
+    po::variables_map vm = readCommandLine(argc, argv, desc);
 
+    EXPECT_EQ(1, vm.count("help"));
+    EXPECT_EQ(0, vm.count("compression"));
+    EXPECT_THROW(vm["compression"].as<int>(), boost::bad_any_cast);
+  }
 
-  //EXPECT_TRUE(false);
+  {
+    char* argv[] = {"dummy.exe", "--compression", "7.5"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    EXPECT_THROW(readCommandLine(argc, argv, desc), std::exception);
+
+    //EXPECT_EQ(0, vm.count("help"));
+    //EXPECT_EQ(1, vm.count("compression"));
+    //EXPECT_EQ(7, vm["compression"].as<int>());
+    //EXPECT_EQ(7.5, vm["compression"].as<double>());
+  }
 }
