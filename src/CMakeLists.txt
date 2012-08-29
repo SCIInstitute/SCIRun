@@ -93,7 +93,7 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ########################################################################
 # Find and configure Boost
 
-SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.49" "1.49.0")
+SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.50" "1.50.0")
 
 #IF(CMAKE_COMPILER_IS_GNUCC AND NOT APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
 #  # For 64-bit linux builds, static libraries need to be compiled with -fPIC
@@ -110,12 +110,12 @@ SET(Boost_USE_STATIC_RUNTIME OFF)
 
 IF(WIN32 AND MSVC)
   # Test directives only - remove when Boost is added to CMake build
-  SET(Boost_DIR "E:/boost_1_49_0")
-  SET(BOOST_LIBRARYDIR "E:/git/scirunguiprototype/src/Externals/x64/Release")
+  SET(Boost_DIR "E:/git/boost/")
+  SET(BOOST_LIBRARYDIR "E:/git/boost/bin/x64/Release")
 ENDIF()
 
 # TODO: eventually replace with CMake project
-FIND_PACKAGE(Boost 1.49.0
+FIND_PACKAGE(Boost 1.50.0
                REQUIRED
                COMPONENTS date_time filesystem regex system signals serialization thread program_options
 )
@@ -126,7 +126,7 @@ IF(Boost_FOUND)
   MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
   SET(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
 ELSE()
-  MESSAGE(FATAL_ERROR "Boost 1.49 or greater is required to build SCIRun5Prototype")
+  MESSAGE(FATAL_ERROR "Boost 1.50 or greater is required to build SCIRun5Prototype")
 ENDIF()
 
 
