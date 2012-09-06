@@ -138,6 +138,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRUN5_BOOST_INCLUDE_DIRS}
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen_3_1_1
 )
 
 OPTION(VTK_SUPPORT "Build VTK RenderWindow" OFF)

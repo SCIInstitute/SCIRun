@@ -28,6 +28,7 @@
 
 SET(Core_Datatypes_Tests_SRCS
   DenseMatrixTests.cc
+  EigenDenseMatrixTests.cc
   GeometryTests.cc
   MatrixTests.cc
   ScalarTests.cc
