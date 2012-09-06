@@ -90,6 +90,7 @@ TEST(CommandLineSpecTest, BoostExampleCode)
     char* argv[] = {"dummy.exe", "--compression", "7.5"};
     int argc = sizeof(argv)/sizeof(char*);
 
+    //what exception type?
     EXPECT_THROW(readCommandLine(argc, argv, desc), std::exception);
 
     //EXPECT_EQ(0, vm.count("help"));
