@@ -41,12 +41,12 @@ namespace
   DenseMatrixHandle matrix1()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 4));
-    for (size_t i = 0; i < m->nrows(); ++ i)
-      for (size_t j = 0; j < m->ncols(); ++ j)
+    for (size_t i = 0; i < m->rows(); ++ i)
+      for (size_t j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j - 5;
     return m;
   }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
 }
 
 TEST(AppendMatrixAlgorithmTests, CanAppendRows)
@@ -57,8 +57,8 @@ TEST(AppendMatrixAlgorithmTests, CanAppendRows)
   DenseMatrixHandle m2(matrix1());
   AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::ROWS);
 
-  EXPECT_EQ(6, result->nrows());
-  EXPECT_EQ(4, result->ncols());
+  EXPECT_EQ(6, result->rows());
+  EXPECT_EQ(4, result->cols());
 
   std::cout << *result << std::endl;
 }
@@ -71,8 +71,8 @@ TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
   DenseMatrixHandle m2(matrix1());
   AppendMatrixAlgorithm::Outputs result = algo.run(AppendMatrixAlgorithm::Inputs(m1, m2), AppendMatrixAlgorithm::COLUMNS);
 
-  EXPECT_EQ(3, result->nrows());
-  EXPECT_EQ(8, result->ncols());
+  EXPECT_EQ(3, result->rows());
+  EXPECT_EQ(8, result->cols());
 
   std::cout << *result << std::endl;
 }

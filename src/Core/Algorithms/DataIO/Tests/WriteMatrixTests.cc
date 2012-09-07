@@ -43,20 +43,19 @@ namespace
   DenseMatrix matrix1()
   {
     DenseMatrix m (3, 3);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
+    for (size_t i = 0; i < m.rows(); ++ i)
+      for (size_t j = 0; j < m.cols(); ++ j)
         m(i, j) = 3.0 * i + j + 1;
     return m;
   }
   DenseMatrix matrixNonSquare()
   {
     DenseMatrix m (3, 4);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
+    for (size_t i = 0; i < m.rows(); ++ i)
+      for (size_t j = 0; j < m.cols(); ++ j)
         m(i, j) = 3.5 * i + j;
     return m;
   }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
 TEST(WriteMatrixTests, CanWriteToStream)

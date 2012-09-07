@@ -53,7 +53,8 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     (*result) *= -1;
     break;
   case TRANSPOSE:
-    result.reset(matrix->make_transpose()); 
+    result.reset(matrix->clone());
+    result->transposeInPlace();
     break;
   case SCALAR_MULTIPLY:
     boost::optional<double> scalarOption = params.get<1>();

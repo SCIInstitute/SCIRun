@@ -39,3 +39,15 @@ DatatypeHandle GeometryObject::get_underlying() const
 {
   return data_;
 }
+
+GeometryObject::GeometryObject(const GeometryObject& other) : data_(other.data_->clone()) 
+{}
+
+GeometryObject& GeometryObject::operator=(const GeometryObject& other) 
+{ 
+  if (this != &other)
+  {
+    data_.reset(other.data_->clone());
+  } 
+  return *this; 
+}

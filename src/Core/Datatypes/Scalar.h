@@ -43,6 +43,7 @@ namespace Datatypes {
   public:
     explicit Scalar(T val) : val_(val) {}
     T getValue() const { return val_; }
+    virtual Scalar* clone() const { return new Scalar(*this); }
   private:
     T val_;
   };

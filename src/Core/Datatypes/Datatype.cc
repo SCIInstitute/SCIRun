@@ -44,7 +44,7 @@ Datatype& Datatype::operator=(const Datatype& rhs)
   return *this;
 }
 
-Datatype* Datatype::clone() const
-{
-  return new Datatype(*this);
-}
+//Datatype* Datatype::clone() const
+//{
+//  return new Datatype(*this);
+//}

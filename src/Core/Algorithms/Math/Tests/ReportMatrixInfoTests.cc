@@ -39,22 +39,21 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 namespace
 {
-  DenseMatrixHandle matrix1()
+  DenseMatrixHandle matrix1a()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 4));
-    for (size_t i = 0; i < m->nrows(); ++ i)
-      for (size_t j = 0; j < m->ncols(); ++ j)
+    for (size_t i = 0; i < m->rows(); ++ i)
+      for (size_t j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j - 5;
     return m;
   }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
 }
 
 TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle m(matrix1a());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
 #ifdef WIN32
   const std::string expectedType = "class SCIRun::Core::Datatypes::DenseMatrixGeneric<double>";
@@ -70,7 +69,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsRowAndColumnCount)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle m(matrix1a());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
   EXPECT_EQ(3, result.get<1>());
   EXPECT_EQ(4, result.get<2>());
@@ -80,7 +79,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfElements)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle m(matrix1a());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
   
   EXPECT_EQ(12, result.get<3>());
@@ -90,7 +89,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMinimumAndMaximum)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1());
+  DenseMatrixHandle m(matrix1a());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
   EXPECT_EQ(-5, result.get<4>());
   EXPECT_EQ(4, result.get<5>());
@@ -143,6 +142,6 @@ TEST(BigVectorFieldFile, DISABLED_ReadIt)
   std::ifstream file("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\danBigMatrix.txt");
   DenseMatrix m;
   file >> m;
-  EXPECT_EQ(6, m.nrows());
-  EXPECT_EQ(3000, m.ncols());
+  EXPECT_EQ(6, m.rows());
+  EXPECT_EQ(3000, m.cols());
 }

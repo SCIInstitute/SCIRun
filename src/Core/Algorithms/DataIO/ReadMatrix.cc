@@ -27,6 +27,7 @@
 */
 
 #include <fstream>
+#include <iostream>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>

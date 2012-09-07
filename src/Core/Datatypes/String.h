@@ -43,6 +43,7 @@ namespace Datatypes {
     explicit String(const std::string& s = "");
 
     const std::string& value() const { return value_; }
+    virtual String* clone() const { return new String(*this); }
   private:
     std::string value_;
   };

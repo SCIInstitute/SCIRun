@@ -30,7 +30,7 @@
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Dataflow/Network/RendererInterface.h>
 
 using namespace SCIRun::Modules::Render;

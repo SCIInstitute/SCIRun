@@ -41,7 +41,10 @@ namespace Datatypes {
   {
   public:
     explicit GeometryObject(DatatypeHandle dh);
+    GeometryObject(const GeometryObject& other);
+    GeometryObject& operator=(const GeometryObject& other);
     DatatypeHandle get_underlying() const;
+    virtual GeometryObject* clone() const { return new GeometryObject(*this); }
   private:
     DatatypeHandle data_;
   };

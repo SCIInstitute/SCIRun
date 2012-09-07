@@ -26,32 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Modules/DataIO/WriteMatrix.h>
-#include <Core/Algorithms/DataIO/WriteMatrix.h>
+#ifndef MATRIX_TEST_CASES_H
+#define MATRIX_TEST_CASES_H
+
 #include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::DataIO;
-
-WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun")) {}
-
-void WriteMatrixModule::execute()
+namespace TestUtils
 {
-  DatatypeHandleOption data = get_input_handle(0);
-  if (!data)
+  using SCIRun::Core::Datatypes::DenseMatrix;
+  
+  DenseMatrix matrix1()
   {
-    std::cout << "Required input not present, this check should go in the module base class!!!" << std::endl;
-    return;
+    DenseMatrix m (3, 3);
+    for (int i = 0; i < m.rows(); ++ i)
+      for (int j = 0; j < m.cols(); ++ j)
+        m(i, j) = 3.0 * i + j;
+    return m;
   }
-
-  DenseMatrixHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*data);
-
-  filename_ = get_state()->getValue(WriteMatrixAlgorithm::Filename).getString();
-
-  WriteMatrixAlgorithm algo;
-  algo.run(matrix, filename_);
+  DenseMatrix matrixNonSquare()
+  {
+    DenseMatrix m (3, 4);
+    for (int i = 0; i < m.rows(); ++ i)
+      for (int j = 0; j < m.cols(); ++ j)
+        m(i, j) = 3.0 * i + j;
+    return m;
+  }
+  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
 }
+
+#endif

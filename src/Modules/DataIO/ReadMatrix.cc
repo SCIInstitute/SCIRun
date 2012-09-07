@@ -30,7 +30,7 @@
 #include <boost/filesystem.hpp>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::DataIO;

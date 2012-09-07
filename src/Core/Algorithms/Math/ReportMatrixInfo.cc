@@ -39,9 +39,9 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
   const std::string type = typeid(*input).name();
 
   return Outputs(type, 
-    input->nrows(), 
-    input->ncols(), 
-    input->nrows() * input->ncols(), 
-    input->min(), 
-    input->max());
+    input->rows(), 
+    input->cols(), 
+    input->rows() * input->cols(), 
+    input->minCoeff(), 
+    input->maxCoeff());
 }

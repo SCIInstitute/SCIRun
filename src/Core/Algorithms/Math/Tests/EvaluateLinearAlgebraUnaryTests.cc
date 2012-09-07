@@ -28,33 +28,35 @@
 
 #include <gtest/gtest.h>
 
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
-
-namespace
-{
-  DenseMatrix matrix1()
-  {
-    DenseMatrix m (3, 3);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.0 * i + j;
-    return m;
-  }
-  DenseMatrix matrixNonSquare()
-  {
-    DenseMatrix m (3, 4);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.0 * i + j;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
-}
+using namespace TestUtils;
+//
+//namespace
+//{
+//  DenseMatrix matrix1()
+//  {
+//    DenseMatrix m (3, 3);
+//    for (size_t i = 0; i < m.nrows(); ++ i)
+//      for (size_t j = 0; j < m.ncols(); ++ j)
+//        m(i, j) = 3.0 * i + j;
+//    return m;
+//  }
+//  DenseMatrix matrixNonSquare()
+//  {
+//    DenseMatrix m (3, 4);
+//    for (size_t i = 0; i < m.nrows(); ++ i)
+//      for (size_t j = 0; j < m.ncols(); ++ j)
+//        m(i, j) = 3.0 * i + j;
+//    return m;
+//  }
+//  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+//}
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegate)
 {
@@ -71,8 +73,8 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanTranspose)
 
   DenseMatrixHandle m(matrix1().clone());
   DenseMatrixHandle result = algo.run(m, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-  DenseMatrixHandle expected(m->make_transpose());
-  EXPECT_EQ(*expected, *result);
+  DenseMatrix expected(m->transpose());
+  EXPECT_EQ(expected, *result);
 }
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiply)

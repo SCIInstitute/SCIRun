@@ -67,20 +67,20 @@ namespace
   DenseMatrixHandle matrix1()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->nrows(); ++i)
-      for (size_t j = 0; j < m->ncols(); ++j)
+    for (size_t i = 0; i < m->rows(); ++i)
+      for (size_t j = 0; j < m->cols(); ++j)
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
   DenseMatrixHandle matrix2()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->nrows(); ++i)
-      for (size_t j = 0; j < m->ncols(); ++j)
+    for (size_t i = 0; i < m->rows(); ++i)
+      for (size_t j = 0; j < m->cols(); ++j)
         (*m)(i, j) = -2.0 * i + j;
     return m;
   }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
+  const DenseMatrix Zero(DenseMatrix::Zero(3,3));
 
   ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
   {
@@ -130,7 +130,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
-  EXPECT_EQ(transpose(*input), *receiveModule->latestReceivedMatrix());
+  EXPECT_EQ(input->transpose(), *receiveModule->latestReceivedMatrix());
 
   process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   process->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 2.0);
@@ -142,7 +142,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
 TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
 {
-  DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + transpose(*matrix1());
+  DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
 
   //Test network:
   /* 

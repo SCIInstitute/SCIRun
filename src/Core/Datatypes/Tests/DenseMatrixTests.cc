@@ -28,33 +28,13 @@
 
 #include <gtest/gtest.h>
 
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Core::Datatypes;
-
-namespace
-{
-  DenseMatrix matrix1()
-  {
-    DenseMatrix m (3, 3);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.0 * i + j;
-    return m;
-  }
-  DenseMatrix matrixNonSquare()
-  {
-    DenseMatrix m (3, 4);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.0 * i + j;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
-}
-
+using namespace TestUtils;
 
 #define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
 
@@ -69,14 +49,14 @@ TEST(DenseMatrixTest, CanPrintInLegacyFormat)
   DenseMatrix m(matrix1());
   std::string legacy = matrix_to_string(0.5 * m);
   std::cout << legacy << std::endl;
-  EXPECT_EQ("0 0.5 1 \n1.5 2 2.5 \n3 3.5 4 \n", legacy);
+  EXPECT_EQ("  0 0.5   1\n1.5   2 2.5\n  3 3.5   4", legacy);
 }
 
 TEST(DenseMatrixTest, CanDetermineSize)
 {
   DenseMatrix m(matrixNonSquare());
-  EXPECT_EQ(3, m.nrows());
-  EXPECT_EQ(4, m.ncols());
+  EXPECT_EQ(3, m.rows());
+  EXPECT_EQ(4, m.cols());
 }
 
 TEST(DenseMatrixTest, CanCopyConstrunt)
@@ -127,9 +107,9 @@ TEST(DenseMatrixUnaryOperationTests, CanTranspose)
   DenseMatrix m(matrix1());
 
   PRINT_MATRIX(m);
-  PRINT_MATRIX(transpose(m));
+  PRINT_MATRIX(m.transpose());
 
-  EXPECT_EQ(m, transpose(transpose(m)));
+  EXPECT_EQ(m, m.transpose().transpose());
 }
 
 TEST(DenseMatrixBinaryOperationTests, CanMultiply)
@@ -163,7 +143,7 @@ TEST(DenseMatrixBinaryOperationTests, CanSubtract)
 TEST(DenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
 {
   DenseMatrix sum = matrix1() + matrixNonSquare();
-  std::cout << sum.nrows() << std::endl;
-  std::cout << sum.ncols() << std::endl;
+  std::cout << sum.rows() << std::endl;
+  std::cout << sum.cols() << std::endl;
   PRINT_MATRIX(sum);
 }

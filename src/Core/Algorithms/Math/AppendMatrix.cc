@@ -37,37 +37,40 @@ AlgorithmParameterName AppendMatrixAlgorithm::OptionName("RowsOrColumns");
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
 {
-  DenseMatrixConstHandle lhs = input.get<0>();
-  DenseMatrixConstHandle rhs = input.get<1>();
-  if (!lhs || !rhs)
+  DenseMatrixConstHandle lhsPtr = input.get<0>();
+  DenseMatrixConstHandle rhsPtr = input.get<1>();
+  if (!lhsPtr || !rhsPtr)
     return Outputs(); //TODO: error
+
+  const DenseMatrix& lhs = *lhsPtr;
+  const DenseMatrix& rhs = *rhsPtr;
 
   if (params == ROWS)
   {
-    if (lhs->ncols() != rhs->ncols())
+    if (lhs.cols() != rhs.cols())
       return Outputs(); //TODO: error
 
-    DenseMatrixHandle output(new DenseMatrix(lhs->nrows() + rhs->nrows(), lhs->ncols()));
-    for (int i = 0; i < lhs->nrows(); ++i)
-      for (int j = 0; j < lhs->ncols(); ++j)
-        (*output)(i,j) = (*lhs)(i,j);
-    for (int i = 0; i < rhs->nrows(); ++i)
-      for (int j = 0; j < rhs->ncols(); ++j)
-        (*output)(i + lhs->nrows(), j) = (*rhs)(i,j);
+    DenseMatrixHandle output(new DenseMatrix(lhs.rows() + rhs.rows(), lhs.cols()));
+    for (int i = 0; i < lhs.rows(); ++i)
+      for (int j = 0; j < lhs.cols(); ++j)
+        (*output)(i,j) = lhs(i,j);
+    for (int i = 0; i < rhs.rows(); ++i)
+      for (int j = 0; j < rhs.cols(); ++j)
+        (*output)(i + lhs.rows(), j) = rhs(i,j);
     return output;
   }
   else // columns
   {
-    if (lhs->nrows() != rhs->nrows())
+    if (lhs.rows() != rhs.rows())
       return Outputs(); //TODO: error
 
-    DenseMatrixHandle output(new DenseMatrix(lhs->nrows(), lhs->ncols() + rhs->ncols()));
-    for (int i = 0; i < lhs->nrows(); ++i)
-      for (int j = 0; j < lhs->ncols(); ++j)
-        (*output)(i,j) = (*lhs)(i,j);
-    for (int i = 0; i < rhs->nrows(); ++i)
-      for (int j = 0; j < rhs->ncols(); ++j)
-        (*output)(i, j + lhs->ncols()) = (*rhs)(i,j);
+    DenseMatrixHandle output(new DenseMatrix(lhs.rows(), lhs.cols() + rhs.cols()));
+    for (int i = 0; i < lhs.rows(); ++i)
+      for (int j = 0; j < lhs.cols(); ++j)
+        (*output)(i,j) = lhs(i,j);
+    for (int i = 0; i < rhs.rows(); ++i)
+      for (int j = 0; j < rhs.cols(); ++j)
+        (*output)(i, j + lhs.cols()) = rhs(i,j);
     return output;
   }
 }

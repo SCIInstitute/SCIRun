@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
+#include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
@@ -37,31 +38,11 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO;
-
-namespace
-{
-  DenseMatrix matrix1()
-  {
-    DenseMatrix m (3, 3);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.0 * i + j + 1;
-    return m;
-  }
-  DenseMatrix matrixNonSquare()
-  {
-    DenseMatrix m (3, 4);
-    for (size_t i = 0; i < m.nrows(); ++ i)
-      for (size_t j = 0; j < m.ncols(); ++ j)
-        m(i, j) = 3.5 * i + j;
-    return m;
-  }
-  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
-}
+using namespace TestUtils;
 
 TEST(ReadMatrixTests, CanReadFromStream)
 {
-  const std::string matrixString = "1 2 3\n4 5 6\n7 8 9\n";
+  const std::string matrixString = "0 1 2\n3 4 5\n6 7 8\n";
 
   std::istringstream istr(matrixString);
 

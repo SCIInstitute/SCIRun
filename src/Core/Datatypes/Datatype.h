@@ -54,7 +54,7 @@ namespace Datatypes {
       return dynamic_cast<const T*>(this);
     }
 
-    virtual Datatype* clone() const;
+    virtual Datatype* clone() const = 0;
   };
 
   typedef boost::shared_ptr<Datatype> DatatypeHandle;

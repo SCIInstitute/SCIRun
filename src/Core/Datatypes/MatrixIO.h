@@ -41,9 +41,11 @@ namespace Datatypes {
   template <typename T>
   std::ostream& operator<<(std::ostream& o, const DenseMatrixGeneric<T>& m)
   {
-    for (size_t i = 0; i < m.nrows(); ++i)
+    //TODO!!
+    //o << static_cast<DenseMatrixGeneric<T>::Base>(m);
+    for (int i = 0; i < m.rows(); ++i)
     {
-      for (size_t j = 0; j < m.ncols(); ++j)
+      for (int j = 0; j < m.cols(); ++j)
       {
         o << m(i,j) << " ";
       }
@@ -80,11 +82,11 @@ namespace Datatypes {
         values.push_back(lineData);
     }
 
-    m.clear();
     m.resize(values.size(), values[0].size());
-    for (size_t i = 0; i < m.nrows(); ++i)
+    m.setZero();
+    for (int i = 0; i < m.rows(); ++i)
     {
-      for (size_t j = 0; j < m.ncols(); ++j)
+      for (int j = 0; j < m.cols(); ++j)
       {
         m(i,j) = values[i][j];
       }
@@ -94,10 +96,10 @@ namespace Datatypes {
   }
 
   template <typename T>
-  std::string matrix_to_string(const DenseMatrixGeneric<T>& m)
+  std::string matrix_to_string(const T& m)
   {
     std::ostringstream o;
-    o << m;
+    o << /*static_cast<DenseMatrixGeneric<T>::Base>*/(m);
     return o.str();
   }
 

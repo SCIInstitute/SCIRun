@@ -41,14 +41,14 @@ namespace Datatypes {
   bool operator==(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
   {
     bool returnValue = 
-      (lhs.nrows() == lhs.nrows()) &&
-      (lhs.ncols() == rhs.ncols());
+      (lhs.rows() == lhs.rows()) &&
+      (lhs.cols() == rhs.cols());
 
     if (returnValue)
     {
-      for (size_t i = 0; returnValue && i < lhs.nrows(); ++i)
+      for (int i = 0; returnValue && i < lhs.rows(); ++i)
       {
-        for (size_t j = 0; returnValue && j < lhs.ncols(); ++j)
+        for (int j = 0; returnValue && j < lhs.cols(); ++j)
         {
           returnValue &= std::fabs(lhs(i,j) - rhs(i,j)) < 1e-15;
         }

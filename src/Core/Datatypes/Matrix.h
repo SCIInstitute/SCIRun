@@ -30,7 +30,6 @@
 #ifndef CORE_DATATYPES_MATRIX_H
 #define CORE_DATATYPES_MATRIX_H 
 
-#include <boost/numeric/ublas/matrix.hpp> //TODO
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/MatrixFwd.h>
 
@@ -39,47 +38,11 @@ namespace Core {
 namespace Datatypes {
 
   template <typename T>
-  class DenseMatrixGeneric : public Datatype
+  class MatrixBase : public Datatype
   {
-  public:
-    typedef T value_type;
-    typedef DenseMatrixGeneric<T> this_type;
 
-    DenseMatrixGeneric();
-    DenseMatrixGeneric(size_t nrows, size_t ncols);
-    DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val);
-    DenseMatrixGeneric(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator=(const DenseMatrixGeneric& rhs);
-
-    size_t nrows() const;
-    size_t ncols() const;
-    T& operator()(size_t r, size_t c);
-    const T& operator()(size_t r, size_t c) const;
-
-    T min() const;
-    T max() const;
-
-    DenseMatrixGeneric& operator+=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator-=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator*=(const DenseMatrixGeneric& rhs);
-    DenseMatrixGeneric& operator*=(const T& scalar);
-
-    DenseMatrixGeneric* make_transpose() const;
-    void transpose_in_place();
-    void clear();
-    void resize(size_t nrows, size_t ncols);
-
-    virtual DenseMatrixGeneric* clone() const;
-    
-    static DenseMatrixGeneric zero_matrix(size_t nrows, size_t ncols);
-
-  private:
-    typedef boost::numeric::ublas::matrix<T> MatrixInternal;
-    DenseMatrixGeneric(const MatrixInternal& internals);
-    MatrixInternal matrix_;
   };
 
-  typedef DenseMatrixGeneric<double> DenseMatrix;
 
 
 }}}

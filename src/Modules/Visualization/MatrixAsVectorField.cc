@@ -51,7 +51,7 @@ void MatrixAsVectorFieldModule::execute()
     return;
   }
 
-  if (mat->nrows() != 6)
+  if (mat->rows() != 6)
   {
     std::cout << "Not outputting, matrix does not have 6 rows." << std::endl;
     return;
