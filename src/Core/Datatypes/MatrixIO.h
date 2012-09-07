@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_MATRIX_IO_H 
 
 #include <Core/Datatypes/Matrix.h>
+#include <vector>
 #include <ostream>
 #include <istream>
 
