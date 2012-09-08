@@ -26,10 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Utils)
+SET(Core_Application_Tests_SRCS
+  ApplicationTests.cc
+)
 
+SCIRUN_ADD_UNIT_TEST(Core_Application_Tests
+${Core_Application_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Application_Tests
+Core_Application
+gtest_main
+gtest
+gmock
+)

@@ -26,10 +26,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Utils)
+SET(Core_Application_SRCS
+  Application.cc
+)
 
+SET(Core_Application_HEADERS
+  Application.h
+  Share.h
+)
+
+ADD_LIBRARY(Core_Application 
+${Core_Application_HEADERS}
+${Core_Application_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Application
+${Boost_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Application)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
