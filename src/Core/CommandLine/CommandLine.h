@@ -29,6 +29,7 @@
 #ifndef CORE_COMMANDLINE_COMMANDLINESPEC_H
 #define CORE_COMMANDLINE_COMMANDLINESPEC_H 
 
+#include <boost/shared_ptr.hpp>
 #include <Core/CommandLine/Share.h>
 
 namespace SCIRun {
@@ -38,6 +39,13 @@ namespace SCIRun {
       class SCISHARE CommandLineSpec
       {
       };
+
+      class SCISHARE ApplicationParameters
+      {
+
+      };
+
+      typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;
 }}}
 
 #endif

@@ -53,6 +53,11 @@ TEST(CommandLineSpecTest, BoostExampleCode)
     ("compression", po::value<int>(), "set compression level")
     ;
 
+  std::ostringstream ostr;
+  ostr << desc;
+  std::cout << desc << std::endl;
+  EXPECT_EQ("Allowed options:\n  --help                produce help message\n  --compression arg     set compression level\n",  ostr.str());
+
   {
     char* argv[] = {"dummy.exe", "--help", "--compression", "4"};
     int argc = sizeof(argv)/sizeof(char*);
@@ -97,5 +102,47 @@ TEST(CommandLineSpecTest, BoostExampleCode)
     //EXPECT_EQ(1, vm.count("compression"));
     //EXPECT_EQ(7, vm["compression"].as<int>());
     //EXPECT_EQ(7.5, vm["compression"].as<double>());
+  }
+}
+
+TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
+{
+  // Declare the supported options.
+  po::options_description desc("Basic options");
+  desc.add_options()
+    ("help,h", "prints usage information")
+    ("version,v", "prints out version information--TODO")
+    ("execute,e", "executes the given network on startup")
+    ("Execute,E", "executes the given network on startup and quits when done")
+    ("datadir,d", po::value<std::string>(), "scirun data directory--TODO")
+    ("regression,r", "regression test a network--TODO")
+    ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
+    ("interactive,i", "interactive mode--TODO")
+    ("headless,x", "disable GUI--TODO")
+    ("input-file", po::value<std::string>(), "SCIRun Network Input File")
+    ;
+
+  po::positional_options_description p;
+  p.add("input-file", -1);
+
+  //std::cout << p << std::endl;
+ 
+
+  std::ostringstream ostr;
+  ostr << desc;
+  std::cout << desc << std::endl;
+  //EXPECT_EQ("Allowed options:\n  --help                produce help message\n  --compression arg     set compression level\n",  ostr.str());
+
+  {
+    char* argv[] = {"scirun.exe", "--help", "net.srn5"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    po::variables_map vm;
+    po::store(po::command_line_parser(argc, argv).
+      options(desc).positional(p).run(), vm);
+    po::notify(vm);
+
+    EXPECT_EQ(1, vm.count("help"));
+    EXPECT_EQ(1, vm.count("input-file"));
   }
 }

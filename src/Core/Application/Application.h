@@ -30,9 +30,9 @@
 #define CORE_APPLICATION_APPLICATION_H
 
 #include <boost/filesystem/path.hpp>
-//#include <boost/signals2.hpp>
 
 #include <Core/Utils/Singleton.h>
+#include <Core/CommandLine/CommandLine.h>
 #include <Core/Application/Share.h>
 
 namespace SCIRun
@@ -57,9 +57,13 @@ private:
 	virtual ~Application();
 
 public:
+
+  CommandLine::ApplicationParametersHandle parameters();
+
+
 	bool is_command_line_parameter( const std::string& key );
 	bool check_command_line_parameter( const std::string& key, std::string& value );
-	void parse_command_line_parameters( int argc, char** argv );
+	void readCommandLine(int argc, char* argv[]);
 
   //TODO: following will be useful later
 #if 0

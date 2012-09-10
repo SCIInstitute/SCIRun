@@ -32,7 +32,7 @@ SET(Core_Utils_SRCS
 
 SET(Core_Utils_HEADERS
   Singleton.h
-  #Share.h
+  Share.h
 )
 
 ADD_LIBRARY(Core_Utils 

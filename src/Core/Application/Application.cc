@@ -31,6 +31,7 @@
 #include <Core/Application/Application.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Core::CommandLine;
 
 namespace SCIRun
 {
@@ -45,7 +46,9 @@ namespace SCIRun
   }
 }
 
-CORE_SINGLETON_IMPLEMENTATION( Application );
+CORE_SINGLETON_IMPLEMENTATION( Application )
+
+//SCIRun::Core::Singleton<Application> Application::instance_;
 
 Application::Application() :
 	private_( new ApplicationPrivate )
@@ -54,6 +57,11 @@ Application::Application() :
 
 Application::~Application()
 {
+}
+
+ApplicationParametersHandle Application::parameters()
+{
+  return ApplicationParametersHandle();
 }
 
 bool Application::is_command_line_parameter( const std::string &key )
@@ -66,7 +74,7 @@ bool Application::check_command_line_parameter( const std::string &key, std::str
   return true;
 }
 
-void Application::parse_command_line_parameters( int argc, char **argv )
+void Application::readCommandLine(int argc, char* argv[])
 {
 
 }
