@@ -26,29 +26,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Application_SRCS
-  Application.cc
+SET(Core_Command_SRCS
+  Command.cc
+  CommandFactory.cc
 )
 
-SET(Core_Application_HEADERS
-  Application.h
+SET(Core_Command_HEADERS
+  Command.h
+  CommandFactory.h
   Share.h
 )
 
-ADD_LIBRARY(Core_Application 
-${Core_Application_HEADERS}
-${Core_Application_SRCS})
+ADD_LIBRARY(Core_Command 
+${Core_Command_HEADERS}
+${Core_Command_SRCS})
 
-TARGET_LINK_LIBRARIES(Core_Application
+TARGET_LINK_LIBRARIES(Core_Command
   Core_CommandLine
-  Engine_Network
-  Modules_Factory
-  Dataflow_State
   ${Boost_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Application)
+  ADD_DEFINITIONS(-DBUILD_Core_Command)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)

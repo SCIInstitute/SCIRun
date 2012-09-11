@@ -26,48 +26,10 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CORE_UTILS_SINGLETON_H
-#define CORE_UTILS_SINGLETON_H
+#include <Core/Command/Command.h>
 
-#include <boost/thread/mutex.hpp>
-#include <boost/noncopyable.hpp>
-#include <Core/Utils/Share.h>
+using namespace SCIRun::Core::GlobalCommands;
 
-namespace SCIRun 
+GlobalCommand::~GlobalCommand()
 {
-namespace Core
-{
-
-// CLASS SINGLETON:
-/// Class for defining a singleton implementation
-/// A singleton class embeds this class to handle 
-/// the creation of the singleton class.
-
-/// NOTE: This singleton model requires that the project is linked statically
-
-template< class T >
-class Singleton : public boost::noncopyable
-{
-public:
-	T& instance()
-	{
-	  static T instance_;
-    return instance_;
-	}
-};
-
-#define CORE_SINGLETON(name)\
-public:\
-	friend class SCIRun::Core::Singleton<name>;\
-	static name& Instance() { return instance_.instance(); }\
-\
-private:\
-	static SCIRun::Core::Singleton<name> instance_;\
-	
-#define CORE_SINGLETON_IMPLEMENTATION(name)\
-SCIRun::Core::Singleton<name> name::instance_;
-
 }
-}
-
-#endif

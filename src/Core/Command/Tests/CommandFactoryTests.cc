@@ -27,27 +27,3 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/program_options.hpp>
-#include <Core/Application/Application.h>
-
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::CommandLine;
-
-TEST(ApplicationSingletonTest, CanCreateAndParseCommandLine)
-{
-  Application& app = Application::Instance();
-
-  ApplicationParametersHandle appParams = app.parameters();
-  EXPECT_FALSE(appParams);
-
-  char* argv[] = {"scirun.exe", "-e", "network.srn5"};
-  int argc = sizeof(argv)/sizeof(char*);
-
-  app.readCommandLine(argc, argv);
-
-  appParams = app.parameters();
-  ASSERT_TRUE(appParams);
-
-  EXPECT_EQ("network.srn5", appParams->inputFile().get());
-  EXPECT_TRUE(appParams->executeNetwork());
-}

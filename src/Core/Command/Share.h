@@ -26,28 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <boost/program_options.hpp>
-#include <Core/Application/Application.h>
+#undef SCISHARE
 
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::CommandLine;
-
-TEST(ApplicationSingletonTest, CanCreateAndParseCommandLine)
-{
-  Application& app = Application::Instance();
-
-  ApplicationParametersHandle appParams = app.parameters();
-  EXPECT_FALSE(appParams);
-
-  char* argv[] = {"scirun.exe", "-e", "network.srn5"};
-  int argc = sizeof(argv)/sizeof(char*);
-
-  app.readCommandLine(argc, argv);
-
-  appParams = app.parameters();
-  ASSERT_TRUE(appParams);
-
-  EXPECT_EQ("network.srn5", appParams->inputFile().get());
-  EXPECT_TRUE(appParams->executeNetwork());
-}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Command
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

@@ -26,48 +26,49 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CORE_UTILS_SINGLETON_H
-#define CORE_UTILS_SINGLETON_H
+#ifndef CORE_COMMAND_COMMAND_H
+#define CORE_COMMAND_COMMAND_H
 
-#include <boost/thread/mutex.hpp>
-#include <boost/noncopyable.hpp>
-#include <Core/Utils/Share.h>
+#include <Core/Command/Share.h>
 
-namespace SCIRun 
+namespace SCIRun
 {
-namespace Core
-{
+  namespace Core
+  {
+    namespace GlobalCommands
+    {
+      class SCISHARE GlobalCommand
+      {
+      public:
+        virtual ~GlobalCommand();
+        virtual void execute() = 0;
+      };
 
-// CLASS SINGLETON:
-/// Class for defining a singleton implementation
-/// A singleton class embeds this class to handle 
-/// the creation of the singleton class.
+      class SCISHARE CommandWithGui : public GlobalCommand
+      {
+      };
 
-/// NOTE: This singleton model requires that the project is linked statically
+      class SCISHARE HeadlessCommand : public GlobalCommand
+      {
+      };
 
-template< class T >
-class Singleton : public boost::noncopyable
-{
-public:
-	T& instance()
-	{
-	  static T instance_;
-    return instance_;
-	}
-};
+      enum Commands
+      {
+        LoadNetworkFile,
+        ExecuteCurrentNetwork,
+        Quit
+      };
 
-#define CORE_SINGLETON(name)\
-public:\
-	friend class SCIRun::Core::Singleton<name>;\
-	static name& Instance() { return instance_.instance(); }\
-\
-private:\
-	static SCIRun::Core::Singleton<name> instance_;\
-	
-#define CORE_SINGLETON_IMPLEMENTATION(name)\
-SCIRun::Core::Singleton<name> name::instance_;
-
-}
+      /*
+      class SCISHARE LoadFileCommand : public *Command
+      {};
+      class SCISHARE ExecuteCurrentNetworkCommand : public *Command
+      {};
+      class SCISHARE QuitCommand : public *Command
+      {};
+      */
+    }
+  }
 }
 
 #endif

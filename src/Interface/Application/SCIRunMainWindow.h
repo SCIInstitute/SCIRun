@@ -30,14 +30,21 @@
 #define INTERFACE_APPLICATION_SCIRUN_MAIN_WINDOW_H
 
 #include <QDialog>
+#include <boost/shared_ptr.hpp>
 #include "ui_SCIRunMainWindow.h"
+
+namespace SCIRun {
+  namespace Dataflow {
+    namespace Engine {
+      class NetworkEditorController;
+    }}}
 
 namespace SCIRun {
 namespace Gui {
 
-#ifdef BUILD_VTK_SUPPORT
-class RenderWindow;
-#endif
+//#ifdef BUILD_VTK_SUPPORT
+//class RenderWindow;
+//#endif
 
 class NetworkEditor;
 
@@ -46,6 +53,7 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 	Q_OBJECT
 public:
 	static SCIRunMainWindow* Instance();
+  void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
 protected Q_SLOTS:
   void ToggleRenderer();
 protected:
@@ -55,13 +63,12 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   
-#ifdef BUILD_VTK_SUPPORT
-  RenderWindow* renderWindow_;
-#endif
+//#ifdef BUILD_VTK_SUPPORT
+//  RenderWindow* renderWindow_;
+//#endif
 
 private:
   bool okToContinue();
-  //bool loadFile(const QString& fileName);
   void saveNetworkFile(const QString& fileName);
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();

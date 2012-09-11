@@ -29,13 +29,15 @@
 #include <QApplication>
 #include <Interface/Application/GuiApplication.h>
 #include <Interface/Application/SCIRunMainWindow.h>
+#include <Core/Application/Application.h>
 
 using namespace SCIRun::Gui;
 
-int Application::run(int argc, char* argv[])
+int GuiApplication::run(int argc, char* argv[])
 {
   QApplication app(argc, argv);
   SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+  mainWin->setController(Core::Application::Instance().controller());
   mainWin->show();
   return app.exec();
 }

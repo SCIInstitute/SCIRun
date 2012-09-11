@@ -26,29 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Application_SRCS
-  Application.cc
+SET(Core_Command_Tests_SRCS
+  CommandFactoryTests.cc
 )
 
-SET(Core_Application_HEADERS
-  Application.h
-  Share.h
+SCIRUN_ADD_UNIT_TEST(Core_Command_Tests
+${Core_Command_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Command_Tests
+Core_Command
+gtest_main
+gtest
+gmock
 )
-
-ADD_LIBRARY(Core_Application 
-${Core_Application_HEADERS}
-${Core_Application_SRCS})
-
-TARGET_LINK_LIBRARIES(Core_Application
-  Core_CommandLine
-  Engine_Network
-  Modules_Factory
-  Dataflow_State
-  ${Boost_LIBRARIES}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Application)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(Tests)

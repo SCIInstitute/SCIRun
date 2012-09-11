@@ -26,10 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
+
+using namespace SCIRun::Core;
+using namespace SCIRun::Gui;
 
 int main(int argc, char* argv[])
 {
-  //TODO: need to check for mode (GUI/interactive/script)
-	return SCIRun::Gui::Application::run(argc, argv);
+  Application::Instance().readCommandLine(argc, argv);
+  
+  if (Application::Instance().parameters()->disableGui())
+  {
+    //TODO
+    std::cout << "SCIRun headless mode not implemented yet, starting GUI." << std::endl;
+  }
+
+	return GuiApplication::run(argc, argv);
 }

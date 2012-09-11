@@ -3,7 +3,7 @@
 
  The MIT License
 
- Copyright (c) 2009 Scientific Computing and Imaging Institute,
+ Copyright (c) 2012 Scientific Computing and Imaging Institute,
  University of Utah.
 
 
@@ -35,6 +35,12 @@
 #include <Core/CommandLine/CommandLine.h>
 #include <Core/Application/Share.h>
 
+namespace SCIRun {
+  namespace Dataflow {
+    namespace Engine {
+      class NetworkEditorController;
+    }}}
+
 namespace SCIRun
 {
 namespace Core
@@ -57,13 +63,9 @@ private:
 	virtual ~Application();
 
 public:
-
+  void readCommandLine(int argc, char* argv[]);
   CommandLine::ApplicationParametersHandle parameters();
-
-
-	bool is_command_line_parameter( const std::string& key );
-	bool check_command_line_parameter( const std::string& key, std::string& value );
-	void readCommandLine(int argc, char* argv[]);
+  boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
 
   //TODO: following will be useful later
 #if 0
@@ -86,9 +88,7 @@ public:
 	boost::signals2::signal< void () > application_stop_signal_;
 #endif
 
-	// -- internals --
 private:
-	// internals of this class
 	ApplicationPrivateHandle private_;
   
 //public:

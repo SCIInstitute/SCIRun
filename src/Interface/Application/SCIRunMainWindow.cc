@@ -33,24 +33,24 @@
 #include <Interface/Application/Logger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Dataflow/State/SimpleMapModuleState.h>
+
+
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
-#ifdef BUILD_VTK_SUPPORT
-#include "RenderWindow.h"
-#endif
+//#ifdef BUILD_VTK_SUPPORT
+//#include "RenderWindow.h"
+//#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Factory;
+//using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Dataflow::State;
 
 namespace
@@ -110,6 +110,12 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
   return instance_;
 }
 
+void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller)
+{
+  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
+  networkEditor_->setNetworkEditorController(controllerProxy);
+}
+
 SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
@@ -129,12 +135,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-
-  ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
-  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  boost::shared_ptr<NetworkEditorController> controller(new NetworkEditorController(moduleFactory, sf));
-  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
-  networkEditor_->setNetworkEditorController(controllerProxy);
 
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
@@ -190,15 +190,15 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   moduleSelectorTreeWidget_->expandAll();
 
-#ifdef BUILD_VTK_SUPPORT
-  // Build render window.
-  renderWindow_ = new RenderWindow(this);
-  renderWindow_->setEnabled(false);
-  renderWindow_->setVisible(false);
-  moduleFactory->setRenderer(renderWindow_);
-
-  connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
-#endif
+//#ifdef BUILD_VTK_SUPPORT
+//  // Build render window.
+//  renderWindow_ = new RenderWindow(this);
+//  renderWindow_->setEnabled(false);
+//  renderWindow_->setVisible(false);
+//  moduleFactory->setRenderer(renderWindow_);
+//
+//  connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
+//#endif
 }
 
 void SCIRunMainWindow::saveNetwork()

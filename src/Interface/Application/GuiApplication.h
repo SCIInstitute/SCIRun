@@ -34,12 +34,12 @@
 namespace SCIRun {
 namespace Gui {
 
-  class SCISHARE Application
+  class SCISHARE GuiApplication
   {
   public:
     static int run(int argc, char* argv[]);
   private:
-    Application();
+    GuiApplication();
   };
 }
 }
