@@ -28,6 +28,7 @@
 
 SET(Core_CommandLine_Tests_SRCS
   CommandLineTests.cc
+  ScirunCommandLineSpecTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_CommandLine_Tests

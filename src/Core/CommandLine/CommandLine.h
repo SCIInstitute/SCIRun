@@ -29,23 +29,42 @@
 #ifndef CORE_COMMANDLINE_COMMANDLINESPEC_H
 #define CORE_COMMANDLINE_COMMANDLINESPEC_H 
 
+#include <string>
+#include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/noncopyable.hpp>
 #include <Core/CommandLine/Share.h>
 
 namespace SCIRun {
   namespace Core {
     namespace CommandLine {
 
-      class SCISHARE CommandLineSpec
+      class SCISHARE ApplicationParameters : boost::noncopyable
       {
-      };
-
-      class SCISHARE ApplicationParameters
-      {
-
+      public:
+        virtual ~ApplicationParameters();
+        virtual boost::optional<std::string> inputFile() const = 0;
+        virtual bool help() const = 0;
+        virtual bool version() const = 0;
+        virtual bool executeNetwork() const = 0;
+        virtual bool executeNetworkAndQuit() const = 0;
+        virtual bool disableGui() const = 0;
       };
 
       typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;
+
+      class CommandLineParserInternal;
+
+      class SCISHARE CommandLineParser : boost::noncopyable
+      {
+      public:
+        CommandLineParser();
+        ApplicationParametersHandle parse(int argc, char* argv[]);
+        std::string describe() const;
+      private:
+        boost::shared_ptr<CommandLineParserInternal> impl_;
+      };
+
 }}}
 
 #endif
