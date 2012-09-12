@@ -423,9 +423,9 @@ SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePosit
   return positions;
 }
 
-void NetworkEditor::executeAll()
+void NetworkEditor::executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func)
 {
-  controller_->executeAll(*this);
+  controller_->executeAll(*this, func);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
 }

@@ -130,10 +130,11 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
   }
 }
 
-void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup)
+void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, NetworkExecutionFinishedCallback func)
 {
   BoostGraphSerialScheduler scheduler;
   LinearSerialNetworkExecutor executor;
+  executor.setNetworkFinishedCallback(func);
   try
   {
     executor.executeAll(lookup, scheduler.schedule(*theNetwork_));

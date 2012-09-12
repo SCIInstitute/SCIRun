@@ -74,8 +74,11 @@ namespace Engine {
   public:
     virtual ~NetworkExecutor();
     virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
+    void setNetworkFinishedCallback(Networks::NetworkExecutionFinishedCallback func) { finishedFunc_ = func; }
     //TODO
     // virtual void connectNetworkFinishedListener()...
+  protected:
+    Networks::NetworkExecutionFinishedCallback finishedFunc_;
   };
 
 }

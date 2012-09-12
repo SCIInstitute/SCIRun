@@ -195,7 +195,20 @@ void SCIRunMainWindow::doInitialStuff()
 {
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
+  {
     loadNetworkFile(QString::fromStdString(inputFile.get()));
+    if (SCIRun::Core::Application::Instance().parameters()->executeNetwork())
+    {
+      // -e
+      networkEditor_->executeAll();
+    }
+    else if (SCIRun::Core::Application::Instance().parameters()->executeNetworkAndQuit())
+    {
+      // -E
+      //TODO: exit code should be from network execution for regression testing.
+      networkEditor_->executeAll([this] {close(); qApp->quit();});
+    }
+  }
 }
 
 void SCIRunMainWindow::saveNetwork()

@@ -71,7 +71,7 @@ void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networ
   return controller_->loadNetwork(xml);
 }
 
-void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup)
+void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func)
 {
-  controller_->executeAll(lookup);
+  controller_->executeAll(lookup, func);
 }

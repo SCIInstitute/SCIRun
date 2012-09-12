@@ -58,7 +58,7 @@ namespace Engine {
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
 
-    void executeAll(const Networks::ExecutableLookup& lookup);
+    void executeAll(const Networks::ExecutableLookup& lookup, Networks::NetworkExecutionFinishedCallback func = 0);
 
     Networks::NetworkXMLHandle saveNetwork() const;
     void loadNetwork(const Networks::NetworkXML& xml);

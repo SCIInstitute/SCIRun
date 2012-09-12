@@ -38,7 +38,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 struct LinearExecution
 {
-  LinearExecution(const ExecutableLookup& lookup, ModuleExecutionOrder order) : lookup_(lookup), order_(order)
+  LinearExecution(const ExecutableLookup& lookup, ModuleExecutionOrder order, NetworkExecutionFinishedCallback func) : lookup_(lookup), order_(order), func_(func)
   {
   }
   void operator()() const
@@ -51,14 +51,17 @@ struct LinearExecution
         obj->execute();
       }
     }
+    if (func_)
+      func_();
   }
   const ExecutableLookup& lookup_;
   ModuleExecutionOrder order_;
+  NetworkExecutionFinishedCallback func_;
 };
 
 void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order)
 {
-  LinearExecution runner(lookup, order);
+  LinearExecution runner(lookup, order, finishedFunc_);
   //runner();
   boost::thread execution = boost::thread(runner);
 }

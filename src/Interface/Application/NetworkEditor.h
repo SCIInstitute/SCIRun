@@ -78,7 +78,7 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
-    void executeAll();
+    void executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func = 0);
     void clear();
 
     //TODO: break out, unit test
