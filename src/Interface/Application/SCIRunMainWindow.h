@@ -42,10 +42,6 @@ namespace SCIRun {
 namespace SCIRun {
 namespace Gui {
 
-//#ifdef BUILD_VTK_SUPPORT
-//class RenderWindow;
-//#endif
-
 class NetworkEditor;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
@@ -54,6 +50,7 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 public:
 	static SCIRunMainWindow* Instance();
   void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
+  void doInitialStuff();
 protected Q_SLOTS:
   void ToggleRenderer();
 protected:
@@ -63,13 +60,10 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   
-//#ifdef BUILD_VTK_SUPPORT
-//  RenderWindow* renderWindow_;
-//#endif
-
 private:
   bool okToContinue();
   void saveNetworkFile(const QString& fileName);
+  void loadNetworkFile(const QString& filename);
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
   QString strippedName(const QString& fillFileName);

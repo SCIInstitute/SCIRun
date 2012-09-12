@@ -67,6 +67,10 @@ namespace Gui {
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
     void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+
+    SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork();
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
@@ -95,7 +99,6 @@ namespace Gui {
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;
-    friend class SCIRunMainWindow; //TODO
     void createActions();
     //void createMenus();
     //void createToolBars();

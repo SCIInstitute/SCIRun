@@ -39,5 +39,6 @@ int GuiApplication::run(int argc, char* argv[])
   SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
   mainWin->setController(Core::Application::Instance().controller());
   mainWin->show();
+  mainWin->doInitialStuff();
   return app.exec();
 }

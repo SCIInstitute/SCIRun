@@ -36,7 +36,7 @@
 
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Network/NetworkFwd.h>
-
+#include <Core/Application/Application.h>
 
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -189,16 +189,13 @@ SCIRunMainWindow::SCIRunMainWindow()
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
+}
 
-//#ifdef BUILD_VTK_SUPPORT
-//  // Build render window.
-//  renderWindow_ = new RenderWindow(this);
-//  renderWindow_->setEnabled(false);
-//  renderWindow_->setVisible(false);
-//  moduleFactory->setRenderer(renderWindow_);
-//
-//  connect(actionRenderer, SIGNAL(triggered()), this, SLOT(ToggleRenderer()));
-//#endif
+void SCIRunMainWindow::doInitialStuff()
+{
+  auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
+  if (inputFile)
+    loadNetworkFile(QString::fromStdString(inputFile.get()));
 }
 
 void SCIRunMainWindow::saveNetwork()
@@ -217,7 +214,7 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
-  NetworkXMLHandle data = networkEditor_->controller_->saveNetwork();
+  NetworkXMLHandle data = networkEditor_->saveNetwork();
 
   ModulePositionsHandle positions = networkEditor_->dumpModulePositions();
 
@@ -233,39 +230,57 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
   setWindowModified(false);
 }
 
+class FileOpenCommand
+{
+public:
+  FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
+  void execute()
+  {
+    networkEditor_->clear();
+    std::cout << "Attempting load of " << filename_ << std::endl;
+
+    try
+    {
+      boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename_);
+
+      if (xml)
+      {
+        networkEditor_->loadNetwork(xml->network);
+        networkEditor_->moveModules(xml->modulePositions);
+      }
+      else
+        std::cout << "File load failed." << std::endl;
+
+      std::cout << "File load done." << std::endl;
+    }
+    catch (...)
+    {
+      std::cout << "File load failed." << std::endl;
+    }
+  }
+private:
+  std::string filename_;
+  NetworkEditor* networkEditor_;
+};
+
 void SCIRunMainWindow::loadNetwork()
 {
   if (okToContinue())
   {
     QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
+    loadNetworkFile(filename);
+  }
+}
 
-    if (!filename.isEmpty())
-    {
-      networkEditor_->clear();
-      std::cout << "Attempting load of " << filename.toStdString() << std::endl;
+void SCIRunMainWindow::loadNetworkFile(const QString& filename)
+{
+  if (!filename.isEmpty())
+  {
+    FileOpenCommand command(filename.toStdString(), networkEditor_);
+    command.execute();
 
-      try
-      {
-        boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename.toStdString());
-
-        if (xml)
-        {
-          networkEditor_->controller_->loadNetwork(xml->network);
-          networkEditor_->moveModules(xml->modulePositions);
-        }
-        else
-          std::cout << "File load failed." << std::endl;
-
-        std::cout << "File load done." << std::endl;
-      }
-      catch (...)
-      {
-        std::cout << "File load failed." << std::endl;
-      }
-
-      setCurrentFile(filename);
-      statusBar()->showMessage(tr("File loaded"), 2000);
-    }
+    setCurrentFile(filename);
+    statusBar()->showMessage(tr("File loaded"), 2000);
   }
 }
 

@@ -464,3 +464,13 @@ void NetworkEditor::moveModules(const ModulePositions& modulePositions)
     }
   }
 }
+
+SCIRun::Dataflow::Networks::NetworkXMLHandle NetworkEditor::saveNetwork()
+{
+  return controller_->saveNetwork();
+}
+
+void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml)
+{
+  controller_->loadNetwork(xml);
+}
