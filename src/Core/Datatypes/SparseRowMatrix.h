@@ -27,82 +27,51 @@
 */
 
 
-#ifndef CORE_DATATYPES_MATRIX_IO_H
-#define CORE_DATATYPES_MATRIX_IO_H 
+#ifndef CORE_DATATYPES_SPARSE_MATRIX_H
+#define CORE_DATATYPES_SPARSE_MATRIX_H 
 
 #include <Core/Datatypes/Matrix.h>
-#include <vector>
-#include <ostream>
-#include <istream>
+#include <Eigen/SparseCore>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
   template <typename T>
-  std::ostream& operator<<(std::ostream& o, const DenseMatrixGeneric<T>& m)
+  class SparseRowMatrixGeneric : public MatrixBase<T>, public Eigen::SparseMatrix<T, Eigen::RowMajor>
   {
-    //TODO!!
-    //o << static_cast<DenseMatrixGeneric<T>::Base>(m);
-    for (int i = 0; i < m.rows(); ++i)
+  public:
+    typedef T value_type;
+    typedef SparseRowMatrixGeneric<T> this_type;
+    typedef Eigen::SparseMatrix<T, Eigen::RowMajor> Base;
+
+    //TODO: need C++11
+    //using Base::Base;
+
+    SparseRowMatrixGeneric() : Base() {}
+    SparseRowMatrixGeneric(int nrows, int ncols) : Base(nrows, ncols) {}
+
+    // This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
+    template<typename OtherDerived>
+    SparseRowMatrixGeneric(const Eigen::SparseMatrixBase<OtherDerived>& other)
+      : Base(other)
+    { }
+
+    // This method allows you to assign Eigen expressions to SparseRowMatrixGeneric
+    template<typename OtherDerived>
+    SparseRowMatrixGeneric& operator=(const Eigen::SparseMatrixBase<OtherDerived>& other)
     {
-      for (int j = 0; j < m.cols(); ++j)
-      {
-        o << m(i,j) << " ";
-      }
-      o << "\n";
-    }
-    return o;
-  }
-
-  template <typename T>
-  std::istream& operator>>(std::istream& istr, DenseMatrixGeneric<T>& m)
-  {
-    std::vector<std::vector<T> > values;
-
-    std::string line;
-
-    while (!std::getline(istr, line, '\n').eof()) 
-    {
-      std::istringstream reader(line);
-
-      std::vector<T> lineData;
-
-      while(!reader.eof()) 
-      {
-        T val;
-        reader >> val;
-
-        if(reader.fail())
-          break;
-
-        lineData.push_back(val);
-      }
-
-      if (!lineData.empty())
-        values.push_back(lineData);
+      this->Base::operator=(other);
+      return *this;
     }
 
-    m.resize(values.size(), values[0].size());
-    m.setZero();
-    for (int i = 0; i < m.rows(); ++i)
+    virtual SparseRowMatrixGeneric* clone() const 
     {
-      for (int j = 0; j < m.cols(); ++j)
-      {
-        m(i,j) = values[i][j];
-      }
+      return new SparseRowMatrixGeneric(*this);
     }
+  };
 
-    return istr;
-  }
-
-  template <typename T>
-  std::string matrix_to_string(const T& m)
-  {
-    std::ostringstream o;
-    o << m;
-    return o.str();
-  }
+  typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
 
 }}}
 

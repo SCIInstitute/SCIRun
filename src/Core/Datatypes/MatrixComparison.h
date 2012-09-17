@@ -31,6 +31,8 @@
 #define CORE_DATATYPES_MATRIX_COMPARISON_H 
 
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
 namespace SCIRun {
@@ -59,6 +61,36 @@ namespace Datatypes {
 
   template <typename T>
   bool operator!=(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
+  {
+    return !(lhs == rhs);
+  }
+
+
+  template <typename T>
+  bool operator==(const SparseRowMatrixGeneric<T>& lhs, const SparseRowMatrixGeneric<T>& rhs)
+  {
+    if (lhs.rows() != rhs.rows())
+      return false;
+    if (lhs.cols() != rhs.cols())
+      return false;
+
+    for (int k = 0; k < lhs.outerSize(); ++k)
+    {
+      typename SparseRowMatrixGeneric<T>::InnerIterator it1(lhs,k);
+      typename SparseRowMatrixGeneric<T>::InnerIterator it2(rhs,k);
+      for (; it1 && it2; ++it1, ++it2)
+      {
+        if (it1.index() != it2.index())
+          return false;
+        if (it1.value() != it2.value())
+          return false;
+      }
+    }
+    return true;
+  }
+
+  template <typename T>
+  bool operator!=(const SparseRowMatrixGeneric<T>& lhs, const SparseRowMatrixGeneric<T>& rhs)
   {
     return !(lhs == rhs);
   }

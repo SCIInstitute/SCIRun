@@ -28,122 +28,146 @@
 
 #include <gtest/gtest.h>
 
-#include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Core::Datatypes;
-using namespace TestUtils;
+//using namespace TestUtils;
+
+namespace
+{
+  SparseRowMatrix matrix1()
+  {
+    SparseRowMatrix m(3,4);
+    m.insert(0,0) = 1;
+    m.insert(1,2) = -2;
+    m.insert(2,3) = 0.5;
+    return m;
+  }
+}
 
 #define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
 
-TEST(DenseMatrixTest, CanCreateBasicMatrix)
+
+
+TEST(SparseRowMatrixTest, CanCreateBasicMatrix)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
   PRINT_MATRIX(m);
 }
 
-TEST(DenseMatrixTest, CanPrintInLegacyFormat)
+TEST(SparseRowMatrixTest, CanPrintInLegacyFormat)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
   std::string legacy = matrix_to_string(0.5 * m);
   std::cout << legacy << std::endl;
-  EXPECT_EQ("  0 0.5   1\n1.5   2 2.5\n  3 3.5   4", legacy);
+  EXPECT_EQ("0.5 0 0 0 \n0 0 -1 0 \n0 0 0 0.25 \n", legacy);
 }
 
-TEST(DenseMatrixTest, CanDetermineSize)
+TEST(SparseRowMatrixTest, CanDetermineSize)
 {
-  DenseMatrix m(matrixNonSquare());
+  SparseRowMatrix m(matrix1());
   EXPECT_EQ(3, m.rows());
   EXPECT_EQ(4, m.cols());
 }
 
-TEST(DenseMatrixTest, CanCopyConstruct)
+TEST(SparseRowMatrixTest, CanCopyConstruct)
 {
-  DenseMatrix m(matrixNonSquare());
-  DenseMatrix m2(m);
+  SparseRowMatrix m(matrix1());
+  SparseRowMatrix m2(m);
   EXPECT_EQ(m, m2);
-  m(1,2) += 1;
+  m.coeffRef(1,2) += 1;
+  PRINT_MATRIX(m);
+  PRINT_MATRIX(m2);
   EXPECT_NE(m, m2);
 }
 
-TEST(DenseMatrixTest, CanAssign)
+TEST(SparseRowMatrixTest, CanAssign)
 {
-  DenseMatrix m(matrixNonSquare());
+  SparseRowMatrix m(matrix1());
   
-  DenseMatrix m2;
+  SparseRowMatrix m2;
   EXPECT_NE(m, m2);
   m2 = m;
   EXPECT_EQ(m, m2);
-  m(1,2) += 1;
+  m.coeffRef(1,2) += 1;
   EXPECT_NE(m, m2);
 }
 
-TEST(DenseMatrixUnaryOperationTests, CanNegate)
+TEST(SparseRowMatrixUnaryOperationTests, CanNegate)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(-m);
 
-  DenseMatrix n = - -m;
+  SparseRowMatrix n = - -m;
   EXPECT_EQ(m, n);
-  EXPECT_EQ(m + (-m), Zero);
+  //EXPECT_EQ(m + (-m), Zero);
+  EXPECT_TRUE(false);
 }
 
-TEST(DenseMatrixUnaryOperationTests, CanScalarMultiply)
+TEST(SparseRowMatrixUnaryOperationTests, CanScalarMultiply)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(2*m);
   PRINT_MATRIX(m*2);
-  EXPECT_EQ(2*m, m*2);
+  SparseRowMatrix x = 2*m;
+  SparseRowMatrix y = m*2;
+  EXPECT_EQ(x,y);
 }
 
-TEST(DenseMatrixUnaryOperationTests, CanTranspose)
+TEST(SparseRowMatrixUnaryOperationTests, CanTranspose)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m.transpose());
 
-  EXPECT_EQ(m, m.transpose().transpose());
+  SparseRowMatrix mtt = m.transpose().transpose();
+  EXPECT_EQ(m,mtt);
 }
 
-TEST(DenseMatrixBinaryOperationTests, CanMultiply)
+TEST(SparseRowMatrixBinaryOperationTests, CanMultiply)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
 
   PRINT_MATRIX(m);
-  PRINT_MATRIX(m * m);
-  EXPECT_EQ(Zero * m, Zero);
+  PRINT_MATRIX(m * m.transpose());
+  //EXPECT_EQ(Zero * m, Zero);
+  EXPECT_TRUE(false);
 }
 
-TEST(DenseMatrixBinaryOperationTests, CanAdd)
+TEST(SparseRowMatrixBinaryOperationTests, CanAdd)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m + m);
-  EXPECT_EQ(m + m, 2*m);
+  SparseRowMatrix m2a = m + m;
+  SparseRowMatrix m2b = 2*m;
+  EXPECT_EQ(m2a, m2b);
 }
 
-TEST(DenseMatrixBinaryOperationTests, CanSubtract)
+TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
 {
-  DenseMatrix m(matrix1());
+  SparseRowMatrix m(matrix1());
 
   PRINT_MATRIX(m);
   PRINT_MATRIX(m - m);
-  EXPECT_EQ(m - m, Zero);
+  //EXPECT_EQ(m - m, Zero);
+  EXPECT_TRUE(false);
 }
 
 //TODO: compare to v4.
-TEST(DenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
-{
-  DenseMatrix sum = matrix1() + matrixNonSquare();
-  std::cout << sum.rows() << std::endl;
-  std::cout << sum.cols() << std::endl;
-  PRINT_MATRIX(sum);
-}
+//TEST(SparseRowMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
+//{
+//  SparseRowMatrix sum = matrix1() + matrix1();
+//  std::cout << sum.rows() << std::endl;
+//  std::cout << sum.cols() << std::endl;
+//  PRINT_MATRIX(sum);
+//}

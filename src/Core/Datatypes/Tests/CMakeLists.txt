@@ -32,6 +32,7 @@ SET(Core_Datatypes_Tests_SRCS
   GeometryTests.cc
   MatrixTests.cc
   ScalarTests.cc
+  SparseRowMatrixTests.cc
   StringTests.cc
 )
 

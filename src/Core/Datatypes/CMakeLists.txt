@@ -43,6 +43,7 @@ SET(Core_Datatypes_HEADERS
   MatrixIO.h
   Scalar.h
   Share.h
+  SparseRowMatrix.h
   String.h
 )
 

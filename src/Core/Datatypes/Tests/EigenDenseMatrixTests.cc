@@ -81,7 +81,7 @@ TEST(EigenDenseMatrixTest, CanDetermineSize)
   EXPECT_EQ(4, m.cols());
 }
 
-TEST(EigenDenseMatrixTest, CanCopyConstrunt)
+TEST(EigenDenseMatrixTest, CanCopyConstruct)
 {
   DenseMatrix m(matrixNonSquare());
   DenseMatrix m2(m);
