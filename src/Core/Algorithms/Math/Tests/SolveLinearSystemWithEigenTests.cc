@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 
 #include <fstream>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -37,14 +37,31 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-namespace
+//namespace
+//{
+//  DenseMatrixHandle matrix1a()
+//  {
+//    DenseMatrixHandle m(new DenseMatrix(3, 3));
+//    for (int i = 0; i < m->rows(); ++ i)
+//      for (int j = 0; j < m->cols(); ++ j)
+//        (*m)(i, j) = (3.0 * i*i - 2*j*j + 2 + (i == j ? 1 : 0))/1;
+//    return m;
+//  }
+//}
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
 {
-  DenseMatrixHandle matrix1a()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 4));
-    for (size_t i = 0; i < m->rows(); ++ i)
-      for (size_t j = 0; j < m->cols(); ++ j)
-        (*m)(i, j) = 3.0 * i + j - 5;
-    return m;
-  }
+  DenseMatrix m1(3,3);
+  m1 << 1,2,3, 
+    -3,-2,-1,
+    0,0,1;
+  std::cout << m1 << std::endl;
+
+  auto det = m1.determinant();
+  std::cout << det << std::endl;
+
+  auto inv = m1.inverse();
+  std::cout << inv << std::endl;
+
+  EXPECT_TRUE(false);
 }

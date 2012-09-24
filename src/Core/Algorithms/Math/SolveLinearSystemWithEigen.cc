@@ -26,22 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Core::Algorithms::Math;
-
-ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
-{
-  if (!input)
-    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
-
-  const std::string type = typeid(*input).name();
-
-  return Outputs(type, 
-    input->rows(), 
-    input->cols(), 
-    input->rows() * input->cols(), 
-    input->minCoeff(), 
-    input->maxCoeff());
-}
+//
+//ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
+//{
+//  if (!input)
+//    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
+//
+//  const std::string type = typeid(*input).name();
+//
+//  return Outputs(type, 
+//    input->rows(), 
+//    input->cols(), 
+//    input->rows() * input->cols(), 
+//    input->minCoeff(), 
+//    input->maxCoeff());
+//}

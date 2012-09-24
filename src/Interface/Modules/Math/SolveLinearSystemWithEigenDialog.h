@@ -39,24 +39,24 @@ namespace SCIRun {
 namespace Gui {
   
   //TODO DAN
-
-class SCISHARE CreateMatrixDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::CreateMatrix
-{
-	Q_OBJECT
-	
-public:
-  CreateMatrixDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual int moduleExecutionTime();
-  virtual void pull();
-
-private Q_SLOTS:
-  void pushMatrixToState();
-  //void saveFile();
-};
+//
+//class SCISHARE CreateMatrixDialog : public ModuleDialogGeneric, 
+//  //public SCIRun::State::SendScalarState, 
+//  public Ui::CreateMatrix
+//{
+//	Q_OBJECT
+//	
+//public:
+//  CreateMatrixDialog(const std::string& name, 
+//    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+//    QWidget* parent = 0);
+//  virtual int moduleExecutionTime();
+//  virtual void pull();
+//
+//private Q_SLOTS:
+//  void pushMatrixToState();
+//  //void saveFile();
+//};
 
 }
 }

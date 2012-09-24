@@ -46,6 +46,29 @@ namespace Datatypes {
   typedef boost::shared_ptr<DenseMatrix> DenseMatrixHandle;
   typedef boost::shared_ptr<const DenseMatrix> DenseMatrixConstHandle;
 
+  template <typename T>
+  class DenseColumnMatrixGeneric;
+
+  typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
+
+  typedef boost::shared_ptr<DenseColumnMatrix> DenseColumnMatrixHandle;
+  typedef boost::shared_ptr<const DenseColumnMatrix> DenseColumnMatrixConstHandle;
+
+  template <typename T>
+  class SparseRowMatrixGeneric;
+
+  typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
+
+  typedef boost::shared_ptr<SparseRowMatrix> SparseRowMatrixHandle;
+  typedef boost::shared_ptr<const SparseRowMatrix> SparseRowMatrixConstHandle;
+
+  //template <typename T>
+  //class DenseColumnMatrixGeneric;
+
+  //typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
+
+  //typedef boost::shared_ptr<DenseColumnMatrix> DenseColumnMatrixHandle;
+  //typedef boost::shared_ptr<const DenseColumnMatrix> DenseColumnMatrixConstHandle;
 }}}
 
 

@@ -43,25 +43,23 @@ namespace Datatypes {
   public:
     typedef T value_type;
     typedef DenseMatrixGeneric<T> this_type;
-    typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor | Eigen::AutoAlign> Base;
+    typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor | Eigen::AutoAlign> EigenBase;
 
-    //TODO: need C++11
-    //using Base::Base;
-
-    DenseMatrixGeneric() : Base() {}
-    DenseMatrixGeneric(size_t nrows, size_t ncols) : Base(nrows, ncols) {}
+    //TODO: don't like this default ctor, since it doesn't act like a vector.
+    //DenseMatrixGeneric() : Base() {}
+    DenseMatrixGeneric(size_t nrows = 0, size_t ncols = 0) : EigenBase(nrows, ncols) {}
 
     // This constructor allows you to construct DenseMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     DenseMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
-      : Base(other)
+      : EigenBase(other)
     { }
 
     // This method allows you to assign Eigen expressions to DenseMatrixGeneric
     template<typename OtherDerived>
     DenseMatrixGeneric& operator=(const Eigen::MatrixBase<OtherDerived>& other)
     {
-      this->Base::operator=(other);
+      this->EigenBase::operator=(other);
       return *this;
     }
 

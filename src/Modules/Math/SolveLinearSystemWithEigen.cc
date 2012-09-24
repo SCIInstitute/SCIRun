@@ -27,8 +27,8 @@
 */
 
 #include <iostream>
-#include <Modules/Math/ReportMatrixInfo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Modules/Math/SolveLinearSystemWithEigen.h>
+#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
@@ -36,23 +36,23 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
-
-void ReportMatrixInfoModule::execute()
-{
-  DatatypeHandleOption input = get_input_handle(0);
-  if (!input)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
-  if (!matrix)
-  {
-    std::cout << "Matrix was null." << std::endl;
-    //TODO log error? send null? check standard practice.
-    return;
-  }
-
-  ReportMatrixInfoAlgorithm algo;
-  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  get_state()->setTransientValue("ReportedInfo", output);
-}
+//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
+//
+//void ReportMatrixInfoModule::execute()
+//{
+//  DatatypeHandleOption input = get_input_handle(0);
+//  if (!input)
+//    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
+//
+//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
+//  if (!matrix)
+//  {
+//    std::cout << "Matrix was null." << std::endl;
+//    //TODO log error? send null? check standard practice.
+//    return;
+//  }
+//
+//  ReportMatrixInfoAlgorithm algo;
+//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
+//  get_state()->setTransientValue("ReportedInfo", output);
+//}

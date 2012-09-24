@@ -41,9 +41,9 @@ namespace Math {
   class SCISHARE SolveLinearSystemWithEigenAlgorithm : public AlgorithmBase
   {
   public:
-    typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
-    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
-    typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
+    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseColumnMatrixConstHandle> Inputs;
+    typedef boost::tuple<double, int> Parameters;  
+    typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
   };
