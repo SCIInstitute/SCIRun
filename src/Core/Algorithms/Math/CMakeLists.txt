@@ -31,6 +31,7 @@ SET(Algorithms_Math_SRCS
   EvaluateLinearAlgebraUnary.cc
   EvaluateLinearAlgebraBinary.cc
   ReportMatrixInfo.cc
+  SolveLinearSystemWithEigen.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -39,6 +40,7 @@ SET(Algorithms_Math_HEADERS
   EvaluateLinearAlgebraBinary.h
   ReportMatrixInfo.h
   Share.h
+  SolveLinearSystemWithEigen.h
 )
 
 ADD_LIBRARY(Algorithms_Math 

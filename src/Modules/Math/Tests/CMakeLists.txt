@@ -32,6 +32,7 @@ SET(Modules_Math_Tests_SRCS
   EvaluateLinearAlgebraUnaryTests.cc
   EvaluateLinearAlgebraBinaryTests.cc
   MatrixCalculatorFunctionalTests.cc
+  SolveLinearSystemWithEigenTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

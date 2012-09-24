@@ -35,6 +35,7 @@ SET(Modules_Math_SRCS
   EvaluateLinearAlgebraBinaryState.cc
   ReportMatrixInfo.cc
   ReportMatrixInfoState.cc
+  SolveLinearSystemWithEigen.cc
 )
 
 SET(Modules_Math_HEADERS
@@ -47,6 +48,7 @@ SET(Modules_Math_HEADERS
   ReportMatrixInfo.h
   ReportMatrixInfoState.h
   Share.h
+  SolveLinearSystemWithEigen.h
 )
 
 ADD_LIBRARY(Modules_Math 
