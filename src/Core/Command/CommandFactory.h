@@ -29,6 +29,7 @@
 #ifndef CORE_COMMAND_COMMANDFACTORY_H
 #define CORE_COMMAND_COMMANDFACTORY_H
 
+#include <Core/Command/Command.h>
 #include <Core/Command/Share.h>
 
 namespace SCIRun
@@ -38,7 +39,6 @@ namespace SCIRun
     namespace GlobalCommands
     {
       class GlobalCommand;
-      enum Commands;
 
       class SCISHARE CommandFactory 
       {
