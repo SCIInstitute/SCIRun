@@ -33,6 +33,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <Eigen/Dense>
 
 namespace SCIRun {
 namespace Core {
@@ -49,7 +50,8 @@ namespace Datatypes {
   template <typename T>
   class DenseColumnMatrixGeneric;
 
-  typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
+  typedef Eigen::VectorXd DenseColumnMatrix;
+  //typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
 
   typedef boost::shared_ptr<DenseColumnMatrix> DenseColumnMatrixHandle;
   typedef boost::shared_ptr<const DenseColumnMatrix> DenseColumnMatrixConstHandle;

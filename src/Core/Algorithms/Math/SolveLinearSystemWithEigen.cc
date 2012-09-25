@@ -28,20 +28,22 @@
 
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Eigen/Sparse>
 
 using namespace SCIRun::Core::Algorithms::Math;
-//
-//ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
-//{
-//  if (!input)
-//    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
-//
-//  const std::string type = typeid(*input).name();
-//
-//  return Outputs(type, 
-//    input->rows(), 
-//    input->cols(), 
-//    input->rows() * input->cols(), 
-//    input->minCoeff(), 
-//    input->maxCoeff());
-//}
+using namespace SCIRun::Core::Datatypes;
+
+SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
+{
+  Eigen::ConjugateGradient<DenseMatrix::EigenBase> cg;
+  cg.compute(*input.get<0>());
+
+  if (cg.info() != Eigen::Success)
+    return SolveLinearSystemAlgorithm::Outputs();
+
+  cg.setTolerance(params.get<0>());
+  cg.setMaxIterations(params.get<1>());
+  auto x = cg.solve(*input.get<1>());
+  //TODO: move ctor
+  return SolveLinearSystemAlgorithm::Outputs(new DenseColumnMatrix(x));
+}

@@ -51,7 +51,7 @@ namespace
   }
 }
 
-TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
+TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWithEigenClasses)
 { 
   int n = 3;
   DenseMatrix m1(n,n);
@@ -106,4 +106,27 @@ cg.setMaxIterations(1);
   EXPECT_EQ(v, x);
 
   //EXPECT_TRUE(false);
+}
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
+{
+  int n = 3;
+  DenseMatrixHandle A(new DenseMatrix(n,n));
+  *A << 2,-1,0,
+    -1,2,-1,
+    0,-1,2;
+
+  DenseColumnMatrix v(n);
+  v << 1,2,3;
+  std::cout << "expected solution = \n" << v << std::endl;
+
+  DenseColumnMatrixHandle rhs(new DenseColumnMatrix(*A * v));
+  std::cout << "rhs = \n" << *rhs << std::endl;
+
+  SolveLinearSystemAlgorithm algo;
+
+  auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10));
+
+  ASSERT_TRUE(x);
+  EXPECT_EQ(v, *x);
 }
