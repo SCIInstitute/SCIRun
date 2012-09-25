@@ -37,6 +37,7 @@
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
+#include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
@@ -75,6 +76,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new MatrixAsVectorFieldDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ViewScene") != std::string::npos)
     return new ViewSceneDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SolveLinearSystem") != std::string::npos)
+    return new SolveLinearSystemDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, executionTime, parentToUse_);
 }

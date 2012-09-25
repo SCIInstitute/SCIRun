@@ -31,37 +31,79 @@
 #include <fstream>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
+#include <Eigen/Sparse>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-//namespace
-//{
-//  DenseMatrixHandle matrix1a()
-//  {
-//    DenseMatrixHandle m(new DenseMatrix(3, 3));
-//    for (int i = 0; i < m->rows(); ++ i)
-//      for (int j = 0; j < m->cols(); ++ j)
-//        (*m)(i, j) = (3.0 * i*i - 2*j*j + 2 + (i == j ? 1 : 0))/1;
-//    return m;
-//  }
-//}
+namespace
+{
+  void copyDenseToSparse(const DenseMatrix& from, SparseRowMatrix& to)
+  {
+    to.setZero();
+    for (int i = 0; i < from.rows(); ++i)
+      for (int j = 0; j < from.cols(); ++j)
+        if (fabs(from(i,j)) > 1e-10)
+          to.insert(i,j) = from(i,j);
+  }
+}
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
-{
-  DenseMatrix m1(3,3);
-  m1 << 1,2,3, 
-    -3,-2,-1,
-    0,0,1;
-  std::cout << m1 << std::endl;
+{ 
+  int n = 3;
+  DenseMatrix m1(n,n);
+  m1 << 2,-1,0,
+    -1,2,-1,
+    0,-1,2;
 
-  auto det = m1.determinant();
-  std::cout << det << std::endl;
+  using namespace Eigen;
+  VectorXd v(n);
+  v << 1,2,3;
+  std::cout << "expected solution = \n" << v << std::endl;
 
-  auto inv = m1.inverse();
-  std::cout << inv << std::endl;
+  auto rhs = m1*v;
+  std::cout << "rhs = \n" << rhs << std::endl;
+ 
+  VectorXd x(n);
+  x.setZero();
+  //SparseRowMatrix A(n,n);
+  //copyDenseToSparse(m1, A);
 
-  EXPECT_TRUE(false);
+  std::cout << "matrix to solve: \n" << m1 << std::endl;
+  
+  ConjugateGradient<DenseMatrix::EigenBase> cg;
+  cg.compute(m1);
+
+  ASSERT_TRUE(cg.info() == Success);
+
+  cg.setTolerance(1e-15);
+  x = cg.solve(rhs);
+
+  #if 0
+cg.setMaxIterations(1);
+  //x = VectorXd::Random(n);
+  int i = 0;
+  do {
+    //std::cout << "i = " << i << std::endl;
+    //std::cout << "guess\n" << x << std::endl;
+    x = cg.solveWithGuess(rhs, x);
+    //std::cout << "new guess\n" << x << std::endl;
+    //std::cout << "-------------" << std::endl;
+    
+    std::cout << i << " : " << cg.error() << std::endl;
+    ++i;
+  } while (cg.info() != Success && i < 2000);
+#endif
+
+  std::cout << "#iterations:     " << cg.iterations() << std::endl;
+  std::cout << "estimated error: " << cg.error()      << std::endl;
+
+  std::cout << x << std::endl;
+
+  EXPECT_EQ(v, x);
+
+  //EXPECT_TRUE(false);
 }

@@ -38,7 +38,7 @@ namespace Core {
 namespace Algorithms {
 namespace Math {
   
-  class SCISHARE SolveLinearSystemWithEigenAlgorithm : public AlgorithmBase
+  class SCISHARE SolveLinearSystemAlgorithm : public AlgorithmBase
   {
   public:
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseColumnMatrixConstHandle> Inputs;

@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
-#define MODULES_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
+#ifndef MODULES_MATH_SOLVELINEARSYSTEM_H
+#define MODULES_MATH_SOLVELINEARSYSTEM_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/Share.h>
@@ -36,12 +36,12 @@ namespace SCIRun {
 namespace Modules {
 namespace Math {
   
-  class SCISHARE SolveLinearSystemWithEigenModule : public SCIRun::Dataflow::Networks::Module,
+  class SCISHARE SolveLinearSystemModule : public SCIRun::Dataflow::Networks::Module,
     public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
-    SolveLinearSystemWithEigenModule();
+    SolveLinearSystemModule();
     virtual void execute();
     static std::string inputPort0Name() { return "Input"; }
   };

@@ -26,33 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Modules/Math/SolveLinearSystemWithEigen.h>
-#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
+#define INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Math;
-using namespace SCIRun::Dataflow::Networks;
+#include "Interface/Modules/Math/ui_SolveLinearSystemWithEigen.h"
+#include <boost/shared_ptr.hpp>
+#include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Math/Share.h>
 
-//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
-//
-//void ReportMatrixInfoModule::execute()
-//{
-//  DatatypeHandleOption input = get_input_handle(0);
-//  if (!input)
-//    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-//
-//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
-//  if (!matrix)
-//  {
-//    std::cout << "Matrix was null." << std::endl;
-//    //TODO log error? send null? check standard practice.
-//    return;
-//  }
-//
-//  ReportMatrixInfoAlgorithm algo;
-//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-//  get_state()->setTransientValue("ReportedInfo", output);
-//}
+namespace SCIRun {
+namespace Gui {
+  
+  //TODO DAN
+
+class SCISHARE SolveLinearSystemDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::SolveLinearSystem
+{
+	Q_OBJECT
+	
+public:
+  SolveLinearSystemDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual int moduleExecutionTime();
+  virtual void pull();
+
+private Q_SLOTS:
+  void pushMatrixToState();
+  //void saveFile();
+};
+
+}
+}
+
+#endif

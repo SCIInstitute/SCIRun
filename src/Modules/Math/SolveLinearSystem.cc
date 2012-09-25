@@ -26,40 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/CreateMatrixDialog.h>
-#include <Modules/Math/CreateMatrix.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#include <iostream>
+#include <Modules/Math/SolveLinearSystem.h>
+#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Gui;
-using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Dataflow::Networks;
 
-//CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
-//  QWidget* parent /* = 0 */)
-//  : ModuleDialogGeneric(state, parent)
-//{
-//  setupUi(this);
-//  setWindowTitle(QString::fromStdString(name));
-//  executeButton_->setEnabled(false);
-//  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
-//  
-//  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-//  //TODO: here is where to start on standardizing module dialog buttons.
-//  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
-//}
+//ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
 //
-//int CreateMatrixDialog::moduleExecutionTime()
+//void ReportMatrixInfoModule::execute()
 //{
-//  return 2000;
-//}
+//  DatatypeHandleOption input = get_input_handle(0);
+//  if (!input)
+//    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
 //
-//void CreateMatrixDialog::pushMatrixToState()
-//{
-//  state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
-//}
+//  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
+//  if (!matrix)
+//  {
+//    std::cout << "Matrix was null." << std::endl;
+//    //TODO log error? send null? check standard practice.
+//    return;
+//  }
 //
-//void CreateMatrixDialog::pull()
-//{
-//  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+//  ReportMatrixInfoAlgorithm algo;
+//  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
+//  get_state()->setTransientValue("ReportedInfo", output);
 //}

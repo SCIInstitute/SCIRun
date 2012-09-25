@@ -43,25 +43,25 @@ namespace Datatypes {
   public:
     typedef T value_type;
     typedef SparseRowMatrixGeneric<T> this_type;
-    typedef Eigen::SparseMatrix<T, Eigen::RowMajor> Base;
+    typedef Eigen::SparseMatrix<T, Eigen::RowMajor> EigenBase;
 
     //TODO: need C++11
     //using Base::Base;
 
-    SparseRowMatrixGeneric() : Base() {}
-    SparseRowMatrixGeneric(int nrows, int ncols) : Base(nrows, ncols) {}
+    SparseRowMatrixGeneric() : EigenBase() {}
+    SparseRowMatrixGeneric(int nrows, int ncols) : EigenBase(nrows, ncols) {}
 
     // This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     SparseRowMatrixGeneric(const Eigen::SparseMatrixBase<OtherDerived>& other)
-      : Base(other)
+      : EigenBase(other)
     { }
 
     // This method allows you to assign Eigen expressions to SparseRowMatrixGeneric
     template<typename OtherDerived>
     SparseRowMatrixGeneric& operator=(const Eigen::SparseMatrixBase<OtherDerived>& other)
     {
-      this->Base::operator=(other);
+      this->EigenBase::operator=(other);
       return *this;
     }
 

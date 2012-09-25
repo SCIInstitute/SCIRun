@@ -26,39 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATE_MATRIX_H
-#define INTERFACE_MODULES_CREATE_MATRIX_H
+#include <Interface/Modules/Math/SolveLinearSystemDialog.h>
+//#include <Modules/Math/CreateMatrix.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <QFileDialog>
 
-#include "Interface/Modules/Math/ui_CreateMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/Share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Modules::Math;
 
-namespace SCIRun {
-namespace Gui {
+SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  executeButton_->setEnabled(false);
+  //executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
-  //TODO DAN
-//
-//class SCISHARE CreateMatrixDialog : public ModuleDialogGeneric, 
-//  //public SCIRun::State::SendScalarState, 
-//  public Ui::CreateMatrix
-//{
-//	Q_OBJECT
-//	
-//public:
-//  CreateMatrixDialog(const std::string& name, 
-//    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-//    QWidget* parent = 0);
-//  virtual int moduleExecutionTime();
-//  virtual void pull();
-//
-//private Q_SLOTS:
-//  void pushMatrixToState();
-//  //void saveFile();
-//};
-
-}
+  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  //TODO: here is where to start on standardizing module dialog buttons.
+  //connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
 }
 
-#endif
+int SolveLinearSystemDialog::moduleExecutionTime()
+{
+  return 2000;
+}
+
+void SolveLinearSystemDialog::pushMatrixToState()
+{
+  //state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+}
+
+void SolveLinearSystemDialog::pull()
+{
+  //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+}
