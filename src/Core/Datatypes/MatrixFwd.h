@@ -40,6 +40,14 @@ namespace Core {
 namespace Datatypes {
 
   template <typename T>
+  class MatrixBase;
+
+  typedef MatrixBase<double> Matrix;
+
+  typedef boost::shared_ptr<Matrix> MatrixHandle;
+  typedef boost::shared_ptr<const Matrix> MatrixConstHandle;
+
+  template <typename T>
   class DenseMatrixGeneric;
 
   typedef DenseMatrixGeneric<double> DenseMatrix;
@@ -50,6 +58,7 @@ namespace Datatypes {
   template <typename T>
   class DenseColumnMatrixGeneric;
 
+  //TODO: make real class, inheriting from Eigen
   typedef Eigen::VectorXd DenseColumnMatrix;
   //typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
 

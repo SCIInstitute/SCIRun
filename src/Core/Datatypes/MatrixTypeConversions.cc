@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
-#define ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/Math/Share.h>
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-  
-  //TODO: this will be the base class of all the solvers. for now it will just contain the Eigen CG impl.
-  class SCISHARE SolveLinearSystemAlgorithm : public AlgorithmBase
-  {
-  public:
-    typedef boost::tuple<SCIRun::Core::Datatypes::MatrixConstHandle, SCIRun::Core::Datatypes::DenseColumnMatrixConstHandle> Inputs;
-    typedef boost::tuple<double, int> Parameters;  
-    typedef SCIRun::Core::Datatypes::DenseColumnMatrixConstHandle Outputs;
+DenseMatrixConstHandle matrix_cast::as_dense(const MatrixConstHandle& mh)
+{
+  return to<const DenseMatrix>(mh);
+}
 
-    Outputs run(const Inputs& input, const Parameters& params) const;
-  };
+SparseRowMatrixConstHandle matrix_cast::as_sparse(const MatrixConstHandle& mh)
+{
+  return to<const SparseRowMatrix>(mh);
+}
 
-}}}}
+bool matrix_is::dense(const MatrixConstHandle& mh) 
+{ 
+  return matrix_cast::as_dense(mh) != 0; 
+}
 
-#endif
+bool matrix_is::sparse(const MatrixConstHandle& mh) 
+{ 
+  return matrix_cast::as_sparse(mh) != 0; 
+}

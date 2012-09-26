@@ -130,3 +130,29 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
   ASSERT_TRUE(x);
   EXPECT_EQ(v, *x);
 }
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallSparseSystem)
+{
+  int n = 3;
+  DenseMatrix Adense(n,n);
+  Adense << 2,-1,0,
+    -1,2,-1,
+    0,-1,2;
+
+  SparseRowMatrixHandle A(new SparseRowMatrix(n,n));
+  copyDenseToSparse(Adense, *A);
+
+  DenseColumnMatrix v(n);
+  v << 1,2,3;
+  std::cout << "expected solution = \n" << v << std::endl;
+
+  DenseColumnMatrixHandle rhs(new DenseColumnMatrix(*A * v));
+  std::cout << "rhs = \n" << *rhs << std::endl;
+
+  SolveLinearSystemAlgorithm algo;
+
+  auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10));
+
+  ASSERT_TRUE(x);
+  EXPECT_EQ(v, *x);
+}

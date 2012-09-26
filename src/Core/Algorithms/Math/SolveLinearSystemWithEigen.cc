@@ -28,22 +28,54 @@
 
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/Sparse>
 
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
+namespace
+{
+  class SolveLinearSystemAlgorithmEigenCGImpl
+  {
+  public:
+    SolveLinearSystemAlgorithmEigenCGImpl(const DenseColumnMatrix& rhs, double tolerance, int maxIterations) : 
+        rhs_(rhs), tolerance_(tolerance), maxIterations_(maxIterations) {}
+
+    template <class MatrixType>
+    DenseColumnMatrix solveWithEigen(const MatrixType& lhs)
+    {
+      Eigen::ConjugateGradient<typename MatrixType::EigenBase> cg;
+      cg.compute(lhs);
+
+      if (cg.info() != Eigen::Success)
+        return DenseColumnMatrix();
+
+      cg.setTolerance(tolerance_);
+      cg.setMaxIterations(maxIterations_);
+      return cg.solve(rhs_);
+    }
+  private:
+    const DenseColumnMatrix& rhs_;
+    double tolerance_;
+    int maxIterations_;
+  };
+}
+
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
-  Eigen::ConjugateGradient<DenseMatrix::EigenBase> cg;
-  cg.compute(*input.get<0>());
-
-  if (cg.info() != Eigen::Success)
-    return SolveLinearSystemAlgorithm::Outputs();
-
-  cg.setTolerance(params.get<0>());
-  cg.setMaxIterations(params.get<1>());
-  auto x = cg.solve(*input.get<1>());
+  MatrixConstHandle A = input.get<0>();
+  
+  DenseColumnMatrix x;
+  SolveLinearSystemAlgorithmEigenCGImpl impl(*input.get<1>(), params.get<0>(), params.get<1>());
+  if (matrix_is::dense(A))
+    x = impl.solveWithEigen(*matrix_cast::as_dense(A));
+  else if (matrix_is::sparse(A))
+    x = impl.solveWithEigen(*matrix_cast::as_sparse(A));
   //TODO: move ctor
-  return SolveLinearSystemAlgorithm::Outputs(new DenseColumnMatrix(x));
+  if (x.size())
+    return SolveLinearSystemAlgorithm::Outputs(new DenseColumnMatrix(x));
+  else
+    return SolveLinearSystemAlgorithm::Outputs();
 }
