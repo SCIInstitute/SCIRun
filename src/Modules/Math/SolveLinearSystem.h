@@ -43,7 +43,9 @@ namespace Math {
   public:
     SolveLinearSystemModule();
     virtual void execute();
-    static std::string inputPort0Name() { return "Input"; }
+    static std::string inputPort0Name() { return "Matrix"; }
+    static std::string inputPort1Name() { return "RHS"; }
+    static std::string outputPort0Name() { return "Solution"; }
   };
 }}}
 

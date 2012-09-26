@@ -43,6 +43,7 @@
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
+#include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/String/CreateString.h>
@@ -178,6 +179,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     description.output_ports_ += CreateMatrixModule::outputPortDescription(CreateMatrixModule::outputPort0Name());
     description.maker_ = boost::factory<CreateMatrixModule*>();
+  }
+  else if (name.find("SolveLinearSystem") != std::string::npos)
+  {
+    description.input_ports_ = SolveLinearSystemModule::inputPortDescription(SolveLinearSystemModule::inputPort0Name(), SolveLinearSystemModule::inputPort1Name());
+    description.output_ports_ += SolveLinearSystemModule::outputPortDescription(SolveLinearSystemModule::outputPort0Name());
+    description.maker_ = boost::factory<SolveLinearSystemModule*>();
   }
   else if (name.find("CreateString") != std::string::npos)
   {
