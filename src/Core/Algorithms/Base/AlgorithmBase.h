@@ -31,6 +31,7 @@
 
 #include <string>
 #include <boost/variant.hpp>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Algorithms/Base/Share.h>
 
 namespace SCIRun {
@@ -65,11 +66,29 @@ namespace Algorithms {
     //etc
   };
 
-  class SCISHARE AlgorithmBase
+  class SCISHARE AlgorithmLogger
+  {
+  public:
+    AlgorithmLogger();
+    ~AlgorithmLogger();
+    void setLogger(Core::Logging::LoggerHandle logger);
+
+    //! functions for the algorithm, so it can forward errors if needed
+    void error(const std::string& error) const;
+    void warning(const std::string& warning) const;
+    void remark(const std::string& remark) const;
+    void status(const std::string& status) const;
+  private:
+    Core::Logging::LoggerHandle logger_;
+    Core::Logging::LoggerHandle defaultLogger_;
+  };
+
+  //template <class Input, class Output, class Parameters>
+  class SCISHARE AlgorithmBase : public AlgorithmLogger
   {
   public:
     virtual ~AlgorithmBase();
-  
+
     /*
       TODO idea: make it mockable
   
@@ -79,6 +98,9 @@ namespace Algorithms {
       Input: tuple/heterogeneous vector of Datatypes
       Output: tuple of Datatypes, possibly delay-executed
     */
+
+    //virtual boost::optional<Output> run(const Input& input, const Parameters& params) const = 0;
+
   };
 
 }}}

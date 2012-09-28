@@ -26,8 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Core/Datatypes/Datatype.h>
+#include <iostream>
+#include <Core/Logging/Logger.h>
 
-using namespace SCIRun::Core::Datatypes;
-//TODO 
+using namespace SCIRun::Core::Logging;
+
+LoggerInterface::~LoggerInterface() {}
+

@@ -206,7 +206,6 @@ void ModuleWidget::execute()
 {
   std::cout << "Executing Module: " << moduleId_ << std::endl;
 
-  //std::cout << "Will sleep for " << executionTime_ << " milliseconds." << std::endl;
   {
     ModuleExecutionRunner runner(this);
     runner();

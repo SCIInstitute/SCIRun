@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,32 +27,49 @@
 */
 
 
-#ifndef CORE_LOGGING_LOGGER_H
-#define CORE_LOGGING_LOGGER_H 
 
-#include <string>
-#include <Core/Logging/Share.h>
+/*
+ *  ProgressReporter.cc
+ *
+ *  Written by:
+ *   Yarden Livnat
+ *   Department of Computer Science
+ *   University of Utah
+ *   Jul 2003
+ *
+ */
 
-namespace SCIRun 
+#include <Core/Utils/ProgressReporter.h>
+
+using namespace SCIRun::Core::Utility;
+
+ProgressReporter::ProgressReporter() :
+  progressCurrent_(/*"ProgressReporter::progress_amount_", */0),
+  progressMax_(100)
 {
-  namespace Core
-  {
-    namespace Logging
-    {
-      class SCISHARE LoggerInterface 
-      {
-      public:
-        virtual ~LoggerInterface();
-
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
-      };
-
-    }
-  }
 }
 
+ProgressReporter::~ProgressReporter()
+{
+}
 
-#endif
+void
+ProgressReporter::report_start(const std::string&)
+{
+}
+
+void
+ProgressReporter::report_end()
+{
+}
+
+void
+ProgressReporter::update_progress(double)
+{
+}
+
+void
+ProgressReporter::update_progress(int, int)
+{
+}
+

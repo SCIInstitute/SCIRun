@@ -27,32 +27,52 @@
 */
 
 
-#ifndef CORE_LOGGING_LOGGER_H
-#define CORE_LOGGING_LOGGER_H 
+
+/*
+ *  ProgressReporter.h:
+ *
+ *  Written by:
+ *   Yarden Livnat
+ *   Department of Computer Science
+ *   University of Utah
+ *   July 2003
+ *
+ */
+
+
+#ifndef SCIRun_Core_Util_ProgressReporter_h
+#define SCIRun_Core_Util_ProgressReporter_h
+
 
 #include <string>
-#include <Core/Logging/Share.h>
 
-namespace SCIRun 
-{
-  namespace Core
-  {
-    namespace Logging
-    {
-      class SCISHARE LoggerInterface 
+#include <Core/Utils/Share.h>
+
+namespace SCIRun {
+  namespace Core {
+    namespace Utility {
+
+      class SCISHARE ProgressReporter 
       {
-      public:
-        virtual ~LoggerInterface();
+        public:
+          ProgressReporter();
+          virtual ~ProgressReporter();
 
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
+          virtual void report_start(const std::string& tag);
+          virtual void report_end();
+
+          // Execution time progress.
+          // Percent is number between 0.0-1.0
+          virtual void update_progress(double percent);
+          virtual void update_progress(int current, int max);
+
+        protected:
+          //TODO: replace with C++11 atomic<int>?
+          //AtomicCounter         progress_current_;
+          int progressCurrent_;
+          int progressMax_;
       };
 
-    }
-  }
-}
-
+}}}
 
 #endif

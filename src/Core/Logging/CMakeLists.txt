@@ -27,16 +27,23 @@
 #
 
 SET(Core_Logging_SRCS
+  ConsoleLogger.cc
   Logger.cc
 )
 
 SET(Core_Logging_HEADERS
+  ConsoleLogger.h
   Logger.h
+  LoggerFwd.h
 )
 
 ADD_LIBRARY(Core_Logging 
 ${Core_Logging_HEADERS}
 ${Core_Logging_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Logging)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
 

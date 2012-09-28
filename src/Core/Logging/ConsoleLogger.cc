@@ -26,33 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
+#include <Core/Logging/ConsoleLogger.h>
 
-#ifndef CORE_LOGGING_LOGGER_H
-#define CORE_LOGGING_LOGGER_H 
+using namespace SCIRun::Core::Logging;
 
-#include <string>
-#include <Core/Logging/Share.h>
-
-namespace SCIRun 
+void ConsoleLogger::error(const std::string& msg)
 {
-  namespace Core
-  {
-    namespace Logging
-    {
-      class SCISHARE LoggerInterface 
-      {
-      public:
-        virtual ~LoggerInterface();
-
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
-      };
-
-    }
-  }
+  std::cerr << "Error: " << msg << std::endl;
 }
 
+void ConsoleLogger::warning(const std::string& msg)
+{
+  std::cerr << "Warning: " << msg << std::endl;
+}
 
-#endif
+void ConsoleLogger::remark(const std::string& msg)
+{
+  std::cerr << "Remark: " << msg << std::endl;
+}
+
+void ConsoleLogger::status(const std::string& msg)
+{
+  std::cerr << msg << std::endl;
+}

@@ -28,8 +28,10 @@
 
 #include <iostream>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Logging/ConsoleLogger.h>
 
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 AlgorithmBase::~AlgorithmBase() {}
 
@@ -49,4 +51,36 @@ std::string AlgorithmParameter::getString() const
 {
   const std::string* v = boost::get<std::string>(&value_);
   return v ? *v : "";
+}
+
+AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
+{
+  logger_ = defaultLogger_;
+}
+
+AlgorithmLogger::~AlgorithmLogger() {}
+
+void AlgorithmLogger::setLogger(LoggerHandle logger)
+{
+  logger_ = logger;
+}
+
+void AlgorithmLogger::error(const std::string& error) const
+{
+  logger_->error(error);
+}
+
+void AlgorithmLogger::warning(const std::string& warning) const
+{
+  logger_->warning(warning);
+}
+
+void AlgorithmLogger::remark(const std::string& remark) const
+{
+  logger_->remark(remark);
+}
+
+void AlgorithmLogger::status(const std::string& status) const
+{
+  logger_->status(status);
 }

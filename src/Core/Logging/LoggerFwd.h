@@ -27,11 +27,10 @@
 */
 
 
-#ifndef CORE_LOGGING_LOGGER_H
-#define CORE_LOGGING_LOGGER_H 
+#ifndef CORE_LOGGING_LOGGERFWD_H
+#define CORE_LOGGING_LOGGERFWD_H 
 
-#include <string>
-#include <Core/Logging/Share.h>
+#include <boost/shared_ptr.hpp>
 
 namespace SCIRun 
 {
@@ -39,17 +38,8 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class SCISHARE LoggerInterface 
-      {
-      public:
-        virtual ~LoggerInterface();
-
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
-      };
-
+      class LoggerInterface;
+      typedef boost::shared_ptr<LoggerInterface> LoggerHandle;
     }
   }
 }

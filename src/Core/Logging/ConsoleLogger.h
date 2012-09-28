@@ -27,10 +27,10 @@
 */
 
 
-#ifndef CORE_LOGGING_LOGGER_H
-#define CORE_LOGGING_LOGGER_H 
+#ifndef CORE_LOGGING_CONSOLELOGGER_H
+#define CORE_LOGGING_CONSOLELOGGER_H 
 
-#include <string>
+#include <Core/Logging/Logger.h>
 #include <Core/Logging/Share.h>
 
 namespace SCIRun 
@@ -39,15 +39,13 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class SCISHARE LoggerInterface 
+      class SCISHARE ConsoleLogger : public LoggerInterface 
       {
       public:
-        virtual ~LoggerInterface();
-
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
+        virtual void error(const std::string& msg);
+        virtual void warning(const std::string& msg);
+        virtual void remark(const std::string& msg);
+        virtual void status(const std::string& msg);
       };
 
     }

@@ -28,11 +28,13 @@
 
 SET(Core_Utils_SRCS
   Singleton.cc
+  ProgressReporter.cc
 )
 
 SET(Core_Utils_HEADERS
   Singleton.h
   Share.h
+  ProgressReporter.h
 )
 
 ADD_LIBRARY(Core_Utils 
@@ -43,8 +45,8 @@ ${Core_Utils_HEADERS})
 #${Boost_LIBRARIES}
 #)
 
-#IF(BUILD_SHARED_LIBS)
-#  ADD_DEFINITIONS(-DBUILD_Core_Application)
-#ENDIF(BUILD_SHARED_LIBS)
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Utils)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
