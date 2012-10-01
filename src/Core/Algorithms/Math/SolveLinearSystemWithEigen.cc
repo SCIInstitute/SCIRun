@@ -69,6 +69,7 @@ namespace
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
+  //TODO: make convenience macros for these common error conditions (also to increase readability)
   MatrixConstHandle A = input.get<0>();
   if (!A)
     BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null input matrix"));
