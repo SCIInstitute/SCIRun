@@ -27,11 +27,13 @@
 
 
 SET(Core_Utils_SRCS
+  Exception.cc
   Singleton.cc
   ProgressReporter.cc
 )
 
 SET(Core_Utils_HEADERS
+  Exception.h
   Singleton.h
   Share.h
   ProgressReporter.h

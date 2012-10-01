@@ -37,22 +37,23 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms;
 
 namespace
 {
   DenseMatrix matrix1()
   {
     DenseMatrix m (3, 3);
-    for (size_t i = 0; i < m.rows(); ++ i)
-      for (size_t j = 0; j < m.cols(); ++ j)
+    for (int i = 0; i < m.rows(); ++ i)
+      for (int j = 0; j < m.cols(); ++ j)
         m(i, j) = 3.0 * i + j + 1;
     return m;
   }
   DenseMatrix matrixNonSquare()
   {
     DenseMatrix m (3, 4);
-    for (size_t i = 0; i < m.rows(); ++ i)
-      for (size_t j = 0; j < m.cols(); ++ j)
+    for (int i = 0; i < m.rows(); ++ i)
+      for (int j = 0; j < m.cols(); ++ j)
         m(i, j) = 3.5 * i + j;
     return m;
   }
@@ -92,4 +93,23 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
   DenseMatrixConstHandle roundTrip = read.run(filename);
 
   EXPECT_EQ(*m1, *roundTrip);
+}
+
+TEST(WriteMatrixAlgorithmTest, ThrowsWithNullInput)
+{
+  WriteMatrixAlgorithm algo;
+  EXPECT_THROW(algo.run(DenseMatrixHandle(), "a.txt"), AlgorithmInputException);
+}
+
+TEST(WriteMatrixAlgorithmTest, CheckBoostExceptionLoggingCapability)
+{
+  try
+  {
+    WriteMatrixAlgorithm algo;
+    algo.run(DenseMatrixHandle(), "a.txt");
+  }
+  catch (boost::exception& e)
+  {
+    std::cout << boost::diagnostic_information(e) << std::endl; 	
+  }
 }

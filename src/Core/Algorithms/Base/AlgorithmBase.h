@@ -30,8 +30,10 @@
 #define ALGORITHMS_BASE_ALGORITHMBASE_H
 
 #include <string>
+#include <stdexcept>
 #include <boost/variant.hpp>
 #include <Core/Logging/LoggerFwd.h>
+#include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/Share.h>
 
 namespace SCIRun {
@@ -99,8 +101,13 @@ namespace Algorithms {
       Output: tuple of Datatypes, possibly delay-executed
     */
 
-    //virtual boost::optional<Output> run(const Input& input, const Parameters& params) const = 0;
+    //virtual Output run(const Input& input, const Parameters& params) const = 0;
 
+  };
+
+  //TODO: discuss.
+  struct SCISHARE AlgorithmInputException : virtual ExceptionBase
+  {
   };
 
 }}}

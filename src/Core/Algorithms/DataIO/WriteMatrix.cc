@@ -42,8 +42,7 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 {
   if (!inputMatrix)
   {
-    error("Cannot write null matrix.");
-    return;
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Cannot write null matrix."));
   }
 
   std::ofstream writer(filename.c_str());
