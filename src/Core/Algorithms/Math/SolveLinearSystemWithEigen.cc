@@ -34,6 +34,8 @@
 
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core;
 
 namespace
 {
@@ -50,7 +52,9 @@ namespace
       cg.compute(lhs);
 
       if (cg.info() != Eigen::Success)
-        return DenseColumnMatrix();
+        BOOST_THROW_EXCEPTION(AlgorithmInputException() 
+          << LinearAlgebraErrorMessage("Conjugate gradient initialization was unsuccessful")
+          << EigenComputationInfo(cg.info()));
 
       cg.setTolerance(tolerance_);
       cg.setMaxIterations(maxIterations_);
@@ -66,9 +70,31 @@ namespace
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
   MatrixConstHandle A = input.get<0>();
+  if (!A)
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null input matrix"));
+
+  auto b = input.get<1>();
+  if (!b)
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null rhs vector"));
   
+  double tolerance = params.get<0>();
+  if (tolerance < 0)
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << DoubleOutOfRangeInfo(
+      DoubleOutOfRangeInfo::value_type(
+        std::string("Tolerance out of range!"), 
+        tolerance, 
+        boost::numeric::interval<double>(0, std::numeric_limits<double>::infinity()))));
+
+  int maxIterations = params.get<1>();
+  if (maxIterations < 0)
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << IntOutOfRangeInfo(
+      IntOutOfRangeInfo::value_type(
+        std::string("Max iterations out of range!"), 
+        maxIterations, 
+         boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity()))));
+
+  SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
   DenseColumnMatrix x;
-  SolveLinearSystemAlgorithmEigenCGImpl impl(*input.get<1>(), params.get<0>(), params.get<1>());
   if (matrix_is::dense(A))
     x = impl.solveWithEigen(*matrix_cast::as_dense(A));
   else if (matrix_is::sparse(A))

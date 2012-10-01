@@ -38,6 +38,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 namespace
 {
@@ -155,4 +156,67 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallSparseSystem)
 
   ASSERT_TRUE(x);
   EXPECT_EQ(v, *x);
+}
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNullMatrix)
+{
+  int n = 3;
+  DenseMatrixHandle A;
+
+  DenseColumnMatrixHandle rhs(new DenseColumnMatrix(3));
+
+  SolveLinearSystemAlgorithm algo;
+
+  EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10)), AlgorithmInputException);
+}
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNullRHS)
+{
+  int n = 3;
+  DenseMatrixHandle A(new DenseMatrix(n,n));
+  *A << 2,-1,0,
+    -1,2,-1,
+    0,-1,2;
+
+  DenseColumnMatrixHandle rhs;
+
+  SolveLinearSystemAlgorithm algo;
+
+  EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10)), AlgorithmInputException);
+}
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNegativeTolerance)
+{
+  int n = 3;
+  DenseMatrixHandle A(new DenseMatrix(n,n));
+  *A << 2,-1,0,
+    -1,2,-1,
+    0,-1,2;
+
+  DenseColumnMatrix v(n);
+  v << 1,2,3;
+
+  DenseColumnMatrixHandle rhs(new DenseColumnMatrix(*A * v));
+
+  SolveLinearSystemAlgorithm algo;
+
+  EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(-4, 10)), AlgorithmInputException);
+}
+
+TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNegativeMaxIterations)
+{
+  int n = 3;
+  DenseMatrixHandle A(new DenseMatrix(n,n));
+  *A << 2,-1,0,
+    -1,2,-1,
+    0,-1,2;
+
+  DenseColumnMatrix v(n);
+  v << 1,2,3;
+
+  DenseColumnMatrixHandle rhs(new DenseColumnMatrix(*A * v));
+
+  SolveLinearSystemAlgorithm algo;
+
+  EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, -1)), AlgorithmInputException);
 }

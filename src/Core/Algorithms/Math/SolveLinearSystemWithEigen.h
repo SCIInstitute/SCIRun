@@ -49,6 +49,8 @@ namespace Math {
     Outputs run(const Inputs& input, const Parameters& params) const;
   };
 
+  typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;
+
 }}}}
 
 #endif

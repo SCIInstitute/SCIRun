@@ -31,6 +31,8 @@
 
 #include <stdexcept>
 #include <boost/exception/all.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/numeric/interval.hpp>
 #include <Core/Utils/Share.h>
 
 namespace SCIRun 
@@ -45,6 +47,12 @@ namespace Core
   };
 
   typedef boost::error_info<struct tag_null_object, std::string> NullObjectInfo;
+  //TODO: discuss location/type
+  typedef boost::error_info<struct tag_linear_algebra_error, std::string> LinearAlgebraErrorMessage;
+  //TODO: make macro for various types
+  typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double>>> DoubleOutOfRangeInfo;
+  typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int>>> IntOutOfRangeInfo;
+
 
 }
 }
