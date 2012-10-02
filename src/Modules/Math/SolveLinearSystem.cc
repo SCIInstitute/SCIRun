@@ -30,6 +30,7 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
@@ -40,19 +41,13 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
 
 void SolveLinearSystemModule::execute()
 {
-  //DatatypeHandleOption input = get_input_handle(0);
-  //if (!input)
-  //  throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
+  auto A = getRequiredInput<Matrix>(0);
+  auto rhs = getRequiredInput<DenseColumnMatrix>(1);
+  auto tolerance = get_state()->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
+  auto maxIterations = get_state()->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
+    
+  SolveLinearSystemAlgorithm algo;
+  auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(tolerance, maxIterations));
 
-  //DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
-  //if (!matrix)
-  //{
-  //  std::cout << "Matrix was null." << std::endl;
-  //  //TODO log error? send null? check standard practice.
-  //  return;
-  //}
-
-  //ReportMatrixInfoAlgorithm algo;
-  //ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  //get_state()->setTransientValue("ReportedInfo", output);
+  send_output_handle(0, x);
 }

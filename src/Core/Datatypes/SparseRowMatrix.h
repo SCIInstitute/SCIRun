@@ -71,8 +71,6 @@ namespace Datatypes {
     }
   };
 
-  typedef SparseRowMatrixGeneric<double> SparseRowMatrix;
-
 }}}
 
 

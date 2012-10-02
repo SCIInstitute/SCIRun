@@ -189,7 +189,7 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t id
   //TODO test...
   if (idx >= iports_.size())
   {
-    throw std::invalid_argument("port does not exist at index " + boost::lexical_cast<std::string>(idx));
+    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
   }
 
   return iports_[idx]->getData();

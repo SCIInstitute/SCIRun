@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_MODULE_H 
 
 #include <boost/noncopyable.hpp>
+#include <boost/lexical_cast.hpp>
 #include <vector>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -78,6 +79,13 @@ namespace Networks {
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
+    // Throws if input is not present or null.
+    template <class T>
+    boost::shared_ptr<const T> getRequiredInput(size_t idx);
+
+    template <class T>
+    boost::shared_ptr<const T> getRequiredInput(const std::string& name);
+
     class SCISHARE Builder : boost::noncopyable
     {
     public:
@@ -119,6 +127,31 @@ namespace Networks {
     PortManager<InputPortHandle> iports_;
     static int instanceCount_;
   };
+
+  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
+  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
+  struct SCISHARE PortNotFoundException : virtual DataPortException {};
+
+  template <class T>
+  boost::shared_ptr<const T> Module::getRequiredInput(size_t idx)
+  {
+    DatatypeHandleOption inputOpt = get_input_handle(idx);
+    if (!inputOpt)
+      BOOST_THROW_EXCEPTION(NoHandleOnPortException() << Core::ErrorMessage("Input data required on port # " + boost::lexical_cast<std::string>(idx)));
+
+    if (!*inputOpt)
+      BOOST_THROW_EXCEPTION(NullHandleOnPortException());
+
+    boost::shared_ptr<const T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
+    if (!data)
+    {
+      BOOST_THROW_EXCEPTION(WrongDatatypeOnPortException());
+    }
+    return data;
+  }
+  
   
 }}
 

@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Eigen/Sparse>
@@ -46,7 +47,7 @@ namespace
         rhs_(rhs), tolerance_(tolerance), maxIterations_(maxIterations) {}
 
     template <class MatrixType>
-    DenseColumnMatrix solveWithEigen(const MatrixType& lhs)
+    DenseColumnMatrix::EigenBase solveWithEigen(const MatrixType& lhs)
     {
       Eigen::ConjugateGradient<typename MatrixType::EigenBase> cg;
       cg.compute(lhs);
@@ -66,6 +67,9 @@ namespace
     int maxIterations_;
   };
 }
+
+AlgorithmParameterName SolveLinearSystemAlgorithm::Tolerance("Tolerance");
+AlgorithmParameterName SolveLinearSystemAlgorithm::MaxIterations("MaxIterations");
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {

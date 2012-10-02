@@ -69,8 +69,6 @@ namespace Datatypes {
     }
   };
 
-  typedef DenseMatrixGeneric<double> DenseMatrix;
-
 }}}
 
 

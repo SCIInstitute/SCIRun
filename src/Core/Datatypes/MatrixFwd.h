@@ -31,9 +31,6 @@
 #define CORE_DATATYPES_MATRIX_FWD_H 
 
 #include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <Eigen/Dense>
 
 namespace SCIRun {
 namespace Core {
@@ -58,9 +55,7 @@ namespace Datatypes {
   template <typename T>
   class DenseColumnMatrixGeneric;
 
-  //TODO: make real class, inheriting from Eigen
-  typedef Eigen::VectorXd DenseColumnMatrix;
-  //typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
+  typedef DenseColumnMatrixGeneric<double> DenseColumnMatrix;
 
   typedef boost::shared_ptr<DenseColumnMatrix> DenseColumnMatrixHandle;
   typedef boost::shared_ptr<const DenseColumnMatrix> DenseColumnMatrixConstHandle;

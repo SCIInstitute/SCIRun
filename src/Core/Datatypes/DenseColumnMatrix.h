@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,48 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
-#define ALGORITHMS_MATH_SOLVELINEARSYSTEMWITHEIGEN_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-//TODO: move
-#include <Eigen/src/Core/util/Constants.h>
-#include <Core/Algorithms/Math/Share.h>
+#ifndef CORE_DATATYPES_DENSE_COLUMN_MATRIX_H
+#define CORE_DATATYPES_DENSE_COLUMN_MATRIX_H 
+
+#include <Core/Datatypes/Matrix.h>
+#include <Eigen/Dense>
 
 namespace SCIRun {
 namespace Core {
-namespace Algorithms {
-namespace Math {
-  
-  //TODO: this will be the base class of all the solvers. for now it will just contain the Eigen CG impl.
-  class SCISHARE SolveLinearSystemAlgorithm : public AlgorithmBase
+namespace Datatypes {
+
+  template <typename T>
+  class DenseColumnMatrixGeneric : public MatrixBase<T>, public Eigen::Matrix<T, Eigen::Dynamic, 1>
   {
   public:
-    static AlgorithmParameterName Tolerance;
-    static AlgorithmParameterName MaxIterations;
+    typedef T value_type;
+    typedef DenseColumnMatrixGeneric<T> this_type;
+    typedef Eigen::Matrix<T, Eigen::Dynamic, 1> EigenBase;
 
-    typedef boost::tuple<SCIRun::Core::Datatypes::MatrixConstHandle, SCIRun::Core::Datatypes::DenseColumnMatrixConstHandle> Inputs;
-    typedef boost::tuple<double, int> Parameters;  
-    typedef SCIRun::Core::Datatypes::DenseColumnMatrixHandle Outputs;
+    DenseColumnMatrixGeneric(size_t nrows = 0) : EigenBase(nrows) {}
 
-    Outputs run(const Inputs& input, const Parameters& params) const;
+    // This constructor allows you to construct DenseColumnMatrixGeneric from Eigen expressions
+    template<typename OtherDerived>
+    DenseColumnMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
+      : EigenBase(other)
+    { }
+
+    // This method allows you to assign Eigen expressions to DenseColumnMatrixGeneric
+    template<typename OtherDerived>
+    DenseColumnMatrixGeneric& operator=(const Eigen::MatrixBase<OtherDerived>& other)
+    {
+      this->EigenBase::operator=(other);
+      return *this;
+    }
+
+    virtual DenseColumnMatrixGeneric* clone() const 
+    {
+      return new DenseColumnMatrixGeneric(*this);
+    }
   };
 
-  typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;
+}}}
 
-}}}}
 
 #endif

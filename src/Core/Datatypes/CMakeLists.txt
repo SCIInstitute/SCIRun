@@ -38,9 +38,11 @@ SET(Core_Datatypes_SRCS
 SET(Core_Datatypes_HEADERS
   Datatype.h
   DenseMatrix.h
+  DenseColumnMatrix.h
   Geometry.h
   Matrix.h
   MatrixComparison.h
+  MatrixFwd.h
   MatrixIO.h
   MatrixTypeConversions.h
   Scalar.h
