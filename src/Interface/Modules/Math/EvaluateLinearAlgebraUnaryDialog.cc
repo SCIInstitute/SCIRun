@@ -49,8 +49,7 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   connect(scalarMultiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   //TODO: here is where to start on standardizing module dialog buttons.
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-  //TODO: crucial: need better sig/slot connection.
-  //connect(scalarLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushOperationToState(const QString&)));
+  connect(scalarLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushOperationToState()));
 }
 
 int EvaluateLinearAlgebraUnaryDialog::moduleExecutionTime()

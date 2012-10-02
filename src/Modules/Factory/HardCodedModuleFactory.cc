@@ -110,6 +110,8 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   return module;
 }
 
+//TODO: make more generic...macros?
+
 ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
 {
   std::string name = info.module_name_;

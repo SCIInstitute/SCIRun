@@ -186,7 +186,7 @@ void ModuleWidget::ModuleExecutionRunner::operator()()
   
   try
   {
-    module_->theModule_->execute();
+    module_->theModule_->do_execute();
   }
   catch (std::exception& e)
   {
@@ -204,14 +204,11 @@ void ModuleWidget::ModuleExecutionRunner::operator()()
 
 void ModuleWidget::execute()
 {
-  std::cout << "Executing Module: " << moduleId_ << std::endl;
-
   {
     ModuleExecutionRunner runner(this);
     runner();
   }
   Q_EMIT moduleExecuted();
-  std::cout << "Done executing." << std::endl;
 }
 
 void ModuleWidget::setExecutionTime(int milliseconds) 

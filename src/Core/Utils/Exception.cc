@@ -27,3 +27,33 @@
  */
 
 #include <Core/Utils/Exception.h>
+#include <boost/regex.hpp>
+
+using namespace SCIRun::Core;
+
+const char* ExceptionBase::what() const
+{
+  try
+  {
+    if (auto msg = boost::get_error_info<Core::ErrorMessage>(*this))
+      return msg->c_str();
+    else
+      return "";
+  }
+  catch (...)
+  {
+    return "";
+  }
+}
+
+std::string ExceptionBase::typeName() const
+{
+  //TODO very hacky.
+  std::string name = typeid(*this).name();
+
+  static boost::regex r(".*\\<(.+)\\>");
+  boost::smatch match;
+  if (boost::regex_match(name, match, r))
+    return (std::string)match[1];
+  return name;
+}

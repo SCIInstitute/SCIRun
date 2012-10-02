@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
 #define INTERFACE_MODULES_SOLVELINEARSYSTEMDIALOG_H
 
-#include "Interface/Modules/Math/ui_SolveLinearSystemWithEigen.h"
+#include "Interface/Modules/Math/ui_SolveLinearSystem.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -54,8 +54,7 @@ public:
   virtual void pull();
 
 private Q_SLOTS:
-  void pushMatrixToState();
-  //void saveFile();
+  void pushParametersToState();
 };
 
 }

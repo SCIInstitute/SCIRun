@@ -44,6 +44,7 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD0(execute, void());
+          MOCK_METHOD0(do_execute, void());
           MOCK_METHOD0(get_state, ModuleStateHandle());
           MOCK_METHOD1(set_state, void(ModuleStateHandle));
           MOCK_METHOD2(send_output_handle, void(size_t, SCIRun::Core::Datatypes::DatatypeHandle));
@@ -57,6 +58,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(has_ui, bool());
           MOCK_METHOD1(set_id, void(const std::string&));
           MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());
+          MOCK_METHOD1(setLogger, void(SCIRun::Core::Logging::LoggerHandle));
+          MOCK_CONST_METHOD0(getLogger, SCIRun::Core::Logging::LoggerHandle());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

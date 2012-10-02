@@ -72,12 +72,15 @@ namespace Networks {
     InputPortHandle get_input_port(size_t idx) const;
 
     //TODO: execute signal here.
-    void do_execute();
+    virtual void do_execute();
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
+
+    virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
+    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const { return log_; }
 
     // Throws if input is not present or null.
     template <class T>
@@ -125,7 +128,10 @@ namespace Networks {
     ModuleStateHandle state_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
+
+    SCIRun::Core::Logging::LoggerHandle log_;
     static int instanceCount_;
+    static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

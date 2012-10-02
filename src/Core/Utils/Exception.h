@@ -44,6 +44,8 @@ namespace Core
 
   struct SCISHARE ExceptionBase : virtual std::exception, virtual boost::exception
   {
+    virtual const char* what() const;
+    std::string typeName() const;
   };
 
   typedef boost::error_info<struct tag_error_message, std::string> ErrorMessage;

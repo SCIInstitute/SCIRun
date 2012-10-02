@@ -47,7 +47,9 @@ void SolveLinearSystemModule::execute()
   auto maxIterations = get_state()->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
     
   SolveLinearSystemAlgorithm algo;
-  auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(tolerance, maxIterations));
+  auto x = algo.run(
+    SolveLinearSystemAlgorithm::Inputs(A, rhs), 
+    SolveLinearSystemAlgorithm::Parameters(tolerance, maxIterations));
 
   send_output_handle(0, x);
 }

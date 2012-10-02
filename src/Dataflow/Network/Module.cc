@@ -36,9 +36,11 @@
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
+#include <Core/Logging/ConsoleLogger.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
+using namespace SCIRun::Core::Logging;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -46,6 +48,7 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 }
 
 /*static*/ int Module::instanceCount_ = 0;
+/*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
 
 Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
@@ -56,6 +59,7 @@ Module::Module(const ModuleLookupInfo& info,
   id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);
+  log_ = defaultLogger_;
 }
 
 Module::~Module()
@@ -87,81 +91,46 @@ size_t Module::num_output_ports() const
 
 void Module::do_execute()
 {
-  //abort_flag_=0;
-
-  //TODO: soon
-  //Logger::Instance()->log("STARTING MODULE: "+id_);
+  log_->status("STARTING MODULE: "+id_);
 
   // Reset all of the ports.
   oports_.resetAll();
   iports_.resetAll();
 
-  // Reset the TCL variables.
-  //reset_vars();
-
-  // This gets flagged if the data on any input port has changed.
-  // Also used in the various execute functions to note gui_vars changing.
-  //inputs_changed_ = false;
-
-  // Call the User's execute function.
-  //update_msg_state(Reset);
-  //timer_ = Time::currentTicks();
-
-  //update_state(JustStarted);
-
   try 
   {
     execute();
   }
-  catch(const std::bad_alloc& /*ba*/)
+  catch(const std::bad_alloc&)
   {
-    std::cerr << "MODULE ERROR: bad_alloc caught" << std::endl;
-    //std::ostringstream command;
-    //command << "createSciDialog -error -title \"Memory Allocation Error\""
-    //  << " -message \"" << module_name_ << " tried to allocate too much memory.\n"
-    //  << "You network may be in an unstable state.  Please consider saving it\n"
-    //  << "if necessary and restarting SCIRun using a smaller data set.\n"
-    //  << "(You may need to use ^u to unlock the Network Editor (if SCIRun didn't\n"
-    //  << "finish executing) before you can save your network.)\"";
-    //error( "Module tried to allocate too much memory... Be careful, your network"
-    //  " may be unstable now." );
-    //TCLInterface::eval( command.str() );
+    log_->error("MODULE ERROR: bad_alloc caught");
   }
-  catch (const std::exception& /*e*/)
+  catch (Core::ExceptionBase& e)
   {
-    std::cerr << "MODULE ERROR: std::exception caught" << std::endl;
-    //error(std::string("Module crashed with the following exception:\n  ")+
-    //  e.message());
-    //if (e.stackTrace())
-    //{
-    //  error("Thread Stacktrace:");
-    //  error(e.stackTrace());
-    //}
+    std::ostringstream ostr;
+    ostr << "Caught exception: " << e.typeName();
+    ostr << "\n";
+    ostr << "Message: " << e.what() << "\n";
+    
+    ostr << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
+    ostr << boost::diagnostic_information(e) << std::endl;
+    log_->error(ostr.str());
   }
-  catch (const std::string& /*a*/)
+  catch (const std::exception& e)
   {
-    std::cerr << "MODULE ERROR: std::string caught" << std::endl;
-    //error(a);
-  }
-  catch (const char * /*a*/)
-  {
-    std::cerr << "MODULE ERROR: const char* caught" << std::endl;
-    //error(a);
+    log_->error("MODULE ERROR: std::exception caught");
+    log_->error(e.what());
   }
   catch (...)
   {
-    std::cerr << "MODULE ERROR: unhandled exception caught" << std::endl;
-    //error("Module.cc: Module caught unhandled exception.");
+    log_->error("MODULE ERROR: unhandled exception caught");
   }
 
-  //update_state(Completed);
-
   // Call finish on all ports.
-  iports_.apply(boost::bind(&PortInterface::finish, _1));
-  oports_.apply(boost::bind(&PortInterface::finish, _1));
+  //iports_.apply(boost::bind(&PortInterface::finish, _1));
+  //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
-  //TODO
-  //Logger::Instance()->log("MODULE FINISHED: " + id_);  
+  log_->status("MODULE FINISHED: " + id_);  
 }
 
 ModuleStateHandle Module::get_state() 

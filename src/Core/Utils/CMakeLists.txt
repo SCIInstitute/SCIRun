@@ -43,9 +43,9 @@ ADD_LIBRARY(Core_Utils
 ${Core_Utils_SRCS}
 ${Core_Utils_HEADERS})
 
-#TARGET_LINK_LIBRARIES(Core_Application
-#${Boost_LIBRARIES}
-#)
+TARGET_LINK_LIBRARIES(Core_Utils
+${Boost_LIBRARIES}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Utils)

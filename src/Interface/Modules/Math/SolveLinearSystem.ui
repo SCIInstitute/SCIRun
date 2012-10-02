@@ -83,7 +83,7 @@
      </attribute>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>21</x>
@@ -115,7 +115,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QSpinBox" name="spinBox">
+      <widget class="QSpinBox" name="maxIterationsSpinBox_">
        <property name="minimum">
         <number>1</number>
        </property>

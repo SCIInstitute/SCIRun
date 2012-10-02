@@ -33,6 +33,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Dataflow/Network/ExecutableObject.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
@@ -62,12 +63,17 @@ namespace Networks {
 
     virtual ModuleStateHandle get_state() = 0;
 
+    virtual void do_execute() = 0;
+
     //TODO for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
 
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
+
+    virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
+    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
   };
 }}}
 

@@ -27,13 +27,13 @@
 */
 
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-//#include <Modules/Math/CreateMatrix.h>
+#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Algorithms::Math;
 
 SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,11 +42,11 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  //executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //TODO: here is where to start on standardizing module dialog buttons.
-  //connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
+
+  connect(targetErrorLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushParametersToState()));
+  connect(maxIterationsSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(pushParametersToState()));
 }
 
 int SolveLinearSystemDialog::moduleExecutionTime()
@@ -54,12 +54,16 @@ int SolveLinearSystemDialog::moduleExecutionTime()
   return 2000;
 }
 
-void SolveLinearSystemDialog::pushMatrixToState()
+void SolveLinearSystemDialog::pushParametersToState()
 {
-  //state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+  state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, maxIterationsSpinBox_->value());
+  state_->setValue(SolveLinearSystemAlgorithm::Tolerance, targetErrorLineEdit_->text().toDouble());
 }
 
 void SolveLinearSystemDialog::pull()
 {
+  maxIterationsSpinBox_->setValue(state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt());
+  targetErrorLineEdit_->setText(QString::number(state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble()));
   //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }
+
