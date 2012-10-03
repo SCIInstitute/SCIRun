@@ -31,24 +31,55 @@
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
 using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) {}
 
+//TODO: move
+class matrix_convert
+{
+public:
+  static DenseColumnMatrixConstHandle to_column(const MatrixConstHandle& mh)
+  {
+    auto col = matrix_cast::as_column(mh);
+      if (col)
+        return col;
+    
+    auto dense = matrix_cast::as_dense(mh);
+    if (dense)
+      return DenseColumnMatrixConstHandle(new DenseColumnMatrix(dense->col(0)));
+    
+    return DenseColumnMatrixConstHandle();
+  }
+};
+
 void SolveLinearSystemModule::execute()
 {
   auto A = getRequiredInput<Matrix>(0);
-  auto rhs = getRequiredInput<DenseColumnMatrix>(1);
+  auto rhs = getRequiredInput<Matrix>(1);
+
+  if (rhs->ncols() != 1)
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Right hand side matrix must contain only one column."));
+
+  auto rhsCol = matrix_cast::as_column(rhs);
+  if (!rhsCol)
+    rhsCol = matrix_convert::to_column(rhs);
+
   auto tolerance = get_state()->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
+  std::cout << "-------SLS: tolerance = " << tolerance << std::endl;
   auto maxIterations = get_state()->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
-    
+  std::cout << "-------SLS: maxIter = " << maxIterations << std::endl;
+
   SolveLinearSystemAlgorithm algo;
   auto x = algo.run(
-    SolveLinearSystemAlgorithm::Inputs(A, rhs), 
+    SolveLinearSystemAlgorithm::Inputs(A, rhsCol), 
     SolveLinearSystemAlgorithm::Parameters(tolerance, maxIterations));
 
   send_output_handle(0, x);

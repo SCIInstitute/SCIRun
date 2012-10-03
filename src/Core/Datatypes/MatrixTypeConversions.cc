@@ -29,6 +29,7 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 
 using namespace SCIRun::Core::Datatypes;
 
@@ -42,6 +43,11 @@ SparseRowMatrixConstHandle matrix_cast::as_sparse(const MatrixConstHandle& mh)
   return to<const SparseRowMatrix>(mh);
 }
 
+DenseColumnMatrixConstHandle matrix_cast::as_column(const MatrixConstHandle& mh)
+{
+  return to<const DenseColumnMatrix>(mh);
+}
+
 bool matrix_is::dense(const MatrixConstHandle& mh) 
 { 
   return matrix_cast::as_dense(mh) != 0; 
@@ -50,4 +56,9 @@ bool matrix_is::dense(const MatrixConstHandle& mh)
 bool matrix_is::sparse(const MatrixConstHandle& mh) 
 { 
   return matrix_cast::as_sparse(mh) != 0; 
+}
+
+bool matrix_is::column(const MatrixConstHandle& mh) 
+{ 
+  return matrix_cast::as_column(mh) != 0; 
 }

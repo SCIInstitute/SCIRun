@@ -52,12 +52,7 @@ namespace Datatypes {
 
     static DenseMatrixConstHandle as_dense(const MatrixConstHandle& mh);
     static SparseRowMatrixConstHandle as_sparse(const MatrixConstHandle& mh);
-
-    //TODO soon
-    //static inline ColumnMatrix* as_column(const MatrixConstHandle& mh)
-    //{
-    //  return to<ColumnMatrix>(mh);
-    //}
+    static DenseColumnMatrixConstHandle as_column(const MatrixConstHandle& mh);
 
   private:
     matrix_cast();
@@ -69,7 +64,7 @@ namespace Datatypes {
     // Test to see if the matrix is this subtype.
     static bool dense(const MatrixConstHandle& mh);
     static bool sparse(const MatrixConstHandle& mh);
-    //static inline bool column(const MatrixConstHandle& mh) { return matrix_cast::as_column(mh) != 0; }
+    static bool column(const MatrixConstHandle& mh);
   private:
     matrix_is();
   };

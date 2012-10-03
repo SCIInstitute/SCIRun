@@ -108,5 +108,5 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
   if (x.size())
     return SolveLinearSystemAlgorithm::Outputs(new DenseColumnMatrix(x));
   else
-    return SolveLinearSystemAlgorithm::Outputs();
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen produced an empty solution."));
 }

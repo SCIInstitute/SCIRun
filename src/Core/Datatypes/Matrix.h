@@ -40,6 +40,10 @@ namespace Datatypes {
   template <typename T>
   class MatrixBase : public Datatype
   {
+  public:
+    virtual size_t nrows() const = 0;
+    virtual size_t ncols() const = 0;
+
       //TODO: not much to go here for now.
   };
 

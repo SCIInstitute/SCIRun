@@ -110,6 +110,10 @@ namespace Algorithms {
   {
   };
 
+  struct SCISHARE AlgorithmProcessingException : virtual ExceptionBase
+  {
+  };
+
 }}}
 
 #endif
