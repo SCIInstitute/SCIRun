@@ -49,13 +49,13 @@ namespace
 }
 
 #define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
-
+#define PRINT_MATRIX_BASE(x) std::cout << #x << " = \n" << static_cast<const MatrixBase<double>&>((x)) << std::endl
 
 
 TEST(SparseRowMatrixTest, CanCreateBasicMatrix)
 {
   SparseRowMatrix m(matrix1());
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
 }
 
 TEST(SparseRowMatrixTest, CanPrintInLegacyFormat)
@@ -79,8 +79,8 @@ TEST(SparseRowMatrixTest, CanCopyConstruct)
   SparseRowMatrix m2(m);
   EXPECT_EQ(m, m2);
   m.coeffRef(1,2) += 1;
-  PRINT_MATRIX(m);
-  PRINT_MATRIX(m2);
+  PRINT_MATRIX_BASE(m);
+  PRINT_MATRIX_BASE(m2);
   EXPECT_NE(m, m2);
 }
 
@@ -100,7 +100,7 @@ TEST(SparseRowMatrixUnaryOperationTests, CanNegate)
 {
   SparseRowMatrix m(matrix1());
 
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(-m);
 
   SparseRowMatrix n = - -m;
@@ -113,7 +113,7 @@ TEST(SparseRowMatrixUnaryOperationTests, CanScalarMultiply)
 {
   SparseRowMatrix m(matrix1());
 
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(2*m);
   PRINT_MATRIX(m*2);
   SparseRowMatrix x = 2*m;
@@ -125,7 +125,7 @@ TEST(SparseRowMatrixUnaryOperationTests, CanTranspose)
 {
   SparseRowMatrix m(matrix1());
 
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m.transpose());
 
   SparseRowMatrix mtt = m.transpose().transpose();
@@ -136,7 +136,7 @@ TEST(SparseRowMatrixBinaryOperationTests, CanMultiply)
 {
   SparseRowMatrix m(matrix1());
 
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m * m.transpose());
   //EXPECT_EQ(Zero * m, Zero);
   EXPECT_TRUE(false);
@@ -146,7 +146,7 @@ TEST(SparseRowMatrixBinaryOperationTests, CanAdd)
 {
   SparseRowMatrix m(matrix1());
 
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m + m);
   SparseRowMatrix m2a = m + m;
   SparseRowMatrix m2b = 2*m;
@@ -157,7 +157,7 @@ TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
 {
   SparseRowMatrix m(matrix1());
 
-  PRINT_MATRIX(m);
+  PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m - m);
   //EXPECT_EQ(m - m, Zero);
   EXPECT_TRUE(false);

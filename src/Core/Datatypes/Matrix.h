@@ -32,6 +32,7 @@
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <iosfwd>
 
 namespace SCIRun {
 namespace Core {
@@ -44,6 +45,14 @@ namespace Datatypes {
     virtual size_t nrows() const = 0;
     virtual size_t ncols() const = 0;
 
+    friend std::ostream& operator<<(std::ostream& o, const MatrixBase<T>& m)
+    {
+      m.print(o);
+      return o;
+    }
+
+  private:
+    virtual void print(std::ostream&) const = 0;
       //TODO: not much to go here for now.
   };
 

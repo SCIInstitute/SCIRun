@@ -30,6 +30,8 @@
 #include <gmock/gmock.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
@@ -112,4 +114,30 @@ TEST(WriteMatrixAlgorithmTest, CheckBoostExceptionLoggingCapability)
   {
     std::cout << boost::diagnostic_information(e) << std::endl; 	
   }
+}
+
+#define PRINT_MATRIX_BASE(x) std::cout << #x << " = \n" << static_cast<const MatrixBase<double>&>((x)) << std::endl
+
+TEST(WriteMatrixTest, CanPrintSparseMatrix)
+{
+  SparseRowMatrix m(3,3);
+  m.insert(0,0) = 1;
+  m.insert(1,2) = -1.4;
+
+  PRINT_MATRIX_BASE(m);
+  //std::cout << m << std::endl;
+
+
+
+  EXPECT_TRUE(false);
+}
+
+TEST(WriteMatrixTest, CanPrintColumnMatrix)
+{
+  DenseColumnMatrix m(3);
+  m << 1,2,0;
+
+  std::ostringstream ostr;
+  ostr << m;
+  EXPECT_EQ("1\n2\n0", ostr.str());
 }

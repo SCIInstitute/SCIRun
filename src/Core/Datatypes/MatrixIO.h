@@ -40,22 +40,6 @@ namespace Core {
 namespace Datatypes {
 
   template <typename T>
-  std::ostream& operator<<(std::ostream& o, const DenseMatrixGeneric<T>& m)
-  {
-    //TODO!!
-    //o << static_cast<DenseMatrixGeneric<T>::Base>(m);
-    for (int i = 0; i < m.rows(); ++i)
-    {
-      for (int j = 0; j < m.cols(); ++j)
-      {
-        o << m(i,j) << " ";
-      }
-      o << "\n";
-    }
-    return o;
-  }
-
-  template <typename T>
   std::istream& operator>>(std::istream& istr, DenseMatrixGeneric<T>& m)
   {
     std::vector<std::vector<T> > values;

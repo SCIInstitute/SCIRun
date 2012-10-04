@@ -70,6 +70,20 @@ namespace Datatypes {
 
     virtual size_t nrows() const { return rows(); }
     virtual size_t ncols() const { return cols(); }
+  private:
+    virtual void print(std::ostream& o) const
+    {
+      //TODO!!
+      //o << static_cast<const EigenBase&>(m);
+      for (int i = 0; i < rows(); ++i)
+      {
+        for (int j = 0; j < cols(); ++j)
+        {
+          o << (*this)(i,j) << " ";
+        }
+        o << "\n";
+      }
+    }
   };
 
 }}}

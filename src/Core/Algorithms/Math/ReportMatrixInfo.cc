@@ -34,14 +34,18 @@ using namespace SCIRun::Core::Algorithms::Math;
 ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
 {
   if (!input)
-    return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null input matrix"));
+    //return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
 
   const std::string type = typeid(*input).name();
 
   return Outputs(type, 
-    input->rows(), 
-    input->cols(), 
-    input->rows() * input->cols(), 
-    input->minCoeff(), 
-    input->maxCoeff());
+    input->nrows(), 
+    input->ncols(), 
+    input->nrows() * input->ncols(),  //TODO: sparse is different
+    //TODO: need a clean way, don't want to reimplement with lots of virtual fns on MatrixBase
+    //input->minCoeff(), 
+    //input->maxCoeff()
+    0,0
+    );
 }

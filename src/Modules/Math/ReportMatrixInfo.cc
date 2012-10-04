@@ -40,17 +40,7 @@ ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("Repo
 
 void ReportMatrixInfoModule::execute()
 {
-  DatatypeHandleOption input = get_input_handle(0);
-  if (!input)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  DenseMatrixConstHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
-  if (!matrix)
-  {
-    std::cout << "Matrix was null." << std::endl;
-    //TODO log error? send null? check standard practice.
-    return;
-  }
+  auto matrix = getRequiredInput<Matrix>(0);
 
   ReportMatrixInfoAlgorithm algo;
   ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
