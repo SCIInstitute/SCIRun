@@ -58,6 +58,7 @@ namespace Datatypes {
   };
 
   typedef boost::shared_ptr<Datatype> DatatypeHandle;
+  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
   typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
 
 }}}

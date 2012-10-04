@@ -45,20 +45,8 @@ Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 
 void EvaluateLinearAlgebraBinaryModule::execute()
 {
-  DatatypeHandleOption lhs = get_input_handle(0);
-  if (!lhs)
-    throw std::logic_error("TODO Input data (lhs) required, need to move this check to Module base class!");
-  DatatypeHandleOption rhs = get_input_handle(1);
-  if (!rhs)
-    throw std::logic_error("TODO Input data (rhs) required, need to move this check to Module base class!");
-
-  DenseMatrixHandle lhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO: clean
-  DenseMatrixHandle rhsInput = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO: clean
-  if (!lhsInput || !rhsInput)
-  {
-    //TODO log error? send null? check standard practice.
-    return;
-  }
+  auto lhs = getRequiredInput<DenseMatrix>(0);
+  auto rhs = getRequiredInput<DenseMatrix>(1);
 
   ModuleStateHandle state = get_state();
   EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = (EvaluateLinearAlgebraBinaryAlgorithm::Parameters)
@@ -73,7 +61,7 @@ void EvaluateLinearAlgebraBinaryModule::execute()
 
 
   EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO inject
-  DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhsInput, rhsInput), oper); 
+  DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhs, rhs), oper); 
 
   send_output_handle(0, output);
 }

@@ -39,16 +39,7 @@ ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Vi
 
 void ShowStringModule::execute()
 {
-  DatatypeHandleOption input = get_input_handle(0);
-  if (!input)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  StringHandle str = boost::dynamic_pointer_cast<String>(*input); //TODO : clean
-  if (!str)
-  {
-    //TODO log error? send null? check standard practice.
-    return;
-  }
+  auto str = getRequiredInput<String>(0);
 
   std::cout << "String value received: " << str->value() << std::endl;
 

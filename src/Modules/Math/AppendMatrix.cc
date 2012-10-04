@@ -40,29 +40,9 @@ AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix
 
 void AppendMatrixModule::execute()
 {
-  DatatypeHandleOption lhs = get_input_handle(0);
-  if (!lhs)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  DenseMatrixConstHandle matrixLHS = boost::dynamic_pointer_cast<DenseMatrix>(*lhs); //TODO: clean
-  if (!matrixLHS)
-  {
-    //TODO log error? send null? check standard practice.
-    return;
-  }
-
-  DatatypeHandleOption rhs = get_input_handle(1);
-  if (!rhs)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  DenseMatrixConstHandle matrixRHS = boost::dynamic_pointer_cast<DenseMatrix>(*rhs); //TODO: clean
-  if (!matrixRHS)
-  {
-    //TODO log error? send null? check standard practice.
-    return;
-  }
-
-  AppendMatrixAlgorithm::Parameters param = (AppendMatrixAlgorithm::Parameters) get_state()->getValue(AppendMatrixAlgorithm::OptionName).getInt();
+  auto matrixLHS = getRequiredInput<DenseMatrix>(0);
+  auto matrixRHS = getRequiredInput<DenseMatrix>(1);
+  auto param = (AppendMatrixAlgorithm::Parameters) get_state()->getValue(AppendMatrixAlgorithm::OptionName).getInt();
 
   AppendMatrixAlgorithm algo;
   AppendMatrixAlgorithm::Outputs output = algo.run(AppendMatrixAlgorithm::Inputs(matrixLHS, matrixRHS), param);

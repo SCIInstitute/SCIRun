@@ -46,16 +46,7 @@ EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
 
 void EvaluateLinearAlgebraUnaryModule::execute()
 {
-  DatatypeHandleOption input = get_input_handle(0);
-  if (!input)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  DenseMatrixConstHandle denseInput = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO: clean
-  if (!denseInput)
-  {
-    //TODO log error? send null? check standard practice.
-    return;
-  }
+  auto denseInput = getRequiredInput<DenseMatrix>(0);
 
   ModuleStateHandle state = get_state();
   

@@ -39,17 +39,7 @@ MatrixAsVectorFieldModule::MatrixAsVectorFieldModule() : Module(ModuleLookupInfo
 
 void MatrixAsVectorFieldModule::execute()
 {
-  DatatypeHandleOption input = get_input_handle(0);
-  if (!input)
-    throw std::logic_error("TODO Input data required, need to move this check to Module base class!");
-
-  DenseMatrixHandle mat = boost::dynamic_pointer_cast<DenseMatrix>(*input); //TODO : clean
-  if (!mat)
-  {
-    std::cout << "Matrix was null, returning." << std::endl;
-    //TODO log error? send null? check standard practice.
-    return;
-  }
+  auto mat = getRequiredInput<DenseMatrix>(0);
 
   if (mat->rows() != 6)
   {

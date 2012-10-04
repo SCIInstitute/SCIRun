@@ -31,11 +31,11 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-GeometryObject::GeometryObject(DatatypeHandle dh) : data_(dh)
+GeometryObject::GeometryObject(DatatypeConstHandle dh) : data_(dh)
 {
 }
 
-DatatypeHandle GeometryObject::get_underlying() const
+DatatypeConstHandle GeometryObject::get_underlying() const
 {
   return data_;
 }
