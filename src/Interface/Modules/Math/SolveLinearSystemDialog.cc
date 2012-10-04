@@ -45,6 +45,8 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
 
+  //TODO: clean these up...still getting circles of push/pull
+  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
   connect(targetErrorLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushParametersToState()));
   connect(maxIterationsSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(pushParametersToState()));
 }
@@ -56,14 +58,25 @@ int SolveLinearSystemDialog::moduleExecutionTime()
 
 void SolveLinearSystemDialog::pushParametersToState()
 {
-  state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, maxIterationsSpinBox_->value());
-  state_->setValue(SolveLinearSystemAlgorithm::Tolerance, targetErrorLineEdit_->text().toDouble());
+  //std::cout << "SolveLinearSystemDialog::pushParametersToState" << std::endl;
+
+  //TODO: need pattern for this, to avoid silly recursion of push/pull.
+  int max = maxIterationsSpinBox_->value();
+  if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
+    state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, max);
+
+  //std::cout << "\tpushParametersToState\t" << targetErrorLineEdit_->text().toDouble() << std::endl;
+
+  double error = targetErrorLineEdit_->text().toDouble();
+  if (error != state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble())
+    state_->setValue(SolveLinearSystemAlgorithm::Tolerance, error);
 }
 
 void SolveLinearSystemDialog::pull()
 {
   maxIterationsSpinBox_->setValue(state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt());
+  //std::cout << "SolveLinearSystemDialog::pull" << std::endl;
+  //std::cout << "\tpull\t" << state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble() << std::endl;
   targetErrorLineEdit_->setText(QString::number(state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble()));
-  //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }
 

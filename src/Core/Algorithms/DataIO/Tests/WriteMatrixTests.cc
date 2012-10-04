@@ -127,9 +127,9 @@ TEST(WriteMatrixTest, CanPrintSparseMatrix)
   PRINT_MATRIX_BASE(m);
   //std::cout << m << std::endl;
 
-
-
-  EXPECT_TRUE(false);
+  std::ostringstream ostr;
+  ostr << static_cast<const MatrixBase<double>&>(m);
+  EXPECT_EQ("1 0 0 \n0 0 -1.4 \n0 0 0 \n", ostr.str());
 }
 
 TEST(WriteMatrixTest, CanPrintColumnMatrix)

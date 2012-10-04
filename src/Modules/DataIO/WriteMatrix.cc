@@ -41,15 +41,7 @@ WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", 
 
 void WriteMatrixModule::execute()
 {
-  DatatypeHandleOption data = get_input_handle(0);
-  if (!data)
-  {
-    std::cout << "Required input not present, this check should go in the module base class!!!" << std::endl;
-    return;
-  }
-
-  DenseMatrixHandle matrix = boost::dynamic_pointer_cast<DenseMatrix>(*data);
-
+  auto matrix = getRequiredInput<Matrix>(0);
   filename_ = get_state()->getValue(WriteMatrixAlgorithm::Filename).getString();
 
   WriteMatrixAlgorithm algo;
