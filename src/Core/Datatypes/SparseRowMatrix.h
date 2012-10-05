@@ -70,8 +70,8 @@ namespace Datatypes {
       return new SparseRowMatrixGeneric(*this);
     }
 
-    virtual size_t nrows() const { return rows(); }
-    virtual size_t ncols() const { return cols(); }
+    virtual size_t nrows() const { return this->rows(); }
+    virtual size_t ncols() const { return this->cols(); }
 
   private:
     virtual void print(std::ostream& o) const

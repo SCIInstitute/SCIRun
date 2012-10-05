@@ -44,7 +44,7 @@ namespace Core
 
   struct SCISHARE ExceptionBase : virtual std::exception, virtual boost::exception
   {
-    virtual const char* what() const;
+    virtual const char* what() const throw();
     std::string typeName() const;
   };
 
@@ -53,8 +53,8 @@ namespace Core
   //TODO: discuss location/type
   typedef boost::error_info<struct tag_linear_algebra_error, std::string> LinearAlgebraErrorMessage;
   //TODO: make macro for various types
-  typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double>>> DoubleOutOfRangeInfo;
-  typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int>>> IntOutOfRangeInfo;
+  typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
+  typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
 
 }

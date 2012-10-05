@@ -31,7 +31,7 @@
 
 using namespace SCIRun::Core;
 
-const char* ExceptionBase::what() const
+const char* ExceptionBase::what() const throw()
 {
   try
   {

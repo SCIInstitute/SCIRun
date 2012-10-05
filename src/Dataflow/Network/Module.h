@@ -143,14 +143,14 @@ namespace Networks {
   template <class T>
   boost::shared_ptr<const T> Module::getRequiredInput(size_t idx)
   {
-    DatatypeHandleOption inputOpt = get_input_handle(idx);
+    auto inputOpt = get_input_handle(idx);
     if (!inputOpt)
       BOOST_THROW_EXCEPTION(NoHandleOnPortException() << Core::ErrorMessage("Input data required on port # " + boost::lexical_cast<std::string>(idx)));
 
     if (!*inputOpt)
       BOOST_THROW_EXCEPTION(NullHandleOnPortException());
 
-    boost::shared_ptr<const T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
+    boost::shared_ptr<const T> data = boost::dynamic_pointer_cast<const T>(*inputOpt);
     if (!data)
     {
       BOOST_THROW_EXCEPTION(WrongDatatypeOnPortException());
