@@ -1,3 +1,4 @@
+
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -26,27 +27,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_Math_Tests_SRCS
-  AppendMatrixTests.cc
-  ReportMatrixInfoTests.cc
-  EvaluateLinearAlgebraUnaryTests.cc
-  EvaluateLinearAlgebraBinaryTests.cc
-  SolveLinearSystemWithEigenTests.cc
+SET(Testing_Utils_HEADERS
+  MatrixTestUtilities.h
+  Share.h
 )
 
-#SET(Engine_Network_Tests_HEADERS
-#  NetworkEditorControllerTests_.h
-#)
-
-SCIRUN_ADD_UNIT_TEST(Algorithms_Math_Tests
-${Algorithms_Math_Tests_SRCS})
-
-TARGET_LINK_LIBRARIES(Algorithms_Math_Tests
-Algorithms_Math
-Algorithms_DataIO
-Core_Datatypes
-Testing_Utils
-gtest_main
-gtest
-gmock
+SET(Testing_Utils_SRCS
+  MatrixTestUtilities.cc
 )
+
+ADD_LIBRARY(Testing_Utils 
+${Testing_Utils_HEADERS}
+${Testing_Utils_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Testing_Utils
+  Core_Datatypes
+  ${Boost_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Testing_Utils)
+ENDIF(BUILD_SHARED_LIBS)

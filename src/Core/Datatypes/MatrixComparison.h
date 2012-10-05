@@ -32,6 +32,7 @@
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
@@ -43,7 +44,7 @@ namespace Datatypes {
   bool operator==(const DenseMatrixGeneric<T>& lhs, const DenseMatrixGeneric<T>& rhs)
   {
     bool returnValue = 
-      (lhs.rows() == lhs.rows()) &&
+      (lhs.rows() == rhs.rows()) &&
       (lhs.cols() == rhs.cols());
 
     if (returnValue)
@@ -65,6 +66,26 @@ namespace Datatypes {
     return !(lhs == rhs);
   }
 
+  template <typename T>
+  bool operator==(const DenseColumnMatrixGeneric<T>& lhs, const DenseColumnMatrixGeneric<T>& rhs)
+  {
+    bool returnValue = (lhs.rows() == rhs.rows());
+
+    if (returnValue)
+    {
+      for (int i = 0; returnValue && i < lhs.rows(); ++i)
+      {
+        returnValue &= std::fabs(lhs(i) - rhs(i)) < 1e-15;
+      }
+    }
+    return returnValue;
+  }
+
+  template <typename T>
+  bool operator!=(const DenseColumnMatrixGeneric<T>& lhs, const DenseColumnMatrixGeneric<T>& rhs)
+  {
+    return !(lhs == rhs);
+  }
 
   template <typename T>
   bool operator==(const SparseRowMatrixGeneric<T>& lhs, const SparseRowMatrixGeneric<T>& rhs)

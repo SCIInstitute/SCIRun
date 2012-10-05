@@ -177,6 +177,7 @@ ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
 ADD_SUBDIRECTORY(Main)
 ADD_SUBDIRECTORY(Externals)
+ADD_SUBDIRECTORY(Testing)
 
 
 ########################################################################
@@ -217,6 +218,7 @@ SET_PROPERTY(TARGET gmock         PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
 
 SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_DataIO   PROPERTY FOLDER "Interface/Modules")
