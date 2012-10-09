@@ -33,9 +33,12 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Utils/StringUtil.h>
 #include <boost/filesystem.hpp>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace TestUtils;
@@ -73,9 +76,33 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
   const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
   if (boost::filesystem::exists(filename))
   {
-    DenseMatrixConstHandle matrix = algo.run(filename);
+    DenseMatrixConstHandle matrix = matrix_cast::as_dense(algo.run(filename));
+    ASSERT_TRUE(matrix);
+    EXPECT_EQ(matrix1(), *matrix);
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
+}
 
-    EXPECT_EQ(matrixNonSquare(), *matrix);
+TEST(ReadMatrixAlgorithmTest, TestFromRealASCIIMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "E:\\stuff\\sp2.mat";
+  if (boost::filesystem::exists(filename))
+  {
+    MatrixConstHandle matrix = algo.run(filename);
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::sparse(matrix));
+
+    auto sp = matrix_cast::as_sparse(matrix);
+
+    DenseMatrix a(2, 3);
+    a << 1, 0, 3.5,
+      -1, 2, 0;
+
+    //TODO: compare dense and sparse
+    //EXPECT_EQ(a, *mat);
+    EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
   }
   else
     std::cout << "file does not exist, skipping test." << std::endl;

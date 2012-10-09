@@ -38,6 +38,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Utils/StringUtil.h>
 
 #include <Testing/Utils/Share.h>
 
@@ -46,15 +47,6 @@ namespace SCIRun
 
 namespace TestUtils
 {
-  //TODO: move
-  template <typename T>
-  std::string to_string(const T& t)
-  {
-    std::ostringstream o;
-    o << t;
-    return o.str();
-  }
-
 
 //inline long long count_single_value(const Core::Datatypes::Matrix& m, const double val)
 //{
@@ -133,30 +125,7 @@ inline ::testing::AssertionResult compare_with_two_norm(const Core::Datatypes::D
 //#define EXPECT_MATRIX_NOT_EQ_TOLERANCE(actual, expected, tolerance) EXPECT_FALSE(compare_with_tolerance_readable((actual), (expected), (tolerance)))
 //#define EXPECT_MATRIX_NOT_EQ(actual, expected) EXPECT_MATRIX_NOT_EQ_TOLERANCE((actual), (expected), DEFAULT_MATRIX_PERCENT_TOLERANCE)
 
-class SCISHARE EigenMatrixFromScirunAsciiFormatConverter
-{
-public:
-  Core::Datatypes::SparseRowMatrixHandle makeSparse(const std::string& matFile);
 
-  boost::optional<std::string> getMatrixContentsLine(const std::string& matStr);
-
-  std::string readFile(const std::string& filename);
-
-  Core::Datatypes::DenseMatrixHandle makeDense(const std::string& matFile);
-  Core::Datatypes::DenseColumnMatrixHandle makeColumn(const std::string& matFile);
-
-  typedef std::vector<size_t> Indices;
-  typedef std::vector<double> Data;
-  typedef boost::tuple<size_t, size_t, size_t, Indices, Indices, Data> SparseData;
-  typedef boost::tuple<std::string,std::string,std::string,std::string,std::string,std::string> RawSparseData;
-  typedef boost::tuple<size_t, size_t, Data> DenseData;
-  typedef boost::tuple<std::string,std::string,std::string> RawDenseData;
-
-  boost::optional<RawDenseData> parseDenseMatrixString(const std::string& matString);
-  DenseData convertRaw(const RawDenseData& data);
-  boost::optional<RawSparseData> parseSparseMatrixString(const std::string& matString);
-  SparseData convertRaw(const RawSparseData& data);
-};
 
 struct ScopedTimer
 {

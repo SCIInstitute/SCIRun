@@ -29,11 +29,13 @@
 SET(Algorithms_DataIO_SRCS
   ReadMatrix.cc
   WriteMatrix.cc
+  EigenMatrixFromScirunAsciiFormatConverter.cc
 )
 
 SET(Algorithms_DataIO_HEADERS
   ReadMatrix.h
   WriteMatrix.h
+  EigenMatrixFromScirunAsciiFormatConverter.h
   Share.h
 )
 

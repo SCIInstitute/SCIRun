@@ -26,11 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_DATAIO_READMATRIX_H
-#define ALGORITHMS_DATAIO_READMATRIX_H
+#ifndef ALGORITHMS_DATAIO_EIGENMATRIXFROMSCIRUNASCIIFORMATCONVERTER_H
+#define ALGORITHMS_DATAIO_EIGENMATRIXFROMSCIRUNASCIIFORMATCONVERTER_H
 
 #include <string>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <vector>
+#include <boost/optional.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/DataIO/Share.h>
 
@@ -38,19 +40,34 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 namespace DataIO {
+namespace internal
+{
 
-      class SCISHARE ReadMatrixAlgorithm : public AlgorithmBase
-      {
-      public:
-        typedef void Inputs;
-        typedef std::string Parameters; 
-        typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
+  class SCISHARE EigenMatrixFromScirunAsciiFormatConverter
+  {
+  public:
+    Core::Datatypes::SparseRowMatrixHandle makeSparse(const std::string& matFile);
 
-        static AlgorithmParameterName Filename;
+    boost::optional<std::string> getMatrixContentsLine(const std::string& matStr);
 
-        Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
-      };
+    std::string readFile(const std::string& filename);
 
-}}}}
+    Core::Datatypes::DenseMatrixHandle makeDense(const std::string& matFile);
+    Core::Datatypes::DenseColumnMatrixHandle makeColumn(const std::string& matFile);
+
+    typedef std::vector<int> Indices;
+    typedef std::vector<double> Data;
+    typedef boost::tuple<int, int, int, Indices, Indices, Data> SparseData;
+    typedef boost::tuple<std::string,std::string,std::string,std::string,std::string,std::string> RawSparseData;
+    typedef boost::tuple<int, int, Data> DenseData;
+    typedef boost::tuple<std::string,std::string,std::string> RawDenseData;
+
+    boost::optional<RawDenseData> parseDenseMatrixString(const std::string& matString);
+    DenseData convertRaw(const RawDenseData& data);
+    boost::optional<RawSparseData> parseSparseMatrixString(const std::string& matString);
+    SparseData convertRaw(const RawSparseData& data);
+  };
+
+}}}}}
 
 #endif

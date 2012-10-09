@@ -36,6 +36,7 @@ SET(Core_Utils_HEADERS
   Exception.h
   Singleton.h
   Share.h
+  StringUtil.h
   ProgressReporter.h
 )
 

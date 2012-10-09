@@ -30,7 +30,9 @@
 #include <iostream>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
+#include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun::Core::Algorithms;
@@ -44,11 +46,23 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   if (!boost::filesystem::exists(filename))
     return Outputs();
   
-  //TODO: push logging up hierarchy
-  std::cout << "Algorithm start." << std::endl;
-  std::ifstream reader(filename.c_str());
-  DenseMatrixHandle matrix(new DenseMatrix);
-  reader >> *matrix;
-  std::cout << "Algorithm returning." << std::endl;
-  return matrix;
+  
+  if (boost::filesystem::extension(filename) == ".txt")
+  {
+    //TODO: push logging up hierarchy
+    std::cout << "Algorithm start." << std::endl;
+    std::ifstream reader(filename.c_str());
+    DenseMatrixHandle matrix(new DenseMatrix);
+    reader >> *matrix;
+    std::cout << "Algorithm returning." << std::endl;
+    return matrix;
+  }
+  else if (boost::filesystem::extension(filename) == ".mat")
+  {
+    std::cout << "FOUND .mat file assuming is SCIRUNv4 ASCII format." << std::endl;
+    std::cout << "also assuming sparse for now..." << std::endl;
+    internal::EigenMatrixFromScirunAsciiFormatConverter conv;
+    return conv.makeSparse(filename);
+  }
+  return ReadMatrixAlgorithm::Outputs();
 }

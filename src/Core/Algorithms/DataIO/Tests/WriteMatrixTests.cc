@@ -34,6 +34,7 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 
@@ -92,7 +93,8 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
   write.run(m1, filename);
 
   ReadMatrixAlgorithm read;
-  DenseMatrixConstHandle roundTrip = read.run(filename);
+  DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename));
+  ASSERT_TRUE(roundTrip);
 
   EXPECT_EQ(*m1, *roundTrip);
 }
