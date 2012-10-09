@@ -116,6 +116,17 @@ DenseMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeDense(const std
   return mat;
 }
 
+DenseColumnMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeColumn(const std::string& matFile)
+{
+  DenseData data = convertRaw(parseDenseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
+  DenseColumnMatrixHandle mat(new DenseColumnMatrix(data.get<0>()));
+
+  BOOST_FOREACH(double x, data.get<2>())
+    *mat << x;
+
+  return mat;
+}
+
 boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMatrixFromScirunAsciiFormatConverter::parseDenseMatrixString(const std::string& matString)
 {
   boost::regex r("(\\d+) (\\d+) \\{0 (.*)\\}\\}");

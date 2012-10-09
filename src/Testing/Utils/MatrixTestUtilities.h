@@ -46,6 +46,15 @@ namespace SCIRun
 
 namespace TestUtils
 {
+  //TODO: move
+  template <typename T>
+  std::string to_string(const T& t)
+  {
+    std::ostringstream o;
+    o << t;
+    return o.str();
+  }
+
 
 //inline long long count_single_value(const Core::Datatypes::Matrix& m, const double val)
 //{
@@ -98,15 +107,15 @@ inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes:
 //  ::testing::AssertionFailure() << "ColumnMatrix 1: \n"<< matrix_to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << matrix_to_string(xhat).substr(0, printSize);
 //}
 //
-//inline ::testing::AssertionResult compare_with_two_norm(const ColumnMatrix& x, const ColumnMatrix& xhat, double error = 1e-15, int printSize = 50)
-//{
-//  double delta = (x - xhat).vector_norm();
-//  return delta < error ? 
-//    ::testing::AssertionSuccess() :
-//  ::testing::AssertionFailure() <<
-//    "Vectors are " << delta << " apart, expect less than " << error << " distance apart.\n" <<
-//    "ColumnMatrix 1: \n"<< matrix_to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << matrix_to_string(xhat).substr(0, printSize);
-//}
+inline ::testing::AssertionResult compare_with_two_norm(const Core::Datatypes::DenseColumnMatrix& x, const Core::Datatypes::DenseColumnMatrix& xhat, double error = 1e-15, int printSize = 50)
+{
+  double delta = (x - xhat).norm();
+  return delta < error ? 
+    ::testing::AssertionSuccess() :
+  ::testing::AssertionFailure() <<
+    "Vectors are " << delta << " apart, expect less than " << error << " distance apart.\n" <<
+    "ColumnMatrix 1: \n"<< to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << to_string(xhat).substr(0, printSize);
+}
  
 //TODO improve failure reporting
 //#define EXPECT_MATRIX_EQ_TOLERANCE(actual, expected, tolerance) EXPECT_TRUE(compare_with_tolerance_readable((actual), (expected), (tolerance)))
@@ -118,7 +127,7 @@ inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes:
 //#define EXPECT_COLUMN_MATRIX_EQ_TO(actual, expected) EXPECT_MATRIX_EQ((actual), MAKE_COLUMN_MATRIX(expected))
 //
 //#define EXPECT_COLUMN_MATRIX_EQ_BY_RELATIVE_INFINITY_NORM(actual, expected, error) EXPECT_TRUE(compare_with_relative_infinity_norm((actual), (expected), (error)))
-//#define EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(actual, expected, error) EXPECT_TRUE(compare_with_two_norm((actual), (expected), (error)))
+#define EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(actual, expected, error) EXPECT_TRUE(compare_with_two_norm((actual), (expected), (error)))
 //#define EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM_WITHIN_MACHINE_EPSILON(actual, expected) EXPECT_TRUE(compare_with_two_norm((actual), (expected)))
 //
 //#define EXPECT_MATRIX_NOT_EQ_TOLERANCE(actual, expected, tolerance) EXPECT_FALSE(compare_with_tolerance_readable((actual), (expected), (tolerance)))
@@ -134,6 +143,7 @@ public:
   std::string readFile(const std::string& filename);
 
   Core::Datatypes::DenseMatrixHandle makeDense(const std::string& matFile);
+  Core::Datatypes::DenseColumnMatrixHandle makeColumn(const std::string& matFile);
 
   typedef std::vector<size_t> Indices;
   typedef std::vector<double> Data;

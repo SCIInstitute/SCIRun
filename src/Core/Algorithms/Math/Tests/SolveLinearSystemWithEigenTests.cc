@@ -133,8 +133,8 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
 
   auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10));
 
-  ASSERT_TRUE(x);
-  EXPECT_EQ(v, *x);
+  ASSERT_TRUE(x.get<0>());
+  EXPECT_EQ(v, *x.get<0>());
 }
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallSparseSystem)
@@ -159,8 +159,8 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallSparseSystem)
 
   auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10));
 
-  ASSERT_TRUE(x);
-  EXPECT_EQ(v, *x);
+  ASSERT_TRUE(x.get<0>());
+  EXPECT_EQ(v, *x.get<0>());
 }
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNullMatrix)
@@ -232,14 +232,12 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 {
   EigenMatrixFromScirunAsciiFormatConverter converter;
 
-  const std::string file = "E:\\sp2.mat";
+  const std::string file = "E:\\stuff\\sp2.mat";
   std::string matStr = converter.readFile(file);
 
-  //std::cout << matStr << std::endl;
   //2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}
 
   std::string contents = converter.getMatrixContentsLine(matStr).get_value_or("");
-  //std::cout << contents << std::endl;
 
   ASSERT_EQ("2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}", contents);
 
@@ -267,18 +265,13 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
   EXPECT_EQ(2, mat->rows());
   EXPECT_EQ(3, mat->cols());
 
-  //std::cout << *mat << std::endl;
-
   DenseMatrix a(2, 3);
   a << 1, 0, 3.5,
     -1, 2, 0;
 
-  //std::cout << a << std::endl;
-
   //TODO: compare dense and sparse
   //EXPECT_EQ(a, *mat);
-
-  //EXPECT_TRUE(false);
+  EXPECT_EQ(to_string(a), to_string(mat->castForPrinting()));
 }
 
 TEST(EigenSparseSolverTest, CanSolveTinySystem)
@@ -345,55 +338,52 @@ TEST(SparseMatrixReadTest, DISABLED_CanReadInBigVector)
 
 TEST(EigenSparseSolverTest, CanSolveBigSystem)
 {
-  const std::string AFile = "C:\\Dev\\Dropbox\\CGDarrell\\A_txt.mat";
-  const std::string rhsFile = "C:\\Dev\\Dropbox\\CGDarrell\\RHS_text.txt";
+  const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
+  const std::string rhsFile = "e:\\stuff\\CGDarrell\\RHS_text.txt";
   EigenMatrixFromScirunAsciiFormatConverter converter;
   auto A = converter.makeSparse(AFile);
+  ASSERT_TRUE(A);
+
+  std::cout << A->nrows() << " x " << A->ncols() << std::endl;
 
   const int n = A->cols();
-  Eigen::VectorXd x(n);
-  x.setZero();
-  auto b = converter.makeDense(rhsFile);
-
+  auto b = converter.makeColumn(rhsFile); 
+  ASSERT_TRUE(b);
+  std::cout << b->nrows() << " x " << b->ncols() << std::endl;
+  
+  SolveLinearSystemAlgorithm::Outputs x;
   {
-    ScopedTimer t("Solving block.");
-    Eigen::ConjugateGradient<Eigen::SparseMatrix<double> > cg;
-    cg.compute(*A);
-    std::cout << "done precomputing." << std::endl;
-    cg.setTolerance(0.05);
-    //cg.setMaxIterations(2000);
-    //x = cg.solve(*b);
-    //std::cout << x << std::endl;
+    ScopedTimer t("using algorithm object");
+    SolveLinearSystemAlgorithm algo;
 
-    cg.setMaxIterations(1);
-    const int iters = 2000;
-    int i = 0;
-    do {
-      x = cg.solveWithGuess(*b, x);
-      std::cout << i << " : " << cg.error() << std::endl;
-      ++i;
-    } while (cg.info() != Eigen::Success && i < iters);
+    x = algo.run(boost::make_tuple(A, b), boost::make_tuple(1e-5, 2000));
 
-    std::cout << "#iterations:     " << cg.iterations() << std::endl;
-    std::cout << "estimated error: " << cg.error()      << std::endl;
+    ASSERT_TRUE(x.get<0>());
+    std::cout << "error: " << x.get<1>() << std::endl;
+    std::cout << "iterations: " << x.get<2>() << std::endl;
+
+    auto error = *A * *x.get<0>() - *b;
+    std::cout << "MAX error: " << error.maxCoeff() << std::endl;
+    std::cout << "MIN error: " << error.minCoeff() << std::endl;
   }
 
   {
     ScopedTimer t("comparing solutions.");
-    const std::string xFileEigen = "C:\\Dev\\Dropbox\\CGDarrell\\xEigen.txt";
+    const std::string xFileEigen = "e:\\stuff\\CGDarrell\\xEigenNEW.txt";
     std::ofstream output(xFileEigen);
-    output << x << std::endl;
+    auto solution = *x.get<0>();
+    output << solution << std::endl;
 
-    const std::string xFileScirun = "C:\\Dev\\Dropbox\\CGDarrell\\xScirun.mat";
+    const std::string xFileScirun = "e:\\stuff\\CGDarrell\\xScirun.mat";
     auto xExpected = converter.makeDense(xFileScirun);
     ASSERT_TRUE(xExpected);
     EXPECT_EQ(428931, xExpected->rows());
     EXPECT_EQ(1, xExpected->cols());
 
-    EXPECT_EQ(*xExpected, x /*, .1)*/);
-    EXPECT_EQ(*xExpected, x /*, .01)*/);
-    EXPECT_EQ(*xExpected, x /*, .001)*/);
-    EXPECT_EQ(*xExpected, x /*, .0001)*/);
+    EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .1);
+    EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .01);
+    EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .001);
+    EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .0001);
     //EXPECT_TRUE(eigenMatricesEqual(*xExpected, x, .00001));
   }
 

@@ -36,6 +36,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 namespace
 {
@@ -95,17 +96,11 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMinimumAndMaximum)
   EXPECT_EQ(4, result.get<5>());
 }
 
-TEST(ReportMatrixInfoAlgorithmTests, NullInputReturnsDummyValues)
+TEST(ReportMatrixInfoAlgorithmTests, NullInputThrows)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  ReportMatrixInfoAlgorithm::Outputs result = algo.run(DenseMatrixHandle());
-  EXPECT_EQ("<null>", result.get<0>());
-  EXPECT_EQ(0, result.get<1>());
-  EXPECT_EQ(0, result.get<2>());
-  EXPECT_EQ(0, result.get<3>());
-  EXPECT_EQ(0, result.get<4>());
-  EXPECT_EQ(0, result.get<5>());
+  EXPECT_THROW(algo.run(DenseMatrixHandle()), AlgorithmInputException);
 }
 
 TEST(BigVectorFieldFile, DISABLED_MakeIt)

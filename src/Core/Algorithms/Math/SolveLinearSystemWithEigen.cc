@@ -59,12 +59,16 @@ namespace
 
       cg.setTolerance(tolerance_);
       cg.setMaxIterations(maxIterations_);
-      return cg.solve(rhs_);
+      auto solution = cg.solve(rhs_).eval();
+      tolerance_ = cg.error();
+      maxIterations_ = cg.iterations();
+      return solution;
     }
-  private:
-    const DenseColumnMatrix& rhs_;
+
     double tolerance_;
     int maxIterations_;
+  private:
+    const DenseColumnMatrix& rhs_;
   };
 }
 
@@ -101,12 +105,22 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
   SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
   DenseColumnMatrix x;
   if (matrix_is::dense(A))
+  {
     x = impl.solveWithEigen(*matrix_cast::as_dense(A));
+  }
   else if (matrix_is::sparse(A))
+  {
     x = impl.solveWithEigen(*matrix_cast::as_sparse(A));
-  //TODO: move ctor
+  }
+  else
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen can only handle dense and sparse matrices."));
+  
   if (x.size())
-    return SolveLinearSystemAlgorithm::Outputs(new DenseColumnMatrix(x));
+  {
+    //TODO: move ctor
+    DenseColumnMatrixHandle solution(new DenseColumnMatrix(x));
+    return SolveLinearSystemAlgorithm::Outputs(solution, impl.tolerance_, impl.maxIterations_);
+  }
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen produced an empty solution."));
 }

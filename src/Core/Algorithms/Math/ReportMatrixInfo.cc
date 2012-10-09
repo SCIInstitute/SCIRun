@@ -37,7 +37,7 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
     BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null input matrix"));
     //return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
 
-  const std::string type = typeid(*input).name();
+  const std::string type = typeid(*input).name();  //TODO: need dynamic type name
 
   return Outputs(type, 
     input->nrows(), 

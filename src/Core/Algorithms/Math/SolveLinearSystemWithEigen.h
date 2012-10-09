@@ -49,7 +49,7 @@ namespace Math {
 
     typedef boost::tuple<SCIRun::Core::Datatypes::MatrixConstHandle, SCIRun::Core::Datatypes::DenseColumnMatrixConstHandle> Inputs;
     typedef boost::tuple<double, int> Parameters;  
-    typedef SCIRun::Core::Datatypes::DenseColumnMatrixHandle Outputs;
+    typedef boost::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
   };

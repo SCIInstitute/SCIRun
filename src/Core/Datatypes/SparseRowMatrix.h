@@ -73,6 +73,8 @@ namespace Datatypes {
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
 
+    const MatrixBase<T>& castForPrinting() const { return *this; } //TODO: lame...figure out a better way
+
   private:
     virtual void print(std::ostream& o) const
     {

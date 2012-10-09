@@ -73,14 +73,13 @@ void SolveLinearSystemModule::execute()
     rhsCol = matrix_convert::to_column(rhs);
 
   auto tolerance = get_state()->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
-  std::cout << "-------SLS: tolerance = " << tolerance << std::endl;
   auto maxIterations = get_state()->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
-  std::cout << "-------SLS: maxIter = " << maxIterations << std::endl;
 
   SolveLinearSystemAlgorithm algo;
   auto x = algo.run(
     SolveLinearSystemAlgorithm::Inputs(A, rhsCol), 
     SolveLinearSystemAlgorithm::Parameters(tolerance, maxIterations));
 
-  send_output_handle(0, x);
+  //TODO: make ports/update GUI with resultant error+iterations.
+  send_output_handle(0, x.get<0>());
 }
