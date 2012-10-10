@@ -62,3 +62,16 @@ bool matrix_is::column(const MatrixConstHandle& mh)
 { 
   return matrix_cast::as_column(mh) != 0; 
 }
+
+DenseColumnMatrixConstHandle matrix_convert::to_column(const MatrixConstHandle& mh)
+{
+  auto col = matrix_cast::as_column(mh);
+  if (col)
+    return col;
+
+  auto dense = matrix_cast::as_dense(mh);
+  if (dense)
+    return DenseColumnMatrixConstHandle(new DenseColumnMatrix(dense->col(0)));
+
+  return DenseColumnMatrixConstHandle();
+}

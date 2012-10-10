@@ -42,24 +42,6 @@ using namespace SCIRun::Dataflow::Networks;
 
 SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) {}
 
-//TODO: move
-class matrix_convert
-{
-public:
-  static DenseColumnMatrixConstHandle to_column(const MatrixConstHandle& mh)
-  {
-    auto col = matrix_cast::as_column(mh);
-      if (col)
-        return col;
-    
-    auto dense = matrix_cast::as_dense(mh);
-    if (dense)
-      return DenseColumnMatrixConstHandle(new DenseColumnMatrix(dense->col(0)));
-    
-    return DenseColumnMatrixConstHandle();
-  }
-};
-
 void SolveLinearSystemModule::execute()
 {
   auto A = getRequiredInput<Matrix>(0);

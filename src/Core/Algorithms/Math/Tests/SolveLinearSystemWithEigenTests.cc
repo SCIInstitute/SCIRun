@@ -35,6 +35,7 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Eigen/Sparse>
 #include <Testing/Utils/MatrixTestUtilities.h>
@@ -229,8 +230,6 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNegativeMaxIterations)
   EXPECT_THROW(algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, -1)), AlgorithmInputException);
 }
 
-
-
 TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 {
   EigenMatrixFromScirunAsciiFormatConverter converter;
@@ -339,35 +338,36 @@ TEST(SparseMatrixReadTest, DISABLED_CanReadInBigVector)
   EXPECT_EQ(1, mat->cols());
 }
 
-TEST(EigenSparseSolverTest, CanSolveBigSystem)
+TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
 {
   const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
   const std::string rhsFile = "e:\\stuff\\CGDarrell\\RHS_text.txt";
   EigenMatrixFromScirunAsciiFormatConverter converter;
-  auto A = converter.makeSparse(AFile);
+  auto A = converter.make(AFile);
   ASSERT_TRUE(A);
 
   std::cout << A->nrows() << " x " << A->ncols() << std::endl;
 
-  const int n = A->cols();
-  auto b = converter.makeColumn(rhsFile); 
+  //const int n = A->ncols();
+  auto b = converter.make(rhsFile); 
   ASSERT_TRUE(b);
   std::cout << b->nrows() << " x " << b->ncols() << std::endl;
+  auto bCol = matrix_convert::to_column(b);
   
   SolveLinearSystemAlgorithm::Outputs x;
   {
     ScopedTimer t("using algorithm object");
     SolveLinearSystemAlgorithm algo;
 
-    x = algo.run(boost::make_tuple(A, b), boost::make_tuple(1e-5, 2000));
+    x = algo.run(boost::make_tuple(A, bCol), boost::make_tuple(1e-20, 4000));
 
     ASSERT_TRUE(x.get<0>());
     std::cout << "error: " << x.get<1>() << std::endl;
     std::cout << "iterations: " << x.get<2>() << std::endl;
 
-    auto error = *A * *x.get<0>() - *b;
-    std::cout << "MAX error: " << error.maxCoeff() << std::endl;
-    std::cout << "MIN error: " << error.minCoeff() << std::endl;
+    //auto error = *A * *x.get<0>() - *b;
+    //std::cout << "MAX error: " << error.maxCoeff() << std::endl;
+    //std::cout << "MIN error: " << error.minCoeff() << std::endl;
   }
 
   {
@@ -375,13 +375,13 @@ TEST(EigenSparseSolverTest, CanSolveBigSystem)
     const std::string xFileEigen = "e:\\stuff\\CGDarrell\\xEigenNEW.txt";
     std::ofstream output(xFileEigen);
     auto solution = *x.get<0>();
-    output << solution << std::endl;
+    output << std::setprecision(15) << solution << std::endl;
 
-    const std::string xFileScirun = "e:\\stuff\\CGDarrell\\xScirun.mat";
-    auto xExpected = converter.makeDense(xFileScirun);
+    const std::string xFileScirun = "e:\\stuff\\CGDarrell\\xScirunColumn.mat";
+    auto xExpected = converter.makeColumn(xFileScirun);
     ASSERT_TRUE(xExpected);
-    EXPECT_EQ(428931, xExpected->rows());
-    EXPECT_EQ(1, xExpected->cols());
+    EXPECT_EQ(428931, xExpected->nrows());
+    EXPECT_EQ(1, xExpected->ncols());
 
     EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .1);
     EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .01);

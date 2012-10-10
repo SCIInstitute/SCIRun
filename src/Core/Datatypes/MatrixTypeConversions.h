@@ -69,6 +69,14 @@ namespace Datatypes {
     matrix_is();
   };
  
+  //TODO: move
+  class SCISHARE matrix_convert
+  {
+  public:
+    static DenseColumnMatrixConstHandle to_column(const MatrixConstHandle& mh);
+  private:
+    matrix_convert();
+  };
 
 }}}
 
