@@ -67,5 +67,5 @@ void ReadMatrixDialog::pushFileNameToState(const QString& str)
 
 void ReadMatrixDialog::openFile()
 {
-  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Matrix Text File", ".", "*.txt"));
+  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Matrix Text File", ".", "Text files (*.txt);;SCIRun Matrix File [ASCII] (*.mat)"));
 }
