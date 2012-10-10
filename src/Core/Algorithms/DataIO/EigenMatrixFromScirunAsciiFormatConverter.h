@@ -46,6 +46,8 @@ namespace internal
   class SCISHARE EigenMatrixFromScirunAsciiFormatConverter
   {
   public:
+    Core::Datatypes::MatrixHandle make(const std::string& matFile);
+
     Core::Datatypes::SparseRowMatrixHandle makeSparse(const std::string& matFile);
 
     boost::optional<std::string> getMatrixContentsLine(const std::string& matStr);
@@ -63,6 +65,7 @@ namespace internal
     typedef boost::tuple<std::string,std::string,std::string> RawDenseData;
 
     boost::optional<RawDenseData> parseDenseMatrixString(const std::string& matString);
+    boost::optional<RawDenseData> parseColumnMatrixString(const std::string& matString);
     DenseData convertRaw(const RawDenseData& data);
     boost::optional<RawSparseData> parseSparseMatrixString(const std::string& matString);
     SparseData convertRaw(const RawSparseData& data);

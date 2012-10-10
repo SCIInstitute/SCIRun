@@ -50,6 +50,7 @@ namespace Core
 
   typedef boost::error_info<struct tag_error_message, std::string> ErrorMessage;
   typedef boost::error_info<struct tag_null_object, std::string> NullObjectInfo;
+  typedef boost::error_info<struct tag_file_not_found, std::string> FileNotFound;
   //TODO: discuss location/type
   typedef boost::error_info<struct tag_linear_algebra_error, std::string> LinearAlgebraErrorMessage;
   //TODO: make macro for various types

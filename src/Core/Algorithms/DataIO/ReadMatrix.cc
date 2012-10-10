@@ -44,13 +44,13 @@ AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
   if (!boost::filesystem::exists(filename))
-    return Outputs();
-  
-  
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << FileNotFound(filename));
+
+  //TODO: push logging up hierarchy
+  std::cout << "Algorithm start." << std::endl;
+
   if (boost::filesystem::extension(filename) == ".txt")
   {
-    //TODO: push logging up hierarchy
-    std::cout << "Algorithm start." << std::endl;
     std::ifstream reader(filename.c_str());
     DenseMatrixHandle matrix(new DenseMatrix);
     reader >> *matrix;
@@ -59,10 +59,9 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   }
   else if (boost::filesystem::extension(filename) == ".mat")
   {
-    std::cout << "FOUND .mat file assuming is SCIRUNv4 ASCII format." << std::endl;
-    std::cout << "also assuming sparse for now..." << std::endl;
+    std::cout << "FOUND .mat file: assuming is SCIRUNv4 ASCII format." << std::endl;
     internal::EigenMatrixFromScirunAsciiFormatConverter conv;
-    return conv.makeSparse(filename);
+    return conv.make(filename);
   }
-  return ReadMatrixAlgorithm::Outputs();
+  BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown matrix file format"));
 }

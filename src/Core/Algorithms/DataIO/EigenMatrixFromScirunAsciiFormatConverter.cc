@@ -39,21 +39,52 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO::internal;
 
-
-template <typename T>
-std::vector<T> parseLineOfNumbers(const std::string& line)
+namespace
 {
-  typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-  boost::char_separator<char> sep(" ");
-  tokenizer tok(line, sep);
+  template <typename T>
+  std::vector<T> parseLineOfNumbers(const std::string& line)
+  {
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    boost::char_separator<char> sep(" ");
+    tokenizer tok(line, sep);
 
-  std::vector<T> numbers;
-  std::transform(tok.begin(), tok.end(), std::back_inserter(numbers), [](const std::string& s){ return boost::lexical_cast<T>(s);});
-  return numbers;
+    std::vector<T> numbers;
+    std::transform(tok.begin(), tok.end(), std::back_inserter(numbers), [](const std::string& s){ return boost::lexical_cast<T>(s);});
+
+    return numbers;
+  }
+
+  bool fileContainsString(const std::string& filename, const std::string& str)
+  {
+    std::ifstream input(filename);
+    std::string line;
+
+    while (std::getline(input, line)) 
+    {
+      auto index = line.find(str);
+      if (index != std::string::npos && line.find('\0') > index)
+        return true;
+    }
+
+    return false;
+  }
+}
+
+MatrixHandle EigenMatrixFromScirunAsciiFormatConverter::make(const std::string& matFile)
+{
+  if (fileContainsString(matFile, "DenseMatrix"))
+    return makeDense(matFile);
+  if (fileContainsString(matFile, "SparseRowMatrix"))
+    return makeSparse(matFile);
+  if (fileContainsString(matFile, "ColumnMatrix"))
+    return makeColumn(matFile);
+
+  BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown SCIRun matrix format"));
 }
 
 SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(const std::string& matFile)
@@ -114,19 +145,22 @@ DenseMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeDense(const std
   DenseData data = convertRaw(parseDenseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
   DenseMatrixHandle mat(new DenseMatrix(data.get<0>(), data.get<1>()));
 
-  BOOST_FOREACH(double x, data.get<2>())
-    *mat << x;
+  auto values = data.get<2>().begin();
+  for (int i = 0; i < mat->rows(); ++i)
+    for (int j = 0; j < mat->cols(); ++j)
+      (*mat)(i,j) = *values++;
 
   return mat;
 }
 
 DenseColumnMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeColumn(const std::string& matFile)
 {
-  DenseData data = convertRaw(parseDenseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
+  DenseData data = convertRaw(parseColumnMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
   DenseColumnMatrixHandle mat(new DenseColumnMatrix(data.get<0>()));
 
-  BOOST_FOREACH(double x, data.get<2>())
-    *mat << x;
+  auto values = data.get<2>().begin();
+  for (int i = 0; i < mat->rows(); ++i)
+      (*mat)(i) = *values++;
 
   return mat;
 }
@@ -139,6 +173,18 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMa
   if (what.size() == 4)
   {
     return boost::make_tuple(what[1], what[2], what[3]);
+  }
+  return boost::optional<RawDenseData>();
+}
+
+boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMatrixFromScirunAsciiFormatConverter::parseColumnMatrixString(const std::string& matString)
+{
+  boost::regex r("(\\d+) (.*)\\}");
+  boost::smatch what;
+  regex_match(matString, what, r);
+  if (what.size() == 3)
+  {
+    return boost::make_tuple(what[1], "1", what[2]);
   }
   return boost::optional<RawDenseData>();
 }

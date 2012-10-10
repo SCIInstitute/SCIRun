@@ -37,6 +37,7 @@
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Utils/StringUtil.h>
 #include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -84,7 +85,14 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
     std::cout << "file does not exist, skipping test." << std::endl;
 }
 
-TEST(ReadMatrixAlgorithmTest, TestFromRealASCIIMatFile)
+TEST(ReadMatrixAlgorithmTest, ThrowsForFileNotFound)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "ZZZ:\\no way this file exists............\\\\////\\\\//";
+  EXPECT_THROW(algo.run(filename), Core::Algorithms::AlgorithmInputException);
+}
+
+TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
   const std::string filename = "E:\\stuff\\sp2.mat";
@@ -103,6 +111,92 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealASCIIMatFile)
     //TODO: compare dense and sparse
     //EXPECT_EQ(a, *mat);
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "E:\\stuff\\CGDarrell\\xScirun.mat";
+  if (boost::filesystem::exists(filename))
+  {
+    MatrixConstHandle matrix = algo.run(filename);
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::dense(matrix));
+
+    auto dense = matrix_cast::as_dense(matrix);
+    EXPECT_EQ(1, dense->cols());
+    EXPECT_EQ(428931, dense->rows());
+    EXPECT_NEAR(-7.86543, dense->minCoeff(), 1e-4);
+    EXPECT_NEAR(8.90886, dense->maxCoeff(), 1e-4);
+    EXPECT_DOUBLE_EQ(-0.346299309398506, (*dense)(0,0));
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string filename = "E:\\stuff\\CGDarrell\\xScirunColumn.mat";
+  if (boost::filesystem::exists(filename))
+  {
+    MatrixConstHandle matrix = algo.run(filename);
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::column(matrix));
+
+    auto col = matrix_cast::as_column(matrix);
+    EXPECT_EQ(1, col->cols());
+    EXPECT_EQ(428931, col->rows());
+    EXPECT_NEAR(-7.86543, col->minCoeff(), 1e-4);
+    EXPECT_NEAR(8.90886, col->maxCoeff(), 1e-4);
+    EXPECT_DOUBLE_EQ(-0.346299309398506, (*col)(0,0));
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, TestLargeSparseFromRealASCIIMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
+  if (boost::filesystem::exists(AFile))
+  {
+    MatrixConstHandle matrix = algo.run(AFile);
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::sparse(matrix));
+
+    auto sp = matrix_cast::as_sparse(matrix);
+
+    EXPECT_EQ(428931, sp->rows());
+    EXPECT_EQ(428931, sp->cols());
+    EXPECT_EQ(5540569, sp->nonZeros());
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, UnknownFileFormatThrows)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string notAMatrixFile = "E:\\git\\SCIRunGUIPrototype\\src\\Core\\Algorithms\\DataIO\\Share.h";
+  if (boost::filesystem::exists(notAMatrixFile))
+  {
+    EXPECT_THROW(algo.run(notAMatrixFile), Core::Algorithms::AlgorithmInputException);
+  }
+  else
+    std::cout << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, ThrowsForMatlabFilesICantThemReadYet)
+{
+  ReadMatrixAlgorithm algo;
+  const std::string matlabFile = "E:\\stuff\\CGDarrell\\RHS.mat";
+  if (boost::filesystem::exists(matlabFile))
+  {
+    EXPECT_THROW(algo.run(matlabFile), Core::Algorithms::AlgorithmInputException);
   }
   else
     std::cout << "file does not exist, skipping test." << std::endl;
