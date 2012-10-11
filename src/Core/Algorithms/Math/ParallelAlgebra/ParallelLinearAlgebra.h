@@ -47,20 +47,29 @@ namespace Math {
 
   class ParallelLinearAlgebra;
 
+  class SCISHARE Barrier 
+  {
+  public:
+    Barrier(const std::string& name, size_t numThreads);
+    void wait();
+  private:
+    std::string name_;
+    boost::barrier barrier_;
+  };
+
 // The algorithm that uses this should derive from this class
-class SCISHARE ParallelLinearAlgebraBase 
+class SCISHARE ParallelLinearAlgebraBase : boost::noncopyable
 {
 public:
   ParallelLinearAlgebraBase(); //:      barrier_("Parallel Linear Algebra") {}
   virtual ~ParallelLinearAlgebraBase();// {}
   
-  bool start_parallel(std::vector<Datatypes::MatrixHandle>& matrices, int nproc = -1);
+  bool start_parallel(std::vector<Datatypes::SparseRowMatrixHandle>& matrices, int nproc = -1);
   void run_parallel(int proc, int nproc);
   
-  virtual bool parallel(ParallelLinearAlgebra& PLA, std::vector<Datatypes::MatrixHandle>& matrices) = 0;
+  virtual bool parallel(ParallelLinearAlgebra& PLA, std::vector<Datatypes::SparseRowMatrixHandle>& matrices) = 0;
 
   //! classes for communication
-  boost::barrier barrier_;
   std::vector<double> reduce1_;
   std::vector<double> reduce2_;
   std::vector<bool> success_;
@@ -68,10 +77,11 @@ public:
   size_t size_;
   int nproc_;
     
-  Datatypes::MatrixHandle current_matrix_;
-  std::list<Datatypes::MatrixHandle> vectors_;
-  std::vector<Datatypes::MatrixHandle> imatrices_;
+  Datatypes::SparseRowMatrixHandle current_matrix_;
+  std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
+  std::vector<Datatypes::SparseRowMatrixHandle> imatrices_;
 };
+
 
 
 class SCISHARE ParallelLinearAlgebra : boost::noncopyable
@@ -97,9 +107,9 @@ public:
   // Constructor
   ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc); 
     
-  bool add_vector(Datatypes::MatrixHandle& mat, ParallelVector& V);
+  bool add_vector(Datatypes::DenseColumnMatrixHandle mat, ParallelVector& V);
   bool new_vector(ParallelVector& V);
-  bool add_matrix(Datatypes::MatrixHandle& mat, ParallelMatrix& M);
+  bool add_matrix(Datatypes::SparseRowMatrixHandle mat, ParallelMatrix& M);
 
   void mult(ParallelVector& a, ParallelVector& b, ParallelVector& r);
   void add(ParallelVector& a, ParallelVector& b, ParallelVector& r);
@@ -139,7 +149,8 @@ private:
   double reduce_min(double val);
   double reduce_max(double val);
     
-  ParallelLinearAlgebraBase* base_;
+  Barrier barrier_;
+  //ParallelLinearAlgebraBase* base_;
   
   int proc_;  // process number
   int nproc_; // number of processes
