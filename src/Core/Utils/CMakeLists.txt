@@ -34,6 +34,7 @@ SET(Core_Utils_SRCS
 
 SET(Core_Utils_HEADERS
   Exception.h
+  Macros.h
   Singleton.h
   Share.h
   StringUtil.h
