@@ -35,6 +35,9 @@
 
 #include <vector>
 #include <list>
+#include <boost/noncopyable.hpp>
+#include <boost/thread/barrier.hpp>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
@@ -42,117 +45,113 @@ namespace Core {
 namespace Algorithms {
 namespace Math {
 
+  class ParallelLinearAlgebra;
 
 // The algorithm that uses this should derive from this class
 class SCISHARE ParallelLinearAlgebraBase 
 {
-
-  public:
-    ParallelLinearAlgebraBase() :
-      barrier_("Parallel Linear Algebra") {}
-    virtual ~ParallelLinearAlgebraBase() {}
+public:
+  ParallelLinearAlgebraBase(); //:      barrier_("Parallel Linear Algebra") {}
+  virtual ~ParallelLinearAlgebraBase();// {}
   
-    bool start_parallel(std::vector<MatrixHandle>& matrices,int nproc=-1);
-    void run_parallel(int proc, int nproc);
+  bool start_parallel(std::vector<Datatypes::MatrixHandle>& matrices, int nproc = -1);
+  void run_parallel(int proc, int nproc);
   
-    virtual bool parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrices) = 0;
+  virtual bool parallel(ParallelLinearAlgebra& PLA, std::vector<Datatypes::MatrixHandle>& matrices) = 0;
 
-
-    //! classes for communication
-    Barrier              barrier_;
-    std::vector<double>  reduce1_;
-    std::vector<double>  reduce2_;
-    std::vector<bool>    success_;
+  //! classes for communication
+  boost::barrier barrier_;
+  std::vector<double> reduce1_;
+  std::vector<double> reduce2_;
+  std::vector<bool> success_;
     
-    size_type    size_;
-    int                  nproc_;
+  size_t size_;
+  int nproc_;
     
-    MatrixHandle              current_matrix_;
-    std::list<MatrixHandle>   vectors_;
-    
-    std::vector<MatrixHandle> imatrices_;
+  Datatypes::MatrixHandle current_matrix_;
+  std::list<Datatypes::MatrixHandle> vectors_;
+  std::vector<Datatypes::MatrixHandle> imatrices_;
 };
 
 
-class SCISHARE ParallelLinearAlgebra 
+class SCISHARE ParallelLinearAlgebra : boost::noncopyable
 {
-
-  public:
-    class ParallelVector {
-      public:
-        double* data_;
-        size_type size_;
-    };
+public:
+  class ParallelVector {
+    public:
+      double* data_;
+      size_t size_;
+  };
     
-    class ParallelMatrix {
-      public:
-        index_type* rows_;
-        index_type* columns_;
-        double* data_;
+  class ParallelMatrix {
+    public:
+      size_t* rows_;
+      size_t* columns_;
+      double* data_;
         
-        size_type   m_;
-        size_type   n_;
-        size_type   nnz_;
-    };
+      size_t   m_;
+      size_t   n_;
+      size_t   nnz_;
+  };
       
-    // Constructor
-    ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc); 
+  // Constructor
+  ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc); 
     
-    bool add_vector(MatrixHandle& mat, ParallelVector& V);
-    bool new_vector(ParallelVector& V);
-    bool add_matrix(MatrixHandle& mat, ParallelMatrix& M);
+  bool add_vector(Datatypes::MatrixHandle& mat, ParallelVector& V);
+  bool new_vector(ParallelVector& V);
+  bool add_matrix(Datatypes::MatrixHandle& mat, ParallelMatrix& M);
 
-    void mult(ParallelVector& a, ParallelVector& b, ParallelVector& r);
-    void add(ParallelVector& a, ParallelVector& b, ParallelVector& r);
-    void sub(ParallelVector& a, ParallelVector& b, ParallelVector& r);
-    void copy(ParallelVector& a, ParallelVector& r);
+  void mult(ParallelVector& a, ParallelVector& b, ParallelVector& r);
+  void add(ParallelVector& a, ParallelVector& b, ParallelVector& r);
+  void sub(ParallelVector& a, ParallelVector& b, ParallelVector& r);
+  void copy(ParallelVector& a, ParallelVector& r);
 
-    void scale_add(double s, ParallelVector& a, ParallelVector& b, ParallelVector& r);
-    void scale(double s, ParallelVector& a, ParallelVector& r);
-    void invert(ParallelVector& a, ParallelVector& r);
-    void threshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
-    void absthreshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
+  void scale_add(double s, ParallelVector& a, ParallelVector& b, ParallelVector& r);
+  void scale(double s, ParallelVector& a, ParallelVector& r);
+  void invert(ParallelVector& a, ParallelVector& r);
+  void threshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
+  void absthreshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
     
-    double dot(ParallelVector& a, ParallelVector& b);
-    double norm(ParallelVector& a);
-    double min(ParallelVector& a);
-    double max(ParallelVector& a);
-    double absmin(ParallelVector& a);
-    double absmax(ParallelVector& a);
+  double dot(ParallelVector& a, ParallelVector& b);
+  double norm(ParallelVector& a);
+  double min(ParallelVector& a);
+  double max(ParallelVector& a);
+  double absmin(ParallelVector& a);
+  double absmax(ParallelVector& a);
     
-    void mult(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
-    void mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
+  void mult(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
+  void mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
 
-    void diag(ParallelMatrix& a, ParallelVector& r);
-    void absdiag(ParallelMatrix& a, ParallelVector& r);
+  void diag(ParallelMatrix& a, ParallelVector& r);
+  void absdiag(ParallelMatrix& a, ParallelVector& r);
     
-    void zeros(ParallelVector& r);
-    void ones(ParallelVector& r);
+  void zeros(ParallelVector& r);
+  void ones(ParallelVector& r);
     
-    int  proc() { return (proc_); }
-    int  nproc() { return (nproc_); }
+  int  proc() { return proc_; }
+  int  nproc() { return nproc_; }
     
-    bool first() { return (proc_ == 0); }
-    void wait()  { base_->barrier_.wait(nproc_); }
+  bool first() { return proc_ == 0; }
+  void wait();//  { base_->barrier_.wait(nproc_); }
 
-  private:
-    double reduce_sum(double val);
-    double reduce_min(double val);
-    double reduce_max(double val);
+private:
+  double reduce_sum(double val);
+  double reduce_min(double val);
+  double reduce_max(double val);
     
-    ParallelLinearAlgebraBase* base_;
+  ParallelLinearAlgebraBase* base_;
   
-    int proc_;  // process number
-    int nproc_; // number of processes
+  int proc_;  // process number
+  int nproc_; // number of processes
 
-    size_type size_;
-    size_type local_size_;
-    size_type local_size16_;
-    index_type start_;
-    index_type end_;
+  size_t size_;
+  size_t local_size_;
+  size_t local_size16_;
+  size_t start_;
+  size_t end_;
     
-    double* reduce_[2];
-    int     reduce_buffer_;
+  double* reduce_[2];
+  int     reduce_buffer_;
 };
 
 

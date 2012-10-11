@@ -34,6 +34,7 @@
 #define CORE_ALGORITHMS_MATH_LINEARSYSTEM_SOLVELINEARSYSTEM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
@@ -49,16 +50,16 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
   public:
     SolveLinearSystemAlgo();
   
-    bool run(MatrixHandle A,
-             MatrixHandle b,
-             MatrixHandle x0, 
-             MatrixHandle& x,
-             MatrixHandle& convergence);
+    bool run(Datatypes::MatrixHandle A,
+             Datatypes::MatrixHandle b,
+             Datatypes::MatrixHandle x0, 
+             Datatypes::MatrixHandle& x,
+             Datatypes::MatrixHandle& convergence);
 
-    bool run(MatrixHandle A,
-             MatrixHandle b,
-             MatrixHandle x0, 
-             MatrixHandle& x);
+    bool run(Datatypes::MatrixHandle A,
+             Datatypes::MatrixHandle b,
+             Datatypes::MatrixHandle x0, 
+             Datatypes::MatrixHandle& x);
 };
 
 
