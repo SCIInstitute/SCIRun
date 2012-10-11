@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,43 +25,24 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+ 
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
+#include <fstream>
+#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/MatrixComparison.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/MatrixIO.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
-#ifndef CORE_ALGORITHMS_MATH_LINEARSYSTEM_SOLVELINEARSYSTEM_H
-#define CORE_ALGORITHMS_MATH_LINEARSYSTEM_SOLVELINEARSYSTEM_H
-
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/Share.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
-
-// Solve a linear system in parallel using a standard iterative method
-// Method solves A*x = b, with x0 being the initializer for the solution
-
-class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
-{
-  public:
-    SolveLinearSystemAlgo();
-  
-    bool run(MatrixHandle A,
-             MatrixHandle b,
-             MatrixHandle x0, 
-             MatrixHandle& x,
-             MatrixHandle& convergence);
-
-    bool run(MatrixHandle A,
-             MatrixHandle b,
-             MatrixHandle x0, 
-             MatrixHandle& x);
-};
-
-
-}}}}
-
-#endif
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::DataIO::internal;
+using namespace SCIRun::TestUtils;
+using namespace SCIRun;
+using namespace ::testing;

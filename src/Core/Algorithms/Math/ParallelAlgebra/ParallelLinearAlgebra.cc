@@ -39,9 +39,7 @@
 
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 
-#include <float.h>
-
-namespace SCIRun {
+using namespace SCIRun::Core::Algorithms::Math;
 
 ParallelLinearAlgebra::
 ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc)

@@ -39,7 +39,31 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
 
-namespace SCIRunAlgo {
+using namespace SCIRun::Core::Algorithms::Math;
+
+SolveLinearSystemAlgo::SolveLinearSystemAlgo()
+{
+  // For solver
+  add_option("method","cg","jacobi|cg|bicg|minres");
+  add_option("pre_conditioner","jacobi","none|jacobi");
+  add_scalar("target_error",1e-6);
+  add_int("max_iterations",300);
+
+  add_bool("build_convergence",true);
+
+  // for callback
+  // Read this variable to find the error at the start of the iteration
+  add_scalar("original_error",0.0);
+  // Read this variable to find current error
+  add_scalar("current_error",0.0);
+  // Read this variable to find current iteration
+  add_int("iteration",0);
+  // How often the algorithm should go to a callback
+  add_int("callback_step",10);
+
+  add_handle("solution");
+  add_handle("convergence");
+}
 
 using namespace SCIRun;
 
@@ -305,18 +329,17 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   return (true);
 }
- 
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // BICG Solver with simple preconditioner
-
-
 class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo 
 {
   public:
     virtual bool parallel(ParallelLinearAlgebra& PLA, 
                           std::vector<MatrixHandle>& matrix);
 };
-
 
 bool
 SolveLinearSystemBICGAlgo::
@@ -508,11 +531,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   return (true);
 }
+#endif
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // BICG Solver with simple preconditioner
-
 
 class SolveLinearSystemMINRESAlgo : public SolveLinearSystemParallelAlgo 
 {
@@ -844,9 +867,9 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   return (true);
 }
+#endif
 
-
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // JACOBI Solver with simple preconditioner
 
@@ -996,7 +1019,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   return (true);
 }
-
+#endif
 
 bool
 SolveLinearSystemAlgo::run(MatrixHandle A,

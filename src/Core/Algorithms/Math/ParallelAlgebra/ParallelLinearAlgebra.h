@@ -31,25 +31,21 @@
 ///////////////////////////
 
 #ifndef CORE_ALGORITHMS_MATH_PARALLELALGEBRA_PARALLELLINEARALGEBRA_H
-#define CORE_ALGORITHMS_MATH_PARALLELALGEBRA_PARALLELLINEARALGEBRA_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Thread/Thread.h>
-#include <Core/Thread/Barrier.h>
+#define CORE_ALGORITHMS_MATH_PARALLELALGEBRA_PARALLELLINEARALGEBRA_H
 
 #include <vector>
 #include <list>
-//! for Windows support
-#include <Core/Datatypes/share.h>
+#include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Math {
 
-class ParallelLinearAlgebraBase;
-class ParallelLinearAlgebra;
 
 // The algorithm that uses this should derive from this class
-class ParallelLinearAlgebraBase {
+class SCISHARE ParallelLinearAlgebraBase 
+{
 
   public:
     ParallelLinearAlgebraBase() :
@@ -78,7 +74,8 @@ class ParallelLinearAlgebraBase {
 };
 
 
-class ParallelLinearAlgebra {
+class SCISHARE ParallelLinearAlgebra 
+{
 
   public:
     class ParallelVector {
@@ -159,6 +156,6 @@ class ParallelLinearAlgebra {
 };
 
 
-}
+}}}}
 
 #endif

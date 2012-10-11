@@ -31,7 +31,9 @@ SET(Algorithms_Math_Tests_SRCS
   ReportMatrixInfoTests.cc
   EvaluateLinearAlgebraUnaryTests.cc
   EvaluateLinearAlgebraBinaryTests.cc
+  ParallelLinearAlgebraTests.cc
   SolveLinearSystemWithEigenTests.cc
+  SolveLinearSystemAlgoTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS
