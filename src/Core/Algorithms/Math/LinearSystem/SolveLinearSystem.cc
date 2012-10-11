@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///////////////////////////
+// PORTED SCIRUN v4 CODE //
+///////////////////////////
+
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 

@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///////////////////////////
+// PORTED SCIRUN v4 CODE //
+///////////////////////////
+
 #include <Core/Math/MiscMath.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>
