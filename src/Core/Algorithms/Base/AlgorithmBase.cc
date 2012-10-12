@@ -84,3 +84,36 @@ void AlgorithmLogger::status(const std::string& status) const
 {
   logger_->status(status);
 }
+
+AlgorithmParameterList::AlgorithmParameterList() {}
+
+void AlgorithmParameterList::set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value)
+{
+  auto iter = parameters_.find(key);
+  if (iter == parameters_.end())
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound());
+  iter->second.value_ = value;
+}
+
+const AlgorithmParameter& AlgorithmParameterList::get(const AlgorithmParameterName& key) const
+{
+  auto iter = parameters_.find(key);
+  if (iter == parameters_.end())
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound());
+  return iter->second;
+}
+
+void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue)
+{
+  parameters_[key] = AlgorithmParameter(key, defaultValue);
+}
+
+ScopedAlgorithmReporter::ScopedAlgorithmReporter(AlgorithmStatusReporter* algo, const std::string& tag) : algo_(algo)
+{
+  algo_->algo_start(tag);
+}
+
+ScopedAlgorithmReporter::~ScopedAlgorithmReporter()
+{
+  algo_->algo_end();
+}

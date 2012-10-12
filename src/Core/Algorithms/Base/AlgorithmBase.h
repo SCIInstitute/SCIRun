@@ -94,6 +94,8 @@ namespace Algorithms {
         
     void algo_start(const std::string& tag) {}
     void algo_end() {}
+    void update_progress(double percent) const {}
+    void update_progress(size_t current, size_t max) const  {}
   private:
   };
 
@@ -110,13 +112,16 @@ namespace Algorithms {
   class SCISHARE AlgorithmParameterList
   {
   public:
+    AlgorithmParameterList();
     void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
-    AlgorithmParameter::Value get(const AlgorithmParameterName& key) const;
+    const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
   private:
     std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
   };
+
+  
 
   //template <class Input, class Output, class Parameters>
   class SCISHARE AlgorithmBase : public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
@@ -138,12 +143,15 @@ namespace Algorithms {
 
   };
 
-  //TODO: discuss.
   struct SCISHARE AlgorithmInputException : virtual ExceptionBase
   {
   };
 
   struct SCISHARE AlgorithmProcessingException : virtual ExceptionBase
+  {
+  };
+
+  struct SCISHARE AlgorithmParameterNotFound : virtual AlgorithmProcessingException //TODO??
   {
   };
 

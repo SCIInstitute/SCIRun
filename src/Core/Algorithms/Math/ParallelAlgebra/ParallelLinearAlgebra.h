@@ -47,6 +47,7 @@ namespace Math {
 
   class ParallelLinearAlgebra;
 
+  //TODO move to Thread/Util library obviously
   class SCISHARE Barrier 
   {
   public:
@@ -57,6 +58,22 @@ namespace Math {
     boost::barrier barrier_;
   };
 
+  struct SCISHARE SolverInputs
+  {
+    Datatypes::SparseRowMatrixHandle A;
+    Datatypes::DenseColumnMatrixHandle b;
+    Datatypes::DenseColumnMatrixHandle x0;
+    Datatypes::DenseColumnMatrixHandle x;
+
+    void clear()
+    {
+      A.reset();
+      b.reset();
+      x0.reset();
+      x.reset();
+    }
+  };
+
 // The algorithm that uses this should derive from this class
 class SCISHARE ParallelLinearAlgebraBase : boost::noncopyable
 {
@@ -64,10 +81,10 @@ public:
   ParallelLinearAlgebraBase(); //:      barrier_("Parallel Linear Algebra") {}
   virtual ~ParallelLinearAlgebraBase();// {}
   
-  bool start_parallel(std::vector<Datatypes::SparseRowMatrixHandle>& matrices, int nproc = -1);
+  bool start_parallel(SolverInputs& matrices, int nproc = -1);
   void run_parallel(int proc, int nproc);
   
-  virtual bool parallel(ParallelLinearAlgebra& PLA, std::vector<Datatypes::SparseRowMatrixHandle>& matrices) = 0;
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) = 0;
 
   //! classes for communication
   std::vector<double> reduce1_;
@@ -78,7 +95,7 @@ public:
     
   Datatypes::DenseColumnMatrixHandle current_matrix_;
   std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
-  std::vector<Datatypes::SparseRowMatrixHandle> imatrices_;
+  SolverInputs imatrices_;
 };
 
 
@@ -141,7 +158,7 @@ public:
   int  nproc() { return nproc_; }
     
   bool first() { return proc_ == 0; }
-  void wait();//  { base_->barrier_.wait(nproc_); }
+  void wait();
 
 private:
   double reduce_sum(double val);

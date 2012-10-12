@@ -43,7 +43,19 @@
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
+Barrier::Barrier(const std::string& name, size_t numThreads) : name_(name), barrier_(numThreads)
+{
+}
+
+void Barrier::wait()
+{
+  barrier_.wait();
+}
+
 ParallelLinearAlgebraBase::ParallelLinearAlgebraBase() 
+{}
+
+ParallelLinearAlgebraBase::~ParallelLinearAlgebraBase() 
 {}
 
 ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc) 
@@ -71,6 +83,11 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, in
   reduce_buffer_ = 0;
 }
 
+void ParallelLinearAlgebra::wait()
+{
+  barrier_.wait();
+}
+
 bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVector& V)
 {
   // Basic checks
@@ -87,7 +104,7 @@ bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVect
 
 bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
 {
-  barrier_.wait();
+  wait();
   
   base_->success_[proc_] = true;
   if (proc_ == 0)
@@ -104,13 +121,13 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
     }
   }
   
-  barrier_.wait();
+  wait();
 
   if (!base_->success_[0]) 
     return false;
   
   auto mat = base_->current_matrix_;
-  barrier_.wait();
+  wait();
 
   return(add_vector(mat,V));
 }
@@ -613,7 +630,7 @@ double ParallelLinearAlgebra::absmax(ParallelVector& a)
 
 void ParallelLinearAlgebra::mult(ParallelMatrix& a, ParallelVector& b, ParallelVector& r)
 {
-  barrier_.wait();
+  wait();
 
   double* idata = b.data_;
   double* odata = r.data_;
@@ -637,7 +654,7 @@ void ParallelLinearAlgebra::mult(ParallelMatrix& a, ParallelVector& b, ParallelV
 
 void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r)
 {
-  barrier_.wait();
+  wait();
 
   double* idata = b.data_;
   double* odata = r.data_;
@@ -709,8 +726,11 @@ double ParallelLinearAlgebra::reduce_sum(double val)
 {
   int buffer = reduce_buffer_;
   reduce_[buffer][proc_] = val;
-  if (reduce_buffer_) reduce_buffer_ = 0; else reduce_buffer_ = 1;
-  barrier_.wait();
+  if (reduce_buffer_) 
+    reduce_buffer_ = 0; 
+  else 
+    reduce_buffer_ = 1;
+  wait();
   
   double ret = 0.0; for (int j=0; j<nproc_;j++) ret += reduce_[buffer][j];
   return (ret);
@@ -720,8 +740,11 @@ double ParallelLinearAlgebra::reduce_max(double val)
 {
   int buffer = reduce_buffer_;
   reduce_[buffer][proc_] = val;
-  if (reduce_buffer_) reduce_buffer_ = 0; else reduce_buffer_ = 1;
-  barrier_.wait();
+  if (reduce_buffer_) 
+    reduce_buffer_ = 0; 
+  else 
+    reduce_buffer_ = 1;
+  wait();
   
   double ret = -(DBL_MAX); for (int j=0; j<nproc_;j++) if (reduce_[buffer][j] > ret) ret = reduce_[buffer][j];
   return (ret);
@@ -731,26 +754,23 @@ double ParallelLinearAlgebra::reduce_min(double val)
 {
   int buffer = reduce_buffer_;
   reduce_[buffer][proc_] = val;
-  if (reduce_buffer_) reduce_buffer_ = 0; else reduce_buffer_ = 1;
-  barrier_.wait();
+  if (reduce_buffer_) 
+    reduce_buffer_ = 0; 
+  else 
+    reduce_buffer_ = 1;
+  wait();
   
   double ret = DBL_MAX; for (int j=0; j<nproc_;j++) if (reduce_[buffer][j] < ret) ret = reduce_[buffer][j];
   return (ret);
 }
 
-bool ParallelLinearAlgebraBase::start_parallel(std::vector<SparseRowMatrixHandle>& matrices, int nproc)
+bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc)
 {
-  
-  if (matrices.empty()) return (false);
-  
-  size_t size = -1;
-  for (size_t j=0; j<matrices.size(); j++)
-  {
-    if (size == -1) 
-      size = matrices[j]->nrows();
-    if (matrices[j]->nrows() != size) 
-      return (false);
-  }
+  size_t size = matrices.A->nrows();
+  if (matrices.b->nrows() != size
+    || matrices.x->nrows() != size
+    || matrices.x0->nrows() != size)
+    return false;
 
   // Store base size in base class
   size_ = size;
@@ -768,8 +788,9 @@ bool ParallelLinearAlgebraBase::start_parallel(std::vector<SparseRowMatrixHandle
   reduce2_.resize(nproc);
   success_.resize(nproc);
   
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc,nproc);
-
+#endif
   // clear temp memory
   vectors_.clear();
   current_matrix_.reset();

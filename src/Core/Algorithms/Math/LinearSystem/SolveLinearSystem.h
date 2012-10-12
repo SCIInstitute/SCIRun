@@ -50,16 +50,16 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
   public:
     SolveLinearSystemAlgo();
   
-    bool run(Datatypes::MatrixHandle A,
-             Datatypes::MatrixHandle b,
-             Datatypes::MatrixHandle x0, 
-             Datatypes::MatrixHandle& x,
-             Datatypes::MatrixHandle& convergence);
+    bool run(Datatypes::SparseRowMatrixHandle A,
+             Datatypes::DenseColumnMatrixHandle b,
+             Datatypes::DenseColumnMatrixHandle x0, 
+             Datatypes::DenseColumnMatrixHandle& x,
+             Datatypes::DenseColumnMatrixHandle& convergence);
 
-    bool run(Datatypes::MatrixHandle A,
-             Datatypes::MatrixHandle b,
-             Datatypes::MatrixHandle x0, 
-             Datatypes::MatrixHandle& x);
+    bool run(Datatypes::SparseRowMatrixHandle A,
+             Datatypes::DenseColumnMatrixHandle b,
+             Datatypes::DenseColumnMatrixHandle x0, 
+             Datatypes::DenseColumnMatrixHandle& x);
 
     static AlgorithmParameterName TargetError;
     static AlgorithmParameterName MaxIterations;
