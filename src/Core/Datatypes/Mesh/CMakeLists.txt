@@ -26,39 +26,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Datatypes_SRCS
-  Datatype.cc
-  Geometry.cc
-  Matrix.cc
-  MatrixTypeConversions.cc
-  Scalar.cc
-  String.cc
+SET(Core_Datatypes_Mesh_SRCS
+  Field.cc
+  FieldInformation.cc
 )
 
-SET(Core_Datatypes_HEADERS
-  Datatype.h
-  DenseMatrix.h
-  DenseColumnMatrix.h
-  Geometry.h
-  Matrix.h
-  MatrixComparison.h
-  MatrixFwd.h
-  MatrixIO.h
-  MatrixTypeConversions.h
-  Scalar.h
+SET(Core_Datatypes_Mesh_HEADERS
+  Field.h
+  FieldFwd.h
+  FieldInformation.h
   Share.h
-  SparseRowMatrix.h
-  String.h
 )
 
-ADD_LIBRARY(Core_Datatypes 
-${Core_Datatypes_HEADERS}
-${Core_Datatypes_SRCS})
+ADD_LIBRARY(Core_Datatypes_Mesh
+${Core_Datatypes_Mesh_HEADERS}
+${Core_Datatypes_Mesh_SRCS})
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Mesh)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
-ADD_SUBDIRECTORY(Mesh)
 

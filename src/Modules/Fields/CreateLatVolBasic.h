@@ -41,8 +41,8 @@
  *
  */
 
-#ifndef MODULES_FIELDS_CREATELATVOL_H
-#define MODULES_FIELDS_CREATELATVOL_H
+#ifndef MODULES_FIELDS_CREATELATVOLBASIC_H
+#define MODULES_FIELDS_CREATELATVOLBASIC_H
 
 #include <Dataflow/Network/Module.h>
 
@@ -51,16 +51,15 @@ namespace SCIRun {
     namespace Fields {
 
 class CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<StringPortTag>,
-  public Has2OutputPorts<MatrixPortTag, StringPortTag>
+  public Has1OutputPort<FieldPortTag>
 {
   public:
-    CreateLatVol(GuiContext* ctx);
-    virtual ~CreateLatVol() {}
+    CreateLatVolBasic();
 
     virtual void execute();
 
   private:
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     GuiInt size_x_;
     GuiInt size_y_;
     GuiInt size_z_;
@@ -69,6 +68,7 @@ class CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
     GuiString element_size_;
 
     enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+#endif 
 };
 
 }}}

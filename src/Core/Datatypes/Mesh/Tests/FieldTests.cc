@@ -28,10 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Fields/CreateLatVolBasic.h>
 
-using namespace SCIRun;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;

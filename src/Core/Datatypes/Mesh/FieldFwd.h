@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,51 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
+#ifndef CORE_DATATYPES_FIELD_FWD_H
+#define CORE_DATATYPES_FIELD_FWD_H
 
-/*
- *  CreateLatVol.cc:  Make an ImageField that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
-
-#ifndef MODULES_FIELDS_CREATELATVOLBASIC_H
-#define MODULES_FIELDS_CREATELATVOLBASIC_H
-
-#include <Dataflow/Network/Module.h>
+#include <boost/shared_ptr.hpp>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Core {
+namespace Datatypes {
 
-class CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<FieldPortTag>
-{
-  public:
-    CreateLatVolBasic();
+  class Field;
+  typedef boost::shared_ptr<Field> FieldHandle;
 
-    virtual void execute();
+  class Mesh;
+  typedef boost::shared_ptr<Mesh> MeshHandle;
 
-  private:
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    GuiInt size_x_;
-    GuiInt size_y_;
-    GuiInt size_z_;
-    GuiDouble padpercent_;
-    GuiString data_at_;
-    GuiString element_size_;
+  class VField;
+  class VMesh;
 
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-#endif 
-};
-
+  class TypeDescription;
 }}}
 
 #endif
+

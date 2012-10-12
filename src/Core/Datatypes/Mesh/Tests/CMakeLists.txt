@@ -26,39 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Datatypes_SRCS
-  Datatype.cc
-  Geometry.cc
-  Matrix.cc
-  MatrixTypeConversions.cc
-  Scalar.cc
-  String.cc
+SET(Core_Datatypes_Mesh_Tests_SRCS
+  FieldTests.cc
 )
 
-SET(Core_Datatypes_HEADERS
-  Datatype.h
-  DenseMatrix.h
-  DenseColumnMatrix.h
-  Geometry.h
-  Matrix.h
-  MatrixComparison.h
-  MatrixFwd.h
-  MatrixIO.h
-  MatrixTypeConversions.h
-  Scalar.h
-  Share.h
-  SparseRowMatrix.h
-  String.h
+SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Mesh_Tests
+${Core_Datatypes_Mesh_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh_Tests
+Core_Datatypes_Mesh
+gtest_main
+gtest
+gmock
 )
-
-ADD_LIBRARY(Core_Datatypes 
-${Core_Datatypes_HEADERS}
-${Core_Datatypes_SRCS})
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(Tests)
-ADD_SUBDIRECTORY(Mesh)
-

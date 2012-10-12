@@ -41,17 +41,12 @@
  *
  */
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/Fields/CreateLatVolBasic.h>
 #include <Core/Datatypes/Matrix.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Mesh/Field.h>
+#include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Util/StringUtil.h>
-
-#include <Dataflow/GuiInterface/GuiVar.h>
-
-#include <iostream>
 
 DECLARE_MAKER(CreateLatVol)
 
