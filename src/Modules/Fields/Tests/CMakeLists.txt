@@ -26,11 +26,25 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
+SET(Modules_Fields_Tests_SRCS
+  CreateLatVolTests.cc
+)
+
+#SET(Engine_Network_Tests_HEADERS
+#  NetworkEditorControllerTests_.h
+#)
+
+SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
+${Modules_Fields_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_Fields_Tests
+Modules_Fields
+Modules_Factory
+#Algorithms_Math
+Core_Datatypes
+Dataflow_Network
+Dataflow_State
+gtest_main
+gtest
+gmock
+)

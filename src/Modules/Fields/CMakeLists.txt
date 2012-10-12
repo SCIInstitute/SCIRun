@@ -26,11 +26,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
+SET(Modules_Fields_SRCS
+  CreateLatVolBasic.cc
+)
+
+SET(Modules_Fields_HEADERS
+  CreateLatVolBasic.h
+  Share.h
+)
+
+ADD_LIBRARY(Modules_Fields 
+${Modules_Fields_HEADERS}
+${Modules_Fields_SRCS})
+
+TARGET_LINK_LIBRARIES(Modules_Fields
+Dataflow_Network
+Core_Datatypes
+#Algorithms_Math
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Fields)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
+

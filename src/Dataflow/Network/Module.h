@@ -187,6 +187,7 @@ namespace Modules
   struct SCISHARE MatrixPortTag {};
   struct SCISHARE ScalarPortTag {};
   struct SCISHARE StringPortTag {};
+  struct SCISHARE FieldPortTag {};
   struct SCISHARE GeometryPortTag {};
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeMatrixPort(const std::string& name)
@@ -202,6 +203,11 @@ namespace Modules
   inline SCIRun::Dataflow::Networks::PortDescription MakeStringPort(const std::string& name)
   {
     return SCIRun::Dataflow::Networks::PortDescription(name, "String", "darkGreen"); 
+  }
+
+  inline SCIRun::Dataflow::Networks::PortDescription MakeFieldPort(const std::string& name)
+  {
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Field", "yellow"); 
   }
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeGeometryPort(const std::string& name)
@@ -298,6 +304,16 @@ namespace Modules
     static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
     {
       return MakeStringPort(port0Name); 
+    }
+  };
+
+  template <>
+  class Has1OutputPort<FieldPortTag>
+  {
+  public:
+    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)
+    {
+      return MakeFieldPort(port0Name); 
     }
   };
 
