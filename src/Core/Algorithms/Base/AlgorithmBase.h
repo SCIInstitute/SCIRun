@@ -85,8 +85,41 @@ namespace Algorithms {
     Core::Logging::LoggerHandle defaultLogger_;
   };
 
+  //TODO
+  class SCISHARE AlgorithmStatusReporter
+  {
+  public:
+    AlgorithmStatusReporter() {}
+    ~AlgorithmStatusReporter() {}
+        
+    void algo_start(const std::string& tag) {}
+    void algo_end() {}
+  private:
+  };
+
+  class SCISHARE ScopedAlgorithmReporter
+  {
+  public:
+    ScopedAlgorithmReporter(AlgorithmStatusReporter* algo, const std::string& tag);
+    ~ScopedAlgorithmReporter();
+  private:
+    AlgorithmStatusReporter* algo_;
+  };
+  
+  //TODO: link this to ModuleState via meeting discussion
+  class SCISHARE AlgorithmParameterList
+  {
+  public:
+    void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
+    AlgorithmParameter::Value get(const AlgorithmParameterName& key) const;
+  protected:
+    void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
+  private:
+    std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
+  };
+
   //template <class Input, class Output, class Parameters>
-  class SCISHARE AlgorithmBase : public AlgorithmLogger
+  class SCISHARE AlgorithmBase : public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
   {
   public:
     virtual ~AlgorithmBase();
@@ -113,6 +146,22 @@ namespace Algorithms {
   struct SCISHARE AlgorithmProcessingException : virtual ExceptionBase
   {
   };
+
+#define ENSURE_NOT_NULL(var, message)  if (!(var)) BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo(message))
+  
+#define ENSURE_POSITIVE_DOUBLE(var, message)  if ((var) < 0) \
+  BOOST_THROW_EXCEPTION(AlgorithmInputException() << DoubleOutOfRangeInfo( \
+    DoubleOutOfRangeInfo::value_type( \
+    std::string(message), \
+    var, \
+    boost::numeric::interval<double>(0, std::numeric_limits<double>::infinity())))) 
+
+#define ENSURE_POSITIVE_INT(var, message) if ((var) < 0) \
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << IntOutOfRangeInfo( \
+    IntOutOfRangeInfo::value_type( \
+    std::string(message), \
+    var, \
+    boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity()))))
 
 }}}
 

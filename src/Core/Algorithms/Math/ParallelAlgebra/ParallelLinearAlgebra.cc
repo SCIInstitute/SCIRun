@@ -29,6 +29,8 @@
 ///////////////////////////
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
+//TODO DAN: REFACTORING NEEDED: LEVEL HIGHEST
+///////////////////////////
 
 #include <boost/thread.hpp>
 #include <Core/Datatypes/Matrix.h>
@@ -44,12 +46,12 @@ using namespace SCIRun::Core::Datatypes;
 ParallelLinearAlgebraBase::ParallelLinearAlgebraBase() 
 {}
 
-ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc) : barrier_("Parallel Linear Algebra", nproc)
+ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc) 
+  : barrier_("Parallel Linear Algebra", nproc),
+  base_(base),
+  proc_(proc),
+  nproc_(nproc)
 {
-  //base_ = base;
-  proc_ = proc;
-  nproc_ = nproc;
-  
   // Compute local size
   size_ = base->size_;
   local_size_ = size_/nproc;
@@ -77,10 +79,10 @@ bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVect
   if (mat->nrows() != size_) { return (false); }
   if (matrix_is::sparse(mat)) { return (false); }
   
-  V.data_ = mat->get_data_pointer();
+  V.data_ = mat->data();
   V.size_ = size_;
   
-  return (true);
+  return true;
 }
 
 bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
@@ -92,7 +94,7 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
   {
     try
     {
-      DenseColumnMatrixHandle mat(new DenseColumnMatrix(base_->size_);
+      DenseColumnMatrixHandle mat(new DenseColumnMatrix(base_->size_));
       base_->current_matrix_ = mat;
       base_->vectors_.push_back(mat);
     }
@@ -104,9 +106,10 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
   
   barrier_.wait();
 
-  if (base_->success_[0] == false) return (false);
+  if (!base_->success_[0]) 
+    return false;
   
-  MatrixHandle mat = base_->current_matrix_;
+  auto mat = base_->current_matrix_;
   barrier_.wait();
 
   return(add_vector(mat,V));
@@ -117,13 +120,14 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
   if (!mat) return (false);
   if (mat->nrows() != size_) return (false);
   
-  M.data_ = mat->get_vals();
-  M.rows_ = mat->get_rows();
-  M.columns_ = mat->get_cols();
+  mat->makeCompressed(); //TODO: this should be an invariant of our SparseRowMatrix type.
+  M.data_ = mat->valuePtr();
+  M.rows_ = mat->outerIndexPtr();
+  M.columns_ = mat->innerIndexPtr();
   
   M.m_ = mat->nrows();
   M.n_ = mat->ncols();
-  M.nnz_ = mat->get_nnz();
+  M.nnz_ = mat->nonZeros();
   
   return (true);
 }
@@ -615,14 +619,14 @@ void ParallelLinearAlgebra::mult(ParallelMatrix& a, ParallelVector& b, ParallelV
   double* odata = r.data_;
   
   double* data = a.data_;
-  size_t* rows = a.rows_;
-  size_t* columns = a.columns_;
+  int* rows = a.rows_;
+  int* columns = a.columns_;
   
   for(size_t i=start_;i<end_;i++)
   {
     double sum = 0.0;
-    size_t row_idx=rows[i];
-    size_t next_idx=rows[i+1];
+    int row_idx=rows[i];
+    int next_idx=rows[i+1];
     for(size_t j=row_idx;j<next_idx;j++)
     {
 	    sum+=data[j]*idata[columns[j]];
@@ -639,8 +643,8 @@ void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, Par
   double* odata = r.data_;
   
   double* data = a.data_;
-  size_t* rows = a.rows_;
-  size_t* columns = a.columns_;  
+  int* rows = a.rows_;
+  int* columns = a.columns_;  
   size_t m = a.m_;
   
   for (size_t i=start_; i<end_; i++) odata[i] = 0.0;
@@ -662,8 +666,8 @@ void ParallelLinearAlgebra::diag(ParallelMatrix& a, ParallelVector& r)
   double* odata = r.data_;
   
   double* data = a.data_;
-  size_t* rows = a.rows_;
-  size_t* columns = a.columns_;
+  int* rows = a.rows_;
+  int* columns = a.columns_;
   
   for(size_t i=start_;i<end_;i++)
   {
@@ -684,8 +688,8 @@ void ParallelLinearAlgebra::absdiag(ParallelMatrix& a, ParallelVector& r)
   double* odata = r.data_;
   
   double* data = a.data_;
-  size_t* rows = a.rows_;
-  size_t* columns = a.columns_;
+  int* rows = a.rows_;
+  int* columns = a.columns_;
 
   for(size_t i=start_;i<end_;i++)
   {
@@ -736,13 +740,16 @@ double ParallelLinearAlgebra::reduce_min(double val)
 
 bool ParallelLinearAlgebraBase::start_parallel(std::vector<SparseRowMatrixHandle>& matrices, int nproc)
 {
-  size_t size = -1;
-  if (matrices.size() == 0) return (false);
   
+  if (matrices.empty()) return (false);
+  
+  size_t size = -1;
   for (size_t j=0; j<matrices.size(); j++)
   {
-    if (size == -1) size = matrices[j]->nrows();
-    if (matrices[j]->nrows() != size) return (false);
+    if (size == -1) 
+      size = matrices[j]->nrows();
+    if (matrices[j]->nrows() != size) 
+      return (false);
   }
 
   // Store base size in base class
@@ -750,11 +757,12 @@ bool ParallelLinearAlgebraBase::start_parallel(std::vector<SparseRowMatrixHandle
   
   //! Require a minimum of 50 variables per processor
   //! Below that parallelism is overhead
-  if (nproc*50 > size_) nproc = size_/50;
-  if (nproc < 1) nproc = boost::thread::hardware_concurrency();
+  if (nproc*50 > size_) 
+    nproc = size_/50;
+  if (nproc < 1) 
+    nproc = boost::thread::hardware_concurrency();
 
-  imatrices_.resize(matrices.size());
-  for (size_t j=0; j<matrices.size(); j++) imatrices_[j] = matrices[j];
+  imatrices_ = matrices;
 
   reduce1_.resize(nproc);
   reduce2_.resize(nproc);
@@ -762,16 +770,17 @@ bool ParallelLinearAlgebraBase::start_parallel(std::vector<SparseRowMatrixHandle
   
   Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc,nproc);
 
-// clear temp memory
+  // clear temp memory
   vectors_.clear();
   current_matrix_.reset();
   imatrices_.clear();
 
   //return std::all_of(success_.begin(), success_.end(), [](bool b) {return b;});
   for (size_t j = 0; j < success_.size(); ++j)
-    if (!success_[j]) return (false);
+    if (!success_[j]) 
+      return false;
   
-  return (true);  
+  return true;  
 }
 
 void ParallelLinearAlgebraBase::run_parallel(int proc,  int nproc)

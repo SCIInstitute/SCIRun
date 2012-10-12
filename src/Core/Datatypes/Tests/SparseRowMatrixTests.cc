@@ -27,6 +27,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -34,13 +35,13 @@
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Core::Datatypes;
-//using namespace TestUtils;
+using namespace ::testing;
 
 namespace
 {
   SparseRowMatrix matrix1()
   {
-    SparseRowMatrix m(3,4);
+    SparseRowMatrix m(4,5);
     m.insert(0,0) = 1;
     m.insert(1,2) = -2;
     m.insert(2,3) = 0.5;
@@ -62,15 +63,14 @@ TEST(SparseRowMatrixTest, CanPrintInLegacyFormat)
 {
   SparseRowMatrix m(matrix1());
   std::string legacy = matrix_to_string(0.5 * m);
-  std::cout << legacy << std::endl;
-  EXPECT_EQ("0.5 0 0 0 \n0 0 -1 0 \n0 0 0 0.25 \n", legacy);
+  EXPECT_EQ("0.5 0 0 0 0 \n0 0 -1 0 0 \n0 0 0 0.25 0 \n0 0 0 0 0 \n", legacy);
 }
 
 TEST(SparseRowMatrixTest, CanDetermineSize)
 {
   SparseRowMatrix m(matrix1());
-  EXPECT_EQ(3, m.rows());
-  EXPECT_EQ(4, m.cols());
+  EXPECT_EQ(4, m.nrows());
+  EXPECT_EQ(5, m.ncols());
 }
 
 TEST(SparseRowMatrixTest, CanCopyConstruct)
@@ -171,3 +171,39 @@ TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
 //  std::cout << sum.cols() << std::endl;
 //  PRINT_MATRIX(sum);
 //}
+
+template <typename T>
+void printArray(const T* ts, size_t size)
+{
+  std::copy(ts, ts + size, std::ostream_iterator<T>(std::cout, " "));
+  std::cout << std::endl;
+}
+
+TEST(SparseRowMatrixTest, CheckingInternalArrays)
+{
+  auto mat = matrix1();
+  std::cout << mat.castForPrinting() << std::endl;
+
+  mat.makeCompressed();
+  EXPECT_EQ(0, mat.innerNonZeroPtr());
+  EXPECT_EQ(3, mat.nonZeros());
+  EXPECT_NE(mat.rows(), mat.cols());
+  EXPECT_EQ(mat.outerSize(), mat.rows());
+  EXPECT_EQ(mat.innerSize(), mat.cols());
+
+  std::cout << "Values:" << std::endl;
+  printArray(mat.valuePtr(), mat.nonZeros());
+  std::vector<double> values(mat.valuePtr(), mat.valuePtr() + mat.nonZeros());
+  EXPECT_THAT(values, ElementsAre(1, -2, 0.5));
+  std::cout << "Inners/Columns:" << std::endl;
+  printArray(mat.innerIndexPtr(), mat.nonZeros());
+  std::vector<double> columns(mat.innerIndexPtr(), mat.innerIndexPtr() + mat.nonZeros());
+  EXPECT_THAT(columns, ElementsAre(0,2,3));
+  std::cout << "Outers/Rows:" << std::endl;
+  printArray(mat.outerIndexPtr(), mat.outerSize());
+  std::vector<double> rows(mat.outerIndexPtr(), mat.outerIndexPtr() + mat.outerSize());
+  EXPECT_THAT(rows, ElementsAre(0,1,2,3));
+
+
+  //EXPECT_TRUE(false);
+}

@@ -75,9 +75,8 @@ public:
   std::vector<bool> success_;
     
   size_t size_;
-  int nproc_;
     
-  Datatypes::SparseRowMatrixHandle current_matrix_;
+  Datatypes::DenseColumnMatrixHandle current_matrix_;
   std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
   std::vector<Datatypes::SparseRowMatrixHandle> imatrices_;
 };
@@ -95,8 +94,8 @@ public:
     
   class ParallelMatrix {
     public:
-      size_t* rows_;
-      size_t* columns_;
+      int* rows_;
+      int* columns_;
       double* data_;
         
       size_t   m_;
@@ -150,7 +149,7 @@ private:
   double reduce_max(double val);
     
   Barrier barrier_;
-  //ParallelLinearAlgebraBase* base_;
+  ParallelLinearAlgebraBase* base_;
   
   int proc_;  // process number
   int nproc_; // number of processes

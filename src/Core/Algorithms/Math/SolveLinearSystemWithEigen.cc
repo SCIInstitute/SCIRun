@@ -79,28 +79,16 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
 {
   //TODO: make convenience macros for these common error conditions (also to increase readability)
   MatrixConstHandle A = input.get<0>();
-  if (!A)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null input matrix"));
+  ENSURE_NOT_NULL(A, "Null input matrix");
 
   auto b = input.get<1>();
-  if (!b)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null rhs vector"));
+  ENSURE_NOT_NULL(b, "Null rhs vector");
   
   double tolerance = params.get<0>();
-  if (tolerance < 0)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << DoubleOutOfRangeInfo(
-      DoubleOutOfRangeInfo::value_type(
-        std::string("Tolerance out of range!"), 
-        tolerance, 
-        boost::numeric::interval<double>(0, std::numeric_limits<double>::infinity()))));
+  ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
 
   int maxIterations = params.get<1>();
-  if (maxIterations < 0)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << IntOutOfRangeInfo(
-      IntOutOfRangeInfo::value_type(
-        std::string("Max iterations out of range!"), 
-        maxIterations, 
-         boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity()))));
+  ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
   SolveLinearSystemAlgorithmEigenCGImpl impl(*b, tolerance, maxIterations);
   DenseColumnMatrix x;
@@ -115,7 +103,7 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen can only handle dense and sparse matrices."));
   
-  if (x.size())
+  if (x.size() != 0)
   {
     //TODO: move ctor
     DenseColumnMatrixHandle solution(new DenseColumnMatrix(x));

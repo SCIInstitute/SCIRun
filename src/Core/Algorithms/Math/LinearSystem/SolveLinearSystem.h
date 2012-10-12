@@ -60,6 +60,10 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
              Datatypes::MatrixHandle b,
              Datatypes::MatrixHandle x0, 
              Datatypes::MatrixHandle& x);
+
+    static AlgorithmParameterName TargetError;
+    static AlgorithmParameterName MaxIterations;
+    static AlgorithmParameterName BuildConvergence;
 };
 
 

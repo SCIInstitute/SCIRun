@@ -33,64 +33,66 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 
-#include <Core/Datatypes/ColumnMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Datatypes;
+
+AlgorithmParameterName SolveLinearSystemAlgo::TargetError("target error");
+AlgorithmParameterName SolveLinearSystemAlgo::MaxIterations("max iterations");
+AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("build convergence");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // For solver
   add_option("method","cg","jacobi|cg|bicg|minres");
   add_option("pre_conditioner","jacobi","none|jacobi");
-  add_scalar("target_error",1e-6);
-  add_int("max_iterations",300);
+#endif
+  addParameter(TargetError, 1e-6);
+  addParameter(MaxIterations, 300);
 
-  add_bool("build_convergence",true);
+  addParameter(BuildConvergence, true);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // for callback
   // Read this variable to find the error at the start of the iteration
-  add_scalar("original_error",0.0);
+  addParameter("original_error", 0.0);
   // Read this variable to find current error
-  add_scalar("current_error",0.0);
+  addParameter("current_error", 0.0);
   // Read this variable to find current iteration
-  add_int("iteration",0);
+  addParameter("iteration", 0);
   // How often the algorithm should go to a callback
-  add_int("callback_step",10);
-
-  add_handle("solution");
-  add_handle("convergence");
+  addParameter("callback_step", 10);
+  addParameter("solution", MatrixHandle());
+  addParameter("convergence", MatrixHandle());
+#endif
 }
-
-using namespace SCIRun;
-
-
-//-------------------------------------------------------
-// ParallelSolver base
 
 class SolveLinearSystemParallelAlgo : public ParallelLinearAlgebraBase 
 {
-  public:
-    bool run(AlgoBase* base, MatrixHandle a, MatrixHandle b,
-             MatrixHandle x0, MatrixHandle& x,
-             MatrixHandle& convergence);
-             
- protected: 
+public:
+  SolveLinearSystemParallelAlgo() : convergence_(0), algo_(0) {}
 
+  bool run(AlgorithmBase* base, MatrixHandle a, MatrixHandle b,
+            MatrixHandle x0, MatrixHandle& x,
+            MatrixHandle& convergence);         
+protected: 
   std::string pre_conditioner_;
-  double*     convergence_;
-  AlgoBase*   algo_;
+  double* convergence_;
+  AlgorithmBase* algo_;
 };
 
 
 bool
-SolveLinearSystemParallelAlgo::run(AlgoBase* algo, 
+SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo, 
                                    MatrixHandle a, MatrixHandle b, 
                                    MatrixHandle x0, MatrixHandle& x, 
-                                   MatrixHandle& convergence)
+                                   MatrixHandle& convergence) 
 {
   // Create vector with matrices that need to be processed
   std::vector<MatrixHandle> matrix(4);
@@ -100,25 +102,15 @@ SolveLinearSystemParallelAlgo::run(AlgoBase* algo,
   matrix[2] = x0;
   
   // Create output matrix
-  size_type size = x0->nrows();
-  x = new ColumnMatrix(size);
-  if (x.get_rep() == 0)
-  {
-    algo->error("Could not allocate output matrix");
-    return (false);
-  }
+  auto size = x0->nrows();
+  x.reset(new DenseColumnMatrix(size));
   
   // Copy output matrix pointer
   matrix[3] = x;
 
   // Create convergence matrix
   int num_iter = algo->get_int("max_iterations");
-  convergence = new ColumnMatrix(num_iter);
-  if (convergence.get_rep() == 0)
-  {
-    algo->error("Could not allocate convergence matrix");
-    return (false);
-  }
+  convergence.reset(new DenseColumnMatrix(num_iter));
   convergence_ = convergence->get_data_pointer();
   
   // Set intermediate solution handle
@@ -128,7 +120,7 @@ SolveLinearSystemParallelAlgo::run(AlgoBase* algo,
   
   pre_conditioner_ = algo_->get_option("pre_conditioner");
   
-  if(!(start_parallel(matrix)))
+  if(!start_parallel(matrix))
   {
     algo->error("Encountered an error while running parallel linear algebra");
     return (false);
@@ -143,14 +135,10 @@ SolveLinearSystemParallelAlgo::run(AlgoBase* algo,
 class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo 
 {
   public:
-             
     virtual bool parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix);
 };
 
-
-bool
-SolveLinearSystemCGAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
 {
   // Algorithm
   
@@ -1028,7 +1016,7 @@ SolveLinearSystemAlgo::run(MatrixHandle A,
                            MatrixHandle& x)
 {
   MatrixHandle convergence;
-  return(run(A,b,x0,x,convergence));
+  return run(A,b,x0,x,convergence);
 }
 
 bool
@@ -1038,81 +1026,76 @@ SolveLinearSystemAlgo::run(MatrixHandle A,
                            MatrixHandle& x,
                            MatrixHandle& convergence)
 {
-  algo_start("SolveLinearSystem");
+  ScopedAlgorithmReporter reporter(this, "SolveLinearSystem");
   
-  if (A.get_rep() == 0)
-  {
-    error("No matrix A is given");
-    algo_end(); return (false);
-  }
+  ENSURE_NOT_NULL(A, "No matrix A is given");
+  ENSURE_NOT_NULL(b, "No matrix b is given");
 
-  if (b.get_rep() == 0)
+  if (!matrix_is::sparse(A))
   {
-    error("No matrix b is given");
-    algo_end(); return (false);
-  }
-
-  if (!(matrix_is::sparse(A)))
-  {
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A is not sparse"));
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle Atmp = A->sparse();
     if (Atmp.get_rep() == 0)
     {
-      error("Matrix A is not sparse");
-      algo_end(); return (false);
+      error();
     }
     A = Atmp;
+#endif
   }
 
-  if (!(matrix_is::dense(b)) && !(matrix_is::column(b)))
+  if (!matrix_is::dense(b) && !matrix_is::column(b))
   {
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix b is not a dense or column matrix"));
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle btmp = b->column();
     if (btmp.get_rep() == 0)
     {
       error("Matrix b is not a dense or column matrix");
       algo_end(); return (false);
     }
+#endif
   }
 
-  if (x0.get_rep() == 0)
+  if (!x0)
   {
     // create an x0 matrix
-    x0 = b;
-    x0.detach();
-    x0->zero();
+    DenseColumnMatrixHandle temp(new DenseColumnMatrix(b->nrows()));
+    temp->setZero();
+    x0 = temp;
   }
 
-  if (!(matrix_is::dense(x0)) && !(matrix_is::column(x0)))
+  if (!matrix_is::dense(x0) && !matrix_is::column(x0))
   {
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix x0 is not a dense or column matrix"));
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle x0tmp = x0->column();
     if (x0tmp.get_rep() == 0)
     {
       error("Matrix x0 is not a dense or column matrix");
       algo_end(); return (false);
     }
+#endif
   }
   
   if ((x0->ncols() != 1) || (b->ncols() != 1))
   {
-    error("Matrix x0 and b need to have the same number of rows");
-    algo_end(); return (false);
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix x0 and b need to have the same number of rows"));
   }
   
   if (A->nrows() != A->ncols())
   {
-    error("Matrix A is not square");
-    algo_end(); return (false);
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A is not square"));
   }
   
   if (A->nrows() != b->nrows())
   {
-    error("Matrix A and b do not have the same number of rows");
-    algo_end(); return (false);
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage(("Matrix A and b do not have the same number of rows");
   }
 
   if (A->nrows() != x0->nrows())
   {
-    error("Matrix A and b do not have the same number of rows");
-    algo_end(); return (false);
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A and b do not have the same number of rows"));
   }
   
   std::string method = get_option("method");
@@ -1121,18 +1104,18 @@ SolveLinearSystemAlgo::run(MatrixHandle A,
   if (method == "cg")
   {
     SolveLinearSystemCGAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    if(!algo.run(this,A,b,x0,x,conv))
     {
-      error("Conjungate Gradient method failed");
-      algo_end(); return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Conjugate Gradient method failed"));
     }
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   else if (method == "bicg")
   {
     SolveLinearSystemBICGAlgo algo;
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
-      error("BiConjungate Gradient method failed");
+      error("BiConjugate Gradient method failed");
       algo_end(); return (false);
     }
   }
@@ -1154,32 +1137,19 @@ SolveLinearSystemAlgo::run(MatrixHandle A,
       algo_end(); return (false);
     }
   }
+#endif
       
   if (get_bool("build_convergence"))
   {
-    if (conv.get_rep())
+    if (conv)
     {
       int iteration = get_int("iteration");
-      convergence = new ColumnMatrix(iteration);
-      if (convergence.get_rep() == 0)
-      {
-        error("Could not allocate output matrix");
-        algo_end(); return (false);
-      }
-      double* odata = convergence->get_data_pointer();
-      double* idata = conv->get_data_pointer();
-      
-      for (index_type i=0; i<iteration; i++)
-        odata[i] = idata[i];
+      convergence = conv->clone();
     }
     else
     {
-      error("No convergence matrix");
-      algo_end(); return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("No convergence matrix"));
     }
   }
-  algo_end(); return (true);
+  return true;
 }
-    
-}
-
