@@ -88,9 +88,6 @@ void CreateLatVolBasic::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
 #endif
-    
-    
-    
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (Size.get_rep())
