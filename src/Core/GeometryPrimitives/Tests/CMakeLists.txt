@@ -26,12 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Utils)
+SET(Core_Geometry_Primitives_Tests_SRCS
+  PointTests.cc
+)
 
+SCIRUN_ADD_UNIT_TEST(Core_Geometry_Primitives_Tests
+${Core_Geometry_Primitives_Tests_SRCS})
+
+TARGET_LINK_LIBRARIES(Core_Geometry_Primitives_Tests
+Core_Geometry_Primitives
+gtest_main
+gtest
+gmock
+)

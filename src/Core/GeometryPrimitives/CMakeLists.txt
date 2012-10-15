@@ -26,12 +26,22 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Utils)
+SET(Core_GeometryPrimitives_SRCS
+  Point.cc
+)
+
+SET(Core_GeometryPrimitives_HEADERS
+  Point.h
+  Share.h
+)
+
+ADD_LIBRARY(Core_Geometry_Primitives 
+${Core_GeometryPrimitives_HEADERS}
+${Core_GeometryPrimitives_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Geometry_Primitives)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
 

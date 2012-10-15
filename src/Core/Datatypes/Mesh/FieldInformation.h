@@ -34,9 +34,9 @@
 #define CORE_DATATYPES_FIELDINFORMATION 1
 
 #include <string>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Mesh/Field.h>
 
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 
@@ -90,21 +90,6 @@ class SCISHARE FieldTypeInformation {
     bool        is_structuredmesh();
     bool        is_unstructuredmesh();
     
-    // These should go...
-    inline bool is_pointcloud() { return(is_pointcloudmesh()); }
-    inline bool is_scanline() { return(is_scanlinemesh()); }
-    inline bool is_image() { return(is_imagemesh()); }
-    inline bool is_latvol() { return(is_latvolmesh()); }
-    inline bool is_curve() { return(is_curvemesh()); }
-    inline bool is_trisurf() { return(is_trisurfmesh()); }
-    inline bool is_quadsurf() { return(is_quadsurfmesh()); }
-    inline bool is_tetvol() { return(is_tetvolmesh()); }
-    inline bool is_prismvol() { return(is_prismvolmesh()); }
-    inline bool is_hexvol() { return(is_hexvolmesh()); }
-    inline bool is_structcurve() { return(is_structcurvemesh()); }    
-    inline bool is_structquadsurf() { return(is_structquadsurfmesh()); }    
-    inline bool is_structhexvol() { return(is_structhexvolmesh()); }
-
     // Naming that is more systematic
     bool        is_pointcloudmesh();
     bool        is_scanlinemesh();

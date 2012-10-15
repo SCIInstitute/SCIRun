@@ -30,20 +30,29 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
+#include <boost/thread/mutex.hpp>
+#include <map>
 #include <Core/Datatypes/Mesh/Field.h>
+
+using namespace SCIRun::Core::Datatypes;
 
 Field::Field()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   DEBUG_CONSTRUCTOR("Field")  
+#endif
 }
 
 Field::~Field()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   DEBUG_DESTRUCTOR("Field")  
+#endif
 }
 
 const int FIELD_VERSION = 3;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void 
 Field::io(Piostream& stream)
 {
@@ -101,95 +110,87 @@ Field::io(Piostream& stream)
   stream.end_class();
 }
 
-// initialize the static member type_id
 PersistentTypeID Field::type_id("Field", "PropertyManager", 0);
 
+#endif
+
+//TODO DAN: REFACTORING NEEDED: LEVEL HIGH
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface
-Mutex *FieldTypeIDMutex = 0;
+static boost::mutex *FieldTypeIDMutex = 0;
 static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = 0;
 
-FieldTypeID::FieldTypeID(const std::string&type,
-                         FieldHandle (*field_maker)(),
-                         FieldHandle (*field_maker_mesh)(MeshHandle)) :
+FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromMesh fmm) :
     type(type),
     field_maker(field_maker),
     field_maker_mesh(field_maker_mesh)
 {
-  if (FieldTypeIDMutex == 0)
+  if (!FieldTypeIDMutex)
   {
-    FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
+    FieldTypeIDMutex = new boost::mutex(/*"Field Type ID Table Lock"*/);
   }
-  FieldTypeIDMutex->lock();
-  if (FieldTypeIDTable == 0)
+
+  boost::mutex::scoped_lock lock(*FieldTypeIDMutex);
+  if (!FieldTypeIDTable)
   {
     FieldTypeIDTable = new std::map<std::string,FieldTypeID*>;
   }
   else
   {
-    std::map<std::string,FieldTypeID*>::iterator dummy;
+    auto it = FieldTypeIDTable->find(type);
     
-    dummy = FieldTypeIDTable->find(type);
-    
-    if (dummy != FieldTypeIDTable->end())
+    if (it != FieldTypeIDTable->end())
     {
-      if (((*dummy).second->field_maker != field_maker) ||
-          ((*dummy).second->field_maker_mesh != field_maker_mesh))
+      if ((it->second->field_maker != field_maker) ||
+          (it->second->field_maker_mesh != field_maker_mesh))
       {
 #if DEBUG
         std::cerr << "WARNING: duplicate field type exists: " << type << "\n";
 #endif
-        FieldTypeIDMutex->unlock();
         return;
       }
     }
   }
   
   (*FieldTypeIDTable)[type] = this;
-  FieldTypeIDMutex->unlock();
 }
 
 
 FieldHandle
 CreateField(const std::string& type, MeshHandle mesh)
 {
-  FieldHandle handle(0);
-  if (FieldTypeIDMutex == 0)
+  if (!FieldTypeIDMutex)
   {
-    FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
+    FieldTypeIDMutex = new boost::mutex(/*"Field Type ID Table Lock"*/);
   }
-  FieldTypeIDMutex->lock();
-  std::map<std::string,FieldTypeID*>::iterator it;
-  it = FieldTypeIDTable->find(type);
+  boost::mutex::scoped_lock lock(*FieldTypeIDMutex);
+  auto it = FieldTypeIDTable->find(type);
   if (it != FieldTypeIDTable->end()) 
   {
-    handle = (*it).second->field_maker_mesh(mesh);
+    return it->second->field_maker_mesh(mesh);
   }
   else
   {
     std::cout << "Cannot find "<<type<<" in database\n";
   }
-  FieldTypeIDMutex->unlock();
-  return (handle);
+  return FieldHandle();
 }
 
 FieldHandle
 CreateField(const std::string& type)
 {
-  FieldHandle handle(0);
-  if (FieldTypeIDMutex == 0)
+  if (!FieldTypeIDMutex)
   {
-    FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
+    FieldTypeIDMutex = new boost::mutex(/*"Field Type ID Table Lock"*/);
   }
-  FieldTypeIDMutex->lock();
-  std::map<std::string,FieldTypeID*>::iterator it;
-  it = FieldTypeIDTable->find(type);
+  boost::mutex::scoped_lock lock(*FieldTypeIDMutex);
+
+  auto it = FieldTypeIDTable->find(type);
   if (it != FieldTypeIDTable->end()) 
   {
-    handle = (*it).second->field_maker();
+    return it->second->field_maker();
   }
-  FieldTypeIDMutex->unlock();
-  return (handle);
+  return FieldHandle();
 }
 
 }

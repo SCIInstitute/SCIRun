@@ -42,44 +42,57 @@
  */
 
 #include <Modules/Fields/CreateLatVolBasic.h>
-#include <Core/Datatypes/Matrix.h>
 
-#include <Core/Datatypes/Mesh/Field.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/GeometryPrimitives/Point.h>
+//#include <Core/Datatypes/Mesh/Field.h>
+//#include <Core/Datatypes/Mesh/FieldInformation.h>
+//#include <Core/Util/StringUtil.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Geometry;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 DECLARE_MAKER(CreateLatVol)
+#endif
 
-CreateLatVol::CreateLatVol(GuiContext* ctx)
-  : Module("CreateLatVol", ctx, Filter, "NewField", "SCIRun"),
-    size_x_(get_ctx()->subVar("sizex"), 16),
+CreateLatVolBasic::CreateLatVolBasic()
+  : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  , size_x_(get_ctx()->subVar("sizex"), 16),
     size_y_(get_ctx()->subVar("sizey"), 16),
     size_z_(get_ctx()->subVar("sizez"), 16),
     padpercent_(get_ctx()->subVar("padpercent"), 0.0),
     data_at_(get_ctx()->subVar("data-at"), "Nodes"),
     element_size_(get_ctx()->subVar("element-size"),"Mesh")
+#endif
 {
 }
 
-
-void
-CreateLatVol::execute()
+void CreateLatVolBasic::execute()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldHandle   ifieldhandle;
   MatrixHandle  Size;
 	
   get_input_handle("Input Field", ifieldhandle, false);
   get_input_handle("LatVol Size",Size,false);
-	
+#endif
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || size_x_.changed() || size_y_.changed() ||
       size_z_.changed() || padpercent_.changed() || data_at_.changed() ||
       element_size_.changed() || !oport_cached("Output Sample Field") )
+#endif
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
+#endif
     
-    Point minb, maxb;
-    DataTypeEnum datatype;
+    
+    
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (Size.get_rep())
     {
       if (Size->get_data_size() == 1)
@@ -107,15 +120,25 @@ CreateLatVol::execute()
         error("LatVol size matrix needs to have or one element or three elements");
       }	
     }	
+#endif
 		
     // Create blank mesh.
-    VField::size_type sizex = Max(2, size_x_.get());
-    VField::size_type sizey = Max(2, size_y_.get());
-    VField::size_type sizez = Max(2, size_z_.get());		
-		
-    if (ifieldhandle.get_rep() == 0)
+    auto sizex = std::max(2, size_x_.get());
+    auto sizey = std::max(2, size_y_.get());
+    auto sizez = std::max(2, size_z_.get());		
+		Point minb, maxb;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    DataTypeEnum datatype;
+#endif
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (!ifieldhandle)
+#endif
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       datatype = SCALAR;
+#endif
       if (element_size_.get() == "Mesh")
       {
         minb = Point(-1.0, -1.0, -1.0);
@@ -129,6 +152,7 @@ CreateLatVol::execute()
                      static_cast<double>(sizez-1));
       }
     }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     else
     {
       datatype = SCALAR;
@@ -145,6 +169,7 @@ CreateLatVol::execute()
       minb = bbox.min();
       maxb = bbox.max();
     }
+#endif
 
     Vector diag((maxb.asVector() - minb.asVector()) * (padpercent_.get()/100.0));
     minb -= diag;
@@ -160,9 +185,14 @@ CreateLatVol::execute()
       return;
     }
 
-    FieldInformation lfi("LatVolMesh",basis_order,"double");
-    if (datatype == VECTOR) lfi.make_vector();
-    else if (datatype == TENSOR) lfi.make_tensor();
+    FieldInformation lfi("LatVolMesh", basis_order, "double");
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (datatype == VECTOR) 
+      lfi.make_vector();
+    else if (datatype == TENSOR) 
+      lfi.make_tensor();
+#endif
 
     // Create Image Field.
     MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
@@ -172,7 +202,3 @@ CreateLatVol::execute()
     send_output_handle("Output Sample Field", ofh);
   }
 }
-
-
-} // End namespace SCIRun
-

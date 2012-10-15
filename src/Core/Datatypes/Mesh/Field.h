@@ -36,6 +36,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <boost/functional/factory.hpp>
+#include <boost/function.hpp>
 //#include <Core/Datatypes/Mesh.h>
 //#include <Core/Datatypes/VMesh.h>
 //#include <Core/Datatypes/VField.h>
@@ -98,16 +99,17 @@ class SCISHARE Field : public Datatype
 typedef boost::factory<FieldHandle> FieldMaker;
 typedef boost::function<FieldHandle(MeshHandle)> FieldMakerFromMesh;
 
-class SCISHARE FieldTypeID {
+class SCISHARE FieldTypeID 
+{
   public:
     // Constructor
     FieldTypeID(const std::string& type, 
                 FieldMaker fieldMaker,
                 FieldMakerFromMesh field_maker_mesh);
     
-    std::string type_;
-    FieldMaker fieldMaker_;
-    FieldMakerFromMesh field_maker_mesh_;
+    std::string type;
+    FieldMaker field_maker;
+    FieldMakerFromMesh field_maker_mesh;
 };
 
 SCISHARE FieldHandle CreateField(const std::string& type);
