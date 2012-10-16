@@ -51,10 +51,13 @@ namespace Gui {
       return Qt::magenta;
     if (str == "white")
       return Qt::white;
+    if (str == "yellow")
+      return Qt::yellow;
     else
       return Qt::black;
   }
 
+  //TODO: merge this with Core_Logging...
   class Logger
   {
   public:

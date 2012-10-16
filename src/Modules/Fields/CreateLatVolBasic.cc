@@ -57,7 +57,7 @@ DECLARE_MAKER(CreateLatVol)
 #endif
 
 CreateLatVolBasic::CreateLatVolBasic()
-  : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
+  : Module(ModuleLookupInfo("CreateLatVolBasic", "NewField", "SCIRun"))
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   , size_x_(get_ctx()->subVar("sizex"), 16),
     size_y_(get_ctx()->subVar("sizey"), 16),

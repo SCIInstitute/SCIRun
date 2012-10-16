@@ -45,6 +45,11 @@ CreateLatVolBasicDialog::CreateLatVolBasicDialog(const std::string& name, Module
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   //TODO: here is where to start on standardizing module dialog buttons.
   //connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
+  xSizeSpinBox_->setValue(16);
+  ySizeSpinBox_->setValue(16);
+  zSizeSpinBox_->setValue(16);
+  dataAtNodesButton_->setChecked(true);
+  elementSizeNormalizedButton_->setChecked(true);
 }
 
 int CreateLatVolBasicDialog::moduleExecutionTime()
