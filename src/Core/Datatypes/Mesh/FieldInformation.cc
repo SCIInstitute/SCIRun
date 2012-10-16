@@ -30,19 +30,22 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Util/StringUtil.h>
+#include <boost/algorithm/string.hpp>
+#include <Core/Datatypes/Mesh/FieldInformation.h>
+#include <Core/Datatypes/Mesh/Field.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Datatypes;
 
-void
-FieldTypeInformation::insert_field_type_information(Field* field)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+void FieldTypeInformation::insert_field_type_information(Field* field)
 {
   std::string temp;
   // Get the name of the GenericField class
   // This should give GenericField
   
-  if (field == 0) return;
+  if (!field) 
+    return;
   field_type = field->get_type_description(Field::FIELD_NAME_ONLY_E)->get_name();
 
   // Analyze the mesh type
@@ -160,7 +163,7 @@ FieldInformation::FieldInformation(Field* field)
 {
   insert_field_type_information(field);
 }
-
+#endif
 std::string
 FieldInformation::get_field_type()
 {
@@ -182,7 +185,7 @@ FieldInformation::get_mesh_type()
 void
 FieldInformation::set_mesh_type(const std::string& type)
 {
-  std::string typeLower = string_tolower(type);
+  std::string typeLower = boost::algorithm::to_lower_copy(type);
   if (typeLower == "scanlinemesh") set_mesh_type(SCANLINEMESH_E);
   else if (typeLower == "imagemesh") set_mesh_type(IMAGEMESH_E);
   else if (typeLower == "latvolmesh") set_mesh_type(LATVOLMESH_E);
@@ -586,6 +589,7 @@ FieldInformation::set_data_type(data_info_type type)
 }
 
 
+
 std::string
 FieldInformation::get_container_type()
 {
@@ -598,7 +602,7 @@ FieldInformation::set_container_type(const std::string& type)
   container_type = type;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 std::string
 FieldInformation::get_field_name()
 {
@@ -644,6 +648,7 @@ FieldInformation::get_mesh_type_id()
   return(mesh_template);
 }
 
+#endif
 
 bool
 FieldTypeInformation::is_isomorphic()
@@ -1071,6 +1076,7 @@ FieldTypeInformation::is_volume()
   return false;  
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 bool        
 FieldInformation::operator==(const FieldInformation& fi) const
@@ -1091,7 +1097,7 @@ FieldInformation::operator!=(const FieldInformation& fi) const
   return (false);
 }
 
-
+#endif
 bool
 FieldInformation::make_nodata()
 {
@@ -1361,6 +1367,7 @@ FieldInformation::make_scalar()
   return (true);
 }
 
+
 bool
 FieldInformation::make_char()
 {
@@ -1445,6 +1452,8 @@ FieldInformation::make_double()
   return (true);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 bool
 FieldInformation::make_vector()
 {
@@ -1458,6 +1467,8 @@ FieldInformation::make_tensor()
   set_data_type("Tensor");
   return (true);
 }
+
+//TODO DAN: REFACTORING NEEDED: LEVEL MEDIUM
 
 FieldHandle CreateField(const std::string& meshtype, 
                          const std::string& basistype, const std::string& datatype)
@@ -1660,9 +1671,4 @@ CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim,const Poi
   else return (MeshHandle(0));
 }
 
-
-
-
-
-} // end namespace
-
+#endif

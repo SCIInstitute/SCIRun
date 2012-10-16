@@ -31,110 +31,111 @@
 ///////////////////////////
 
 #ifndef CORE_DATATYPES_FIELDINFORMATION
-#define CORE_DATATYPES_FIELDINFORMATION 1
+#define CORE_DATATYPES_FIELDINFORMATION
 
 #include <string>
-#include <Core/Datatypes/Mesh/Field.h>
+#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Mesh/FieldFwd.h>
+//#include <Core/Datatypes/Mesh/Field.h>
 
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Datatypes {
 
 class SCISHARE FieldTypeInformation;
 class SCISHARE FieldInformation;
 
-class SCISHARE FieldTypeInformation {
-
-  public:
-
-    bool        is_isomorphic();
-    bool        is_nonlinear();
-    bool        is_linear();
+class SCISHARE FieldTypeInformation 
+{
+public:
+  bool        is_isomorphic();
+  bool        is_nonlinear();
+  bool        is_linear();
     
-    bool        is_nodata();
-    bool        is_constantdata();
-    bool        is_lineardata();
-    bool        is_nonlineardata();
-    bool        is_quadraticdata();
-    bool        is_cubicdata();
-    int         field_basis_order();
+  bool        is_nodata();
+  bool        is_constantdata();
+  bool        is_lineardata();
+  bool        is_nonlineardata();
+  bool        is_quadraticdata();
+  bool        is_cubicdata();
+  int         field_basis_order();
     
-    bool        is_constantmesh();
-    bool        is_linearmesh();
-    bool        is_nonlinearmesh();
-    bool        is_quadraticmesh();
-    bool        is_cubicmesh();
-    int         mesh_basis_order();
+  bool        is_constantmesh();
+  bool        is_linearmesh();
+  bool        is_nonlinearmesh();
+  bool        is_quadraticmesh();
+  bool        is_cubicmesh();
+  int         mesh_basis_order();
   
-    bool        is_tensor();
-    bool        is_vector();
-    bool        is_scalar();
-    bool        is_integer();
-    bool        is_double();
-    bool        is_float();
-    bool        is_longlong();
-    bool        is_long();
-    bool        is_int();
-    bool        is_short();
-    bool        is_char();
-    bool        is_unsigned_longlong();
-    bool        is_unsigned_long();
-    bool        is_unsigned_int();
-    bool        is_unsigned_short();
-    bool        is_unsigned_char();
-    bool        is_dvt(); // double vector tensor
-    bool        is_svt(); // scalar vector tensor
+  bool        is_tensor();
+  bool        is_vector();
+  bool        is_scalar();
+  bool        is_integer();
+  bool        is_double();
+  bool        is_float();
+  bool        is_longlong();
+  bool        is_long();
+  bool        is_int();
+  bool        is_short();
+  bool        is_char();
+  bool        is_unsigned_longlong();
+  bool        is_unsigned_long();
+  bool        is_unsigned_int();
+  bool        is_unsigned_short();
+  bool        is_unsigned_char();
+  bool        is_dvt(); // double vector tensor
+  bool        is_svt(); // scalar vector tensor
     
-    bool        is_regularmesh();
-    bool        is_irregularmesh();
-    bool        is_structuredmesh();
-    bool        is_unstructuredmesh();
+  bool        is_regularmesh();
+  bool        is_irregularmesh();
+  bool        is_structuredmesh();
+  bool        is_unstructuredmesh();
     
-    // Naming that is more systematic
-    bool        is_pointcloudmesh();
-    bool        is_scanlinemesh();
-    bool        is_imagemesh();
-    bool        is_latvolmesh();
-    bool        is_curvemesh();
-    bool        is_trisurfmesh();
-    bool        is_quadsurfmesh();
-    bool        is_tetvolmesh();
-    bool        is_prismvolmesh();
-    bool        is_hexvolmesh();
-    bool        is_structcurvemesh();    
-    bool        is_structquadsurfmesh();    
-    bool        is_structhexvolmesh();
+  // Naming that is more systematic
+  bool        is_pointcloudmesh();
+  bool        is_scanlinemesh();
+  bool        is_imagemesh();
+  bool        is_latvolmesh();
+  bool        is_curvemesh();
+  bool        is_trisurfmesh();
+  bool        is_quadsurfmesh();
+  bool        is_tetvolmesh();
+  bool        is_prismvolmesh();
+  bool        is_hexvolmesh();
+  bool        is_structcurvemesh();    
+  bool        is_structquadsurfmesh();    
+  bool        is_structhexvolmesh();
 
     
-    bool        is_point();
-    bool        is_line();
-    bool        is_surface();
-    bool        is_volume();
+  bool        is_point();
+  bool        is_line();
+  bool        is_surface();
+  bool        is_volume();
     
-    bool        is_pnt_element();
-    bool        is_crv_element();
-    bool        is_tri_element();
-    bool        is_quad_element();
-    bool        is_tet_element();
-    bool        is_prism_element();
-    bool        is_hex_element();
+  bool        is_pnt_element();
+  bool        is_crv_element();
+  bool        is_tri_element();
+  bool        is_quad_element();
+  bool        is_tet_element();
+  bool        is_prism_element();
+  bool        is_hex_element();
 
-    void insert_field_type_information(Field* field);
-  protected:
-  
-    // type names
-    std::string field_type;
-    std::string mesh_type;
-    std::string mesh_basis_type;
-    std::string point_type;
-    std::string basis_type;
-    std::string data_type;
-    std::string container_type;
-    
+  void insert_field_type_information(Field* field);
+protected:
+  std::string field_type;
+  std::string mesh_type;
+  std::string mesh_basis_type;
+  std::string point_type;
+  std::string basis_type;
+  std::string data_type;
+  std::string container_type;
 };
 
 
-class SCISHARE FieldInformation : public FieldTypeInformation {
+class SCISHARE FieldInformation : public FieldTypeInformation 
+{
   
   public:
              
@@ -144,14 +145,12 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
 
     FieldInformation(const std::string& meshtype,int,int, const std::string& datatype);
     FieldInformation(const std::string& meshtype,int, const std::string& datatype);
-    
     FieldInformation(mesh_info_type mesh, meshbasis_info_type databasis,
                      databasis_info_type, data_info_type data);
     FieldInformation(mesh_info_type mesh,databasis_info_type databasis, 
                      data_info_type data);
- 
-    FieldInformation(FieldHandle handle);
-    FieldInformation(Field* field);
+    explicit FieldInformation(FieldHandle handle);
+    explicit FieldInformation(Field* field);
     
   
     std::string get_field_type();
@@ -250,8 +249,10 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     inline bool is_data_typeT(unsigned long long* ) { return (is_unsigned_longlong()); }
     inline bool is_data_typeT(double* )             { return (is_double()); }
     inline bool is_data_typeT(float* )              { return (is_float()); }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     inline bool is_data_typeT(Vector* )             { return (is_vector()); }
     inline bool is_data_typeT(Tensor* )             { return (is_tensor()); }
+#endif
     template<class T> bool is_data_typeT(T*)        { return (false); }
 
     inline void set_data_typeT(char*) { make_char(); }
@@ -266,10 +267,13 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     inline void set_data_typeT(unsigned long long*) { make_unsigned_long_long(); }
     inline void set_data_typeT(float*) { make_float(); }
     inline void set_data_typeT(double*) { make_double(); }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     inline void set_data_typeT(Vector*) { make_vector(); }
     inline void set_data_typeT(Tensor*) { make_tensor(); }
+#endif 
 };
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& meshbasistype, const std::string& databasistype, const std::string& datatype);
 
@@ -283,15 +287,26 @@ SCISHARE FieldHandle CreateField(mesh_info_type mesh,
                                  data_info_type data);
 
 SCISHARE FieldHandle CreateField(FieldInformation &info);
-SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
+#endif 
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
+#endif
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE MeshHandle CreateMesh(FieldInformation &info);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,const Point& min,const Point& max);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
+#endif 
+
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max);
+#endif
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x,const Point& min,const Point& max);
 
@@ -304,8 +319,9 @@ SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x,const Point& min,const Point& max);
+#endif 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline bool UseIntegerInterface(FieldInformation &info) 
 { return(info.is_integer()); }
 
@@ -378,7 +394,8 @@ inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2,Fi
                         FieldInformation &info4, FieldInformation &info5)
 { return(info.is_tensor()&info2.is_tensor()&info3.is_tensor()&info4.is_tensor()&info5.is_tensor()); }
 
-} // end namespace
+#endif
+}}}
 
 #endif
 

@@ -119,11 +119,13 @@ void CreateLatVolBasic::execute()
     }	
 #endif
 		
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     // Create blank mesh.
     auto sizex = std::max(2, size_x_.get());
     auto sizey = std::max(2, size_y_.get());
     auto sizez = std::max(2, size_z_.get());		
 		Point minb, maxb;
+#endif
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     DataTypeEnum datatype;
@@ -136,6 +138,7 @@ void CreateLatVolBasic::execute()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       datatype = SCALAR;
 #endif
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
       if (element_size_.get() == "Mesh")
       {
         minb = Point(-1.0, -1.0, -1.0);
@@ -148,6 +151,7 @@ void CreateLatVolBasic::execute()
                      static_cast<double>(sizey-1),
                      static_cast<double>(sizez-1));
       }
+#endif
     }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     else
@@ -168,6 +172,7 @@ void CreateLatVolBasic::execute()
     }
 #endif
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     Vector diag((maxb.asVector() - minb.asVector()) * (padpercent_.get()/100.0));
     minb -= diag;
     maxb += diag;
@@ -183,7 +188,7 @@ void CreateLatVolBasic::execute()
     }
 
     FieldInformation lfi("LatVolMesh", basis_order, "double");
-
+#endif
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (datatype == VECTOR) 
       lfi.make_vector();
@@ -191,11 +196,13 @@ void CreateLatVolBasic::execute()
       lfi.make_tensor();
 #endif
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     // Create Image Field.
     MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
 
     send_output_handle("Output Sample Field", ofh);
+#endif
   }
 }

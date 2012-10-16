@@ -141,6 +141,8 @@ FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromM
     
     if (it != FieldTypeIDTable->end())
     {
+      std::cout << "WARNING: duplicate field type exists: " << type << std::endl;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //can't compare boost::function--switch back to native fn ptr?
       if ((it->second->field_maker != field_maker) ||
           (it->second->field_maker_mesh != field_maker_mesh))
       {
@@ -148,7 +150,9 @@ FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromM
         std::cerr << "WARNING: duplicate field type exists: " << type << "\n";
 #endif
         return;
+
       }
+#endif
     }
   }
   
@@ -191,6 +195,4 @@ CreateField(const std::string& type)
     return it->second->field_maker();
   }
   return FieldHandle();
-}
-
 }

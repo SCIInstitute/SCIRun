@@ -49,6 +49,7 @@ SET(Core_Datatypes_HEADERS
   Share.h
   SparseRowMatrix.h
   String.h
+  Types.h
 )
 
 ADD_LIBRARY(Core_Datatypes 

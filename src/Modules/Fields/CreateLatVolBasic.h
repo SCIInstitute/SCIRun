@@ -45,18 +45,21 @@
 #define MODULES_FIELDS_CREATELATVOLBASIC_H
 
 #include <Dataflow/Network/Module.h>
+#include <Modules/Fields/Share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-class CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
   public Has1OutputPort<FieldPortTag>
 {
   public:
     CreateLatVolBasic();
 
     virtual void execute();
+
+    static std::string outputPort0Name() { return "Output Sample Field"; }
 
   private:
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

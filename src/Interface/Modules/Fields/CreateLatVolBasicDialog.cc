@@ -26,40 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Math/CreateMatrixDialog.h>
-#include <Modules/Math/CreateMatrix.h>
+#include <Interface/Modules/Fields/CreateLatVolBasicDialog.h>
+#include <Modules/Fields/CreateLatVolBasic.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::Fields;
 
-CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandle state,
+CreateLatVolBasicDialog::CreateLatVolBasicDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   //TODO: here is where to start on standardizing module dialog buttons.
-  connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
+  //connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
 }
 
-int CreateMatrixDialog::moduleExecutionTime()
+int CreateLatVolBasicDialog::moduleExecutionTime()
 {
   return 2000;
 }
 
-void CreateMatrixDialog::pushMatrixToState()
+void CreateLatVolBasicDialog::push()
 {
-  state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+  //state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
 }
 
-void CreateMatrixDialog::pull()
+void CreateLatVolBasicDialog::pull()
 {
-  matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
+  //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }

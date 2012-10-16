@@ -42,6 +42,7 @@ ${Modules_Factory_SRCS})
 TARGET_LINK_LIBRARIES(Modules_Factory
 Dataflow_Network
 Modules_Math
+Modules_Fields
 Modules_Basic
 Modules_DataIO
 Modules_String

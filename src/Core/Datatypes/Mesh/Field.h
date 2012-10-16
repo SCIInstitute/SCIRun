@@ -78,7 +78,8 @@ class SCISHARE Field : public Datatype
     virtual int basis_order() const = 0;
 
     //! Type Description to retrieve information on the actual type of the field
-    enum  td_info_e {
+    enum td_info_e 
+    {
       FULL_TD_E,
       FIELD_NAME_ONLY_E,
       MESH_TD_E,
@@ -96,7 +97,7 @@ class SCISHARE Field : public Datatype
 #endif
 };
 
-typedef boost::factory<FieldHandle> FieldMaker;
+typedef boost::function<FieldHandle()> FieldMaker;
 typedef boost::function<FieldHandle(MeshHandle)> FieldMakerFromMesh;
 
 class SCISHARE FieldTypeID 

@@ -26,36 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATE_MATRIX_H
-#define INTERFACE_MODULES_CREATE_MATRIX_H
+#ifndef INTERFACE_MODULES_CREATE_LATVOLBASIC_H
+#define INTERFACE_MODULES_CREATE_LATVOLBASIC_H
 
-#include "Interface/Modules/Math/ui_CreateMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
+#include "Interface/Modules/Fields/ui_CreateLatVol.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Math/Share.h>
+#include <Interface/Modules/Fields/Share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
-class SCISHARE CreateMatrixDialog : public ModuleDialogGeneric, 
+class SCISHARE CreateLatVolBasicDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::CreateMatrix
+  public Ui::CreateLatVol
 {
 	Q_OBJECT
 	
 public:
-  CreateMatrixDialog(const std::string& name, 
+  CreateLatVolBasicDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual int moduleExecutionTime();
   virtual void pull();
 
 private Q_SLOTS:
-  void pushMatrixToState();
-  //void saveFile();
+  void push();
 };
 
 }

@@ -288,6 +288,16 @@
         </item>
         <item>
          <property name="text">
+          <string>Fields</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>CreateLatVolBasic</string>
+          </property>
+         </item>
+        </item>
+        <item>
+         <property name="text">
           <string>DataIO</string>
          </property>
          <item>

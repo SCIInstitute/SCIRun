@@ -42,15 +42,10 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
-//#ifdef BUILD_VTK_SUPPORT
-//#include "RenderWindow.h"
-//#endif
-
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Dataflow::State;
 
 namespace
@@ -364,8 +359,4 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::ToggleRenderer()
 {
-#ifdef BUILD_VTK_SUPPORT
-  renderWindow_->setEnabled(true);
-  renderWindow_->setVisible(true);
-#endif
 }

@@ -42,6 +42,11 @@ ADD_LIBRARY(Core_Datatypes_Mesh
 ${Core_Datatypes_Mesh_HEADERS}
 ${Core_Datatypes_Mesh_SRCS})
 
+TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh
+  Core_Datatypes
+  ${Boost_LIBRARIES}
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Mesh)
 ENDIF(BUILD_SHARED_LIBS)

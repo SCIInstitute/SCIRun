@@ -28,7 +28,7 @@
 #
 
 SET(Interface_Modules_Fields_FORMS
-  CreateLatVolBasic.ui
+  CreateLatVol.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS

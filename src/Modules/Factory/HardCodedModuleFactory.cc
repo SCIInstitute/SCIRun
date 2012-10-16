@@ -44,6 +44,7 @@
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
+#include <Modules/Fields/CreateLatVolBasic.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/String/CreateString.h>
@@ -58,6 +59,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
@@ -198,6 +200,11 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
     description.input_ports_ += ShowStringModule::inputPortDescription(ShowStringModule::inputPort0Name());
     description.output_ports_ += ShowStringModule::outputPortDescription(ShowStringModule::outputPort0Name());
     description.maker_ = boost::factory<ShowStringModule*>();
+  }
+  else if (name.find("CreateLatVolBasic") != std::string::npos)
+  {
+    description.output_ports_ += CreateLatVolBasic::outputPortDescription(CreateLatVolBasic::outputPort0Name());
+    description.maker_ = boost::factory<CreateLatVolBasic*>();
   }
   else if (name.find("MatrixAsVectorField") != std::string::npos)
   {

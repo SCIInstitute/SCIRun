@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CreateMatrix</class>
- <widget class="QDialog" name="CreateMatrix">
+ <class>CreateLatVol</class>
+ <widget class="QDialog" name="CreateLatVol">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -45,7 +45,7 @@
     <string>Execute</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -60,7 +60,7 @@
       <property name="title">
        <string>Mesh Size</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -119,7 +119,7 @@
       <property name="title">
        <string>Data at Location</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -159,7 +159,7 @@
       <property name="title">
        <string>Mesh Dimensions</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
@@ -195,7 +195,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>CreateMatrix</receiver>
+   <receiver>CreateLatVol</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -211,7 +211,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>CreateMatrix</receiver>
+   <receiver>CreateLatVol</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
