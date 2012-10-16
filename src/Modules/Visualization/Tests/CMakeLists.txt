@@ -28,6 +28,7 @@
 
 SET(Modules_Visualization_Tests_SRCS
   MatrixAsVectorFieldTests.cc
+  ShowFieldTests.cc
   ShowStringTests.cc
 )
 

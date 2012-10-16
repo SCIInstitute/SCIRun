@@ -127,7 +127,7 @@ inline ::testing::AssertionResult compare_with_two_norm(const Core::Datatypes::D
 
 
 
-struct ScopedTimer
+struct SCISHARE ScopedTimer
 {
   explicit ScopedTimer(const std::string& name) : name_(name) 
   {

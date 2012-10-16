@@ -227,6 +227,11 @@
          </item>
          <item>
           <property name="text">
+           <string>ShowField</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>MatrixAsVectorField</string>
           </property>
          </item>

@@ -215,45 +215,71 @@ namespace Modules
     return SCIRun::Dataflow::Networks::PortDescription(name, "Geometry", "magenta"); 
   }
 
-  template <>
-  class Has1InputPort<MatrixPortTag>
-  {
-  public:
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-    {
-      return MakeMatrixPort(port0Name); 
-    }
-  };
+#define INPUT_PORT_SPEC(name)   template <>\
+  class Has1InputPort<name ##PortTag>\
+  {\
+  public:\
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)\
+    {\
+      return Make ## name ## Port(port0Name); \
+    }\
+  }\
 
-  template <>
-  class Has1InputPort<ScalarPortTag>
-  {
-  public:
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-    {
-      return MakeScalarPort(port0Name); 
-    }
-  };
+  INPUT_PORT_SPEC(Matrix);
+  INPUT_PORT_SPEC(Scalar);
+  INPUT_PORT_SPEC(String);
+  INPUT_PORT_SPEC(Field);
+  INPUT_PORT_SPEC(Geometry);
 
-  template <>
-  class Has1InputPort<StringPortTag>
-  {
-  public:
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-    {
-      return MakeStringPort(port0Name); 
-    }
-  };
+  //template <>
+  //class Has1InputPort<MatrixPortTag>
+  //{
+  //public:
+  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+  //  {
+  //    return MakeMatrixPort(port0Name); 
+  //  }
+  //};
 
-  template <>
-  class Has1InputPort<GeometryPortTag>
-  {
-  public:
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-    {
-      return MakeGeometryPort(port0Name); 
-    }
-  };
+  //template <>
+  //class Has1InputPort<ScalarPortTag>
+  //{
+  //public:
+  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+  //  {
+  //    return MakeScalarPort(port0Name); 
+  //  }
+  //};
+
+  //template <>
+  //class Has1InputPort<StringPortTag>
+  //{
+  //public:
+  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+  //  {
+  //    return MakeStringPort(port0Name); 
+  //  }
+  //};
+
+  //template <>
+  //class Has1InputPort<FieldPortTag>
+  //{
+  //public:
+  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+  //  {
+  //    return MakeFieldPort(port0Name); 
+  //  }
+  //};
+
+  //template <>
+  //class Has1InputPort<GeometryPortTag>
+  //{
+  //public:
+  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
+  //  {
+  //    return MakeGeometryPort(port0Name); 
+  //  }
+  //};
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

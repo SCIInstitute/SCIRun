@@ -49,6 +49,7 @@
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/Visualization/ShowString.h>
+#include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/MatrixAsVectorField.h>
 #include <Modules/Render/ViewScene.h>
 
@@ -200,6 +201,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
     description.input_ports_ += ShowStringModule::inputPortDescription(ShowStringModule::inputPort0Name());
     description.output_ports_ += ShowStringModule::outputPortDescription(ShowStringModule::outputPort0Name());
     description.maker_ = boost::factory<ShowStringModule*>();
+  }
+  else if (name.find("ShowField") != std::string::npos)
+  {
+    description.input_ports_ += ShowFieldModule::inputPortDescription(ShowFieldModule::inputPort0Name());
+    description.output_ports_ += ShowFieldModule::outputPortDescription(ShowFieldModule::outputPort0Name());
+    description.maker_ = boost::factory<ShowFieldModule*>();
   }
   else if (name.find("CreateLatVolBasic") != std::string::npos)
   {
