@@ -231,56 +231,6 @@ namespace Modules
   INPUT_PORT_SPEC(Field);
   INPUT_PORT_SPEC(Geometry);
 
-  //template <>
-  //class Has1InputPort<MatrixPortTag>
-  //{
-  //public:
-  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-  //  {
-  //    return MakeMatrixPort(port0Name); 
-  //  }
-  //};
-
-  //template <>
-  //class Has1InputPort<ScalarPortTag>
-  //{
-  //public:
-  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-  //  {
-  //    return MakeScalarPort(port0Name); 
-  //  }
-  //};
-
-  //template <>
-  //class Has1InputPort<StringPortTag>
-  //{
-  //public:
-  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-  //  {
-  //    return MakeStringPort(port0Name); 
-  //  }
-  //};
-
-  //template <>
-  //class Has1InputPort<FieldPortTag>
-  //{
-  //public:
-  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-  //  {
-  //    return MakeFieldPort(port0Name); 
-  //  }
-  //};
-
-  //template <>
-  //class Has1InputPort<GeometryPortTag>
-  //{
-  //public:
-  //  static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)
-  //  {
-  //    return MakeGeometryPort(port0Name); 
-  //  }
-  //};
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   template <class PortTypeTag>

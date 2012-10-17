@@ -175,17 +175,17 @@ void CreateLatVolBasic::execute()
     minb -= diag;
     maxb += diag;
 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+
     int basis_order;
-    if (data_at_.get() == "Nodes") basis_order = 1;
-    else if (data_at_.get() == "Cells") basis_order = 0;
-    else if (data_at_.get() == "None") basis_order = -1;
+    auto data_at = get_state()->getValue(ElementSizeNormalized).getString();
+    if (data_at == "Nodes") basis_order = 1;
+    else if (data_at == "Cells") basis_order = 0;
+    else if (data_at == "None") basis_order = -1;
     else 
     {
-      error("Unsupported data_at location " + data_at_.get() + ".");
-      return;
+      BOOST_THROW_EXCEPTION(AlgorithmInputException() << Core::ErrorMessage("Unsupported data_at location " + data_at + "."));
     }
-
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     FieldInformation lfi("LatVolMesh", basis_order, "double");
 #endif
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
