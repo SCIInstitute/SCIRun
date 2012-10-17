@@ -46,13 +46,14 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 //#include <Core/Datatypes/Mesh/Field.h>
-//#include <Core/Datatypes/Mesh/FieldInformation.h>
+#include <Core/Datatypes/Mesh/FieldInformation.h>
 //#include <Core/Util/StringUtil.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName CreateLatVolBasic::XSize("X size");
 AlgorithmParameterName CreateLatVolBasic::YSize("Y size");
@@ -175,7 +176,7 @@ void CreateLatVolBasic::execute()
     minb -= diag;
     maxb += diag;
 
-
+    //TODO extract method
     int basis_order;
     auto data_at = get_state()->getValue(ElementSizeNormalized).getString();
     if (data_at == "Nodes") basis_order = 1;
@@ -185,9 +186,9 @@ void CreateLatVolBasic::execute()
     {
       BOOST_THROW_EXCEPTION(AlgorithmInputException() << Core::ErrorMessage("Unsupported data_at location " + data_at + "."));
     }
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+    
     FieldInformation lfi("LatVolMesh", basis_order, "double");
-#endif
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (datatype == VECTOR) 
       lfi.make_vector();

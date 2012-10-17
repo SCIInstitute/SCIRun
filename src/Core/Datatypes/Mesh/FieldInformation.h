@@ -36,6 +36,7 @@
 #include <string>
 #include <Core/Datatypes/Types.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 //#include <Core/Datatypes/Mesh/Field.h>
 
 #include <Core/Datatypes/Mesh/Share.h>
@@ -44,9 +45,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-class SCISHARE FieldTypeInformation;
-class SCISHARE FieldInformation;
-
+//TODO: split into separate header
 class SCISHARE FieldTypeInformation 
 {
 public:
@@ -136,9 +135,7 @@ protected:
 
 class SCISHARE FieldInformation : public FieldTypeInformation 
 {
-  
   public:
-             
     FieldInformation(const std::string& meshtype,const std::string& meshbasis,
                                   const std::string& databasis, const std::string& datatype);
     FieldInformation(const std::string& meshtype,const std::string& basis, const std::string& datatype);
@@ -151,7 +148,6 @@ class SCISHARE FieldInformation : public FieldTypeInformation
                      data_info_type data);
     explicit FieldInformation(FieldHandle handle);
     explicit FieldInformation(Field* field);
-    
   
     std::string get_field_type();
     void        set_field_type(const std::string&);
@@ -249,11 +245,11 @@ class SCISHARE FieldInformation : public FieldTypeInformation
     inline bool is_data_typeT(unsigned long long* ) { return (is_unsigned_longlong()); }
     inline bool is_data_typeT(double* )             { return (is_double()); }
     inline bool is_data_typeT(float* )              { return (is_float()); }
+    inline bool is_data_typeT(Geometry::Vector* )             { return (is_vector()); }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    inline bool is_data_typeT(Vector* )             { return (is_vector()); }
     inline bool is_data_typeT(Tensor* )             { return (is_tensor()); }
 #endif
-    template<class T> bool is_data_typeT(T*)        { return (false); }
+    template<class T> bool is_data_typeT(T*)        { return false; }
 
     inline void set_data_typeT(char*) { make_char(); }
     inline void set_data_typeT(unsigned char*) { make_unsigned_char(); }
@@ -267,8 +263,8 @@ class SCISHARE FieldInformation : public FieldTypeInformation
     inline void set_data_typeT(unsigned long long*) { make_unsigned_long_long(); }
     inline void set_data_typeT(float*) { make_float(); }
     inline void set_data_typeT(double*) { make_double(); }
+    inline void set_data_typeT(Geometry::Vector*) { make_vector(); }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    inline void set_data_typeT(Vector*) { make_vector(); }
     inline void set_data_typeT(Tensor*) { make_tensor(); }
 #endif 
 };

@@ -112,6 +112,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,const std::string
   set_mesh_basis_type(basis);
   set_data_basis_type(basis);
 }
+#endif
 
 FieldInformation::FieldInformation(const std::string& meshtype,int basis, const std::string& datatype)
 {
@@ -124,6 +125,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,int basis, const 
   set_data_basis_type(basis);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 FieldInformation::FieldInformation(mesh_info_type meshtype,
                                    meshbasis_info_type meshbasis,
                                    databasis_info_type databasis, 
@@ -1452,8 +1454,6 @@ FieldInformation::make_double()
   return (true);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 bool
 FieldInformation::make_vector()
 {
@@ -1461,6 +1461,7 @@ FieldInformation::make_vector()
   return (true);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool
 FieldInformation::make_tensor()
 {

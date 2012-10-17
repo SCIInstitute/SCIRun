@@ -42,6 +42,7 @@ ${Modules_Fields_SRCS})
 TARGET_LINK_LIBRARIES(Modules_Fields
 Dataflow_Network
 Core_Datatypes
+Core_Datatypes_Mesh
 #Algorithms_Math
 )
 

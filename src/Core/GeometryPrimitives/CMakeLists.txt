@@ -32,6 +32,7 @@ SET(Core_GeometryPrimitives_SRCS
 )
 
 SET(Core_GeometryPrimitives_HEADERS
+  GeomFwd.h
   Point.h
   Vector.h
   Share.h
