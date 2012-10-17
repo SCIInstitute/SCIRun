@@ -28,10 +28,12 @@
 
 SET(Core_GeometryPrimitives_SRCS
   Point.cc
+  Vector.cc
 )
 
 SET(Core_GeometryPrimitives_HEADERS
   Point.h
+  Vector.h
   Share.h
 )
 

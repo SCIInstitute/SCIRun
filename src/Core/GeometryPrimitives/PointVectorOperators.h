@@ -30,56 +30,39 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-/*
- *  CreateLatVol.cc:  Make an ImageField that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+#ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
+#define CORE_GEOMETRY_POINTVECTOROPERATORS_H
 
-#ifndef MODULES_FIELDS_CREATELATVOLBASIC_H
-#define MODULES_FIELDS_CREATELATVOLBASIC_H
-
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Core {
+namespace Geometry {
 
-class SCISHARE CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<FieldPortTag>
-{
-  public:
-    CreateLatVolBasic();
+  inline Vector operator-(const Point& p1, const Point& p2)
+  {
+    return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
+  }
 
-    virtual void execute();
+  inline Point& Point::operator+=(const Vector& v)
+  {
+    d_[0]+=v.d_[0];
+    d_[1]+=v.d_[1];
+    d_[2]+=v.d_[2];
+    return *this;
+  }
 
-    static std::string outputPort0Name() { return "Output Sample Field"; }
-
-    static Core::Algorithms::AlgorithmParameterName XSize;
-    static Core::Algorithms::AlgorithmParameterName YSize;
-    static Core::Algorithms::AlgorithmParameterName ZSize;
-    static Core::Algorithms::AlgorithmParameterName PadPercent;
-    static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
-
-  private:
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    GuiInt size_x_;
-    GuiInt size_y_;
-    GuiInt size_z_;
-    GuiDouble padpercent_;
-    GuiString data_at_;
-    GuiString element_size_;
-
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-#endif 
-};
+  inline Point& Point::operator-=(const Vector& v)
+  {
+    d_[0]-=v.d_[0];
+    d_[1]-=v.d_[1];
+    d_[2]-=v.d_[2];
+    return *this;
+  }
 
 }}}
+
 
 #endif

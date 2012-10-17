@@ -31,11 +31,10 @@
 ///////////////////////////
 
 #ifndef CORE_DATATYPES_FIELD_H
-#define CORE_DATATYPES_FIELD_H 1
+#define CORE_DATATYPES_FIELD_H 
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <boost/functional/factory.hpp>
 #include <boost/function.hpp>
 //#include <Core/Datatypes/Mesh.h>
 //#include <Core/Datatypes/VMesh.h>

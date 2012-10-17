@@ -44,6 +44,7 @@
 #include <Modules/Fields/CreateLatVolBasic.h>
 
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
 //#include <Core/Datatypes/Mesh/Field.h>
 //#include <Core/Datatypes/Mesh/FieldInformation.h>
 //#include <Core/Util/StringUtil.h>
@@ -51,6 +52,13 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms;
+
+AlgorithmParameterName CreateLatVolBasic::XSize("X size");
+AlgorithmParameterName CreateLatVolBasic::YSize("Y size");
+AlgorithmParameterName CreateLatVolBasic::ZSize("Z size");
+AlgorithmParameterName CreateLatVolBasic::PadPercent("Pad Percentage");
+AlgorithmParameterName CreateLatVolBasic::ElementSizeNormalized("ElementSizeNormalized");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 DECLARE_MAKER(CreateLatVol)
@@ -77,9 +85,7 @@ void CreateLatVolBasic::execute()
 	
   get_input_handle("Input Field", ifieldhandle, false);
   get_input_handle("LatVol Size",Size,false);
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || size_x_.changed() || size_y_.changed() ||
       size_z_.changed() || padpercent_.changed() || data_at_.changed() ||
       element_size_.changed() || !oport_cached("Output Sample Field") )
@@ -87,9 +93,7 @@ void CreateLatVolBasic::execute()
   {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (Size.get_rep())
     {
       if (Size->get_data_size() == 1)
@@ -119,27 +123,22 @@ void CreateLatVolBasic::execute()
     }	
 #endif
 		
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     // Create blank mesh.
-    auto sizex = std::max(2, size_x_.get());
-    auto sizey = std::max(2, size_y_.get());
-    auto sizez = std::max(2, size_z_.get());		
+    auto sizex = std::max(2, get_state()->getValue(XSize).getInt());
+    auto sizey = std::max(2, get_state()->getValue(YSize).getInt());
+    auto sizez = std::max(2, get_state()->getValue(ZSize).getInt());		
 		Point minb, maxb;
-#endif
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     DataTypeEnum datatype;
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (!ifieldhandle)
 #endif
     {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       datatype = SCALAR;
 #endif
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-      if (element_size_.get() == "Mesh")
+      if (get_state()->getValue(ElementSizeNormalized).getBool())
       {
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
@@ -151,7 +150,6 @@ void CreateLatVolBasic::execute()
                      static_cast<double>(sizey-1),
                      static_cast<double>(sizez-1));
       }
-#endif
     }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     else
@@ -172,11 +170,12 @@ void CreateLatVolBasic::execute()
     }
 #endif
 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-    Vector diag((maxb.asVector() - minb.asVector()) * (padpercent_.get()/100.0));
+    double padScalar = get_state()->getValue(PadPercent).getDouble() / 100.0;
+    Vector diag((maxb - minb) * padScalar);
     minb -= diag;
     maxb += diag;
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     int basis_order;
     if (data_at_.get() == "Nodes") basis_order = 1;
     else if (data_at_.get() == "Cells") basis_order = 0;

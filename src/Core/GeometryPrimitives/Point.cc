@@ -41,14 +41,14 @@ std::string Point::get_string() const
   return (oss.str());
 }
 
-int Point::operator==(const Point& p) const
+bool SCIRun::Core::Geometry::operator==(const Point& v1, const Point& v2)
 {
-  return p.d_[0] == d_[0] && p.d_[1] == d_[1] && p.d_[2] == d_[2];
+  return v1[0] == v2[0] && v1[1] == v2[1] && v1[2] == v2[2];
 }
 
-int Point::operator!=(const Point& p) const
+bool SCIRun::Core::Geometry::operator!=(const Point& v1, const Point& v2)
 {
-  return p.d_[0] != d_[0] || p.d_[1] != d_[1] || p.d_[2] != d_[2];
+  return !(v1 == v2);
 }
 
 Point::Point(double x, double y, double z, double w)
@@ -96,13 +96,13 @@ Point AffineCombination(const Point& p1, double w1,
 }
 #endif
 
-std::ostream& operator<<( std::ostream& os, const Point& p )
+std::ostream& SCIRun::Core::Geometry::operator<<( std::ostream& os, const Point& p )
 {
   os << '[' << p.x() << ' ' << p.y() << ' ' << p.z() << ']';
   return os;
 }
 
-std::istream& operator>>( std::istream& is, Point& v)
+std::istream& SCIRun::Core::Geometry::operator>>( std::istream& is, Point& v)
 {
   double x, y, z;
   char st;

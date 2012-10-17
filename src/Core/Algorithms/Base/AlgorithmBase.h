@@ -54,7 +54,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmParameter
   {
   public:
-    typedef boost::variant<int,double,std::string> Value;
+    typedef boost::variant<int,double,std::string,bool> Value;
 
     AlgorithmParameter() {}
     AlgorithmParameter(const AlgorithmParameterName& name, const Value& value) : name_(name), value_(value) {}
@@ -65,6 +65,7 @@ namespace Algorithms {
     int getInt() const;
     double getDouble() const;
     std::string getString() const;
+    bool getBool() const;
     //etc
   };
 

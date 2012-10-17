@@ -35,42 +35,38 @@
 
 #include <string>
 #include <vector>
-//#include <iosfwd>
-//#include <math.h>
-
 #include <Core/GeometryPrimitives/Share.h>
-
 
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
 
-class Vector;
-class TypeDescription;
-class Piostream;
+  class Vector;
 
 class Point 
 {
 private:
   double d_[3];
 public:
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   inline explicit Point(const Vector& v);
+#endif
   inline Point(double x, double y, double z)
   { d_[0] = x; d_[1] = y; d_[2] = z; }
     Point(double, double, double, double);
   inline Point(const Point&);
   inline Point();
-  SCISHARE int operator==(const Point&) const;
-  SCISHARE int operator!=(const Point&) const;
   inline Point& operator=(const Point&);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   inline Vector operator+(const Point&) const;
   inline Vector operator-(const Point&) const;
   inline Point operator+(const Vector&) const;
   inline Point operator-(const Vector&) const;
+#endif
   inline Point operator*(double) const;
   inline Point& operator*=(const double);
-  inline Point& operator+=(const Vector&);
-  inline Point& operator-=(const Vector&);
+  Point& operator+=(const Vector&);
+  Point& operator-=(const Vector&);
   inline Point& operator+=(const Point&);
   inline Point& operator-=(const Point&);
   inline Point& operator/=(const double);
@@ -85,9 +81,10 @@ public:
   inline double y() const;
   inline void z(const double);
   inline double z() const;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   inline const Vector &vector() const;
   inline Vector &asVector() const;
-     
+#endif
   inline double& operator[](int idx) 
   {
     return d_[idx];
@@ -103,6 +100,9 @@ public:
   SCISHARE friend std::ostream& operator<<(std::ostream& os, const Point& p);
   SCISHARE friend std::istream& operator>>(std::istream& os, Point& p);
 };
+
+SCISHARE bool operator==(const Point& p1, const Point& p2);
+SCISHARE bool operator!=(const Point& p1, const Point& p2);
 
 inline Point::Point(const Point& p)
 {
@@ -176,10 +176,12 @@ inline
 Point operator*(double d, const Point &p) {
   return p*d;
 }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline 
 Point operator+(const Vector &v, const Point &p) {
   return p+v;
 }
+#endif
 
 SCISHARE std::ostream& operator<<(std::ostream& os, const Point& p);
 SCISHARE std::istream& operator>>(std::istream& os, Point& p);
@@ -222,21 +224,7 @@ inline Point Point::operator-(const Vector& v) const
   return Point(d_[0]-v.d_[0], d_[1]-v.d_[1], d_[2]-v.d_[2]);
 }
 
-inline Point& Point::operator+=(const Vector& v)
-{
-  d_[0]+=v.d_[0];
-  d_[1]+=v.d_[1];
-  d_[2]+=v.d_[2];
-  return *this;
-}
 
-inline Point& Point::operator-=(const Vector& v)
-{
-  d_[0]-=v.d_[0];
-  d_[1]-=v.d_[1];
-  d_[2]-=v.d_[2];
-  return *this;
-}
 
 inline Point& Point::operator+=(const Point& v)
 {
@@ -355,5 +343,6 @@ inline double Dot(const Point& p1, const Point& p2)
 
 }}}
 
+#include <Core/GeometryPrimitives/PointVectorOperators.h>
 
 #endif

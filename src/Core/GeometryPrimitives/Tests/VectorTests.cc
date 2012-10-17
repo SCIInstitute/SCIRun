@@ -28,46 +28,22 @@
 
 #include <gtest/gtest.h>
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/PointVectorOperators.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
 using namespace SCIRun::Core::Geometry;
 
-TEST(PointTests, CanDefaultConstruct)
+TEST(VectorTests, CanDefaultConstruct)
 {
-  Point p;
+  Vector p;
   EXPECT_EQ(0, p.x());
   EXPECT_EQ(0, p.y());
   EXPECT_EQ(0, p.z());
 }
 
-TEST(PointTests, CanSubtractAsVectorDifference)
+TEST(VectorTests, CanScale)
 {
-  Point p1(1,2,3);
-  Point p2(0,-1,0);
-
-  auto diff = p1 - p2;
-  Vector expected(1,3,3);
-  EXPECT_EQ(expected, diff);
-  std::cout << diff << std::endl;
-}
-
-TEST(PointTests, CanAddVector)
-{
-  Point p1(1,2,3);
-  Vector v(3,-1,1);
-
-  p1 += v;
-
-  EXPECT_EQ(Point(4,1,4), p1);
-}
-
-TEST(PointTests, CanSubtractVector)
-{
-  Point p1(1,2,3);
-  Vector v(2,-1,1);
-
-  p1 -= v;
-
-  EXPECT_EQ(Point(-1,3,2), p1);
+  Vector p(1,1,1);
+  Vector p2 = p * 2;
+  EXPECT_EQ(Vector(2,2,2), p2);
+  EXPECT_EQ(Vector(2,2,2), 2 * p);
 }

@@ -53,6 +53,12 @@ std::string AlgorithmParameter::getString() const
   return v ? *v : "";
 }
 
+bool AlgorithmParameter::getBool() const
+{
+  const bool* v = boost::get<bool>(&value_);
+  return v ? *v : false;
+}
+
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
 {
   logger_ = defaultLogger_;
