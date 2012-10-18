@@ -33,8 +33,10 @@
 #include <boost/algorithm/string.hpp>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/Field.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
@@ -167,7 +169,7 @@ FieldInformation::FieldInformation(Field* field)
 }
 #endif
 std::string
-FieldInformation::get_field_type()
+FieldInformation::get_field_type() const
 {
   return(field_type);
 }
@@ -179,7 +181,7 @@ FieldInformation::set_field_type(const std::string& type)
 }
 
 std::string
-FieldInformation::get_mesh_type()
+FieldInformation::get_mesh_type() const
 {
   return(mesh_type);
 }
@@ -471,7 +473,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
 
 
 std::string
-FieldInformation::get_mesh_basis_type()
+FieldInformation::get_mesh_basis_type() const
 {
   return(mesh_basis_type);
 }
@@ -497,7 +499,7 @@ FieldInformation::set_mesh_basis_type(const std::string& type)
 }
 
 std::string
-FieldInformation::get_point_type()
+FieldInformation::get_point_type() const
 {
   return(point_type);
 }
@@ -510,7 +512,7 @@ FieldInformation::set_point_type(const std::string& type)
 
 
 std::string
-FieldInformation::get_basis_type()
+FieldInformation::get_basis_type() const
 {
   return(basis_type);
 }
@@ -545,7 +547,7 @@ FieldInformation::set_basis_type(const std::string& type)
 
 
 std::string
-FieldInformation::get_data_type()
+FieldInformation::get_data_type() const
 {
   return(data_type);
 }
@@ -590,10 +592,8 @@ FieldInformation::set_data_type(data_info_type type)
   }
 }
 
-
-
-std::string
-FieldInformation::get_container_type()
+std::string 
+FieldInformation::get_container_type() const
 {
   return(container_type);
 }
@@ -1552,8 +1552,7 @@ CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y)
   return (CreateMesh(type,x,y));
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max)
+MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, MeshTraits::size_type x, MeshTraits::size_type y, const Point& min, const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,min,max));
@@ -1565,14 +1564,11 @@ CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z));
 }
+#endif
 
-MeshHandle 
-CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max)
-{
-  std::string type = info.get_mesh_type_id();
-  return (CreateMesh(type,x,y,z,min,max));
-}
 
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 MeshHandle 
 CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim)
 {

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,29 +26,4 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_DATATYPES_FIELD_FWD_H
-#define CORE_DATATYPES_FIELD_FWD_H
-
-#include <boost/shared_ptr.hpp>
-
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  class Field;
-  typedef boost::shared_ptr<Field> FieldHandle;
-
-  class Mesh;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
-
-  class VField;
-  class VMesh;
-
-  class TypeDescription;
-
-  class FieldInformation;
-
-}}}
-
-#endif
-
+#include <gtest/gtest.h>

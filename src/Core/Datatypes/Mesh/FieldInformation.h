@@ -34,7 +34,7 @@
 #define CORE_DATATYPES_FIELDINFORMATION
 
 #include <string>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Mesh/MeshTraits.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 //#include <Core/Datatypes/Mesh/Field.h>
@@ -45,7 +45,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-//TODO: split into separate header
+//TODO: split into separate header--but could we just merge these two classes into one?
 class SCISHARE FieldTypeInformation 
 {
 public:
@@ -149,40 +149,40 @@ class SCISHARE FieldInformation : public FieldTypeInformation
     explicit FieldInformation(FieldHandle handle);
     explicit FieldInformation(Field* field);
   
-    std::string get_field_type();
+    std::string get_field_type() const;
     void        set_field_type(const std::string&);
 
-    std::string get_mesh_type();
-    std::string get_mesh_type_id();
+    std::string get_mesh_type() const;
+    std::string get_mesh_type_id() const;
     void        set_mesh_type(const std::string&);
     void        set_mesh_type(mesh_info_type);
     
-    std::string get_mesh_basis_type();
+    std::string get_mesh_basis_type() const;
     void        set_mesh_basis_type(const std::string&);
     void        set_mesh_basis_type(int);
 
-    std::string get_point_type();
+    std::string get_point_type() const;
     void        set_point_type(const std::string&);
 
-    std::string get_basis_type();
+    std::string get_basis_type() const;
     void        set_basis_type(const std::string&);
     void        set_basis_type(int);
 
     // alternative way of setting data_basis
-    std::string get_data_basis_type() { return (get_basis_type()); }
+    std::string get_data_basis_type() const { return (get_basis_type()); } 
     void        set_data_basis_type(const std::string& s) { set_basis_type(s); }
     void        set_data_basis_type(int s) { set_basis_type(s); }
 
-    std::string get_data_type();
+    std::string get_data_type() const;
     void        set_data_type(const std::string&);
     void        set_data_type(data_info_type);
 
-    std::string get_container_type();
+    std::string get_container_type() const;
     void        set_container_type(const std::string&);
 
-    std::string get_field_name();
-    std::string get_field_type_id();
-    std::string get_field_filename();
+    std::string get_field_name() const;
+    std::string get_field_type_id() const;
+    std::string get_field_filename() const;
       
     bool        make_nodata();
     bool        make_constantdata();
@@ -269,6 +269,7 @@ class SCISHARE FieldInformation : public FieldTypeInformation
 #endif 
 };
 
+//TODO: move to Field/MeshFactory classes
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& meshbasistype, const std::string& databasistype, const std::string& datatype);

@@ -30,77 +30,23 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_TYPES_H
-#define CORE_DATATYPES_TYPES_H
+#ifndef CORE_DATATYPES_MESH_H
+#define CORE_DATATYPES_MESH_H 
+
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Mesh/MeshTraits.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
-
-  typedef unsigned int mask_type;
-
-  typedef long long index_type;
-  typedef long long size_type;
-
 namespace Core {
 namespace Datatypes {
-// Mesh information types, that work with FieldInformation and 
-// CreateMesh/CreateField
 
-enum mesh_info_type 
-{ 
-  POINTCLOUDMESH_E = 1,
-  CURVEMESH_E,
-  TRISURFMESH_E,
-  QUADSURFMESH_E,
-  TETVOLMESH_E,
-  PRISMVOLMESH_E,
-  HEXVOLMESH_E,
-  SCANLINEMESH_E,
-  IMAGEMESH_E,
-  LATVOLMESH_E,
-  STRUCTCURVEMESH_E,
-  STRUCTQUADSURFMESH_E,
-  STRUCTHEXVOLMESH_E 
-};
-       
-// How the data is interpolated over the elements       
-       
-enum databasis_info_type 
-{ 
-  NODATA_E =  -1,
-  CONSTANTDATA_E = 0,
-  LINEARDATA_E = 1,
-  QUADRATICDATA_E = 2,
-  CUBICDATA_E = 3 
-};
-
-// The order of the underlying elements
-
-enum meshbasis_info_type 
-{ 
-  LINEARMESH_E = 1,
-  QUADRATICMESH_E = 2,
-  CUBICMESH_E = 3 
-};
-
-// The type of data stored in the field
-
-enum data_info_type 
-{
-  NONE_E = 0,
-  CHAR_E,
-  UNSIGNED_CHAR_E,
-  SHORT_E,
-  UNSIGNED_SHORT_E,
-  INT_E,
-  UNSIGNED_INT_E,
-  LONGLONG_E,
-  UNSIGNED_LONGLONG_E,
-  FLOAT_E,
-  DOUBLE_E,
-  VECTOR_E,
-  TENSOR_E 
-};
+  class SCISHARE Mesh : public Datatype, public MeshTraits
+  {
+  public: 
+  };
 
 }}}
 
 #endif
+

@@ -112,6 +112,8 @@ class SCISHARE FieldTypeID
     FieldMakerFromMesh field_maker_mesh;
 };
 
+
+//TODO: FieldFactory class
 SCISHARE FieldHandle CreateField(const std::string& type);
 SCISHARE FieldHandle CreateField(const std::string& type, MeshHandle mesh);
 

@@ -39,6 +39,7 @@ SET(Core_Utils_HEADERS
   Share.h
   StringUtil.h
   ProgressReporter.h
+  TypeIDTable.h
 )
 
 ADD_LIBRARY(Core_Utils 

@@ -29,12 +29,16 @@
 SET(Core_Datatypes_Mesh_SRCS
   Field.cc
   FieldInformation.cc
+  MeshFactory.cc
 )
 
 SET(Core_Datatypes_Mesh_HEADERS
   Field.h
   FieldFwd.h
   FieldInformation.h
+  Mesh.h
+  MeshFactory.h
+  MeshTraits.h
   Share.h
 )
 

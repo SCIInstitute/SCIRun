@@ -45,6 +45,7 @@
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Datatypes/Mesh/MeshFactory.h>
 //#include <Core/Datatypes/Mesh/Field.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 //#include <Core/Util/StringUtil.h>
@@ -196,9 +197,11 @@ void CreateLatVolBasic::execute()
       lfi.make_tensor();
 #endif
 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+
     // Create Image Field.
-    MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+    MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
 
