@@ -38,6 +38,7 @@
 //#include <Core/Basis/HexTrilinearLgn.h>
 //
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Transform.h>
 //#include <Core/Geometry/BBox.h>
 //#include <Core/Math/MiscMath.h>
 
@@ -46,6 +47,7 @@
 //#include <Core/Datatypes/VMesh.h>
 //#include <Core/Datatypes/FieldRNG.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h> //TODO
+#include <Core/Datatypes/Mesh/VirtualMeshFactory.h>
 
 #include <Core/Datatypes/Mesh/Share.h>
 
@@ -279,7 +281,7 @@ public:
   LatVolMesh(const LatVolMesh &copy);
   virtual LatVolMesh *clone() const;
   virtual ~LatVolMesh();
-  virtual VMesh* vmesh();
+  virtual VirtualMeshHandle vmesh();
   virtual int basis_order();
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
@@ -588,10 +590,8 @@ protected:
   //! (min=min_Node::index_type, max=min+extents-1)
   size_type ni_, nj_, nk_;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  Transform transform_;
-  Basis     basis_;  
-#endif
+  Geometry::Transform transform_;
+  Basis basis_;  
 
   // The jacobian is the same for every element
   // hence store them as soon as we know the transfrom_
@@ -603,7 +603,7 @@ protected:
   double scaled_jacobian_;
   double det_inverse_jacobian_;
 
-  boost::shared_ptr<VMesh> vmesh_;
+  VirtualMeshHandle vmesh_;
 private:
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static PersistentTypeID latvol_typeid;
@@ -1029,9 +1029,10 @@ private:
   const LatVolMesh<Basis>          &mesh_;
   const typename Cell::index_type  index_;
 };
+#endif
 
-
-LatVolMesh() :
+template <class Basis>
+LatVolMesh<Basis>::LatVolMesh() :
 min_i_(0),
   min_j_(0),
   min_k_(0),
@@ -1039,19 +1040,17 @@ min_i_(0),
   nj_(1),
   nk_(1)
 {
-  DEBUG_CONSTRUCTOR("LatVolMesh")   
-    compute_jacobian();
+  //DEBUG_CONSTRUCTOR("LatVolMesh")
+  compute_jacobian();
 
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVLatVolMesh(this);   
+  vmesh_ = VirtualMeshFactory::CreateVLatVolMesh(this);   
 }
 
-LatVolMesh(size_type x, size_type y, size_type z,
-  const Geometry::Point &min, const Geometry::Point &max);
-
-LatVolMesh(LatVolMesh* /* mh */,  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+LatVolMesh<Basis>::LatVolMesh(LatVolMesh* /* mh */,  
   size_type mx, size_type my, size_type mz,
   size_type x, size_type y, size_type z) :
 min_i_(mx),
@@ -1067,10 +1066,12 @@ min_i_(mx),
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVLatVolMesh(this);   
+  vmesh_ = VirtualMeshFactory::CreateVLatVolMesh(this);   
 }
+#endif
 
-LatVolMesh(const LatVolMesh &copy) :
+template <class Basis>
+LatVolMesh<Basis>::LatVolMesh(const LatVolMesh &copy) :
 Mesh(copy),
   min_i_(copy.min_i_),
   min_j_(copy.min_j_),
@@ -1081,33 +1082,34 @@ Mesh(copy),
   transform_(copy.transform_),
   basis_(copy.basis_)
 {
-  DEBUG_CONSTRUCTOR("LatVolMesh")   
-    transform_.compute_imat();
+  //DEBUG_CONSTRUCTOR("LatVolMesh")   
+  transform_.compute_imat();
   compute_jacobian();  
 
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVLatVolMesh(this);   
+  vmesh_ = VirtualMeshFactory::CreateVLatVolMesh(this);   
 }
 
-virtual LatVolMesh *clone() { return new LatVolMesh(*this); }
-virtual ~LatVolMesh() 
+template <class Basis>
+LatVolMesh<Basis>* LatVolMesh<Basis>::clone() const { return new LatVolMesh(*this); }
+
+template <class Basis>
+LatVolMesh<Basis>::~LatVolMesh() 
 {
-  DEBUG_DESTRUCTOR("LatVolMesh")   
+  //DEBUG_DESTRUCTOR("LatVolMesh")   
 }
 
-//! Access point to virtual interface
-virtual VMesh* vmesh() { 
-  return (vmesh_.get_rep()); 
+template <class Basis>
+VirtualMeshHandle LatVolMesh<Basis>::vmesh() { 
+  return vmesh_;
 }
 
-virtual int basis_order() { return (basis_.polynomial_order()); }
+template <class Basis>
+int LatVolMesh<Basis>::basis_order() { return (basis_.polynomial_order()); }
 
-virtual bool has_normals() const { return false; }
-virtual bool has_face_normals() const { return false; }
-virtual bool is_editable() const { return false; }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Basis &get_basis() { return basis_; }
 
 //! Generate the list of points that make up a sufficiently accurate

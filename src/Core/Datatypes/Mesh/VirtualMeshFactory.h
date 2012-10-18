@@ -30,46 +30,27 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
-#define CORE_GEOMETRY_POINTVECTOROPERATORS_H
+#ifndef CORE_DATATYPES_VIRTUALMESHFACTORY_H
+#define CORE_DATATYPES_VIRTUALMESHFACTORY_H 
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Basis/BasisFwd.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 namespace Core {
-namespace Geometry {
+namespace Datatypes {
 
-  inline Vector operator-(const Point& p1, const Point& p2)
-  {
-    return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
-  }
+  template <class Basis>
+  class LatVolMesh;
 
-  inline Point& Point::operator+=(const Vector& v)
+  class SCISHARE VirtualMeshFactory 
   {
-    d_[0]+=v.d_[0];
-    d_[1]+=v.d_[1];
-    d_[2]+=v.d_[2];
-    return *this;
-  }
-
-  inline Point& Point::operator-=(const Vector& v)
-  {
-    d_[0]-=v.d_[0];
-    d_[1]-=v.d_[1];
-    d_[2]-=v.d_[2];
-    return *this;
-  }
-
-  inline Vector::Vector(const Point& p)
-  {
-    d_[0] = p[0];
-    d_[1] = p[1]; 
-    d_[2] = p[2];
-  }
+  public:
+    static VirtualMeshHandle CreateVLatVolMesh(LatVolMesh<Basis::HexTrilinearLgn<Geometry::Point> >* mesh);
+  };
 
 }}}
 
-
 #endif
+

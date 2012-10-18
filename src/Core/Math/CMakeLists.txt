@@ -26,18 +26,22 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Geometry_Primitives_Tests_SRCS
-  PointTests.cc
-  TransformTests.cc
-  VectorTests.cc
+SET(Core_Math_SRCS
+  MiscMath.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Geometry_Primitives_Tests
-${Core_Geometry_Primitives_Tests_SRCS})
-
-TARGET_LINK_LIBRARIES(Core_Geometry_Primitives_Tests
-Core_Geometry_Primitives
-gtest_main
-gtest
-gmock
+SET(Core_Math_HEADERS
+  MiscMath.h
+  Share.h
 )
+
+ADD_LIBRARY(Core_Math 
+${Core_Math_HEADERS}
+${Core_Math_SRCS})
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Math)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
+

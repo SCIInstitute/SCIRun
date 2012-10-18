@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,50 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
+#undef SCISHARE
 
-#ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
-#define CORE_GEOMETRY_POINTVECTOROPERATORS_H
-
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Geometry {
-
-  inline Vector operator-(const Point& p1, const Point& p2)
-  {
-    return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
-  }
-
-  inline Point& Point::operator+=(const Vector& v)
-  {
-    d_[0]+=v.d_[0];
-    d_[1]+=v.d_[1];
-    d_[2]+=v.d_[2];
-    return *this;
-  }
-
-  inline Point& Point::operator-=(const Vector& v)
-  {
-    d_[0]-=v.d_[0];
-    d_[1]-=v.d_[1];
-    d_[2]-=v.d_[2];
-    return *this;
-  }
-
-  inline Vector::Vector(const Point& p)
-  {
-    d_[0] = p[0];
-    d_[1] = p[1]; 
-    d_[2] = p[2];
-  }
-
-}}}
-
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Math
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

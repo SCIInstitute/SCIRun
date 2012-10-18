@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,50 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-#ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
-#define CORE_GEOMETRY_POINTVECTOROPERATORS_H
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Geometry {
-
-  inline Vector operator-(const Point& p1, const Point& p2)
-  {
-    return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
-  }
-
-  inline Point& Point::operator+=(const Vector& v)
-  {
-    d_[0]+=v.d_[0];
-    d_[1]+=v.d_[1];
-    d_[2]+=v.d_[2];
-    return *this;
-  }
-
-  inline Point& Point::operator-=(const Vector& v)
-  {
-    d_[0]-=v.d_[0];
-    d_[1]-=v.d_[1];
-    d_[2]-=v.d_[2];
-    return *this;
-  }
-
-  inline Vector::Vector(const Point& p)
-  {
-    d_[0] = p[0];
-    d_[1] = p[1]; 
-    d_[2] = p[2];
-  }
-
-}}}
-
-
-#endif
+//TODO 

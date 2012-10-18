@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -30,46 +30,29 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
-#define CORE_GEOMETRY_POINTVECTOROPERATORS_H
+#ifndef CORE_MATH_MISCMATH_H
+#define CORE_MATH_MISCMATH_H 
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/Math/Share.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Geometry {
-
-  inline Vector operator-(const Point& p1, const Point& p2)
+namespace SCIRun 
+{
+  namespace Core
   {
-    return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
-  }
+    namespace Math
+    {
 
-  inline Point& Point::operator+=(const Vector& v)
-  {
-    d_[0]+=v.d_[0];
-    d_[1]+=v.d_[1];
-    d_[2]+=v.d_[2];
-    return *this;
-  }
+      #ifndef M_PI
+      #define M_PI 3.14159265358979323846
+      #endif
 
-  inline Point& Point::operator-=(const Vector& v)
-  {
-    d_[0]-=v.d_[0];
-    d_[1]-=v.d_[1];
-    d_[2]-=v.d_[2];
-    return *this;
+      inline double DtoR(double d)
+      {
+        return d*(M_PI/180.);
+      }
+    }
   }
-
-  inline Vector::Vector(const Point& p)
-  {
-    d_[0] = p[0];
-    d_[1] = p[1]; 
-    d_[2] = p[2];
-  }
-
-}}}
+}
 
 
 #endif

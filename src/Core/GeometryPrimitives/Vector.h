@@ -215,15 +215,9 @@ const std::string& Vector_get_h_file_path();
 SCISHARE const TypeDescription* get_type_description(Vector*);
 #endif
 
+
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-inline Vector::Vector(const Point& p)
-{
-  d_[0] = p.d_[0];
-  d_[1] = p.d_[1]; 
-  d_[2] = p.d_[2];
-}
-
 inline double Vector::length2() const
 {
   return d_[0]*d_[0]+d_[1]*d_[1]+d_[2]*d_[2];

@@ -48,9 +48,7 @@ class Point
 private:
   double d_[3];
 public:
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   inline explicit Point(const Vector& v);
-#endif
   inline Point(double x, double y, double z)
   { d_[0] = x; d_[1] = y; d_[2] = z; }
     Point(double, double, double, double);
@@ -85,6 +83,7 @@ public:
   inline const Vector &vector() const;
   inline Vector &asVector() const;
 #endif
+
   inline double& operator[](int idx) 
   {
     return d_[idx];

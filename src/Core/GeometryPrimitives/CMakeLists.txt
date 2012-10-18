@@ -28,12 +28,15 @@
 
 SET(Core_GeometryPrimitives_SRCS
   Point.cc
+  Transform.cc
   Vector.cc
 )
 
 SET(Core_GeometryPrimitives_HEADERS
   GeomFwd.h
   Point.h
+  PointVectorOperators.h
+  Transform.h
   Vector.h
   Share.h
 )

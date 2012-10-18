@@ -26,17 +26,14 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Geometry_Primitives_Tests_SRCS
-  PointTests.cc
-  TransformTests.cc
-  VectorTests.cc
+SET(Core_Math_Tests_SRCS
+  MiscMathTests.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Geometry_Primitives_Tests
-${Core_Geometry_Primitives_Tests_SRCS})
+SCIRUN_ADD_UNIT_TEST(Core_Math_Tests
+${Core_Math_Tests_SRCS})
 
-TARGET_LINK_LIBRARIES(Core_Geometry_Primitives_Tests
-Core_Geometry_Primitives
+TARGET_LINK_LIBRARIES(Core_Math_Tests
 gtest_main
 gtest
 gmock
