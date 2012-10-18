@@ -42,6 +42,7 @@ namespace Datatypes {
   typedef boost::shared_ptr<Mesh> MeshHandle;
 
   class VirtualField;
+  typedef boost::shared_ptr<VirtualField> VirtualFieldHandle;
 
   class VirtualMesh;
   typedef boost::shared_ptr<VirtualMesh> VirtualMeshHandle;

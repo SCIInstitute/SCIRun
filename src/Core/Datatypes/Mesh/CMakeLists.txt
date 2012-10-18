@@ -53,6 +53,7 @@ ${Core_Datatypes_Mesh_SRCS})
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh
   Core_Datatypes
+  Core_Geometry_Primitives
   ${Boost_LIBRARIES}
 )
 

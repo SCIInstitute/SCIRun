@@ -28,22 +28,12 @@
 
 #include <gtest/gtest.h>
 
-#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
 using namespace SCIRun::Core::Geometry;
 
-TEST(VectorTests, CanDefaultConstruct)
+TEST(TransformTests, CanPrint)
 {
-  Vector p;
-  EXPECT_EQ(0, p.x());
-  EXPECT_EQ(0, p.y());
-  EXPECT_EQ(0, p.z());
-}
-
-TEST(VectorTests, CanScale)
-{
-  Vector p(1,1,1);
-  Vector p2 = p * 2;
-  EXPECT_EQ(Vector(2,2,2), p2);
-  EXPECT_EQ(Vector(2,2,2), 2 * p);
+  Transform t;
+  t.print();
 }

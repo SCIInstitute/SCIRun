@@ -57,8 +57,8 @@ public:
   //! Parametric coordinate used for the center
   static double unit_center[3];
  
-  HexTrilinearLgnUnitElement() {}
-  virtual ~HexTrilinearLgnUnitElement() {}
+  HexTrilinearLgnUnitElement();
+  virtual ~HexTrilinearLgnUnitElement();
 
   //! return dimension of domain 
   static int domain_dimension() 

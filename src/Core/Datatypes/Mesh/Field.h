@@ -57,7 +57,7 @@ class SCISHARE Field : public Datatype
     Field(const Field& copy);// : PropertyManager(copy)       { DEBUG_CONSTRUCTOR("Field");  }
     virtual ~Field();
     
-    virtual Field *clone() const = 0;
+    virtual Field* clone() const = 0;
 
     //! Get pointers to associated structures
     //! mesh -> handle to mesh
@@ -67,8 +67,8 @@ class SCISHARE Field : public Datatype
     virtual MeshHandle mesh() const = 0;
     FieldHandle field();// { return (this); }
 
-    virtual VMesh* vmesh()   const = 0;
-    virtual VField* vfield() const = 0;
+    virtual VirtualMeshHandle vmesh()   const = 0;
+    virtual VirtualFieldHandle vfield() const = 0;
     
     //! Detach the mesh from the field, if needed make a new copy of it.
     virtual void mesh_detach() = 0;

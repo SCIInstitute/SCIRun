@@ -53,7 +53,7 @@ int Mesh::basis_order()
   return (-1);
 }
 
-VMesh* Mesh::vmesh()
+VirtualMeshHandle Mesh::vmesh()
 {
-  return 0;
+  return VirtualMeshHandle();
 } 

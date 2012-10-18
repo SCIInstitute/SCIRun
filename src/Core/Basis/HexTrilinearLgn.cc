@@ -33,6 +33,9 @@
 
 using namespace SCIRun::Core::Basis;
 
+HexTrilinearLgnUnitElement::HexTrilinearLgnUnitElement() {}
+HexTrilinearLgnUnitElement::~HexTrilinearLgnUnitElement() {}
+
 double HexTrilinearLgnUnitElement::unit_vertices[8][3] = 
   { {0.0L, 0.0L, 0.0L}, {1.0L, 0.0L, 0.0L}, {1.0L, 1.0L, 0.0L}, 
     {0.0L, 1.0L, 0.0L}, {0.0L, 0.0L, 1.0L}, {1.0L, 0.0L, 1.0L}, 

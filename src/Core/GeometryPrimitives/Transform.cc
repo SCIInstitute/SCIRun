@@ -148,7 +148,7 @@ Transform::pre_trans(const Transform& T)
 }
 
 void
-Transform::print(void)
+Transform::print()
 {
   for(int i=0;i<4;i++) 
   {
@@ -161,7 +161,7 @@ Transform::print(void)
 }
 
 void
-Transform::printi(void)
+Transform::printi()
 {
   for(int i=0;i<4;i++) 
   {
