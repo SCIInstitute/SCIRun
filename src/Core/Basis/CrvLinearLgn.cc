@@ -31,11 +31,8 @@
 
 #include <Core/Basis/CrvLinearLgn.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double CrvLinearLgnUnitElement::unit_vertices[2][1] = {{0}, {1}};
 int    CrvLinearLgnUnitElement::unit_edges[1][2] = {{0, 1}};
 double CrvLinearLgnUnitElement::unit_center[1] = { 0.5 };
-
-} //namespace SCIRun
-

@@ -31,7 +31,7 @@
 
 #include <Core/Basis/HexTrilinearLgn.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double HexTrilinearLgnUnitElement::unit_vertices[8][3] = 
   { {0.0L, 0.0L, 0.0L}, {1.0L, 0.0L, 0.0L}, {1.0L, 1.0L, 0.0L}, 
@@ -51,6 +51,3 @@ double HexTrilinearLgnUnitElement::unit_face_normals[6][3] =
     {0.0L, 1.0L, 0.0L}, {-1.0L, 0.0L, 0.0L},  {0.0L, 0.0L, 1.0L} };
 
 double HexTrilinearLgnUnitElement::unit_center[3] = { 0.5, 0.5, 0.5 };
-
-} //namespace SCIRun
-

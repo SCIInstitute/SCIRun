@@ -30,9 +30,11 @@
 #define CORE_BASIS_HEXWEIGHTS_H 1
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
-class HexElementWeights {
-
+class HexElementWeights 
+{
 public:
   template <class VECTOR>
   void get_linear_weights(const VECTOR& coords, double *w) const
@@ -475,7 +477,7 @@ public:
   inline int num_hderivs() { return 7; }
 };
 
-} // end namespace
+}}}
 
 #endif
 

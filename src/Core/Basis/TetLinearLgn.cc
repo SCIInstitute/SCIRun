@@ -31,7 +31,7 @@
 
 #include <Core/Basis/TetLinearLgn.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double TetLinearLgnUnitElement::unit_vertices[4][3] = 
   {{0,0,0}, {1,0,0}, {0,1,0}, {0,0,1}};
@@ -50,6 +50,3 @@ double TetLinearLgnUnitElement::unit_face_areas[4] =
   { 0.866, 0.5, 0.5, 0.5 };
 
 double TetLinearLgnUnitElement::unit_center[3] = { 0.25, 0.25, 0.25 };
-
-} //namespace SCIRun
-

@@ -35,12 +35,14 @@
 #include <Core/Basis/Basis.h>
 #include <Core/Basis/NoElementWeights.h>
 #include <Core/Basis/PntSamplingSchemes.h>
-#include <Core/Util/TypeDescription.h>
-#include <Core/Persistent/Persistent.h>
-#include <Core/Datatypes/TypeName.h>
-#include <Core/Basis/share.h>
+//#include <Core/Util/TypeDescription.h>
+//#include <Core/Persistent/Persistent.h>
+//#include <Core/Datatypes/TypeName.h>
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of ConstantBasis 
 class SCISHARE ConstantBasisUnitElement {
@@ -172,14 +174,14 @@ public:
       w[si] = 0;
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Functions for dynamic compilation and storing this object on disk
   static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str);
+#endif
 };
-
-
-
-
+  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class T>
 const std::string
@@ -229,6 +231,8 @@ ConstantBasis<T>::io(Piostream &stream)
                      CONSTANTBASIS_VERSION);
   stream.end_class();
 }
+#endif
 
-}
-#endif // Constant_h
+}}}
+
+#endif

@@ -34,9 +34,11 @@
 
 #include <Core/Basis/HexTrilinearLgn.h>
 
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of HexTriquadraticLgn 
   class SCISHARE HexTriquadraticLgnUnitElement : public HexTrilinearLgnUnitElement {
@@ -217,12 +219,14 @@ public:
   {
     return get_volume3(this, cd);
   }
-  
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str); 
+#endif
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const TypeDescription* get_type_description(HexTriquadraticLgn<T> *)
 {
@@ -269,7 +273,7 @@ HexTriquadraticLgn<T>::io(Piostream &stream)
   Pio(stream, this->nodes_);
   stream.end_class();
 }
-
-} //namespace SCIRun
+#endif
+}}}
 
 #endif

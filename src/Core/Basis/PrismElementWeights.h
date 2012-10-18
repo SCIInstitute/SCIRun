@@ -30,6 +30,8 @@
 #define CORE_BASIS_PRISMWEIGHTS_H 1
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class PrismElementWeights {
 
@@ -279,7 +281,7 @@ public:
   inline int num_hderivs() { return 3; }
 };
 
-} // end namespace
+}}}
 
 #endif
 

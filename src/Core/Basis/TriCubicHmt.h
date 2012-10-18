@@ -34,8 +34,11 @@
 
 #include <Core/Basis/TriLinearLgn.h>
 
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
+
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of TriCubicHmt
 
@@ -217,6 +220,6 @@ TriCubicHmt<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
 #endif

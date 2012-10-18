@@ -35,6 +35,8 @@
 #include <Core/Basis/PrismLinearLgn.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of PrismCubicHmt
 class PrismCubicHmtUnitElement : public PrismLinearLgnUnitElement {
@@ -285,6 +287,6 @@ PrismCubicHmt<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
 #endif

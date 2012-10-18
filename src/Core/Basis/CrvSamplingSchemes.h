@@ -29,12 +29,14 @@
 #ifndef CORE_BASIS_CRVSAMPLINGSCHEMES_H
 #define CORE_BASIS_CRVSAMPLINGSCHEMES_H 1
 
-#include <Core/Util/Assert.h>
+//#include <Core/Util/Assert.h>
 #include <vector>
 
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class SCISHARE CrvSamplingSchemes
 {
@@ -117,6 +119,6 @@ class SCISHARE CrvSamplingSchemes
   }
 };
 
-} // end namespace
+}}}
 
 #endif

@@ -34,11 +34,13 @@
 
 #include <Core/Basis/Basis.h>
 #include <Core/Basis/NoElementWeights.h>
-#include <Core/Util/TypeDescription.h>
-#include <Core/Persistent/Persistent.h>
-#include <Core/Datatypes/TypeName.h>
+//#include <Core/Util/TypeDescription.h>
+//#include <Core/Persistent/Persistent.h>
+//#include <Core/Datatypes/TypeName.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of NoDataBasis 
 class NoDataUnitElement {
@@ -109,12 +111,13 @@ public:
   void get_derivate_weights(const VECTOR &coords, unsigned int elem, double *w) const
   {
   }
-   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str); 
+#endif
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const std::string
 NoDataBasis<T>::type_name(int n)
@@ -163,7 +166,8 @@ NoDataBasis<T>::io(Piostream &stream)
                      NODATABASIS_VERSION);
   stream.end_class();
 }
+#endif
 
-} // end namespace SCIRun
+}}}
 
-#endif // NoData_h
+#endif

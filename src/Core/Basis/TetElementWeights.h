@@ -30,6 +30,8 @@
 #define CORE_BASIS_TETWEIGHTS_H 1
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class TetElementWeights {
 
@@ -206,7 +208,7 @@ public:
   inline int num_hderivs() { return 3; }
 };
 
-} // end namespace
+}}}
 
 #endif
 

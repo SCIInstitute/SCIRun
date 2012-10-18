@@ -37,9 +37,11 @@
 #include <Core/Basis/HexElementWeights.h>
 #include <Core/Basis/HexSamplingSchemes.h>
 
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of HexTrilinearLgn 
 class SCISHARE HexTrilinearLgnUnitElement {
@@ -262,10 +264,6 @@ protected:
   }
 };
 
-
-
-
-
 //! Class with weights and coordinates for 1st order Gaussian integration
 template <class T>
 class HexGaussian1
@@ -486,12 +484,14 @@ public:
   {
     return get_volume3(this, cd);
   }
-  
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str);
+#endif
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const TypeDescription* 
 get_type_description(HexTrilinearLgn<T> *)
@@ -538,8 +538,8 @@ HexTrilinearLgn<T>::io(Piostream &stream)
                      HEX_TRILINEAR_LGN_VERSION);
   stream.end_class();
 }
-    
-} //namespace SCIRun
+#endif
 
+}}}
 
 #endif

@@ -31,9 +31,6 @@
 
 #include <Core/Basis/TriQuadraticLgn.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double TriQuadraticLgnUnitElement::unit_vertices[6][2] = {{0,0}, {1,0}, {0,1}, {0.5,0}, {0.5,0.5}, {0,0.5}};
- 
-} //namespace SCIRun
-

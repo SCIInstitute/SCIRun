@@ -30,6 +30,8 @@
 #define CORE_BASIS_TRIWEIGHTS_H 1
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class TriElementWeights {
 
@@ -157,6 +159,6 @@ public:
 
 };
 
-} // end namespace
+}}}
 
 #endif

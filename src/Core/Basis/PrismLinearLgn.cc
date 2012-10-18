@@ -31,7 +31,7 @@
 
 #include <Core/Basis/PrismLinearLgn.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double PrismLinearLgnUnitElement::unit_vertices[6][3] = 
   {{0,0,0}, {1,0,0}, {0,1,0},
@@ -57,6 +57,3 @@ double PrismLinearLgnUnitElement::unit_face_areas[5] =
 
 double PrismLinearLgnUnitElement::unit_center[3] = 
   { 1.0/3.0, 1.0/3.0, 0.5};
-
-} //namespace SCIRun
-

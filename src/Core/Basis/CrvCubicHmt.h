@@ -35,6 +35,8 @@
 #include <Core/Basis/CrvLinearLgn.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of CrvCubicHmt 
 class CrvCubicHmtUnitElement : public CrvLinearLgnUnitElement {
@@ -189,6 +191,6 @@ CrvCubicHmt<T>::io(Piostream &stream)
 }
  
 
-} //namespace SCIRun
+}}}
 
 #endif

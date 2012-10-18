@@ -34,9 +34,11 @@
 
 #include <vector>
 #include <cfloat>
-#include <Core/Util/Assert.h>
+//#include <Core/Util/Assert.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing interfaces to basis elements
 template <class T>
@@ -248,5 +250,6 @@ public:
 
 };
 
-}
-#endif // Basis_h
+}}}
+
+#endif

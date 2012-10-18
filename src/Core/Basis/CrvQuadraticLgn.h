@@ -33,9 +33,11 @@
 #define CORE_BASIS_CRVQUADRATICLGN_H 1
 
 #include <Core/Basis/CrvLinearLgn.h>
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of CrvLinearLgn 
 class SCISHARE CrvQuadraticLgnUnitElement : public CrvLinearLgnUnitElement {
@@ -138,12 +140,13 @@ public:
     return 0.;
   }
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
-
   virtual void io (Piostream& str);
+#endif
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const TypeDescription* get_type_description(CrvQuadraticLgn<T> *)
 {
@@ -189,7 +192,8 @@ CrvQuadraticLgn<T>::io(Piostream &stream)
   Pio(stream, this->nodes_);
   stream.end_class();
 }
-  
-} //namespace SCIRun
+#endif
+
+}}}
 
 #endif

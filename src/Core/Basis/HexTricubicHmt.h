@@ -35,6 +35,8 @@
 #include <Core/Basis/HexTrilinearLgn.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of HexTricubicHmt
 class HexTricubicHmtUnitElement : public HexTrilinearLgnUnitElement {
@@ -445,6 +447,6 @@ HexTricubicHmt<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
-#endif // HexTricubicHmt_h
+#endif

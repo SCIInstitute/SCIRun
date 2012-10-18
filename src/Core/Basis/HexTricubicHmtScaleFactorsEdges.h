@@ -35,8 +35,9 @@
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/Basis/HexTrilinearLgn.h>
 
-
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of HexTricubicHmtScaleFactorsEdges
 class HexTricubicHmtScaleFactorsEdgesUnitElement : 
@@ -630,6 +631,6 @@ HexTricubicHmtScaleFactorsEdges<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
 #endif

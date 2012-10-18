@@ -41,6 +41,8 @@
 #include <Core/Basis/TriLinearLgn.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of TetCubicHmt
 class TriCubicScaleFactorsHmtUnitElement : public TriLinearLgnUnitElement {
@@ -295,6 +297,6 @@ void
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
-#endif // TriCubicHmtScaleFactors_h
+#endif 

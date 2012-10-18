@@ -33,15 +33,16 @@
 #define CORE_BASIS_CRVLINEARLGN_H 1
 
 #include <Core/Basis/Basis.h>
-#include <Core/Util/TypeDescription.h>
-#include <Core/Datatypes/TypeName.h>
+//#include <Core/Util/TypeDescription.h>
+//#include <Core/Datatypes/TypeName.h>
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvElementWeights.h>
 #include <Core/Basis/CrvSamplingSchemes.h>
-#include <Core/Basis/share.h>
-
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of CrvLinearLgn 
 class CrvLinearLgnUnitElement {
@@ -133,7 +134,7 @@ public:
 //! Class for searching of parametric coordinates related to a 
 //! value in Crv meshes and fields
 template <class ElemBasis>
-class CrvLocate  : public Dim1Locate<ElemBasis> {
+class CrvLocate : public Dim1Locate<ElemBasis> {
 public:
   typedef typename ElemBasis::value_type T;
 
@@ -343,10 +344,13 @@ public:
     tmp[0] = 1.0;
   }  
   
-  static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  static const std::string type_name(int n = -1);
   virtual void io (Piostream& str);
+#endif
 };
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const TypeDescription* get_type_description(CrvLinearLgn<T> *)
 {
@@ -393,9 +397,8 @@ CrvLinearLgn<T>::io(Piostream &stream)
                      CRVLINEARLGN_VERSION);
   stream.end_class();
 }
+#endif
 
-} //namespace SCIRun
+}}}
 
-
-
-#endif // CrvLinearLgn_h
+#endif

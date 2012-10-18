@@ -34,9 +34,10 @@
 
 #include <Core/Basis/QuadBilinearLgn.h>
 
-
 namespace SCIRun {
-  
+namespace Core {
+namespace Basis {
+
 //! Class for describing unit geometry of QuadBicubicHmt
 class QuadBicubicHmtUnitElement : public QuadBilinearLgnUnitElement {
 public:
@@ -214,6 +215,6 @@ QuadBicubicHmt<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
 #endif

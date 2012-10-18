@@ -30,6 +30,8 @@
 #define CORE_BASIS_NOWEIGHTS_H 1
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class NoElementWeights {
 
@@ -80,9 +82,6 @@ public:
   inline int num_hderivs() { return 0; }
 };
 
-
-
-
-} // end namespace
+}}}
 
 #endif

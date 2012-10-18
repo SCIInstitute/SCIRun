@@ -31,7 +31,7 @@
 
 #include <Core/Basis/QuadBilinearLgn.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double 
 QuadBilinearLgnUnitElement::unit_vertices[4][2] = {{0,0}, {1,0}, {1,1}, {0,1}};
@@ -46,7 +46,3 @@ QuadBilinearLgnUnitElement::unit_face_normals[1][3] =
 
 double 
 QuadBilinearLgnUnitElement::unit_center[2] = { 0.5, 0.5 };
-
-
-} //namespace SCIRun
-

@@ -32,22 +32,19 @@
 #ifndef CORE_BASIS_LOCATE_H
 #define CORE_BASIS_LOCATE_H 1
 
-#include <math.h>
+#include <cmath>
 
-//! Most calculations are done on the stack in the StackVector object
-//! this one does not require a memory allocation
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <boost/array.hpp>
 
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Containers/StackVector.h>
-
-//! Incude needed for Windows: declares SCISHARE
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
 
 
 namespace SCIRun {
+  namespace Core {
+    namespace Basis {
 
-  //! Inline templated inverse matrix
   template<class T>
     inline T InverseMatrix3x3(const T *p, T *q) 
   {
@@ -71,31 +68,6 @@ namespace SCIRun {
     return detp;
   }
 
-
-  //! Inline templated inverse matrix
-  inline double InverseMatrix3P(const StackVector<Point,3> p, double *q) 
-  {
-    const double a=p[0].x(), b=p[0].y(), c=p[0].z();
-    const double d=p[1].x(), e=p[1].y(), f=p[1].z();
-    const double g=p[2].x(), h=p[2].y(), i=p[2].z();
-      
-    const double detp=a*e*i-c*e*g+b*f*g+c*d*h-a*f*h-b*d*i;
-    const double detinvp=(detp ? 1.0/detp : 0);
-      
-    q[0]=(e*i-f*h)*detinvp;
-    q[1]=(c*h-b*i)*detinvp;
-    q[2]=(b*f-c*e)*detinvp;
-    q[3]=(f*g-d*i)*detinvp;
-    q[4]=(a*i-c*g)*detinvp;
-    q[5]=(c*d-a*f)*detinvp;
-    q[6]=(d*h-e*g)*detinvp;
-    q[7]=(b*g-a*h)*detinvp;
-    q[8]=(a*e-b*d)*detinvp;
-  
-    return detp;
-  }
-
-  //! Inline templated determinant of matrix
   template<class T>
     inline T DetMatrix3x3(const T *p) 
   {
@@ -107,7 +79,6 @@ namespace SCIRun {
     return detp;
   }
 
-  //! Inline templated determinant of matrix
   template<class T>
     inline T ScaledDetMatrix3x3(const T *p) 
   {
@@ -120,30 +91,6 @@ namespace SCIRun {
     return (detp/s);
   }
 
-
-  //! Inline templated determinant of matrix
-  inline double DetMatrix3P(const StackVector<Point,3> p) 
-  {
-    const double a=p[0].x(), b=p[0].y(), c=p[0].z();
-    const double d=p[1].x(), e=p[1].y(), f=p[1].z();
-    const double g=p[2].x(), h=p[2].y(), i=p[2].z();
-      
-    const double detp=a*e*i-c*e*g+b*f*g+c*d*h-a*f*h-b*d*i;
-    return detp;
-  }
-
-  //! Inline templated determinant of matrix
-  inline double ScaledDetMatrix3P(const StackVector<Point,3> p) 
-  {
-    const double a=p[0].x(), b=p[0].y(), c=p[0].z();
-    const double d=p[1].x(), e=p[1].y(), f=p[1].z();
-    const double g=p[2].x(), h=p[2].y(), i=p[2].z();
-      
-    const double detp=a*e*i-c*e*g+b*f*g+c*d*h-a*f*h-b*d*i;
-    const double s = sqrt((a*a+b*b+c*c)*(d*d+e*e+f*f)*(g*g+h*h+i*i));
-    return (detp/s);
-  }
-
   //! default case for volume calculation - currently not needed  
   template <class VECTOR, class T>
   inline double d_volume_type(const VECTOR& /*derivs*/, T* /*type*/)
@@ -153,7 +100,7 @@ namespace SCIRun {
 
   //! Specific implementation for Point
   template<class VECTOR>
-  inline double d_volume_type(const VECTOR& derivs, Point* /*type*/)
+  inline double d_volume_type(const VECTOR& derivs, Geometry::Point* /*type*/)
   {
     double J[9];
     J[0]=derivs[0].x();
@@ -175,8 +122,7 @@ namespace SCIRun {
   {
     return(d_volume_type(derivs,reinterpret_cast<typename VECTOR::value_type*>(0)));
   }
-
-
+  
   template <class ElemBasis, class ElemData>
     double get_volume3(const ElemBasis *pEB, const ElemData &cd)
   {
@@ -208,16 +154,16 @@ namespace SCIRun {
 
   //! area calculation on points
   template <class VECTOR1, class VECTOR2>
-    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Point* type)
+    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point* type)
   {
     const unsigned int dvsize=derivs.size();
     ASSERT(dv0.size()==dvsize);
     ASSERT(dv1.size()==dvsize);
 
-    Vector Jdv0(0,0,0), Jdv1(0,0,0);
+    Geometry::Vector Jdv0(0,0,0), Jdv1(0,0,0);
     for(unsigned int i = 0; i<dvsize; i++) {
-      Jdv0+=dv0[i]*Vector(derivs[i].x(), derivs[i].y(), derivs[i].z());
-      Jdv1+=dv1[i]*Vector(derivs[i].x(), derivs[i].y(), derivs[i].z());
+      Jdv0+=dv0[i]*Geometry::Vector(derivs[i].x(), derivs[i].y(), derivs[i].z());
+      Jdv1+=dv1[i]*Geometry::Vector(derivs[i].x(), derivs[i].y(), derivs[i].z());
     }
   
     return Cross(Jdv0, Jdv1).length();
@@ -306,7 +252,7 @@ namespace SCIRun {
 
   //! arc length calculation on points
    template <class VECTOR1, class VECTOR2>
-  inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Point* type)
+  inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point* type)
   {
     const unsigned int dvsize=dv.size();
     ASSERT(derivs.size()==dvsize);
@@ -407,7 +353,7 @@ namespace SCIRun {
   }
 
   template <>
-  inline Point difference(const Point& interp, const Point& value)
+  inline Geometry::Point difference(const Geometry::Point& interp, const Geometry::Point& value)
   {
     return (interp - value).point();
   }
@@ -430,9 +376,9 @@ namespace SCIRun {
 
   template <class VECTOR1, class VECTOR2>
   inline double getnextx1(VECTOR1 &x, 
-		     const Point& y, const VECTOR2& yd)
+		     const Geometry::Point& y, const VECTOR2& yd)
   {
-    const Point &yd0 = yd[0]; 
+    const Geometry::Point &yd0 = yd[0]; 
 
     const double dx = ((yd0.x() ? y.x()/yd0.x() : 0)+(yd0.y() ? y.y()/yd0.y() : 0)+(yd0.z() ? y.z()/yd0.z() : 0))/3.0;
     x[0] -= dx;
@@ -465,7 +411,7 @@ namespace SCIRun {
 
   template <class VECTOR1, class VECTOR2>
     double getnextx2(VECTOR1 &x, 
-		     const Point& y, const VECTOR2& yd)
+		     const Geometry::Point& y, const VECTOR2& yd)
   {
     const double J00=yd[0].x();
     const double J10=yd[0].y();
@@ -523,7 +469,7 @@ namespace SCIRun {
          
   template <class VECTOR1, class VECTOR2>
     double getnextx3(VECTOR1 &x, 
-		     const Point& y, const VECTOR2& yd)
+		     const Geometry::Point& y, const VECTOR2& yd)
   {
     double J[9], JInv[9];
 
@@ -689,10 +635,10 @@ namespace SCIRun {
     return  cur_d < dist;
   }
 
-  inline bool compare_distance(const Point &interp, const Point &val, 
+  inline bool compare_distance(const Geometry::Point &interp, const Geometry::Point &val, 
 			  double &cur_d, double dist)
   {
-    Vector v = interp - val;
+    Geometry::Vector v = interp - val;
     cur_d = v.length();   
     return  cur_d < dist; 
   }  
@@ -710,12 +656,12 @@ namespace SCIRun {
   }
 
   template <class VECTOR>
-  inline bool check_zero_type(const VECTOR &val, Point* /*type*/, double epsilon)
+  inline bool check_zero_type(const VECTOR &val, Geometry::Point* /*type*/, double epsilon)
   {
     typename VECTOR::const_iterator iter = val.begin();
     while(iter != val.end()) 
     {
-      const Point &v=*iter++;
+      const Geometry::Point &v=*iter++;
       if (fabs(v.x())>epsilon || fabs(v.y())>epsilon || fabs(v.z())>epsilon)
         return false;
     }
@@ -727,8 +673,7 @@ namespace SCIRun {
   {
     return(check_zero_type(derivs,reinterpret_cast<typename VECTOR::value_type*>(0),epsilon));
   }
-
-
-}
+  
+}}}
 
 #endif

@@ -31,9 +31,7 @@
 
 #include <Core/Basis/NoData.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double NoDataUnitElement::unit_vertices[1][1] = { {0} };
 int NoDataUnitElement::unit_edges[1][1] = { {0} };
-
-} // end namespace

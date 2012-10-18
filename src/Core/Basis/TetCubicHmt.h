@@ -35,6 +35,8 @@
 #include <Core/Basis/TetLinearLgn.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of TetCubicHmt
 class TetCubicHmtUnitElement : public TetLinearLgnUnitElement {
@@ -246,6 +248,6 @@ TetCubicHmt<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
 #endif

@@ -30,11 +30,13 @@
 #define CORE_BASIS_QUADSAMPLINGSCHEMES_H 1
 
 #include <vector>
-#include <Core/Util/Assert.h>
+//#include <Core/Util/Assert.h>
 
-#include <Core/Basis/share.h>
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class SCISHARE QuadSamplingSchemes
 {
@@ -134,6 +136,6 @@ class SCISHARE QuadSamplingSchemes
   }
 };
 
-} // end namespace
+}}}
 
 #endif

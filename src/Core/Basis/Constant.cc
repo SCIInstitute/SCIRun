@@ -31,10 +31,9 @@
 
 #include <Core/Basis/Constant.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
 
 double ConstantBasisUnitElement::unit_vertices[1][1] = { {0} };
 int ConstantBasisUnitElement::unit_edges[1][1] = { {0} };
 double ConstantBasisUnitElement::unit_center[3] = { 0,0,0 };
 
-} // end namespace

@@ -36,6 +36,8 @@
 #include <Core/Basis/HexTrilinearLgn.h>
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 //! Class for describing unit geometry of HexTricubicHmtScaleFactors
 class HexTricubicHmtScaleFactorsUnitElement : 
@@ -628,7 +630,7 @@ HexTricubicHmtScaleFactors<T>::io(Piostream &stream)
   stream.end_class();
 }
 
-} //namespace SCIRun
+}}}
 
 
 #endif

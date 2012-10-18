@@ -30,6 +30,8 @@
 #define CORE_BASIS_QUADWEIGHTS_H 1
 
 namespace SCIRun {
+namespace Core {
+namespace Basis {
 
 class QuadElementWeights {
 
@@ -162,6 +164,6 @@ public:
   inline int num_hderivs() { return 2; }
 };
 
-} // end namespace
+}}}
 
 #endif
