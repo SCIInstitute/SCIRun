@@ -2369,28 +2369,7 @@ LatVolMesh<Basis>::to_index(typename LatVolMesh<Basis>::Cell::index_type &idx,
 }
 
 
-template <class Basis>
-void 
-LatVolMesh<Basis>::compute_jacobian()
-{
-  Vector J1 = transform_.project(Vector(1.0,0.0,0.0)); 
-  Vector J2 = transform_.project(Vector(0.0,1.0,0.0)); 
-  Vector J3 = transform_.project(Vector(0.0,0.0,1.0)); 
-  
-  jacobian_[0] = J1.x();
-  jacobian_[1] = J1.y();
-  jacobian_[2] = J1.z();
-  jacobian_[3] = J2.x();
-  jacobian_[4] = J2.y();
-  jacobian_[5] = J2.z();
-  jacobian_[6] = J3.x();
-  jacobian_[7] = J3.y();
-  jacobian_[8] = J3.z();
-  
-  det_jacobian_ = DetMatrix3x3(jacobian_);
-  scaled_jacobian_ = ScaledDetMatrix3x3(jacobian_);
-  det_inverse_jacobian_ = InverseMatrix3x3(jacobian_,inverse_jacobian_);
-}
+
 
 template <class Basis>
 double

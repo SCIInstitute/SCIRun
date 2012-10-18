@@ -383,8 +383,8 @@ class HexTrilinearLgn :
 public:
   typedef T value_type;
 
-  HexTrilinearLgn() {}
-  virtual ~HexTrilinearLgn() {}
+  inline HexTrilinearLgn() {}
+  inline virtual ~HexTrilinearLgn() {}
   
   static int polynomial_order() { return 1; }
 

@@ -419,6 +419,14 @@ Transform::post_permute(int xmap, int ymap, int zmap)
   inverse_valid = false;
 }
 
+Vector
+  Transform::project(const Vector& p) const
+{
+  return Vector(mat[0][0]*p.x()+mat[0][1]*p.y()+mat[0][2]*p.z(),
+    mat[1][0]*p.x()+mat[1][1]*p.y()+mat[1][2]*p.z(),
+    mat[2][0]*p.x()+mat[2][1]*p.y()+mat[2][2]*p.z());
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Point
 Transform::project(const Point& p) const
@@ -447,13 +455,7 @@ Transform::project_inplace(Vector& p) const
   p = t;
 }
 
-Vector
-Transform::project(const Vector& p) const
-{
-  return Vector(mat[0][0]*p.x()+mat[0][1]*p.y()+mat[0][2]*p.z(),
-                mat[1][0]*p.x()+mat[1][1]*p.y()+mat[1][2]*p.z(),
-                mat[2][0]*p.x()+mat[2][1]*p.y()+mat[2][2]*p.z());
-}
+
 void
 Transform::project(const Point& p, Point& res) const
 {

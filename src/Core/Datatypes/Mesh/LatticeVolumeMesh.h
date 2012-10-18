@@ -356,6 +356,7 @@ public:
   index_type get_nk() const { return nk_; }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual bool get_dim(std::vector<size_type>&) const;
+  virtual void set_dim(const std::vector<size_type>& dims);
   Geometry::Vector diagonal() const;
   
   virtual BBox get_bounding_box() const;
@@ -371,7 +372,6 @@ public:
   void set_ni(index_type i);
   void set_nj(index_type j);
   void set_nk(index_type k);
-  virtual void set_dim(std::vector<size_type> dims);
 
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
@@ -552,6 +552,7 @@ public:
   virtual int topology_geometry() const { return (STRUCTURED | REGULAR); }
 #endif
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Type description, used for finding names of the mesh class for
   //! dynamic compilation purposes. Some of this should be obsolete    
   virtual const TypeDescription *get_type_description() const;
@@ -562,7 +563,6 @@ public:
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new LatVolMesh(); }
 #endif
@@ -681,6 +681,28 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
   
   //! Initialize the virtual interface when the mesh is created
   vmesh_ = VirtualMeshFactory::CreateVLatVolMesh(this);  
+}
+
+template <class Basis>
+void LatVolMesh<Basis>::compute_jacobian()
+{
+  auto J1 = transform_.project(Vector(1.0,0.0,0.0)); 
+  auto J2 = transform_.project(Vector(0.0,1.0,0.0)); 
+  auto J3 = transform_.project(Vector(0.0,0.0,1.0)); 
+
+  jacobian_[0] = J1.x();
+  jacobian_[1] = J1.y();
+  jacobian_[2] = J1.z();
+  jacobian_[3] = J2.x();
+  jacobian_[4] = J2.y();
+  jacobian_[5] = J2.z();
+  jacobian_[6] = J3.x();
+  jacobian_[7] = J3.y();
+  jacobian_[8] = J3.z();
+
+  det_jacobian_ = DetMatrix3x3(jacobian_);
+  scaled_jacobian_ = ScaledDetMatrix3x3(jacobian_);
+  det_inverse_jacobian_ = InverseMatrix3x3(jacobian_,inverse_jacobian_);
 }
 
 
