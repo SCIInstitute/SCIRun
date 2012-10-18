@@ -29,6 +29,7 @@
 SET(Core_Datatypes_Mesh_Tests_SRCS
   FieldTests.cc
   LatticeVolumeMeshTests.cc
+  MeshFactoryTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Mesh_Tests

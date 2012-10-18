@@ -37,7 +37,9 @@ SET(Core_Datatypes_Mesh_SRCS
 SET(Core_Datatypes_Mesh_HEADERS
   Field.h
   FieldFwd.h
+  FieldIndex.h
   FieldInformation.h
+  FieldIterator.h
   LatticeVolumeMesh.h
   Mesh.h
   MeshFactory.h

@@ -26,17 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/LatVolMesh.h>
-#include <Core/Datatypes/VMeshShared.h>
-#include <Core/Datatypes/StructHexVolMesh.h>
-#include <Core/Basis/HexElementWeights.h>
+#include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
+//#include <Core/Datatypes/VMeshShared.h>
+//#include <Core/Datatypes/StructHexVolMesh.h>
+//#include <Core/Basis/HexElementWeights.h>
 
+using namespace SCIRun::Core::Datatypes;
 
+//! Register class maker, so we can instantiate it
+static MeshTypeID LatVolMesh_MeshID1(LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
+  LatVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
+  LatVolMesh<HexTrilinearLgn<Point> >::latvol_maker);
 
-//! Only include this class if we included LatVol Support
-#if (SCIRUN_LATVOL_SUPPORT > 0) || (SCIRUN_STRUCTHEXVOL_SUPPORT > 0)
-
-namespace SCIRun {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 //! This is the virtual interface to the curve mesh
 //! This class lives besides the real mesh class for now and solely profides
@@ -1139,10 +1141,7 @@ VMesh* CreateVLatVolMesh(LatVolMesh<HexTrilinearLgn<Point> >* mesh)
   return new VLatVolMesh<LatVolMesh<HexTrilinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
-static MeshTypeID LatVolMesh_MeshID1(LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
-                  LatVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
-                  LatVolMesh<HexTrilinearLgn<Point> >::latvol_maker);
+
                   
 
 //! Functions for determining the number of indices that are used
@@ -2808,10 +2807,6 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& 
   ASSERTFAIL("Gradient of unknown order requested");
 }
 
-
-
-#if (SCIRUN_STRUCTHEXVOL_SUPPORT > 0)
-
 template<class MESH>
 class VStructHexVolMesh : public VLatVolMesh<MESH> {
 public:
@@ -4115,8 +4110,5 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_t
 }
 
 
-#endif
-
-} // namespace
 #endif
 

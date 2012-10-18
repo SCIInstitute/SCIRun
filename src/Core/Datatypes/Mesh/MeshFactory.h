@@ -47,8 +47,8 @@ namespace Datatypes {
 
   struct MeshConstructionParameters
   {
-    MeshTraits::size_type x, y, z;
-    Geometry::Point min, max;
+    MeshTraits::size_type x_, y_, z_;
+    Geometry::Point min_, max_;
 
     MeshConstructionParameters(MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Geometry::Point& min, const Geometry::Point& max);
   };
