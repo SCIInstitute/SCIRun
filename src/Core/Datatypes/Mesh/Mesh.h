@@ -47,7 +47,7 @@ namespace Datatypes {
     Mesh();
     Mesh(const Mesh& copy); //: PropertyManager(copy) { DEBUG_CONSTRUCTOR("Mesh");  }
     virtual ~Mesh();
-    virtual Mesh* clone() = 0;
+    virtual Mesh* clone() const = 0;
     //! Virtual interface functions:
     //! Get the virtual mesh interface, this returns the pointer to an internal
     //! object that has all the virtual functions. This object will be destroyed

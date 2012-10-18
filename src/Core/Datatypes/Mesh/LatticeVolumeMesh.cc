@@ -29,12 +29,16 @@
 #include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
 //#include <Core/Datatypes/VMeshShared.h>
 //#include <Core/Datatypes/StructHexVolMesh.h>
-//#include <Core/Basis/HexElementWeights.h>
+#include <Core/Datatypes/Mesh/MeshFactory.h>
+#include <Core/Basis/HexTrilinearLgn.h>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
 
 //! Register class maker, so we can instantiate it
-static MeshTypeID LatVolMesh_MeshID1(LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
+static MeshFactory::MeshTypeID LatVolMesh_MeshID1(LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
   LatVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
   LatVolMesh<HexTrilinearLgn<Point> >::latvol_maker);
 

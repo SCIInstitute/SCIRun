@@ -45,6 +45,7 @@
 #include <Core/Datatypes/Mesh/Mesh.h>
 //#include <Core/Datatypes/VMesh.h>
 //#include <Core/Datatypes/FieldRNG.h>
+#include <Core/Datatypes/Mesh/MeshFactory.h> //TODO
 
 #include <Core/Datatypes/Mesh/Share.h>
 
@@ -276,7 +277,7 @@ public:
   LatVolMesh(LatVolMesh* /* mh */, size_type mx, size_type my, size_type mz,
              size_type x, size_type y, size_type z);
   LatVolMesh(const LatVolMesh &copy);
-  virtual LatVolMesh *clone();
+  virtual LatVolMesh *clone() const;
   virtual ~LatVolMesh();
   virtual VMesh* vmesh();
   virtual int basis_order();
@@ -538,16 +539,18 @@ public:
 #endif
 
   static const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Unsafe due to non-constness of unproject.
   Transform &get_transform();
   Transform &set_transform(const Transform &trans);
 #endif
 
   virtual int dimensionality() const { return 3; }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual int topology_geometry() const { return (STRUCTURED | REGULAR); }
+#endif
     
   //! Type description, used for finding names of the mesh class for
   //! dynamic compilation purposes. Some of this should be obsolete    
@@ -564,9 +567,17 @@ public:
   static Persistent *maker() { return new LatVolMesh(); }
 #endif
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new LatVolMesh(); }
+  static MeshHandle mesh_maker() 
+  { 
+    MeshHandle ret(new LatVolMesh()); 
+    return ret;
+  }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Geometry::Point& min, const Geometry::Point& max) { return new LatVolMesh(x,y,z,min,max); }
+  static MeshHandle latvol_maker(const SCIRun::Core::Datatypes::MeshConstructionParameters& params) 
+  { 
+    MeshHandle ret(new LatVolMesh(params.x_, params.y_, params.z_, params.min_, params.max_)); 
+    return ret;
+  }
 
 protected:
   void compute_jacobian();
