@@ -30,47 +30,30 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/Mesh.h>
-#include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
 
-CORE_SINGLETON_IMPLEMENTATION( MeshFactory )
-
-MeshFactory::MeshFactory()
+Mesh::Mesh()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  DEBUG_CONSTRUCTOR("Mesh")  
+#endif
 }
 
-MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params)
+Mesh::~Mesh() 
 {
-  std::string type = info.get_mesh_type_id();
-  return CreateMesh(type, params);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  DEBUG_DESTRUCTOR("Mesh")  
+#endif
 }
 
-MeshHandle MeshFactory::CreateMesh(const std::string& type, const MeshConstructionParameters& params)
+int Mesh::basis_order()
 {
-  auto ctorInfo = meshTypeIdLookup_.findConstructorInfo(type);
-  if (ctorInfo)
-    return ctorInfo->ctor_(params);
-  return MeshHandle();
-  /*
-  auto it = MeshTypeIDTable->find(type);
-  if (it != MeshTypeIDTable->end()) 
-  {
-  if ((*it).second->latvol_maker != 0)
-  {
-  return = (*it).second->latvol_maker(x,y,z,min,max);
-  }
-  }
-  MeshTypeIDMutex->unlock();
-  return (handle);*/
+  return (-1);
 }
 
-MeshFactory::MeshTypeID::MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor /* = 0 */) :
-  type_(type), defCtor_(defCtor), ctor_(ctor)
+VMesh* Mesh::vmesh()
 {
-  MeshFactory::Instance().meshTypeIdLookup_.registerConstructorInfo(type, *this);
-}
+  return 0;
+} 

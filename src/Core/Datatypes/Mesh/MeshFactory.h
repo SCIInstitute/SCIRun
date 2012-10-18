@@ -38,7 +38,7 @@
 #include <Core/Utils/TypeIDTable.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/Datatypes/Mesh/MeshTraits.h>
-#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
@@ -53,6 +53,8 @@ namespace Datatypes {
     MeshConstructionParameters(MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Geometry::Point& min, const Geometry::Point& max);
   };
 
+  typedef MeshHandle (*MeshDefaultConstructor)();
+  typedef MeshHandle (*MeshConstructor)(const MeshConstructionParameters&);
 
   class SCISHARE MeshFactory : boost::noncopyable
   {
@@ -61,14 +63,18 @@ namespace Datatypes {
   public:
     MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
 
-    class MeshTypeID
+    struct SCISHARE MeshTypeID
     {
-
+      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = 0);
+      
+      std::string type_;
+      MeshDefaultConstructor defCtor_;
+      MeshConstructor ctor_;
     };
 
   private:
     MeshFactory();
-    MeshHandle CreateMesh(const std::string& type, MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Geometry::Point& min, const Geometry::Point& max);
+    MeshHandle CreateMesh(const std::string& type, const MeshConstructionParameters& params);
 
     Core::Utility::TypeIDTable<MeshTypeID> meshTypeIdLookup_;
   };

@@ -31,6 +31,7 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/optional.hpp>
 #include <Core/Utils/Share.h>
 
 namespace SCIRun 
@@ -41,10 +42,15 @@ namespace Utility
 {
   // A thread-safe map used for constructor lookup in Mesh/Field factories.
 
-  template <class ValueType>
+  template <class CtorInfo>
   class TypeIDTable : boost::noncopyable
   {
-
+  public:
+    //do locking internally
+    boost::optional<const CtorInfo&> findConstructorInfo(const std::string& key) const;
+    void registerConstructorInfo(const std::string& key, const CtorInfo& info);
+  private:
+    boost::mutex::scoped_lock scopedLock();
   };
 
 }}}
