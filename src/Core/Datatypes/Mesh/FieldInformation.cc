@@ -634,20 +634,20 @@ FieldInformation::get_field_type_id()
     basis_type + "<" + data_type + ">" + "," + container_type + "<" +
     data_type + meshptr + ">" + ">";
   
-  for (std::string::size_type r=0; r< field_template.size(); r++) if (field_template[r] == ' ') field_template[r] = '_';  
+  std::replace(field_template.begin(), field_template.end(), ' ', '_');
         
-  return(field_template);
+  return field_template;
 }
 
 
 std::string
 FieldInformation::get_mesh_type_id()
 {
-  std::string mesh_template =  mesh_type + "<" + mesh_basis_type + "<" + point_type + ">" + ">";
+  std::string mesh_template = mesh_type + "<" + mesh_basis_type + "<" + point_type + ">" + ">";
   
-  for (std::string::size_type r=0; r< mesh_template.size(); r++) if (mesh_template[r] == ' ') mesh_template[r] = '_';  
+  std::replace(mesh_template.begin(), mesh_template.end(), ' ', '_');
         
-  return(mesh_template);
+  return mesh_template;
 }
 
 #endif

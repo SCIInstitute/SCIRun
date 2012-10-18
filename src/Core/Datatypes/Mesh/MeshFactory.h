@@ -45,7 +45,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  struct MeshConstructionParameters
+  struct SCISHARE MeshConstructionParameters
   {
     MeshTraits::size_type x_, y_, z_;
     Geometry::Point min_, max_;
