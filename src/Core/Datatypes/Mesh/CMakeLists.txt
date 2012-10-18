@@ -32,6 +32,7 @@ SET(Core_Datatypes_Mesh_SRCS
   LatticeVolumeMesh.cc
   Mesh.cc
   MeshFactory.cc
+  VirtualMeshFactory.cc
 )
 
 SET(Core_Datatypes_Mesh_HEADERS
@@ -44,6 +45,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   Mesh.h
   MeshFactory.h
   MeshTraits.h
+  VirtualMeshFactory.h
   Share.h
 )
 

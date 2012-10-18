@@ -34,9 +34,7 @@
 #define CORE_DATATYPES_LATVOLMESH_H 
 
 #include <boost/array.hpp>
-//#include <Core/Basis/Locate.h>
-//#include <Core/Basis/HexTrilinearLgn.h>
-//
+
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Transform.h>
 //#include <Core/Geometry/BBox.h>
@@ -356,10 +354,10 @@ public:
   index_type get_ni() const { return ni_; }
   index_type get_nj() const { return nj_; }
   index_type get_nk() const { return nk_; }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual bool get_dim(std::vector<size_type>&) const;
   Geometry::Vector diagonal() const;
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  
   virtual BBox get_bounding_box() const;
   virtual void transform(const Transform &t);
   virtual void get_canonical_transform(Transform &t);

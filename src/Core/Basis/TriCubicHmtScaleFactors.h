@@ -37,7 +37,7 @@
 #ifndef CORE_BASIS_TRICUBICHMTSCALEFACTORS_H
 #define CORE_BASIS_TRICUBICHMTSCALEFACTORS_H 1
 
-#include <Core/Persistent/PersistentSTL.h>
+//#include <Core/Persistent/PersistentSTL.h>
 #include <Core/Basis/TriLinearLgn.h>
 
 namespace SCIRun {
@@ -241,13 +241,14 @@ public:
     return 0.;
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static const std::string type_name(int n = -1);
-
   virtual void io (Piostream& str); 
+#endif
 };
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class T>
 const TypeDescription* get_type_description(TriCubicHmtScaleFactors<T> *)
@@ -296,6 +297,7 @@ void
   Pio(stream, this->scalefactors_);
   stream.end_class();
 }
+#endif
 
 }}}
 

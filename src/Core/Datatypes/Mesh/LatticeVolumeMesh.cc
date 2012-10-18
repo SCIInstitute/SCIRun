@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Geometry;
 
 
 //! Register class maker, so we can instantiate it
-static MeshFactory::MeshTypeID LatVolMesh_MeshID1(LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
+static MeshFactory::MeshTypeID LatVolMesh_MeshID1("LatVolMesh<HexTrilinearLgn<Point>>", //LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
   LatVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
   LatVolMesh<HexTrilinearLgn<Point> >::latvol_maker);
 

@@ -30,28 +30,15 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_VIRTUALMESHFACTORY_H
-#define CORE_DATATYPES_VIRTUALMESHFACTORY_H 
+#include <Core/Datatypes/Mesh/VirtualMeshFactory.h>
+#include <Core/Basis/Bases.h>
+#include <Core/GeometryPrimitives/Point.h>
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/GeometryPrimitives/GeomFwd.h>
-#include <Core/Basis/BasisFwd.h>
-#include <Core/Datatypes/Mesh/Share.h>
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  template <class Basis>
-  class LatVolMesh;
-
-  class SCISHARE VirtualMeshFactory 
-  {
-  public:
-    static VirtualMeshHandle CreateVLatVolMesh(LatVolMesh<Basis::HexTrilinearLgn<Geometry::Point> >* mesh);
-  };
-
-}}}
-
-#endif
-
+VirtualMeshHandle VirtualMeshFactory::CreateVLatVolMesh(LatVolMesh<HexTrilinearLgn<Point> >* mesh)
+{
+  return VirtualMeshHandle();
+}

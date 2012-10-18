@@ -194,13 +194,14 @@ public:
   {
     return get_volume3(this, cd);
   }
-  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str);
+#endif
 };
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const TypeDescription* get_type_description(TetCubicHmt<T> *)
 {
@@ -247,7 +248,7 @@ TetCubicHmt<T>::io(Piostream &stream)
   Pio(stream, this->derivs_);
   stream.end_class();
 }
-
+#endif
 }}}
 
 #endif

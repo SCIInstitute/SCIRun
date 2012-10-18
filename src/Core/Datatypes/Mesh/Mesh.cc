@@ -48,6 +48,11 @@ Mesh::~Mesh()
 #endif
 }
 
+Mesh::Mesh(const Mesh& copy)
+{
+
+}
+
 int Mesh::basis_order()
 {
   return (-1);
