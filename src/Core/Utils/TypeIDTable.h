@@ -46,11 +46,38 @@ namespace Utility
   class TypeIDTable : boost::noncopyable
   {
   public:
+    typedef boost::optional<const CtorInfo&> CtorInfoOption;
+    
     //do locking internally
-    boost::optional<const CtorInfo&> findConstructorInfo(const std::string& key) const;
-    void registerConstructorInfo(const std::string& key, const CtorInfo& info);
+    CtorInfoOption findConstructorInfo(const std::string& key) const
+    {
+      boost::mutex::scoped_lock s(lock_);
+      auto iter = lookup_.find(key);
+      if (iter == lookup_.end())
+        return CtorInfoOption();
+      return CtorInfoOption(iter->second);
+    }
+
+    bool registerConstructorInfo(const std::string& key, const CtorInfo& info)
+    {
+      boost::mutex::scoped_lock s(lock_);
+      auto iter = lookup_.find(key);
+      if (iter != lookup_.end())
+      {
+        if (iter->second != info)
+        {
+          //TODO: improve for testing
+          std::cerr << "WARNING: duplicate type exists: " << key << "\n";
+          return false;
+        }
+      }
+      lookup_[key] = info;
+      return true;
+    }
+
   private:
-    boost::mutex::scoped_lock scopedLock();
+    mutable boost::mutex lock_;
+    std::map<std::string, CtorInfo> lookup_;
   };
 
 }}}

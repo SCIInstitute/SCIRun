@@ -27,3 +27,55 @@
 */
 
 #include <gtest/gtest.h>
+
+#include <Core/Utils/TypeIDTable.h>
+
+using namespace SCIRun::Core::Utility;
+
+struct XXX 
+{
+  int x;
+};
+
+bool operator==(const XXX& x1, const XXX& x2)
+{
+  return x1.x == x2.x;
+}
+
+bool operator!=(const XXX& x1, const XXX& x2)
+{
+  return !(x1 == x2);
+}
+
+TEST(TypeIDTableTests, CanConstructEmpty)
+{
+  TypeIDTable<XXX> table;
+  
+  auto ctor = table.findConstructorInfo("LatVolMesh");
+
+  EXPECT_FALSE(ctor);
+}
+
+TEST(TypeIDTableTests, CanRegisterObjectForLater)
+{
+  TypeIDTable<XXX> table;
+
+  const std::string type = "LatVolMesh";
+
+  XXX ctorInfo;
+  EXPECT_TRUE(table.registerConstructorInfo(type, ctorInfo));
+
+  auto ctor = table.findConstructorInfo(type);
+
+  EXPECT_TRUE(ctor);
+}
+
+TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
+{
+  EXPECT_TRUE(false);
+}
