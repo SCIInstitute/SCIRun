@@ -32,24 +32,24 @@
 
 using namespace SCIRun::Core::Utility;
 
-struct XXX 
+struct Dummy 
 {
   int x;
 };
 
-bool operator==(const XXX& x1, const XXX& x2)
+bool operator==(const Dummy& x1, const Dummy& x2)
 {
   return x1.x == x2.x;
 }
 
-bool operator!=(const XXX& x1, const XXX& x2)
+bool operator!=(const Dummy& x1, const Dummy& x2)
 {
   return !(x1 == x2);
 }
 
 TEST(TypeIDTableTests, CanConstructEmpty)
 {
-  TypeIDTable<XXX> table;
+  TypeIDTable<Dummy> table;
   
   auto ctor = table.findConstructorInfo("LatVolMesh");
 
@@ -58,11 +58,11 @@ TEST(TypeIDTableTests, CanConstructEmpty)
 
 TEST(TypeIDTableTests, CanRegisterObjectForLater)
 {
-  TypeIDTable<XXX> table;
+  TypeIDTable<Dummy> table;
 
   const std::string type = "LatVolMesh";
 
-  XXX ctorInfo;
+  Dummy ctorInfo;
   EXPECT_TRUE(table.registerConstructorInfo(type, ctorInfo));
 
   auto ctor = table.findConstructorInfo(type);
@@ -72,10 +72,33 @@ TEST(TypeIDTableTests, CanRegisterObjectForLater)
 
 TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
 {
-  EXPECT_TRUE(false);
+  TypeIDTable<Dummy> table;
+
+  const std::string type = "LatVolMesh";
+
+  Dummy ctorInfo1;
+  ctorInfo1.x = 1;
+  EXPECT_TRUE(table.registerConstructorInfo(type, ctorInfo1));
+
+  Dummy ctorInfo2;
+  ctorInfo2.x = 2;
+  EXPECT_FALSE(table.registerConstructorInfo(type, ctorInfo2));
+  EXPECT_EQ(1, table.size());
+
+  auto ctor = table.findConstructorInfo(type);
+
+  EXPECT_TRUE(ctor);
+  EXPECT_EQ(1, ctor->x);
 }
 
+//TODO
 TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
 {
+  TypeIDTable<Dummy> table;
+
+  const std::string type = "LatVolMesh";
+
+  Dummy ctorInfo1;
+  ctorInfo1.x = 1;
   EXPECT_TRUE(false);
 }

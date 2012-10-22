@@ -75,6 +75,8 @@ namespace Utility
       return true;
     }
 
+    size_t size() const { return lookup_.size(); }
+
   private:
     mutable boost::mutex lock_;
     std::map<std::string, CtorInfo> lookup_;
