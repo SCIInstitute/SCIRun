@@ -56,6 +56,8 @@ namespace Datatypes {
   typedef MeshHandle (*MeshDefaultConstructor)();
   typedef MeshHandle (*MeshConstructor)(const MeshConstructionParameters&);
 
+  //TODO: yucky double-singleton to separate registration from construction.
+
   class SCISHARE MeshFactory : boost::noncopyable
   {
     CORE_SINGLETON( MeshFactory );
@@ -63,19 +65,35 @@ namespace Datatypes {
   public:
     MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
 
-    struct SCISHARE MeshTypeID
-    {
-      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = 0);
-      
-      std::string type_;
-      MeshDefaultConstructor defCtor_;
-      MeshConstructor ctor_;
-    };
-
   private:
     MeshFactory();
     MeshHandle CreateMesh(const std::string& type, const MeshConstructionParameters& params);
+    class MeshRegistry& registry_;
+  };
 
+  class SCISHARE MeshRegistry : boost::noncopyable
+  {
+    CORE_SINGLETON( MeshRegistry );
+  public:
+
+    struct SCISHARE MeshTypeID
+    {
+      MeshTypeID();
+      MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor = 0);
+
+      std::string type_;
+      MeshDefaultConstructor defCtor_;
+      MeshConstructor ctor_;
+
+      bool operator==(const MeshTypeID& other) const;
+      bool operator!=(const MeshTypeID& other) const;
+
+      friend class MeshRegistry;
+    };
+
+    friend class MeshFactory;
+  private:
+    MeshRegistry();
     Core::Utility::TypeIDTable<MeshTypeID> meshTypeIdLookup_;
   };
 

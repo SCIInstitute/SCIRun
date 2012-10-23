@@ -33,17 +33,26 @@
 #include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/Datatypes/Mesh/LatticeVolumeMeshRegister.h>
 #include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
 
 MeshConstructionParameters::MeshConstructionParameters(MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Point& min, const Point& max)
   : x_(x), y_(y), z_(z), min_(min), max_(max) {}
 
 CORE_SINGLETON_IMPLEMENTATION( MeshFactory )
+CORE_SINGLETON_IMPLEMENTATION( MeshRegistry )
 
-MeshFactory::MeshFactory()
+MeshFactory::MeshFactory() : registry_(MeshRegistry::Instance())
+{
+  SCIRun::Core::Datatypes::registerLatticeVolumeMesh();
+  //fill in all mesh types here, via their basic register functions.
+}
+
+MeshRegistry::MeshRegistry()
 {
 }
 
@@ -55,25 +64,28 @@ MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, const MeshConst
 
 MeshHandle MeshFactory::CreateMesh(const std::string& type, const MeshConstructionParameters& params)
 {
-  auto ctorInfo = meshTypeIdLookup_.findConstructorInfo(type);
+  auto ctorInfo = registry_.meshTypeIdLookup_.findConstructorInfo(type);
   if (ctorInfo)
     return ctorInfo->ctor_(params);
   return MeshHandle();
-  /*
-  auto it = MeshTypeIDTable->find(type);
-  if (it != MeshTypeIDTable->end()) 
-  {
-  if ((*it).second->latvol_maker != 0)
-  {
-  return = (*it).second->latvol_maker(x,y,z,min,max);
-  }
-  }
-  MeshTypeIDMutex->unlock();
-  return (handle);*/
 }
 
-MeshFactory::MeshTypeID::MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor /* = 0 */) :
+MeshRegistry::MeshTypeID::MeshTypeID() : defCtor_(0), ctor_(0)
+{
+}
+
+MeshRegistry::MeshTypeID::MeshTypeID(const std::string& type, MeshDefaultConstructor defCtor, MeshConstructor ctor /* = 0 */) :
   type_(type), defCtor_(defCtor), ctor_(ctor)
 {
-  MeshFactory::Instance().meshTypeIdLookup_.registerConstructorInfo(type, *this);
+  MeshRegistry::Instance().meshTypeIdLookup_.registerConstructorInfo(type, *this);
+}
+
+bool MeshRegistry::MeshTypeID::operator==(const MeshRegistry::MeshTypeID& other) const 
+{
+  return defCtor_ == other.defCtor_ && ctor_ == other.ctor_;
+}
+
+bool MeshRegistry::MeshTypeID::operator!=(const MeshRegistry::MeshTypeID& other) const 
+{
+  return !(*this == other);
 }

@@ -30,22 +30,25 @@
 //#include <Core/Datatypes/VMeshShared.h>
 //#include <Core/Datatypes/StructHexVolMesh.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
+#include <Core/Datatypes/Mesh/LatticeVolumeMeshRegister.h>
 #include <Core/Basis/HexTrilinearLgn.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Basis;
 using namespace SCIRun::Core::Geometry;
 
-
+void SCIRun::Core::Datatypes::registerLatticeVolumeMesh()
+{
 //! Register class maker, so we can instantiate it
-static MeshFactory::MeshTypeID LatVolMesh_MeshID1("LatVolMesh<HexTrilinearLgn<Point>>", //LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
+static MeshRegistry::MeshTypeID LatVolMesh_MeshID1("LatVolMesh<HexTrilinearLgn<Point>>", //LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
   LatVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
   LatVolMesh<HexTrilinearLgn<Point> >::latvol_maker);
+}
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 //! This is the virtual interface to the curve mesh
-//! This class lives besides the real mesh class for now and solely profides
+//! This class lives besides the real mesh class for now and solely provides
 //! an interface. In the future however when dynamic compilation is gone
 //! this should be put into the LatVolMesh class.
 template<class MESH> class VLatVolMesh;
@@ -59,7 +62,7 @@ class VLatVolMesh : public VMeshShared<MESH> {
 public:
   virtual bool is_latvolmesh()         { return (true); }
 
-  //! constructor and descructor
+  //! constructor and destructor
   VLatVolMesh(MESH* mesh) : VMeshShared<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VLatVolMesh")    

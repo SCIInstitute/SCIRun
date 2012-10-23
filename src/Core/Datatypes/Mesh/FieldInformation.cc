@@ -638,10 +638,9 @@ FieldInformation::get_field_type_id()
         
   return field_template;
 }
+#endif
 
-
-std::string
-FieldInformation::get_mesh_type_id()
+std::string FieldInformation::get_mesh_type_id() const
 {
   std::string mesh_template = mesh_type + "<" + mesh_basis_type + "<" + point_type + ">" + ">";
   
@@ -649,8 +648,6 @@ FieldInformation::get_mesh_type_id()
         
   return mesh_template;
 }
-
-#endif
 
 bool
 FieldTypeInformation::is_isomorphic()
