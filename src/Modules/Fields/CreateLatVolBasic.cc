@@ -46,6 +46,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
 //#include <Core/Datatypes/Mesh/Field.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 //#include <Core/Util/StringUtil.h>
@@ -200,6 +201,7 @@ void CreateLatVolBasic::execute()
 
     // Create Image Field.
     MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+    send_output_handle(0, mesh);
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     FieldHandle ofh = CreateField(lfi,mesh);

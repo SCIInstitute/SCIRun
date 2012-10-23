@@ -53,6 +53,8 @@ namespace Gui {
       return Qt::white;
     if (str == "yellow")
       return Qt::yellow;
+    if (str == "darkYellow")
+      return Qt::darkYellow;
     else
       return Qt::black;
   }
