@@ -235,6 +235,7 @@ namespace Modules
   INPUT_PORT_SPEC(Scalar);
   INPUT_PORT_SPEC(String);
   INPUT_PORT_SPEC(Field);
+  INPUT_PORT_SPEC(Mesh);  //TODO temporary
   INPUT_PORT_SPEC(Geometry);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
