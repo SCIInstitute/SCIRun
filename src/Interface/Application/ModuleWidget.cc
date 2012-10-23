@@ -36,7 +36,7 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
-#include <Interface/Application/Logger.h>
+#include <Interface/Application/GuiLogger.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -50,6 +50,31 @@ using namespace SCIRun::Dataflow::Networks;
 QPointF ProxyWidgetPosition::currentPosition() const
 {
   return widget_->pos() + offset_;
+}
+
+namespace {
+//TODO move to separate header
+QColor to_color(const std::string& str)
+{
+  if (str == "red")
+    return Qt::red;
+  if (str == "blue")
+    return Qt::blue;
+  if (str == "darkGreen")
+    return Qt::darkGreen;
+  if (str == "cyan")
+    return Qt::cyan;
+  if (str == "magenta")
+    return Qt::magenta;
+  if (str == "white")
+    return Qt::white;
+  if (str == "yellow")
+    return Qt::yellow;
+  if (str == "darkYellow")
+    return Qt::darkYellow;
+  else
+    return Qt::black;
+}
 }
 
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
@@ -141,7 +166,7 @@ ModuleWidget::~ModuleWidget()
 {
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
-  Logger::Instance()->log("Module deleted.");
+  GuiLogger::Instance().log("Module deleted.");
   dialog_.reset();
   Q_EMIT removeModule(moduleId_);
 }

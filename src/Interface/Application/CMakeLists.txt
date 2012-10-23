@@ -45,6 +45,7 @@ ENDIF(VTK_SUPPORT)
 
 SET(Interface_Application_SOURCES 
   GuiApplication.cc
+  GuiLogger.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
   SCIRunMainWindow.cc
@@ -58,7 +59,7 @@ SET(Interface_Application_SOURCES
 
 SET(Interface_Application_HEADERS
   GuiApplication.h
-  Logger.h
+  GuiLogger.h
   ModuleWidget.h
   ModuleProxyWidget.h
   SCIRunMainWindow.h
@@ -99,6 +100,7 @@ ADD_LIBRARY(Interface_Application
 TARGET_LINK_LIBRARIES(Interface_Application 
   Dataflow_Network
   Core_Application
+  Core_Logging
   Interface_Modules_Base
   Interface_Modules_Factory
   ${GUI_VTK_LINK_LIBRARIES}

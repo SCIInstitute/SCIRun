@@ -32,7 +32,7 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
-#include <Interface/Application/Logger.h>
+#include <Interface/Application/GuiLogger.h>
 
 using namespace SCIRun::Gui;
 
@@ -57,11 +57,11 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
     setColor(fromPort_->color());
   
   trackNodes();
+  GuiLogger::Instance().log("Connection made.");
 }
 
 ConnectionLine::~ConnectionLine()
 {
-  //std::cout << "~~~~~~~~~~~~~~~~~~~ConnectionLine " << id_.id_ << "\n  " << this << std::endl;
   if (fromPort_ && toPort_)
   {
     fromPort_->removeConnection(this);
@@ -70,7 +70,7 @@ ConnectionLine::~ConnectionLine()
     toPort_->turn_off_light();
   }
   Q_EMIT deleted(id_);
-  Logger::Instance()->log("Connection deleted.");
+  GuiLogger::Instance().log("Connection deleted.");
 }
 
 void ConnectionLine::setColor(const QColor& color)
@@ -90,7 +90,7 @@ void ConnectionLine::trackNodes()
     setLine(QLineF(fromPort_->position(), toPort_->position()));
   }
   else
-    throw std::logic_error("no from/to set for Connection");
+    BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection"));
 }
 
 ConnectionInProgress::ConnectionInProgress(PortWidget* port)

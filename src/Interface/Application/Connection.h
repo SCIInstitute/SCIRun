@@ -31,6 +31,7 @@
 
 #include <QGraphicsLineItem>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Core/Utils/Exception.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -56,6 +57,8 @@ private:
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
 };
+
+struct InvalidConnection : virtual Core::ExceptionBase {};
 
 class ConnectionInProgress : public QGraphicsLineItem
 {

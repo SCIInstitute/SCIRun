@@ -37,7 +37,7 @@
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/Port.h>
-#include <Interface/Application/Logger.h>
+#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
@@ -46,8 +46,6 @@
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-
-boost::shared_ptr<Logger> Logger::instance_;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
@@ -142,7 +140,7 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   proxy->setSelected(true);
   bringToFront();
 
-  Logger::Instance()->log("Module added.");
+  GuiLogger::Instance().log("Module added.");
 }
 
 void NetworkEditor::bringToFront()

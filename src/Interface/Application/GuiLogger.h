@@ -26,52 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef LOGGER_H
-#define LOGGER_H
+#ifndef GUI_LOGGER_H
+#define GUI_LOGGER_H
 
+#include <Core/Utils/Singleton.h>
+#include <Core/Logging/LoggerFwd.h>
 #include <boost/shared_ptr.hpp>
 #include <QString>
 
 namespace SCIRun {
 namespace Gui {
 
-  //TODO move to separate header
-
-  inline QColor to_color(const std::string& str)
+  class GuiLogger : boost::noncopyable
   {
-    if (str == "red")
-      return Qt::red;
-    if (str == "blue")
-      return Qt::blue;
-    if (str == "darkGreen")
-      return Qt::darkGreen;
-    if (str == "cyan")
-      return Qt::cyan;
-    if (str == "magenta")
-      return Qt::magenta;
-    if (str == "white")
-      return Qt::white;
-    if (str == "yellow")
-      return Qt::yellow;
-    if (str == "darkYellow")
-      return Qt::darkYellow;
-    else
-      return Qt::black;
-  }
-
-  //TODO: merge this with Core_Logging...
-  class Logger
-  {
+    CORE_SINGLETON(GuiLogger)
   public:
-    virtual ~Logger() {}
-    virtual void log(const QString& message) const = 0;
-    static boost::shared_ptr<Logger> Instance() { return instance_; }
-    static void set_instance(Logger* p) { instance_.reset(p); }
+    void log(const QString& message) const;
+    static void setInstance(Core::Logging::LoggerHandle logger);
   private:
-    static boost::shared_ptr<Logger> instance_;
+    GuiLogger();
+    static Core::Logging::LoggerHandle loggerImpl_;
   };
 
-}
-}
+}}
 
 #endif

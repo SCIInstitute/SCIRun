@@ -30,10 +30,10 @@
 #include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
-#include <Interface/Application/Logger.h>
+#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-
+#include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Application/Application.h>
@@ -67,13 +67,36 @@ namespace
     return list;
   }
 
-  struct LogAppender : public Logger
+  class TextEditAppender : public Core::Logging::LoggerInterface
   {
-    explicit LogAppender(QTextEdit* text) : text_(text) {}
+  public:
+    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
+
     void log(const QString& message) const 
     {
       text_->append(message);
     }
+
+    virtual void error(const std::string& msg)
+    {
+      log("Error: " + QString::fromStdString(msg));
+    }
+
+    virtual void warning(const std::string& msg)
+    {
+      log("Warning: " + QString::fromStdString(msg));
+    }
+
+    virtual void remark(const std::string& msg)
+    {
+      log("Remark: " + QString::fromStdString(msg));
+    }
+
+    virtual void status(const std::string& msg)
+    {
+      log(QString::fromStdString(msg));
+    }
+  private:
     QTextEdit* text_;
   };
 
@@ -116,7 +139,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 	setupUi(this);
 
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-  Logger::set_instance(new LogAppender(logTextBrowser_));
+  Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
+  GuiLogger::setInstance(logger);
   networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
@@ -174,7 +198,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 
   QStringList result = visitTree(moduleSelectorTreeWidget_);
-  std::for_each(result.begin(), result.end(), boost::bind(&Logger::log, boost::ref(*Logger::Instance()), _1));
+  std::for_each(result.begin(), result.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
