@@ -41,4 +41,36 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, QWidget* parent) : Q
   setModal(false);
   setWindowTitle("Log for " + moduleName);
   setVisible(false);
+  connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
+}
+
+void ModuleLogWindow::appendMessage(const QString& message, const QColor& color /* = Qt::black */)
+{
+  logTextEdit_->insertHtml(QString("<p style=\"color:") + color.name() + "\">" + message);
+  logTextEdit_->append("\n");
+}
+
+ModuleLogger::ModuleLogger(ModuleLogWindow* window) : window_(window) 
+{
+  connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window_, SLOT(appendMessage(const QString&, const QColor&)));
+}
+
+void ModuleLogger::error(const std::string& msg)
+{
+  logSignal("<b>ERROR: " + QString::fromStdString(msg) + "</b>", Qt::red);
+}
+
+void ModuleLogger::warning(const std::string& msg)
+{
+  logSignal("WARNING: " + QString::fromStdString(msg), Qt::yellow);
+}
+
+void ModuleLogger::remark(const std::string& msg)
+{
+  logSignal("REMARK: " + QString::fromStdString(msg), Qt::blue);
+}
+
+void ModuleLogger::status(const std::string& msg)
+{
+  logSignal(QString::fromStdString(msg), Qt::black);
 }

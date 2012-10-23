@@ -47,6 +47,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Logging;
 
 QPointF ProxyWidgetPosition::currentPosition() const
 {
@@ -104,6 +105,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
 
   logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
+  LoggerHandle logger(new ModuleLogger(logWindow_));
+  theModule_->setLogger(logger);
 }
 
 void ModuleWidget::addPortLayouts()
@@ -172,6 +175,7 @@ ModuleWidget::~ModuleWidget()
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");
   dialog_.reset();
+  theModule_->setLogger(LoggerHandle());
   Q_EMIT removeModule(moduleId_);
 }
 

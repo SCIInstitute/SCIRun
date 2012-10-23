@@ -31,6 +31,7 @@
 
 #include "ui_ModuleLogWindow.h"
 
+#include <Core/Logging/Logger.h>
 #include <Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
@@ -42,6 +43,23 @@ class ModuleLogWindow : public QDialog, public Ui::ModuleLogWindow
 	
 public:
   explicit ModuleLogWindow(const QString& moduleName, QWidget* parent = 0);
+public Q_SLOTS:
+  void appendMessage(const QString& message, const QColor& color = Qt::black);
+};
+
+class ModuleLogger : public QObject, public Core::Logging::LoggerInterface
+{
+  Q_OBJECT
+public:
+  explicit ModuleLogger(ModuleLogWindow* window);
+  virtual void error(const std::string& msg);
+  virtual void warning(const std::string& msg);
+  virtual void remark(const std::string& msg);
+  virtual void status(const std::string& msg);
+Q_SIGNALS:
+  void logSignal(const QString& message, const QColor& color);
+private:
+  ModuleLogWindow* window_;
 };
 
 }
