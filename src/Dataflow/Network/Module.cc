@@ -59,7 +59,7 @@ Module::Module(const ModuleLookupInfo& info,
   id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);
-  log_ = defaultLogger_;
+  setLogger(defaultLogger_);
 }
 
 Module::~Module()

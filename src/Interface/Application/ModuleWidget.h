@@ -99,6 +99,8 @@ private:
   void makeOptionsDialog();
   int executionTime_;
 
+  class ModuleLogWindow* logWindow_;
+
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 
   class ModuleExecutionRunner

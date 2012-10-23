@@ -37,6 +37,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/GuiLogger.h>
+#include <Interface/Application/ModuleLogWindow.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -100,6 +101,9 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
 
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
   makeOptionsDialog();
+
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
+  connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
 }
 
 void ModuleWidget::addPortLayouts()

@@ -46,6 +46,7 @@ ENDIF(VTK_SUPPORT)
 SET(Interface_Application_SOURCES 
   GuiApplication.cc
   GuiLogger.cc
+  ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
   SCIRunMainWindow.cc
@@ -60,6 +61,7 @@ SET(Interface_Application_SOURCES
 SET(Interface_Application_HEADERS
   GuiApplication.h
   GuiLogger.h
+  ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
   SCIRunMainWindow.h
@@ -73,6 +75,7 @@ SET(Interface_Application_HEADERS
 
 SET(Interface_Application_FORMS
   Module.ui
+  ModuleLogWindow.ui
   SCIRunMainWindow.ui
   RenderWindow.ui
 )
