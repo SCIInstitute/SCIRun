@@ -50,7 +50,7 @@ namespace Algorithms {
   {
   };
 
-#define ALGORITHM_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(AlgorithmInputException() << type((message))); }
+#define ALGORITHM_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << type((message))); }
 #define ALGORITHM_INPUT_ERROR(message) ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 
 #define ENSURE_NOT_NULL(var, message)  if (!(var)) ALGORITHM_INPUT_ERROR_WITH_TYPE(NullObjectInfo, message)

@@ -27,6 +27,8 @@
 */
 
 #include <iostream>
+
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -56,7 +58,7 @@ void CreateMatrixModule::execute()
   }
   catch (...)
   {
-  	std::cout << "Matrix parsing failed." << std::endl;
+  	ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
   }
 
   send_output_handle(0, matrix);

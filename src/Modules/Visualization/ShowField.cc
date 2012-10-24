@@ -40,8 +40,6 @@ void ShowFieldModule::execute()
 {
   auto str = getRequiredInput<Field>(0);
 
-  //std::cout << "String value received: " << str->value() << std::endl;
-
   GeometryHandle geom(new GeometryObject(str));
   send_output_handle(0, geom);
 }

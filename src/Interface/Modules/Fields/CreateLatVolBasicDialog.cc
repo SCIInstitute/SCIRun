@@ -52,11 +52,6 @@ CreateLatVolBasicDialog::CreateLatVolBasicDialog(const std::string& name, Module
   elementSizeNormalizedButton_->setChecked(true);
 }
 
-int CreateLatVolBasicDialog::moduleExecutionTime()
-{
-  return 2000;
-}
-
 void CreateLatVolBasicDialog::push()
 {
   //state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());

@@ -40,8 +40,3 @@ ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime,
   executionTimeHorizontalSlider_->setValue(executionTime);
   connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
 }
-
-int ModuleDialogBasic::moduleExecutionTime()
-{
-  return executionTimeHorizontalSlider_->value();
-}

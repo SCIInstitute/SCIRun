@@ -41,17 +41,11 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
-}
-
-int EvaluateLinearAlgebraBinaryDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 int EvaluateLinearAlgebraBinaryDialog::getSelectedOperator() const

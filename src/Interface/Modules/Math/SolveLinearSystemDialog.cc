@@ -51,21 +51,12 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   connect(maxIterationsSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(pushParametersToState()));
 }
 
-int SolveLinearSystemDialog::moduleExecutionTime()
-{
-  return 2000;
-}
-
 void SolveLinearSystemDialog::pushParametersToState()
 {
-  //std::cout << "SolveLinearSystemDialog::pushParametersToState" << std::endl;
-
   //TODO: need pattern for this, to avoid silly recursion of push/pull.
   int max = maxIterationsSpinBox_->value();
   if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
     state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, max);
-
-  //std::cout << "\tpushParametersToState\t" << targetErrorLineEdit_->text().toDouble() << std::endl;
 
   double error = targetErrorLineEdit_->text().toDouble();
   if (error != state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble())
@@ -75,8 +66,6 @@ void SolveLinearSystemDialog::pushParametersToState()
 void SolveLinearSystemDialog::pull()
 {
   maxIterationsSpinBox_->setValue(state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt());
-  //std::cout << "SolveLinearSystemDialog::pull" << std::endl;
-  //std::cout << "\tpull\t" << state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble() << std::endl;
   targetErrorLineEdit_->setText(QString::number(state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble()));
 }
 

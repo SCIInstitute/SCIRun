@@ -42,16 +42,10 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   //TODO: here is where to start on standardizing module dialog buttons.
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
-}
-
-int CreateMatrixDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 void CreateMatrixDialog::pushMatrixToState()

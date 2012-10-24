@@ -74,6 +74,7 @@ void NetworkEditorController::removeModule(const std::string& id)
 
 void NetworkEditorController::printNetwork() const
 {
+  //TODO: use real logger here
   if (theNetwork_)
     std::cout << theNetwork_->toString() << std::endl;
 }
@@ -141,6 +142,7 @@ void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::Execu
   }
   catch (NetworkHasCyclesException&)
   {
+    //TODO: use real logger here
     std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
   }  
 }

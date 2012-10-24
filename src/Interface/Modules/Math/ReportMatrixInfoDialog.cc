@@ -42,15 +42,9 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(executeButton_, SIGNAL(clicked()), this, SLOT(pullAndDisplayInfo()));
-}
-
-int ReportMatrixInfoDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 

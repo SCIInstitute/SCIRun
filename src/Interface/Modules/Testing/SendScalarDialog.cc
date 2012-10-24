@@ -41,15 +41,9 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
-}
-
-int SendScalarDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 void SendScalarDialog::pushScalarValueToState(const QString& str) 

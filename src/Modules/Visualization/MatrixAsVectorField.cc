@@ -43,11 +43,9 @@ void MatrixAsVectorFieldModule::execute()
 
   if (mat->rows() != 6)
   {
-    std::cout << "Not outputting, matrix does not have 6 rows." << std::endl;
+    error("Not outputting, matrix does not have 6 rows.");
     return;
   }
-
-  std::cout << "Matrix value received." << std::endl;
 
   GeometryHandle geom(new GeometryObject(mat));
   send_output_handle(0, geom);

@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <iostream>
@@ -41,10 +42,8 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   DenseMatrixHandle result;
   DenseMatrixConstHandle lhs = inputs.get<0>();
   DenseMatrixConstHandle rhs = inputs.get<1>();
-  if (!lhs || !rhs)
-  {
-    return result;
-  }
+  ENSURE_NOT_NULL(lhs, "lhs");
+  ENSURE_NOT_NULL(rhs, "rhs");
 
   Operator oper = params;
 
@@ -64,7 +63,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     *result *= *rhs;
     break;
   default:
-    std::cout << "ERROR: unknown binary operation" << std::endl;
+    ALGORITHM_INPUT_ERROR("ERROR: unknown binary operation");
     break;
   }
 

@@ -40,8 +40,6 @@ void ShowMeshModule::execute()
 {
   auto mesh = getRequiredInput<Mesh>(0);
 
-  //std::cout << "String value received: " << str->value() << std::endl;
-
   GeometryHandle geom(new GeometryObject(mesh));
   send_output_handle(0, geom);
 }

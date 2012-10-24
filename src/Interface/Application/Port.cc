@@ -29,6 +29,7 @@
 #include <iostream>
 #include <QtGui>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Utility.h>
@@ -179,7 +180,7 @@ void PortWidget::makeConnection(const QPointF& pos)
       }
       else
       {
-        std::cout << "trying to connect a module with itself, let's not allow circular connections yet." << std::endl;
+        GuiLogger::Instance().log("trying to connect a module with itself, let's not allow circular connections yet.");
       }
     }
   }
@@ -192,8 +193,6 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
   {
     if (canBeConnected(port))
     {
-      //Logger::Instance()->log("Connection made.");
-
       PortWidget* out = this->isInput() ? port : this;
       PortWidget* in = this->isInput() ? this : port;
 
@@ -207,7 +206,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
     }
     else
     {
-      std::cout << "input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!" << std::endl;
+      GuiLogger::Instance().log("input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!");
     }
   }
   return false;
@@ -221,7 +220,6 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
     SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     ConnectionLine* c = new ConnectionLine(out, in, id);
-    //std::cout << "--------> adding ConnectionLine to scene: " << id.id_ << "\n cxn*= " << c << "\n port* = " << this << std::endl;
     TheScene->addItem(c);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }

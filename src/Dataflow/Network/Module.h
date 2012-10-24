@@ -73,7 +73,7 @@ namespace Networks {
     InputPortHandle get_input_port(size_t idx) const;
 
     //TODO: execute signal here.
-    virtual void do_execute();
+    virtual void do_execute(); //throw()--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 

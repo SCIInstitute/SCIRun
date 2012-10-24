@@ -141,6 +141,7 @@ FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromM
     
     if (it != FieldTypeIDTable->end())
     {
+      //TODO: use real logger here
       std::cout << "WARNING: duplicate field type exists: " << type << std::endl;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER //can't compare boost::function--switch back to native fn ptr?
       if ((it->second->field_maker != field_maker) ||

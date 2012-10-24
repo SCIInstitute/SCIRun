@@ -135,7 +135,6 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, this);
     hookUpSignals(w);
-    //std::cout << "@@@ connecting " << moduleId << " moduleWidget to port " << port->get_portname() << "\n " << w << std::endl;
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
   }
@@ -217,15 +216,7 @@ void ModuleWidget::ModuleExecutionRunner::operator()()
   const int numIncrements = 20;
   const int increment = module_->executionTime_ / numIncrements;
   
-  try
-  {
-    module_->theModule_->do_execute();
-  }
-  catch (std::exception& e)
-  {
-    std::cout << "Caught exception from module execution:" << std::endl;
-    std::cout << e.what() << std::endl;
-  }
+  module_->theModule_->do_execute();
 
   for (int i = 0; i < numIncrements; ++i)
   {

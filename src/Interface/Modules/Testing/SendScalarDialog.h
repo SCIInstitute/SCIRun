@@ -47,7 +47,6 @@ public:
   SendScalarDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual int moduleExecutionTime();
   virtual void pull();
 private Q_SLOTS:
   void pushScalarValueToState(const QString& str);

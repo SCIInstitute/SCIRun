@@ -39,12 +39,6 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-}
-
-int ViewSceneDialog::moduleExecutionTime()
-{
-  return 2000;
 }

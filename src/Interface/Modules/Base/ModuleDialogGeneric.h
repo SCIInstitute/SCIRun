@@ -43,7 +43,7 @@ namespace Gui {
     virtual ~ModuleDialogGeneric() {}
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
-    virtual int moduleExecutionTime() = 0;
+    //virtual int moduleExecutionTime() = 0;
     //TODO: how to genericize this?  do we need to?
   public Q_SLOTS:
     virtual void moduleExecuted() {}

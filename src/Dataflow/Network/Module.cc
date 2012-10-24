@@ -193,7 +193,9 @@ public:
   explicit DummyModule(const ModuleLookupInfo& info) : Module(info) {}
   virtual void execute() 
   {
-    std::cout << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
+    std::ostringstream ostr;
+    ostr << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
+    status(ostr.str());
   }
 };
 

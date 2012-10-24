@@ -42,15 +42,9 @@ CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(stringInput_, SIGNAL(textChanged(const QString&)), this, SLOT(pushStringToState(const QString&)));
-}
-
-int CreateStringDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 void CreateStringDialog::pushStringToState(const QString& str) 

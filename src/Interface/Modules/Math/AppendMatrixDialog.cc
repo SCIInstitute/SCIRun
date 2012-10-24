@@ -41,16 +41,10 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
   connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
-}
-
-int AppendMatrixDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 void AppendMatrixDialog::isRows()

@@ -40,25 +40,6 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  //connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }
-
-int ShowStringDialog::moduleExecutionTime()
-{
-  return 2000;
-}
-//
-//void WriteMatrixDialog::pushFileNameToState(const QString& str) 
-//{
-//  std::cout << "filename set on state object" << std::endl;
-//  state_->setValue("FileName", str.toStdString());
-//}
-//
-//void WriteMatrixDialog::saveFile()
-//{
-//  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
-//}

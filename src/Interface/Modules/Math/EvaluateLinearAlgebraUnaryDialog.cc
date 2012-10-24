@@ -41,7 +41,6 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(transposeRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
@@ -50,11 +49,6 @@ EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::st
   //TODO: here is where to start on standardizing module dialog buttons.
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(scalarLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushOperationToState()));
-}
-
-int EvaluateLinearAlgebraUnaryDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 int EvaluateLinearAlgebraUnaryDialog::getSelectedOperator() const

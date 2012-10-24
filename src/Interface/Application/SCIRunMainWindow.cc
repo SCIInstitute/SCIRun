@@ -258,7 +258,7 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
   setCurrentFile(fileName);
 
   statusBar()->showMessage(tr("File saved"), 2000);
-  std::cout << "file save done." << std::endl;
+  GuiLogger::Instance().log("File save done.");
   setWindowModified(false);
 }
 
@@ -269,7 +269,7 @@ public:
   void execute()
   {
     networkEditor_->clear();
-    std::cout << "Attempting load of " << filename_ << std::endl;
+    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
 
     try
     {
@@ -281,13 +281,13 @@ public:
         networkEditor_->moveModules(xml->modulePositions);
       }
       else
-        std::cout << "File load failed." << std::endl;
+        GuiLogger::Instance().log("File load failed.");
 
-      std::cout << "File load done." << std::endl;
+      GuiLogger::Instance().log("File load done.");
     }
     catch (...)
     {
-      std::cout << "File load failed." << std::endl;
+      GuiLogger::Instance().log("File load failed.");
     }
   }
 private:

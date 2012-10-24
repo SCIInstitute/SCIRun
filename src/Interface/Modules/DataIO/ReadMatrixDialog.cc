@@ -43,7 +43,6 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   executeButton_->setEnabled(false);
-  executionTimeHorizontalSlider_->setValue(moduleExecutionTime());
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
@@ -53,11 +52,6 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
 void ReadMatrixDialog::pull()
 {
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
-}
-
-int ReadMatrixDialog::moduleExecutionTime()
-{
-  return 2000;
 }
 
 void ReadMatrixDialog::pushFileNameToState(const QString& str) 
