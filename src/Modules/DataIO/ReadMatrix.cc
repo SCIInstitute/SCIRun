@@ -43,15 +43,9 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
 void ReadMatrixModule::execute()
 {
   filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
-  //TODO: error should come from algorithm layer
-  if (!boost::filesystem::exists(filename_))
-  {
-    //error()
-    std::cout << "File not found: " << filename_ << std::endl;
-    return;
-  }
 
   ReadMatrixAlgorithm algo;
+  algo.setLogger(getLogger());
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
   send_output_handle(0, matrix);
   StringHandle file(new String(filename_));

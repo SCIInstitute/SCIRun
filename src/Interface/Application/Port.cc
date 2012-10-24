@@ -31,7 +31,6 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PositionProvider.h>
-#include <Interface/Application/Logger.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>

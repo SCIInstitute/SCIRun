@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
@@ -33,9 +34,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
 {
-  if (!input)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Null input matrix"));
-    //return boost::make_tuple("<null>", 0, 0, 0, 0, 0); //TODO: check v4
+  ENSURE_NOT_NULL(input, "Null input matrix");
 
   const std::string type = typeid(*input).name();  //TODO: need dynamic type name
 

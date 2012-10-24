@@ -69,6 +69,8 @@ Module::~Module()
 
 ModuleStateFactoryHandle Module::defaultStateFactory_;
 
+LoggerHandle Module::getLogger() const { return log_ ? log_ : defaultLogger_; }
+
 OutputPortHandle Module::get_output_port(size_t idx) const
 {
   return oports_[idx];

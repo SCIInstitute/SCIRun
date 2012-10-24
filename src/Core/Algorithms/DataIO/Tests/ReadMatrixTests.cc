@@ -35,6 +35,7 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Utils/StringUtil.h>
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>

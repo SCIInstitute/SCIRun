@@ -28,8 +28,8 @@
 
 SET(Algorithms_Math_SRCS
   AppendMatrix.cc
-  EvaluateLinearAlgebraUnary.cc
-  EvaluateLinearAlgebraBinary.cc
+  EvaluateLinearAlgebraUnaryAlgo.cc
+  EvaluateLinearAlgebraBinaryAlgo.cc
   ReportMatrixInfo.cc
   SolveLinearSystemWithEigen.cc
   LinearSystem/SolveLinearSystem.cc

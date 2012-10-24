@@ -33,6 +33,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/lexical_cast.hpp>
 #include <vector>
+#include <Core/Logging/Logger.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -44,7 +45,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
   
-  class SCISHARE Module : public ModuleInterface, boost::noncopyable
+  class SCISHARE Module : public ModuleInterface, public Core::Logging::LoggerInterface, boost::noncopyable
   {
   public:
     Module(const ModuleLookupInfo& info, 
@@ -80,7 +81,11 @@ namespace Networks {
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
-    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const { return log_; }
+    virtual SCIRun::Core::Logging::LoggerHandle getLogger() const;
+    virtual void error(const std::string& msg) { getLogger()->error(msg); }
+    virtual void warning(const std::string& msg) { getLogger()->warning(msg); }
+    virtual void remark(const std::string& msg) { getLogger()->remark(msg); }
+    virtual void status(const std::string& msg) { getLogger()->status(msg); }
 
     // Throws if input is not present or null.
     template <class T>

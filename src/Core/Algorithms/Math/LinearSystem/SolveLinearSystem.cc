@@ -30,6 +30,7 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 

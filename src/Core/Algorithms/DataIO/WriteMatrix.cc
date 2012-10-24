@@ -27,7 +27,7 @@
 */
 
 #include <fstream>
-#include <stdexcept>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
@@ -40,10 +40,7 @@ AlgorithmParameterName WriteMatrixAlgorithm::Filename("Filename");
 
 WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
 {
-  if (!inputMatrix)
-  {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo("Cannot write null matrix."));
-  }
+  ENSURE_NOT_NULL(inputMatrix, "Cannot write null matrix.");
 
   std::ofstream writer(filename.c_str());
   writer << *inputMatrix;

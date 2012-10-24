@@ -143,35 +143,7 @@ namespace Algorithms {
     //virtual Output run(const Input& input, const Parameters& params) const = 0;
 
   };
-
-  struct SCISHARE AlgorithmInputException : virtual ExceptionBase
-  {
-  };
-
-  struct SCISHARE AlgorithmProcessingException : virtual ExceptionBase
-  {
-  };
-
-  struct SCISHARE AlgorithmParameterNotFound : virtual AlgorithmProcessingException //TODO??
-  {
-  };
-
-#define ENSURE_NOT_NULL(var, message)  if (!(var)) BOOST_THROW_EXCEPTION(AlgorithmInputException() << NullObjectInfo(message))
   
-#define ENSURE_POSITIVE_DOUBLE(var, message)  if ((var) < 0) \
-  BOOST_THROW_EXCEPTION(AlgorithmInputException() << DoubleOutOfRangeInfo( \
-    DoubleOutOfRangeInfo::value_type( \
-    std::string(message), \
-    var, \
-    boost::numeric::interval<double>(0, std::numeric_limits<double>::infinity())))) 
-
-#define ENSURE_POSITIVE_INT(var, message) if ((var) < 0) \
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << IntOutOfRangeInfo( \
-    IntOutOfRangeInfo::value_type( \
-    std::string(message), \
-    var, \
-    boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity()))))
-
 }}}
 
 #endif

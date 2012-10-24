@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <Modules/Math/SolveLinearSystem.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -48,7 +49,7 @@ void SolveLinearSystemModule::execute()
   auto rhs = getRequiredInput<Matrix>(1);
 
   if (rhs->ncols() != 1)
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Right hand side matrix must contain only one column."));
+    ALGORITHM_INPUT_ERROR("Right hand side matrix must contain only one column.");
 
   auto rhsCol = matrix_cast::as_column(rhs);
   if (!rhsCol)

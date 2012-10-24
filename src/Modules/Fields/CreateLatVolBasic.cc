@@ -43,6 +43,7 @@
 
 #include <Modules/Fields/CreateLatVolBasic.h>
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
@@ -186,7 +187,7 @@ void CreateLatVolBasic::execute()
     else if (data_at == "None") basis_order = -1;
     else 
     {
-      BOOST_THROW_EXCEPTION(AlgorithmInputException() << Core::ErrorMessage("Unsupported data_at location " + data_at + "."));
+      ALGORITHM_INPUT_ERROR("Unsupported data_at location " + data_at + ".");
     }
     
     FieldInformation lfi("LatVolMesh", basis_order, "double");

@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/timer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -54,7 +55,7 @@ namespace
     tokenizer tok(line, sep);
 
     std::vector<T> numbers;
-    std::transform(tok.begin(), tok.end(), std::back_inserter(numbers), [](const std::string& s){ return boost::lexical_cast<T>(s);});
+    std::transform(tok.begin(), tok.end(), std::back_inserter(numbers), boost::lexical_cast<T,std::string>);
 
     return numbers;
   }
@@ -84,6 +85,7 @@ MatrixHandle EigenMatrixFromScirunAsciiFormatConverter::make(const std::string& 
   if (fileContainsString(matFile, "ColumnMatrix"))
     return makeColumn(matFile);
 
+  //TODO: no access to error(), need alternative for logging this exception
   BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown SCIRun matrix format"));
 }
 

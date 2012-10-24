@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Logging/ConsoleLogger.h>
 
 using namespace SCIRun::Core::Algorithms;

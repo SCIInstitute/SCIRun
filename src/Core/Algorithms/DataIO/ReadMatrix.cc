@@ -33,6 +33,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun::Core::Algorithms;
@@ -43,8 +44,7 @@ AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
-  if (!boost::filesystem::exists(filename))
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << FileNotFound(filename));
+  ENSURE_FILE_EXISTS(filename);
 
   //TODO: push logging up hierarchy
   std::cout << "Algorithm start." << std::endl;
@@ -59,9 +59,9 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   }
   else if (boost::filesystem::extension(filename) == ".mat")
   {
-    std::cout << "FOUND .mat file: assuming is SCIRUNv4 ASCII format." << std::endl;
+    status("FOUND .mat file: assuming is SCIRUNv4 ASCII format.");
     internal::EigenMatrixFromScirunAsciiFormatConverter conv;
     return conv.make(filename);
   }
-  BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown matrix file format"));
+  ALGORITHM_INPUT_ERROR("Unknown matrix file format");
 }
