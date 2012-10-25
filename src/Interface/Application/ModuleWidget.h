@@ -102,6 +102,8 @@ private:
 
   class ModuleLogWindow* logWindow_;
 
+  boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
+
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 
   class ModuleExecutionRunner
@@ -112,8 +114,7 @@ private:
   private:
     ModuleWidget* module_;
   };
-  friend class FakeExecutionRunner;
-  //
+
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;
   QHBoxLayout* inputPortLayout_;

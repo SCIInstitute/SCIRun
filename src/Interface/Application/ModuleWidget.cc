@@ -56,28 +56,79 @@ QPointF ProxyWidgetPosition::currentPosition() const
 
 namespace {
 //TODO move to separate header
-QColor to_color(const std::string& str)
-{
-  if (str == "red")
-    return Qt::red;
-  if (str == "blue")
-    return Qt::blue;
-  if (str == "darkGreen")
-    return Qt::darkGreen;
-  if (str == "cyan")
-    return Qt::cyan;
-  if (str == "magenta")
-    return Qt::magenta;
-  if (str == "white")
-    return Qt::white;
-  if (str == "yellow")
-    return Qt::yellow;
-  if (str == "darkYellow")
-    return Qt::darkYellow;
-  else
-    return Qt::black;
+  QColor to_color(const std::string& str)
+  {
+    if (str == "red")
+      return Qt::red;
+    if (str == "blue")
+      return Qt::blue;
+    if (str == "darkGreen")
+      return Qt::darkGreen;
+    if (str == "cyan")
+      return Qt::cyan;
+    if (str == "magenta")
+      return Qt::magenta;
+    if (str == "white")
+      return Qt::white;
+    if (str == "yellow")
+      return Qt::yellow;
+    if (str == "darkYellow")
+      return Qt::darkYellow;
+    else
+      return Qt::black;
+  }
+
+  QAction* separatorAction(QWidget* parent)
+  {
+    auto sep = new QAction(parent);
+    sep->setSeparator(true);
+    return sep;
+  }
+
+  QAction* disabled(QAction* action)
+  {
+    action->setEnabled(false);
+    return action;
+  }
 }
-}
+
+namespace SCIRun {
+namespace Gui {
+  class ModuleActionsMenu
+  {
+  public:
+    ModuleActionsMenu(ModuleWidget* parent, const std::string& moduleId)
+    {
+      menu_ = new QMenu("Actions", parent);
+
+      //TODO:  hook up disabled actions
+      menu_->addActions(QList<QAction*>()
+        << disabled(new QAction("ID: " + QString::fromStdString(moduleId), parent))
+        << separatorAction(parent)
+        << disabled(new QAction("Execute", parent))
+        << disabled(new QAction("Help", parent))
+        << disabled(new QAction("Notes", parent))
+        << disabled(new QAction("Duplicate", parent))
+        << disabled(new QAction("Replace With->(TODO)", parent))
+        << new QAction("Show Log", parent)
+        << disabled(new QAction("Make Sub-Network", parent))
+        << separatorAction(parent)
+        << new QAction("Destroy", parent));
+    }
+    QMenu* getMenu() { return menu_; }
+    QAction* getAction(const char* name) const
+    {
+      BOOST_FOREACH(QAction* action, menu_->actions())
+      {
+        if (action->text().contains(name))
+          return action;
+      }
+      return 0;
+    }
+  private:
+    QMenu* menu_;
+  };
+}}
 
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
@@ -102,14 +153,17 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
   makeOptionsDialog();
 
-  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
-  connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
-  connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
-  LoggerHandle logger(new ModuleLogger(logWindow_));
-  theModule_->setLogger(logger);
-
   setupModuleActions();
   
+  logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
+  connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
+  connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
+  connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
+
+  //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
+
+  LoggerHandle logger(new ModuleLogger(logWindow_));
+  theModule_->setLogger(logger);
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
@@ -121,35 +175,11 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
     .arg(color.blue()));
 }
 
-namespace 
-{
-  QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
-}
-
 void ModuleWidget::setupModuleActions()
 {
-  auto menu = new QMenu("Actions", this);
-  //menu->addActions(parent->parent()->actions());
+  actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
 
-  menu->addActions(QList<QAction*>()
-    << new QAction(QString::fromStdString(moduleId_), this)
-    << separatorAction(this)
-    << new QAction("Execute", this)
-    << new QAction("Help", this)
-    << new QAction("Notes", this)
-    << new QAction("Duplicate", this)
-    << new QAction("Replace With->(TODO)", this)
-    << new QAction("Show Log", this)
-    << new QAction("Make Sub-Network", this)
-    << separatorAction(this)
-    << new QAction("Destroy", this));
-
-  moduleActionButton_->setMenu(menu);
+  moduleActionButton_->setMenu(actionsMenu_->getMenu());
 }
 
 void ModuleWidget::addPortLayouts()
