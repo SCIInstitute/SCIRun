@@ -62,7 +62,7 @@ namespace
 
   bool fileContainsString(const std::string& filename, const std::string& str)
   {
-    std::ifstream input(filename);
+    std::ifstream input(filename.c_str());
     std::string line;
 
     while (std::getline(input, line)) 
