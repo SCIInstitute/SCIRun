@@ -78,6 +78,7 @@ public Q_SLOTS:
   virtual void execute();
   void showOptionsDialog();
   void setExecutionTime(int milliseconds);
+  void setLogButtonColor(const QColor& color);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);

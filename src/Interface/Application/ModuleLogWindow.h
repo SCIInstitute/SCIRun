@@ -45,6 +45,8 @@ public:
   explicit ModuleLogWindow(const QString& moduleName, QWidget* parent = 0);
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
+Q_SIGNALS:
+  void messageReceived(const QColor& color);
 };
 
 class ModuleLogger : public QObject, public Core::Logging::LoggerInterface
@@ -58,8 +60,7 @@ public:
   virtual void status(const std::string& msg);
 Q_SIGNALS:
   void logSignal(const QString& message, const QColor& color);
-private:
-  ModuleLogWindow* window_;
+  void alert(const QColor& color);
 };
 
 }

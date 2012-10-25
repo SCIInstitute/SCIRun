@@ -105,8 +105,18 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
 
   logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
+  connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   LoggerHandle logger(new ModuleLogger(logWindow_));
   theModule_->setLogger(logger);
+}
+
+void ModuleWidget::setLogButtonColor(const QColor& color)
+{
+  logButton2_->setStyleSheet(
+    QString("* { background-color: rgb(%1,%2,%3) }")
+    .arg(color.red())
+    .arg(color.green())
+    .arg(color.blue()));
 }
 
 void ModuleWidget::addPortLayouts()

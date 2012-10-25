@@ -93,7 +93,7 @@ size_t Module::num_output_ports() const
 
 void Module::do_execute()
 {
-  log_->status("STARTING MODULE: "+id_);
+  status("STARTING MODULE: " + id_);
 
   // Reset all of the ports.
   oports_.resetAll();
@@ -105,7 +105,7 @@ void Module::do_execute()
   }
   catch(const std::bad_alloc&)
   {
-    log_->error("MODULE ERROR: bad_alloc caught");
+    error("MODULE ERROR: bad_alloc caught");
   }
   catch (Core::ExceptionBase& e)
   {
@@ -116,23 +116,23 @@ void Module::do_execute()
     
     ostr << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
     ostr << boost::diagnostic_information(e) << std::endl;
-    log_->error(ostr.str());
+    error(ostr.str());
   }
   catch (const std::exception& e)
   {
-    log_->error("MODULE ERROR: std::exception caught");
-    log_->error(e.what());
+    error("MODULE ERROR: std::exception caught");
+    error(e.what());
   }
   catch (...)
   {
-    log_->error("MODULE ERROR: unhandled exception caught");
+    error("MODULE ERROR: unhandled exception caught");
   }
 
   // Call finish on all ports.
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
-  log_->status("MODULE FINISHED: " + id_);  
+  status("MODULE FINISHED: " + id_);  
 }
 
 ModuleStateHandle Module::get_state() 

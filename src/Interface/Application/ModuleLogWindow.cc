@@ -46,23 +46,25 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, QWidget* parent) : Q
 
 void ModuleLogWindow::appendMessage(const QString& message, const QColor& color /* = Qt::black */)
 {
-  logTextEdit_->insertHtml(QString("<p style=\"color:") + color.name() + "\">" + message);
-  logTextEdit_->append("\n");
+  logTextEdit_->insertHtml(QString("<p style=\"color:") + color.name() + "\">" + message + "</p><br>");
 }
 
-ModuleLogger::ModuleLogger(ModuleLogWindow* window) : window_(window) 
+ModuleLogger::ModuleLogger(ModuleLogWindow* window)
 {
-  connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window_, SLOT(appendMessage(const QString&, const QColor&)));
+  connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
+  connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
 }
 
 void ModuleLogger::error(const std::string& msg)
 {
   logSignal("<b>ERROR: " + QString::fromStdString(msg) + "</b>", Qt::red);
+  alert(Qt::red);
 }
 
 void ModuleLogger::warning(const std::string& msg)
 {
   logSignal("WARNING: " + QString::fromStdString(msg), Qt::yellow);
+  alert(Qt::yellow);
 }
 
 void ModuleLogger::remark(const std::string& msg)
