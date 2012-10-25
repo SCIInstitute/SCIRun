@@ -302,7 +302,7 @@ void NetworkEditor::updateActions()
   //copyAction_->setEnabled(isNode);
   //addLinkAction_->setEnabled(isNodePair);
   deleteAction_->setEnabled(hasSelection);
-  bringToFrontAction_->setEnabled(isNode);
+  //bringToFrontAction_->setEnabled(isNode);
   sendToBackAction_->setEnabled(isNode);
   propertiesAction_->setEnabled(isNode || isLink);
 
@@ -332,7 +332,7 @@ void NetworkEditor::createActions()
   //addLinkAction_->setShortcut(tr("Ctrl+L"));
   //connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
 
-  deleteAction_ = new QAction(tr("&Delete"), this);
+  deleteAction_ = new QAction(tr("&Delete selected modules"), this);
   deleteAction_->setIcon(QIcon(":/images/delete.png"));
   deleteAction_->setShortcut(tr("Del"));
   connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
@@ -352,12 +352,12 @@ void NetworkEditor::createActions()
   //pasteAction_->setShortcut(tr("Ctrl+V"));
   //connect(pasteAction_, SIGNAL(triggered()), this, SLOT(paste()));
 
-  bringToFrontAction_ = new QAction(tr("Bring to &Front"), this);
-  bringToFrontAction_->setIcon(QIcon(":/images/bringtofront.png"));
-  connect(bringToFrontAction_, SIGNAL(triggered()),
-    this, SLOT(bringToFront()));
+  //bringToFrontAction_ = new QAction(tr("Bring to &Front"), this);
+  //bringToFrontAction_->setIcon(QIcon(":/images/bringtofront.png"));
+  //connect(bringToFrontAction_, SIGNAL(triggered()),
+  //  this, SLOT(bringToFront()));
 
-  sendToBackAction_ = new QAction(tr("&Send to Back"), this);
+  sendToBackAction_ = new QAction(tr("&Send selected to back"), this);
   sendToBackAction_->setIcon(QIcon(":/images/sendtoback.png"));
   connect(sendToBackAction_, SIGNAL(triggered()),
     this, SLOT(sendToBack()));
@@ -374,16 +374,17 @@ void NetworkEditor::setModuleDumpAction(QAction* action)
     connect(moduleDumpAction_, SIGNAL(triggered()), this, SLOT(dumpModulePositions()));
 }
 
-void NetworkEditor::addActions(QWidget* widget)
+QList<QAction*> NetworkEditor::getModuleSpecificActions() const
 {
+  return QList<QAction*>() 
+    //<< bringToFrontAction_
+    << sendToBackAction_
+    << deleteAction_;
   //widget->addAction(addNodeAction_);
   //widget->addAction(addLinkAction_);
-  widget->addAction(bringToFrontAction_);
-  widget->addAction(sendToBackAction_);
   //widget->addAction(cutAction_);
   //widget->addAction(copyAction_);
   //widget->addAction(pasteAction_);
-  widget->addAction(deleteAction_);
 }
 
 void NetworkEditor::dropEvent(QDropEvent* event)

@@ -98,7 +98,7 @@ private:
   std::string moduleId_;
   boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
   void makeOptionsDialog();
-  int executionTime_;
+  void setupModuleActions();
 
   class ModuleLogWindow* logWindow_;
 

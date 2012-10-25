@@ -82,7 +82,6 @@ QColor to_color(const std::string& str)
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
   moduleId_(theModule->get_id()),
-  executionTime_(0),
   theModule_(theModule)
 {
   setupUi(this);
@@ -108,6 +107,9 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   LoggerHandle logger(new ModuleLogger(logWindow_));
   theModule_->setLogger(logger);
+
+  setupModuleActions();
+  
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
@@ -119,6 +121,37 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
     .arg(color.blue()));
 }
 
+namespace 
+{
+  QAction* separatorAction(QWidget* parent)
+  {
+    auto sep = new QAction(parent);
+    sep->setSeparator(true);
+    return sep;
+  }
+}
+
+void ModuleWidget::setupModuleActions()
+{
+  auto menu = new QMenu("Actions", this);
+  //menu->addActions(parent->parent()->actions());
+
+  menu->addActions(QList<QAction*>()
+    << new QAction(QString::fromStdString(moduleId_), this)
+    << separatorAction(this)
+    << new QAction("Execute", this)
+    << new QAction("Help", this)
+    << new QAction("Notes", this)
+    << new QAction("Duplicate", this)
+    << new QAction("Replace With->(TODO)", this)
+    << new QAction("Show Log", this)
+    << new QAction("Make Sub-Network", this)
+    << separatorAction(this)
+    << new QAction("Destroy", this));
+
+  moduleActionButton_->setMenu(menu);
+}
+
 void ModuleWidget::addPortLayouts()
 {
   outputPortLayout_ = new QHBoxLayout;
@@ -127,14 +160,14 @@ void ModuleWidget::addPortLayouts()
   QHBoxLayout* outputRowLayout = new QHBoxLayout;
   outputRowLayout->setAlignment(Qt::AlignLeft);
   outputRowLayout->addLayout(outputPortLayout_);
-  verticalLayout_2->insertLayout(-1, outputRowLayout);
+  verticalLayout->insertLayout(-1, outputRowLayout);
 
   inputPortLayout_ = new QHBoxLayout;
   inputPortLayout_->setSpacing(3);
   QHBoxLayout* inputRowLayout = new QHBoxLayout;
   inputRowLayout->setAlignment(Qt::AlignLeft);
   inputRowLayout->addLayout(inputPortLayout_);
-  verticalLayout_2->insertLayout(0, inputRowLayout);
+  verticalLayout->insertLayout(0, inputRowLayout);
 }
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
@@ -224,7 +257,7 @@ void ModuleWidget::setPercentComplete(double p)
 void ModuleWidget::ModuleExecutionRunner::operator()()
 {
   const int numIncrements = 20;
-  const int increment = module_->executionTime_ / numIncrements;
+  const int increment = /*module_->executionTime_*/100 / numIncrements;
   
   module_->theModule_->do_execute();
 
@@ -247,7 +280,7 @@ void ModuleWidget::execute()
 
 void ModuleWidget::setExecutionTime(int milliseconds) 
 { 
-  executionTime_ = milliseconds; 
+  //executionTime_ = milliseconds; 
   setPercentComplete(0);
 }
 
@@ -260,7 +293,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialogFactory_)
       dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
 
-    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state(), executionTime_));
+    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state(), 0));
     dialog_->pull();
     connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
     connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));

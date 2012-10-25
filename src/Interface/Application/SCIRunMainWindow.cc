@@ -190,10 +190,14 @@ SCIRunMainWindow::SCIRunMainWindow()
 	executeBar->addAction(moduleCounter);
 	
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
-	scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  auto sep = new QAction(this);
+  sep->setSeparator(true);
+  scrollAreaWidgetContents_->addAction(sep);
+	scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
+  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+
 	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
 	scrollArea_->viewport()->setAutoFillBackground(true);	
-  networkEditor_->addActions(scrollAreaWidgetContents_);
 
 	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 

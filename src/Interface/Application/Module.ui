@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>207</width>
-    <height>96</height>
+    <width>253</width>
+    <height>103</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,37 +37,97 @@
   <widget class="QWidget" name="">
    <property name="geometry">
     <rect>
-     <x>12</x>
-     <y>12</y>
-     <width>180</width>
-     <height>71</height>
+     <x>13</x>
+     <y>13</y>
+     <width>223</width>
+     <height>85</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLabel" name="titleLabel_">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
-        <horstretch>3</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <layout class="QHBoxLayout" name="labelHorizontalLayout_">
+      <property name="topMargin">
+       <number>2</number>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>163</width>
-        <height>27</height>
-       </size>
+      <property name="bottomMargin">
+       <number>5</number>
       </property>
-      <property name="lineWidth">
-       <number>-4</number>
-      </property>
-      <property name="text">
-       <string>&lt;b&gt;&lt;h2&gt;ModuleTitle&lt;/h2&gt;&lt;/b&gt;</string>
-      </property>
-     </widget>
+      <item>
+       <widget class="QLabel" name="titleLabel_">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+          <horstretch>3</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>163</width>
+          <height>27</height>
+         </size>
+        </property>
+        <property name="lineWidth">
+         <number>-4</number>
+        </property>
+        <property name="text">
+         <string>&lt;b&gt;&lt;h2&gt;ModuleTitle&lt;/h2&gt;&lt;/b&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="moduleActionButton_">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>40</horstretch>
+          <verstretch>23</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>50</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>40</width>
+          <height>23</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Actions</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeType">
+       <enum>QSizePolicy::Fixed</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>2</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="buttonHorizontalLayout_">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetFixedSize</enum>
+      </property>
+      <property name="topMargin">
+       <number>2</number>
+      </property>
+      <property name="bottomMargin">
+       <number>2</number>
+      </property>
       <item>
        <widget class="QPushButton" name="optionsButton_">
         <property name="sizePolicy">
@@ -78,7 +138,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>23</width>
+          <width>30</width>
           <height>23</height>
          </size>
         </property>

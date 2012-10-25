@@ -109,14 +109,22 @@ void Module::do_execute()
   }
   catch (Core::ExceptionBase& e)
   {
-    std::ostringstream ostr;
-    ostr << "Caught exception: " << e.typeName();
-    ostr << "\n";
-    ostr << "Message: " << e.what() << "\n";
-    
-    ostr << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
-    ostr << boost::diagnostic_information(e) << std::endl;
-    error(ostr.str());
+    //TODO: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
+    {
+      std::ostringstream ostr;
+      ostr << "Caught exception: " << e.typeName();
+      ostr << "\n";
+      ostr << "Message: " << e.what() << std::endl;
+      error(ostr.str());
+    }
+
+    {
+      //TODO: condition this block on logging level
+      std::ostringstream ostrExtra;
+      ostrExtra << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
+      ostrExtra << boost::diagnostic_information(e) << std::endl;
+      error(ostrExtra.str());
+    }
   }
   catch (const std::exception& e)
   {

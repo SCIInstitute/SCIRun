@@ -75,6 +75,8 @@ namespace Networks {
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
   };
+
+  #define MODULE_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 }}}
 
 #endif

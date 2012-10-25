@@ -150,15 +150,15 @@ namespace Networks {
   {
     auto inputOpt = get_input_handle(idx);
     if (!inputOpt)
-      BOOST_THROW_EXCEPTION(NoHandleOnPortException() << Core::ErrorMessage("Input data required on port # " + boost::lexical_cast<std::string>(idx)));
+      MODULE_INPUT_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port # " + boost::lexical_cast<std::string>(idx));
 
     if (!*inputOpt)
-      BOOST_THROW_EXCEPTION(NullHandleOnPortException());
+      MODULE_INPUT_ERROR_WITH_TYPE(NullHandleOnPortException, "");
 
     boost::shared_ptr<const T> data = boost::dynamic_pointer_cast<const T>(*inputOpt);
     if (!data)
     {
-      BOOST_THROW_EXCEPTION(WrongDatatypeOnPortException());
+      MODULE_INPUT_ERROR_WITH_TYPE(WrongDatatypeOnPortException, "");
     }
     return data;
   }

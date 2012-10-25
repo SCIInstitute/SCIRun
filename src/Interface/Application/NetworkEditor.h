@@ -62,7 +62,7 @@ namespace Gui {
 	
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
-    void addActions(QWidget* widget);
+    QList<QAction*> getModuleSpecificActions() const;
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
@@ -118,7 +118,7 @@ namespace Gui {
     QAction* deleteAction_;
     //QAction* addLinkAction_;
     //QAction* addNodeAction_;
-    QAction* bringToFrontAction_;
+    //QAction* bringToFrontAction_;
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
