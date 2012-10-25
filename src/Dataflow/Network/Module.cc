@@ -128,8 +128,7 @@ void Module::do_execute()
   }
   catch (const std::exception& e)
   {
-    error("MODULE ERROR: std::exception caught");
-    error(e.what());
+    error(std::string("MODULE ERROR: std::exception caught: ") + e.what());
   }
   catch (...)
   {

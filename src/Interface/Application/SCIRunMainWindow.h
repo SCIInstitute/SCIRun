@@ -67,6 +67,7 @@ private:
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
   QString strippedName(const QString& fillFileName);
+  void setActionIcons();
   QString currentFile_;
 private Q_SLOTS:
   void saveNetworkAs();

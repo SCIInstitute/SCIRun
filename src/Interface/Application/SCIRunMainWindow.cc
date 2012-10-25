@@ -175,8 +175,14 @@ SCIRunMainWindow::SCIRunMainWindow()
     f->addAction(moduleSearchAction);
   }
 #endif
-	
-	QToolBar* executeBar = addToolBar(tr("&Execute"));
+
+  setActionIcons();
+
+  QToolBar* standardBar = addToolBar("Standard");
+  standardBar->addAction(actionLoad_);
+  standardBar->addAction(actionSave_);
+
+  QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
 	
 	QWidgetAction* globalProgress = new QWidgetAction(this);
@@ -245,7 +251,8 @@ void SCIRunMainWindow::saveNetwork()
 void SCIRunMainWindow::saveNetworkAs()
 {
   QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
-  saveNetworkFile(filename);
+  if (!filename.isEmpty())
+    saveNetworkFile(filename);
 }
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
@@ -387,4 +394,12 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::ToggleRenderer()
 {
+}
+
+void SCIRunMainWindow::setActionIcons() 
+{
+  actionLoad_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
+  actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
+  //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
+  actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
