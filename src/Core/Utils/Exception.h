@@ -57,6 +57,43 @@ namespace Core
   typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
   typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
+  typedef boost::error_info<struct tag_dimension_mismatch, std::string> DimensionMismatchInfo;
+  typedef boost::error_info<struct tag_invalid_argument_value, std::string> InvalidArgumentValueInfo;
+  typedef boost::error_info<struct tag_not_implemented, std::string> NotImplementedInfo;
+  
+  // TODO: move these exceptions to new exception header file once it exists
+  struct SCISHARE DimensionMismatch : virtual ExceptionBase
+  {
+  };
+
+  struct SCISHARE InvalidArgumentValue : virtual ExceptionBase
+  {
+  };
+  
+  // TODO: should not need this in production code.
+  //
+  // Any prototype code using this exception should be reviewed and improved!!!
+  struct SCISHARE NotImplemented : virtual ExceptionBase
+  {
+  };
+
+#define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
+  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo( \
+    DimensionMismatchInfo::value_type( \
+      std::string(message) )))
+
+#define REPORT_INVALID_ARGUMENT_VALUE(message) \
+  BOOST_THROW_EXCEPTION(InvalidArgumentValue() << InvalidArgumentValueInfo( \
+    InvalidArgumentValueInfo::value_type( \
+      std::string(message) )))
+  
+// TODO: should not need this in production code.
+//
+// Any prototype code using this exception should be reviewed and improved!!!
+#define REPORT_NOT_IMPLEMENTED(message) \
+  BOOST_THROW_EXCEPTION(NotImplemented() << NotImplementedInfo( \
+    NotImplementedInfo::value_type( \
+      std::string(message) )))
 
 }
 }

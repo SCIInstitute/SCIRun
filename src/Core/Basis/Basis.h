@@ -35,6 +35,8 @@
 #include <vector>
 #include <cfloat>
 //#include <Core/Util/Assert.h>
+#include <Core/Utils/Exception.h>
+
 
 namespace SCIRun {
 namespace Core {
@@ -48,11 +50,17 @@ public:
   BasisSimple() {}
   virtual ~BasisSimple() {}
   
+  // TODO: exceptions being used to avoid virtual inheritance?
+  //
+  // TODO: SCIRun 5 porting note: ASSERTFAIL replaced by REPORT_NOT_IMPLEMENTED
+  // (should not need this in production code)
+
+
   //! get value at parametric coordinate 
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR& /*coords*/, const ElemData &) const
   {
-    ASSERTFAIL("interpolate not supported by basis");
+    REPORT_NOT_IMPLEMENTED("interpolate not supported by basis");
   }
   
   //! get first derivative at parametric coordinate
@@ -60,7 +68,7 @@ public:
   void derivate(const VECTOR1& /*coords*/, const ElemData &, 
 		VECTOR2& /*derivs*/) const
   {
-    ASSERTFAIL("derivate not supported by basis");
+    REPORT_NOT_IMPLEMENTED("derivate not supported by basis");
   }
 
   //! get parametric coordinate for value within the element
@@ -68,44 +76,44 @@ public:
   bool get_coords(VECTOR& /*coords*/, const T& /*value*/, 
 		  const ElemData &) const
   {
-    ASSERTFAIL("get_coords not supported by basis");
+    REPORT_NOT_IMPLEMENTED("get_coords not supported by basis");
   }
 
   //! get arc length for edge of element
   template <class ElemData>
   double get_arc_length(const unsigned /*edge*/, const ElemData&) const  
   {
-    ASSERTFAIL("get_arc_length not supported by basis");
+    REPORT_NOT_IMPLEMENTED("get_arc_length not supported by basis");
   }
  
   //! get area for face of element
   template <class ElemData>
   double get_area(const unsigned /*face*/, const ElemData&) const  
   {
-    ASSERTFAIL("get_area not supported by basis");
+    REPORT_NOT_IMPLEMENTED("get_area not supported by basis");
   }
  
   //! get volume for element
   template <class ElemData>
   double get_volume(const ElemData &) const  
   {
-    ASSERTFAIL("get_volume not supported by basis");
+    REPORT_NOT_IMPLEMENTED("get_volume not supported by basis");
   }
  
   //! add a node value 
   void add_node_value(const T &) 
   {
-    ASSERTFAIL("add_node_value not supported by basis");
+    REPORT_NOT_IMPLEMENTED("add_node_value not supported by basis");
   }
 
   void set_node_value(const T &, unsigned int) 
   {
-    ASSERTFAIL("set_node_value not supported by basis");
+    REPORT_NOT_IMPLEMENTED("set_node_value not supported by basis");
   }
   
   void get_node_value(T &, unsigned int) const
   {
-    ASSERTFAIL("get_node_value not supported by basis");  
+    REPORT_NOT_IMPLEMENTED("get_node_value not supported by basis");  
   }
 
   void resize_node_values(size_t)
@@ -121,13 +129,13 @@ public:
   //! add a derivative value 
   void add_derivatives(const std::vector<T> &) 
   {
-    ASSERTFAIL("add_derivative not supported by basis");
+    REPORT_NOT_IMPLEMENTED("add_derivative not supported by basis");
   }
 
   //! add scale factors 
   void add_scalefactors(const std::vector<T> &) 
   {
-    ASSERTFAIL("add_scalefactors not supported by basis");
+    REPORT_NOT_IMPLEMENTED("add_scalefactors not supported by basis");
   }
 
   //! return number of additional derivatives

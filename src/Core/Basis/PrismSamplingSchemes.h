@@ -86,11 +86,11 @@ class SCISHARE PrismSamplingSchemes
     }
     else if (order == 3)
     {
-      ASSERTFAIL("Quadrature scheme 3 has not been implemented");
+      REPORT_NOT_IMPLEMENTED("Quadrature scheme 3 has not been implemented");
     }
     else
     {
-      ASSERTFAIL("Only Gaussian scheme 1, 2, and 3 are implemented");
+      REPORT_NOT_IMPLEMENTED("Only Gaussian scheme 1, and 2 are implemented");
     }
   }
   

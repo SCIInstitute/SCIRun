@@ -108,7 +108,7 @@ class SCISHARE TriSamplingSchemes
     }
     else
     {
-      ASSERTFAIL("Only Gaussian scheme 1, 2, and 3 are implemented");
+      REPORT_NOT_IMPLEMENTED("Only Gaussian scheme 1, 2, and 3 are implemented");
     }
   }
   
