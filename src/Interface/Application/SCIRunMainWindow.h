@@ -81,30 +81,6 @@ private Q_SLOTS:
   void filterModuleNamesInTreeView(const QString& start);
 };
 
-class NetworkExecutionProgressBar : public QObject
-{
-  Q_OBJECT
-public:
-  explicit NetworkExecutionProgressBar(QWidget* parent);
-
-  QList<QAction*> actions() const;
-
-  public Q_SLOTS:
-    void updateTotalModules(int count);
-    void incrementModulesDone();
-    void resetModulesDone();
-
-private:
-  class QWidgetAction* barAction_;
-  class QProgressBar* progressBar_;
-  class QWidgetAction* counterAction_;
-  class QLabel* counterLabel_;
-  int numModulesDone_;
-  int totalModules_;
-
-  QString counterLabelString() const;
-};
-
 }
 }
 #endif

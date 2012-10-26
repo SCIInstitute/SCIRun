@@ -35,6 +35,7 @@
 #include <Interface/Application/NetworkEditor.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Application/Application.h>
 
@@ -143,53 +144,6 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
   networkEditor_->setNetworkEditorController(controllerProxy);
 }
 
-NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0), totalModules_(0)
-{
-  barAction_ = new QWidgetAction(parent);
-  barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
-  barAction_->setVisible(true);
-
-  counterAction_ = new QWidgetAction(parent);
-  counterAction_->setDefaultWidget(counterLabel_ = new QLabel(counterLabelString(), parent));
-  counterAction_->setVisible(true);
-}
-
-QList<QAction*> NetworkExecutionProgressBar::actions() const
-{
-  return QList<QAction*>() << barAction_ << counterAction_;
-}
-
-
-void NetworkExecutionProgressBar::updateTotalModules(int count)
-{
-  if (count >= 0)
-  {
-    totalModules_ = count;
-    counterLabel_->setText(counterLabelString());
-    progressBar_->setMaximum(count);
-  }
-}
-void NetworkExecutionProgressBar::incrementModulesDone()
-{
-  if (numModulesDone_ < totalModules_)
-  {
-    numModulesDone_++;
-    counterLabel_->setText(counterLabelString());
-    progressBar_->setValue(numModulesDone_);
-  }
-}
-
-void NetworkExecutionProgressBar::resetModulesDone()
-{
-  numModulesDone_ = 0;
-  counterLabel_->setText(counterLabelString());
-  progressBar_->setValue(numModulesDone_);
-}
-
-QString NetworkExecutionProgressBar::counterLabelString() const
-{
-  return QString("  %1 / %2  ").arg(numModulesDone_).arg(totalModules_);
-}
 
 SCIRunMainWindow::SCIRunMainWindow()
 {

@@ -49,6 +49,7 @@ SET(Interface_Application_SOURCES
   ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
+  NetworkExecutionProgressBar.cc
   SCIRunMainWindow.cc
   Node.cc
   Port.cc
@@ -64,6 +65,7 @@ SET(Interface_Application_HEADERS
   ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
+  NetworkExecutionProgressBar.h
   SCIRunMainWindow.h
   Node.h
   Connection.h

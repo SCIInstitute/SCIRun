@@ -74,9 +74,13 @@ void NetworkEditorController::removeModule(const std::string& id)
 
 void NetworkEditorController::printNetwork() const
 {
-  //TODO: use real logger here
-  if (theNetwork_)
-    std::cout << theNetwork_->toString() << std::endl;
+  //TODO: and make this switchable
+  if (false)
+  {
+    //TODO: use real logger here
+    if (theNetwork_)
+      std::cout << theNetwork_->toString() << std::endl;
+  }
 }
 
 void NetworkEditorController::addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc)
