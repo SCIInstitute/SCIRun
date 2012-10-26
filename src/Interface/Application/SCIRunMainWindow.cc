@@ -50,8 +50,6 @@ using namespace SCIRun::Dataflow::State;
 
 namespace
 {
-
-
   struct GrabNameAndSetFlags
   {
     QStringList nameList_;
@@ -145,6 +143,47 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
   networkEditor_->setNetworkEditorController(controllerProxy);
 }
 
+NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0), totalModules_(0)
+{
+  barAction_ = new QWidgetAction(parent);
+  barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
+  barAction_->setVisible(true);
+
+  counterAction_ = new QWidgetAction(parent);
+  counterAction_->setDefaultWidget(counterLabel_ = new QLabel(counterLabelString(), parent));
+  counterAction_->setVisible(true);
+}
+
+QList<QAction*> NetworkExecutionProgressBar::actions() const
+{
+  return QList<QAction*>() << barAction_ << counterAction_;
+}
+
+
+void NetworkExecutionProgressBar::updateTotalModules(int count)
+{
+  if (count >= 0)
+  {
+    totalModules_ = count;
+    counterLabel_->setText(counterLabelString());
+    progressBar_->setMaximum(count);
+  }
+}
+void NetworkExecutionProgressBar::updateModulesDone(int count)
+{
+  if (numModulesDone_ <= totalModules_)
+  {
+    numModulesDone_ = count;
+    counterLabel_->setText(counterLabelString());
+    progressBar_->setValue(count);
+  }
+}
+
+QString NetworkExecutionProgressBar::counterLabelString()
+{
+  return QString("  %1 / %2  ").arg(numModulesDone_).arg(totalModules_);
+}
+
 SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
@@ -162,6 +201,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->horizontalScrollBar()->setValue(0);
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
+  actionSave_->setStatusTip(tr("Save network"));
+  actionLoad_->setStatusTip(tr("Load network"));
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
@@ -196,15 +237,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
 	
-	QWidgetAction* globalProgress = new QWidgetAction(this);
-	globalProgress->setDefaultWidget(new QProgressBar(this));
-	globalProgress->setVisible(true);
-	executeBar->addAction(globalProgress);
-	
-	QWidgetAction* moduleCounter = new QWidgetAction(this);
-	moduleCounter->setDefaultWidget(new QLabel("0/0", this));
-	moduleCounter->setVisible(true);
-	executeBar->addAction(moduleCounter);
+	progressBar_.reset(new NetworkExecutionProgressBar(this));
+  executeBar->addActions(progressBar_->actions());
 	
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
@@ -220,7 +254,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);
-  std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
+  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -250,6 +284,7 @@ void SCIRunMainWindow::doInitialStuff()
     {
       // -E
       //TODO: exit code should be from network execution for regression testing.
+      //TODO: don't like passing the callback all the way down...better way to do it?--yes, when network done event is available, just have to add a quit() subscriber.
       networkEditor_->executeAll([this] {close(); qApp->quit();});
     }
   }
@@ -339,6 +374,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
 
     setCurrentFile(filename);
     statusBar()->showMessage(tr("File loaded"), 2000);
+    progressBar_->updateTotalModules(networkEditor_->numModules());
   }
 }
 
@@ -404,7 +440,7 @@ bool SCIRunMainWindow::okToContinue()
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);
-  //updateStatusBar();
+  progressBar_->updateTotalModules(networkEditor_->numModules());
 }
 
 void SCIRunMainWindow::ToggleRenderer()

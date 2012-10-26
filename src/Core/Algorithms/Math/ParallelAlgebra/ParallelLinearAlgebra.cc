@@ -804,7 +804,7 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
   return true;  
 }
 
-void ParallelLinearAlgebraBase::run_parallel(int proc,  int nproc)
+void ParallelLinearAlgebraBase::run_parallel(int proc, int nproc)
 {
   ParallelLinearAlgebra PLA(this,proc,nproc);
   success_[proc] = parallel(PLA,imatrices_);

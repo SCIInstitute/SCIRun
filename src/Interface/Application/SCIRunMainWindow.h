@@ -71,6 +71,7 @@ private:
   void setActionIcons();
   void makeFilterButtonMenu();
   QString currentFile_;
+  boost::shared_ptr<class NetworkExecutionProgressBar> progressBar_;
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -78,6 +79,29 @@ private Q_SLOTS:
   bool clearNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
+};
+
+class NetworkExecutionProgressBar : public QObject
+{
+  Q_OBJECT
+public:
+  explicit NetworkExecutionProgressBar(QWidget* parent);
+
+  QList<QAction*> actions() const;
+
+  public Q_SLOTS:
+    void updateTotalModules(int count);
+    void updateModulesDone(int count);
+
+private:
+  class QWidgetAction* barAction_;
+  class QProgressBar* progressBar_;
+  class QWidgetAction* counterAction_;
+  class QLabel* counterLabel_;
+  int numModulesDone_;
+  int totalModules_;
+
+  QString counterLabelString();
 };
 
 }

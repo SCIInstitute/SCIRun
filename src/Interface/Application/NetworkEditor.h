@@ -71,6 +71,8 @@ namespace Gui {
     SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork();
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
 
+    int numModules() const;
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
@@ -109,15 +111,11 @@ namespace Gui {
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     
-    //QMenu* fileMenu_;
-    //QMenu* editMenu_;
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;
     //QAction* pasteAction_;
     QAction* deleteAction_;
-    //QAction* addLinkAction_;
-    //QAction* addNodeAction_;
     //QAction* bringToFrontAction_;
     QAction* sendToBackAction_;
     QAction* propertiesAction_;

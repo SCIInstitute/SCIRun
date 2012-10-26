@@ -29,6 +29,7 @@
 #include <iostream>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/Network.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Gui;
@@ -74,4 +75,9 @@ void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networ
 void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func)
 {
   controller_->executeAll(lookup, func);
+}
+
+int NetworkEditorControllerGuiProxy::numModules() const 
+{
+  return controller_->getNetwork()->nmodules();
 }

@@ -166,6 +166,9 @@
          <property name="text">
           <string>Filter:</string>
          </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item>
@@ -181,6 +184,9 @@
          </property>
          <property name="text">
           <string>Clear</string>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

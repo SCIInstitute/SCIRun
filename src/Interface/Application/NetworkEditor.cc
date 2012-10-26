@@ -473,3 +473,8 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xm
 {
   controller_->loadNetwork(xml);
 }
+
+int NetworkEditor::numModules() const
+{
+  return controller_->numModules();
+}
