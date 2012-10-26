@@ -174,7 +174,7 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMa
   regex_match(matString, what, r);
   if (what.size() == 4)
   {
-    return boost::make_tuple(what[1], what[2], what[3]);
+    return boost::make_tuple(what[1].str(), what[2].str(), what[3].str());
   }
   return boost::optional<RawDenseData>();
 }
@@ -186,7 +186,7 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawDenseData> EigenMa
   regex_match(matString, what, r);
   if (what.size() == 3)
   {
-    return boost::make_tuple(what[1], "1", what[2]);
+    return boost::make_tuple(what[1].str(), std::string("1"), what[2].str());
   }
   return boost::optional<RawDenseData>();
 }
@@ -206,7 +206,7 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenM
   regex_match(matString, what, r);
   if (what.size() == 7)
   {
-    return boost::make_tuple(what[1], what[2], what[3], what[4], what[5], what[6]);
+    return boost::make_tuple(what[1].str(), what[2].str(), what[3].str(), what[4].str(), what[5].str(), what[6].str());
   }
   return boost::optional<RawSparseData>();
 }
