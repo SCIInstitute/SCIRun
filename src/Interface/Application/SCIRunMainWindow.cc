@@ -50,21 +50,32 @@ using namespace SCIRun::Dataflow::State;
 
 namespace
 {
-  void visitTree(QStringList& list, QTreeWidgetItem* item)
+
+
+  struct GrabNameAndSetFlags
   {
-    list << item->text(0) + "," + QString::number(item->childCount());
-    if (item->childCount() != 0)
-      item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    QStringList nameList_;
+    void operator()(QTreeWidgetItem* item)
+    {
+      nameList_ << item->text(0) + "," + QString::number(item->childCount());
+      if (item->childCount() != 0)
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    }
+  };
+
+  template <class Func>
+  void visitItem(QTreeWidgetItem* item, Func& itemFunc)
+  {
+    itemFunc(item);
     for (int i = 0; i < item->childCount(); ++i)
-      visitTree(list, item->child(i));
+      visitItem(item->child(i), itemFunc);
   }
 
-  QStringList visitTree(QTreeWidget* tree) 
+  template <class Func>
+  void visitTree(QTreeWidget* tree, Func& itemFunc) 
   {
-    QStringList list;
     for (int i = 0; i < tree->topLevelItemCount(); ++i)
-      visitTree(list, tree->topLevelItem(i));
-    return list;
+      visitItem(tree->topLevelItem(i), itemFunc);
   }
 
   class TextEditAppender : public Core::Logging::LoggerInterface
@@ -207,8 +218,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 
-  QStringList result = visitTree(moduleSelectorTreeWidget_);
-  std::for_each(result.begin(), result.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
+  GrabNameAndSetFlags visitor;
+  visitTree(moduleSelectorTreeWidget_, visitor);
+  std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -218,6 +230,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
+
+  connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
+  makeFilterButtonMenu();
 }
 
 void SCIRunMainWindow::doInitialStuff()
@@ -402,4 +417,84 @@ void SCIRunMainWindow::setActionIcons()
   actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+}
+
+struct HideItemsNotMatchingString
+{
+  explicit HideItemsNotMatchingString(bool useRegex, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), useRegex_(useRegex) {}
+  QRegExp match_;
+  QString start_;
+  bool useRegex_;
+
+  void operator()(QTreeWidgetItem* item)
+  {
+    if (item)
+      if (0 == item->childCount())
+      {
+        item->setHidden(shouldHide(item));
+      }
+      else
+      {
+        bool shouldHideCategory = true;
+        for (int i = 0; i < item->childCount(); ++i)
+        {
+          auto child = item->child(i);
+          if (!child->isHidden())
+          {
+            shouldHideCategory = false;
+            break;
+          }
+        }
+        item->setHidden(shouldHideCategory);
+      }
+  }
+
+  bool shouldHide(QTreeWidgetItem* item) 
+  {
+    auto text = item->text(0);
+    if (useRegex_)
+      return !match_.exactMatch(text);
+    return !text.startsWith(start_, Qt::CaseInsensitive);
+  }
+};
+
+struct ShowAll
+{
+  void operator()(QTreeWidgetItem* item)
+  {
+    item->setHidden(false);
+  }
+};
+
+void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
+{
+  ShowAll show;
+  visitTree(moduleSelectorTreeWidget_, show);
+  
+  bool regexSelected = filterActionGroup_->checkedAction()->text().contains("wildcards");
+  
+  
+  HideItemsNotMatchingString func(regexSelected, start);
+
+  //note: goofy double call, first to hide the leaves, then hide the categories.
+  visitTree(moduleSelectorTreeWidget_, func);
+  visitTree(moduleSelectorTreeWidget_, func);
+}
+
+void SCIRunMainWindow::makeFilterButtonMenu()
+{
+  auto filterMenu = new QMenu(filterButton_);
+  filterActionGroup_ = new QActionGroup(filterMenu);
+  auto startsWithAction = new QAction("Starts with", filterButton_);
+  startsWithAction->setCheckable(true);
+  startsWithAction->setChecked(true);
+  filterActionGroup_->addAction(startsWithAction);
+  filterMenu->addAction(startsWithAction);
+
+  auto wildcardAction = new QAction("Use wildcards", filterButton_);
+  wildcardAction->setCheckable(true);
+  filterActionGroup_->addAction(wildcardAction);
+  filterMenu->addAction(wildcardAction);
+
+  filterButton_->setMenu(filterMenu);
 }

@@ -59,6 +59,7 @@ private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+  QActionGroup* filterActionGroup_;
   
 private:
   bool okToContinue();
@@ -68,6 +69,7 @@ private:
   void updateRecentFileActions();
   QString strippedName(const QString& fillFileName);
   void setActionIcons();
+  void makeFilterButtonMenu();
   QString currentFile_;
 private Q_SLOTS:
   void saveNetworkAs();
@@ -75,6 +77,7 @@ private Q_SLOTS:
   void loadNetwork();
   bool clearNetwork();
   void networkModified();
+  void filterModuleNamesInTreeView(const QString& start);
 };
 
 }

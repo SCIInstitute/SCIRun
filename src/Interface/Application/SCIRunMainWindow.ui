@@ -156,14 +156,33 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="moduleFilterLabel_">
+        <widget class="QPushButton" name="filterButton_">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Filter:*</string>
+          <string>Filter:</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLineEdit" name="moduleFilterLineEdit_"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="clearFilterButton_">
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Clear</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -772,6 +791,22 @@
     <hint type="destinationlabel">
      <x>518</x>
      <y>847</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>clearFilterButton_</sender>
+   <signal>clicked()</signal>
+   <receiver>moduleFilterLineEdit_</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>64</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>141</x>
+     <y>63</y>
     </hint>
    </hints>
   </connection>
