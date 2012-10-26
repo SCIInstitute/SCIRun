@@ -49,7 +49,8 @@ using namespace SCIRun::Dataflow::Networks;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
-  moduleDumpAction_(0)
+  moduleDumpAction_(0),
+  moduleEventProxy_(new ModuleEventProxy)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
   scene_->setBackgroundBrush(Qt::darkGray);
@@ -100,6 +101,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
 void NetworkEditor::addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
+  moduleEventProxy_->trackModule(module);
   setupModule(moduleWidget);
   Q_EMIT modified();
 }
@@ -477,4 +479,15 @@ void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xm
 int NetworkEditor::numModules() const
 {
   return controller_->numModules();
+}
+
+ModuleEventProxy::ModuleEventProxy()
+{
+  qRegisterMetaType<std::string>("std::string");
+}
+
+void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle module)
+{
+  module->connectExecuteBegins(boost::bind(&ModuleEventProxy::moduleExecuteStart, this, _1));
+  module->connectExecuteEnds(boost::bind(&ModuleEventProxy::moduleExecuteEnd, this, _1));
 }

@@ -91,7 +91,8 @@ public:
 
   public Q_SLOTS:
     void updateTotalModules(int count);
-    void updateModulesDone(int count);
+    void incrementModulesDone();
+    void resetModulesDone();
 
 private:
   class QWidgetAction* barAction_;
@@ -101,7 +102,7 @@ private:
   int numModulesDone_;
   int totalModules_;
 
-  QString counterLabelString();
+  QString counterLabelString() const;
 };
 
 }

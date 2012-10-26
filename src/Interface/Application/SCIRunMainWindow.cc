@@ -169,17 +169,24 @@ void NetworkExecutionProgressBar::updateTotalModules(int count)
     progressBar_->setMaximum(count);
   }
 }
-void NetworkExecutionProgressBar::updateModulesDone(int count)
+void NetworkExecutionProgressBar::incrementModulesDone()
 {
-  if (numModulesDone_ <= totalModules_)
+  if (numModulesDone_ < totalModules_)
   {
-    numModulesDone_ = count;
+    numModulesDone_++;
     counterLabel_->setText(counterLabelString());
-    progressBar_->setValue(count);
+    progressBar_->setValue(numModulesDone_);
   }
 }
 
-QString NetworkExecutionProgressBar::counterLabelString()
+void NetworkExecutionProgressBar::resetModulesDone()
+{
+  numModulesDone_ = 0;
+  counterLabel_->setText(counterLabelString());
+  progressBar_->setValue(numModulesDone_);
+}
+
+QString NetworkExecutionProgressBar::counterLabelString() const
 {
   return QString("  %1 / %2  ").arg(numModulesDone_).arg(totalModules_);
 }
@@ -239,6 +246,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 	
 	progressBar_.reset(new NetworkExecutionProgressBar(this));
   executeBar->addActions(progressBar_->actions());
+  connect(actionExecute_All_, SIGNAL(triggered()), progressBar_.get(), SLOT(resetModulesDone()));
+  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), progressBar_.get(), SLOT(incrementModulesDone()));
 	
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);

@@ -50,6 +50,19 @@ namespace Gui {
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
   };
+
+  Q_DECLARE_METATYPE (std::string)
+
+  class ModuleEventProxy : public QObject
+  {
+    Q_OBJECT
+  public:
+    ModuleEventProxy();
+    void trackModule(SCIRun::Dataflow::Networks::ModuleHandle module);
+Q_SIGNALS:
+    void moduleExecuteStart(const std::string& id);
+    void moduleExecuteEnd(const std::string& id);
+  };
   
   class ConnectionLine;
   class ModuleWidget;
@@ -72,6 +85,8 @@ namespace Gui {
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
 
     int numModules() const;
+
+    boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
 
   protected:
     virtual void dropEvent(QDropEvent* event);
@@ -132,6 +147,8 @@ namespace Gui {
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
+
+    boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
   };
 
 }

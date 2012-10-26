@@ -44,7 +44,7 @@ namespace Basis {
   template <class T, size_t N>
   class StackVector : public boost::array<T,N>
   {
-  }
+  };
 
 //! Class for describing interfaces to basis elements
 template <class T>
