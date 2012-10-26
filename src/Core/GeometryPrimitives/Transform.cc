@@ -26,6 +26,8 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+#include <cmath>
+
 //#include <Core/Util/TypeDescription.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>

@@ -32,6 +32,8 @@
 #ifndef CORE_BASIS_PRISMLINEARLGN_H
 #define CORE_BASIS_PRISMLINEARLGN_H 1
 
+#include <float.h>
+
 #include <Core/Basis/CrvLinearLgn.h>
 #include <Core/Basis/TriLinearLgn.h>
 #include <Core/Basis/QuadBilinearLgn.h>

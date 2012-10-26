@@ -32,7 +32,10 @@
 //TODO DAN: REFACTORING NEEDED: LEVEL HIGHEST
 ///////////////////////////
 
+#include <float.h>
+
 #include <boost/thread.hpp>
+
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>

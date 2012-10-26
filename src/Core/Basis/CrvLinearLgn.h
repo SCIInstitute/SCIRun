@@ -32,6 +32,8 @@
 #ifndef CORE_BASIS_CRVLINEARLGN_H
 #define CORE_BASIS_CRVLINEARLGN_H 1
 
+#include <float.h>
+
 #include <Core/Basis/Basis.h>
 //#include <Core/Util/TypeDescription.h>
 //#include <Core/Datatypes/TypeName.h>

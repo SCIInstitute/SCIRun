@@ -32,6 +32,8 @@
 #ifndef CORE_BASIS_TRILINEARLGN_H
 #define CORE_BASIS_TRILINEARLGN_H 1
 
+#include <float.h>
+
 #include <Core/Basis/CrvLinearLgn.h>
 #include <Core/Basis/TriElementWeights.h>
 #include <Core/Basis/TriSamplingSchemes.h>

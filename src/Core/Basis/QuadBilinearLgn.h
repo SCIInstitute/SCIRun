@@ -32,6 +32,8 @@
 #ifndef CORE_BASIS_QUADBILINEARLGN_H
 #define CORE_BASIS_QUADBILINEARLGN_H 1
 
+#include <float.h>
+
 #include <Core/Basis/CrvLinearLgn.h>
 #include <Core/Basis/QuadElementWeights.h>
 #include <Core/Basis/QuadSamplingSchemes.h>
