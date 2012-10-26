@@ -30,6 +30,7 @@
 #ifndef DATAFLOW_NETWORK_MODULE_INTERFACE_H
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H 
 
+#include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Dataflow/Network/ExecutableObject.h>
@@ -56,6 +57,10 @@ namespace Networks {
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
   
+  //TODO: nice reason to replace string with "ModuleId" class
+  typedef boost::signals2::signal<void (const std::string&)> ExecuteBeginsSignalType;
+  typedef boost::signals2::signal<void (const std::string&)> ExecuteEndsSignalType;
+
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ExecutableObject
   {
   public:
@@ -74,6 +79,9 @@ namespace Networks {
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
+
+    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
+    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
   };
 
   #define MODULE_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }

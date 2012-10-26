@@ -93,6 +93,7 @@ size_t Module::num_output_ports() const
 
 void Module::do_execute()
 {
+  executeBegins_(id_);
   status("STARTING MODULE: " + id_);
 
   // Reset all of the ports.
@@ -140,6 +141,7 @@ void Module::do_execute()
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   status("MODULE FINISHED: " + id_);  
+  executeEnds_(id_);
 }
 
 ModuleStateHandle Module::get_state() 
@@ -255,4 +257,14 @@ Module::Builder& Module::Builder::disable_ui()
 ModuleHandle Module::Builder::build()
 {
   return module_;
+}
+
+boost::signals2::connection Module::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
+{
+  return executeBegins_.connect(subscriber);
+}
+
+boost::signals2::connection Module::connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber)
+{
+  return executeEnds_.connect(subscriber);
 }

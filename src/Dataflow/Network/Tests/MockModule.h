@@ -60,6 +60,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());
           MOCK_METHOD1(setLogger, void(SCIRun::Core::Logging::LoggerHandle));
           MOCK_CONST_METHOD0(getLogger, SCIRun::Core::Logging::LoggerHandle());
+          MOCK_METHOD1(connectExecuteBegins, boost::signals2::connection(const ExecuteBeginsSignalType::slot_type&));
+          MOCK_METHOD1(connectExecuteEnds, boost::signals2::connection(const ExecuteEndsSignalType::slot_type&));
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

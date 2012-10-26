@@ -87,6 +87,9 @@ namespace Networks {
     virtual void remark(const std::string& msg) { getLogger()->remark(msg); }
     virtual void status(const std::string& msg) { getLogger()->status(msg); }
 
+    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
+    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
+
     // Throws if input is not present or null.
     template <class T>
     boost::shared_ptr<const T> getRequiredInput(size_t idx);
@@ -133,6 +136,9 @@ namespace Networks {
     ModuleStateHandle state_;
     PortManager<OutputPortHandle> oports_;
     PortManager<InputPortHandle> iports_;
+
+    ExecuteBeginsSignalType executeBegins_;
+    ExecuteEndsSignalType executeEnds_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     static int instanceCount_;
