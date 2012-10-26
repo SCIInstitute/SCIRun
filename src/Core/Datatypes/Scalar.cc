@@ -31,5 +31,5 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-template class Scalar<int>;
-template class Scalar<double>;
+//template class Scalar<int>;
+//template class Scalar<double>;
