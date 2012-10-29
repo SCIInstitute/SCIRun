@@ -148,6 +148,7 @@ FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromM
           (it->second->field_maker_mesh != field_maker_mesh))
       {
 #if DEBUG
+        //TODO: use real logger here
         std::cerr << "WARNING: duplicate field type exists: " << type << "\n";
 #endif
         return;
@@ -176,6 +177,7 @@ CreateField(const std::string& type, MeshHandle mesh)
   }
   else
   {
+    //TODO: use real logger here
     std::cout << "Cannot find "<<type<<" in database\n";
   }
   return FieldHandle();

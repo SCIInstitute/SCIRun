@@ -100,15 +100,6 @@ namespace Algorithms {
   private:
   };
 
-  class SCISHARE ScopedAlgorithmReporter
-  {
-  public:
-    ScopedAlgorithmReporter(AlgorithmStatusReporter* algo, const std::string& tag);
-    ~ScopedAlgorithmReporter();
-  private:
-    AlgorithmStatusReporter* algo_;
-  };
-  
   //TODO: link this to ModuleState via meeting discussion
   class SCISHARE AlgorithmParameterList
   {

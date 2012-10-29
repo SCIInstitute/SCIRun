@@ -46,15 +46,11 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 {
   ENSURE_FILE_EXISTS(filename);
 
-  //TODO: push logging up hierarchy
-  std::cout << "Algorithm start." << std::endl;
-
   if (boost::filesystem::extension(filename) == ".txt")
   {
     std::ifstream reader(filename.c_str());
     DenseMatrixHandle matrix(new DenseMatrix);
     reader >> *matrix;
-    std::cout << "Algorithm returning." << std::endl;
     return matrix;
   }
   else if (boost::filesystem::extension(filename) == ".mat")

@@ -182,7 +182,6 @@ void printArray(const T* ts, size_t size)
 TEST(SparseRowMatrixTest, CheckingInternalArrays)
 {
   auto mat = matrix1();
-  std::cout << mat.castForPrinting() << std::endl;
 
   mat.makeCompressed();
   EXPECT_EQ(0, mat.innerNonZeroPtr());
@@ -191,19 +190,10 @@ TEST(SparseRowMatrixTest, CheckingInternalArrays)
   EXPECT_EQ(mat.outerSize(), mat.rows());
   EXPECT_EQ(mat.innerSize(), mat.cols());
 
-  std::cout << "Values:" << std::endl;
-  printArray(mat.valuePtr(), mat.nonZeros());
   std::vector<double> values(mat.valuePtr(), mat.valuePtr() + mat.nonZeros());
   EXPECT_THAT(values, ElementsAre(1, -2, 0.5));
-  std::cout << "Inners/Columns:" << std::endl;
-  printArray(mat.innerIndexPtr(), mat.nonZeros());
   std::vector<double> columns(mat.innerIndexPtr(), mat.innerIndexPtr() + mat.nonZeros());
   EXPECT_THAT(columns, ElementsAre(0,2,3));
-  std::cout << "Outers/Rows:" << std::endl;
-  printArray(mat.outerIndexPtr(), mat.outerSize());
   std::vector<double> rows(mat.outerIndexPtr(), mat.outerIndexPtr() + mat.outerSize());
   EXPECT_THAT(rows, ElementsAre(0,1,2,3));
-
-
-  //EXPECT_TRUE(false);
 }

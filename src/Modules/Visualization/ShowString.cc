@@ -41,8 +41,6 @@ void ShowStringModule::execute()
 {
   auto str = getRequiredInput<String>(0);
 
-  std::cout << "String value received: " << str->value() << std::endl;
-
   GeometryHandle geom(new GeometryObject(str));
   send_output_handle(0, geom);
 }

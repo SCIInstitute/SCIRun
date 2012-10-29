@@ -55,7 +55,6 @@ TEST(CommandLineSpecTest, BoostExampleCode)
 
   std::ostringstream ostr;
   ostr << desc;
-  //std::cout << desc << std::endl;
   EXPECT_EQ("Allowed options:\n  --help                produce help message\n  --compression arg     set compression level\n",  ostr.str());
 
   {

@@ -112,6 +112,12 @@ class SCISHARE FieldTypeID
     FieldMakerFromMesh field_maker_mesh;
 };
 
+//TODO: copy/paste from MeshFactory. Can probably make generic.
+class SCISHARE FieldFactory
+{
+
+};
+
 
 //TODO: FieldFactory class
 SCISHARE FieldHandle CreateField(const std::string& type);

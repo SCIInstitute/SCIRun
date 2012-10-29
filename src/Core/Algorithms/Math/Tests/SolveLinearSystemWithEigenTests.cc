@@ -95,14 +95,9 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWith
 
   #if 0
 cg.setMaxIterations(1);
-  //x = VectorXd::Random(n);
   int i = 0;
   do {
-    //std::cout << "i = " << i << std::endl;
-    //std::cout << "guess\n" << x << std::endl;
     x = cg.solveWithGuess(rhs, x);
-    //std::cout << "new guess\n" << x << std::endl;
-    //std::cout << "-------------" << std::endl;
     
     std::cout << i << " : " << cg.error() << std::endl;
     ++i;
@@ -115,8 +110,6 @@ cg.setMaxIterations(1);
   std::cout << x << std::endl;
 
   EXPECT_EQ(v, x);
-
-  //EXPECT_TRUE(false);
 }
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
@@ -279,14 +272,6 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 
 TEST(EigenSparseSolverTest, CanSolveTinySystem)
 {
-  //Eigen::MatrixXd a(4, 3);
-  //a << 1.0,2.,3.,
-  //  1.,4,5,
-  //  5.,6,7,
-  //  4,0.1,0.1;
-
-  //std::cout << a << std::endl;
-
   typedef Eigen::Triplet<double> T;
   std::vector<T> tripletList;
   int estimation_of_entries = 10;
@@ -299,23 +284,16 @@ TEST(EigenSparseSolverTest, CanSolveTinySystem)
   Eigen::SparseMatrix<double> mat(n,n);
   mat.setFromTriplets(tripletList.begin(), tripletList.end());
 
-  //std::cout << mat << std::endl;
-
   Eigen::VectorXd x(n), b(n);
   // fill A and b
   b.setZero();
   b(1) = 1;
-  //std::cout << b << std::endl;
 
   Eigen::ConjugateGradient<Eigen::SparseMatrix<double> > cg;
   cg.compute(mat);
   x = cg.solve(b);
-  //std::cout << x << std::endl;
   std::cout << "#iterations:     " << cg.iterations() << std::endl;
   std::cout << "estimated error: " << cg.error()      << std::endl;
-
-
-  //EXPECT_TRUE(false);
 }
 
 TEST(SparseMatrixReadTest, DISABLED_CanReadInBigMatrix)
@@ -365,10 +343,6 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
     ASSERT_TRUE(x.get<0>());
     std::cout << "error: " << x.get<1>() << std::endl;
     std::cout << "iterations: " << x.get<2>() << std::endl;
-
-    //auto error = *A * *x.get<0>() - *b;
-    //std::cout << "MAX error: " << error.maxCoeff() << std::endl;
-    //std::cout << "MIN error: " << error.minCoeff() << std::endl;
   }
 
   {
@@ -388,8 +362,5 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
     EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .01);
     EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .001);
     EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*xExpected, solution , .0001);
-    //EXPECT_TRUE(eigenMatricesEqual(*xExpected, x, .00001));
   }
-
-  //EXPECT_TRUE(false);
 }

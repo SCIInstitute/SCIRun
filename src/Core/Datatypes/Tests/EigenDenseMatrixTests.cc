@@ -55,7 +55,6 @@ namespace
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
 }
 
-
 #define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
 
 TEST(EigenDenseMatrixTest, CanCreateBasicMatrix)
@@ -70,7 +69,6 @@ TEST(EigenDenseMatrixTest, CanPrintInLegacyFormat)
   std::ostringstream o;
   o << 0.5*m;
   std::string legacy = o.str();
-  std::cout << legacy << std::endl;
   EXPECT_EQ("  0 0.5   1\n1.5   2 2.5\n  3 3.5   4", legacy);
 }
 
