@@ -30,10 +30,9 @@
 #include <boost/foreach.hpp>
 #include <Dataflow/Network/Port.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Utils/Exception.h>
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
-
-#include <stdexcept>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
@@ -41,10 +40,9 @@ using namespace SCIRun::Core::Datatypes;
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
   : module_(module), typeName_(params.type_name), portName_(params.port_name), colorName_(params.color_name)
 {
-  if (!module_)
-    throw std::invalid_argument("port cannot have null module");
+  ENSURE_NOT_NULL1(module_, "port cannot have null module");
   if (typeName_.empty() || portName_.empty() || colorName_.empty())
-    throw std::invalid_argument("port has empty metadata");
+    THROW_INVALID_ARGUMENT("port has empty metadata");
 }
 
 Port::~Port()
@@ -59,9 +57,10 @@ void Port::attach(Connection* conn)
 
 void Port::detach(Connection* conn)
 {
-  std::vector<Connection*>::iterator pos = std::find(connections_.begin(), connections_.end(), conn);
+  auto pos = std::find(connections_.begin(), connections_.end(), conn);
   if (pos == connections_.end())
   {
+    //TODO: use real logger here
     std::cerr << "Port::detach: Connection not found";
   }
   connections_.erase(pos);
@@ -105,8 +104,7 @@ DatatypeHandleOption InputPort::getData()
 void InputPort::attach(Connection* conn)
 {
   if (connections_.size() > 0)
-    //TODO: make custom exception type
-    throw std::invalid_argument("input ports accept at most one connection");
+    THROW_INVALID_ARGUMENT("input ports accept at most one connection");
   Port::attach(conn);
 }
 

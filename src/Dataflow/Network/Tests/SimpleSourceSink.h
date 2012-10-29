@@ -67,7 +67,7 @@ namespace SCIRun
         {
           SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
           if (!sink)
-            throw std::invalid_argument("SimpleSource can only send to SimpleSinks");
+            THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
           sink->setData(data);
         }
       };

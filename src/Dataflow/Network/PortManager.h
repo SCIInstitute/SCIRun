@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_PORTMANAGER_H 
 
 #include <Dataflow/Network/Port.h>
+#include <Core/Utils/Exception.h>
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -64,6 +65,8 @@ public:
   void resetAll();
 };
 
+struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
+
 template<class T>
 PortManager<T>::PortManager() :
   module_(0)
@@ -90,7 +93,7 @@ PortManager<T>::remove(int item)
 {
   if (static_cast<int>(ports_.size()) <= item)
   {
-    throw "PortManager tried to remove a port that does not exist";
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
   }
   ports_.erase(ports_.begin() + item);
 }

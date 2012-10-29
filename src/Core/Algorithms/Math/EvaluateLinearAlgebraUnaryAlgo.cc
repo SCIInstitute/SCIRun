@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <stdexcept>
 
@@ -60,7 +61,7 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   case SCALAR_MULTIPLY:
     boost::optional<double> scalarOption = params.get<1>();
     if (!scalarOption)
-      throw std::invalid_argument("No scalar value available to multiply!");
+      ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
     double scalar = scalarOption.get();
     result.reset(matrix->clone());
     (*result) *= scalar;

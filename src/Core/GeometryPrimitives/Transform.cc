@@ -214,6 +214,7 @@ Transform::build_shear(double mat[4][4], const Vector& s, const Plane& p)
   double d=Dot(dn,p.normal());
   if (fabs(d)<0.00001) 
   {
+    //TODO: use real logger here
     std::cerr << "Transform - shear vector lies in shear fixed plane.  Returning identity." << std::endl;
     return;
   }

@@ -40,7 +40,7 @@ AlgorithmParameterName WriteMatrixAlgorithm::Filename("Filename");
 
 WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
 {
-  ENSURE_NOT_NULL(inputMatrix, "Cannot write null matrix.");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(inputMatrix, "Cannot write null matrix.");
 
   std::ofstream writer(filename.c_str());
   writer << *inputMatrix;

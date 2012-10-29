@@ -30,8 +30,8 @@
 #define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Utils/Exception.h>
 #include <list>
-#include <stdexcept>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
@@ -53,11 +53,7 @@ namespace Engine {
     ModuleIdList list_;
   };
 
-  class NetworkHasCyclesException : public std::invalid_argument
-  {
-  public:
-    explicit NetworkHasCyclesException(const char* str);
-  };
+  struct NetworkHasCyclesException : virtual Core::InvalidArgumentException {};
 
   //Serial
   class SCISHARE Scheduler

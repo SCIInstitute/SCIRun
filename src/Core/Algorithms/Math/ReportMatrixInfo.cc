@@ -34,7 +34,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
 {
-  ENSURE_NOT_NULL(input, "Null input matrix");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input matrix");
 
   const std::string type = typeid(*input).name();  //TODO: need dynamic type name
 

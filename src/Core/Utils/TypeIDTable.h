@@ -67,6 +67,7 @@ namespace Utility
         if (iter->second != info)
         {
           //TODO: improve for testing
+          //TODO: use real logger here
           std::cerr << "WARNING: duplicate type exists: " << key << "\n";
           return false;
         }

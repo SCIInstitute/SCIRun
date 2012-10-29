@@ -42,8 +42,8 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   DenseMatrixHandle result;
   DenseMatrixConstHandle lhs = inputs.get<0>();
   DenseMatrixConstHandle rhs = inputs.get<1>();
-  ENSURE_NOT_NULL(lhs, "lhs");
-  ENSURE_NOT_NULL(rhs, "rhs");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(lhs, "lhs");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(rhs, "rhs");
 
   Operator oper = params;
 

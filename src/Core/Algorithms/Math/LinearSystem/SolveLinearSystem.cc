@@ -1043,10 +1043,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
                            DenseColumnMatrixHandle& x,
                            DenseColumnMatrixHandle& convergence)
 {
-  ScopedAlgorithmReporter reporter(this, "SolveLinearSystem");
-  
-  ENSURE_NOT_NULL(A, "No matrix A is given");
-  ENSURE_NOT_NULL(b, "No matrix b is given");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "No matrix b is given");
 
   if (!matrix_is::sparse(A))
   {

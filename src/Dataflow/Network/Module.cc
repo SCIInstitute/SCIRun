@@ -91,7 +91,7 @@ size_t Module::num_output_ports() const
   return oports_.size();
 }
 
-void Module::do_execute()
+void Module::do_execute() throw()
 {
   executeBegins_(id_);
   status("STARTING MODULE: " + id_);
@@ -180,7 +180,7 @@ void Module::send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHan
   //TODO test...
   if (idx >= oports_.size())
   {
-    throw std::invalid_argument("port does not exist at index " + boost::lexical_cast<std::string>(idx));
+    THROW_OUT_OF_RANGE("port does not exist at index " + boost::lexical_cast<std::string>(idx));
   }
 
   oports_[idx]->sendData(data);

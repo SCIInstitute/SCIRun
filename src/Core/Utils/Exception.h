@@ -57,6 +57,17 @@ namespace Core
   typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
   typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
+  struct SCISHARE NullPointerException : virtual ExceptionBase {};
+
+  #define ENSURE_NOT_NULL1(var, message)  if (!(var)) BOOST_THROW_EXCEPTION(SCIRun::Core::NullPointerException() << SCIRun::Core::NullObjectInfo(message))
+
+  struct SCISHARE OutOfRangeException : virtual ExceptionBase {};
+
+  #define THROW_OUT_OF_RANGE(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::OutOfRangeException() << SCIRun::Core::ErrorMessage(message))
+
+  struct SCISHARE InvalidArgumentException : virtual ExceptionBase {};
+
+  #define THROW_INVALID_ARGUMENT(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
 
 }
 }

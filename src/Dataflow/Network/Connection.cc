@@ -28,24 +28,21 @@
 
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Module.h>
-
-#include <stdexcept>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
 Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id)
   : omod_(omod), imod_(imod), id_(id)
 {
-  if (!omod)
-    throw std::invalid_argument("output module is null");
-  if (!imod)
-    throw std::invalid_argument("input module is null");
+  ENSURE_NOT_NULL1(omod, "output module is null");
+  ENSURE_NOT_NULL1(imod, "input module is null");
+  
   oport_ = omod_->get_output_port(oportno);
-  if (!oport_)
-    throw std::invalid_argument("output port is null");
+  ENSURE_NOT_NULL1(oport_, "output port is null");
+  
   iport_ = imod_->get_input_port(iportno);
-  if (!iport_)
-    throw std::invalid_argument("input port is null");
+  ENSURE_NOT_NULL1(iport_, "input port is null");
 
   //TODO: check for matching types here
 

@@ -57,6 +57,7 @@ TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh
   Core_Datatypes
   Core_Geometry_Primitives
   Core_Basis
+  Core_Utils
   ${Boost_LIBRARIES}
 )
 

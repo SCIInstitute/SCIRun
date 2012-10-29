@@ -203,7 +203,10 @@ FieldInformation::set_mesh_type(const std::string& type)
   else if (typeLower == "tetvolmesh") set_mesh_type(TETVOLMESH_E);
   else if (typeLower == "prismvolmesh") set_mesh_type(PRISMVOLMESH_E);
   else if (typeLower == "hexvolmesh") set_mesh_type(HEXVOLMESH_E);
-  else { throw std::string("Unknown mesh type"); }
+  else 
+  { 
+    BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("Unknown mesh type")); 
+  }
 }
 
 
@@ -225,7 +228,7 @@ FieldInformation::set_mesh_type(mesh_info_type type)
     case TETVOLMESH_E:       mesh_type = "TetVolMesh"; break;
     case PRISMVOLMESH_E:     mesh_type = "PrismVolMesh"; break;
     case HEXVOLMESH_E:       mesh_type = "HexVolMesh"; break;
-    default: throw std::string("Unknown mesh type"); 
+    default: BOOST_THROW_EXCEPTION(UnknownMeshType() << Core::ErrorMessage("Unknown mesh type")); 
   }
   
   if (type == SCANLINEMESH_E)
@@ -588,7 +591,8 @@ FieldInformation::set_data_type(data_info_type type)
     case VECTOR_E:              data_type = "Vector"; break;
     case TENSOR_E:              data_type = "Tensor"; break;
 
-    default: throw std::string("INTERNAL ERROR - unknown data_info_type");
+    default: 
+      BOOST_THROW_EXCEPTION(MeshException() << Core::ErrorMessage("INTERNAL ERROR - unknown data_info_type"));
   }
 }
 

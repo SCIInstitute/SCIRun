@@ -70,7 +70,7 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
   }
   catch (std::invalid_argument& e)
   {
-  	throw NetworkHasCyclesException(e.what());
+  	BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << Core::ErrorMessage(e.what()));
   }
 
   ModuleExecutionOrder::ModuleIdList list;
@@ -80,9 +80,4 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
   }
 
   return ModuleExecutionOrder(list);
-}
-
-NetworkHasCyclesException::NetworkHasCyclesException(const char* str)
-  : std::invalid_argument(str) 
-{
 }

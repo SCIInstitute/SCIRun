@@ -37,6 +37,7 @@
 #include <Core/Datatypes/Mesh/MeshTraits.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Utils/Exception.h>
 //#include <Core/Datatypes/Mesh/Field.h>
 
 #include <Core/Datatypes/Mesh/Share.h>
@@ -268,6 +269,10 @@ class SCISHARE FieldInformation : public FieldTypeInformation
     inline void set_data_typeT(Tensor*) { make_tensor(); }
 #endif 
 };
+
+struct MeshException : virtual SCIRun::Core::ExceptionBase {};
+
+struct UnknownMeshType : virtual MeshException {};
 
 //TODO: move to Field/MeshFactory classes
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

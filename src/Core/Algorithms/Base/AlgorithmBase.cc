@@ -114,13 +114,3 @@ void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, con
 {
   parameters_[key] = AlgorithmParameter(key, defaultValue);
 }
-
-ScopedAlgorithmReporter::ScopedAlgorithmReporter(AlgorithmStatusReporter* algo, const std::string& tag) : algo_(algo)
-{
-  algo_->algo_start(tag);
-}
-
-ScopedAlgorithmReporter::~ScopedAlgorithmReporter()
-{
-  algo_->algo_end();
-}

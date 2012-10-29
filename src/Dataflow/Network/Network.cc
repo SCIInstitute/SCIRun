@@ -74,8 +74,9 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   size_t outputPortIndex = out.second;
   size_t inputPortIndex = in.second;
 
-  if (!outputModule || !inputModule)
-    throw std::invalid_argument("cannot connect null modules");
+  ENSURE_NOT_NULL1(outputModule, "cannot connect null output module");
+  ENSURE_NOT_NULL1(inputModule, "cannot connect null input module");
+  
   // assure that the ports are not altered while connecting
   //m1->oports_.lock();
   //m2->iports_.lock();
@@ -148,7 +149,7 @@ size_t Network::nmodules() const
 ModuleHandle Network::module(size_t i) const
 {
   if (i >= nmodules())
-    throw std::out_of_range("Module index out of range");
+    THROW_OUT_OF_RANGE("Module index out of range");
 
   return modules_[i];
 }

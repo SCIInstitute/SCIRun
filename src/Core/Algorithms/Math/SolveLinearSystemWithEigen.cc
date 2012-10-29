@@ -78,12 +78,11 @@ AlgorithmParameterName SolveLinearSystemAlgorithm::MaxIterations("MaxIterations"
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
-  //TODO: make convenience macros for these common error conditions (also to increase readability)
   MatrixConstHandle A = input.get<0>();
-  ENSURE_NOT_NULL(A, "Null input matrix");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "Null input matrix");
 
   auto b = input.get<1>();
-  ENSURE_NOT_NULL(b, "Null rhs vector");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "Null rhs vector");
   
   double tolerance = params.get<0>();
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
