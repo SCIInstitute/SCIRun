@@ -74,8 +74,8 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   size_t outputPortIndex = out.second;
   size_t inputPortIndex = in.second;
 
-  ENSURE_NOT_NULL1(outputModule, "cannot connect null output module");
-  ENSURE_NOT_NULL1(inputModule, "cannot connect null input module");
+  ENSURE_NOT_NULL(outputModule, "cannot connect null output module");
+  ENSURE_NOT_NULL(inputModule, "cannot connect null input module");
   
   // assure that the ports are not altered while connecting
   //m1->oports_.lock();

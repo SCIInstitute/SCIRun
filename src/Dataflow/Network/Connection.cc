@@ -35,14 +35,14 @@ using namespace SCIRun::Dataflow::Networks;
 Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id)
   : omod_(omod), imod_(imod), id_(id)
 {
-  ENSURE_NOT_NULL1(omod, "output module is null");
-  ENSURE_NOT_NULL1(imod, "input module is null");
+  ENSURE_NOT_NULL(omod, "output module is null");
+  ENSURE_NOT_NULL(imod, "input module is null");
   
   oport_ = omod_->get_output_port(oportno);
-  ENSURE_NOT_NULL1(oport_, "output port is null");
+  ENSURE_NOT_NULL(oport_, "output port is null");
   
   iport_ = imod_->get_input_port(iportno);
-  ENSURE_NOT_NULL1(iport_, "input port is null");
+  ENSURE_NOT_NULL(iport_, "input port is null");
 
   //TODO: check for matching types here
 

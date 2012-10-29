@@ -59,7 +59,7 @@ namespace Core
 
   struct SCISHARE NullPointerException : virtual ExceptionBase {};
 
-  #define ENSURE_NOT_NULL1(var, message)  if (!(var)) BOOST_THROW_EXCEPTION(SCIRun::Core::NullPointerException() << SCIRun::Core::NullObjectInfo(message))
+  #define ENSURE_NOT_NULL(var, message)  if (!(var)) BOOST_THROW_EXCEPTION(SCIRun::Core::NullPointerException() << SCIRun::Core::NullObjectInfo(message))
 
   struct SCISHARE OutOfRangeException : virtual ExceptionBase {};
 
