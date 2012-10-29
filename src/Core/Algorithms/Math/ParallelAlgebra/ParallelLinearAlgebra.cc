@@ -149,7 +149,9 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
   return (true);
 }
 
-void ParallelLinearAlgebra::mult(ParallelVector& a, ParallelVector& b, ParallelVector& r)
+//TODO: refactor duplication
+
+void ParallelLinearAlgebra::mult(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
   double* a_ptr = a.data_+start_; 
   double* b_ptr = b.data_+start_; 
@@ -185,6 +187,7 @@ void ParallelLinearAlgebra::mult(ParallelVector& a, ParallelVector& b, ParallelV
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::add(ParallelVector& a, ParallelVector& b, ParallelVector& r)
 { 
   double* a_ptr = a.data_+start_; 
@@ -220,8 +223,9 @@ void ParallelLinearAlgebra::add(ParallelVector& a, ParallelVector& b, ParallelVe
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
 }
+#endif
 
-void ParallelLinearAlgebra::sub(ParallelVector& a, ParallelVector& b, ParallelVector& r)
+void ParallelLinearAlgebra::sub(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
   double* a_ptr = a.data_+start_; 
   double* b_ptr = b.data_+start_; 
@@ -257,7 +261,7 @@ void ParallelLinearAlgebra::sub(ParallelVector& a, ParallelVector& b, ParallelVe
   }
 }
 
-void ParallelLinearAlgebra::copy(ParallelVector& a, ParallelVector& r)
+void ParallelLinearAlgebra::copy(const ParallelVector& a, ParallelVector& r)
 {
   double* a_ptr = a.data_+start_; 
   double* r_ptr = r.data_+start_;
@@ -292,6 +296,7 @@ void ParallelLinearAlgebra::copy(ParallelVector& a, ParallelVector& r)
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::scale(double s, ParallelVector& a, ParallelVector& r)
 {
   double* a_ptr = a.data_+start_; 
@@ -374,8 +379,9 @@ void ParallelLinearAlgebra::threshold_invert(ParallelVector& a, ParallelVector& 
     r_ptr++; a_ptr++;
   }
 }
+#endif
 
-void ParallelLinearAlgebra::absthreshold_invert(ParallelVector& a, ParallelVector& r,double threshold)
+void ParallelLinearAlgebra::absthreshold_invert(const ParallelVector& a, ParallelVector& r,double threshold)
 {
   double* a_ptr = a.data_+start_; 
   double* r_ptr = r.data_+start_;
@@ -388,7 +394,7 @@ void ParallelLinearAlgebra::absthreshold_invert(ParallelVector& a, ParallelVecto
   }
 }
 
-void ParallelLinearAlgebra::scale_add(double s, ParallelVector& a, ParallelVector& b, ParallelVector& r)
+void ParallelLinearAlgebra::scale_add(double s, const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
   double* a_ptr = a.data_+start_; 
   double* b_ptr = b.data_+start_; 
@@ -424,7 +430,7 @@ void ParallelLinearAlgebra::scale_add(double s, ParallelVector& a, ParallelVecto
   }
 }
 
-double ParallelLinearAlgebra::dot(ParallelVector& a, ParallelVector& b)
+double ParallelLinearAlgebra::dot(const ParallelVector& a, const ParallelVector& b)
 {
   double* a_ptr = a.data_+start_; 
   double* b_ptr = b.data_+start_;
@@ -462,6 +468,7 @@ double ParallelLinearAlgebra::dot(ParallelVector& a, ParallelVector& b)
   return(reduce_sum(val));
 }
  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::zeros(ParallelVector& a)
 {
   double* a_ptr = a.data_+start_;
@@ -495,7 +502,8 @@ void ParallelLinearAlgebra::zeros(ParallelVector& a)
   {  
     (*a_ptr) = 0.0; a_ptr++;
   }
-}    
+}
+#endif
 
 void ParallelLinearAlgebra::ones(ParallelVector& a)
 {
@@ -532,7 +540,7 @@ void ParallelLinearAlgebra::ones(ParallelVector& a)
   }
 }    
              
-double ParallelLinearAlgebra::norm(ParallelVector& a)
+double ParallelLinearAlgebra::norm(const ParallelVector& a)
 {
   double* a_ptr = a.data_+start_;
 
@@ -570,6 +578,22 @@ double ParallelLinearAlgebra::norm(ParallelVector& a)
   return(sqrt(reduce_sum(val)));
 }
 
+//TODO: refactor to use algorithm
+double ParallelLinearAlgebra::max(const ParallelVector& a)
+{
+  double m = -(DBL_MAX);
+  double* a_ptr = a.data_+start_;
+
+  for (size_t j=0; j<local_size_; j++) 
+  { 
+    if (m < (*a_ptr)) m = (*a_ptr);
+    a_ptr++;
+  }
+
+  return(reduce_max(m));
+}
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 double ParallelLinearAlgebra::min(ParallelVector& a)
 {
   double m = DBL_MAX;
@@ -584,21 +608,9 @@ double ParallelLinearAlgebra::min(ParallelVector& a)
   return(reduce_min(m));
 }
 
-double ParallelLinearAlgebra::max(ParallelVector& a)
-{
-  double m = -(DBL_MAX);
-  double* a_ptr = a.data_+start_;
 
-  for (size_t j=0; j<local_size_; j++) 
-  { 
-    if (m < (*a_ptr)) m = (*a_ptr);
-    a_ptr++;
-  }
-  
-  return(reduce_max(m));
-}
 
-double ParallelLinearAlgebra::absmin(ParallelVector& a)
+double ParallelLinearAlgebra::absmin(const ParallelVector& a)
 {
   double m = DBL_MAX;
   double* a_ptr = a.data_+start_;
@@ -613,7 +625,7 @@ double ParallelLinearAlgebra::absmin(ParallelVector& a)
   return(reduce_min(m));
 }
 
-double ParallelLinearAlgebra::absmax(ParallelVector& a)
+double ParallelLinearAlgebra::absmax(const ParallelVector& a)
 {
   double m = -(DBL_MAX);
   double* a_ptr = a.data_+start_;
@@ -627,8 +639,10 @@ double ParallelLinearAlgebra::absmax(ParallelVector& a)
   
   return(reduce_max(m));
 }
+#endif
 
-void ParallelLinearAlgebra::mult(ParallelMatrix& a, ParallelVector& b, ParallelVector& r)
+
+void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& b, ParallelVector& r)
 {
   wait();
 
@@ -652,6 +666,7 @@ void ParallelLinearAlgebra::mult(ParallelMatrix& a, ParallelVector& b, ParallelV
   }    
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r)
 {
   wait();
@@ -699,8 +714,9 @@ void ParallelLinearAlgebra::diag(ParallelMatrix& a, ParallelVector& r)
     odata[i]=val;
   }    
 }
+#endif
 
-void ParallelLinearAlgebra::absdiag(ParallelMatrix& a, ParallelVector& r)
+void ParallelLinearAlgebra::absdiag(const ParallelMatrix& a, ParallelVector& r)
 {
   double* odata = r.data_;
   
@@ -716,7 +732,8 @@ void ParallelLinearAlgebra::absdiag(ParallelMatrix& a, ParallelVector& r)
 
     for(size_t j=row_idx;j<next_idx;j++)
     {
-      if (columns[j] == i) val = data[j];
+      if (columns[j] == i) 
+        val = data[j];
     }
     odata[i]=std::abs(val);
   }    

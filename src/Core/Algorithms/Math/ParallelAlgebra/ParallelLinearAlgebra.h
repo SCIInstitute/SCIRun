@@ -78,8 +78,8 @@ namespace Math {
 class SCISHARE ParallelLinearAlgebraBase : boost::noncopyable
 {
 public:
-  ParallelLinearAlgebraBase(); //:      barrier_("Parallel Linear Algebra") {}
-  virtual ~ParallelLinearAlgebraBase();// {}
+  ParallelLinearAlgebraBase(); 
+  virtual ~ParallelLinearAlgebraBase();
   
   bool start_parallel(SolverInputs& matrices, int nproc = -1);
   void run_parallel(int proc, int nproc);
@@ -127,31 +127,41 @@ public:
   bool new_vector(ParallelVector& V);
   bool add_matrix(Datatypes::SparseRowMatrixHandle mat, ParallelMatrix& M);
 
-  void mult(ParallelVector& a, ParallelVector& b, ParallelVector& r);
-  void add(ParallelVector& a, ParallelVector& b, ParallelVector& r);
-  void sub(ParallelVector& a, ParallelVector& b, ParallelVector& r);
-  void copy(ParallelVector& a, ParallelVector& r);
+  void mult(const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
+  void sub(const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
+  void copy(const ParallelVector& a, ParallelVector& r);
 
-  void scale_add(double s, ParallelVector& a, ParallelVector& b, ParallelVector& r);
+  // r = s*a + b;
+  void scale_add(double s, const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  void add(const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
+
   void scale(double s, ParallelVector& a, ParallelVector& r);
   void invert(ParallelVector& a, ParallelVector& r);
   void threshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
-  void absthreshold_invert(ParallelVector& a, ParallelVector& r, double threshold);
-    
-  double dot(ParallelVector& a, ParallelVector& b);
-  double norm(ParallelVector& a);
-  double min(ParallelVector& a);
-  double max(ParallelVector& a);
-  double absmin(ParallelVector& a);
-  double absmax(ParallelVector& a);
-    
-  void mult(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
+  
+  double min(const ParallelVector& a);
+
+  double absmin(const ParallelVector& a);
+  double absmax(const ParallelVector& a);
+  
   void mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r);
 
   void diag(ParallelMatrix& a, ParallelVector& r);
-  void absdiag(ParallelMatrix& a, ParallelVector& r);
-    
   void zeros(ParallelVector& r);
+#endif
+  
+  void absthreshold_invert(const ParallelVector& a, ParallelVector& r, double threshold);
+    
+  double dot(const ParallelVector& a, const ParallelVector& b);
+  double norm(const ParallelVector& a);
+  double max(const ParallelVector& a);
+
+  void mult(const ParallelMatrix& a, const ParallelVector& b, ParallelVector& r);
+  
+  void absdiag(const ParallelMatrix& a, ParallelVector& r);
+  
   void ones(ParallelVector& r);
     
   int  proc() { return proc_; }
