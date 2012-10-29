@@ -39,8 +39,10 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 Barrier::Barrier(const std::string& name, size_t numThreads) : name_(name), barrier_(numThreads)
@@ -58,14 +60,16 @@ ParallelLinearAlgebraBase::ParallelLinearAlgebraBase()
 ParallelLinearAlgebraBase::~ParallelLinearAlgebraBase() 
 {}
 
-ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc) 
+ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& data, int proc, int nproc) 
   : barrier_("Parallel Linear Algebra", nproc),
-  base_(base),
+  data_(data),
   proc_(proc),
-  nproc_(nproc)
+  nproc_(nproc),
+  reduce1_(nproc_),
+  reduce2_(nproc_)
 {
   // Compute local size
-  size_ = base->size_;
+  size_ = data.getSize();
   local_size_ = size_/nproc;
   
   // Compute start and end index for this thread
@@ -77,8 +81,8 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, in
   
   // Set reduction buffers
   // To optimize performance we alternate buffers
-  reduce_[0] = &(base->reduce1_[0]);
-  reduce_[1] = &(base->reduce2_[0]);
+  reduce_[0] = &(reduce1_[0]);
+  reduce_[1] = &(reduce2_[0]);
   
   reduce_buffer_ = 0;
 }
@@ -106,27 +110,27 @@ bool ParallelLinearAlgebra::new_vector(ParallelVector& V)
 {
   wait();
   
-  base_->success_[proc_] = true;
+  data_.setSuccess(proc_);
   if (proc_ == 0)
   {
     try
     {
-      DenseColumnMatrixHandle mat(new DenseColumnMatrix(base_->size_));
-      base_->current_matrix_ = mat;
-      base_->vectors_.push_back(mat);
+      DenseColumnMatrixHandle mat(new DenseColumnMatrix(data_.getSize()));
+      data_.setCurrentMatrix(mat);
+      data_.addVector(mat);
     }
     catch (...)
     {
-      base_->success_[0] = false;    
+      data_.setFail(0);
     }
   }
   
   wait();
 
-  if (!base_->success_[0]) 
+  if (!data_.isSuccess(0)) 
     return false;
   
-  auto mat = base_->current_matrix_;
+  auto mat = data_.getCurrentMatrix();
   wait();
 
   return(add_vector(mat,V));
@@ -753,6 +757,7 @@ double ParallelLinearAlgebra::reduce_sum(double val)
   return (ret);
 }
 
+//TODO: std::max_element
 double ParallelLinearAlgebra::reduce_max(double val)
 {
   int buffer = reduce_buffer_;
@@ -767,6 +772,7 @@ double ParallelLinearAlgebra::reduce_max(double val)
   return (ret);
 }
 
+//TODO: std::min_element
 double ParallelLinearAlgebra::reduce_min(double val)
 {
   int buffer = reduce_buffer_;
@@ -789,40 +795,32 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
     || matrices.x0->nrows() != size)
     return false;
 
-  // Store base size in base class
-  size_ = size;
-  
   //! Require a minimum of 50 variables per processor
   //! Below that parallelism is overhead
-  if (nproc*50 > size_) 
-    nproc = size_/50;
+  if (nproc*50 > size) 
+    nproc = size / 50;
   if (nproc < 1) 
     nproc = boost::thread::hardware_concurrency();
 
-  imatrices_ = matrices;
-
-  reduce1_.resize(nproc);
-  reduce2_.resize(nproc);
-  success_.resize(nproc);
+  ParallelLinearAlgebraSharedData sharedData(matrices);
   
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc,nproc);
 #endif
-  // clear temp memory
-  vectors_.clear();
-  current_matrix_.reset();
-  imatrices_.clear();
 
-  //return std::all_of(success_.begin(), success_.end(), [](bool b) {return b;});
-  for (size_t j = 0; j < success_.size(); ++j)
-    if (!success_[j]) 
-      return false;
-  
-  return true;  
+  return sharedData.success();
 }
 
-void ParallelLinearAlgebraBase::run_parallel(int proc, int nproc)
+void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& data, int proc, int nproc)
 {
-  ParallelLinearAlgebra PLA(this,proc,nproc);
-  success_[proc] = parallel(PLA,imatrices_);
+  ParallelLinearAlgebra PLA(data,proc,nproc);
+  parallel(PLA, data.inputs());
+}
+
+ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs) : size_(inputs.A->nrows()), success_(size_), imatrices_(inputs) 
+{
+  if (inputs.b->nrows() != size_
+    || inputs.x->nrows() != size_
+    || inputs.x0->nrows() != size_)
+    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Dimension mismatch")); //TODO: use new DimensionMismatch exception type
 }

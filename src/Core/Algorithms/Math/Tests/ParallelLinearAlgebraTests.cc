@@ -38,6 +38,7 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
+#include <boost/thread/thread.hpp>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
@@ -48,60 +49,104 @@ using namespace ::testing;
 
 namespace
 {
-  SparseRowMatrix matrix1() 
+  const int size = 1000;
+  SparseRowMatrixHandle matrix1() 
   {
-    SparseRowMatrix m(3,3);
-    m.insert(0,0) = 1;
-    m.insert(1,2) = -1;
+    SparseRowMatrixHandle m(new SparseRowMatrix(size,size));
+    m->insert(0,0) = 1;
+    m->insert(1,2) = -1;
+    m->insert(size-1,size-1) = 2;
     return m;
   }
 
   SparseRowMatrix matrix2() 
   {
-    SparseRowMatrix m(3,3);
+    SparseRowMatrix m(size,size);
     m.insert(0,1) = -2;
     m.insert(1,1) = 0.5;
+    m.insert(size-1,size-1) = 4;
     return m;
   }
 
   SparseRowMatrix matrix3() 
   {
-    SparseRowMatrix m(3,3);
+    SparseRowMatrix m(size,size);
     m.insert(0,0) = -1;
     m.insert(1,2) = 1;
+    m.insert(size-1,size-1) = -2;
     return m;
   }
 
-  DenseColumnMatrix vector1()
+  DenseColumnMatrixHandle vector1()
   {
-    DenseColumnMatrix v(3);
-    v << 1, 2, 3;
+    DenseColumnMatrixHandle v(new DenseColumnMatrix(size));
+    v->setZero();
+    *v << 1, 2, 4;
+    (*v)[size-1] = -1;
     return v;
   }
 
-  DenseColumnMatrix vector2()
+  DenseColumnMatrixHandle vector2()
   {
-    DenseColumnMatrix v(3);
-    v << -1, -2, -3;
+    DenseColumnMatrixHandle v(new DenseColumnMatrix(size));
+    v->setZero();
+    *v << -1, -2, -4;
+    (*v)[size-1] = 1;
     return v;
   }
 
-  DenseColumnMatrix vector3()
+  DenseColumnMatrixHandle vector3()
   {
-    DenseColumnMatrix v(3);
-    v << 0, 1, 0;
+    DenseColumnMatrixHandle v(new DenseColumnMatrix(size));
+    v->setZero();
+    *v << 0, 1, 0;
+    (*v)[size-1] = -7;
     return v;
+  }
+
+  unsigned int numProcs()
+  {
+    return boost::thread::hardware_concurrency();
+  }
+
+  SolverInputs getDummySystem()
+  {
+    SolverInputs system;
+    system.A = matrix1();
+    system.b = vector1();
+    system.x = vector2();
+    system.x0 = vector3();
+    return system;
   }
 }
 
 TEST(ParallelLinearAlgebraTests, CanCreateEmptyParallelVector)
 {
-  EXPECT_TRUE(false);
+  ParallelLinearAlgebraSharedData data(getDummySystem());
+  ParallelLinearAlgebra pla(data, 0, 1);
+
+  ParallelLinearAlgebra::ParallelVector v;
+  EXPECT_TRUE(pla.new_vector(v));
+
+  EXPECT_EQ(size, v.size_);
 }
 
-TEST(ParallelLinearAlgebraTests, CanCopyParallelVector)
+TEST(ParallelLinearAlgebraTests, CanCreateParallelVectorFromVectorAsShallowReference)
 {
-  EXPECT_TRUE(false);
+  ParallelLinearAlgebraSharedData data(getDummySystem());
+  ParallelLinearAlgebra pla(data, 0, 1);
+
+  ParallelLinearAlgebra::ParallelVector v;
+  auto v1 = vector1();
+  EXPECT_TRUE(pla.add_vector(v1, v));
+
+  EXPECT_EQ(v1->nrows(), v.size_);
+  for (size_t i = 0; i < size; ++i)
+    EXPECT_EQ((*v1)[i], v.data_[i]);
+
+  EXPECT_EQ(0, (*v1)[100]);
+  v.data_[100]++;
+  EXPECT_EQ(1, (*v1)[100]);
 }
 
 TEST(ParallelLinearAlgebraTests, CanCopyParallelSparseMatrix)
@@ -121,6 +166,12 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
 
 TEST(ParallelArithmeticTests, CanComputeMaxOfVector)
 {
+  ParallelLinearAlgebraSharedData data(getDummySystem());
+  ParallelLinearAlgebra pla(data, 1, 1);
+
+  //pla.max()
+
+
   EXPECT_TRUE(false);
 }
 

@@ -74,6 +74,37 @@ namespace Math {
     }
   };
 
+  class SCISHARE ParallelLinearAlgebraSharedData : boost::noncopyable
+  {
+  public:
+    explicit ParallelLinearAlgebraSharedData(const SolverInputs& inputs);
+    size_t getSize() const { return size_; }
+    Datatypes::DenseColumnMatrixHandle getCurrentMatrix() const { return current_matrix_; }
+    void setCurrentMatrix(Datatypes::DenseColumnMatrixHandle mat) { current_matrix_ = mat; }
+    void addVector(Datatypes::DenseColumnMatrixHandle mat) { vectors_.push_back(mat); }
+    void setSuccess(size_t i) { success_[i] = true; }
+    void setFail(size_t i) { success_[i] = false; } 
+    bool isSuccess(size_t i) const { return success_[i]; }
+
+    bool success() const 
+    {
+      //return std::all_of(success_.begin(), success_.end(), [](bool b) {return b;});
+      for (size_t j = 0; j < success_.size(); ++j)
+        if (!success_[j]) 
+          return false;
+      return true;  
+    }
+
+    SolverInputs& inputs() { return imatrices_; }
+
+  private:
+    size_t size_;
+    Datatypes::DenseColumnMatrixHandle current_matrix_;
+    std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
+    std::vector<bool> success_;
+    SolverInputs imatrices_;
+  };
+
 // The algorithm that uses this should derive from this class
 class SCISHARE ParallelLinearAlgebraBase : boost::noncopyable
 {
@@ -82,19 +113,12 @@ public:
   virtual ~ParallelLinearAlgebraBase();
   
   bool start_parallel(SolverInputs& matrices, int nproc = -1);
-  void run_parallel(int proc, int nproc);
-  
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) = 0;
 
-  //! classes for communication
-  std::vector<double> reduce1_;
-  std::vector<double> reduce2_;
-  std::vector<bool> success_;
-    
-  size_t size_;
-    
-  Datatypes::DenseColumnMatrixHandle current_matrix_;
-  std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) = 0;
+  
+private:
+  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc, int nproc);
+  //size_t size_;
   SolverInputs imatrices_;
 };
 
@@ -121,7 +145,7 @@ public:
   };
       
   // Constructor
-  ParallelLinearAlgebra(ParallelLinearAlgebraBase* base, int proc, int nproc); 
+  ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& base, int proc, int nproc); 
     
   bool add_vector(Datatypes::DenseColumnMatrixHandle mat, ParallelVector& V);
   bool new_vector(ParallelVector& V);
@@ -176,7 +200,7 @@ private:
   double reduce_max(double val);
     
   Barrier barrier_;
-  ParallelLinearAlgebraBase* base_;
+  ParallelLinearAlgebraSharedData& data_;
   
   int proc_;  // process number
   int nproc_; // number of processes
@@ -189,6 +213,10 @@ private:
     
   double* reduce_[2];
   int     reduce_buffer_;
+
+  //! classes for communication
+  std::vector<double> reduce1_;
+  std::vector<double> reduce2_;
 };
 
 
