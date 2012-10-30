@@ -82,6 +82,7 @@ namespace Math {
     Datatypes::DenseColumnMatrixHandle getCurrentMatrix() const { return current_matrix_; }
     void setCurrentMatrix(Datatypes::DenseColumnMatrixHandle mat) { current_matrix_ = mat; }
     void addVector(Datatypes::DenseColumnMatrixHandle mat) { vectors_.push_back(mat); }
+    void setFlag(size_t i, bool b) { success_[i] = b; }
     void setSuccess(size_t i) { success_[i] = true; }
     void setFail(size_t i) { success_[i] = false; } 
     bool isSuccess(size_t i) const { return success_[i]; }
@@ -94,11 +95,18 @@ namespace Math {
       //return std::all_of(success_.begin(), success_.end(), [](bool b) {return b;});
       for (size_t j = 0; j < success_.size(); ++j)
         if (!success_[j]) 
+        {
+          std::cout << "returning false from success() dues to proc " << j << std::endl;
           return false;
+        }
+      std::cout << "returning true from success()" << std::endl;
       return true;  
     }
 
     SolverInputs& inputs() { return imatrices_; }
+
+    double* reduceBuffer1() { return &reduce1_[0]; }
+    double* reduceBuffer2() { return &reduce2_[0]; }
 
   private:
     size_t size_;
@@ -108,6 +116,9 @@ namespace Math {
     SolverInputs imatrices_;
     Barrier barrier_;
     int numProcs_;
+    //! classes for communication
+    std::vector<double> reduce1_;
+    std::vector<double> reduce2_;
   };
 
 // The algorithm that uses this should derive from this class
@@ -217,9 +228,7 @@ private:
   double* reduce_[2];
   int     reduce_buffer_;
 
-  //! classes for communication
-  std::vector<double> reduce1_;
-  std::vector<double> reduce2_;
+ 
 };
 
 

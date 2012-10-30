@@ -78,7 +78,7 @@ AlgorithmParameterName SolveLinearSystemAlgorithm::MaxIterations("MaxIterations"
 
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
-  MatrixConstHandle A = input.get<0>();
+  auto A = input.get<0>();
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "Null input matrix");
 
   auto b = input.get<1>();

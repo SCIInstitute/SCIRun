@@ -64,9 +64,7 @@ ParallelLinearAlgebraBase::~ParallelLinearAlgebraBase()
 ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& data, int proc) 
   : data_(data),
   proc_(proc),
-  nproc_(data.numProcs()),
-  reduce1_(nproc_),
-  reduce2_(nproc_)
+  nproc_(data.numProcs())
 {
   // Compute local size
   size_ = data.getSize();
@@ -83,17 +81,17 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
   
   // Set reduction buffers
   // To optimize performance we alternate buffers
-  reduce_[0] = &(reduce1_[0]);
-  reduce_[1] = &(reduce2_[0]);
+  reduce_[0] = data.reduceBuffer1();
+  reduce_[1] = data.reduceBuffer2();
   
   reduce_buffer_ = 0;
 }
 
 void ParallelLinearAlgebra::wait()
 {
-  std::cout << "PLA #" << proc_ << " out of " << nproc_ << " waiting..." << std::endl;
+  //std::cout << "PLA #" << proc_ << " out of " << nproc_ << " waiting..." << std::endl;
   data_.wait();
-  std::cout << "PLA #" << proc_ << " out of " << nproc_ << " done waiting." << std::endl;
+  //std::cout << "PLA #" << proc_ << " out of " << nproc_ << " done waiting." << std::endl;
 }
 
 bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVector& V)
@@ -791,9 +789,32 @@ double ParallelLinearAlgebra::reduce_min(double val)
   return (ret);
 }
 
+#include <boost/foreach.hpp>
+
+class Parallel
+{
+public:
+  typedef boost::function<void(int)> IndexedTask;
+  static void RunTasks(IndexedTask task, int numProcs)
+  {
+    std::vector<boost::shared_ptr<boost::thread>> threads(numProcs);
+
+    for (int i = 0; i < numProcs; ++i)
+    {
+      threads[i].reset(new boost::thread(boost::bind(task, i)));
+    }
+
+    BOOST_FOREACH(boost::shared_ptr<boost::thread> t, threads)
+    {
+      t->join();
+      t.reset();
+    }
+  }
+};
+
 bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc)
 {
-  size_t size = matrices.A->nrows();
+  int size = matrices.A->nrows();
   if (matrices.b->nrows() != size
     || matrices.x->nrows() != size
     || matrices.x0->nrows() != size)
@@ -801,27 +822,44 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
 
   //! Require a minimum of 50 variables per processor
   //! Below that parallelism is overhead
+  std::cout << "nproc passed in as " << nproc << std::endl;
   if (nproc*50 > size) 
+  {
+    std::cout << "size is " << size << std::endl;
     nproc = size / 50;
+  }
   if (nproc < 1) 
+  {
+    std::cout << "getting boost thread concurrency" << std::endl;
     nproc = boost::thread::hardware_concurrency();
+  }
+
+  std::cout << "nproc set to " << nproc << std::endl;
 
   ParallelLinearAlgebraSharedData sharedData(matrices, nproc);
   
+  auto task_i = [&sharedData, this](int i) { run_parallel(sharedData, i); };
+  Parallel::RunTasks(task_i, nproc);
+
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc);
 #endif
 
+  //std::cout << "need to fill in code here!" << std::endl;
   return sharedData.success();
 }
 
 void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& data, int proc)
 {
   ParallelLinearAlgebra PLA(data,proc);
-  parallel(PLA, data.inputs());
+  data.setFlag(proc, parallel(PLA, data.inputs()));
 }
 
-ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()), success_(size_), imatrices_(inputs), barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
+ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()), 
+  success_(numProcs), 
+  reduce1_(numProcs),
+  reduce2_(numProcs),
+  imatrices_(inputs), barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
 {
   if (inputs.b->nrows() != size_
     || inputs.x->nrows() != size_

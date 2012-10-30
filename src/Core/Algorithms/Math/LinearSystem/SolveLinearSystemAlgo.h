@@ -61,8 +61,9 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
              Datatypes::DenseColumnMatrixHandle x0, 
              Datatypes::DenseColumnMatrixHandle& x);
 
-    static AlgorithmParameterName TargetError;
-    static AlgorithmParameterName MaxIterations;
+    //static AlgorithmParameterName TargetError1;
+    static AlgorithmParameterName TargetError() { return AlgorithmParameterName("target error"); }
+    static AlgorithmParameterName MaxIterations() { return AlgorithmParameterName("max iterations"); }
     static AlgorithmParameterName BuildConvergence;
 };
 

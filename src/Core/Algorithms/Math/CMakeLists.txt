@@ -32,7 +32,7 @@ SET(Algorithms_Math_SRCS
   EvaluateLinearAlgebraBinaryAlgo.cc
   ReportMatrixInfo.cc
   SolveLinearSystemWithEigen.cc
-  LinearSystem/SolveLinearSystem.cc
+  LinearSystem/SolveLinearSystemAlgo.cc
   ParallelAlgebra/ParallelLinearAlgebra.cc
 )
 
@@ -43,7 +43,7 @@ SET(Algorithms_Math_HEADERS
   ReportMatrixInfo.h
   Share.h
   SolveLinearSystemWithEigen.h
-  LinearSystem/SolveLinearSystem.h
+  LinearSystem/SolveLinearSystemAlgo.h
   ParallelAlgebra/ParallelLinearAlgebra.h
 )
 

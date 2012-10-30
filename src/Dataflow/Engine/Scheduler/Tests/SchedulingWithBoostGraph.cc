@@ -81,20 +81,6 @@ using ::testing::Return;
 using namespace std;
 using namespace boost;
 
-#if 0
-
-struct cycle_detector : public dfs_visitor<>
-{
-  cycle_detector(bool& has_cycle) 
-    : m_has_cycle(has_cycle) { }
-
-  template <class Edge, class Graph>
-  void back_edge(Edge, Graph&) { m_has_cycle = true; }
-protected:
-  bool& m_has_cycle;
-};
-#endif
-
 namespace
 {
   DenseMatrixHandle matrix1()

@@ -92,10 +92,10 @@ namespace Networks {
 
     // Throws if input is not present or null.
     template <class T>
-    boost::shared_ptr<const T> getRequiredInput(size_t idx);
+    boost::shared_ptr<T> getRequiredInput(size_t idx);
 
     template <class T>
-    boost::shared_ptr<const T> getRequiredInput(const std::string& name);
+    boost::shared_ptr<T> getRequiredInput(const std::string& name);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -152,7 +152,7 @@ namespace Networks {
   struct SCISHARE PortNotFoundException : virtual DataPortException {};
 
   template <class T>
-  boost::shared_ptr<const T> Module::getRequiredInput(size_t idx)
+  boost::shared_ptr<T> Module::getRequiredInput(size_t idx)
   {
     auto inputOpt = get_input_handle(idx);
     if (!inputOpt)
@@ -161,7 +161,7 @@ namespace Networks {
     if (!*inputOpt)
       MODULE_INPUT_ERROR_WITH_TYPE(NullHandleOnPortException, "");
 
-    boost::shared_ptr<const T> data = boost::dynamic_pointer_cast<const T>(*inputOpt);
+    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
     if (!data)
     {
       MODULE_INPUT_ERROR_WITH_TYPE(WrongDatatypeOnPortException, "");

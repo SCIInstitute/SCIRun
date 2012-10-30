@@ -45,14 +45,14 @@ namespace Datatypes {
   {
   public:
     template <class ToType>
-    static boost::shared_ptr<ToType> to(const MatrixConstHandle& matrix, typename boost::enable_if<boost::is_base_of<MatrixBase<typename ToType::value_type>, ToType> >::type* = 0)
+    static boost::shared_ptr<ToType> to(const MatrixHandle& matrix, typename boost::enable_if<boost::is_base_of<MatrixBase<typename ToType::value_type>, ToType> >::type* = 0)
     {
       return boost::dynamic_pointer_cast<ToType>(matrix);
     }
 
-    static DenseMatrixConstHandle as_dense(const MatrixConstHandle& mh);
-    static SparseRowMatrixConstHandle as_sparse(const MatrixConstHandle& mh);
-    static DenseColumnMatrixConstHandle as_column(const MatrixConstHandle& mh);
+    static DenseMatrixHandle as_dense(const MatrixHandle& mh);
+    static SparseRowMatrixHandle as_sparse(const MatrixHandle& mh);
+    static DenseColumnMatrixHandle as_column(const MatrixHandle& mh);
 
   private:
     matrix_cast();
@@ -62,9 +62,9 @@ namespace Datatypes {
   {
   public:
     // Test to see if the matrix is this subtype.
-    static bool dense(const MatrixConstHandle& mh);
-    static bool sparse(const MatrixConstHandle& mh);
-    static bool column(const MatrixConstHandle& mh);
+    static bool dense(const MatrixHandle& mh);
+    static bool sparse(const MatrixHandle& mh);
+    static bool column(const MatrixHandle& mh);
   private:
     matrix_is();
   };
@@ -73,7 +73,7 @@ namespace Datatypes {
   class SCISHARE matrix_convert
   {
   public:
-    static DenseColumnMatrixConstHandle to_column(const MatrixConstHandle& mh);
+    static DenseColumnMatrixHandle to_column(const MatrixHandle& mh);
   private:
     matrix_convert();
   };

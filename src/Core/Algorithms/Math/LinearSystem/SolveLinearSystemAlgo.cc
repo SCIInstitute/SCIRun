@@ -31,7 +31,7 @@
 ///////////////////////////
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystem.h>
+#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -43,8 +43,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName SolveLinearSystemAlgo::TargetError("target error");
-AlgorithmParameterName SolveLinearSystemAlgo::MaxIterations("max iterations");
+//AlgorithmParameterName SolveLinearSystemAlgo::TargetError1("target error");
+//AlgorithmParameterName SolveLinearSystemAlgo::MaxIterations1("max iterations");
 AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("build convergence");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
@@ -54,8 +54,8 @@ SolveLinearSystemAlgo::SolveLinearSystemAlgo()
   add_option("method","cg","jacobi|cg|bicg|minres");
   add_option("pre_conditioner","jacobi","none|jacobi");
 #endif
-  addParameter(TargetError, 1e-6);
-  addParameter(MaxIterations, 300);
+  addParameter(TargetError(), 1e-6);
+  addParameter(MaxIterations(), 300);
 
   addParameter(BuildConvergence, true);
 
@@ -108,7 +108,7 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
   matrices.x = x;
 
   // Create convergence matrix
-  int num_iter = algo->get(SolveLinearSystemAlgo::MaxIterations).getInt();
+  int num_iter = algo->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
   convergence.reset(new DenseColumnMatrix(num_iter));
   convergence_ = convergence;
   
@@ -126,8 +126,9 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
 
   if(!start_parallel(matrices))
   {
-    algo->error("Encountered an error while running parallel linear algebra");
-    return (false);
+    const std::string msg = "Encountered an error while running parallel linear algebra";
+    algo->error(msg);
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << SCIRun::Core::ErrorMessage(msg));
   }
 
   return (true);
@@ -144,11 +145,14 @@ class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo
 
 bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 {
+  std::cout << "in CG parallel" << std::endl;
   ParallelLinearAlgebra::ParallelMatrix A; 
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN, DIAG, R, Z, P;
 
-  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError).getDouble();
-  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations).getInt();
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  std::cout << "tolerance: " << tolerance << std::endl;
+  std::cout << "max_iter: " << max_iter << std::endl;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get("callback_step");
 #endif
@@ -170,9 +174,10 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 #endif
     }
     PLA.wait();
+    std::cout << "returning false: could not link matrices" << std::endl;
     return (false);
   }
-
+  std::cout << "matrices added" << std::endl;
   if ( !PLA.new_vector(X) ||
        !PLA.new_vector(DIAG) ||
        !PLA.new_vector(R) ||
@@ -189,8 +194,10 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 #endif
     }
     PLA.wait();
+    std::cout << "returning false: could not allocate memory" << std::endl;
     return (false);
   }
+  std::cout << "temp vectors created" << std::endl;
 
   PLA.copy(X0,X);
   PLA.copy(X0,XMIN);
@@ -206,6 +213,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
   {
     PLA.ones(DIAG);
   }
+  std::cout << "preconditioner made" << std::endl;
   
   PLA.mult(A,X,R);
   PLA.sub(B,R,R);
@@ -215,6 +223,8 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 
   double xmin = error;
   double orig = error;
+
+  std::cout << "norms calculated" << std::endl;
 
   if (error <= tolerance)
   {
@@ -227,6 +237,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 #endif
     }
     PLA.wait();
+    std::cout << "returning true: error <= tolerance 1" << std::endl;
     return (true);
   }
     
@@ -239,7 +250,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
    
   while (niter < max_iter)
   {
-   
+   //std::cout << "iteration: " << niter << std::endl;
     if (error <= tolerance)
     {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
@@ -253,6 +264,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
       }
 #endif
       PLA.wait();
+      std::cout << "returning true: error <= tolerance 2" << std::endl;
       return true;
     }
     
@@ -268,20 +280,20 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
       double bk = bknum/bkden;
       PLA.scale_add(bk,P,Z,P);
     }
-    
+    //std::cout << "math 1" << std::endl;
     PLA.mult(A,P,Z);
     bkden = bknum;
     
-    
+    //std::cout << "math 2" << std::endl;
     double akden = PLA.dot(Z,P);
     double ak=bknum/akden;
     
-        
+        //std::cout << "math 3" << std::endl;
     PLA.scale_add(ak,P,X,X);
     PLA.scale_add(-ak,Z,R,R);
     
     error = PLA.norm(R)/bnorm;
-        
+        //std::cout << "math 4" << std::endl;
     if (error < xmin) 
     { 
       PLA.copy(X,XMIN); 
@@ -334,6 +346,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 #endif
   PLA.wait();
   
+  std::cout << "returning true: reached end of function" << std::endl;
   return true;
 }
 
@@ -1048,7 +1061,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
   if (!matrix_is::sparse(A))
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A is not sparse"));
+    ALGORITHM_INPUT_ERROR("Matrix A is not sparse");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle Atmp = A->sparse();
     if (Atmp.get_rep() == 0)
@@ -1061,7 +1074,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
   if (!matrix_is::dense(b) && !matrix_is::column(b))
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix b is not a dense or column matrix"));
+    ALGORITHM_INPUT_ERROR("Matrix b is not a dense or column matrix");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle btmp = b->column();
     if (btmp.get_rep() == 0)
@@ -1082,7 +1095,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
   if (!matrix_is::dense(x0) && !matrix_is::column(x0))
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix x0 is not a dense or column matrix"));
+    ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle x0tmp = x0->column();
     if (x0tmp.get_rep() == 0)
@@ -1095,22 +1108,22 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   
   if ((x0->ncols() != 1) || (b->ncols() != 1))
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix x0 and b need to have the same number of rows"));
+    ALGORITHM_INPUT_ERROR("Matrix x0 and b need to have the same number of rows");
   }
   
   if (A->nrows() != A->ncols())
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A is not square"));
+    ALGORITHM_INPUT_ERROR("Matrix A is not square");
   }
   
   if (A->nrows() != b->nrows())
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A and b do not have the same number of rows"));
+    ALGORITHM_INPUT_ERROR("Matrix A and b do not have the same number of rows");
   }
 
   if (A->nrows() != x0->nrows())
   {
-    BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Matrix A and b do not have the same number of rows"));
+    ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
   std::string method = "cg";

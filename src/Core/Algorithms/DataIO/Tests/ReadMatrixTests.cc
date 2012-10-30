@@ -99,7 +99,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
   const std::string filename = "E:\\stuff\\sp2.mat";
   if (boost::filesystem::exists(filename))
   {
-    MatrixConstHandle matrix = algo.run(filename);
+    auto matrix = algo.run(filename);
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 
@@ -123,7 +123,7 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
   const std::string filename = "E:\\stuff\\CGDarrell\\xScirun.mat";
   if (boost::filesystem::exists(filename))
   {
-    MatrixConstHandle matrix = algo.run(filename);
+    auto matrix = algo.run(filename);
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::dense(matrix));
 
@@ -144,7 +144,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
   const std::string filename = "E:\\stuff\\CGDarrell\\xScirunColumn.mat";
   if (boost::filesystem::exists(filename))
   {
-    MatrixConstHandle matrix = algo.run(filename);
+    auto matrix = algo.run(filename);
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::column(matrix));
 
@@ -165,7 +165,7 @@ TEST(ReadMatrixAlgorithmTest, TestLargeSparseFromRealASCIIMatFile)
   const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
   if (boost::filesystem::exists(AFile))
   {
-    MatrixConstHandle matrix = algo.run(AFile);
+    auto matrix = algo.run(AFile);
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 

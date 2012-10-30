@@ -209,7 +209,6 @@ struct Copy
     
     pla.new_vector(v1_);
     std::cout << "pla" << proc_ << " new vector" << std::endl;
-
     
     pla.add_vector(vec2copy_, v2_);
     std::cout << "pla" << proc_ << " add vector" << std::endl;

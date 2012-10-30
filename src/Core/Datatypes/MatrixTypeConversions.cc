@@ -33,37 +33,37 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-DenseMatrixConstHandle matrix_cast::as_dense(const MatrixConstHandle& mh)
+DenseMatrixHandle matrix_cast::as_dense(const MatrixHandle& mh)
 {
-  return to<const DenseMatrix>(mh);
+  return to<DenseMatrix>(mh);
 }
 
-SparseRowMatrixConstHandle matrix_cast::as_sparse(const MatrixConstHandle& mh)
+SparseRowMatrixHandle matrix_cast::as_sparse(const MatrixHandle& mh)
 {
-  return to<const SparseRowMatrix>(mh);
+  return to<SparseRowMatrix>(mh);
 }
 
-DenseColumnMatrixConstHandle matrix_cast::as_column(const MatrixConstHandle& mh)
+DenseColumnMatrixHandle matrix_cast::as_column(const MatrixHandle& mh)
 {
-  return to<const DenseColumnMatrix>(mh);
+  return to<DenseColumnMatrix>(mh);
 }
 
-bool matrix_is::dense(const MatrixConstHandle& mh) 
+bool matrix_is::dense(const MatrixHandle& mh) 
 { 
   return matrix_cast::as_dense(mh) != 0; 
 }
 
-bool matrix_is::sparse(const MatrixConstHandle& mh) 
+bool matrix_is::sparse(const MatrixHandle& mh) 
 { 
   return matrix_cast::as_sparse(mh) != 0; 
 }
 
-bool matrix_is::column(const MatrixConstHandle& mh) 
+bool matrix_is::column(const MatrixHandle& mh) 
 { 
   return matrix_cast::as_column(mh) != 0; 
 }
 
-DenseColumnMatrixConstHandle matrix_convert::to_column(const MatrixConstHandle& mh)
+DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 {
   auto col = matrix_cast::as_column(mh);
   if (col)
@@ -71,7 +71,7 @@ DenseColumnMatrixConstHandle matrix_convert::to_column(const MatrixConstHandle& 
 
   auto dense = matrix_cast::as_dense(mh);
   if (dense)
-    return DenseColumnMatrixConstHandle(new DenseColumnMatrix(dense->col(0)));
+    return DenseColumnMatrixHandle(new DenseColumnMatrix(dense->col(0)));
 
-  return DenseColumnMatrixConstHandle();
+  return DenseColumnMatrixHandle();
 }
