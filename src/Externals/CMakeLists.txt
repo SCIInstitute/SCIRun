@@ -32,7 +32,9 @@ MESSAGE(STATUS "Configuring External Packages")
 # ADDING GOOGLE MOCK
 ##################################################
 
+# TODO: move to external repository
 MESSAGE(STATUS "Configuring google-mock")
 ADD_SUBDIRECTORY(gmock)
 #MESSAGE(STATUS "Configuring eigen")
 #ADD_SUBDIRECTORY(eigen_3_1_1)
+
