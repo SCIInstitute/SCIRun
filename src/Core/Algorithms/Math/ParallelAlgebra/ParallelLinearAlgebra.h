@@ -77,7 +77,7 @@ namespace Math {
   class SCISHARE ParallelLinearAlgebraSharedData : boost::noncopyable
   {
   public:
-    explicit ParallelLinearAlgebraSharedData(const SolverInputs& inputs);
+    explicit ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs);
     size_t getSize() const { return size_; }
     Datatypes::DenseColumnMatrixHandle getCurrentMatrix() const { return current_matrix_; }
     void setCurrentMatrix(Datatypes::DenseColumnMatrixHandle mat) { current_matrix_ = mat; }
@@ -85,6 +85,9 @@ namespace Math {
     void setSuccess(size_t i) { success_[i] = true; }
     void setFail(size_t i) { success_[i] = false; } 
     bool isSuccess(size_t i) const { return success_[i]; }
+
+    void wait() { barrier_.wait(); }
+    int numProcs() const { return numProcs_; }
 
     bool success() const 
     {
@@ -103,6 +106,8 @@ namespace Math {
     std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
     std::vector<bool> success_;
     SolverInputs imatrices_;
+    Barrier barrier_;
+    int numProcs_;
   };
 
 // The algorithm that uses this should derive from this class
@@ -117,8 +122,7 @@ public:
   virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) = 0;
   
 private:
-  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc, int nproc);
-  //size_t size_;
+  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc);
   SolverInputs imatrices_;
 };
 
@@ -145,7 +149,7 @@ public:
   };
       
   // Constructor
-  ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& base, int proc, int nproc); 
+  ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& base, int proc); 
     
   bool add_vector(Datatypes::DenseColumnMatrixHandle mat, ParallelVector& V);
   bool new_vector(ParallelVector& V);
@@ -199,7 +203,6 @@ private:
   double reduce_min(double val);
   double reduce_max(double val);
     
-  Barrier barrier_;
   ParallelLinearAlgebraSharedData& data_;
   
   int proc_;  // process number

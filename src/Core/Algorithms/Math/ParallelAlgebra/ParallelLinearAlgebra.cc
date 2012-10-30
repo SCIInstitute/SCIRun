@@ -47,6 +47,7 @@ using namespace SCIRun::Core::Datatypes;
 
 Barrier::Barrier(const std::string& name, size_t numThreads) : name_(name), barrier_(numThreads)
 {
+  std::cout << "Initiating barrier with thread count " << numThreads << std::endl;
 }
 
 void Barrier::wait()
@@ -60,17 +61,16 @@ ParallelLinearAlgebraBase::ParallelLinearAlgebraBase()
 ParallelLinearAlgebraBase::~ParallelLinearAlgebraBase() 
 {}
 
-ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& data, int proc, int nproc) 
-  : barrier_("Parallel Linear Algebra", nproc),
-  data_(data),
+ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& data, int proc) 
+  : data_(data),
   proc_(proc),
-  nproc_(nproc),
+  nproc_(data.numProcs()),
   reduce1_(nproc_),
   reduce2_(nproc_)
 {
   // Compute local size
   size_ = data.getSize();
-  local_size_ = size_/nproc;
+  local_size_ = size_/nproc_;
   
   // Compute start and end index for this thread
   start_ = proc*local_size_;
@@ -78,6 +78,8 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
   if (proc == nproc_-1) end_ = size_;
   if (proc == nproc_-1) local_size_ = end_ - start_;
   local_size16_ = (local_size_&(~0xf));
+
+  std::cout << "PLA #" << proc_ << " out of " << nproc_ << " is handling range [" << start_ << "," << end_ << ")" << std::endl;
   
   // Set reduction buffers
   // To optimize performance we alternate buffers
@@ -89,7 +91,9 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
 
 void ParallelLinearAlgebra::wait()
 {
-  barrier_.wait();
+  std::cout << "PLA #" << proc_ << " out of " << nproc_ << " waiting..." << std::endl;
+  data_.wait();
+  std::cout << "PLA #" << proc_ << " out of " << nproc_ << " done waiting." << std::endl;
 }
 
 bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVector& V)
@@ -802,22 +806,22 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
   if (nproc < 1) 
     nproc = boost::thread::hardware_concurrency();
 
-  ParallelLinearAlgebraSharedData sharedData(matrices);
+  ParallelLinearAlgebraSharedData sharedData(matrices, nproc);
   
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-  Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc,nproc);
+  Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc);
 #endif
 
   return sharedData.success();
 }
 
-void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& data, int proc, int nproc)
+void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& data, int proc)
 {
-  ParallelLinearAlgebra PLA(data,proc,nproc);
+  ParallelLinearAlgebra PLA(data,proc);
   parallel(PLA, data.inputs());
 }
 
-ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs) : size_(inputs.A->nrows()), success_(size_), imatrices_(inputs) 
+ParallelLinearAlgebraSharedData::ParallelLinearAlgebraSharedData(const SolverInputs& inputs, int numProcs) : size_(inputs.A->nrows()), success_(size_), imatrices_(inputs), barrier_("Parallel Linear Algebra", numProcs), numProcs_(numProcs)
 {
   if (inputs.b->nrows() != size_
     || inputs.x->nrows() != size_

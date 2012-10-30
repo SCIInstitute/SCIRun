@@ -122,8 +122,8 @@ namespace
 
 TEST(ParallelLinearAlgebraTests, CanCreateEmptyParallelVector)
 {
-  ParallelLinearAlgebraSharedData data(getDummySystem());
-  ParallelLinearAlgebra pla(data, 0, 1);
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 1);
+  ParallelLinearAlgebra pla(data, 0);
 
   ParallelLinearAlgebra::ParallelVector v;
   EXPECT_TRUE(pla.new_vector(v));
@@ -133,8 +133,8 @@ TEST(ParallelLinearAlgebraTests, CanCreateEmptyParallelVector)
 
 TEST(ParallelLinearAlgebraTests, CanCreateParallelVectorFromVectorAsShallowReference)
 {
-  ParallelLinearAlgebraSharedData data(getDummySystem());
-  ParallelLinearAlgebra pla(data, 0, 1);
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 1);
+  ParallelLinearAlgebra pla(data, 0);
 
   ParallelLinearAlgebra::ParallelVector v;
   auto v1 = vector1();
@@ -149,14 +149,99 @@ TEST(ParallelLinearAlgebraTests, CanCreateParallelVectorFromVectorAsShallowRefer
   EXPECT_EQ(1, (*v1)[100]);
 }
 
-TEST(ParallelLinearAlgebraTests, CanCopyParallelSparseMatrix)
+TEST(ParallelLinearAlgebraTests, CanCopyParallelSparseMatrixAsShallowReference)
 {
-  EXPECT_TRUE(false);
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 1);
+  ParallelLinearAlgebra pla(data, 0);
+
+  ParallelLinearAlgebra::ParallelMatrix m;
+  auto m1 = matrix1();
+  EXPECT_TRUE(pla.add_matrix(m1, m));
+
+  EXPECT_EQ(m1->nrows(), m.m_);
+  EXPECT_EQ(m1->ncols(), m.n_);
+  EXPECT_EQ(m1->nonZeros(), m.nnz_);
+  EXPECT_EQ(m1->coeff(1,2), m.data_[1]);
+
+  EXPECT_EQ(1, m1->coeff(0,0));
+  m.data_[0]++;
+  EXPECT_EQ(2, m1->coeff(0,0));
 }
 
 TEST(ParallelLinearAlgebraTests, CanCopyContentsOfVector)
 {
-  EXPECT_TRUE(false);
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 1);
+  ParallelLinearAlgebra pla(data, 0);
+
+  ParallelLinearAlgebra::ParallelVector v1;
+  pla.new_vector(v1);
+  
+  ParallelLinearAlgebra::ParallelVector v2;
+  auto vec2 = vector2();
+  pla.add_vector(vec2, v2);
+  
+  pla.copy(v2, v1);
+
+  EXPECT_EQ(v1.size_, v2.size_);
+  for (size_t i = 0; i < size; ++i)
+  {
+    EXPECT_EQ(v2.data_[i], v1.data_[i]);
+  }
+  v1.data_[7]++;
+  EXPECT_NE(v1.data_[7], v2.data_[7]);
+}
+
+struct Copy
+{
+  Copy(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle vec2copy) : 
+    data_(data), v1_(v1), v2_(v2), proc_(proc), vec2copy_(vec2copy) {}
+
+  ParallelLinearAlgebraSharedData& data_;
+  int proc_;
+  ParallelLinearAlgebra::ParallelVector& v1_;
+  ParallelLinearAlgebra::ParallelVector& v2_;
+  DenseColumnMatrixHandle vec2copy_;
+
+  void operator()()
+  {
+    std::cout << proc_ << " starting" << std::endl;
+    ParallelLinearAlgebra pla(data_, proc_);
+    
+    pla.new_vector(v1_);
+    std::cout << "pla" << proc_ << " new vector" << std::endl;
+
+    
+    pla.add_vector(vec2copy_, v2_);
+    std::cout << "pla" << proc_ << " add vector" << std::endl;
+
+    pla.copy(v2_, v1_);
+    std::cout << "pla" << proc_ << "  copy" << std::endl;
+  }
+};
+
+TEST(ParallelLinearAlgebraTests, CanCopyContentsOfVectorMulti)
+{
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 2);
+  
+  ParallelLinearAlgebra::ParallelVector v1, v2;
+
+  auto vec2copy = vector2();
+  Copy c0(data, v1, v2, 0, vec2copy);
+  Copy c1(data, v1, v2, 1, vec2copy);
+  
+  boost::thread t1 = boost::thread(boost::ref(c0));
+  boost::thread t2 = boost::thread(boost::ref(c1));
+  t1.join();
+  t2.join();
+
+  EXPECT_EQ(v1.size_, v2.size_);
+  for (size_t i = 0; i < size; ++i)
+  {
+    //std::cout << i << std::endl;
+    EXPECT_EQ(v2.data_[i], v1.data_[i]);
+  }
+  v1.data_[7]++;
+  EXPECT_NE(v1.data_[7], v2.data_[7]);
 }
 
 TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
@@ -164,10 +249,26 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
   EXPECT_TRUE(false);
 }
 
+TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
+{
+  EXPECT_TRUE(false);
+}
+
 TEST(ParallelArithmeticTests, CanComputeMaxOfVector)
 {
-  ParallelLinearAlgebraSharedData data(getDummySystem());
-  ParallelLinearAlgebra pla(data, 1, 1);
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 1);
+  ParallelLinearAlgebra pla(data, 1);
+
+  //pla.max()
+
+
+  EXPECT_TRUE(false);
+}
+
+TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
+{
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 4);
+  ParallelLinearAlgebra pla(data, 1);
 
   //pla.max()
 
@@ -180,12 +281,22 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
   EXPECT_TRUE(false);
 }
 
+TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThresholdMulti)
+{
+  EXPECT_TRUE(false);
+}
+
 TEST(ParallelLinearAlgebraTests, CanFillVectorWithOnes)
 {
   EXPECT_TRUE(false);
 }
 
 TEST(ParallelArithmeticTests, CanMultiplyMatrixByVector)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST(ParallelArithmeticTests, CanMultiplyMatrixByVectorMulti)
 {
   EXPECT_TRUE(false);
 }
@@ -206,6 +317,26 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
 }
 
 TEST(ParallelArithmeticTests, CanComputeDotProduct)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST(ParallelArithmeticTests, CanSubtractVectorsMulti)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST(ParallelArithmeticTests, CanCompute2NormMulti)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
+{
+  EXPECT_TRUE(false);
+}
+
+TEST(ParallelArithmeticTests, CanComputeDotProductMulti)
 {
   EXPECT_TRUE(false);
 }
