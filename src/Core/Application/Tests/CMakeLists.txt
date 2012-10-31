@@ -31,11 +31,12 @@ SET(Core_Application_Tests_SRCS
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Application_Tests
-${Core_Application_Tests_SRCS})
+  ${Core_Application_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Core_Application_Tests
-Core_Application
-gtest_main
-gtest
-gmock
+  Core_Application
+  gtest_main
+  gtest
+  gmock
 )

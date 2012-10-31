@@ -33,10 +33,12 @@
 #include <vector>
 
 #include <Core/Basis/Share.h>
+#include <Core/Utils/Exception.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Basis {
+
 
 class SCISHARE CrvSamplingSchemes
 {
@@ -99,7 +101,7 @@ class SCISHARE CrvSamplingSchemes
     }
     else
     {
-      ASSERTFAIL("Only Gaussian scheme 1, 2, and 3 are implemented");
+      REPORT_NOT_IMPLEMENTED("Only Gaussian scheme 1, 2, and 3 are implemented");
     }
   }
   

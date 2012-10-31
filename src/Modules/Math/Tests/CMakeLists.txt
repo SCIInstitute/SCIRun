@@ -40,16 +40,17 @@ SET(Modules_Math_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Modules_Math_Tests
-${Modules_Math_Tests_SRCS})
+  ${Modules_Math_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Math_Tests
-Modules_Math
-Modules_Factory
-Algorithms_Math
-Core_Datatypes
-Dataflow_Network
-Dataflow_State
-gtest_main
-gtest
-gmock
+  Modules_Math
+  Modules_Factory
+  Algorithms_Math
+  Core_Datatypes
+  Dataflow_Network
+  Dataflow_State
+  gtest_main
+  gtest
+  gmock
 )

@@ -32,6 +32,8 @@
 #ifndef CORE_BASIS_HEXTRILINEARLGN_H
 #define CORE_BASIS_HEXTRILINEARLGN_H 1
 
+#include <float.h>
+
 #include <Core/Basis/CrvLinearLgn.h>
 #include <Core/Basis/QuadBilinearLgn.h>
 #include <Core/Basis/HexElementWeights.h>

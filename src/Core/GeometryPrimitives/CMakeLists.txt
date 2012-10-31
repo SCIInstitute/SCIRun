@@ -42,8 +42,9 @@ SET(Core_GeometryPrimitives_HEADERS
 )
 
 ADD_LIBRARY(Core_Geometry_Primitives 
-${Core_GeometryPrimitives_HEADERS}
-${Core_GeometryPrimitives_SRCS})
+  ${Core_GeometryPrimitives_HEADERS}
+  ${Core_GeometryPrimitives_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Geometry_Primitives)

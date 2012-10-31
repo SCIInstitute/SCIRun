@@ -39,7 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
 
-TEST(NetworkTests, CanAddAndRemoveModules)
+TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
   ModuleStateFactoryHandle sf(new MockModuleStateFactory);
@@ -61,7 +61,7 @@ TEST(NetworkTests, CanAddAndRemoveModules)
   EXPECT_FALSE(network.remove_module("not in the network"));
 }
 
-TEST(NetworkTests, CanAddAndRemoveConnections)
+TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
   ModuleStateFactoryHandle sf(new MockModuleStateFactory);
@@ -86,7 +86,7 @@ TEST(NetworkTests, CanAddAndRemoveConnections)
   EXPECT_EQ(0, network.nconnections());
 }
 
-TEST(NetworkTests, CannotMakeSameConnectionTwice)
+TEST(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
   ModuleStateFactoryHandle sf(new MockModuleStateFactory);

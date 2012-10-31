@@ -43,11 +43,12 @@ SET(Core_Utils_HEADERS
 )
 
 ADD_LIBRARY(Core_Utils 
-${Core_Utils_SRCS}
-${Core_Utils_HEADERS})
+  ${Core_Utils_SRCS}
+  ${Core_Utils_HEADERS}
+)
 
 TARGET_LINK_LIBRARIES(Core_Utils
-${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

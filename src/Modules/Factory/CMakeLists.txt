@@ -36,18 +36,19 @@ SET(Modules_Factory_HEADERS
 )
 
 ADD_LIBRARY(Modules_Factory 
-${Modules_Factory_HEADERS}
-${Modules_Factory_SRCS})
+  ${Modules_Factory_HEADERS}
+  ${Modules_Factory_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Factory
-Dataflow_Network
-Modules_Math
-Modules_Fields
-Modules_Basic
-Modules_DataIO
-Modules_String
-Modules_Render
-Modules_Visualization
+  Dataflow_Network
+  Modules_Math
+  Modules_Fields
+  Modules_Basic
+  Modules_DataIO
+  Modules_String
+  Modules_Render
+  Modules_Visualization
 )
 
 IF(BUILD_SHARED_LIBS)

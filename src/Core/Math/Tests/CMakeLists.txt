@@ -31,10 +31,11 @@ SET(Core_Math_Tests_SRCS
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Math_Tests
-${Core_Math_Tests_SRCS})
+  ${Core_Math_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Core_Math_Tests
-gtest_main
-gtest
-gmock
+  gtest_main
+  gtest
+  gmock
 )

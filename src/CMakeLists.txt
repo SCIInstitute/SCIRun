@@ -52,6 +52,7 @@ INCLUDE(CMakeBackwardCompatibilityC)
 INCLUDE(CMakeBackwardCompatibilityCXX)
 INCLUDE(CheckCSourceCompiles)
 INCLUDE(CheckCXXSourceCompiles)
+INCLUDE(ExternalProject)
 
 ########################################################################
 # Configure test support
@@ -72,6 +73,72 @@ ENDIF()
 
 
 ########################################################################
+# Compiler flags and definitions
+
+# Better compiler check for OS X?
+IF(CMAKE_COMPILER_IS_GNUCC)
+  IF(UNIX)
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  ENDIF()
+
+  IF(APPLE)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
+  ENDIF()
+ENDIF()
+
+
+########################################################################
+# Find and configure Git
+
+FIND_PACKAGE(Git)
+IF(NOT GIT_FOUND)
+  MESSAGE(FATAL_ERROR "Git not found.")
+ENDIF()
+
+
+########################################################################
+# Configure Boost external project
+
+# TODO: make macro
+
+SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
+SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
+
+# TODO: fix install step
+ExternalProject_Add(Boost_external
+  PREFIX ${boost_BINARY_DIR}
+  GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
+  GIT_TAG "origin/master"
+  SOURCE_DIR ${boost_SOURCE_DIR}
+  BINARY_DIR ${boost_BINARY_DIR}
+  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
+  PATCH_COMMAND ""
+  UPDATE_COMMAND ""
+  INSTALL_DIR ""
+  INSTALL_COMMAND ""
+  #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
+)
+
+SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)
+SET(SCI_BOOST_LIBRARY boost CACHE INTERNAL "Boost library name." FORCE)
+#LINK_DIRECTORIES(${boost_BINARY_DIR})
+
+# adding Boost as a build target and dependency
+ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED)
+
+## TODO: change to install location
+SET_PROPERTY(TARGET ${SCI_BOOST_LIBRARY}
+  PROPERTY
+    IMPORTED_LOCATION "${boost_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
+ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
+
+INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
+
+########################################################################
 # Find and configure Qt
 
 SET(QT_MIN_VERSION "4.7.0")
@@ -89,62 +156,16 @@ ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-
-########################################################################
-# Find and configure Boost
-
-SET(Boost_ADDITIONAL_VERSIONS "1.42" "1.50" "1.50.0")
-
-#IF(CMAKE_COMPILER_IS_GNUCC AND NOT APPLE AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-#  # For 64-bit linux builds, static libraries need to be compiled with -fPIC
-#  # (default on OS X), which doesn't seem to be the case for Boost static libs.
-#  # Using shared object libraries seems to be the easier solution for now.
-#  SET(Boost_USE_STATIC_LIBS OFF)
-#ELSE()
-#  SET(Boost_USE_STATIC_LIBS ON)
-#ENDIF()
-
-SET(Boost_USE_STATIC_LIBS ON)
-SET(Boost_USE_MULTITHREADED ON)
-SET(Boost_USE_STATIC_RUNTIME OFF)
-
-IF(WIN32 AND MSVC)
-  # Test directives only - remove when Boost is added to CMake build
-  SET(Boost_DIR "E:/git/boost/")
-  SET(BOOST_LIBRARYDIR "E:/git/boost/bin/x64/Release")
-ENDIF()
-
-# TODO: eventually replace with CMake project
-FIND_PACKAGE(Boost 1.50.0
-               REQUIRED
-               COMPONENTS date_time filesystem regex system signals serialization thread program_options chrono
-)
-
-IF(Boost_FOUND)
-  INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-  MESSAGE(STATUS "Boost")
-  MESSAGE(STATUS ${Boost_INCLUDE_DIRS})
-  SET(SCIRUN5_BOOST_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}/)
-ELSE()
-  MESSAGE(FATAL_ERROR "Boost 1.50 or greater is required to build SCIRun5Prototype")
-ENDIF()
-
-
 INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
+  ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
-  ${SCIRUN5_BOOST_INCLUDE_DIRS}
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen_3_1_1
 )
-
-OPTION(VTK_SUPPORT "Build VTK RenderWindow" OFF)
-IF(VTK_SUPPORT)
-  ADD_DEFINITIONS(-DBUILD_VTK_SUPPORT)
-ENDIF(VTK_SUPPORT)
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 

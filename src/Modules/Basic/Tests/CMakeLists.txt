@@ -35,16 +35,17 @@ SET(Modules_Basic_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Modules_Basic_Tests
-#${Engine_Network_Tests_HEADERS}
-${Modules_Basic_Tests_SRCS})
+  #${Engine_Network_Tests_HEADERS}
+  ${Modules_Basic_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Basic_Tests
-Dataflow_Network
-Core_Datatypes
-Modules_Basic
-Modules_Factory
-Dataflow_State
-gtest_main
-gtest
-gmock
+  Dataflow_Network
+  Core_Datatypes
+  Modules_Basic
+  Modules_Factory
+  Dataflow_State
+  gtest_main
+  gtest
+  gmock
 )

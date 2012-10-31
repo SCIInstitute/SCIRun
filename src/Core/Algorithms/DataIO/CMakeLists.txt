@@ -40,13 +40,14 @@ SET(Algorithms_DataIO_HEADERS
 )
 
 ADD_LIBRARY(Algorithms_DataIO 
-${Algorithms_DataIO_HEADERS}
-${Algorithms_DataIO_SRCS})
+  ${Algorithms_DataIO_HEADERS}
+  ${Algorithms_DataIO_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Algorithms_DataIO
-Core_Datatypes
-Algorithms_Base
-${Boost_LIBRARIES}
+  Core_Datatypes
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

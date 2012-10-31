@@ -35,14 +35,15 @@ SET(Engine_Network_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Engine_Network_Tests
-#${Engine_Network_Tests_HEADERS}
-${Engine_Network_Tests_SRCS})
+  #${Engine_Network_Tests_HEADERS}
+  ${Engine_Network_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Engine_Network_Tests
-Dataflow_Network
-Engine_Network
-Algorithms_Math
-gtest_main
-gtest
-gmock
+  Dataflow_Network
+  Engine_Network
+  Algorithms_Math
+  gtest_main
+  gtest
+  gmock
 )

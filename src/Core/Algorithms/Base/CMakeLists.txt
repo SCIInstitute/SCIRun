@@ -37,16 +37,17 @@ SET(Algorithms_Base_HEADERS
 )
 
 ADD_LIBRARY(Algorithms_Base 
-${Algorithms_Base_HEADERS}
-${Algorithms_Base_SRCS})
+  ${Algorithms_Base_HEADERS}
+  ${Algorithms_Base_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Algorithms_Base)
 ENDIF(BUILD_SHARED_LIBS)
 
 TARGET_LINK_LIBRARIES(Algorithms_Base
-Core_Logging
-Core_Utils
+  Core_Logging
+  Core_Utils
 )
 
 ADD_SUBDIRECTORY(Tests)

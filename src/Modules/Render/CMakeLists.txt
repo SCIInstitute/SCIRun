@@ -36,12 +36,13 @@ SET(Modules_Render_HEADERS
 )
 
 ADD_LIBRARY(Modules_Render 
-${Modules_Render_HEADERS}
-${Modules_Render_SRCS})
+  ${Modules_Render_HEADERS}
+  ${Modules_Render_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Render
-Dataflow_Network
-Core_Datatypes
+  Dataflow_Network
+  Core_Datatypes
 )
 
 IF(BUILD_SHARED_LIBS)

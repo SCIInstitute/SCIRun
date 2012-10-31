@@ -184,7 +184,8 @@ std::string Network::toString() const
   std::ostringstream ostr;
   ostr << "~~~NETWORK DESCRIPTION~~~\n";
   ostr << "Modules:\n";
-  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *boost::lambda::_1));
+    //TODO: fix for mac (nonessential code, just commented out for now)
+  //std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *boost::lambda::_1));
   ostr << "\nConnections:\n";
   std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), GetConnectionIds());
   return ostr.str();

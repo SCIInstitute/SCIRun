@@ -32,6 +32,8 @@
 #ifndef CORE_BASIS_TETLINEARLGN_H
 #define CORE_BASIS_TETLINEARLGN_H 1
 
+#include <float.h>
+
 #include <Core/Basis/TetElementWeights.h>
 #include <Core/Basis/TetSamplingSchemes.h>
 #include <Core/Basis/TriLinearLgn.h>

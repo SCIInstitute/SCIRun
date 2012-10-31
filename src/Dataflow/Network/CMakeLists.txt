@@ -62,8 +62,9 @@ SET(Dataflow_Network_HEADERS
 )
 
 ADD_LIBRARY(Dataflow_Network 
-${Dataflow_Network_HEADERS}
-${Dataflow_Network_SRCS})
+  ${Dataflow_Network_HEADERS}
+  ${Dataflow_Network_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Dataflow_Network)
@@ -74,5 +75,5 @@ ADD_SUBDIRECTORY(Tests)
 TARGET_LINK_LIBRARIES(Dataflow_Network
   Core_Datatypes
   Algorithms_Base
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )

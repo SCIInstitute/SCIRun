@@ -36,11 +36,12 @@ SET(Core_CommandLine_HEADERS
 )
 
 ADD_LIBRARY(Core_CommandLine 
-${Core_CommandLine_HEADERS}
-${Core_CommandLine_SRCS})
+  ${Core_CommandLine_HEADERS}
+  ${Core_CommandLine_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Core_CommandLine
-${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

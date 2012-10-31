@@ -32,12 +32,13 @@ SET(Algorithms_DataIO_Tests_SRCS
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_DataIO_Tests
-${Algorithms_DataIO_Tests_SRCS})
+  ${Algorithms_DataIO_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Algorithms_DataIO_Tests
-Algorithms_DataIO
-Core_Datatypes
-gtest_main
-gtest
-gmock
+  Algorithms_DataIO
+  Core_Datatypes
+  gtest_main
+  gtest
+  gmock
 )

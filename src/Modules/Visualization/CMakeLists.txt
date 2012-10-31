@@ -42,12 +42,14 @@ SET(Modules_Visualization_HEADERS
 )
 
 ADD_LIBRARY(Modules_Visualization 
-${Modules_Visualization_HEADERS}
-${Modules_Visualization_SRCS})
+  ${Modules_Visualization_HEADERS}
+  ${Modules_Visualization_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Visualization
-Dataflow_Network
-Core_Datatypes
+  Dataflow_Network
+  Core_Datatypes
+  Core_Datatypes_Mesh
 )
 
 IF(BUILD_SHARED_LIBS)

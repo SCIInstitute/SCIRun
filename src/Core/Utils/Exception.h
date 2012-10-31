@@ -69,6 +69,44 @@ namespace Core
 
   #define THROW_INVALID_ARGUMENT(message)  BOOST_THROW_EXCEPTION(SCIRun::Core::InvalidArgumentException() << SCIRun::Core::ErrorMessage(message))
 
+  typedef boost::error_info<struct tag_dimension_mismatch, std::string> DimensionMismatchInfo;
+  typedef boost::error_info<struct tag_invalid_argument_value, std::string> InvalidArgumentValueInfo;
+  typedef boost::error_info<struct tag_not_implemented, std::string> NotImplementedInfo;
+  
+  // TODO: move these exceptions to new exception header file once it exists
+  struct SCISHARE DimensionMismatch : virtual ExceptionBase
+  {
+  };
+
+  struct SCISHARE InvalidArgumentValue : virtual ExceptionBase
+  {
+  };
+  
+  // TODO: should not need this in production code.
+  //
+  // Any prototype code using this exception should be reviewed and improved!!!
+  struct SCISHARE NotImplemented : virtual ExceptionBase
+  {
+  };
+
+#define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
+  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo( \
+    DimensionMismatchInfo::value_type( \
+      std::string(message) )))
+
+#define REPORT_INVALID_ARGUMENT_VALUE(message) \
+  BOOST_THROW_EXCEPTION(InvalidArgumentValue() << InvalidArgumentValueInfo( \
+    InvalidArgumentValueInfo::value_type( \
+      std::string(message) )))
+  
+// TODO: should not need this in production code.
+//
+// Any prototype code using this exception should be reviewed and improved!!!
+#define REPORT_NOT_IMPLEMENTED(message) \
+  BOOST_THROW_EXCEPTION(NotImplemented() << NotImplementedInfo( \
+    NotImplementedInfo::value_type( \
+      std::string(message) )))
+
 }
 }
 

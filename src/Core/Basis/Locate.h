@@ -34,17 +34,26 @@
 
 #include <cmath>
 
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Point.h>
 #include <boost/array.hpp>
 
-#include <Core/Basis/Share.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Utils/Exception.h>
 
+#include <Core/Basis/Share.h>
 
 namespace SCIRun {
   namespace Core {
     namespace Basis {
 
+        template <class T, size_t N>
+        class StackVector : public boost::array<T,N>
+        {
+        public:
+            StackVector(size_t s) {}
+        };
+                
+        
   template<class T>
     inline T InverseMatrix3x3(const T *p, T *q) 
   {
@@ -143,22 +152,25 @@ namespace SCIRun {
     return volume*pEB->volume();
   }
  
-
-  //! default case for face area calculation - currently not needed
-  template <class VECTOR1, class VECTOR2,class T>
-    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, T* type)
-  {
-    ASSERT(0); // to do
-    return 0;  
-  }
+// TODO: function not implemented - would this case be useful, or should
+// this just be removed.
+//
+//  //! default case for face area calculation - currently not needed
+//  template <class VECTOR1, class VECTOR2,class T>
+//    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, T* type)
+//  {
+//    ASSERT(0); // to do
+//    return 0;  
+//  }
 
   //! area calculation on points
   template <class VECTOR1, class VECTOR2>
     inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point* type)
   {
-    const unsigned int dvsize=derivs.size();
-    ASSERT(dv0.size()==dvsize);
-    ASSERT(dv1.size()==dvsize);
+    const unsigned int dvsize = derivs.size();
+    
+    ENSURE_DIMENSIONS_MATCH(dv0.size(), dvsize, "Vector dv0 size not equal to derivs Vector size");
+    ENSURE_DIMENSIONS_MATCH(dv1.size(), dvsize, "Vector dv0 size not equal to derivs Vector size");
 
     Geometry::Vector Jdv0(0,0,0), Jdv1(0,0,0);
     for(unsigned int i = 0; i<dvsize; i++) {
@@ -242,22 +254,25 @@ namespace SCIRun {
   }
  
  
- 
-  template <class VECTOR1, class VECTOR2, class T>
-  inline double d_arc_length_type(const VECTOR1& derivs, const VECTOR2& dv, T* type)
-  {
-    ASSERT(0); // to do
-    return 0;  
-  }
+// TODO: function not implemented - useful or delete?
+//
+//  template <class VECTOR1, class VECTOR2, class T>
+//  inline double d_arc_length_type(const VECTOR1& derivs, const VECTOR2& dv, T* type)
+//  {
+//    ASSERT(0); // to do
+//    return 0;  
+//  }
 
   //! arc length calculation on points
    template <class VECTOR1, class VECTOR2>
   inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point* type)
   {
-    const unsigned int dvsize=dv.size();
-    ASSERT(derivs.size()==dvsize);
+    const unsigned int dvsize = dv.size();
+    
+    ENSURE_DIMENSIONS_MATCH(derivs.size(), dvsize, "Vector dv0 size not equal to derivs Vector size");
+
     double Jdv[3];
-    Jdv[0]=Jdv[1]=Jdv[2]=0.;
+    Jdv[0] = Jdv[1] = Jdv[2] = 0.;
     for(unsigned int i = 0; i<dvsize; i++) {
       Jdv[0]+=dv[i]*derivs[i].x();
       Jdv[1]+=dv[i]*derivs[i].y();
