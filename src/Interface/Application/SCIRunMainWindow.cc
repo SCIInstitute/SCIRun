@@ -428,6 +428,7 @@ struct HideItemsNotMatchingString
   void operator()(QTreeWidgetItem* item)
   {
     if (item)
+    {
       if (0 == item->childCount())
       {
         item->setHidden(shouldHide(item));
@@ -446,6 +447,7 @@ struct HideItemsNotMatchingString
         }
         item->setHidden(shouldHideCategory);
       }
+    }
   }
 
   bool shouldHide(QTreeWidgetItem* item) 
@@ -471,7 +473,6 @@ void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
   visitTree(moduleSelectorTreeWidget_, show);
   
   bool regexSelected = filterActionGroup_->checkedAction()->text().contains("wildcards");
-  
   
   HideItemsNotMatchingString func(regexSelected, start);
 

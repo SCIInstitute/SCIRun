@@ -39,6 +39,7 @@ class QMenu;
 class QToolBar;
 class QAction;
 class QGraphicsScene;
+Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
 namespace Gui {
@@ -50,8 +51,6 @@ namespace Gui {
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
   };
-
-  Q_DECLARE_METATYPE (std::string)
 
   class ModuleEventProxy : public QObject
   {
