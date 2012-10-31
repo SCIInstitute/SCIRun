@@ -82,4 +82,10 @@ namespace SCIRun {
   }
 }
 
+#ifdef WIN32
+#define ENABLE_ON_WINDOWS(test) test
+#else
+#define ENABLE_ON_WINDOWS(test) DISABLED_##test
+#endif
+
 #endif

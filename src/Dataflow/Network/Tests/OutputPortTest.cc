@@ -62,7 +62,7 @@ protected:
   DatatypeSinkInterfaceHandle sink_;
 };
 
-TEST_F(OutputPortTest, SendSomeData)
+TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(SendSomeData))
 {
   Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
 
@@ -82,7 +82,7 @@ TEST_F(OutputPortTest, SendSomeData)
   outputPort->sendData(dataToPush);
 }
 
-TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
+TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(DataNotSentWhenNoConnectionsOnPort))
 {
   Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
 
@@ -96,7 +96,7 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
   outputPort->sendData(dataToPush);
 }
 
-TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
+TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(CanSendDataToMultipleConnections))
 {
   Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
 
