@@ -49,6 +49,7 @@ ADD_LIBRARY(Modules_Visualization
 TARGET_LINK_LIBRARIES(Modules_Visualization
   Dataflow_Network
   Core_Datatypes
+  Core_Datatypes_Mesh
 )
 
 IF(BUILD_SHARED_LIBS)

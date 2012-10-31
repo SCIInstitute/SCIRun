@@ -35,6 +35,8 @@
 
 #include <boost/array.hpp>
 
+#include <Core/Utils/Exception.h>
+#include <Core/Basis/Locate.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Transform.h>
 //#include <Core/Geometry/BBox.h>
@@ -466,19 +468,19 @@ public:
 
   int get_weights(const Geometry::Point &p, typename Node::array_type &l, double *w);
   int get_weights(const Geometry::Point & , typename Edge::array_type & , double * )
-    { ASSERTFAIL("LatVolMesh::get_weights for edges isn't supported"); }
+    { REPORT_NOT_IMPLEMENTED("LatVolMesh::get_weights for edges isn't supported"); }
   int get_weights(const Geometry::Point & , typename Face::array_type & , double * )
-    { ASSERTFAIL("LatVolMesh::get_weights for faces isn't supported"); }
+    { REPORT_NOT_IMPLEMENTED("LatVolMesh::get_weights for faces isn't supported"); }
   int get_weights(const Geometry::Point &p, typename Cell::array_type &l, double *w);
 
   void get_point(Geometry::Point &p, const typename Node::index_type &i) const
   { get_center(p, i); }
 
   void get_normal(Geometry::Vector &, const typename Node::index_type &) const
-  { ASSERTFAIL("This mesh type does not have node normals."); }
+  { REPORT_NOT_IMPLEMENTED("This mesh type does not have node normals."); }
   void get_normal(Geometry::Vector &, std::vector<double> &, typename Elem::index_type,
                   unsigned int)
-  { ASSERTFAIL("This mesh type does not have element normals."); }
+  { REPORT_NOT_IMPLEMENTED("This mesh type does not have element normals."); }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   void get_random_point(Geometry::Point &,
                         const typename Elem::index_type &,
@@ -673,9 +675,9 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
 {
   //DEBUG_CONSTRUCTOR("LatVolMesh")   
     
-  transform_.pre_scale(Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0 / (k-1.0)));
+  transform_.pre_scale(Geometry::Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0 / (k-1.0)));
   transform_.pre_scale(max - min);
-  transform_.pre_translate(Vector(min));
+  transform_.pre_translate(Geometry::Vector(min));
   transform_.compute_imat();
   compute_jacobian();  
   
@@ -686,9 +688,9 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
 template <class Basis>
 void LatVolMesh<Basis>::compute_jacobian()
 {
-  auto J1 = transform_.project(Vector(1.0,0.0,0.0)); 
-  auto J2 = transform_.project(Vector(0.0,1.0,0.0)); 
-  auto J3 = transform_.project(Vector(0.0,0.0,1.0)); 
+  auto J1 = transform_.project(Geometry::Vector(1.0,0.0,0.0)); 
+  auto J2 = transform_.project(Geometry::Vector(0.0,1.0,0.0)); 
+  auto J3 = transform_.project(Geometry::Vector(0.0,0.0,1.0)); 
 
   jacobian_[0] = J1.x();
   jacobian_[1] = J1.y();
@@ -700,6 +702,7 @@ void LatVolMesh<Basis>::compute_jacobian()
   jacobian_[7] = J3.y();
   jacobian_[8] = J3.z();
 
+    using namespace SCIRun::Core::Basis;
   det_jacobian_ = DetMatrix3x3(jacobian_);
   scaled_jacobian_ = ScaledDetMatrix3x3(jacobian_);
   det_inverse_jacobian_ = InverseMatrix3x3(jacobian_,inverse_jacobian_);

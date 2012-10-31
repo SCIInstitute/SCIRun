@@ -42,12 +42,18 @@
 
 #include <Core/Basis/Share.h>
 
-
-
 namespace SCIRun {
   namespace Core {
     namespace Basis {
 
+        template <class T, size_t N>
+        class StackVector : public boost::array<T,N>
+        {
+        public:
+            StackVector(size_t s) {}
+        };
+                
+        
   template<class T>
     inline T InverseMatrix3x3(const T *p, T *q) 
   {

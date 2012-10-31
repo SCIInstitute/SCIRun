@@ -31,6 +31,7 @@
 
 #include <vector>
 //#include <Core/Util/Assert.h>
+#include <Core/Utils/Exception.h>
 
 #include <Core/Basis/Share.h>
 
