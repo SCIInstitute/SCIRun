@@ -125,14 +125,12 @@ class Vector
     inline double maxComponent() const;
 
     inline void Set(double x, double y, double z);
-            
-    SCISHARE friend std::ostream& operator<<(std::ostream& os, const Vector& p);
-    SCISHARE friend std::istream& operator>>(std::istream& os, Vector& p);
-
-}; // end class Vector
+};
 
 SCISHARE bool operator==(const Vector& v1, const Vector& v2);
 SCISHARE bool operator!=(const Vector& v1, const Vector& v2);
+SCISHARE std::ostream& operator<<(std::ostream& os, const Vector& p);
+SCISHARE std::istream& operator>>(std::istream& os, Vector& p);
 
 inline Vector::Vector()
 {
