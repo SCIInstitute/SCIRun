@@ -36,13 +36,14 @@ SET(Engine_Network_HEADERS
 )
 
 ADD_LIBRARY(Engine_Network 
-${Engine_Network_HEADERS}
-${Engine_Network_SRCS})
+  ${Engine_Network_HEADERS}
+  ${Engine_Network_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Engine_Network
-Dataflow_Network
-Core_Serialization_Network
-Engine_Scheduler
+  Dataflow_Network
+  Core_Serialization_Network
+  Engine_Scheduler
 )
 
 IF(BUILD_SHARED_LIBS)

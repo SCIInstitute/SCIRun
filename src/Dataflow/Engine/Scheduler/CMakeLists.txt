@@ -40,11 +40,12 @@ SET(Engine_Scheduler_HEADERS
 )
 
 ADD_LIBRARY(Engine_Scheduler 
-${Engine_Scheduler_HEADERS}
-${Engine_Scheduler_SRCS})
+  ${Engine_Scheduler_HEADERS}
+  ${Engine_Scheduler_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Engine_Scheduler
-Dataflow_Network
+  Dataflow_Network
 )
 
 IF(BUILD_SHARED_LIBS)

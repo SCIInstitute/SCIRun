@@ -48,12 +48,14 @@ SET(Algorithms_Math_HEADERS
 )
 
 ADD_LIBRARY(Algorithms_Math 
-${Algorithms_Math_HEADERS}
-${Algorithms_Math_SRCS})
+  ${Algorithms_Math_HEADERS}
+  ${Algorithms_Math_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Algorithms_Math
-Core_Datatypes
-Algorithms_Base
+  Core_Datatypes
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
@@ -61,4 +63,3 @@ IF(BUILD_SHARED_LIBS)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
-

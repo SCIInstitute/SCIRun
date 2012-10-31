@@ -47,18 +47,19 @@ INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_LIBRARY(Interface_Modules_Fields
-${Interface_Modules_Fields_HEADERS}
-${Interface_Modules_Fields_FORMS_HEADERS}
-${Interface_Modules_Fields_HEADERS_MOC}
-${Interface_Modules_Fields_SOURCES}
+  ${Interface_Modules_Fields_HEADERS}
+  ${Interface_Modules_Fields_FORMS_HEADERS}
+  ${Interface_Modules_Fields_HEADERS_MOC}
+  ${Interface_Modules_Fields_SOURCES}
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Fields 
   #Algorithms_Fields
   Modules_Fields
   Interface_Modules_Base
-  ${Boost_LIBRARIES}
-  ${QT_LIBRARIES})
+  ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Modules_Fields)

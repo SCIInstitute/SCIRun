@@ -52,13 +52,14 @@ SET(Modules_Math_HEADERS
 )
 
 ADD_LIBRARY(Modules_Math 
-${Modules_Math_HEADERS}
-${Modules_Math_SRCS})
+  ${Modules_Math_HEADERS}
+  ${Modules_Math_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Math
-Dataflow_Network
-Core_Datatypes
-Algorithms_Math
+  Dataflow_Network
+  Core_Datatypes
+  Algorithms_Math
 )
 
 IF(BUILD_SHARED_LIBS)

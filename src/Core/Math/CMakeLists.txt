@@ -36,8 +36,9 @@ SET(Core_Math_HEADERS
 )
 
 ADD_LIBRARY(Core_Math 
-${Core_Math_HEADERS}
-${Core_Math_SRCS})
+  ${Core_Math_HEADERS}
+  ${Core_Math_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Math)

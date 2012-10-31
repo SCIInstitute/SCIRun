@@ -39,8 +39,9 @@ SET(Core_Logging_HEADERS
 )
 
 ADD_LIBRARY(Core_Logging 
-${Core_Logging_HEADERS}
-${Core_Logging_SRCS})
+  ${Core_Logging_HEADERS}
+  ${Core_Logging_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Logging)

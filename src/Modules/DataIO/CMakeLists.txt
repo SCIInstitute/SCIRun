@@ -42,14 +42,15 @@ SET(Modules_DataIO_HEADERS
 )
 
 ADD_LIBRARY(Modules_DataIO 
-${Modules_DataIO_HEADERS}
-${Modules_DataIO_SRCS})
+  ${Modules_DataIO_HEADERS}
+  ${Modules_DataIO_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_DataIO
-Dataflow_Network
-Core_Datatypes
-Algorithms_DataIO
-${Boost_LIBRARIES}
+  Dataflow_Network
+  Core_Datatypes
+  Algorithms_DataIO
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

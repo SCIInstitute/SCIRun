@@ -36,13 +36,14 @@ SET(Modules_String_HEADERS
 )
 
 ADD_LIBRARY(Modules_String 
-${Modules_String_HEADERS}
-${Modules_String_SRCS})
+  ${Modules_String_HEADERS}
+  ${Modules_String_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_String
-Dataflow_Network
-Core_Datatypes
-Algorithms_Base
+  Dataflow_Network
+  Core_Datatypes
+  Algorithms_Base
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -33,11 +33,12 @@ SET(Core_Datatypes_Mesh_Tests_SRCS
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Mesh_Tests
-${Core_Datatypes_Mesh_Tests_SRCS})
+  ${Core_Datatypes_Mesh_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh_Tests
-Core_Datatypes_Mesh
-gtest_main
-gtest
-gmock
+  Core_Datatypes_Mesh
+  gtest_main
+  gtest
+  gmock
 )

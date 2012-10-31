@@ -77,15 +77,15 @@ ENDIF()
 
 # Better compiler check for OS X?
 IF(CMAKE_COMPILER_IS_GNUCC)
- # IF(UNIX)
- #   #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
- #   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
- # ENDIF()
+  IF(UNIX)
+    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  ENDIF()
 
-#  IF(APPLE)
-#    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-#    SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
-#  ENDIF()
+  IF(APPLE)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+    SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
+  ENDIF()
 ENDIF()
 
 
@@ -101,27 +101,42 @@ ENDIF()
 ########################################################################
 # Configure Boost external project
 
+# TODO: make macro
+
 SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
 SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
 
 # TODO: fix install step
-ExternalProject_Add(Boost
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/Externals"
+ExternalProject_Add(Boost_external
+  PREFIX ${boost_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
   GIT_TAG "origin/master"
   SOURCE_DIR ${boost_SOURCE_DIR}
   BINARY_DIR ${boost_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
-  #INSTALL_DIR ${boost_BINARY_DIR}
-  #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
   PATCH_COMMAND ""
   UPDATE_COMMAND ""
+  INSTALL_DIR ""
   INSTALL_COMMAND ""
+  #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
 )
 
 SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)
 SET(SCI_BOOST_LIBRARY boost CACHE INTERNAL "Boost library name." FORCE)
+#LINK_DIRECTORIES(${boost_BINARY_DIR})
 
+# adding Boost as a build target and dependency
+ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED)
+
+## TODO: change to install location
+SET_PROPERTY(TARGET ${SCI_BOOST_LIBRARY}
+  PROPERTY
+    IMPORTED_LOCATION "${boost_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
+ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
+ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
+
+INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 
 ########################################################################
 # Find and configure Qt
@@ -150,10 +165,6 @@ INCLUDE_DIRECTORIES(
   ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen_3_1_1
-)
-
-LINK_DIRECTORIES(
-  ${boost_BINARY_DIR}
 )
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)

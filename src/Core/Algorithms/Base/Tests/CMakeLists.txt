@@ -31,11 +31,12 @@ SET(Algorithms_Base_Tests_SRCS
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Base_Tests
-${Algorithms_Base_Tests_SRCS})
+  ${Algorithms_Base_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Algorithms_Base_Tests
-Algorithms_Base
-gtest_main
-gtest
-gmock
+  Algorithms_Base
+  gtest_main
+  gtest
+  gmock
 )

@@ -46,12 +46,13 @@ SET(Modules_Basic_HEADERS
 )
 
 ADD_LIBRARY(Modules_Basic 
-${Modules_Basic_HEADERS}
-${Modules_Basic_SRCS})
+  ${Modules_Basic_HEADERS}
+  ${Modules_Basic_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Basic
-Core_Datatypes
-Dataflow_Network
+  Core_Datatypes
+  Dataflow_Network
 )
 
 IF(BUILD_SHARED_LIBS)

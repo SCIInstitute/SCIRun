@@ -53,8 +53,9 @@ SET(Core_Datatypes_HEADERS
 )
 
 ADD_LIBRARY(Core_Datatypes 
-${Core_Datatypes_HEADERS}
-${Core_Datatypes_SRCS})
+  ${Core_Datatypes_HEADERS}
+  ${Core_Datatypes_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes)

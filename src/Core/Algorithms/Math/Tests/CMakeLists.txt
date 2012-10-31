@@ -41,14 +41,15 @@ SET(Algorithms_Math_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Math_Tests
-${Algorithms_Math_Tests_SRCS})
+  ${Algorithms_Math_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Algorithms_Math_Tests
-Algorithms_Math
-Algorithms_DataIO
-Core_Datatypes
-Testing_Utils
-gtest_main
-gtest
-gmock
+  Algorithms_Math
+  Algorithms_DataIO
+  Core_Datatypes
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
 )

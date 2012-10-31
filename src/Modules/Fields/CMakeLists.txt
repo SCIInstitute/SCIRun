@@ -36,14 +36,15 @@ SET(Modules_Fields_HEADERS
 )
 
 ADD_LIBRARY(Modules_Fields 
-${Modules_Fields_HEADERS}
-${Modules_Fields_SRCS})
+  ${Modules_Fields_HEADERS}
+  ${Modules_Fields_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_Fields
-Dataflow_Network
-Core_Datatypes
-Core_Datatypes_Mesh
-#Algorithms_Math
+  Dataflow_Network
+  Core_Datatypes
+  Core_Datatypes_Mesh
+  #Algorithms_Math
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -29,48 +29,48 @@
 # Sources of Core/Basis classes
 
 SET(Core_Basis_HEADERS
-Bases.h
-Constant.h
-CrvElementWeights.h
-CrvLinearLgn.h
-CrvQuadraticLgn.h
-HexElementsWeights.h
-HexSamplingSchemes.h
-HexTricubicHmtScaleFactors.h
-Locate.h
-NoData.h
-PntSamplingSchemes.h
-PrismElementWeights.h
-PrismLinearLgn.h
-PrismQuadraticLgn.h
-QuadBicubicHmt.h
-QuadBilinearLgn.h
-QuadBiquadraticLgn.h
-QuadSamplingSchemes.h
-TetCubicHmt.h
-TetSamplingSchemes.h
-TriCubicHmt.h
-TriElementWeights.h
-TriLinearLgn.h
-TriQuadraticLgn.h
-Basis.h
-CrvCubicHmt.h
-CrvSamplingSchemes.h
-HexElementWeights.h
-HexTricubicHmt.h
-HexTricubicHmtScaleFactorsEdges.h
-HexTrilinearLgn.h
-HexTriquadraticLgn.h
-NoElementWeights.h
-PrismCubicHmt.h
-PrismSamplingSchemes.h
-QuadElementWeights.h
-Share.h
-TetElementWeights.h
-TetLinearLgn.h
-TetQuadraticLgn.h
-TriCubicHmtScaleFactors.h
-TriSamplingSchemes.h
+  Bases.h
+  Constant.h
+  CrvElementWeights.h
+  CrvLinearLgn.h
+  CrvQuadraticLgn.h
+  HexElementsWeights.h
+  HexSamplingSchemes.h
+  HexTricubicHmtScaleFactors.h
+  Locate.h
+  NoData.h
+  PntSamplingSchemes.h
+  PrismElementWeights.h
+  PrismLinearLgn.h
+  PrismQuadraticLgn.h
+  QuadBicubicHmt.h
+  QuadBilinearLgn.h
+  QuadBiquadraticLgn.h
+  QuadSamplingSchemes.h
+  TetCubicHmt.h
+  TetSamplingSchemes.h
+  TriCubicHmt.h
+  TriElementWeights.h
+  TriLinearLgn.h
+  TriQuadraticLgn.h
+  Basis.h
+  CrvCubicHmt.h
+  CrvSamplingSchemes.h
+  HexElementWeights.h
+  HexTricubicHmt.h
+  HexTricubicHmtScaleFactorsEdges.h
+  HexTrilinearLgn.h
+  HexTriquadraticLgn.h
+  NoElementWeights.h
+  PrismCubicHmt.h
+  PrismSamplingSchemes.h
+  QuadElementWeights.h
+  Share.h
+  TetElementWeights.h
+  TetLinearLgn.h
+  TetQuadraticLgn.h
+  TriCubicHmtScaleFactors.h
+  TriSamplingSchemes.h
 )
 
 SET(Core_Basis_SRCS
@@ -91,8 +91,9 @@ SET(Core_Basis_SRCS
 )
 
 ADD_LIBRARY(Core_Basis 
-${Core_Basis_HEADERS}
-${Core_Basis_SRCS})
+  ${Core_Basis_HEADERS}
+  ${Core_Basis_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Basis)

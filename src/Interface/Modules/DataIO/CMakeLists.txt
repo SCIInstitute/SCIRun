@@ -50,16 +50,16 @@ INCLUDE(${QT_USE_FILE})
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 ADD_LIBRARY(Interface_Modules_DataIO
-${Interface_Modules_DataIO_HEADERS}
-${Interface_Modules_DataIO_FORMS_HEADERS}
-${Interface_Modules_DataIO_HEADERS_MOC}
-${Interface_Modules_DataIO_SOURCES}
+  ${Interface_Modules_DataIO_HEADERS}
+  ${Interface_Modules_DataIO_FORMS_HEADERS}
+  ${Interface_Modules_DataIO_HEADERS_MOC}
+  ${Interface_Modules_DataIO_SOURCES}
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_DataIO 
   Algorithms_DataIO
   Interface_Modules_Base
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)

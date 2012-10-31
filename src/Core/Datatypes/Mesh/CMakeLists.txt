@@ -50,14 +50,15 @@ SET(Core_Datatypes_Mesh_HEADERS
 )
 
 ADD_LIBRARY(Core_Datatypes_Mesh
-${Core_Datatypes_Mesh_HEADERS}
-${Core_Datatypes_Mesh_SRCS})
+  ${Core_Datatypes_Mesh_HEADERS}
+  ${Core_Datatypes_Mesh_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh
   Core_Datatypes
   Core_Geometry_Primitives
   Core_Basis
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -36,11 +36,12 @@ SET(Dataflow_State_HEADERS
 )
 
 ADD_LIBRARY(Dataflow_State 
-${Dataflow_State_HEADERS}
-${Dataflow_State_SRCS})
+  ${Dataflow_State_HEADERS}
+  ${Dataflow_State_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Dataflow_State
-Dataflow_Network
+  Dataflow_Network
 )
 
 IF(BUILD_SHARED_LIBS)

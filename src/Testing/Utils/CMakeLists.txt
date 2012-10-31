@@ -37,13 +37,13 @@ SET(Testing_Utils_SRCS
 )
 
 ADD_LIBRARY(Testing_Utils 
-${Testing_Utils_HEADERS}
-${Testing_Utils_SRCS}
+  ${Testing_Utils_HEADERS}
+  ${Testing_Utils_SRCS}
 )
 
 TARGET_LINK_LIBRARIES(Testing_Utils
   Core_Datatypes
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

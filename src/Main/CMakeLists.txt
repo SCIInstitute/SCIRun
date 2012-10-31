@@ -32,7 +32,8 @@ SET(SCIRunGUIPrototype_SOURCES
 )
 
 ADD_EXECUTABLE(SCIRunGUIPrototype
-  ${SCIRunGUIPrototype_SOURCES})
+  ${SCIRunGUIPrototype_SOURCES}
+)
 
 TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
   Interface_Application

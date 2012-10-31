@@ -36,15 +36,16 @@ SET(Core_Application_HEADERS
 )
 
 ADD_LIBRARY(Core_Application 
-${Core_Application_HEADERS}
-${Core_Application_SRCS})
+  ${Core_Application_HEADERS}
+  ${Core_Application_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Core_Application
   Core_CommandLine
   Engine_Network
   Modules_Factory
   Dataflow_State
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

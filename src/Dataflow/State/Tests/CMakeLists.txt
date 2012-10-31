@@ -35,13 +35,14 @@ SET(Dataflow_State_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Dataflow_State_Tests
-#${Engine_Network_Tests_HEADERS}
-${Dataflow_State_Tests_SRCS})
+  #${Engine_Network_Tests_HEADERS}
+  ${Dataflow_State_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Dataflow_State_Tests
-Dataflow_Network
-#Dataflow_State
-gtest_main
-gtest
-gmock
+  Dataflow_Network
+  #Dataflow_State
+  gtest_main
+  gtest
+  gmock
 )

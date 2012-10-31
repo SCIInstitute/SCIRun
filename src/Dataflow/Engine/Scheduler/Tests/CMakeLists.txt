@@ -37,8 +37,9 @@ SET(Engine_Scheduler_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Engine_Scheduler_Tests
-#${Engine_Network_Tests_HEADERS}
-${Engine_Scheduler_Tests_SRCS})
+  #${Engine_Network_Tests_HEADERS}
+  ${Engine_Scheduler_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
   Dataflow_Network
@@ -53,5 +54,5 @@ TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
   gtest_main
   gtest
   gmock
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )

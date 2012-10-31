@@ -37,14 +37,15 @@ SET(Modules_DataIO_Tests_SRCS
 #)
 
 SCIRUN_ADD_UNIT_TEST(Modules_DataIO_Tests
-${Modules_DataIO_Tests_SRCS})
+  ${Modules_DataIO_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Modules_DataIO_Tests
-Modules_DataIO
-Modules_Factory
-Dataflow_State
-gtest_main
-gtest
-gmock
-${Boost_LIBRARIES}
+  Modules_DataIO
+  Modules_Factory
+  Dataflow_State
+  gtest_main
+  gtest
+  gmock
+  ${SCI_BOOST_LIBRARY}
 )

@@ -47,14 +47,15 @@ SET(Dataflow_Network_Tests_HEADERS
 )
 
 SCIRUN_ADD_UNIT_TEST(Dataflow_Network_Tests 
-${Dataflow_Network_Tests_HEADERS}
-${Dataflow_Network_Tests_SRCS})
+  ${Dataflow_Network_Tests_HEADERS}
+  ${Dataflow_Network_Tests_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Dataflow_Network_Tests
-Dataflow_Network
-Core_Datatypes
-gtest_main
-gtest
-gmock
+  Dataflow_Network
+  Core_Datatypes
+  gtest_main
+  gtest
+  gmock
 )
 

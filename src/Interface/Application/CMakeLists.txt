@@ -107,7 +107,7 @@ TARGET_LINK_LIBRARIES(Interface_Application
   Interface_Modules_Base
   Interface_Modules_Factory
   ${GUI_VTK_LINK_LIBRARIES}
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )

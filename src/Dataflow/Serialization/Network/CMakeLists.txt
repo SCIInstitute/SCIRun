@@ -43,8 +43,9 @@ SET(Core_Serialization_Network_HEADERS
 )
 
 ADD_LIBRARY(Core_Serialization_Network 
-${Core_Serialization_Network_HEADERS}
-${Core_Serialization_Network_SRCS})
+  ${Core_Serialization_Network_HEADERS}
+  ${Core_Serialization_Network_SRCS}
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Serialization_Network)
@@ -56,5 +57,5 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network
   Dataflow_Network
   Core_Datatypes
   Dataflow_State
-  ${Boost_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
