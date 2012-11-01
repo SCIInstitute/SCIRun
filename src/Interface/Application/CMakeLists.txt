@@ -27,17 +27,6 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-IF(VTK_SUPPORT)
-  FIND_PACKAGE(VTK REQUIRED)
-  INCLUDE(${VTK_USE_FILE})
-  SET(GUI_VTK_SOURCES
-    RenderWindow.cc)
-  SET(GUI_VTK_HEADERS
-    RenderWindow.h)
-  SET(GUI_VTK_LINK_LIBRARIES
-    QVTK)
-ENDIF(VTK_SUPPORT)
-
 ##################################################
 # Set sources
 ##################################################
@@ -56,7 +45,6 @@ SET(Interface_Application_SOURCES
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
-  ${GUI_VTK_SOURCES}
 )
 
 SET(Interface_Application_HEADERS
@@ -72,7 +60,6 @@ SET(Interface_Application_HEADERS
   Port.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
-  ${GUI_VTK_HEADERS}
 )
 
 SET(Interface_Application_FORMS
@@ -108,7 +95,6 @@ TARGET_LINK_LIBRARIES(Interface_Application
   Core_Logging
   Interface_Modules_Base
   Interface_Modules_Factory
-  ${GUI_VTK_LINK_LIBRARIES}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}

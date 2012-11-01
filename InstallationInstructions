@@ -39,7 +39,7 @@ OS X (tested on 10.6 (Xcode 3.2.6), 10.7 (Xcode 4.3.3)):
 Linux (tested on OpenSuSE 12.1):
 	gcc 4.6
 
-	Boost 1.49 or greater
+	Boost 1.50 or greater
         (If building on Linux from source, see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:DevTasks:QtMigration:BoostBuildNotes).
 		uses these compiled libraries: 
 			date_time
@@ -55,7 +55,7 @@ Linux (tested on OpenSuSE 12.1):
 		Root cmake file is SCIRunGUIPrototype/src/CMakeLists.txt.
 		Make sure BUILD_SHARED_LIBS is on (default setting).
 
-	Qt 4.7.4
+	Qt 4.8
 Windows:
 	Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions)
 
@@ -65,9 +65,4 @@ OS X:
 Linux:
 	Build from source (http://download.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.zip), or use system libraries if available.
 
-Optional:
 
-	VTK 5.10 
-		build using CMake and turn option VTK_USE_QT on when configuring
-
-	Once VTK is built, in the SCIRunGUIPrototype/src/CMakeLists.txt file, turn on option VTK_SUPPORT, and make sure VTK_DIR is set correctly.
