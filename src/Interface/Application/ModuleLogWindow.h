@@ -45,6 +45,7 @@ public:
   explicit ModuleLogWindow(const QString& moduleName, QWidget* parent = 0);
 public Q_SLOTS:
   void appendMessage(const QString& message, const QColor& color = Qt::black);
+  void popupMessageBox(const QString& message);
 Q_SIGNALS:
   void messageReceived(const QColor& color);
 };
@@ -61,6 +62,7 @@ public:
 Q_SIGNALS:
   void logSignal(const QString& message, const QColor& color);
   void alert(const QColor& color);
+  void popup(const QString& message);
 };
 
 }

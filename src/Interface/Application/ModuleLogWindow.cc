@@ -49,16 +49,24 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
   logTextEdit_->insertHtml(QString("<p style=\"color:") + color.name() + "\">" + message + "</p><br>");
 }
 
+void ModuleLogWindow::popupMessageBox(const QString& message)
+{
+  QMessageBox::critical(this, windowTitle(), message, QMessageBox::Ok);
+}
+
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)
 {
   connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
   connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
+  connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString& message)));
 }
 
 void ModuleLogger::error(const std::string& msg)
 {
-  logSignal("<b>ERROR: " + QString::fromStdString(msg) + "</b>", Qt::red);
+  auto qmsg = QString::fromStdString(msg);
+  logSignal("<b>ERROR: " + qmsg + "</b>", Qt::red);
   alert(Qt::red);
+  popup(qmsg);
 }
 
 void ModuleLogger::warning(const std::string& msg)
