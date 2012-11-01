@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1119</width>
-    <height>998</height>
+    <height>852</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>796</width>
-         <height>662</height>
+         <width>793</width>
+         <height>477</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -139,7 +139,7 @@
    <property name="minimumSize">
     <size>
      <width>299</width>
-     <height>200</height>
+     <height>223</height>
     </size>
    </property>
    <property name="features">
@@ -157,9 +157,15 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="filterButton_">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="maximumSize">
           <size>
-           <width>50</width>
+           <width>85</width>
            <height>16777215</height>
           </size>
          </property>
@@ -456,7 +462,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -466,7 +472,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -487,7 +493,7 @@
                 <string>Straight</string>
                </property>
                <attribute name="buttonGroup">
-                <string>pipelinesButtonGroup_</string>
+                <string notr="true">pipelinesButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -497,7 +503,7 @@
                 <string>Jagged</string>
                </property>
                <attribute name="buttonGroup">
-                <string>pipelinesButtonGroup_</string>
+                <string notr="true">pipelinesButtonGroup_</string>
                </attribute>
               </widget>
              </item>
