@@ -51,7 +51,7 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-  QMessageBox::critical(this->parentWidget(), windowTitle(), message, QMessageBox::Ok);
+  QMessageBox::critical(this->parentWidget(), windowTitle(), windowTitle() + "\n" + message, QMessageBox::Ok);
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)
