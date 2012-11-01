@@ -34,12 +34,12 @@
   <property name="midLineWidth">
    <number>0</number>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>13</x>
      <y>13</y>
-     <width>223</width>
+     <width>233</width>
      <height>85</height>
     </rect>
    </property>
@@ -78,19 +78,19 @@
        <widget class="QPushButton" name="moduleActionButton_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>40</horstretch>
+          <horstretch>37</horstretch>
           <verstretch>23</verstretch>
          </sizepolicy>
         </property>
         <property name="minimumSize">
          <size>
-          <width>50</width>
+          <width>60</width>
           <height>23</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>40</width>
+          <width>60</width>
           <height>23</height>
          </size>
         </property>

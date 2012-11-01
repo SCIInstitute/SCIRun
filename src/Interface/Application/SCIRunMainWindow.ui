@@ -41,7 +41,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>821</width>
+         <width>796</width>
          <height>662</height>
         </rect>
        </property>
@@ -138,7 +138,7 @@
    </property>
    <property name="minimumSize">
     <size>
-     <width>224</width>
+     <width>299</width>
      <height>200</height>
     </size>
    </property>
@@ -167,7 +167,7 @@
           <string>Filter:</string>
          </property>
          <property name="flat">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -191,6 +191,30 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>7</pointsize>
+         <weight>50</weight>
+         <italic>true</italic>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="text">
+        <string>Drag and drop module name from here to editor to place</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
