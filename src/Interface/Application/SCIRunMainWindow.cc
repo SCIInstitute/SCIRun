@@ -248,7 +248,8 @@ void SCIRunMainWindow::doInitialStuff()
       // -E
       //TODO: exit code should be from network execution for regression testing.
       //TODO: don't like passing the callback all the way down...better way to do it?--yes, when network done event is available, just have to add a quit() subscriber.
-      networkEditor_->executeAll([this] {close(); qApp->quit();});
+      // for exit code: qApp->exit(code); 
+      networkEditor_->executeAll([this](int code) {close(); qApp->exit(code);});
     }
   }
 }

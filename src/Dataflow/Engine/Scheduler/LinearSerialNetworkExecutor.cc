@@ -52,7 +52,7 @@ struct LinearExecution
       }
     }
     if (func_)
-      func_();
+      func_(lookup_.errorCode());
   }
   const ExecutableLookup& lookup_;
   ModuleExecutionOrder order_;
@@ -62,6 +62,5 @@ struct LinearExecution
 void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order)
 {
   LinearExecution runner(lookup, order, finishedFunc_);
-  //runner();
   boost::thread execution = boost::thread(runner);
 }

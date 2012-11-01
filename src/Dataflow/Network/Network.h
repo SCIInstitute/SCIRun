@@ -59,12 +59,14 @@ namespace Networks {
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);
     virtual ConnectionDescriptionList connections() const;
+    virtual int errorCode() const;
     virtual std::string toString() const;
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
     Modules modules_;
     Connections connections_;
+    int errorCode_;
   };
 
 }}}

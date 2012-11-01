@@ -40,7 +40,7 @@
 using namespace SCIRun::Dataflow::Networks;
 
 Network::Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), errorCode_(0)
 {
   moduleFactory_->setStateFactory(stateFactory_);
 }
@@ -204,4 +204,9 @@ NetworkInterface::ConnectionDescriptionList Network::connections() const
   ConnectionDescriptionList conns;
   std::transform(connections_.begin(), connections_.end(), std::back_inserter(conns), Describe());
   return conns;
+}
+
+int Network::errorCode() const
+{
+  return errorCode_;
 }

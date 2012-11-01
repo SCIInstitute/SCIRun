@@ -86,6 +86,7 @@ Q_SIGNALS:
     int numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
+    int errorCode() const { return 0; }
 
   protected:
     virtual void dropEvent(QDropEvent* event);

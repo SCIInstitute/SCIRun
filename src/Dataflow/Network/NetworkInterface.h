@@ -47,6 +47,7 @@ namespace Networks {
   public:
     virtual ~ExecutableLookup() {}
     virtual ExecutableObject* lookupExecutable(const std::string& id) const = 0; 
+    virtual int errorCode() const = 0;
   };
 
   typedef std::pair<ModuleHandle, size_t> ModulePortIndexPair;

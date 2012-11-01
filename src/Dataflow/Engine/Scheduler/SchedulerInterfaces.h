@@ -64,6 +64,11 @@ namespace Engine {
   };
 
   //TODO: types for ParallelScheduler, etc
+  
+  
+  //ToDO: network begin/end signal.
+  //typedef boost::signals2::signal<int (const std::string&)> ExecuteBeginsSignalType;
+  //typedef boost::signals2::signal<void (const std::string&)> ExecuteEndsSignalType;
 
   class SCISHARE NetworkExecutor
   {
