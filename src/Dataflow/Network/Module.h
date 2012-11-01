@@ -82,13 +82,14 @@ namespace Networks {
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const;
-    virtual void error(const std::string& msg) { getLogger()->error(msg); }
+    virtual void error(const std::string& msg) { errorSignal_(id_); getLogger()->error(msg); }
     virtual void warning(const std::string& msg) { getLogger()->warning(msg); }
     virtual void remark(const std::string& msg) { getLogger()->remark(msg); }
     virtual void status(const std::string& msg) { getLogger()->status(msg); }
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
+    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
 
     // Throws if input is not present or null.
     template <class T>
@@ -139,6 +140,7 @@ namespace Networks {
 
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
+    ErrorSignalType errorSignal_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     static int instanceCount_;

@@ -55,6 +55,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(toString, std::string());
           MOCK_CONST_METHOD0(connections, ConnectionDescriptionList());
           MOCK_CONST_METHOD0(errorCode, int());
+          MOCK_METHOD1(incrementErrorCode, void(const std::string&));
         };
 
         typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;

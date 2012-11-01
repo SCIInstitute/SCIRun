@@ -60,6 +60,7 @@ namespace Networks {
     virtual void disable_connection(const ConnectionId&);
     virtual ConnectionDescriptionList connections() const;
     virtual int errorCode() const;
+    virtual void incrementErrorCode(const std::string& moduleId);
     virtual std::string toString() const;
   private:
     ModuleFactoryHandle moduleFactory_;

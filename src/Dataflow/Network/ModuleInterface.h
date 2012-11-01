@@ -60,6 +60,7 @@ namespace Networks {
   //TODO: nice reason to replace string with "ModuleId" class
   typedef boost::signals2::signal<void (const std::string&)> ExecuteBeginsSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ExecuteEndsSignalType;
+  typedef boost::signals2::signal<void (const std::string&)> ErrorSignalType;
 
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ExecutableObject
   {
@@ -82,6 +83,7 @@ namespace Networks {
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
+    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) = 0;
   };
 
   #define MODULE_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }

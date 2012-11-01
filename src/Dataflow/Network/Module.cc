@@ -268,3 +268,8 @@ boost::signals2::connection Module::connectExecuteEnds(const ExecuteEndsSignalTy
 {
   return executeEnds_.connect(subscriber);
 }
+
+boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::slot_type& subscriber)
+{
+  return errorSignal_.connect(subscriber);
+}

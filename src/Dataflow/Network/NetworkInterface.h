@@ -77,6 +77,7 @@ namespace Networks {
     virtual size_t nconnections() const = 0;
     virtual void disable_connection(const ConnectionId&) = 0;
     virtual ConnectionDescriptionList connections() const = 0;
+    virtual void incrementErrorCode(const std::string& moduleId) = 0;
 
     virtual std::string toString() const = 0;
   };
