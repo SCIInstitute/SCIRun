@@ -48,6 +48,8 @@ public Q_SLOTS:
   void popupMessageBox(const QString& message);
 Q_SIGNALS:
   void messageReceived(const QColor& color);
+private:
+  QString moduleName_;
 };
 
 class ModuleLogger : public QObject, public Core::Logging::LoggerInterface
