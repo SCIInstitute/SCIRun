@@ -147,11 +147,17 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   addPorts(*theModule);
 
   //TODO: this code should be used to set the correct sizes.
-  //int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
-  //titleLabel_->setMinimumWidth(pixelWidth + 10);
-
-  //setMinimumSize(pixelWidth + 10, this->minimumHeight());
-
+  int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
+  //std::cout << "label width for " << name.toStdString() << " is " << pixelWidth << std::endl;
+  //std::cout << "\tand my frame size is " << width() << std::endl;
+  //std::cout << "\tand label sizehint width is: " << titleLabel_->sizeHint().width() << std::endl;
+  int extraWidth = pixelWidth - 240;
+  if (extraWidth > 0)
+  {
+    resize(width() + extraWidth + 30, height());
+    //std::cout << "increasing width by " << extraWidth + 30 << std::endl;
+  }
+   
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
   makeOptionsDialog();
 
