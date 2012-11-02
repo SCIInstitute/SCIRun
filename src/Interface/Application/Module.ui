@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>222</width>
+    <width>228</width>
     <height>76</height>
    </rect>
   </property>
@@ -39,7 +39,7 @@
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>201</width>
+     <width>217</width>
      <height>74</height>
     </rect>
    </property>
@@ -98,7 +98,7 @@
          </size>
         </property>
         <property name="text">
-         <string/>
+         <string>   </string>
         </property>
         <property name="icon">
          <iconset resource="scirun5.qrc">
@@ -109,6 +109,9 @@
           <width>16</width>
           <height>16</height>
          </size>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -131,7 +134,7 @@
      </spacer>
     </item>
     <item>
-     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0" columnminimumwidth="22,105,16,16">
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
@@ -157,7 +160,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>23</width>
+          <width>30</width>
           <height>23</height>
          </size>
         </property>
@@ -184,7 +187,7 @@
          <number>24</number>
         </property>
         <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         <set>Qt::AlignCenter</set>
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
