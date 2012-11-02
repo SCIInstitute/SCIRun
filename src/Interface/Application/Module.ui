@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>253</width>
-    <height>103</height>
+    <width>222</width>
+    <height>76</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -37,22 +37,25 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>13</x>
-     <y>13</y>
-     <width>235</width>
-     <height>94</height>
+     <x>10</x>
+     <y>0</y>
+     <width>201</width>
+     <height>74</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <item>
-     <layout class="QHBoxLayout" name="labelHorizontalLayout_">
+     <layout class="QGridLayout" name="gridLayout_2">
       <property name="topMargin">
        <number>2</number>
       </property>
       <property name="bottomMargin">
        <number>5</number>
       </property>
-      <item>
+      <item row="0" column="0">
        <widget class="QLabel" name="titleLabel_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
@@ -70,11 +73,11 @@
          <number>-4</number>
         </property>
         <property name="text">
-         <string>&lt;b&gt;&lt;h2&gt;ModuleTitle&lt;/h2&gt;&lt;/b&gt;</string>
+         <string>&lt;b&gt;&lt;h3&gt;ModuleTitle&lt;/h3&gt;&lt;/b&gt;</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="1">
        <widget class="QPushButton" name="moduleActionButton_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -84,18 +87,28 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>65</width>
+          <width>0</width>
           <height>23</height>
          </size>
         </property>
         <property name="maximumSize">
          <size>
-          <width>65</width>
+          <width>40</width>
           <height>23</height>
          </size>
         </property>
         <property name="text">
-         <string>Actions</string>
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="scirun5.qrc">
+          <normaloff>:/gear/Gear.ico</normaloff>:/gear/Gear.ico</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -112,23 +125,23 @@
       <property name="sizeHint" stdset="0">
        <size>
         <width>20</width>
-        <height>2</height>
+        <height>5</height>
        </size>
       </property>
      </spacer>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="buttonHorizontalLayout_">
+     <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetFixedSize</enum>
       </property>
       <property name="topMargin">
-       <number>2</number>
+       <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>2</number>
+       <number>0</number>
       </property>
-      <item>
+      <item row="0" column="0">
        <widget class="QPushButton" name="optionsButton_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -153,12 +166,18 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="1">
        <widget class="QProgressBar" name="progressBar_">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="minimumSize">
          <size>
-          <width>0</width>
-          <height>23</height>
+          <width>100</width>
+          <height>20</height>
          </size>
         </property>
         <property name="value">
@@ -175,7 +194,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="2">
        <widget class="QPushButton" name="helpButton_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -200,7 +219,7 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="3">
        <widget class="QPushButton" name="logButton2_">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -230,6 +249,8 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="scirun5.qrc"/>
+ </resources>
  <connections/>
 </ui>

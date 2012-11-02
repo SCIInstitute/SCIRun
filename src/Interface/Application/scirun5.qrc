@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="gear">
+    <file>Gear.ico</file>
+  </qresource>
+</RCC>

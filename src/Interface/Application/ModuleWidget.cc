@@ -133,10 +133,12 @@ namespace Gui {
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
   moduleId_(theModule->get_id()),
-  theModule_(theModule)
+  theModule_(theModule),
+  inputPortLayout_(0),
+  outputPortLayout_(0)
 {
   setupUi(this);
-  titleLabel_->setText("<b><h2>" + name + "</h2></b>");
+  titleLabel_->setText("<b><h3>" + name + "</h3></b>");
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
@@ -187,20 +189,10 @@ void ModuleWidget::setupModuleActions()
 
 void ModuleWidget::addPortLayouts()
 {
-  outputPortLayout_ = new QHBoxLayout;
-  outputPortLayout_->setSpacing(3);
   
-  QHBoxLayout* outputRowLayout = new QHBoxLayout;
-  outputRowLayout->setAlignment(Qt::AlignLeft);
-  outputRowLayout->addLayout(outputPortLayout_);
-  verticalLayout->insertLayout(-1, outputRowLayout);
-
-  inputPortLayout_ = new QHBoxLayout;
-  inputPortLayout_->setSpacing(3);
-  QHBoxLayout* inputRowLayout = new QHBoxLayout;
-  inputRowLayout->setAlignment(Qt::AlignLeft);
-  inputRowLayout->addLayout(inputPortLayout_);
-  verticalLayout->insertLayout(0, inputRowLayout);
+  
+  
+  verticalLayout->setContentsMargins(5,0,5,0);
 }
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
@@ -234,12 +226,27 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
 
 void ModuleWidget::addPort(OutputPortWidget* port)
 {
+  if (!outputPortLayout_)
+  {
+    //TODO--extract method
+    outputPortLayout_ = new QHBoxLayout;
+    outputPortLayout_->setSpacing(3);
+    outputPortLayout_->setAlignment(Qt::AlignLeft);
+    verticalLayout->insertLayout(-1, outputPortLayout_);
+  }
   outputPortLayout_->addWidget(port);
   outputPorts_.push_back(port);
 }
 
 void ModuleWidget::addPort(InputPortWidget* port)
 {
+  if (!inputPortLayout_)
+  {
+    inputPortLayout_ = new QHBoxLayout;
+    inputPortLayout_->setSpacing(3);
+    inputPortLayout_->setAlignment(Qt::AlignLeft);
+    verticalLayout->insertLayout(0, inputPortLayout_);
+  }
   inputPortLayout_->addWidget(port);
   inputPorts_.push_back(port);
 }

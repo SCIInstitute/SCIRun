@@ -70,6 +70,8 @@ SET(Interface_Application_FORMS
 )
 
 SET(Interface_Application_RESOURCES
+#Gear.ico
+scirun5.qrc
 #Interface/Application/scirun-icon-small.ico
 #Interface/Application/scirun-icon-large.ico
 #Interface/Application/lin_agt_wrench-32.png
