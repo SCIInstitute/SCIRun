@@ -42,9 +42,10 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  executeButton_->setEnabled(false);
+  fixSize();
+  //executeButton_->setEnabled(false);
   
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
 }

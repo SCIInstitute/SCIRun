@@ -53,6 +53,7 @@ namespace Gui {
     void executeButtonPressed();
   protected:
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
+    void fixSize();
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
   };
 

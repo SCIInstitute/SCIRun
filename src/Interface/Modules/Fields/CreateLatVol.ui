@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
+    <width>454</width>
     <height>549</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>454</width>
+    <height>549</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -18,7 +30,7 @@
     <rect>
      <x>10</x>
      <y>510</y>
-     <width>413</width>
+     <width>421</width>
      <height>23</height>
     </rect>
    </property>
@@ -30,19 +42,6 @@
    </property>
    <property name="centerButtons">
     <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QCommandLinkButton" name="executeButton_">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>50</y>
-     <width>185</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Execute</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -65,7 +64,7 @@
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>221</width>
+         <width>291</width>
          <height>131</height>
         </rect>
        </property>
@@ -124,7 +123,7 @@
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>127</width>
+         <width>211</width>
          <height>65</height>
         </rect>
        </property>
@@ -164,7 +163,7 @@
         <rect>
          <x>10</x>
          <y>30</y>
-         <width>178</width>
+         <width>251</width>
          <height>42</height>
         </rect>
        </property>

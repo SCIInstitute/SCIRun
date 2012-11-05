@@ -36,9 +36,15 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   state_(state)
 {
   setModal(false);
-  //if (minimumWidth() > 0 && minimumHeight() > 0)
-  //  setFixedSize(minimumWidth(), minimumHeight());
 
   if (state_)
     state_->connect_state_changed(boost::bind(&ModuleDialogGeneric::pull, this));
+}
+
+void ModuleDialogGeneric::fixSize()
+{
+  if (minimumWidth() > 0 && minimumHeight() > 0)
+  {
+    setFixedSize(minimumWidth(), minimumHeight());
+  }
 }
