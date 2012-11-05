@@ -126,6 +126,7 @@ void NetworkEditor::setupModule(ModuleWidget* module)
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
+  connect(moduleEventProxy_.get(), SIGNAL(moduleExecuteStart(const std::string&)), module, SLOT(resetLogButtonColor(const std::string&)));
 
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);

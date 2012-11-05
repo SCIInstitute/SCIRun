@@ -46,14 +46,7 @@ ReceiveScalarModule::ReceiveScalarModule()
 
 void ReceiveScalarModule::execute()
 {
-  DatatypeHandleOption data = get_input_handle(0);
-  if (data)
-  {
-    const Double* doubleData = (*data)->as<Double>();
-    if (doubleData)
-    {
-      latestValue_ = doubleData->getValue();
-      get_state()->setValue(ReceivedValue, latestValue_);
-    }
-  }
+  auto doubleData = getRequiredInput<Double>(0);
+  latestValue_ = doubleData->getValue();
+  get_state()->setValue(ReceivedValue, latestValue_);
 }

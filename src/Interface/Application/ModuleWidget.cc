@@ -192,6 +192,14 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
     .arg(color.blue()));
 }
 
+void ModuleWidget::resetLogButtonColor(const std::string& moduleId)
+{
+  if (moduleId == theModule_->get_id())
+  {
+    logButton2_->setStyleSheet("");
+  }
+}
+
 void ModuleWidget::setupModuleActions()
 {
   actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
@@ -201,9 +209,6 @@ void ModuleWidget::setupModuleActions()
 
 void ModuleWidget::addPortLayouts()
 {
-  
-  
-  
   verticalLayout->setContentsMargins(5,0,5,0);
 }
 
@@ -332,7 +337,6 @@ void ModuleWidget::execute()
 
 void ModuleWidget::setExecutionTime(int milliseconds) 
 { 
-  //executionTime_ = milliseconds; 
   setPercentComplete(0);
 }
 
@@ -347,7 +351,6 @@ void ModuleWidget::makeOptionsDialog()
 
     dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state(), 0));
     dialog_->pull();
-    connect(dialog_.get(), SIGNAL(executionTimeChanged(int)), this, SLOT(setExecutionTime(int)));
     connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
     connect(this, SIGNAL(moduleExecuted()), dialog_.get(), SLOT(moduleExecuted()));
   }
@@ -357,5 +360,7 @@ void ModuleWidget::showOptionsDialog()
 {
   makeOptionsDialog();
   dialog_->show();
+  dialog_->raise();
+  dialog_->activateWindow();
 }
 

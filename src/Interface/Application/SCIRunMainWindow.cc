@@ -230,6 +230,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   makeFilterButtonMenu();
+  activateWindow();
 }
 
 void SCIRunMainWindow::doInitialStuff()
