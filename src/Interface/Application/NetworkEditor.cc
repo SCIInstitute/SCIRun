@@ -70,6 +70,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
 
   updateActions();
+  ensureVisible(0,0,0,0);
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
@@ -334,7 +335,7 @@ void NetworkEditor::createActions()
   //addLinkAction_->setShortcut(tr("Ctrl+L"));
   //connect(addLinkAction_, SIGNAL(triggered()), this, SLOT(addLink()));
 
-  deleteAction_ = new QAction(tr("&Delete selected modules"), this);
+  deleteAction_ = new QAction(tr("&Delete selected objects"), this);
   deleteAction_->setIcon(QIcon(":/images/delete.png"));
   deleteAction_->setShortcut(tr("Del"));
   connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
