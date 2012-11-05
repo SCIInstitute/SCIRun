@@ -130,6 +130,17 @@ namespace Gui {
   };
 }}
 
+namespace
+{
+#ifdef WIN32
+  const int moduleWidthThreshold = 220;
+  const int extraModuleWidth = 40;
+#else
+  const int moduleWidthThreshold = 240;
+  const int extraModuleWidth = 30;
+#endif
+}
+
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
   moduleId_(theModule->get_id()),
@@ -146,16 +157,11 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   addPortLayouts();
   addPorts(*theModule);
 
-  //TODO: this code should be used to set the correct sizes.
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
-  //std::cout << "label width for " << name.toStdString() << " is " << pixelWidth << std::endl;
-  //std::cout << "\tand my frame size is " << width() << std::endl;
-  //std::cout << "\tand label sizehint width is: " << titleLabel_->sizeHint().width() << std::endl;
-  int extraWidth = pixelWidth - 240;
+  int extraWidth = pixelWidth - moduleWidthThreshold;
   if (extraWidth > 0)
   {
-    resize(width() + extraWidth + 30, height());
-    //std::cout << "increasing width by " << extraWidth + 30 << std::endl;
+    resize(width() + extraWidth + extraModuleWidth, height());
   }
    
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
