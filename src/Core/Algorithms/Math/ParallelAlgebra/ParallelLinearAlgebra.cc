@@ -32,9 +32,7 @@
 //TODO DAN: REFACTORING NEEDED: LEVEL HIGHEST
 ///////////////////////////
 
-#include <float.h>
-
-#include <boost/thread.hpp>
+#include <cfloat>
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -43,20 +41,12 @@
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Thread/Parallel.h>
 
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
-
-Barrier::Barrier(const std::string& name, size_t numThreads) : name_(name), barrier_(numThreads)
-{
-  std::cout << "Initiating barrier with thread count " << numThreads << std::endl;
-}
-
-void Barrier::wait()
-{
-  barrier_.wait();
-}
+using namespace SCIRun::Core::Thread;
 
 ParallelLinearAlgebraBase::ParallelLinearAlgebraBase() 
 {}
@@ -792,32 +782,11 @@ double ParallelLinearAlgebra::reduce_min(double val)
   return (ret);
 }
 
-#include <boost/foreach.hpp>
 
-class Parallel
-{
-public:
-  typedef boost::function<void(int)> IndexedTask;
-  static void RunTasks(IndexedTask task, int numProcs)
-  {
-    std::vector<boost::shared_ptr<boost::thread>> threads(numProcs);
-
-    for (int i = 0; i < numProcs; ++i)
-    {
-      threads[i].reset(new boost::thread(boost::bind(task, i)));
-    }
-
-    BOOST_FOREACH(boost::shared_ptr<boost::thread> t, threads)
-    {
-      t->join();
-      t.reset();
-    }
-  }
-};
 
 bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc)
 {
-  int size = matrices.A->nrows();
+  size_t size = matrices.A->nrows();
   if (matrices.b->nrows() != size
     || matrices.x->nrows() != size
     || matrices.x0->nrows() != size)
@@ -825,30 +794,20 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
 
   //! Require a minimum of 50 variables per processor
   //! Below that parallelism is overhead
-  std::cout << "nproc passed in as " << nproc << std::endl;
-  if (nproc*50 > size) 
+  if (nproc*50 > static_cast<int>(size))
   {
-    std::cout << "size is " << size << std::endl;
     nproc = size / 50;
   }
   if (nproc < 1) 
   {
-    std::cout << "getting boost thread concurrency" << std::endl;
-    nproc = boost::thread::hardware_concurrency();
+    nproc = Parallel::NumCores();
   }
-
-  std::cout << "nproc set to " << nproc << std::endl;
 
   ParallelLinearAlgebraSharedData sharedData(matrices, nproc);
   
   auto task_i = [&sharedData, this](int i) { run_parallel(sharedData, i); };
   Parallel::RunTasks(task_i, nproc);
 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-  Thread::parallel(this,&ParallelLinearAlgebraBase::run_parallel,nproc);
-#endif
-
-  //std::cout << "need to fill in code here!" << std::endl;
   return sharedData.success();
 }
 

@@ -24,43 +24,30 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
-SET(Algorithms_Math_SRCS
-  AppendMatrix.cc
-  EvaluateLinearAlgebraUnaryAlgo.cc
-  EvaluateLinearAlgebraBinaryAlgo.cc
-  ReportMatrixInfo.cc
-  SolveLinearSystemWithEigen.cc
-  LinearSystem/SolveLinearSystemAlgo.cc
-  ParallelAlgebra/ParallelLinearAlgebra.cc
+
+SET(Core_Thread_SRCS
+  Barrier.cc
+  Parallel.cc
 )
 
-SET(Algorithms_Math_HEADERS
-  AppendMatrix.h
-  EvaluateLinearAlgebraUnary.h
-  EvaluateLinearAlgebraBinary.h
-  ReportMatrixInfo.h
+SET(Core_Thread_HEADERS
+  Barrier.h
+  Parallel.h
   Share.h
-  SolveLinearSystemWithEigen.h
-  LinearSystem/SolveLinearSystemAlgo.h
-  ParallelAlgebra/ParallelLinearAlgebra.h
 )
 
-ADD_LIBRARY(Algorithms_Math 
-  ${Algorithms_Math_HEADERS}
-  ${Algorithms_Math_SRCS}
+ADD_LIBRARY(Core_Thread 
+  ${Core_Thread_SRCS}
+  ${Core_Thread_HEADERS}
 )
 
-TARGET_LINK_LIBRARIES(Algorithms_Math
-  Core_Datatypes
-  Core_Thread
-  Algorithms_Base
+TARGET_LINK_LIBRARIES(Core_Thread
   ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_Math)
+  ADD_DEFINITIONS(-DBUILD_Core_Thread)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)

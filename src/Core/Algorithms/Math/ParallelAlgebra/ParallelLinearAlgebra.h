@@ -36,8 +36,8 @@
 #include <vector>
 #include <list>
 #include <boost/noncopyable.hpp>
-#include <boost/thread/barrier.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Thread/Barrier.h>
 #include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
@@ -46,18 +46,7 @@ namespace Algorithms {
 namespace Math {
 
   class ParallelLinearAlgebra;
-
-  //TODO move to Thread/Util library obviously
-  class SCISHARE Barrier 
-  {
-  public:
-    Barrier(const std::string& name, size_t numThreads);
-    void wait();
-  private:
-    std::string name_;
-    boost::barrier barrier_;
-  };
-
+  
   struct SCISHARE SolverInputs
   {
     Datatypes::SparseRowMatrixHandle A;
@@ -114,7 +103,7 @@ namespace Math {
     std::list<Datatypes::DenseColumnMatrixHandle> vectors_;
     std::vector<bool> success_;
     SolverInputs imatrices_;
-    Barrier barrier_;
+    SCIRun::Core::Thread::Barrier barrier_;
     int numProcs_;
     //! classes for communication
     std::vector<double> reduce1_;

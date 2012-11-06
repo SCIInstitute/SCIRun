@@ -26,41 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_Math_SRCS
-  AppendMatrix.cc
-  EvaluateLinearAlgebraUnaryAlgo.cc
-  EvaluateLinearAlgebraBinaryAlgo.cc
-  ReportMatrixInfo.cc
-  SolveLinearSystemWithEigen.cc
-  LinearSystem/SolveLinearSystemAlgo.cc
-  ParallelAlgebra/ParallelLinearAlgebra.cc
+SET(Core_Thread_Tests_SRCS
+  ParallelTests.cc
 )
 
-SET(Algorithms_Math_HEADERS
-  AppendMatrix.h
-  EvaluateLinearAlgebraUnary.h
-  EvaluateLinearAlgebraBinary.h
-  ReportMatrixInfo.h
-  Share.h
-  SolveLinearSystemWithEigen.h
-  LinearSystem/SolveLinearSystemAlgo.h
-  ParallelAlgebra/ParallelLinearAlgebra.h
+SCIRUN_ADD_UNIT_TEST(Core_Thread_Tests
+  ${Core_Thread_Tests_SRCS}
 )
 
-ADD_LIBRARY(Algorithms_Math 
-  ${Algorithms_Math_HEADERS}
-  ${Algorithms_Math_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Algorithms_Math
-  Core_Datatypes
+TARGET_LINK_LIBRARIES(Core_Thread_Tests
   Core_Thread
-  Algorithms_Base
-  ${SCI_BOOST_LIBRARY}
+  gtest_main
+  gtest
+  gmock
 )
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_Math)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(Tests)
