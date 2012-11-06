@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>536</width>
+    <width>449</width>
     <height>303</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>449</width>
+    <height>303</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -126,19 +138,6 @@
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QCommandLinkButton" name="executeButton_">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>50</y>
-     <width>185</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Execute</string>
-   </property>
   </widget>
  </widget>
  <resources/>

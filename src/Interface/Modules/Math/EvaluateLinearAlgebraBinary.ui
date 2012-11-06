@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>536</width>
-    <height>232</height>
+    <width>439</width>
+    <height>186</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>439</width>
+    <height>186</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
@@ -16,8 +28,8 @@
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>17</x>
-     <y>191</y>
+     <x>10</x>
+     <y>150</y>
      <width>413</width>
      <height>23</height>
     </rect>
@@ -37,7 +49,7 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>413</width>
+     <width>321</width>
      <height>131</height>
     </rect>
    </property>
@@ -82,73 +94,6 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QLabel" name="executionTimeLabel_">
-   <property name="geometry">
-    <rect>
-     <x>18</x>
-     <y>160</y>
-     <width>96</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Execution Time (ms)</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="executionTimeSpinBox_">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>162</y>
-     <width>45</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>false</bool>
-   </property>
-   <property name="maximum">
-    <number>5000</number>
-   </property>
-  </widget>
-  <widget class="QSlider" name="executionTimeHorizontalSlider_">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>160</y>
-     <width>84</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="maximum">
-    <number>5000</number>
-   </property>
-   <property name="singleStep">
-    <number>10</number>
-   </property>
-   <property name="pageStep">
-    <number>250</number>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="tickPosition">
-    <enum>QSlider::TicksBelow</enum>
-   </property>
-  </widget>
-  <widget class="QCommandLinkButton" name="executeButton_">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>90</y>
-     <width>185</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Execute</string>
-   </property>
-  </widget>
  </widget>
  <resources/>
  <connections>
@@ -181,38 +126,6 @@
     <hint type="destinationlabel">
      <x>286</x>
      <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>executionTimeHorizontalSlider_</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>executionTimeSpinBox_</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>242</x>
-     <y>25</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>400</x>
-     <y>25</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>executionTimeSpinBox_</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>executionTimeHorizontalSlider_</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>400</x>
-     <y>25</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>242</x>
-     <y>25</y>
     </hint>
    </hints>
   </connection>

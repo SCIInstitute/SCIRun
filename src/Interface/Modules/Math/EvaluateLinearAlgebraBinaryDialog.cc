@@ -40,9 +40,10 @@ EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  executeButton_->setEnabled(false);
+  fixSize();
+  //executeButton_->setEnabled(false);
   
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(addRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(subtractRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));
   connect(multiplyRadioButton_, SIGNAL(clicked()), this, SLOT(pushOperationToState()));

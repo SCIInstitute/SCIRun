@@ -29,7 +29,7 @@
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,9 +41,10 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  executeButton_->setEnabled(false);
+  fixSize();
+  //executeButton_->setEnabled(false);
   
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
 
   //TODO: clean these up...still getting circles of push/pull
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
