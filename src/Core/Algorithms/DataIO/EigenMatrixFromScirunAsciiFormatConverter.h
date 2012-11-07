@@ -34,6 +34,7 @@
 #include <boost/optional.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Utils/ProgressReporter.h>
 #include <Core/Algorithms/DataIO/Share.h>
 
 namespace SCIRun {
@@ -46,6 +47,7 @@ namespace internal
   class SCISHARE EigenMatrixFromScirunAsciiFormatConverter
   {
   public:
+    explicit EigenMatrixFromScirunAsciiFormatConverter(const Utility::ProgressReporter* reporter = 0);
     Core::Datatypes::MatrixHandle make(const std::string& matFile);
 
     Core::Datatypes::SparseRowMatrixHandle makeSparse(const std::string& matFile);
@@ -69,6 +71,8 @@ namespace internal
     DenseData convertRaw(const RawDenseData& data);
     boost::optional<RawSparseData> parseSparseMatrixString(const std::string& matString);
     SparseData convertRaw(const RawSparseData& data);
+  private:
+    const Utility::ProgressReporter* reporter_;
   };
 
 }}}}}

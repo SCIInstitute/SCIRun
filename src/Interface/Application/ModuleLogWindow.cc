@@ -63,21 +63,25 @@ ModuleLogger::ModuleLogger(ModuleLogWindow* window)
 
 void ModuleLogger::error(const std::string& msg)
 {
+  const QColor red = Qt::red;
   auto qmsg = QString::fromStdString(msg);
-  logSignal("<b>ERROR: " + qmsg + "</b>", Qt::red);
-  alert(Qt::red);
+  logSignal("<b>ERROR: " + qmsg + "</b>", red);
+  alert(red);
   popup(qmsg);
 }
 
 void ModuleLogger::warning(const std::string& msg)
 {
-  logSignal("WARNING: " + QString::fromStdString(msg), Qt::yellow);
-  alert(Qt::yellow);
+  const QColor yellow = Qt::yellow;
+  logSignal("WARNING: " + QString::fromStdString(msg), yellow);
+  alert(yellow);
 }
 
 void ModuleLogger::remark(const std::string& msg)
 {
-  logSignal("REMARK: " + QString::fromStdString(msg), Qt::blue);
+  const QColor blue = Qt::blue;
+  logSignal("REMARK: " + QString::fromStdString(msg), blue);
+  alert(blue);
 }
 
 void ModuleLogger::status(const std::string& msg)

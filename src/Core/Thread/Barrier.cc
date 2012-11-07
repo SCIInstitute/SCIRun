@@ -32,7 +32,7 @@ using namespace SCIRun::Core::Thread;
 
 Barrier::Barrier(const std::string& name, size_t numThreads) : name_(name), barrier_(numThreads)
 {
-  std::cout << "Initiating barrier with thread count " << numThreads << std::endl;
+  //std::cout << "Initiating barrier with thread count " << numThreads << std::endl;
 }
 
 void Barrier::wait()

@@ -35,6 +35,7 @@ SET(Core_Logging_HEADERS
   ConsoleLogger.h
   Logger.h
   LoggerFwd.h
+  ScopedTimeRemarker.h
   Share.h
 )
 

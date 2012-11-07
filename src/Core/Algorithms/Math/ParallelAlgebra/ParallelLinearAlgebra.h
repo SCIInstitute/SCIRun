@@ -85,10 +85,10 @@ namespace Math {
       for (size_t j = 0; j < success_.size(); ++j)
         if (!success_[j]) 
         {
-          std::cout << "returning false from success() dues to proc " << j << std::endl;
+          //std::cout << "returning false from success() dues to proc " << j << std::endl;
           return false;
         }
-      std::cout << "returning true from success()" << std::endl;
+      //std::cout << "returning true from success()" << std::endl;
       return true;  
     }
 

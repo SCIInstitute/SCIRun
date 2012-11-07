@@ -54,6 +54,7 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 
 void SolveLinearSystemDialog::pushParametersToState()
 {
+  //std::cout << "SLS pushing" << std::endl;
   //TODO: need pattern for this, to avoid silly recursion of push/pull.
   int max = maxIterationsSpinBox_->value();
   if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
@@ -66,7 +67,16 @@ void SolveLinearSystemDialog::pushParametersToState()
 
 void SolveLinearSystemDialog::pull()
 {
-  maxIterationsSpinBox_->setValue(state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt());
-  targetErrorLineEdit_->setText(QString::number(state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble()));
+  //std::cout << "SLS pulling" << std::endl;
+  auto iterations = state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
+  //std::cout << "SLS state value: " << iterState << std::endl;
+  //std::cout << "SLS QString value: " << QString::number(iterState).toStdString() << std::endl;
+  
+  auto tolerance = state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
+  //std::cout << "SLS state value: " << stateValue << std::endl;
+  //std::cout << "SLS QString value: " << QString::number(stateValue).toStdString() << std::endl;
+
+  maxIterationsSpinBox_->setValue(iterations);
+  targetErrorLineEdit_->setText(QString::number(tolerance));
 }
 

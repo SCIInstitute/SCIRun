@@ -43,33 +43,12 @@
 
 using namespace SCIRun::Core::Utility;
 
-ProgressReporter::ProgressReporter() :
-  progressCurrent_(/*"ProgressReporter::progress_amount_", */0),
-  progressMax_(100)
-{
-}
+//ProgressReporter::ProgressReporter() :
+//  progressCurrent_(/*"ProgressReporter::progress_amount_", */0),
+//  progressMax_(100)
+//{
+//}
 
 ProgressReporter::~ProgressReporter()
 {
 }
-
-void
-ProgressReporter::report_start(const std::string&)
-{
-}
-
-void
-ProgressReporter::report_end()
-{
-}
-
-void
-ProgressReporter::update_progress(double)
-{
-}
-
-void
-ProgressReporter::update_progress(int, int)
-{
-}
-

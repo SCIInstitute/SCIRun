@@ -55,22 +55,21 @@ namespace SCIRun {
       class SCISHARE ProgressReporter 
       {
         public:
-          ProgressReporter();
           virtual ~ProgressReporter();
 
-          virtual void report_start(const std::string& tag);
-          virtual void report_end();
+          virtual void report_start(const std::string& tag) const = 0;
+          virtual void report_end() const = 0;
 
           // Execution time progress.
           // Percent is number between 0.0-1.0
-          virtual void update_progress(double percent);
-          virtual void update_progress(int current, int max);
+          virtual void update_progress(double percent) const = 0;
+          inline void update_progress(int current, int max) const { update_progress(((double)current) / max); }
 
         protected:
           //TODO: replace with C++11 atomic<int>?
           //AtomicCounter         progress_current_;
-          int progressCurrent_;
-          int progressMax_;
+          //int progressCurrent_;
+          //int progressMax_;
       };
 
 }}}

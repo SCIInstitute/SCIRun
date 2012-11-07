@@ -79,7 +79,8 @@ public Q_SLOTS:
   void showOptionsDialog();
   void setExecutionTime(int milliseconds);
   void setLogButtonColor(const QColor& color);
-  void resetLogButtonColor(const std::string& moduleId);
+  void resetLogButtonColor();
+  void resetProgressBar();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);

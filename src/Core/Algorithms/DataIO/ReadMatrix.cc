@@ -56,7 +56,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   else if (boost::filesystem::extension(filename) == ".mat")
   {
     status("FOUND .mat file: assuming is SCIRUNv4 ASCII format.");
-    internal::EigenMatrixFromScirunAsciiFormatConverter conv;
+    internal::EigenMatrixFromScirunAsciiFormatConverter conv(this);
     return conv.make(filename);
   }
   ALGORITHM_INPUT_ERROR("Unknown matrix file format");

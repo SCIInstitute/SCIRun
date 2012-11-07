@@ -114,3 +114,5 @@ void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, con
 {
   parameters_[key] = AlgorithmParameter(key, defaultValue);
 }
+
+AlgorithmStatusReporter::UpdaterFunc AlgorithmStatusReporter::updaterFunc_([](double r) { std::cout << "Algorithm at " << std::setiosflags(std::ios::fixed) << std::setprecision(2) << r*100 << "% complete" << std::endl;});

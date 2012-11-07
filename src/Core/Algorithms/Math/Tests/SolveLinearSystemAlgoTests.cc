@@ -86,7 +86,15 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   EXPECT_EQ(428931, solution->nrows());
   EXPECT_EQ(1, solution->ncols());
 
+  auto scirun4solution = matrix_cast::as_dense(reader.run("E:\\stuff\\CGDarrell\\scirun4solution.txt"));
+  ASSERT_TRUE(scirun4solution);
+  DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
+  EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, 0.15);
 
   WriteMatrixAlgorithm writer;
   writer.run(solution, "E:\\stuff\\CGDarrell\\portedSolution.txt");
+
+  auto diff = *expected - *solution;
+  auto maxDiff = diff.maxCoeff();
+  std::cout << "max diff is: " << maxDiff << std::endl;
 }

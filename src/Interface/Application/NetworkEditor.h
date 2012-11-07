@@ -104,6 +104,7 @@ Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void modified();
+    void networkExecuted();
   private Q_SLOTS:
     void del();
     void cut();

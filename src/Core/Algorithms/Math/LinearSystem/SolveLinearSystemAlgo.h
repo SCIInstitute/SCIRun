@@ -50,6 +50,7 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
   public:
     SolveLinearSystemAlgo();
   
+    //TODO: refactor to new algorithm::run standard signature
     bool run(Datatypes::SparseRowMatrixHandle A,
              Datatypes::DenseColumnMatrixHandle b,
              Datatypes::DenseColumnMatrixHandle x0, 

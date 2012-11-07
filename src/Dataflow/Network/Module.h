@@ -158,15 +158,17 @@ namespace Networks {
   {
     auto inputOpt = get_input_handle(idx);
     if (!inputOpt)
-      MODULE_INPUT_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port # " + boost::lexical_cast<std::string>(idx));
+      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port #" + boost::lexical_cast<std::string>(idx));
 
     if (!*inputOpt)
-      MODULE_INPUT_ERROR_WITH_TYPE(NullHandleOnPortException, "");
+      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
 
     boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
     if (!data)
     {
-      MODULE_INPUT_ERROR_WITH_TYPE(WrongDatatypeOnPortException, "");
+      std::ostringstream ostr;
+      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
+      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
     }
     return data;
   }

@@ -26,9 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+#include <sstream>
 #include <Core/Logging/Logger.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
 
 using namespace SCIRun::Core::Logging;
 
 LoggerInterface::~LoggerInterface() {}
+
+ScopedTimeRemarker::ScopedTimeRemarker(LoggerInterface* log, const std::string& label) : log_(log), label_(label) 
+{}
+
+ScopedTimeRemarker::~ScopedTimeRemarker()
+{
+  std::ostringstream perf;
+  perf << label_ <<  " took " << timer_.elapsed() << " seconds." << std::endl;
+  log_->remark(perf.str());
+}

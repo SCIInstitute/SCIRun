@@ -26,10 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_LOGGING_LOGGER_H
-#define CORE_LOGGING_LOGGER_H 
+#ifndef CORE_LOGGING_SCOPEDTIMEREMARKER_H
+#define CORE_LOGGING_SCOPEDTIMEREMARKER_H 
 
 #include <string>
+#include <boost/timer.hpp>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Logging/Share.h>
 
 namespace SCIRun 
@@ -38,15 +40,15 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class SCISHARE LoggerInterface 
+      class SCISHARE ScopedTimeRemarker
       {
       public:
-        virtual ~LoggerInterface();
-
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
+        ScopedTimeRemarker(LoggerInterface* log, const std::string& label);
+        ~ScopedTimeRemarker();
+      private:
+        LoggerInterface* log_;
+        std::string label_;
+        boost::timer timer_;
       };
     }
   }

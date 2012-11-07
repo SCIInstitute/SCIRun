@@ -126,7 +126,8 @@ void NetworkEditor::setupModule(ModuleWidget* module)
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
-  connect(moduleEventProxy_.get(), SIGNAL(moduleExecuteStart(const std::string&)), module, SLOT(resetLogButtonColor(const std::string&)));
+  connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
+  connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(maxZ_);
   proxy->setVisible(true);
@@ -431,6 +432,7 @@ void NetworkEditor::executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinis
   controller_->executeAll(*this, func);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
+  Q_EMIT networkExecuted();
 }
 
 ExecutableObject* NetworkEditor::lookupExecutable(const std::string& id) const

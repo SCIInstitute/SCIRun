@@ -70,7 +70,7 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
   if (proc == nproc_-1) local_size_ = end_ - start_;
   local_size16_ = (local_size_&(~0xf));
 
-  std::cout << "PLA #" << proc_ << " out of " << nproc_ << " is handling range [" << start_ << "," << end_ << ")" << std::endl;
+  //std::cout << "PLA #" << proc_ << " out of " << nproc_ << " is handling range [" << start_ << "," << end_ << ")" << std::endl;
   
   // Set reduction buffers
   // To optimize performance we alternate buffers

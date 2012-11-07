@@ -47,6 +47,8 @@ namespace Math {
     static std::string inputPort1Name() { return "RHS"; }
     static std::string outputPort0Name() { return "Solution"; }
   };
+
+  struct SCISHARE LinearAlgebraError : virtual Core::ExceptionBase {};
 }}}
 
 #endif

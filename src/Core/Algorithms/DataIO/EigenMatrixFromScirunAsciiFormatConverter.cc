@@ -43,6 +43,7 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms::DataIO::internal;
 
 namespace
@@ -76,6 +77,10 @@ namespace
   }
 }
 
+EigenMatrixFromScirunAsciiFormatConverter::EigenMatrixFromScirunAsciiFormatConverter(const ProgressReporter* reporter) : reporter_(reporter)
+{
+}
+
 MatrixHandle EigenMatrixFromScirunAsciiFormatConverter::make(const std::string& matFile)
 {
   if (fileContainsString(matFile, "DenseMatrix"))
@@ -92,6 +97,8 @@ MatrixHandle EigenMatrixFromScirunAsciiFormatConverter::make(const std::string& 
 SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(const std::string& matFile)
 {
   SparseData data = convertRaw(parseSparseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
+  if (reporter_)
+    reporter_->update_progress(0.3);
   SparseRowMatrixHandle mat(new SparseRowMatrix(data.get<0>(), data.get<1>()));
 
   typedef Eigen::Triplet<double> T;
@@ -107,6 +114,11 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
     int nextRow;
     for (int r = 0; r < mat->rows(); ++r)
     {
+      if (reporter_ && (r % 1000 == 1))
+      {
+        reporter_->update_progress(r, mat->rows());
+      }
+
       nextRow = rowAcc[r+1];
       while (count < nextRow)
       {
@@ -119,6 +131,8 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
 
   mat->setFromTriplets(tripletList.begin(), tripletList.end());
   mat->makeCompressed();
+  if (reporter_)
+    reporter_->update_progress(1);
   return mat;
 }
 

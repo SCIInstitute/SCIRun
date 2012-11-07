@@ -192,11 +192,19 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
     .arg(color.blue()));
 }
 
-void ModuleWidget::resetLogButtonColor(const std::string& moduleId)
+void ModuleWidget::resetLogButtonColor()
 {
-  if (moduleId == theModule_->get_id())
+  //if (moduleId == theModule_->get_id())
   {
     logButton2_->setStyleSheet("");
+  }
+}
+
+void ModuleWidget::resetProgressBar()
+{
+  //if (moduleId == theModule_->get_id())
+  {
+    progressBar_->setValue(0);
   }
 }
 

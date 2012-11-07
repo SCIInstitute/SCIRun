@@ -32,8 +32,10 @@
 #include <string>
 #include <stdexcept>
 #include <boost/variant.hpp>
+#include <boost/function.hpp>
 #include <Core/Logging/LoggerFwd.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Utils/ProgressReporter.h>
 #include <Core/Algorithms/Base/Share.h>
 
 namespace SCIRun {
@@ -87,17 +89,29 @@ namespace Algorithms {
   };
 
   //TODO
-  class SCISHARE AlgorithmStatusReporter
+  class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
     AlgorithmStatusReporter() {}
     ~AlgorithmStatusReporter() {}
         
-    void algo_start(const std::string& tag) {}
-    void algo_end() {}
-    void update_progress(double percent) const {}
-    void update_progress(size_t current, size_t max) const  {}
+    virtual void report_start(const std::string& tag) const {}
+//     {
+//       std::cout << "Algorithm starting: " << tag << std::endl;
+//     }
+
+   virtual void report_end() const {}
+//     {
+//       std::cout << "Algorithm ending." << std::endl;
+//     }
+
+    void update_progress(double percent) const { updaterFunc_(percent); }
+
+    typedef boost::function<void(double)> UpdaterFunc;
+    static void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }
+    static UpdaterFunc getUpdaterFunc() { return updaterFunc_; }
   private:
+    static UpdaterFunc updaterFunc_;
   };
 
   //TODO: link this to ModuleState via meeting discussion
