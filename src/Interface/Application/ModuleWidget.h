@@ -61,9 +61,6 @@ public:
   QPointF inputPortPosition() const;
   QPointF outputPortPosition() const;
 
-  double percentComplete() const;
-  void setPercentComplete(double p);
-
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
   //TODO abstract
@@ -77,16 +74,18 @@ public:
 public Q_SLOTS:
   virtual void execute();
   void showOptionsDialog();
-  void setExecutionTime(int milliseconds);
+  //void setExecutionTime(int milliseconds);
   void setLogButtonColor(const QColor& color);
   void resetLogButtonColor();
   void resetProgressBar();
+  void updateProgressBar(double percent);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
+  void updateProgressBarSignal(double percent);
 private:
   Ports inputPorts_;
   Ports outputPorts_;

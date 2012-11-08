@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <QtGui>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 
@@ -47,18 +48,21 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
   return QList<QAction*>() << barAction_ << counterAction_;
 }
 
-
 void NetworkExecutionProgressBar::updateTotalModules(int count)
 {
-  if (count >= 0)
+  //std::cout << "updateTotalModules: " << count << std::endl;
+  if (count >= 0 && count != totalModules_)
   {
     totalModules_ = count;
+    numModulesDone_ = 0;
     counterLabel_->setText(counterLabelString());
     progressBar_->setMaximum(count);
+    progressBar_->setValue(0);
   }
 }
 void NetworkExecutionProgressBar::incrementModulesDone()
 {
+  //std::cout << "incrementModulesDone: " << numModulesDone_ << std::endl;
   if (numModulesDone_ < totalModules_)
   {
     numModulesDone_++;
@@ -69,6 +73,7 @@ void NetworkExecutionProgressBar::incrementModulesDone()
 
 void NetworkExecutionProgressBar::resetModulesDone()
 {
+  //std::cout << "resetModulesDone: " << std::endl;
   numModulesDone_ = 0;
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);

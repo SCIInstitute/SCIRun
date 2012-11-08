@@ -87,22 +87,22 @@ namespace
       text_->append(message);
     }
 
-    virtual void error(const std::string& msg)
+    virtual void error(const std::string& msg) const
     {
       log("Error: " + QString::fromStdString(msg));
     }
 
-    virtual void warning(const std::string& msg)
+    virtual void warning(const std::string& msg) const
     {
       log("Warning: " + QString::fromStdString(msg));
     }
 
-    virtual void remark(const std::string& msg)
+    virtual void remark(const std::string& msg) const
     {
       log("Remark: " + QString::fromStdString(msg));
     }
 
-    virtual void status(const std::string& msg)
+    virtual void status(const std::string& msg) const
     {
       log(QString::fromStdString(msg));
     }

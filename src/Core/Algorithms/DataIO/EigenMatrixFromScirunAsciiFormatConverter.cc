@@ -98,7 +98,7 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
 {
   SparseData data = convertRaw(parseSparseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
   if (reporter_)
-    reporter_->update_progress(0.3);
+    reporter_->update_progress(0.7);
   SparseRowMatrixHandle mat(new SparseRowMatrix(data.get<0>(), data.get<1>()));
 
   typedef Eigen::Triplet<double> T;
@@ -116,7 +116,7 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
     {
       if (reporter_ && (r % 1000 == 1))
       {
-        reporter_->update_progress(r, mat->rows());
+        reporter_->update_progress(0.7 + (0.3*((double)r / mat->rows())));
       }
 
       nextRow = rowAcc[r+1];
@@ -138,6 +138,9 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
 
 boost::optional<std::string> EigenMatrixFromScirunAsciiFormatConverter::getMatrixContentsLine(const std::string& matStr)
 {
+  if (reporter_)
+    reporter_->update_progress(0.2);
+  
   std::istringstream reader(matStr);
   std::string line;
   while(std::getline(reader, line))
@@ -153,6 +156,8 @@ std::string EigenMatrixFromScirunAsciiFormatConverter::readFile(const std::strin
   std::ifstream matFile(filename.c_str());
   std::string matStr((std::istreambuf_iterator<char>(matFile)),
     std::istreambuf_iterator<char>());
+  if (reporter_)
+    reporter_->update_progress(0.1);
   return matStr;
 }
 
@@ -220,6 +225,8 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenM
   regex_match(matString, what, r);
   if (what.size() == 7)
   {
+    if (reporter_)
+      reporter_->update_progress(0.4);
     return boost::make_tuple(what[1].str(), what[2].str(), what[3].str(), what[4].str(), what[5].str(), what[6].str());
   }
   return boost::optional<RawSparseData>();
@@ -227,6 +234,8 @@ boost::optional<EigenMatrixFromScirunAsciiFormatConverter::RawSparseData> EigenM
 
 EigenMatrixFromScirunAsciiFormatConverter::SparseData EigenMatrixFromScirunAsciiFormatConverter::convertRaw(const RawSparseData& data)
 {
+  if (reporter_)
+    reporter_->update_progress(0.5);
   return boost::make_tuple(
     boost::lexical_cast<int>(data.get<0>()),
     boost::lexical_cast<int>(data.get<1>()),

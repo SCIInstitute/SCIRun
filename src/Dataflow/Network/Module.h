@@ -82,10 +82,13 @@ namespace Networks {
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const;
-    virtual void error(const std::string& msg) { errorSignal_(id_); getLogger()->error(msg); }
-    virtual void warning(const std::string& msg) { getLogger()->warning(msg); }
-    virtual void remark(const std::string& msg) { getLogger()->remark(msg); }
-    virtual void status(const std::string& msg) { getLogger()->status(msg); }
+    virtual void error(const std::string& msg) const { errorSignal_(id_); getLogger()->error(msg); }
+    virtual void warning(const std::string& msg) const { getLogger()->warning(msg); }
+    virtual void remark(const std::string& msg) const { getLogger()->remark(msg); }
+    virtual void status(const std::string& msg) const { getLogger()->status(msg); }
+
+    SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
+    virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) { updaterFunc_ = func; }
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
@@ -143,6 +146,7 @@ namespace Networks {
     ErrorSignalType errorSignal_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
+    SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
     static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
   };

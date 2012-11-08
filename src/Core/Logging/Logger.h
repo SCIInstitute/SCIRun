@@ -30,6 +30,7 @@
 #define CORE_LOGGING_LOGGER_H 
 
 #include <string>
+#include <Core/Logging/LoggerFwd.h>
 #include <Core/Logging/Share.h>
 
 namespace SCIRun 
@@ -43,10 +44,10 @@ namespace SCIRun
       public:
         virtual ~LoggerInterface();
 
-        virtual void error(const std::string& msg) = 0;
-        virtual void warning(const std::string& msg) = 0;
-        virtual void remark(const std::string& msg) = 0;
-        virtual void status(const std::string& msg) = 0;
+        virtual void error(const std::string& msg) const = 0;
+        virtual void warning(const std::string& msg) const = 0;
+        virtual void remark(const std::string& msg) const = 0;
+        virtual void status(const std::string& msg) const = 0;
       };
     }
   }

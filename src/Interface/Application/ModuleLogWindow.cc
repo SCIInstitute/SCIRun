@@ -61,7 +61,7 @@ ModuleLogger::ModuleLogger(ModuleLogWindow* window)
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
 }
 
-void ModuleLogger::error(const std::string& msg)
+void ModuleLogger::error(const std::string& msg) const
 {
   const QColor red = Qt::red;
   auto qmsg = QString::fromStdString(msg);
@@ -70,21 +70,21 @@ void ModuleLogger::error(const std::string& msg)
   popup(qmsg);
 }
 
-void ModuleLogger::warning(const std::string& msg)
+void ModuleLogger::warning(const std::string& msg) const
 {
   const QColor yellow = Qt::yellow;
   logSignal("WARNING: " + QString::fromStdString(msg), yellow);
   alert(yellow);
 }
 
-void ModuleLogger::remark(const std::string& msg)
+void ModuleLogger::remark(const std::string& msg) const
 {
   const QColor blue = Qt::blue;
   logSignal("REMARK: " + QString::fromStdString(msg), blue);
   alert(blue);
 }
 
-void ModuleLogger::status(const std::string& msg)
+void ModuleLogger::status(const std::string& msg) const
 {
   logSignal(QString::fromStdString(msg), Qt::black);
 }

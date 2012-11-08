@@ -42,10 +42,10 @@ namespace SCIRun
       class SCISHARE ConsoleLogger : public LoggerInterface 
       {
       public:
-        virtual void error(const std::string& msg);
-        virtual void warning(const std::string& msg);
-        virtual void remark(const std::string& msg);
-        virtual void status(const std::string& msg);
+        virtual void error(const std::string& msg) const;
+        virtual void warning(const std::string& msg) const;
+        virtual void remark(const std::string& msg) const;
+        virtual void status(const std::string& msg) const;
       };
 
     }

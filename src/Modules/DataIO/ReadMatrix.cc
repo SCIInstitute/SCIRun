@@ -46,6 +46,8 @@ void ReadMatrixModule::execute()
 
   ReadMatrixAlgorithm algo;
   algo.setLogger(getLogger());
+  algo.setUpdaterFunc(getUpdaterFunc());
+
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
   send_output_handle(0, matrix);
   StringHandle file(new String(filename_));

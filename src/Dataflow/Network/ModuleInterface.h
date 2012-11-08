@@ -33,6 +33,7 @@
 #include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/ExecutableObject.h>
 #include <Core/Logging/LoggerFwd.h>
 #include <Dataflow/Network/Share.h>
@@ -62,6 +63,7 @@ namespace Networks {
   typedef boost::signals2::signal<void (const std::string&)> ExecuteEndsSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ErrorSignalType;
 
+  //TODO: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ExecutableObject
   {
   public:
@@ -80,6 +82,7 @@ namespace Networks {
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
+    virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;

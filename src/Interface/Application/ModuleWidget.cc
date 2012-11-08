@@ -175,12 +175,14 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(show()));
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
+  connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
 
   LoggerHandle logger(new ModuleLogger(logWindow_));
   theModule_->setLogger(logger);
+  theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
@@ -194,18 +196,12 @@ void ModuleWidget::setLogButtonColor(const QColor& color)
 
 void ModuleWidget::resetLogButtonColor()
 {
-  //if (moduleId == theModule_->get_id())
-  {
-    logButton2_->setStyleSheet("");
-  }
+  logButton2_->setStyleSheet("");
 }
 
 void ModuleWidget::resetProgressBar()
 {
-  //if (moduleId == theModule_->get_id())
-  {
-    progressBar_->setValue(0);
-  }
+  progressBar_->setValue(0);
 }
 
 void ModuleWidget::setupModuleActions()
@@ -306,32 +302,10 @@ QPointF ModuleWidget::outputPortPosition() const
   return pos();
 }
 
-double ModuleWidget::percentComplete() const
-{
-  return progressBar_->value() / 100.0;
-}
-
-void ModuleWidget::setPercentComplete(double p)
-{
-  if (0 <= p && p <= 1)
-  {
-    progressBar_->setValue(100 * p);
-  }
-}
-
 void ModuleWidget::ModuleExecutionRunner::operator()()
 {
-  const int numIncrements = 20;
-  const int increment = /*module_->executionTime_*/100 / numIncrements;
-  
   module_->theModule_->do_execute();
-
-  for (int i = 0; i < numIncrements; ++i)
-  {
-     boost::this_thread::sleep(boost::posix_time::milliseconds(increment));
-     module_->setPercentComplete(i / (double)numIncrements);
-  }
-  module_->setPercentComplete(1);
+  module_->updateProgressBar(1);
 }
 
 void ModuleWidget::execute()
@@ -341,11 +315,6 @@ void ModuleWidget::execute()
     runner();
   }
   Q_EMIT moduleExecuted();
-}
-
-void ModuleWidget::setExecutionTime(int milliseconds) 
-{ 
-  setPercentComplete(0);
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;
@@ -372,3 +341,8 @@ void ModuleWidget::showOptionsDialog()
   dialog_->activateWindow();
 }
 
+void ModuleWidget::updateProgressBar(double percent)
+{
+  //std::cout << " ModuleWidget::updateProgressBar " << percent << std::endl;
+  progressBar_->setValue(percent * progressBar_->maximum());
+}

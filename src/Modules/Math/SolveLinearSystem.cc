@@ -72,6 +72,8 @@ void SolveLinearSystemModule::execute()
   SolveLinearSystemAlgo algo;
   algo.set(SolveLinearSystemAlgo::TargetError(), tolerance);
   algo.set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
+  algo.setLogger(getLogger());
+  algo.setUpdaterFunc(getUpdaterFunc());
 
   DenseColumnMatrixHandle solution;
 

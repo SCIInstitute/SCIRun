@@ -33,7 +33,7 @@
 #include <stdexcept>
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
-#include <Core/Logging/LoggerFwd.h>
+#include <Core/Logging/Logger.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Algorithms/Base/Share.h>
@@ -71,7 +71,7 @@ namespace Algorithms {
     //etc
   };
 
-  class SCISHARE AlgorithmLogger
+  class SCISHARE AlgorithmLogger : public Core::Logging::LoggerInterface
   {
   public:
     AlgorithmLogger();
@@ -79,10 +79,10 @@ namespace Algorithms {
     void setLogger(Core::Logging::LoggerHandle logger);
 
     //! functions for the algorithm, so it can forward errors if needed
-    void error(const std::string& error) const;
-    void warning(const std::string& warning) const;
-    void remark(const std::string& remark) const;
-    void status(const std::string& status) const;
+    virtual void error(const std::string& error) const;
+    virtual void warning(const std::string& warning) const;
+    virtual void remark(const std::string& remark) const;
+    virtual void status(const std::string& status) const;
   private:
     Core::Logging::LoggerHandle logger_;
     Core::Logging::LoggerHandle defaultLogger_;
@@ -92,26 +92,23 @@ namespace Algorithms {
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
-    AlgorithmStatusReporter() {}
+    AlgorithmStatusReporter() 
+    {
+      setUpdaterFunc(defaultUpdaterFunc_);
+    }
     ~AlgorithmStatusReporter() {}
         
     virtual void report_start(const std::string& tag) const {}
-//     {
-//       std::cout << "Algorithm starting: " << tag << std::endl;
-//     }
-
-   virtual void report_end() const {}
-//     {
-//       std::cout << "Algorithm ending." << std::endl;
-//     }
+    virtual void report_end() const {}
 
     void update_progress(double percent) const { updaterFunc_(percent); }
 
     typedef boost::function<void(double)> UpdaterFunc;
-    static void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }
-    static UpdaterFunc getUpdaterFunc() { return updaterFunc_; }
+    void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }
+    UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
   private:
-    static UpdaterFunc updaterFunc_;
+    UpdaterFunc updaterFunc_;
+    static UpdaterFunc defaultUpdaterFunc_;
   };
 
   //TODO: link this to ModuleState via meeting discussion

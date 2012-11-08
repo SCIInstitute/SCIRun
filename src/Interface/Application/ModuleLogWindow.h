@@ -57,14 +57,14 @@ class ModuleLogger : public QObject, public Core::Logging::LoggerInterface
   Q_OBJECT
 public:
   explicit ModuleLogger(ModuleLogWindow* window);
-  virtual void error(const std::string& msg);
-  virtual void warning(const std::string& msg);
-  virtual void remark(const std::string& msg);
-  virtual void status(const std::string& msg);
+  virtual void error(const std::string& msg) const;
+  virtual void warning(const std::string& msg) const;
+  virtual void remark(const std::string& msg) const;
+  virtual void status(const std::string& msg) const;
 Q_SIGNALS:
-  void logSignal(const QString& message, const QColor& color);
-  void alert(const QColor& color);
-  void popup(const QString& message);
+  void logSignal(const QString& message, const QColor& color) const;
+  void alert(const QColor& color) const;
+  void popup(const QString& message) const;
 };
 
 }

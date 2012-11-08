@@ -55,6 +55,15 @@ namespace Gui {
     explicit ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle state, QWidget* parent = 0);
     void fixSize();
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+
+    //TODO: need a better push/pull model
+    bool pulling_;
+    struct Pulling
+    {
+      explicit Pulling(ModuleDialogGeneric* m) : m_(m) { m->pulling_ = true; }
+      ~Pulling() { m_->pulling_ = false; }
+      ModuleDialogGeneric* m_;
+    };
   };
 
 }

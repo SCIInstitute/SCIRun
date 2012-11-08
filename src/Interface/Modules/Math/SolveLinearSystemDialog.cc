@@ -54,19 +54,27 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
 
 void SolveLinearSystemDialog::pushParametersToState()
 {
-  //std::cout << "SLS pushing" << std::endl;
-  //TODO: need pattern for this, to avoid silly recursion of push/pull.
-  int max = maxIterationsSpinBox_->value();
-  if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
-    state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, max);
+  if (!pulling_)
+  {
+    //std::cout << "SLS pushing" << std::endl;
+    //TODO: need pattern for this, to avoid silly recursion of push/pull.
+    int max = maxIterationsSpinBox_->value();
+    if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
+      state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, max);
 
-  double error = targetErrorLineEdit_->text().toDouble();
-  if (error != state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble())
-    state_->setValue(SolveLinearSystemAlgorithm::Tolerance, error);
+    double error = targetErrorLineEdit_->text().toDouble();
+    //std::cout << "SLS error " << error << std::endl;
+    if (error != state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble())
+    {
+      //std::cout << "setting error " << error << std::endl;
+      state_->setValue(SolveLinearSystemAlgorithm::Tolerance, error);
+    }
+  }
 }
 
 void SolveLinearSystemDialog::pull()
 {
+  Pulling p(this);
   //std::cout << "SLS pulling" << std::endl;
   auto iterations = state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
   //std::cout << "SLS state value: " << iterState << std::endl;
@@ -75,7 +83,7 @@ void SolveLinearSystemDialog::pull()
   auto tolerance = state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
   //std::cout << "SLS state value: " << stateValue << std::endl;
   //std::cout << "SLS QString value: " << QString::number(stateValue).toStdString() << std::endl;
-
+  //std::cout << "SLS pulling " << tolerance << std::endl;
   maxIterationsSpinBox_->setValue(iterations);
   targetErrorLineEdit_->setText(QString::number(tolerance));
 }
