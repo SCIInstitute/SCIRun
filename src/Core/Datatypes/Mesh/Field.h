@@ -107,9 +107,9 @@ class SCISHARE FieldTypeID
                 FieldMaker fieldMaker,
                 FieldMakerFromMesh field_maker_mesh);
     
-    std::string type;
-    FieldMaker field_maker;
-    FieldMakerFromMesh field_maker_mesh;
+    std::string type_;
+    FieldMaker field_maker_;
+    FieldMakerFromMesh field_maker_mesh_;
 };
 
 //TODO: copy/paste from MeshFactory. Can probably make generic.

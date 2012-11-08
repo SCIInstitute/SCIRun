@@ -40,7 +40,7 @@ TEST(ApplicationSingletonTest, CanCreateAndParseCommandLine)
   ApplicationParametersHandle appParams = app.parameters();
   EXPECT_FALSE(appParams);
 
-  char* argv[] = {"scirun.exe", "-e", "network.srn5"};
+  const char* argv[] = {"scirun.exe", "-e", "network.srn5"};
   int argc = sizeof(argv)/sizeof(char*);
 
   app.readCommandLine(argc, argv);

@@ -35,7 +35,7 @@ namespace po = boost::program_options;
 
 namespace
 {
-  po::variables_map readCommandLine(int argc, char* argv[], const po::options_description& desc)
+  po::variables_map readCommandLine(int argc, const char* argv[], const po::options_description& desc)
   {
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -58,7 +58,7 @@ TEST(CommandLineSpecTest, BoostExampleCode)
   EXPECT_EQ("Allowed options:\n  --help                produce help message\n  --compression arg     set compression level\n",  ostr.str());
 
   {
-    char* argv[] = {"dummy.exe", "--help", "--compression", "4"};
+    const char* argv[] = {"dummy.exe", "--help", "--compression", "4"};
     int argc = sizeof(argv)/sizeof(char*);
 
     po::variables_map vm = readCommandLine(argc, argv, desc);
@@ -69,7 +69,7 @@ TEST(CommandLineSpecTest, BoostExampleCode)
   }
 
   {
-    char* argv[] = {"dummy.exe", "--compression", "7"};
+    const char* argv[] = {"dummy.exe", "--compression", "7"};
     int argc = sizeof(argv)/sizeof(char*);
 
     po::variables_map vm = readCommandLine(argc, argv, desc);
@@ -80,7 +80,7 @@ TEST(CommandLineSpecTest, BoostExampleCode)
   }
 
   {
-    char* argv[] = {"dummy.exe", "--help"};
+    const char* argv[] = {"dummy.exe", "--help"};
     int argc = sizeof(argv)/sizeof(char*);
 
     po::variables_map vm = readCommandLine(argc, argv, desc);
@@ -91,7 +91,7 @@ TEST(CommandLineSpecTest, BoostExampleCode)
   }
 
   {
-    char* argv[] = {"dummy.exe", "--compression", "7.5"};
+    const char* argv[] = {"dummy.exe", "--compression", "7.5"};
     int argc = sizeof(argv)/sizeof(char*);
 
     //what exception type?

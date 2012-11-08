@@ -37,7 +37,7 @@ namespace Gui {
   class SCISHARE GuiApplication
   {
   public:
-    static int run(int argc, char* argv[]);
+    static int run(int argc, const char* argv[]);
   private:
     GuiApplication();
   };

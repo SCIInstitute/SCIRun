@@ -56,7 +56,7 @@ namespace SCIRun {
           positional_.add("input-file", -1);
         }
 
-        po::variables_map parse(int argc, char* argv[])
+        po::variables_map parse(int argc, const char* argv[])
         {
           po::variables_map vm;
           po::store(po::command_line_parser(argc, argv).
@@ -140,7 +140,7 @@ std::string CommandLineParser::describe() const
   return impl_->describe();
 }
 
-ApplicationParametersHandle CommandLineParser::parse(int argc, char* argv[])
+ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[])
 {
   auto parsed = impl_->parse(argc, argv);
   boost::optional<std::string> inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();

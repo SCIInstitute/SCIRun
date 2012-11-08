@@ -32,7 +32,7 @@
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
 
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 {
   Application::Instance().readCommandLine(argc, argv);
   

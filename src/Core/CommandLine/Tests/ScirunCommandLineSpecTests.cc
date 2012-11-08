@@ -52,7 +52,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   EXPECT_EQ(expectedHelp, parser.describe());
   
   {
-    char* argv[] = {"scirun.exe", "--help", "net.srn5"};
+    const char* argv[] = {"scirun.exe", "--help", "net.srn5"};
     int argc = sizeof(argv)/sizeof(char*);
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
@@ -62,7 +62,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   }
 
   {
-    char* argv[] = {"scirun.exe", "-h", "net.srn5"};
+    const char* argv[] = {"scirun.exe", "-h", "net.srn5"};
     int argc = sizeof(argv)/sizeof(char*);
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
@@ -72,7 +72,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   }
 
   {
-    char* argv[] = {"scirun.exe", "--version"};
+    const char* argv[] = {"scirun.exe", "--version"};
     int argc = sizeof(argv)/sizeof(char*);
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
@@ -83,7 +83,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   }
 
   {
-    char* argv[] = {"scirun.exe", "-v"};
+    const char* argv[] = {"scirun.exe", "-v"};
     int argc = sizeof(argv)/sizeof(char*);
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
@@ -94,7 +94,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   }
 
   {
-    char* argv[] = {"scirun.exe", "-e", "net.srn5"};
+    const char* argv[] = {"scirun.exe", "-e", "net.srn5"};
     int argc = sizeof(argv)/sizeof(char*);
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);
@@ -105,7 +105,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   }
 
   {
-    char* argv[] = {"scirun.exe", "-E", "net.srn5"};
+    const char* argv[] = {"scirun.exe", "-E", "net.srn5"};
     int argc = sizeof(argv)/sizeof(char*);
 
     ApplicationParametersHandle aph = parser.parse(argc, argv);

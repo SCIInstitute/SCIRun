@@ -73,7 +73,7 @@ ApplicationParametersHandle Application::parameters()
   return private_->parameters_;
 }
 
-void Application::readCommandLine(int argc, char* argv[])
+void Application::readCommandLine(int argc, const char* argv[])
 {
   private_->parameters_ = private_->parser.parse(argc, argv);
 }

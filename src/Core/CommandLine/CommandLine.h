@@ -59,7 +59,7 @@ namespace SCIRun {
       {
       public:
         CommandLineParser();
-        ApplicationParametersHandle parse(int argc, char* argv[]);
+        ApplicationParametersHandle parse(int argc, const char* argv[]);
         std::string describe() const;
       private:
         boost::shared_ptr<CommandLineParserInternal> impl_;

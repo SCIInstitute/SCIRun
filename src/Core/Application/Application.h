@@ -63,7 +63,7 @@ private:
 	virtual ~Application();
 
 public:
-  void readCommandLine(int argc, char* argv[]);
+  void readCommandLine(int argc, const char* argv[]);
   CommandLine::ApplicationParametersHandle parameters();
   boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
 

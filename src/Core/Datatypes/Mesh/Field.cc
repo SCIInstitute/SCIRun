@@ -121,9 +121,9 @@ static boost::mutex *FieldTypeIDMutex = 0;
 static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = 0;
 
 FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromMesh fmm) :
-    type(type),
-    field_maker(field_maker),
-    field_maker_mesh(field_maker_mesh)
+    type_(type),
+    field_maker_(fm),
+    field_maker_mesh_(fmm)
 {
   if (!FieldTypeIDMutex)
   {
@@ -173,7 +173,7 @@ CreateField(const std::string& type, MeshHandle mesh)
   auto it = FieldTypeIDTable->find(type);
   if (it != FieldTypeIDTable->end()) 
   {
-    return it->second->field_maker_mesh(mesh);
+    return it->second->field_maker_mesh_(mesh);
   }
   else
   {
@@ -195,7 +195,7 @@ CreateField(const std::string& type)
   auto it = FieldTypeIDTable->find(type);
   if (it != FieldTypeIDTable->end()) 
   {
-    return it->second->field_maker();
+    return it->second->field_maker_();
   }
   return FieldHandle();
 }
