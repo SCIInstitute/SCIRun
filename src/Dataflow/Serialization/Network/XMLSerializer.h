@@ -69,9 +69,9 @@ namespace Networks {
       boost::archive::xml_iarchive ia(istr);
       boost::shared_ptr<Serializable> nh(new Serializable);
       //TODO: use real logger here
-      std::cout << "deserializing..." << std::endl;
+      //std::cout << "deserializing..." << std::endl;
       ia >> BOOST_SERIALIZATION_NVP(*nh);
-      std::cout << "returning deserialized object." << std::endl;
+      //std::cout << "returning deserialized object." << std::endl;
       return nh;
     }
 

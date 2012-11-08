@@ -82,7 +82,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Conjugate Gradient and Preconditioning (Eigen)</string>
+       <string>Conjugate Gradient and Preconditioning (SCI)</string>
       </property>
       <property name="checked">
        <bool>true</bool>
@@ -93,6 +93,41 @@
      <attribute name="title">
       <string>Preconditioners</string>
      </attribute>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>111</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QRadioButton" name="radioButton_2">
+         <property name="text">
+          <string>Jacobi</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QRadioButton" name="radioButton_3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>None</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </widget>
    <widget class="QWidget" name="layoutWidget">

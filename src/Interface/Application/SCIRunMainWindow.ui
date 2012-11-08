@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>793</width>
-         <height>477</height>
+         <width>796</width>
+         <height>516</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -427,7 +427,7 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>311</width>
+           <width>471</width>
            <height>81</height>
           </rect>
          </property>
@@ -442,7 +442,7 @@
            <rect>
             <x>20</x>
             <y>20</y>
-            <width>283</width>
+            <width>404</width>
             <height>56</height>
            </rect>
           </property>
@@ -490,7 +490,7 @@
              <item>
               <widget class="QRadioButton" name="straightPipelinesRadioButton_">
                <property name="text">
-                <string>Straight</string>
+                <string>Diagonal</string>
                </property>
                <attribute name="buttonGroup">
                 <string notr="true">pipelinesButtonGroup_</string>
@@ -498,9 +498,16 @@
               </widget>
              </item>
              <item>
+              <widget class="QRadioButton" name="cubicPipelinesRadioButton_">
+               <property name="text">
+                <string>Cubic Bezier Curves</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QRadioButton" name="jaggedPipelinesRadioButton_">
                <property name="text">
-                <string>Jagged</string>
+                <string>Horizontal/Vertical</string>
                </property>
                <attribute name="buttonGroup">
                 <string notr="true">pipelinesButtonGroup_</string>

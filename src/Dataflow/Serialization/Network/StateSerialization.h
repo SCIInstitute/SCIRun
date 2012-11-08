@@ -72,7 +72,6 @@ namespace boost {
     template<class Archive>
     void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgorithmParameter& ap, const unsigned int version)
     {
-      std::cout << "DESERIALIZING PARAMETER: " << ap.name_.name_ << "," << ap.value_ << std::endl;
       ar & boost::serialization::make_nvp("name", ap.name_.name_);
       ar & boost::serialization::make_nvp("value", ap.value_);
     }
