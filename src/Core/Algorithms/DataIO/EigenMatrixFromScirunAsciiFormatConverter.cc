@@ -79,6 +79,8 @@ EigenMatrixFromScirunAsciiFormatConverter::EigenMatrixFromScirunAsciiFormatConve
 
 MatrixHandle EigenMatrixFromScirunAsciiFormatConverter::make(const std::string& matFile)
 {
+  if (reporter_)
+    reporter_->update_progress(0.01);
   if (fileContainsString(matFile, "DenseMatrix"))
     return makeDense(matFile);
   if (fileContainsString(matFile, "SparseRowMatrix"))

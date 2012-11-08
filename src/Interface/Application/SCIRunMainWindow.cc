@@ -198,10 +198,10 @@ SCIRunMainWindow::SCIRunMainWindow()
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
 	
-	progressBar_.reset(new NetworkExecutionProgressBar(this));
-  executeBar->addActions(progressBar_->actions());
-  connect(actionExecute_All_, SIGNAL(triggered()), progressBar_.get(), SLOT(resetModulesDone()));
-  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), progressBar_.get(), SLOT(incrementModulesDone()));
+	networkProgressBar_.reset(new NetworkExecutionProgressBar(this));
+  executeBar->addActions(networkProgressBar_->actions());
+  connect(actionExecute_All_, SIGNAL(triggered()), networkProgressBar_.get(), SLOT(resetModulesDone()));
+  connect(networkEditor_->moduleEventProxy().get(), SIGNAL(moduleExecuteEnd(const std::string&)), networkProgressBar_.get(), SLOT(incrementModulesDone()));
 	
 	scrollAreaWidgetContents_->addAction(actionExecute_All_);
   auto sep = new QAction(this);
@@ -339,7 +339,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
 
     setCurrentFile(filename);
     statusBar()->showMessage(tr("File loaded"), 2000);
-    progressBar_->updateTotalModules(networkEditor_->numModules());
+    networkProgressBar_->updateTotalModules(networkEditor_->numModules());
   }
 }
 
@@ -405,7 +405,7 @@ bool SCIRunMainWindow::okToContinue()
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);
-  progressBar_->updateTotalModules(networkEditor_->numModules());
+  networkProgressBar_->updateTotalModules(networkEditor_->numModules());
 }
 
 void SCIRunMainWindow::ToggleRenderer()

@@ -80,6 +80,7 @@ void SolveLinearSystemModule::execute()
   bool success;
   {
     ScopedTimeRemarker perf(this, "Linear solver");
+    remark("Using Jacobi preconditioner");
     success = algo.run(ASparse, rhsCol, DenseColumnMatrixHandle(), solution);
   }
   if (!success)
@@ -113,7 +114,7 @@ void SolveLinearSystemModule::execute()
   //  return;
   //}
 
-  remark("Using Jacobi preconditioner");
+  
   //const std::string pre = precond_.get();
   //if (pre == "jacobi")
   //{

@@ -71,7 +71,7 @@ private:
   void setActionIcons();
   void makeFilterButtonMenu();
   QString currentFile_;
-  boost::shared_ptr<class NetworkExecutionProgressBar> progressBar_;
+  boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();

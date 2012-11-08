@@ -168,6 +168,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   makeOptionsDialog();
 
   setupModuleActions();
+
+  progressBar_->setTextVisible(false);
   
   logWindow_ = new ModuleLogWindow(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
   connect(logButton2_, SIGNAL(clicked()), logWindow_, SLOT(show()));
@@ -202,6 +204,7 @@ void ModuleWidget::resetLogButtonColor()
 void ModuleWidget::resetProgressBar()
 {
   progressBar_->setValue(0);
+  progressBar_->setTextVisible(false);
 }
 
 void ModuleWidget::setupModuleActions()
@@ -311,6 +314,7 @@ void ModuleWidget::ModuleExecutionRunner::operator()()
 void ModuleWidget::execute()
 {
   {
+    timer_.restart();
     ModuleExecutionRunner runner(this);
     runner();
   }
@@ -345,4 +349,11 @@ void ModuleWidget::updateProgressBar(double percent)
 {
   //std::cout << " ModuleWidget::updateProgressBar " << percent << std::endl;
   progressBar_->setValue(percent * progressBar_->maximum());
+  progressBar_->setTextVisible(true);
+  updateModuleTime();
+}
+
+void ModuleWidget::updateModuleTime()
+{
+  progressBar_->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
 }

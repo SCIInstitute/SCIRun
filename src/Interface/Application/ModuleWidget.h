@@ -32,6 +32,7 @@
 #include "ui_Module.h"
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/timer.hpp>
 #include <QFrame>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
@@ -79,6 +80,7 @@ public Q_SLOTS:
   void resetLogButtonColor();
   void resetProgressBar();
   void updateProgressBar(double percent);
+  void updateModuleTime();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
@@ -89,6 +91,7 @@ Q_SIGNALS:
 private:
   Ports inputPorts_;
   Ports outputPorts_;
+  boost::timer timer_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 
