@@ -56,6 +56,7 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 
   EvaluateLinearAlgebraUnaryAlgorithm::Parameters params(oper, scalar);
   EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO inject
+  algo.setLogger(getLogger()); //TODO
   DenseMatrixHandle output = algo.run(denseInput, params);  //TODO
   send_output_handle(0, output);
   

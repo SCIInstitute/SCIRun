@@ -75,7 +75,6 @@ public:
 public Q_SLOTS:
   virtual void execute();
   void showOptionsDialog();
-  //void setExecutionTime(int milliseconds);
   void setLogButtonColor(const QColor& color);
   void resetLogButtonColor();
   void resetProgressBar();

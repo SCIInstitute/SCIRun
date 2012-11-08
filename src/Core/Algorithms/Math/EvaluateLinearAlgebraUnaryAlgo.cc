@@ -40,10 +40,8 @@ AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue("Scalar"
 
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(matrix, "matrix");
   DenseMatrixHandle result;
-
-  if (!matrix)
-    return result;
 
   Operator oper = params.get<0>();
 
@@ -59,13 +57,17 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     result->transposeInPlace();
     break;
   case SCALAR_MULTIPLY:
-    boost::optional<double> scalarOption = params.get<1>();
-    if (!scalarOption)
-      ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
-    double scalar = scalarOption.get();
-    result.reset(matrix->clone());
-    (*result) *= scalar;
+    {
+      boost::optional<double> scalarOption = params.get<1>();
+      if (!scalarOption)
+        ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
+      double scalar = scalarOption.get();
+      result.reset(matrix->clone());
+      (*result) *= scalar;
+    }
     break;
+  default:
+    ALGORITHM_INPUT_ERROR("Unknown operand");
   }
 
   return result;
