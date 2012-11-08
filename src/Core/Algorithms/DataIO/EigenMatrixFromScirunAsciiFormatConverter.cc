@@ -51,12 +51,8 @@ namespace
   template <typename T>
   std::vector<T> parseLineOfNumbers(const std::string& line)
   {
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    boost::char_separator<char> sep(" ");
-    tokenizer tok(line, sep);
-
-    std::vector<T> numbers;
-    std::transform(tok.begin(), tok.end(), std::back_inserter(numbers), boost::lexical_cast<T,std::string>);
+    std::istringstream stream(line);
+    std::vector<T> numbers((std::istream_iterator<T>(stream)), (std::istream_iterator<T>()));
 
     return numbers;
   }
@@ -114,10 +110,10 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
     int nextRow;
     for (int r = 0; r < mat->rows(); ++r)
     {
-      if (reporter_ && (r % 1000 == 1))
-      {
-        reporter_->update_progress(0.7 + (0.3*((double)r / mat->rows())));
-      }
+      //if (reporter_ && (r % 1000 == 1))
+      //{
+      //  reporter_->update_progress(0.7 + (0.3*((double)r / mat->rows())));
+      //}
 
       nextRow = rowAcc[r+1];
       while (count < nextRow)
