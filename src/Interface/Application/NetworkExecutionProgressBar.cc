@@ -56,7 +56,8 @@ void NetworkExecutionProgressBar::updateTotalModules(int count)
     totalModules_ = count;
     numModulesDone_ = 0;
     counterLabel_->setText(counterLabelString());
-    progressBar_->setMaximum(count);
+    if (0 != count)
+      progressBar_->setMaximum(count);
     progressBar_->setValue(0);
   }
 }
