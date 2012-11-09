@@ -48,14 +48,18 @@ public:
 
   void setColor(const QColor& color);
   QColor color() const;
-
   void trackNodes();
+  
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
+protected:
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
+  void destroy();
+  bool destroyed_;
 };
 
 struct InvalidConnection : virtual Core::ExceptionBase {};

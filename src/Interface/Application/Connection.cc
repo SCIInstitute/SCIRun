@@ -37,7 +37,7 @@
 using namespace SCIRun::Gui;
 
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id)
-  : fromPort_(fromPort), toPort_(toPort), id_(id)
+  : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false)
 {
   if (fromPort_)
   {
@@ -63,6 +63,12 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
 ConnectionLine::~ConnectionLine()
 {
+  if (!destroyed_)
+    destroy();
+}
+
+void ConnectionLine::destroy() 
+{
   if (fromPort_ && toPort_)
   {
     fromPort_->removeConnection(this);
@@ -72,6 +78,7 @@ ConnectionLine::~ConnectionLine()
   }
   Q_EMIT deleted(id_);
   GuiLogger::Instance().log("Connection deleted.");
+  destroyed_ = true;
 }
 
 void ConnectionLine::setColor(const QColor& color)
@@ -92,6 +99,19 @@ void ConnectionLine::trackNodes()
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection"));
+}
+
+void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+  const char* del = "Delete";
+  QMenu menu;
+  menu.addAction(del);
+  auto a = menu.exec(event->screenPos());
+  if (a && a->text() == del)
+  {
+    scene()->removeItem(this);
+    destroy();
+  }
 }
 
 ConnectionInProgress::ConnectionInProgress(PortWidget* port)
@@ -116,3 +136,4 @@ void ConnectionInProgress::update(const QPointF& end)
 {
   setLine(QLineF(fromPort_->position(), end));
 }
+
