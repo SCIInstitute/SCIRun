@@ -339,7 +339,7 @@ void NetworkEditor::createActions()
 
   deleteAction_ = new QAction(tr("&Delete selected objects"), this);
   deleteAction_->setIcon(QIcon(":/images/delete.png"));
-  deleteAction_->setShortcut(tr("Del"));
+  deleteAction_->setShortcut(Qt::Key_Delete);
   connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
 
   //cutAction_ = new QAction(tr("Cu&t"), this);
