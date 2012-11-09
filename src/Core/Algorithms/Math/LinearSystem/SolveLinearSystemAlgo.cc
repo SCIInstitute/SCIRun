@@ -235,9 +235,12 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
 #endif
+      std::ostringstream ostr;
+      ostr << "Solver found solution with error = " << error;
+      algo_->remark(ostr.str());
     }
     PLA.wait();
-    //std::cout << "returning true: error <= tolerance 1" << std::endl;
+    
     return (true);
   }
     
@@ -250,21 +253,23 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
    
   while (niter < max_iter)
   {
-   //std::cout << "iteration: " << niter << std::endl;
     if (error <= tolerance)
     {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) 
           algo_->do_callbacks();
-      }
 #endif
+        std::ostringstream ostr;
+        ostr << "Solver converged after " << niter << " iterations with error " << error;
+        algo_->remark(ostr.str());
+      }
+
       PLA.wait();
-      //std::cout << "returning true: error <= tolerance 2" << std::endl;
       return true;
     }
     
@@ -280,20 +285,16 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
       double bk = bknum/bkden;
       PLA.scale_add(bk,P,Z,P);
     }
-    //std::cout << "math 1" << std::endl;
     PLA.mult(A,P,Z);
     bkden = bknum;
     
-    //std::cout << "math 2" << std::endl;
     double akden = PLA.dot(Z,P);
     double ak=bknum/akden;
     
-        //std::cout << "math 3" << std::endl;
     PLA.scale_add(ak,P,X,X);
     PLA.scale_add(-ak,Z,R,R);
     
     error = PLA.norm(R)/bnorm;
-        //std::cout << "math 4" << std::endl;
     if (error < xmin) 
     { 
       PLA.copy(X,XMIN); 
@@ -335,18 +336,21 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
   }
   
   // Last iteration update
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
-  }
 #endif
+    std::ostringstream ostr;
+    ostr << "Solver stopped after " << niter << " iterations. Error was " << error;
+    algo_->remark(ostr.str());
+  }
+
   PLA.wait();
   
-  //std::cout << "returning true: reached end of function" << std::endl;
   return true;
 }
 

@@ -427,8 +427,8 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>471</width>
-           <height>81</height>
+           <width>601</width>
+           <height>111</height>
           </rect>
          </property>
          <property name="title">
@@ -442,8 +442,8 @@
            <rect>
             <x>20</x>
             <y>20</y>
-            <width>404</width>
-            <height>56</height>
+            <width>521</width>
+            <height>71</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -462,7 +462,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -472,7 +472,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -493,7 +493,7 @@
                 <string>Diagonal</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">pipelinesButtonGroup_</string>
+                <string>pipelinesButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -510,7 +510,7 @@
                 <string>Horizontal/Vertical</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">pipelinesButtonGroup_</string>
+                <string>pipelinesButtonGroup_</string>
                </attribute>
               </widget>
              </item>

@@ -59,6 +59,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
+  setToolTip("Left - Highlight*\nDouble-Left - Menu");
 }
 
 ConnectionLine::~ConnectionLine()
