@@ -44,7 +44,7 @@ namespace SCIRun
     {
     public:
       explicit ModuleDialogFactory(QWidget* parentToUse);
-      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state, int executionTime);
+      ModuleDialogGeneric* makeDialog(const std::string& moduleId, SCIRun::Dataflow::Networks::ModuleStateHandle state);
     private:
       QWidget* parentToUse_;
     };

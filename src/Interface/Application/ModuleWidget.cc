@@ -330,7 +330,7 @@ void ModuleWidget::makeOptionsDialog()
     if (!dialogFactory_)
       dialogFactory_.reset(new ModuleDialogFactory(SCIRunMainWindow::Instance()));
 
-    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state(), 0));
+    dialog_.reset(dialogFactory_->makeDialog(moduleId_, theModule_->get_state()));
     dialog_->pull();
     connect(dialog_.get(), SIGNAL(executeButtonPressed()), this, SLOT(execute()));
     connect(this, SIGNAL(moduleExecuted()), dialog_.get(), SLOT(moduleExecuted()));

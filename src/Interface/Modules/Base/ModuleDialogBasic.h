@@ -41,7 +41,7 @@ namespace Gui {
     Q_OBJECT
 
   public:
-    explicit ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent = 0);
+    explicit ModuleDialogBasic(const std::string& name, QWidget* parent = 0);
     virtual void pull() {}
   };
 

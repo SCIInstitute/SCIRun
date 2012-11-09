@@ -38,7 +38,4 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  executeButton_->setEnabled(false);
-  
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
 }

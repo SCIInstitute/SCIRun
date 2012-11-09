@@ -50,7 +50,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 ModuleDialogFactory::ModuleDialogFactory(QWidget* parentToUse) : parentToUse_(parentToUse) {}
 
-ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state, int executionTime)
+ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId, ModuleStateHandle state)
 {
   if (moduleId.find("SendScalar") != std::string::npos)
     return new SendScalarDialog(moduleId, state, parentToUse_);
@@ -85,5 +85,5 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("CreateLatVolBasic") != std::string::npos)
     return new CreateLatVolBasicDialog(moduleId, state, parentToUse_);
   else
-    return new ModuleDialogBasic(moduleId, executionTime, parentToUse_);
+    return new ModuleDialogBasic(moduleId, parentToUse_);
 }

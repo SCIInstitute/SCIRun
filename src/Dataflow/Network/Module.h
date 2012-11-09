@@ -127,8 +127,6 @@ namespace Networks {
 
   protected:
     ModuleLookupInfo info_;
-
-    double executionTime_;
     std::string id_;
 
   private:

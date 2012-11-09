@@ -54,7 +54,7 @@ Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   bool hasUi,
   const std::string& version)
-  : info_(info), has_ui_(hasUi), executionTime_(1.0), state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
+  : info_(info), has_ui_(hasUi), state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
 {
   id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
@@ -205,7 +205,7 @@ public:
   virtual void execute() 
   {
     std::ostringstream ostr;
-    ostr << "Module " << get_module_name() << " executing for " << executionTime_ << " seconds." << std::endl;
+    ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
     status(ostr.str());
   }
 };

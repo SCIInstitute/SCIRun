@@ -31,12 +31,10 @@
 
 using namespace SCIRun::Gui;
 
-ModuleDialogBasic::ModuleDialogBasic(const std::string& name, int executionTime, QWidget* parent /* = 0 */)
+ModuleDialogBasic::ModuleDialogBasic(const std::string& name, QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleStateHandle(), parent)
 {
   setupUi(this);
   setModal(false);
   setWindowTitle(QString::fromStdString(name));
-  executionTimeHorizontalSlider_->setValue(executionTime);
-  connect(executionTimeHorizontalSlider_, SIGNAL(valueChanged(int)), this, SIGNAL(executionTimeChanged(int)));
 }
