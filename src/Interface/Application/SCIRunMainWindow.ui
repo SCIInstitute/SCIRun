@@ -119,7 +119,6 @@
     </property>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
-    <addaction name="actionRenderer"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuModules_"/>

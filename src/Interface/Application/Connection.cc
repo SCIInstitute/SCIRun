@@ -102,13 +102,30 @@ void ConnectionLine::trackNodes()
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection"));
 }
 
+namespace
+{
+  const QString deleteAction("Delete");
+  const QString insertModuleAction("Insert Module->*");
+  const QString disableEnableAction("Disable*");
+  const QString editNotesAction("Edit Notes...*");
+}
+class ConnectionMenu : public QMenu
+{
+public:
+  ConnectionMenu()
+  {
+    addAction(deleteAction);
+    addAction(insertModuleAction)->setDisabled(true);
+    addAction(disableEnableAction)->setDisabled(true);
+    addAction(editNotesAction)->setDisabled(true);
+  }
+};
+
 void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-  const char* del = "Delete";
-  QMenu menu;
-  menu.addAction(del);
+  ConnectionMenu menu;
   auto a = menu.exec(event->screenPos());
-  if (a && a->text() == del)
+  if (a && a->text() == deleteAction)
   {
     scene()->removeItem(this);
     destroy();

@@ -83,7 +83,7 @@ namespace Networks {
     catch (boost::bad_any_cast&)
     {
       //TODO: use real logger here
-      std::cout << "Attempted any_cast failed, returning default value." << std::endl;
+      //std::cout << "Attempted any_cast failed, returning default value." << std::endl;
       return T();
     }
   }
