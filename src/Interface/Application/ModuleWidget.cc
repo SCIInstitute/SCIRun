@@ -113,7 +113,7 @@ namespace Gui {
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
         << separatorAction(parent)
-        << new QAction("Destroy", parent));
+        << disabled(new QAction("Destroy", parent)));
     }
     QMenu* getMenu() { return menu_; }
     QAction* getAction(const char* name) const
