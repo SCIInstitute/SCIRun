@@ -45,7 +45,8 @@ namespace SCIRun {
 namespace Gui {
 
 class ConnectionLine;
-class ConnectionInProgress;
+class ConnectionInProgressStraight;
+class ConnectionInProgressCurved;
 class PositionProvider;
 
 class PortWidget : public QWidget, public NeedsScenePositionProvider
@@ -107,7 +108,7 @@ private:
   bool lightOn_;
   QPointF startPos_;
   QWidget* moduleParent_;
-  ConnectionInProgress* currentConnection_;
+  ConnectionInProgressCurved* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
 

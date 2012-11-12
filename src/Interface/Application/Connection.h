@@ -64,10 +64,24 @@ private:
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
 
-class ConnectionInProgress : public QGraphicsLineItem
+class ConnectionInProgressStraight : public QGraphicsLineItem
 {
 public:
-  explicit ConnectionInProgress(PortWidget* port);
+  explicit ConnectionInProgressStraight(PortWidget* port);
+
+  void setColor(const QColor& color);
+  QColor color() const;
+
+  void update(const QPointF& end);
+
+private:
+  PortWidget* fromPort_;
+};
+
+class ConnectionInProgressCurved : public QGraphicsPathItem
+{
+public:
+  explicit ConnectionInProgressCurved(PortWidget* port);
 
   void setColor(const QColor& color);
   QColor color() const;

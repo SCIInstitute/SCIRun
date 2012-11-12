@@ -132,7 +132,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   }
 }
 
-ConnectionInProgress::ConnectionInProgress(PortWidget* port)
+ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port)
   : fromPort_(port)
 {
   setZValue(1000);
@@ -140,18 +140,46 @@ ConnectionInProgress::ConnectionInProgress(PortWidget* port)
   setColor(port->color());
 }
 
-void ConnectionInProgress::setColor(const QColor& color)
+void ConnectionInProgressStraight::setColor(const QColor& color)
 {
   setPen(QPen(color, 5.0, Qt::DashLine));
 }
 
-QColor ConnectionInProgress::color() const
+QColor ConnectionInProgressStraight::color() const
 {
   return pen().color();
 }
 
-void ConnectionInProgress::update(const QPointF& end)
+void ConnectionInProgressStraight::update(const QPointF& end)
 {
   setLine(QLineF(fromPort_->position(), end));
+}
+
+ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port)
+  : fromPort_(port)
+{
+  setZValue(1000);
+
+  setColor(port->color());
+}
+
+void ConnectionInProgressCurved::setColor(const QColor& color)
+{
+  setPen(QPen(color, 5.0, Qt::DashLine));
+}
+
+QColor ConnectionInProgressCurved::color() const
+{
+  return pen().color();
+}
+
+void ConnectionInProgressCurved::update(const QPointF& end)
+{
+  QPainterPath path;
+  QPointF start = fromPort_->position();
+  path.moveTo(start);
+  auto mid = (end - start) / 2;
+  path.cubicTo(mid + QPointF(20,20), mid - QPointF(20,20), end);
+  setPath(path);
 }
 

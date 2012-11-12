@@ -247,7 +247,7 @@ void PortWidget::performDrag(const QPointF& endPos)
   if (!currentConnection_)
   {
     //TODO: move into factory
-    currentConnection_ = new ConnectionInProgress(this);
+    currentConnection_ = new ConnectionInProgressCurved(this);
     if (TheScene)
       TheScene->addItem(currentConnection_);
     currentConnection_->setVisible(true);
