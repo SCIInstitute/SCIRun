@@ -177,9 +177,18 @@ void ConnectionInProgressCurved::update(const QPointF& end)
 {
   QPainterPath path;
   QPointF start = fromPort_->position();
+
   path.moveTo(start);
-  auto mid = (end - start) / 2;
-  path.cubicTo(mid + QPointF(20,20), mid - QPointF(20,20), end);
+  auto mid = (end - start) / 2 + start;
+  
+  QPointF qDir(-(end-start).y() / ((double)(end-start).x()) , 1);
+  double qFactor = std::min(std::abs(100.0 / qDir.x()), 80.0);
+  //TODO: scale down when start close to end. need a unit test at this point.
+  //qFactor /= (end-start).manhattanDistance()
+  
+  auto q1 = mapToScene(mid + qFactor * qDir);
+  auto q2 = mapToScene(mid - qFactor * qDir);
+  path.cubicTo(q1, q2, end);  
   setPath(path);
 }
 
