@@ -52,7 +52,9 @@ INCLUDE(CMakeBackwardCompatibilityC)
 INCLUDE(CMakeBackwardCompatibilityCXX)
 INCLUDE(CheckCSourceCompiles)
 INCLUDE(CheckCXXSourceCompiles)
+INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(ExternalProject)
+
 
 ########################################################################
 # Configure test support
@@ -73,19 +75,31 @@ ENDIF()
 
 
 ########################################################################
-# Compiler flags and definitions
+# Custom compiler flags and definitions
 
 # Better compiler check for OS X?
 IF(CMAKE_COMPILER_IS_GNUCC)
   IF(UNIX)
-    #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++11")
+    CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX11_FLAG)
+    IF(NOT USE_CXX11_FLAG)
+      SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++0x")
+      CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX0x_FLAG)
+      IF(NOT USE_CXX0x_FLAG)
+        SET(CXX_LANGUAGE_STANDARD_FLAG "")
+      ENDIF()
+    ENDIF()
+
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG}")
   ENDIF()
 
   IF(APPLE)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
     SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
+
+    ADD_DEFINITIONS(-DGTEST_USE_OWN_TR1_TUPLE=1)
   ENDIF()
+
 ENDIF()
 
 
@@ -115,10 +129,12 @@ ExternalProject_Add(Boost_external
   BINARY_DIR ${boost_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
   PATCH_COMMAND ""
-  UPDATE_COMMAND ""
   INSTALL_DIR ""
   INSTALL_COMMAND ""
   #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
+  CMAKE_CACHE_ARGS
+    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
+    -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
 )
 
 SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)

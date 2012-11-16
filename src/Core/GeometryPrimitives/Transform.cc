@@ -27,6 +27,7 @@
 */
 
 #include <cmath>
+#include <cstring>
 
 //#include <Core/Util/TypeDescription.h>
 #include <Core/GeometryPrimitives/Transform.h>
