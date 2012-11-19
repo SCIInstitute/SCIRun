@@ -60,14 +60,14 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
     {
       boost::optional<double> scalarOption = params.get<1>();
       if (!scalarOption)
-        ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
+        THROW_ALGORITHM_INPUT_ERROR("No scalar value available to multiply!");
       double scalar = scalarOption.get();
       result.reset(matrix->clone());
       (*result) *= scalar;
     }
     break;
   default:
-    ALGORITHM_INPUT_ERROR("Unknown operand");
+    THROW_ALGORITHM_INPUT_ERROR("Unknown operand");
   }
 
   return result;

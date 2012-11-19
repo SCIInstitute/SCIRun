@@ -63,7 +63,7 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
     *result *= *rhs;
     break;
   default:
-    ALGORITHM_INPUT_ERROR("ERROR: unknown binary operation");
+    THROW_ALGORITHM_INPUT_ERROR("ERROR: unknown binary operation");
     break;
   }
 

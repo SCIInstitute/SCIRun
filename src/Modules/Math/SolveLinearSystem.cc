@@ -52,9 +52,9 @@ void SolveLinearSystemModule::execute()
   auto rhs = getRequiredInput<Matrix>(1);
 
   if (rhs->ncols() != 1)
-    ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
+    THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
   if (!matrix_is::sparse(A))
-    ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
+    THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
 
   auto ASparse = matrix_cast::as_sparse(A);
 

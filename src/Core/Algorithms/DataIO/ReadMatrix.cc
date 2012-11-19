@@ -59,5 +59,5 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
     internal::EigenMatrixFromScirunAsciiFormatConverter conv(this);
     return conv.make(filename);
   }
-  ALGORITHM_INPUT_ERROR("Unknown matrix file format");
+  THROW_ALGORITHM_INPUT_ERROR("Unknown matrix file format");
 }

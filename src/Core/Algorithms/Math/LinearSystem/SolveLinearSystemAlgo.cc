@@ -1067,7 +1067,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
   if (!matrix_is::sparse(A))
   {
-    ALGORITHM_INPUT_ERROR("Matrix A is not sparse");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix A is not sparse");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle Atmp = A->sparse();
     if (Atmp.get_rep() == 0)
@@ -1080,7 +1080,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
   if (!matrix_is::dense(b) && !matrix_is::column(b))
   {
-    ALGORITHM_INPUT_ERROR("Matrix b is not a dense or column matrix");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix b is not a dense or column matrix");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle btmp = b->column();
     if (btmp.get_rep() == 0)
@@ -1101,7 +1101,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
   if (!matrix_is::dense(x0) && !matrix_is::column(x0))
   {
-    ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     MatrixHandle x0tmp = x0->column();
     if (x0tmp.get_rep() == 0)
@@ -1114,22 +1114,22 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   
   if ((x0->ncols() != 1) || (b->ncols() != 1))
   {
-    ALGORITHM_INPUT_ERROR("Matrix x0 and b need to have the same number of rows");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix x0 and b need to have the same number of rows");
   }
   
   if (A->nrows() != A->ncols())
   {
-    ALGORITHM_INPUT_ERROR("Matrix A is not square");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix A is not square");
   }
   
   if (A->nrows() != b->nrows())
   {
-    ALGORITHM_INPUT_ERROR("Matrix A and b do not have the same number of rows");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix A and b do not have the same number of rows");
   }
 
   if (A->nrows() != x0->nrows())
   {
-    ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
+    THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
   std::string method = "cg";

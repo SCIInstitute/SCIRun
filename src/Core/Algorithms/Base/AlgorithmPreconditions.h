@@ -50,13 +50,13 @@ namespace Algorithms {
   {
   };
 
-#define ALGORITHM_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << type((message))); }
-#define ALGORITHM_INPUT_ERROR(message) ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
+#define THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmInputException() << type((message))); }
+#define THROW_ALGORITHM_INPUT_ERROR(message) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 
-#define ALGORITHM_PROCESSING_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << type((message))); }
-#define ALGORITHM_PROCESSING_ERROR(message) ALGORITHM_PROCESSING_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
+#define THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << type((message))); }
+#define THROW_ALGORITHM_PROCESSING_ERROR(message) THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 
-#define ENSURE_ALGORITHM_INPUT_NOT_NULL(var, message)  if (!(var)) ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::NullObjectInfo, message)
+#define ENSURE_ALGORITHM_INPUT_NOT_NULL(var, message)  if (!(var)) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::NullObjectInfo, message)
   
 #define ENSURE_POSITIVE_DOUBLE(var, message)  if ((var) < 0) \
   BOOST_THROW_EXCEPTION(AlgorithmInputException() << DoubleOutOfRangeInfo( \
@@ -73,7 +73,7 @@ namespace Algorithms {
     boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity()))))
 
 #define ENSURE_FILE_EXISTS(filename) if (!boost::filesystem::exists(filename))\
-  ALGORITHM_INPUT_ERROR_WITH_TYPE(FileNotFound, std::string("File not found: (") + (filename.size() != 0 ? filename : "<no file set>") + ")")
+  THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(FileNotFound, std::string("File not found: (") + (filename.size() != 0 ? filename : "<no file set>") + ")")
 
 }}}
 

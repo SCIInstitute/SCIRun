@@ -187,7 +187,7 @@ void CreateLatVolBasic::execute()
     else if (data_at == "None") basis_order = -1;
     else 
     {
-      ALGORITHM_INPUT_ERROR("Unsupported data_at location " + data_at + ".");
+      THROW_ALGORITHM_INPUT_ERROR("Unsupported data_at location " + data_at + ".");
     }
     
     FieldInformation lfi("LatVolMesh", basis_order, "double");
