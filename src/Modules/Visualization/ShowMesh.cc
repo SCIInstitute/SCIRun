@@ -41,5 +41,5 @@ void ShowMeshModule::execute()
   auto mesh = getRequiredInput(Mesh);
 
   GeometryHandle geom(new GeometryObject(mesh));
-  send_output_handle(0, geom);
+  sendOutput(SceneGraph, geom);
 }

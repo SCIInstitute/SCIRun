@@ -44,7 +44,7 @@ namespace Visualization {
     MatrixAsVectorFieldModule();
     virtual void execute();
     INPUT_PORT(0, Matrix, DenseMatrix);
-    static std::string outputPort0Name() { return "RenderedMatrix"; }
+    OUTPUT_PORT(0, RenderedMatrix, GeometryObject);
   };
 }}}
 

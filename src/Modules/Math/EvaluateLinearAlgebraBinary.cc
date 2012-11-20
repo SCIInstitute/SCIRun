@@ -26,12 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <stdexcept>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/DenseMatrix.h> //TODO: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Algorithms::Math;
@@ -63,5 +60,5 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO inject
   DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhs, rhs), oper); 
 
-  send_output_handle(0, output);
+  sendOutput(Result, output);
 }

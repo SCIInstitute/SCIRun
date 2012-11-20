@@ -46,9 +46,8 @@ namespace SCIRun {
 
         INPUT_PORT(0, InputLHS, DenseMatrix);
         INPUT_PORT(1, InputRHS, DenseMatrix);
-        static std::string outputPort0Name() { return "Result"; }
+        OUTPUT_PORT(0, Result, DenseMatrix);
       };
-
 }
 }}
 

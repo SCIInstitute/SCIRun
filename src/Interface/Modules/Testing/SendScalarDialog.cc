@@ -49,10 +49,10 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
 void SendScalarDialog::pushScalarValueToState(const QString& str) 
 {
   double value = str.toDouble();
-  state_->setValue(SendScalarModule::ValueToSend, value);
+  state_->setValue(SendScalarModule::ValueToSend(), value);
 }
 
 void SendScalarDialog::pull()
 {
-  scalarValueToSend_->setText(QString::number(state_->getValue(SendScalarModule::ValueToSend).getDouble()));
+  scalarValueToSend_->setText(QString::number(state_->getValue(SendScalarModule::ValueToSend()).getDouble()));
 }

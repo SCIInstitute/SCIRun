@@ -44,7 +44,7 @@ namespace Visualization {
     ShowStringModule();
     virtual void execute();
     INPUT_PORT(0, String, String);
-    static std::string outputPort0Name() { return "RenderedString"; }
+    OUTPUT_PORT(0, RenderedString, GeometryObject);
   };
 }}}
 

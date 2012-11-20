@@ -41,8 +41,8 @@ CreateStringModule::CreateStringModule() : Module(ModuleLookupInfo("CreateString
 
 void CreateStringModule::execute()
 {
-  stringValue_ = get_state()->getValue(CreateStringModule::InputString).getString();
+  stringValue_ = get_state()->getValue(InputString).getString();
 
   StringHandle s(new String(stringValue_));
-  send_output_handle(0, s);
+  sendOutput(NewString, s);
 }

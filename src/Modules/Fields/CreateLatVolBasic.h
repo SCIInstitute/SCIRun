@@ -59,7 +59,7 @@ class SCISHARE CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
 
     virtual void execute();
 
-    static std::string outputPort0Name() { return "Output Sample Field"; }
+    OUTPUT_PORT(0, OutputSampleField, Mesh);
 
     static Core::Algorithms::AlgorithmParameterName XSize;
     static Core::Algorithms::AlgorithmParameterName YSize;

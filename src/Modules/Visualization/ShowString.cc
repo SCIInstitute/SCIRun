@@ -42,5 +42,5 @@ void ShowStringModule::execute()
   auto str = getRequiredInput(String);
 
   GeometryHandle geom(new GeometryObject(str));
-  send_output_handle(0, geom);
+  sendOutput(RenderedString, geom);
 }

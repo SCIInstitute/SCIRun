@@ -60,6 +60,5 @@ void CreateMatrixModule::execute()
   {
   	THROW_ALGORITHM_INPUT_ERROR("Matrix parsing failed.");
   }
-
-  send_output_handle(0, matrix);
+  sendOutput(EnteredMatrix, matrix);
 }

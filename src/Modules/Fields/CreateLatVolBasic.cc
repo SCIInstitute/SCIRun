@@ -202,7 +202,7 @@ void CreateLatVolBasic::execute()
 
     // Create Image Field.
     MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-    send_output_handle(0, mesh);
+    sendOutput(OutputSampleField, mesh);
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     FieldHandle ofh = CreateField(lfi,mesh);

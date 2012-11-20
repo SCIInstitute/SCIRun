@@ -33,25 +33,19 @@
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-SCIRun::Core::Algorithms::AlgorithmParameterName SendScalarModule::ValueToSend("ValueToSend");
+AlgorithmParameterName SendScalarModule::ValueToSend() { return AlgorithmParameterName("ValueToSend"); }
 
 SendScalarModule::SendScalarModule()
   : Module(ModuleLookupInfo("SendScalar", "Math", "SCIRun")),
   data_(-1)
 {
-
-}
-
-void SendScalarModule::setScalar(double data)
-{
-  data_ = data; 
-  get_state()->setValue(ValueToSend, data_);
 }
 
 void SendScalarModule::execute()
 {
-  data_ = get_state()->getValue(ValueToSend).getDouble();
-  DatatypeHandle output(new Double(data_));
-  send_output_handle(0, output);
+  data_ = get_state()->getValue(ValueToSend()).getDouble();
+  boost::shared_ptr<Double> output(new Double(data_));
+  sendOutput(Scalar, output);
 }

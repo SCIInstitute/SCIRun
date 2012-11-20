@@ -42,9 +42,8 @@ namespace Basic {
   public:
     SendScalarModule();
     virtual void execute();
-    void setScalar(double data);
-    static std::string outputPort0Name() { return "Scalar"; }
-    static Core::Algorithms::AlgorithmParameterName ValueToSend;
+    OUTPUT_PORT(0, Scalar, Double);
+    static Core::Algorithms::AlgorithmParameterName ValueToSend();
   private:
     double data_;
   };

@@ -44,7 +44,7 @@ namespace Basic {
     SendTestMatrixModule();
     virtual void execute();
     void setMatrix(SCIRun::Core::Datatypes::DenseMatrixHandle data) { data_ = data; }
-    static std::string outputPort0Name() { return "TestMatrix"; }
+    OUTPUT_PORT(0, TestMatrix, DenseMatrix);
   private:
     SCIRun::Core::Datatypes::DenseMatrixHandle data_;
   };

@@ -49,7 +49,7 @@ void ReadMatrixModule::execute()
   algo.setUpdaterFunc(getUpdaterFunc());
 
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  send_output_handle(0, matrix);
+  sendOutput(Matrix, matrix);
   StringHandle file(new String(filename_));
-  send_output_handle(1, file);
+  sendOutput(FileLoaded, file);
 }

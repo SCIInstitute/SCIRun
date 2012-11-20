@@ -44,8 +44,8 @@ namespace DataIO {
     ReadMatrixModule();
     virtual void execute();
     INPUT_PORT(0, Filename, String);
-    static std::string outputPort0Name() { return "Matrix"; }
-    static std::string outputPort1Name() { return inputPort0Name(); }
+    OUTPUT_PORT(0, Matrix, Matrix);
+    OUTPUT_PORT(1, FileLoaded, String);
   private:
     std::string filename_;
   };

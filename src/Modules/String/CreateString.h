@@ -42,7 +42,7 @@ namespace StringProcessing {
   public:
     CreateStringModule();
     virtual void execute();
-    static std::string outputPort0Name() { return "String"; }
+    OUTPUT_PORT(0, NewString, String);
     static Core::Algorithms::AlgorithmParameterName InputString;
   private:
     std::string stringValue_;

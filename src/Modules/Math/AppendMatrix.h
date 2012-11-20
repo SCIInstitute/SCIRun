@@ -45,7 +45,7 @@ namespace Math {
     virtual void execute();
     INPUT_PORT(0, FirstMatrix, DenseMatrix);
     INPUT_PORT(1, SecondMatrix, DenseMatrix);
-    static std::string outputPort0Name() { return "ResultMatrix"; }
+    OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
   };
 }}}
 

@@ -47,5 +47,5 @@ void AppendMatrixModule::execute()
   AppendMatrixAlgorithm algo;
   AppendMatrixAlgorithm::Outputs output = algo.run(AppendMatrixAlgorithm::Inputs(matrixLHS, matrixRHS), param);
 
-  send_output_handle(0, output);
+  sendOutput(ResultMatrix, output);
 }

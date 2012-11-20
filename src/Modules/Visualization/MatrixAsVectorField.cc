@@ -48,5 +48,5 @@ void MatrixAsVectorFieldModule::execute()
   }
 
   GeometryHandle geom(new GeometryObject(mat));
-  send_output_handle(0, geom);
+  sendOutput(RenderedMatrix, geom);
 }

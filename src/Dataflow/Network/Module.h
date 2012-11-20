@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_MODULE_H 
 
 #include <boost/noncopyable.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <Core/Logging/Logger.h>
@@ -108,7 +109,7 @@ namespace Networks {
     boost::shared_ptr<T> getRequiredInput(const PortName<T,N>& port);
 
     template <class T, class D, size_t N>
-    void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data, boost::enable_if<typename boost::is_base_of<T,D>::type>* = 0);
+    void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -194,8 +195,10 @@ namespace Networks {
   }
 
   template <class T, class D, size_t N>
-  void Module::sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data, boost::enable_if<typename boost::is_base_of<T,D>::type>*)
+  void Module::sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data)
   {
+    const bool datatypeForThisPortMustBeCompatible = boost::is_base_of<T,D>::value;
+    BOOST_STATIC_ASSERT(datatypeForThisPortMustBeCompatible);
     send_output_handle(static_cast<size_t>(port), data);
   }
   

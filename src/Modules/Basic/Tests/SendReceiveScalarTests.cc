@@ -75,7 +75,7 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
   SendScalarModule* sendScalar = dynamic_cast<SendScalarModule*>(send.get());
   EXPECT_TRUE(sendScalar != 0);
   
-  sendScalar->setScalar(dataToSend);
+  sendScalar->get_state()->setValue(SendScalarModule::ValueToSend(), dataToSend);
   
   //manually execute the network, in the correct order.
   send->execute();

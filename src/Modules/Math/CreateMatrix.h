@@ -42,7 +42,7 @@ namespace Math {
   public:
     CreateMatrixModule();
     virtual void execute();
-    static std::string outputPort0Name() { return "EnteredMatrix"; }
+    OUTPUT_PORT(0, EnteredMatrix, DenseMatrix);
     static Core::Algorithms::AlgorithmParameterName TextEntry;
   };
 }}}
