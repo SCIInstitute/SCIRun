@@ -45,8 +45,8 @@ namespace Render {
 
     void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r);
 
-    static std::string inputPort0Name() { return "RenderedString"; }
-    static std::string inputPort1Name() { return "RenderedMatrixAsVectorField"; }
+    INPUT_PORT(0, RenderedString, GeometryObject);
+    INPUT_PORT(1, RenderedMatrixAsVectorField, GeometryObject);
 
   private:
     SCIRun::Dataflow::Networks::RendererInterface* renderer_;

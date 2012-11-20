@@ -41,10 +41,7 @@ ReceiveTestMatrixModule::ReceiveTestMatrixModule()
 
 void ReceiveTestMatrixModule::execute()
 {
-  DatatypeHandleOption data = get_input_handle(0);
-  if (data)
-  {
-    latestValue_ = boost::dynamic_pointer_cast<DenseMatrix>(*data);
-    get_state()->setTransientValue("ReceivedMatrix", latestValue_);
-  }
+  auto data = getRequiredInput(Input);
+  latestValue_ = data;
+  get_state()->setTransientValue("ReceivedMatrix", latestValue_);
 }

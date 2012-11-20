@@ -44,7 +44,7 @@ namespace SCIRun {
         ReceiveTestMatrixModule();
         virtual void execute();
         SCIRun::Core::Datatypes::DenseMatrixHandle latestReceivedMatrix() const { return latestValue_; }
-        static std::string inputPort0Name() { return "Input"; }
+        INPUT_PORT(0, Input, DenseMatrix);
       private:
         SCIRun::Core::Datatypes::DenseMatrixHandle latestValue_;
       };

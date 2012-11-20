@@ -54,6 +54,7 @@ namespace Datatypes {
   class String;
   class Field;
   class Mesh;
+  class GeometryObject;
 
 }}}
 

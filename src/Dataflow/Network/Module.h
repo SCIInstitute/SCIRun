@@ -78,9 +78,11 @@ namespace Networks {
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 
+  private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
+  public:
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const;
     virtual void error(const std::string& msg) const { errorSignal_(id_); getLogger()->error(msg); }
@@ -95,18 +97,18 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
 
-    // Throws if input is not present or null.
-    template <class T>
-    boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
-
     template <class Type, size_t N>
     struct PortName
     {
       operator size_t() const { return N; }
     };
 
+    // Throws if input is not present or null.
     template <class T, size_t N>
     boost::shared_ptr<T> getRequiredInput(const PortName<T,N>& port);
+
+    template <class T, class D, size_t N>
+    void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data, boost::enable_if<typename boost::is_base_of<T,D>::type>* = 0);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -137,6 +139,9 @@ namespace Networks {
     std::string id_;
 
   private:
+    template <class T>
+    boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
+
     friend class Builder;
     void add_input_port(InputPortHandle);
     void add_output_port(OutputPortHandle);
@@ -186,6 +191,12 @@ namespace Networks {
   boost::shared_ptr<T> Module::getRequiredInput(const PortName<T,N>& port)
   {
     return getRequiredInputAtIndex<T>(static_cast<size_t>(port));
+  }
+
+  template <class T, class D, size_t N>
+  void Module::sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data, boost::enable_if<typename boost::is_base_of<T,D>::type>*)
+  {
+    send_output_handle(static_cast<size_t>(port), data);
   }
   
 }}
@@ -309,7 +320,8 @@ namespace Modules
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
   PortName<Core::Datatypes::##type,index> name;
 
-
+#define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
+  PortName<Core::Datatypes::##type,index> name;
 
 
 

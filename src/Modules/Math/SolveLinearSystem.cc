@@ -150,7 +150,17 @@ void SolveLinearSystemModule::execute()
   //MatrixHandle num_iter = new DenseMatrix(algo_.get_int("iteration"));
   //MatrixHandle residue  = new DenseMatrix(algo_.get_scalar("current_error"));
 
-  send_output_handle(/*"Solution"*/ 0, solution);
+
+
+
+
+  sendOutput(Solution, solution);
+
+
+
+
+
+  //send_output_handle(/*"Solution"*/ 0, solution);
   //send_output_handle("NumIterations",num_iter,false, false);
   //send_output_handle("Residue",residue,false, false);
 }

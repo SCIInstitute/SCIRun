@@ -45,7 +45,8 @@ namespace Math {
     virtual void execute();
     INPUT_PORT(0, Matrix, Matrix);
     INPUT_PORT(1, RHS, Matrix);
-    static std::string outputPort0Name() { return "Solution"; }
+    OUTPUT_PORT(0, Solution, Matrix);
+    //static std::string outputPort0Name() { return "Solution"; }
   };
 
   struct SCISHARE LinearAlgebraError : virtual Core::ExceptionBase {};

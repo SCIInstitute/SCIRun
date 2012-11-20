@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
@@ -48,43 +47,24 @@ void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
 
 void ViewScene::execute()
 {
-  DatatypeHandleOption strInput = get_input_handle(0);
-  DatatypeHandleOption matrixInput = get_input_handle(1);
+  auto strInput = getRequiredInput(RenderedString);
+  auto matrixInput = getRequiredInput(RenderedMatrixAsVectorField);
 
   if (renderer_)
   {
     renderer_->clearScene();
-    std::cout << "Renderer set! Attempting to visualize some data." << std::endl;
-    if (strInput)
-    {
-      GeometryHandle str = boost::dynamic_pointer_cast<GeometryObject>(*strInput); //TODO : clean
-      if (str)
-        renderer_->setText(str->get_underlying()->as<String>()->value().c_str());
-      else
-        renderer_->setText("<null>");
-    }
-    else
-      renderer_->setText("No string input to ViewScene!");
+    status("Renderer set! Attempting to visualize some data.");
 
-    if (matrixInput)
-    {
-      GeometryHandle mat = boost::dynamic_pointer_cast<GeometryObject>(*matrixInput); //TODO : clean
-      if (mat)
-      {
-        const DenseMatrix* dm = mat->get_underlying()->as<DenseMatrix>();
-        if (dm)
-          renderer_->setVectorField(*dm);
-      }
-      else
-        std::cout << "No vector field data available." << std::endl;
-    }
-    else
-      std::cout << "No vector field input to ViewScene!" << std::endl;
+    renderer_->setText(strInput->get_underlying()->as<String>()->value().c_str());
+
+    const DenseMatrix* dm = matrixInput->get_underlying()->as<DenseMatrix>();
+    if (dm)
+       renderer_->setVectorField(*dm);
 
     renderer_->bringToFront();
   }
   else
   {
-    std::cout << "Renderer not set, nothing to do here!" << std::endl;
+    error("Renderer not set, nothing to do here!");
   }
 }
