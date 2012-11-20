@@ -45,15 +45,15 @@ namespace SCIRun {
 namespace Gui {
 
 class ConnectionLine;
-class ConnectionInProgressStraight;
-class ConnectionInProgressCurved;
 class PositionProvider;
+class ConnectionInProgress;
+class ConnectionFactory;
 
 class PortWidget : public QWidget, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, bool isInput, QWidget* parent = 0);
+  PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent = 0);
   ~PortWidget();
 
   QString name() const { return name_; }
@@ -77,7 +77,7 @@ public:
 
   QPointF position() const;
 
-  //TODO: yuck
+  //TODO: yuck?
   static QGraphicsScene* TheScene;
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
@@ -108,9 +108,10 @@ private:
   bool lightOn_;
   QPointF startPos_;
   QWidget* moduleParent_;
-  ConnectionInProgressCurved* currentConnection_;
+  ConnectionInProgress* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
+  boost::shared_ptr<ConnectionFactory> connectionFactory_;
 
   //TODO
   typedef boost::tuple<std::string, size_t, bool> Key;
@@ -120,13 +121,13 @@ private:
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, QWidget* parent = 0);
+  InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent = 0);
 };
 
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, QWidget* parent = 0);
+  OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent = 0);
 };
 
 }

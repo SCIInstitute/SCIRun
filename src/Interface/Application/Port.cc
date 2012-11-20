@@ -42,10 +42,11 @@ QGraphicsScene* PortWidget::TheScene = 0;
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index,
-  bool isInput, QWidget* parent /* = 0 */)
+  bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
   : QWidget(parent), 
   name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
-  moduleParent_(parent)
+  moduleParent_(parent),
+  connectionFactory_(connectionFactory)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
@@ -219,6 +220,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     PortWidget* out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
     PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
     SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
+    //TODO: move into factory
     ConnectionLine* c = new ConnectionLine(out, in, id);
     TheScene->addItem(c);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -246,11 +248,7 @@ void PortWidget::performDrag(const QPointF& endPos)
 {
   if (!currentConnection_)
   {
-    //TODO: move into factory
-    currentConnection_ = new ConnectionInProgressCurved(this);
-    if (TheScene)
-      TheScene->addItem(currentConnection_);
-    currentConnection_->setVisible(true);
+    currentConnection_ = connectionFactory_->makeConnectionInProgress(this);
   }
   currentConnection_->update(endPos);
 }
@@ -286,13 +284,13 @@ QPointF PortWidget::position() const
 }
 
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, true, parent)
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, true, connectionFactory, parent)
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, false, parent)
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, false, connectionFactory, parent)
 {
 }
 

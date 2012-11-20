@@ -134,7 +134,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port)
-  : ConnectionInProgressBase<QGraphicsLineItem>(port)
+  : ConnectionInProgressGraphicsItem<QGraphicsLineItem>(port)
 {
 }
 
@@ -144,7 +144,7 @@ void ConnectionInProgressStraight::update(const QPointF& end)
 }
 
 ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port)
-  : ConnectionInProgressBase<QGraphicsPathItem>(port)
+  : ConnectionInProgressGraphicsItem<QGraphicsPathItem>(port)
 {
 }
 
@@ -167,3 +167,39 @@ void ConnectionInProgressCurved::update(const QPointF& end)
   setPath(path);
 }
 
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene) {}
+
+ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* port) const
+{
+  switch (currentType_)
+  {
+  case EUCLIDEAN:
+  {
+    auto c = new ConnectionInProgressStraight(port);
+    activate(c);
+    return c;
+  }
+  case CUBIC:
+  {
+    auto c = new ConnectionInProgressCurved(port);
+    activate(c);
+    return c;
+  }
+  case MANHATTAN:
+    std::cout << "Manhattan connections not implemented yet." << std::endl;
+    return 0; //TODO
+  default:
+    std::cerr << "Unknown connection type." << std::endl;
+    return 0;
+  }
+}
+
+void ConnectionFactory::activate(QGraphicsItem* item) const
+{
+  if (item)
+  {
+    if (scene_)
+      scene_->addItem(item);
+    item->setVisible(true);
+  }
+}

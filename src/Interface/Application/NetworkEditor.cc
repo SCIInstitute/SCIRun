@@ -55,6 +55,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
   scene_->setBackgroundBrush(Qt::darkGray);
   PortWidget::TheScene = scene_;
+  ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
 
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);

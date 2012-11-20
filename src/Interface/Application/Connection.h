@@ -64,11 +64,18 @@ private:
 
 struct InvalidConnection : virtual Core::ExceptionBase {};
 
-template <class Base>
-class ConnectionInProgressBase : public Base
+class ConnectionInProgress
 {
 public:
-  explicit ConnectionInProgressBase(PortWidget* port) : fromPort_(port)
+  virtual ~ConnectionInProgress() {}
+  virtual void update(const QPointF& end) = 0;
+};
+
+template <class Base>
+class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgress
+{
+public:
+  explicit ConnectionInProgressGraphicsItem(PortWidget* port) : fromPort_(port)
   {
     setZValue(1000); //TODO
     setColor(port->color());
@@ -84,24 +91,35 @@ public:
     return pen().color();
   }
 
-  virtual void update(const QPointF& end) = 0;
-
 protected:
   PortWidget* fromPort_;
 };
 
-class ConnectionInProgressStraight : public ConnectionInProgressBase<QGraphicsLineItem>
+class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>
 {
 public:
   explicit ConnectionInProgressStraight(PortWidget* port);
   virtual void update(const QPointF& end);
 };
 
-class ConnectionInProgressCurved : public ConnectionInProgressBase<QGraphicsPathItem>
+class ConnectionInProgressCurved : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
 {
 public:
   explicit ConnectionInProgressCurved(PortWidget* port);
-  ;virtual void update(const QPointF& end);
+  virtual void update(const QPointF& end);
+};
+
+class ConnectionFactory
+{
+public:
+  enum Type { MANHATTAN, EUCLIDEAN, CUBIC };
+  explicit ConnectionFactory(QGraphicsScene* scene);
+  void setType(Type type);
+  ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
+private:
+  Type currentType_;
+  void activate(QGraphicsItem* item) const;
+  QGraphicsScene* scene_;
 };
 
 }
