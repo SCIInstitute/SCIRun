@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,26 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_SHOW_MESH_H
-#define MODULES_VISUALIZATION_SHOW_MESH_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/Share.h>
+#ifndef CORE_DATATYPES_DATATYPE_FWD_H
+#define CORE_DATATYPES_DATATYPE_FWD_H 
+
+#include <boost/shared_ptr.hpp>
+#include <boost/optional.hpp>
+#include <boost/any.hpp>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+namespace Core {
+namespace Datatypes {
 
-  class SCISHARE ShowMeshModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MeshPortTag>,
-    public Has1OutputPort<GeometryPortTag>
-  {
-  public:
-    ShowMeshModule();
-    virtual void execute();
-    INPUT_PORT(0, Mesh, Mesh);
-    static std::string outputPort0Name() { return "SceneGraph"; }
-  };
+  class Datatype;
+  typedef boost::shared_ptr<Datatype> DatatypeHandle;
+  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
+  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
+
+  template <typename T>
+  class Scalar;
+
+  typedef Scalar<int> Int32;
+  typedef Scalar<double> Double;
+
+  class String;
+  class Field;
+  class Mesh;
+
 }}}
+
 
 #endif

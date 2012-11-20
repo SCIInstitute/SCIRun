@@ -42,8 +42,10 @@ namespace SCIRun {
       public:
         WriteMatrixModule();
         virtual void execute();
-        static std::string inputPort0Name() { return "Matrix"; }
-        static std::string inputPort1Name() { return "Filename"; }
+        INPUT_PORT(0, MatrixToWrite, Matrix);
+        INPUT_PORT(1, Filename, String);
+        //static std::string inputPort0Name() { return "Matrix"; }
+        //static std::string inputPort1Name() { return "Filename"; }
       private:
         std::string filename_;
       };

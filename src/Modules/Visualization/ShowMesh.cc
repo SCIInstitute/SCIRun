@@ -38,7 +38,7 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 
 void ShowMeshModule::execute()
 {
-  auto mesh = getRequiredInput<Mesh>(0);
+  auto mesh = getRequiredInput(Mesh);
 
   GeometryHandle geom(new GeometryObject(mesh));
   send_output_handle(0, geom);

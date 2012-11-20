@@ -37,6 +37,7 @@ SET(Core_Datatypes_SRCS
 
 SET(Core_Datatypes_HEADERS
   Datatype.h
+  DatatypeFwd.h
   DenseMatrix.h
   DenseColumnMatrix.h
   Geometry.h

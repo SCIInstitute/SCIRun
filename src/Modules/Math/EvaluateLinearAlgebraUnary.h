@@ -44,7 +44,7 @@ namespace Math {
   public:
     EvaluateLinearAlgebraUnaryModule();
     virtual void execute();
-    static std::string inputPort0Name() { return "Input"; }
+    INPUT_PORT(0, Input, DenseMatrix);
     static std::string outputPort0Name() { return "Result"; }
   };
 

@@ -43,7 +43,7 @@ namespace Visualization {
   public:
     ShowFieldModule();
     virtual void execute();
-    static std::string inputPort0Name() { return "Mesh"; }
+    INPUT_PORT(0, Mesh, Field);
     static std::string outputPort0Name() { return "SceneGraph"; }
   };
 }}}

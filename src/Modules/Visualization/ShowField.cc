@@ -38,7 +38,7 @@ ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visua
 
 void ShowFieldModule::execute()
 {
-  auto str = getRequiredInput<Field>(0);
+  auto str = getRequiredInput(Mesh);
 
   GeometryHandle geom(new GeometryObject(str));
   send_output_handle(0, geom);

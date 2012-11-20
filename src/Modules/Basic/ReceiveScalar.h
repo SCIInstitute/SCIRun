@@ -43,7 +43,9 @@ namespace SCIRun {
         ReceiveScalarModule();
         virtual void execute();
         double latestReceivedValue() const { return latestValue_; }
-        static std::string inputPort0Name() { return "Input"; }
+
+        INPUT_PORT(0, Input, Double);
+
         static Core::Algorithms::AlgorithmParameterName ReceivedValue;
       private:
         double latestValue_;

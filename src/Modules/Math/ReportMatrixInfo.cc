@@ -40,7 +40,7 @@ ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("Repo
 
 void ReportMatrixInfoModule::execute()
 {
-  auto matrix = getRequiredInput<Matrix>(0);
+  auto matrix = getRequiredInput(Input);
 
   ReportMatrixInfoAlgorithm algo;
   ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);

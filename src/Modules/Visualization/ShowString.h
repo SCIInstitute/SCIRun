@@ -43,7 +43,7 @@ namespace Visualization {
   public:
     ShowStringModule();
     virtual void execute();
-    static std::string inputPort0Name() { return "String"; }
+    INPUT_PORT(0, String, String);
     static std::string outputPort0Name() { return "RenderedString"; }
   };
 }}}

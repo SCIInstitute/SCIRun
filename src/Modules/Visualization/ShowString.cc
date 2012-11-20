@@ -39,7 +39,7 @@ ShowStringModule::ShowStringModule() : Module(ModuleLookupInfo("ShowString", "Vi
 
 void ShowStringModule::execute()
 {
-  auto str = getRequiredInput<String>(0);
+  auto str = getRequiredInput(String);
 
   GeometryHandle geom(new GeometryObject(str));
   send_output_handle(0, geom);

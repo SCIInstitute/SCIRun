@@ -41,7 +41,7 @@ WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", 
 
 void WriteMatrixModule::execute()
 {
-  auto matrix = getRequiredInput<Matrix>(0);
+  auto matrix = getRequiredInput(MatrixToWrite);
   filename_ = get_state()->getValue(WriteMatrixAlgorithm::Filename).getString();
 
   WriteMatrixAlgorithm algo;

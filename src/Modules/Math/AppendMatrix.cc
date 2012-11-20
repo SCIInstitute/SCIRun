@@ -40,8 +40,8 @@ AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix
 
 void AppendMatrixModule::execute()
 {
-  auto matrixLHS = getRequiredInput<DenseMatrix>(0);
-  auto matrixRHS = getRequiredInput<DenseMatrix>(1);
+  auto matrixLHS = getRequiredInput(FirstMatrix);
+  auto matrixRHS = getRequiredInput(SecondMatrix);
   auto param = (AppendMatrixAlgorithm::Parameters) get_state()->getValue(AppendMatrixAlgorithm::OptionName).getInt();
 
   AppendMatrixAlgorithm algo;

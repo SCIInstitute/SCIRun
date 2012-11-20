@@ -42,7 +42,7 @@ namespace Math {
   public:
     ReportMatrixInfoModule();
     virtual void execute();
-    static std::string inputPort0Name() { return "Input"; }
+    INPUT_PORT(0, Input, Matrix);
   };
 }}}
 

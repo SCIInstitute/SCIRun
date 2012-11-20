@@ -39,7 +39,7 @@ MatrixAsVectorFieldModule::MatrixAsVectorFieldModule() : Module(ModuleLookupInfo
 
 void MatrixAsVectorFieldModule::execute()
 {
-  auto mat = getRequiredInput<DenseMatrix>(0);
+  auto mat = getRequiredInput(Matrix);
 
   if (mat->rows() != 6)
   {

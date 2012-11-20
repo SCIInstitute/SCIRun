@@ -48,8 +48,8 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
 
 void SolveLinearSystemModule::execute()
 {
-  auto A = getRequiredInput<Matrix>(0);
-  auto rhs = getRequiredInput<Matrix>(1);
+  auto A = getRequiredInput(Matrix);
+  auto rhs = getRequiredInput(RHS);
 
   if (rhs->ncols() != 1)
     THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");

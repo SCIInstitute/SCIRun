@@ -45,8 +45,8 @@ Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 
 void EvaluateLinearAlgebraBinaryModule::execute()
 {
-  auto lhs = getRequiredInput<DenseMatrix>(0);
-  auto rhs = getRequiredInput<DenseMatrix>(1);
+  auto lhs = getRequiredInput(InputLHS);
+  auto rhs = getRequiredInput(InputRHS);
 
   ModuleStateHandle state = get_state();
   EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = (EvaluateLinearAlgebraBinaryAlgorithm::Parameters)

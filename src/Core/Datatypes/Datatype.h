@@ -30,9 +30,7 @@
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 
 
-#include <boost/shared_ptr.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
@@ -57,9 +55,6 @@ namespace Datatypes {
     virtual Datatype* clone() const = 0;
   };
 
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
 
 }}}
 

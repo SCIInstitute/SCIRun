@@ -44,8 +44,8 @@ namespace SCIRun {
         EvaluateLinearAlgebraBinaryModule();
         virtual void execute();
 
-        static std::string inputPort0Name() { return "InputLHS"; }
-        static std::string inputPort1Name() { return "InputRHS"; }
+        INPUT_PORT(0, InputLHS, DenseMatrix);
+        INPUT_PORT(1, InputRHS, DenseMatrix);
         static std::string outputPort0Name() { return "Result"; }
       };
 

@@ -43,8 +43,8 @@ namespace Math {
   public:
     AppendMatrixModule();
     virtual void execute();
-    static std::string inputPort0Name() { return "Left/Top Matrix"; }
-    static std::string inputPort1Name() { return "Right/Bottom Matrix"; }
+    INPUT_PORT(0, FirstMatrix, DenseMatrix);
+    INPUT_PORT(1, SecondMatrix, DenseMatrix);
     static std::string outputPort0Name() { return "ResultMatrix"; }
   };
 }}}

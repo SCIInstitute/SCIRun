@@ -34,6 +34,7 @@
 #include <boost/lexical_cast.hpp>
 #include <vector>
 #include <Core/Logging/Logger.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -96,10 +97,16 @@ namespace Networks {
 
     // Throws if input is not present or null.
     template <class T>
-    boost::shared_ptr<T> getRequiredInput(size_t idx);
+    boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
 
-    template <class T>
-    boost::shared_ptr<T> getRequiredInput(const std::string& name);
+    template <class Type, size_t N>
+    struct PortName
+    {
+      operator size_t() const { return N; }
+    };
+
+    template <class T, size_t N>
+    boost::shared_ptr<T> getRequiredInput(const PortName<T,N>& port);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -156,7 +163,7 @@ namespace Networks {
   struct SCISHARE PortNotFoundException : virtual DataPortException {};
 
   template <class T>
-  boost::shared_ptr<T> Module::getRequiredInput(size_t idx)
+  boost::shared_ptr<T> Module::getRequiredInputAtIndex(size_t idx)
   {
     auto inputOpt = get_input_handle(idx);
     if (!inputOpt)
@@ -175,6 +182,11 @@ namespace Networks {
     return data;
   }
   
+  template <class T, size_t N>
+  boost::shared_ptr<T> Module::getRequiredInput(const PortName<T,N>& port)
+  {
+    return getRequiredInputAtIndex<T>(static_cast<size_t>(port));
+  }
   
 }}
 
@@ -293,6 +305,14 @@ namespace Modules
   OUTPUT_PORT_SPEC(Field);
   OUTPUT_PORT_SPEC(Mesh);  //TODO temporary
   OUTPUT_PORT_SPEC(Geometry);
+
+#define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
+  PortName<Core::Datatypes::##type,index> name;
+
+
+
+
+
 
 }
 }

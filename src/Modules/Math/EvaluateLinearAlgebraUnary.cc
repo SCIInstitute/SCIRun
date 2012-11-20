@@ -46,7 +46,7 @@ EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
 
 void EvaluateLinearAlgebraUnaryModule::execute()
 {
-  auto denseInput = getRequiredInput<DenseMatrix>(0);
+  auto denseInput = getRequiredInput(Input);
 
   ModuleStateHandle state = get_state();
   
