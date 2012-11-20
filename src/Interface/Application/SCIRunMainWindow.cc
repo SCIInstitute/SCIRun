@@ -222,8 +222,14 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
-
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
+
+  connect(cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
+  connect(manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
+  connect(euclideanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesEuclidean()));
+  //TODO: will be a user or network setting
+  makePipesEuclidean();
+  
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
@@ -499,4 +505,19 @@ void SCIRunMainWindow::makeFilterButtonMenu()
   filterMenu->addAction(wildcardAction);
 
   filterButton_->setMenu(filterMenu);
+}
+
+void SCIRunMainWindow::makePipesCubicBezier()
+{
+  std::cout << "Bezier selected" << std::endl;
+}
+
+void SCIRunMainWindow::makePipesEuclidean()
+{
+  std::cout << "euclidean selected" << std::endl;
+}
+
+void SCIRunMainWindow::makePipesManhattan()
+{
+  //TODO
 }

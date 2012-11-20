@@ -109,6 +109,7 @@ namespace
   const QString disableEnableAction("Disable*");
   const QString editNotesAction("Edit Notes...*");
 }
+
 class ConnectionMenu : public QMenu
 {
 public:
@@ -133,21 +134,8 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 }
 
 ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port)
-  : fromPort_(port)
+  : ConnectionInProgressBase<QGraphicsLineItem>(port)
 {
-  setZValue(1000);
-
-  setColor(port->color());
-}
-
-void ConnectionInProgressStraight::setColor(const QColor& color)
-{
-  setPen(QPen(color, 5.0, Qt::DashLine));
-}
-
-QColor ConnectionInProgressStraight::color() const
-{
-  return pen().color();
 }
 
 void ConnectionInProgressStraight::update(const QPointF& end)
@@ -156,21 +144,8 @@ void ConnectionInProgressStraight::update(const QPointF& end)
 }
 
 ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port)
-  : fromPort_(port)
+  : ConnectionInProgressBase<QGraphicsPathItem>(port)
 {
-  setZValue(1000);
-
-  setColor(port->color());
-}
-
-void ConnectionInProgressCurved::setColor(const QColor& color)
-{
-  setPen(QPen(color, 5.0, Qt::DashLine));
-}
-
-QColor ConnectionInProgressCurved::color() const
-{
-  return pen().color();
 }
 
 void ConnectionInProgressCurved::update(const QPointF& end)

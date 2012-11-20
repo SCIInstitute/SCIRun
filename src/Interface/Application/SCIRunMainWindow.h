@@ -79,6 +79,9 @@ private Q_SLOTS:
   bool clearNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
+  void makePipesEuclidean();
+  void makePipesCubicBezier();
+  void makePipesManhattan();
 };
 
 }
