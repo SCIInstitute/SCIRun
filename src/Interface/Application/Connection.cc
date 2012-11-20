@@ -203,3 +203,8 @@ void ConnectionFactory::activate(QGraphicsItem* item) const
     item->setVisible(true);
   }
 }
+
+void ConnectionFactory::setType(Type type)
+{
+  currentType_ = type;
+}

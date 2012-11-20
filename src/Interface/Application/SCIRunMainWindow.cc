@@ -33,6 +33,7 @@
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/Connection.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -510,11 +511,13 @@ void SCIRunMainWindow::makeFilterButtonMenu()
 void SCIRunMainWindow::makePipesCubicBezier()
 {
   std::cout << "Bezier selected" << std::endl;
+  networkEditor_->setConnectionPipelineType(ConnectionFactory::CUBIC);
 }
 
 void SCIRunMainWindow::makePipesEuclidean()
 {
   std::cout << "euclidean selected" << std::endl;
+  networkEditor_->setConnectionPipelineType(ConnectionFactory::EUCLIDEAN);
 }
 
 void SCIRunMainWindow::makePipesManhattan()

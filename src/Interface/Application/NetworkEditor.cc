@@ -486,6 +486,11 @@ int NetworkEditor::numModules() const
   return controller_->numModules();
 }
 
+void NetworkEditor::setConnectionPipelineType(int type)
+{
+  ModuleWidget::connectionFactory_->setType(ConnectionFactory::Type(type));
+}
+
 ModuleEventProxy::ModuleEventProxy()
 {
   qRegisterMetaType<std::string>("std::string");

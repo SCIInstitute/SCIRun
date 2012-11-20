@@ -97,6 +97,7 @@ Q_SIGNALS:
     void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func = 0);
     void clear();
+    void setConnectionPipelineType(int type);
 
     //TODO: break out, unit test
     SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
