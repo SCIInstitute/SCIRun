@@ -222,7 +222,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     //TODO: move into factory
     ConnectionLine* c = new ConnectionLine(out, in, id);
-    TheScene->addItem(c);
+    TheScene->addItem((static_cast<QGraphicsLineItem*>(c)));
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }

@@ -36,6 +36,46 @@
 
 using namespace SCIRun::Gui;
 
+ConnectionGraphicsItem::ConnectionGraphicsItem()
+{
+  QGraphicsItem::setFlags(QGraphicsItem::ItemIsSelectable);
+  //TODO: need dynamic zValue
+  QGraphicsItem::setZValue(100); 
+  QGraphicsItem::setToolTip("Left - Highlight*\nDouble-Left - Menu");
+}
+
+class EuclideanDrawStrategy : public ConnectionDrawStrategy
+{
+public:
+  void draw(ConnectionGraphicsItem* item, const QPointF& from, const QPointF& to)
+  {
+    item->setLine(QLineF(from, to));
+  }
+};
+
+class CubicBezierDrawStrategy : public ConnectionDrawStrategy
+{
+public:
+  void draw(ConnectionGraphicsItem* item, const QPointF& from, const QPointF& to)
+  {
+    QPainterPath path;
+    QPointF start = from;
+
+    path.moveTo(start);
+    auto mid = (to - start) / 2 + start;
+
+    QPointF qDir(-(to-start).y() / ((double)(to-start).x()) , 1);
+    double qFactor = std::min(std::abs(100.0 / qDir.x()), 80.0);
+    //TODO: scale down when start close to end. need a unit test at this point.
+    //qFactor /= (end-start).manhattanDistance()
+
+    auto q1 = (static_cast<QGraphicsLineItem*>(item))->mapToScene(mid + qFactor * qDir);
+    auto q2 = (static_cast<QGraphicsLineItem*>(item))->mapToScene(mid - qFactor * qDir);
+    path.cubicTo(q1, q2, to);  
+    item->setPath(path);
+  }
+};
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id)
   : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false)
 {
@@ -50,16 +90,14 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
     toPort_->turn_on_light();
   }
 
-  setFlags(QGraphicsItem::ItemIsSelectable);
-  //TODO: need dynamic zValue
-  setZValue(100);
-
   if (fromPort_ && toPort_)
     setColor(fromPort_->color());
-  
+ 
+  ConnectionDrawStrategyPtr p(new EuclideanDrawStrategy);
+  setDrawStrategy(p);
+
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
-  setToolTip("Left - Highlight*\nDouble-Left - Menu");
 }
 
 ConnectionLine::~ConnectionLine()
@@ -82,21 +120,22 @@ void ConnectionLine::destroy()
   destroyed_ = true;
 }
 
-void ConnectionLine::setColor(const QColor& color)
+void ConnectionGraphicsItem::setColor(const QColor& color)
 {
-  setPen(QPen(color, 5.0));
+  QGraphicsLineItem::setPen(QPen(color, 5.0));
+  QGraphicsPathItem::setPen(QPen(color, 5.0));
 }
 
-QColor ConnectionLine::color() const
+QColor ConnectionGraphicsItem::color() const
 {
-  return pen().color();
+  return QGraphicsLineItem::pen().color();
 }
 
 void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
-    setLine(QLineF(fromPort_->position(), toPort_->position()));
+    drawer_->draw(this, fromPort_->position(), toPort_->position());
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection"));
@@ -122,13 +161,13 @@ public:
   }
 };
 
-void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void ConnectionGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   ConnectionMenu menu;
   auto a = menu.exec(event->screenPos());
   if (a && a->text() == deleteAction)
   {
-    scene()->removeItem(this);
+    (static_cast<QGraphicsLineItem*>(this))->scene()->removeItem((static_cast<QGraphicsLineItem*>(this)));
     destroy();
   }
 }

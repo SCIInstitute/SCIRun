@@ -38,27 +38,49 @@ namespace Gui {
 
 class PortWidget;
 
-class ConnectionLine : public QObject, public QGraphicsLineItem
+class ConnectionDrawStrategy
+{
+public:
+  virtual ~ConnectionDrawStrategy() {}
+  virtual void draw(class ConnectionGraphicsItem* item, const QPointF& from, const QPointF& to) = 0;
+};
+
+typedef boost::shared_ptr<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;
+
+class ConnectionGraphicsItem : virtual public QGraphicsLineItem, virtual public QGraphicsPathItem
+{
+public:
+  ConnectionGraphicsItem();
+  void setColor(const QColor& color);
+  QColor color() const;
+  
+
+  ConnectionDrawStrategyPtr getDrawStrategy() const { return drawer_; }
+  void setDrawStrategy(ConnectionDrawStrategyPtr cds) { drawer_ = cds; }
+
+protected:
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+  ConnectionDrawStrategyPtr drawer_;
+  virtual void destroy() = 0;
+};
+
+class ConnectionLine : public QObject, public ConnectionGraphicsItem
 {
   Q_OBJECT
 
 public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id);
   ~ConnectionLine();
-
-  void setColor(const QColor& color);
-  QColor color() const;
   void trackNodes();
-  
+
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
-protected:
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
-  void destroy();
+  virtual void destroy();
   bool destroyed_;
 };
 

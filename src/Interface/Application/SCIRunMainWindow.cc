@@ -510,13 +510,11 @@ void SCIRunMainWindow::makeFilterButtonMenu()
 
 void SCIRunMainWindow::makePipesCubicBezier()
 {
-  std::cout << "Bezier selected" << std::endl;
   networkEditor_->setConnectionPipelineType(ConnectionFactory::CUBIC);
 }
 
 void SCIRunMainWindow::makePipesEuclidean()
 {
-  std::cout << "euclidean selected" << std::endl;
   networkEditor_->setConnectionPipelineType(ConnectionFactory::EUCLIDEAN);
 }
 
