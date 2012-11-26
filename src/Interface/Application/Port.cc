@@ -221,8 +221,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
     SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     //TODO: move into factory
-    ConnectionLine* c = new ConnectionLine(out, in, id);
-    TheScene->addItem((static_cast<QGraphicsLineItem*>(c)));
+    ConnectionLine* c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }

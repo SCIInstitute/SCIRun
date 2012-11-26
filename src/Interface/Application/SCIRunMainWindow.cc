@@ -510,12 +510,12 @@ void SCIRunMainWindow::makeFilterButtonMenu()
 
 void SCIRunMainWindow::makePipesCubicBezier()
 {
-  networkEditor_->setConnectionPipelineType(ConnectionFactory::CUBIC);
+  networkEditor_->setConnectionPipelineType(CUBIC);
 }
 
 void SCIRunMainWindow::makePipesEuclidean()
 {
-  networkEditor_->setConnectionPipelineType(ConnectionFactory::EUCLIDEAN);
+  networkEditor_->setConnectionPipelineType(EUCLIDEAN);
 }
 
 void SCIRunMainWindow::makePipesManhattan()

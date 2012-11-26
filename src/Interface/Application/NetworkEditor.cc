@@ -488,7 +488,7 @@ int NetworkEditor::numModules() const
 
 void NetworkEditor::setConnectionPipelineType(int type)
 {
-  ModuleWidget::connectionFactory_->setType(ConnectionFactory::Type(type));
+  ModuleWidget::connectionFactory_->setType(ConnectionDrawType(type));
 }
 
 ModuleEventProxy::ModuleEventProxy()
