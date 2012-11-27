@@ -232,7 +232,6 @@ void NetworkEditor::del()
     auto link = dynamic_cast<QGraphicsPathItem*>(i.next());
     if (link)
     {
-      std::cout << "QGraphicsPathItem cast successful" << std::endl;
       delete link;
       i.remove();
     }
