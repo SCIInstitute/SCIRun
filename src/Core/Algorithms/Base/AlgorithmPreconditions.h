@@ -57,24 +57,27 @@ namespace Algorithms {
 #define THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << type((message))); }
 #define THROW_ALGORITHM_PROCESSING_ERROR(message) THROW_ALGORITHM_PROCESSING_ERROR_WITH_TYPE(SCIRun::Core::ErrorMessage, message)
 
-#define ENSURE_ALGORITHM_INPUT_NOT_NULL(var, message)  if (!(var)) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::NullObjectInfo, message)
+#define ENSURE_ALGORITHM_INPUT_NOT_NULL(var, message)  if (!(var)) THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(SCIRun::Core::NullObjectInfo, message) else (void)0
   
 #define ENSURE_POSITIVE_DOUBLE(var, message)  if ((var) <= 0) \
   THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE(DoubleOutOfRangeInfo, message, \
     DoubleOutOfRangeInfo::value_type( \
     std::string(message), \
     var, \
-    boost::numeric::interval<double>(0, std::numeric_limits<double>::infinity()))) 
+    boost::numeric::interval<double>(0, std::numeric_limits<double>::infinity()))) \
+    else (void)0
 
 #define ENSURE_POSITIVE_INT(var, message) if ((var) <= 0) \
     THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE_AND_MESSAGE(IntOutOfRangeInfo, message, \
     IntOutOfRangeInfo::value_type( \
     std::string(message), \
     var, \
-    boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity())))
+    boost::numeric::interval<int>(0, std::numeric_limits<int>::infinity()))) \
+    else (void)0
 
 #define ENSURE_FILE_EXISTS(filename) if (!boost::filesystem::exists(filename))\
-  THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(FileNotFound, std::string("File not found: (") + (filename.size() != 0 ? filename : "<no file set>") + ")")
+  THROW_ALGORITHM_INPUT_ERROR_WITH_TYPE(FileNotFound, std::string("File not found: (") + (filename.size() != 0 ? filename : "<no file set>") + ")") \
+  else (void)0
 
 }}}
 
