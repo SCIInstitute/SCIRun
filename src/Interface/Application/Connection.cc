@@ -37,92 +37,86 @@
 
 using namespace SCIRun::Gui;
 
-template <class Base>
-class ConnectionGraphicsItem : public Base
-{
-public:
-  ConnectionGraphicsItem();
-  void setColor(const QColor& color);
-  QColor color() const;
-  virtual void destroy() = 0;
-protected:
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-};
+//template <class Base>
+//class ConnectionGraphicsItem : public Base
+//{
+//public:
+//  ConnectionGraphicsItem();
+//  ~ConnectionGraphicsItem();
+//  void setColor(const QColor& color);
+//  QColor color() const;
+//  virtual void destroy() = 0;
+//
+//};
 
-template <class Base>
-ConnectionGraphicsItem<Base>::ConnectionGraphicsItem()
-{
-  setFlags(QGraphicsItem::ItemIsSelectable);
-  //TODO: need dynamic zValue
-  setZValue(100); 
-  setToolTip("Left - Highlight*\nDouble-Left - Menu");
-}
+//template <class Base>
+//ConnectionGraphicsItem<Base>::ConnectionGraphicsItem()
+//{
+//  setFlags(QGraphicsItem::ItemIsSelectable);
+//  //TODO: need dynamic zValue
+//  setZValue(100); 
+//  setToolTip("Left - Highlight*\nDouble-Left - Menu");
+//}
+
+//template <class Base>
+//ConnectionGraphicsItem<Base>::~ConnectionGraphicsItem()
+//{
+//  std::cout << "doh--need to call a virtual function in a dtor..." << std::endl;
+//}
 
 ConnectionDrawStrategy::~ConnectionDrawStrategy() 
 {
   //std::cout << "~ConnectionDrawStrategy" << std::endl;
 }
 
-class EuclideanDrawStrategy : public ConnectionDrawStrategy, public ConnectionGraphicsItem<QGraphicsLineItem>
+class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  explicit EuclideanDrawStrategy(QGraphicsScene* scene) : ConnectionDrawStrategy(scene)
-  {
-    //std::cout << "ctor Euclidean" << std::endl;
-    scene_->addItem(this);
-    setVisible(true);
-  }
+  //explicit EuclideanDrawStrategy(QGraphicsScene* scene) : ConnectionDrawStrategy(scene)
+  //{
+  //  //std::cout << "ctor Euclidean" << std::endl;
+  //  scene_->addItem(this);
+  //  setVisible(true);
+  //}
 
-  ~EuclideanDrawStrategy()
-  {
-    //std::cout << "~EuclideanDrawStrategy" << std::endl;
-    scene_->removeItem(this);
-  }
+  //~EuclideanDrawStrategy()
+  //{
+  //  //std::cout << "~EuclideanDrawStrategy" << std::endl;
+  //  scene_->removeItem(this);
+  //}
 
-  void destroy()
-  {
-    Q_EMIT connectionDeleted();
-  }
+  //void destroy()
+  //{
+  //  Q_EMIT connectionDeleted();
+  //  //scene_->removeItem(this);
+  //}
   
-  void setColor(const QColor& color)
-  {
-    ConnectionGraphicsItem<QGraphicsLineItem>::setColor(color);
-  }
+  //void setColor(const QColor& color)
+  //{
+  //  ConnectionGraphicsItem<QGraphicsLineItem>::setColor(color);
+  //}
 
-  void draw(const QPointF& from, const QPointF& to)
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
     //std::cout << "Euclidean draw: from " << from.x() << "," << from.y() << " to " << to.x() << "," << to.y() << std::endl;
-    setLine(QLineF(from, to));
+    QPainterPath path;
+    path.moveTo(from);
+    path.lineTo(to);
+    item->setPath(path);
   }
 };
 
-class CubicBezierDrawStrategy : public ConnectionDrawStrategy, public ConnectionGraphicsItem<QGraphicsPathItem>
+class CubicBezierDrawStrategy : public ConnectionDrawStrategy//, public ConnectionGraphicsItem<QGraphicsPathItem>
 {
 public:
-  explicit CubicBezierDrawStrategy(QGraphicsScene* scene) : ConnectionDrawStrategy(scene)
-  {
-    //std::cout << "ctor Cubic" << std::endl;
-    scene_->addItem(this);
-    setVisible(true);
-  }
+  //explicit CubicBezierDrawStrategy(QGraphicsScene* scene) : ConnectionDrawStrategy(scene)
+  //{
+  //  //std::cout << "ctor Cubic" << std::endl;
+  //  scene_->addItem(this);
+  //  setVisible(true);
+  //}
 
-  ~CubicBezierDrawStrategy()
-  {
-    //std::cout << "~CubicBezierDrawStrategy" << std::endl;
-    scene_->removeItem(this);
-  }
-
-  void destroy()
-  {
-    Q_EMIT connectionDeleted();
-  }
-
-  void setColor(const QColor& color)
-  {
-    ConnectionGraphicsItem<QGraphicsPathItem>::setColor(color);
-  }
-
-  void draw(const QPointF& from, const QPointF& to)
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
     //std::cout << "Cubic draw: from " << from.x() << "," << from.y() << " to " << to.x() << "," << to.y() << std::endl;
     QPainterPath path;
@@ -136,10 +130,10 @@ public:
     //TODO: scale down when start close to end. need a unit test at this point.
     //qFactor /= (end-start).manhattanDistance()
 
-    auto q1 = mapToScene(mid + qFactor * qDir);
-    auto q2 = mapToScene(mid - qFactor * qDir);
+    auto q1 = item->mapToScene(mid + qFactor * qDir);
+    auto q2 = item->mapToScene(mid - qFactor * qDir);
     path.cubicTo(q1, q2, to);  
-    setPath(path);
+    item->setPath(path);
   }
 };
 
@@ -158,7 +152,12 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
   }
 
   if (fromPort_ && toPort_)
-    drawer->setColor(fromPort_->color());
+    setColor(fromPort_->color());
+
+  setFlags(QGraphicsItem::ItemIsSelectable);
+  //TODO: need dynamic zValue
+  setZValue(100); 
+  setToolTip("Left - Highlight*\nDouble-Left - Menu");
 
   trackNodes();
   GuiLogger::Instance().log("Connection made.");
@@ -186,14 +185,12 @@ void ConnectionLine::destroy()
   destroyed_ = true;
 }
 
-template <class Base>
-void ConnectionGraphicsItem<Base>::setColor(const QColor& color)
+void ConnectionLine::setColor(const QColor& color)
 {
   setPen(QPen(color, 5.0));
 }
 
-template <class Base>
-QColor ConnectionGraphicsItem<Base>::color() const
+QColor ConnectionLine::color() const
 {
   return pen().color();
 }
@@ -203,19 +200,22 @@ void ConnectionLine::trackNodes()
   if (fromPort_ && toPort_)
   {
     //std::cout << "ConnectionLine::trackNodes" << std::endl;
-    drawer_->draw(fromPort_->position(), toPort_->position());
+    drawer_->draw(this, fromPort_->position(), toPort_->position());
   }
   else
     BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection"));
 }
 
-void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyMaker cds)
+void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
   //std::cout << "ConnectionLine::setDrawStrategy" << std::endl;
-  drawer_ = cds();
-  connect(drawer_.get(), SIGNAL(connectionDeleted()), this, SLOT(destroy()));
-  drawer_->setColor(fromPort_->color());
-  trackNodes();
+  if (!destroyed_)
+  {
+    drawer_ = cds;
+    //connect(drawer_.get(), SIGNAL(connectionDeleted()), this, SLOT(destroy()));
+    //drawer_->setColor(fromPort_->color());
+    trackNodes();
+  }
 }
 
 namespace
@@ -238,8 +238,7 @@ public:
   }
 };
 
-template <class Base>
-void ConnectionGraphicsItem<Base>::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
   ConnectionMenu menu;
   auto a = menu.exec(event->screenPos());
@@ -285,7 +284,7 @@ void ConnectionInProgressCurved::update(const QPointF& end)
   setPath(path);
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene) {}
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene), euclidean_(new EuclideanDrawStrategy), cubic_(new CubicBezierDrawStrategy) {}
 
 ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* port) const
 {
@@ -328,7 +327,7 @@ void ConnectionFactory::setType(ConnectionDrawType type)
   {
     //std::cout << "Factory::setType " << type << std::endl;
     currentType_ = type;
-    Q_EMIT typeChanged([this]() {return getCurrentDrawer();} );
+    Q_EMIT typeChanged(getCurrentDrawer());
   }
 }
 
@@ -337,9 +336,9 @@ ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
   switch (currentType_)
   {
   case EUCLIDEAN:
-    return ConnectionDrawStrategyPtr(new EuclideanDrawStrategy(scene_));
+    return euclidean_;
   case CUBIC:
-    return ConnectionDrawStrategyPtr(new CubicBezierDrawStrategy(scene_));;
+    return cubic_;
   case MANHATTAN:
     std::cout << "Manhattan connections not implemented yet." << std::endl;
     return ConnectionDrawStrategyPtr();
@@ -351,9 +350,9 @@ ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
 
 ConnectionLine* ConnectionFactory::makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const
 {
-  auto draw = getCurrentDrawer();
-  auto c = new ConnectionLine(fromPort, toPort, id, draw);
-  connect(this, SIGNAL(typeChanged(ConnectionDrawStrategyMaker)), c, SLOT(setDrawStrategy(ConnectionDrawStrategyMaker)));
-  connect(draw.get(), SIGNAL(connectionDeleted()), c, SLOT(destroy()));
+  auto c = new ConnectionLine(fromPort, toPort, id, getCurrentDrawer());
+  activate(c);
+  connect(this, SIGNAL(typeChanged(ConnectionDrawStrategyPtr)), c, SLOT(setDrawStrategy(ConnectionDrawStrategyPtr)));
+  //connect(draw.get(), SIGNAL(connectionDeleted()), c, SLOT(destroy()));
   return c;
 }

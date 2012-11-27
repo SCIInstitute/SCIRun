@@ -41,28 +41,26 @@ class PortWidget;
 
 class ConnectionDrawStrategy : public QObject
 {
-  Q_OBJECT
+  //Q_OBJECT
 public:
-  explicit ConnectionDrawStrategy(QGraphicsScene* scene) : scene_(scene) {}
+  //explicit ConnectionDrawStrategy(QGraphicsScene* scene) : scene_(scene) {}
   virtual ~ConnectionDrawStrategy();
-  virtual void draw(const QPointF& from, const QPointF& to) = 0;
-  virtual void setColor(const QColor& color) = 0;
-Q_SIGNALS:
-  void connectionDeleted();
-protected:
-  QGraphicsScene* scene_;
+  virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) = 0;
+  //virtual void setColor(const QColor& color) = 0;
+//Q_SIGNALS:
+//  void connectionDeleted();
+//protected:
+//  QGraphicsScene* scene_;
 };
 
 typedef boost::shared_ptr<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;
-
-typedef boost::function<ConnectionDrawStrategyPtr()> ConnectionDrawStrategyMaker;
 
 enum ConnectionDrawType
 {
   MANHATTAN, EUCLIDEAN, CUBIC
 };
 
-class ConnectionLine : public QObject
+class ConnectionLine : public QObject, public QGraphicsPathItem
 {
   Q_OBJECT
 
@@ -70,19 +68,20 @@ public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
   ~ConnectionLine();
   void trackNodes();
-
+  void setColor(const QColor& color);
+  QColor color() const;
 public Q_SLOTS:
-  void setDrawStrategy(ConnectionDrawStrategyMaker drawerMaker);
-  void destroy();
+  void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
-
+protected:
+  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
   ConnectionDrawStrategyPtr drawer_;
-  
+  void destroy();
   bool destroyed_;
 };
 
@@ -142,11 +141,13 @@ public:
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
 Q_SIGNALS:
-  void typeChanged(ConnectionDrawStrategyMaker drawerMaker);
+  void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
 private:
   ConnectionDrawType currentType_;
   void activate(QGraphicsItem* item) const;
   QGraphicsScene* scene_;
+  ConnectionDrawStrategyPtr euclidean_;
+  ConnectionDrawStrategyPtr cubic_;
   ConnectionDrawStrategyPtr getCurrentDrawer() const;
 };
 

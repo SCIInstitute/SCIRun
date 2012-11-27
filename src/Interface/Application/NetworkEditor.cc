@@ -229,9 +229,10 @@ void NetworkEditor::del()
   QMutableListIterator<QGraphicsItem*> i(items);
   while (i.hasNext())
   {
-    ConnectionLine* link = dynamic_cast<ConnectionLine*>(i.next());
+    auto link = dynamic_cast<QGraphicsPathItem*>(i.next());
     if (link)
     {
+      std::cout << "QGraphicsPathItem cast successful" << std::endl;
       delete link;
       i.remove();
     }
