@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_CONNECTION_H
 
 #include <QGraphicsLineItem>
+#include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Core/Utils/Exception.h>
 
@@ -38,35 +39,30 @@ namespace Gui {
 
 class PortWidget;
 
-class ConnectionDrawStrategy
+class ConnectionDrawStrategy : public QObject
 {
+  Q_OBJECT
 public:
-  virtual ~ConnectionDrawStrategy() {}
-  virtual void draw(class ConnectionGraphicsItem* item, const QPointF& from, const QPointF& to) = 0;
-  void setColor(const QColor& color);
-  QColor color() const;
+  explicit ConnectionDrawStrategy(QGraphicsScene* scene) : scene_(scene) {}
+  virtual ~ConnectionDrawStrategy();
+  virtual void draw(const QPointF& from, const QPointF& to) = 0;
+  virtual void setColor(const QColor& color) = 0;
+Q_SIGNALS:
+  void connectionDeleted();
+protected:
+  QGraphicsScene* scene_;
 };
 
 typedef boost::shared_ptr<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;
 
-template <class Base>
-class ConnectionGraphicsItem : public Base
-{
-public:
-  explicit ConnectionGraphicsItem(ConnectionDrawStrategyPtr drawer);
-
-protected:
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-  ConnectionDrawStrategyPtr drawer_;
-  virtual void destroy() = 0;
-};
+typedef boost::function<ConnectionDrawStrategyPtr()> ConnectionDrawStrategyMaker;
 
 enum ConnectionDrawType
 {
   MANHATTAN, EUCLIDEAN, CUBIC
 };
 
-class ConnectionLine : public QObject //, public ConnectionGraphicsItem
+class ConnectionLine : public QObject
 {
   Q_OBJECT
 
@@ -74,9 +70,10 @@ public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
   ~ConnectionLine();
   void trackNodes();
-  //ConnectionDrawStrategyPtr getDrawStrategy() const { return drawer_; }
+
 public Q_SLOTS:
-  void setDrawStrategy(ConnectionDrawStrategyPtr cds);
+  void setDrawStrategy(ConnectionDrawStrategyMaker drawerMaker);
+  void destroy();
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 
@@ -84,7 +81,8 @@ private:
   PortWidget* fromPort_;
   PortWidget* toPort_;
   SCIRun::Dataflow::Networks::ConnectionId id_;
-  virtual void destroy();
+  ConnectionDrawStrategyPtr drawer_;
+  
   bool destroyed_;
 };
 
@@ -144,14 +142,12 @@ public:
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
 Q_SIGNALS:
-  void typeChanged(ConnectionDrawStrategyPtr drawer);
+  void typeChanged(ConnectionDrawStrategyMaker drawerMaker);
 private:
   ConnectionDrawType currentType_;
   void activate(QGraphicsItem* item) const;
   QGraphicsScene* scene_;
-  ConnectionDrawStrategyPtr euclidean_;
-  ConnectionDrawStrategyPtr cubic_;
-  ConnectionDrawStrategyPtr getCurrentStrategy() const;
+  ConnectionDrawStrategyPtr getCurrentDrawer() const;
 };
 
 }
