@@ -233,6 +233,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else
   {
+    //TODO: log
     std::cout << "NOTE: Module " << name << " does not have any ports defined yet!" << std::endl;
   }
   return description;

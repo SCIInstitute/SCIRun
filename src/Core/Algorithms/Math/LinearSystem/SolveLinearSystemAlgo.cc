@@ -43,8 +43,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-//AlgorithmParameterName SolveLinearSystemAlgo::TargetError1("target error");
-//AlgorithmParameterName SolveLinearSystemAlgo::MaxIterations1("max iterations");
 AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("build convergence");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
@@ -145,15 +143,12 @@ class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo
 
 bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 {
-  //std::cout << "in CG parallel" << std::endl;
   ParallelLinearAlgebra::ParallelMatrix A; 
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN, DIAG, R, Z, P;
 
   double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
   int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
 
-  //std::cout << "tolerance: " << tolerance << std::endl;
-  //std::cout << "max_iter: " << max_iter << std::endl;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get("callback_step");
 #endif
@@ -175,10 +170,8 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 #endif
     }
     PLA.wait();
-    //std::cout << "returning false: could not link matrices" << std::endl;
     return (false);
   }
-  //std::cout << "matrices added" << std::endl;
   if ( !PLA.new_vector(X) ||
        !PLA.new_vector(DIAG) ||
        !PLA.new_vector(R) ||
@@ -195,10 +188,8 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 #endif
     }
     PLA.wait();
-    //std::cout << "returning false: could not allocate memory" << std::endl;
     return (false);
   }
-  //std::cout << "temp vectors created" << std::endl;
 
   PLA.copy(X0,X);
   PLA.copy(X0,XMIN);
@@ -214,7 +205,6 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
   {
     PLA.ones(DIAG);
   }
-  //std::cout << "preconditioner made" << std::endl;
   
   PLA.mult(A,X,R);
   PLA.sub(B,R,R);
@@ -224,8 +214,6 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 
   double xmin = error;
   double orig = error;
-
-  //std::cout << "norms calculated" << std::endl;
 
   if (error <= tolerance)
   {

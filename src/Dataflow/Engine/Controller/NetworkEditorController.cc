@@ -147,7 +147,7 @@ void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::Execu
   }
   catch (NetworkHasCyclesException&)
   {
-    //TODO: use real logger here
+    //TODO: use real logger here--or just let this exception bubble up--needs testing. 
     std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
   }  
 }

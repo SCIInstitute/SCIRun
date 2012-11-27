@@ -88,7 +88,8 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
 
   if (outputPortIndex >= outputModule->num_output_ports() || inputPortIndex >= inputModule->num_input_ports())
   {
-    std::cout << "TODO: ERROR OR NOT?: connection not available, ports do not exist!" << std::endl;
+    //TODO: log
+    //std::cout << "TODO: ERROR OR NOT?: connection not available, ports do not exist!" << std::endl;
     return ConnectionId("");
   }
 

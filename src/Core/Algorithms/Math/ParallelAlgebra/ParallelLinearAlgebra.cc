@@ -82,9 +82,7 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
 
 void ParallelLinearAlgebra::wait()
 {
-  //std::cout << "PLA #" << proc_ << " out of " << nproc_ << " waiting..." << std::endl;
   data_.wait();
-  //std::cout << "PLA #" << proc_ << " out of " << nproc_ << " done waiting." << std::endl;
 }
 
 bool ParallelLinearAlgebra::add_vector(DenseColumnMatrixHandle mat, ParallelVector& V)
