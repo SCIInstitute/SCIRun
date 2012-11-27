@@ -30,9 +30,11 @@
 #define INTERFACE_APPLICATION_CONNECTION_H
 
 #include <QGraphicsLineItem>
-#include <QAbstractGraphicsShapeItem>
+#include <QGraphicsPathItem>
+#include <QPen>
 #include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Interface/Application/Port.h>
 #include <Core/Utils/Exception.h>
 
 namespace SCIRun {
@@ -94,18 +96,18 @@ class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgres
 public:
   explicit ConnectionInProgressGraphicsItem(PortWidget* port) : fromPort_(port)
   {
-    setZValue(1000); //TODO
+    Base::setZValue(1000); //TODO
     setColor(port->color());
   }
 
   void setColor(const QColor& color)
   {
-    setPen(QPen(color, 5.0, Qt::DashLine));
+    Base::setPen(QPen(color, 5.0, Qt::DashLine));
   }
 
   QColor color() const
   {
-    return pen().color();
+    return Base::pen().color();
   }
 
 protected:
