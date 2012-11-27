@@ -244,6 +244,7 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   auto a = menu.exec(event->screenPos());
   if (a && a->text() == deleteAction)
   {
+    scene()->removeItem(this);
     destroy();
   }
 }
