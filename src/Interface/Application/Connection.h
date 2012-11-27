@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_CONNECTION_H
 
 #include <QGraphicsLineItem>
+#include <QAbstractGraphicsShapeItem>
 #include <boost/function.hpp>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Core/Utils/Exception.h>
