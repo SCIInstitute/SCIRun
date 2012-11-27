@@ -39,18 +39,11 @@ namespace Gui {
 
 class PortWidget;
 
-class ConnectionDrawStrategy : public QObject
+class ConnectionDrawStrategy
 {
-  //Q_OBJECT
 public:
-  //explicit ConnectionDrawStrategy(QGraphicsScene* scene) : scene_(scene) {}
-  virtual ~ConnectionDrawStrategy();
+  virtual ~ConnectionDrawStrategy() {}
   virtual void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to) = 0;
-  //virtual void setColor(const QColor& color) = 0;
-//Q_SIGNALS:
-//  void connectionDeleted();
-//protected:
-//  QGraphicsScene* scene_;
 };
 
 typedef boost::shared_ptr<ConnectionDrawStrategy> ConnectionDrawStrategyPtr;

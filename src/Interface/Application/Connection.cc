@@ -37,68 +37,11 @@
 
 using namespace SCIRun::Gui;
 
-//template <class Base>
-//class ConnectionGraphicsItem : public Base
-//{
-//public:
-//  ConnectionGraphicsItem();
-//  ~ConnectionGraphicsItem();
-//  void setColor(const QColor& color);
-//  QColor color() const;
-//  virtual void destroy() = 0;
-//
-//};
-
-//template <class Base>
-//ConnectionGraphicsItem<Base>::ConnectionGraphicsItem()
-//{
-//  setFlags(QGraphicsItem::ItemIsSelectable);
-//  //TODO: need dynamic zValue
-//  setZValue(100); 
-//  setToolTip("Left - Highlight*\nDouble-Left - Menu");
-//}
-
-//template <class Base>
-//ConnectionGraphicsItem<Base>::~ConnectionGraphicsItem()
-//{
-//  std::cout << "doh--need to call a virtual function in a dtor..." << std::endl;
-//}
-
-ConnectionDrawStrategy::~ConnectionDrawStrategy() 
-{
-  //std::cout << "~ConnectionDrawStrategy" << std::endl;
-}
-
 class EuclideanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  //explicit EuclideanDrawStrategy(QGraphicsScene* scene) : ConnectionDrawStrategy(scene)
-  //{
-  //  //std::cout << "ctor Euclidean" << std::endl;
-  //  scene_->addItem(this);
-  //  setVisible(true);
-  //}
-
-  //~EuclideanDrawStrategy()
-  //{
-  //  //std::cout << "~EuclideanDrawStrategy" << std::endl;
-  //  scene_->removeItem(this);
-  //}
-
-  //void destroy()
-  //{
-  //  Q_EMIT connectionDeleted();
-  //  //scene_->removeItem(this);
-  //}
-  
-  //void setColor(const QColor& color)
-  //{
-  //  ConnectionGraphicsItem<QGraphicsLineItem>::setColor(color);
-  //}
-
   void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
-    //std::cout << "Euclidean draw: from " << from.x() << "," << from.y() << " to " << to.x() << "," << to.y() << std::endl;
     QPainterPath path;
     path.moveTo(from);
     path.lineTo(to);
@@ -106,19 +49,11 @@ public:
   }
 };
 
-class CubicBezierDrawStrategy : public ConnectionDrawStrategy//, public ConnectionGraphicsItem<QGraphicsPathItem>
+class CubicBezierDrawStrategy : public ConnectionDrawStrategy
 {
 public:
-  //explicit CubicBezierDrawStrategy(QGraphicsScene* scene) : ConnectionDrawStrategy(scene)
-  //{
-  //  //std::cout << "ctor Cubic" << std::endl;
-  //  scene_->addItem(this);
-  //  setVisible(true);
-  //}
-
   void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
-    //std::cout << "Cubic draw: from " << from.x() << "," << from.y() << " to " << to.x() << "," << to.y() << std::endl;
     QPainterPath path;
     QPointF start = from;
 
@@ -165,7 +100,6 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
 ConnectionLine::~ConnectionLine()
 {
-  //std::cout << "~ConnectionLine" << std::endl;
   if (!destroyed_)
     destroy();
 }
@@ -199,7 +133,6 @@ void ConnectionLine::trackNodes()
 {
   if (fromPort_ && toPort_)
   {
-    //std::cout << "ConnectionLine::trackNodes" << std::endl;
     drawer_->draw(this, fromPort_->position(), toPort_->position());
   }
   else
@@ -208,12 +141,9 @@ void ConnectionLine::trackNodes()
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)
 {
-  //std::cout << "ConnectionLine::setDrawStrategy" << std::endl;
   if (!destroyed_)
   {
     drawer_ = cds;
-    //connect(drawer_.get(), SIGNAL(connectionDeleted()), this, SLOT(destroy()));
-    //drawer_->setColor(fromPort_->color());
     trackNodes();
   }
 }
@@ -326,7 +256,6 @@ void ConnectionFactory::setType(ConnectionDrawType type)
 {
   if (type != currentType_)
   {
-    //std::cout << "Factory::setType " << type << std::endl;
     currentType_ = type;
     Q_EMIT typeChanged(getCurrentDrawer());
   }
@@ -354,6 +283,5 @@ ConnectionLine* ConnectionFactory::makeFinishedConnection(PortWidget* fromPort, 
   auto c = new ConnectionLine(fromPort, toPort, id, getCurrentDrawer());
   activate(c);
   connect(this, SIGNAL(typeChanged(ConnectionDrawStrategyPtr)), c, SLOT(setDrawStrategy(ConnectionDrawStrategyPtr)));
-  //connect(draw.get(), SIGNAL(connectionDeleted()), c, SLOT(destroy()));
   return c;
 }
