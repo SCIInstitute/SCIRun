@@ -151,6 +151,7 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 
   double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
   int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+
   //std::cout << "tolerance: " << tolerance << std::endl;
   //std::cout << "max_iter: " << max_iter << std::endl;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
@@ -1064,6 +1065,11 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "No matrix b is given");
+
+  double tolerance = get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int maxIterations = get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
+  ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
   if (!matrix_is::sparse(A))
   {
