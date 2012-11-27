@@ -320,11 +320,13 @@ namespace Modules
   OUTPUT_PORT_SPEC(Mesh);  //TODO temporary
   OUTPUT_PORT_SPEC(Geometry);
 
+#define ATTACH_NAMESPACE(type) Core::Datatypes::##type
+
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
-  PortName<Core::Datatypes::##type,index> name;
+  PortName<ATTACH_NAMESPACE(type),index> name;
 
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
-  PortName<Core::Datatypes::##type,index> name;
+  PortName<ATTACH_NAMESPACE(type),index> name;
 
 
 
