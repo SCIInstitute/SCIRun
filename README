@@ -36,3 +36,12 @@ Some new user interactions worth mentioning:
 * Saving and loading of network files is enabled. The file format is xml, but it is not compatible with SCIRun 4, so a *.srn5 extension is used. 
 * SCIRun v4 networks are not compatible yet, either. This feature will be implemented in a later milestone release.
 * There are many menu options and GUI elements that do nothing yet. They are either grayed out or have an asterisk next to their name.
+
+New in milestone B:
+* You can filter the module selector's list, either with a simple starting string or a wildcard pattern.
+* In addition to the basic "Euclidean" connection pipes, a "Cubic Bezier"-style connection is available as an option in the Network Editor tab of the Configuration pane.
+* Execution progress is shown in a progress bar as in SCIRun v4.
+* Each module widget has an actions button, that contains common actions that used to appear in the right-click menu.
+* Double-click a connection to bring up its action menu.
+* Deleting objects from the network editor uses Delete on Windows and Fn-Del on MacOS.
+* New working module: SolveLinearSystem--uses the parallel linear algebra library of SCIRun v4 for a fast CG solver method.
