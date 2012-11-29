@@ -614,4 +614,6 @@ private:
 
 #endif 
 
+#include <Core/Datatypes/Mesh/LatticeVolumeMeshTemplateImpl.h>
+
 
