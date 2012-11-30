@@ -27,10 +27,43 @@
 */
 
 #include <gtest/gtest.h>
+#include <numeric>
 
 #include <Core/Thread/Parallel.h>
 
+using namespace SCIRun::Core::Thread;
+
 TEST(ParallelTests, CanDoubleNumberInParallel)
 {
-  EXPECT_TRUE(false);
+  int size = Parallel::NumCores();
+  std::vector<int> nums(size);
+  int i = 0;
+  std::generate(nums.begin(), nums.end(), [&]() {return i++;});
+  
+  int expectedSum = size * (size-1) / 2;
+  EXPECT_EQ(expectedSum, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
+
+  Parallel::RunTasks([&](int i) {nums[i]*=2;}, Parallel::NumCores());
+
+  EXPECT_EQ(expectedSum * 2, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
 }
+
+//TODO
+#if 0
+TEST(ParallelTests, CanDoubleNumberWithParallelForEach)
+{
+  int size = 1000; //
+  std::vector<int> nums(size);
+  int i = 0;
+  std::generate(nums.begin(), nums.end(), [&]() {return i++;});
+
+  int expectedSum = size * (size-1) / 2;
+  EXPECT_EQ(expectedSum, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
+
+  Parallel::ForEach([&](int i) {nums[i]*=2; std::cout << i << std::endl;}, Parallel::NumCores());
+
+  EXPECT_EQ(expectedSum * 2, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
+
+  //EXPECT_TRUE(false);
+}
+#endif
