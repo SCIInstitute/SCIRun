@@ -256,12 +256,19 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
 TEST(ParallelArithmeticTests, CanComputeMaxOfVector)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(), 1);
-  ParallelLinearAlgebra pla(data, 1);
+  ParallelLinearAlgebra pla(data, 0);
 
-  //pla.max()
-
-
-  EXPECT_TRUE(false);
+  ParallelLinearAlgebra::ParallelVector v1;
+  auto vec1 = vector1();
+  pla.add_vector(vec1, v1);
+  double max1 = pla.max(v1);
+  ParallelLinearAlgebra::ParallelVector v2;
+  auto vec2 = vector2();
+  pla.add_vector(vec2, v2);
+  double max2 = pla.max(v2);
+  
+  EXPECT_EQ(4, max1);
+  EXPECT_EQ(1, max2);
 }
 
 TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
