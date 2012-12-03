@@ -27,6 +27,7 @@
 */
 
 #include <gtest/gtest.h>
+#include <boost/thread.hpp>
 
 #include <Core/Utils/TypeIDTable.h>
 
@@ -91,14 +92,39 @@ TEST(TypeIDTableTests, CannotRegisterConflictingCtors)
   EXPECT_EQ(1, ctor->x);
 }
 
-//TODO
+struct TryRegister
+{
+  TryRegister(TypeIDTable<Dummy>& table, int& trueCount, int id) : table_(table), trueCount_(trueCount), id_(id) {}
+  void operator()()
+  {
+    const std::string key = "key";
+    Dummy x;
+    x.x = id_;
+    if (table_.registerConstructorInfo(key, x))
+      trueCount_++;
+  }
+
+  TypeIDTable<Dummy>& table_;
+  int& trueCount_;
+  int id_;
+};
+
 TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
 {
   TypeIDTable<Dummy> table;
 
-  const std::string type = "LatVolMesh";
+  int trueCount = 0;
+  int tryCount = 50;
+  std::vector<boost::thread> threads;
+  for (int i = 0; i < tryCount; ++i)
+  {
+    TryRegister tr(table, trueCount, i);
+    threads.push_back(boost::thread(tr));
+  }
+  for (int i = 0; i < tryCount; ++i)
+  {
+    threads[i].join();
+  }
 
-  Dummy ctorInfo1;
-  ctorInfo1.x = 1;
-  EXPECT_TRUE(false);
+  EXPECT_EQ(1, trueCount);
 }
