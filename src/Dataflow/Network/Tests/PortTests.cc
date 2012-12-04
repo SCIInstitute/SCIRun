@@ -35,6 +35,7 @@
 
 #include <stdexcept>
 
+using namespace SCIRun::Core;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::Return;
@@ -59,10 +60,10 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(Port(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue")),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue")),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue")),  std::invalid_argument);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "")),            std::invalid_argument);
+  ASSERT_THROW(Port(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue")),  NullPointerException);
+  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue")),  InvalidArgumentException);
+  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue")),  InvalidArgumentException);
+  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "")),            InvalidArgumentException);
 }
 
 TEST_F(PortTests, AggregatesConnections)
@@ -103,11 +104,11 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
   ASSERT_EQ(1, outputPort->nconnections());
 
   //shouldn't be able to connect a second output to the same input.
-  EXPECT_THROW(Connection c(outputModule, 1, inputModule, 2, "test"), std::logic_error);
+  EXPECT_THROW(Connection c(outputModule, 1, inputModule, 2, "test"), InvalidArgumentException);
 
   OutputPortHandle outputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*outputModule, get_output_port(2)).WillRepeatedly(Return(outputPort2));
-  EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), std::logic_error);
+  EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), InvalidArgumentException);
 }
 
 TEST_F(PortTests, CannotConnectPortsWithDifferentDatatypes)

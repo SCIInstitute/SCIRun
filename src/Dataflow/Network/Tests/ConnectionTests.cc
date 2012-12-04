@@ -36,6 +36,7 @@
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Core;
 using ::testing::Return;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -69,15 +70,15 @@ protected:
 
 TEST_F(ConnectionTests, CtorThrowsWithNullModules)
 {
-  ASSERT_THROW(Connection(ModuleHandle(), 1, ModuleHandle(), 2, "fake"), std::invalid_argument);
+  ASSERT_THROW(Connection(ModuleHandle(), 1, ModuleHandle(), 2, "fake"), NullPointerException);
   ModuleHandle dummy(new MockModule);
-  ASSERT_THROW(Connection(dummy, 1, ModuleHandle(), 2, "fake"), std::invalid_argument);
-  ASSERT_THROW(Connection(ModuleHandle(), 1, dummy, 2, "fake"), std::invalid_argument);
+  ASSERT_THROW(Connection(dummy, 1, ModuleHandle(), 2, "fake"), NullPointerException);
+  ASSERT_THROW(Connection(ModuleHandle(), 1, dummy, 2, "fake"), NullPointerException);
 }
 
 TEST_F(ConnectionTests, CtorThrowsWhenPortsDontExistOnModules)
 {
-  ASSERT_THROW(Connection(outputModule, 1, inputModule, 2, "test"), std::invalid_argument);
+  ASSERT_THROW(Connection(outputModule, 1, inputModule, 2, "test"), NullPointerException);
 }
 
 TEST_F(ConnectionTests, CtorSetsPortsViaModules)
