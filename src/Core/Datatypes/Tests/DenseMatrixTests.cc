@@ -36,7 +36,7 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace TestUtils;
 
-#define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
+#define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
 
 TEST(DenseMatrixTest, CanCreateBasicMatrix)
 {

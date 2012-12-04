@@ -55,7 +55,7 @@ namespace
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
 }
 
-#define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
+#define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
 
 TEST(EigenDenseMatrixTest, CanCreateBasicMatrix)
 {

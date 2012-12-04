@@ -47,10 +47,16 @@ namespace
     m.insert(2,3) = 0.5;
     return m;
   }
+  SparseRowMatrix Zero()
+  {
+    SparseRowMatrix m(4,5);
+    m.setZero();
+    return m;
+  }
 }
 
-#define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
-#define PRINT_MATRIX_BASE(x) std::cout << #x << " = \n" << static_cast<const MatrixBase<double>&>((x)) << std::endl
+#define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
+#define PRINT_MATRIX_BASE(x) //std::cout << #x << " = \n" << static_cast<const MatrixBase<double>&>((x)) << std::endl
 
 
 TEST(SparseRowMatrixTest, CanCreateBasicMatrix)
@@ -105,8 +111,8 @@ TEST(SparseRowMatrixUnaryOperationTests, CanNegate)
 
   SparseRowMatrix n = - -m;
   EXPECT_EQ(m, n);
-  //EXPECT_EQ(m + (-m), Zero);
-  EXPECT_TRUE(false);
+  SparseRowMatrix diff = m + (-m);
+  EXPECT_EQ(diff, Zero());
 }
 
 TEST(SparseRowMatrixUnaryOperationTests, CanScalarMultiply)
@@ -138,8 +144,8 @@ TEST(SparseRowMatrixBinaryOperationTests, CanMultiply)
 
   PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m * m.transpose());
-  //EXPECT_EQ(Zero * m, Zero);
-  EXPECT_TRUE(false);
+  SparseRowMatrix prod = Zero() * m;
+  EXPECT_EQ(prod, Zero());
 }
 
 TEST(SparseRowMatrixBinaryOperationTests, CanAdd)
@@ -159,8 +165,8 @@ TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
 
   PRINT_MATRIX_BASE(m);
   PRINT_MATRIX(m - m);
-  //EXPECT_EQ(m - m, Zero);
-  EXPECT_TRUE(false);
+  SparseRowMatrix diff = m - m;
+  EXPECT_EQ(diff, Zero());
 }
 
 //TODO: compare to v4.
