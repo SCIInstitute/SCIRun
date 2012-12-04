@@ -39,11 +39,24 @@ namespace Core {
 namespace Datatypes {
 
   template <typename T>
+  struct MatrixVisitorGeneric
+  {
+    virtual ~MatrixVisitorGeneric() {}
+    virtual void visit(DenseMatrixGeneric<T>&) = 0;
+    virtual void visit(SparseRowMatrixGeneric<T>&) = 0;
+    virtual void visit(DenseColumnMatrixGeneric<T>&) = 0;
+  };
+
+  typedef MatrixVisitorGeneric<double> MatrixVisitor;
+
+  template <typename T>
   class MatrixBase : public Datatype
   {
   public:
     virtual size_t nrows() const = 0;
     virtual size_t ncols() const = 0;
+
+    virtual void accept(MatrixVisitorGeneric<T>& visitor) = 0;
 
     friend std::ostream& operator<<(std::ostream& o, const MatrixBase<T>& m)
     {

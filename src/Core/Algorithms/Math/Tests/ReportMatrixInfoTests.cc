@@ -41,12 +41,22 @@ using namespace SCIRun::Core::Algorithms;
 
 namespace
 {
-  DenseMatrixHandle matrix1a()
+  DenseMatrixHandle matrix1Dense()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 4));
-    for (size_t i = 0; i < m->rows(); ++ i)
-      for (size_t j = 0; j < m->cols(); ++ j)
+    for (int i = 0; i < m->rows(); ++ i)
+      for (int j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j - 5;
+    return m;
+  }
+  SparseRowMatrixHandle matrix1Sparse() 
+  {
+    SparseRowMatrixHandle m(new SparseRowMatrix(5,5));
+    m->insert(0,0) = 1;
+    m->insert(1,2) = -1;
+    m->insert(4,4) = 2;
+    //TODO: remove this when NonZeroIterator is ready
+    m->makeCompressed();
     return m;
   }
 }
@@ -55,23 +65,22 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1a());
+  MatrixHandle m(matrix1Dense());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
-#ifdef WIN32
-  const std::string expectedType = "class SCIRun::Core::Datatypes::DenseMatrixGeneric<double>";
-  EXPECT_EQ(expectedType, result.get<0>());
-#else
-  const std::string expectedType = ""; //fill this in later
-  //EXPECT_EQ(expectedType, result.get<0>());
-#endif
-  EXPECT_TRUE(result.get<0>().find("DenseMatrix") != std::string::npos);
+  EXPECT_EQ("DenseMatrix", result.get<0>());
+  m = matrix1Sparse();
+  result = algo.run(m);
+  EXPECT_EQ("SparseRowMatrix", result.get<0>());
+  m.reset(new DenseColumnMatrix);
+  result = algo.run(m);
+  EXPECT_EQ("DenseColumnMatrix", result.get<0>());
 }
 
 TEST(ReportMatrixInfoAlgorithmTests, ReportsRowAndColumnCount)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1a());
+  MatrixHandle m(matrix1Dense());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
   EXPECT_EQ(3, result.get<1>());
   EXPECT_EQ(4, result.get<2>());
@@ -81,20 +90,34 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfElements)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1a());
+  MatrixHandle m(matrix1Dense());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
   
   EXPECT_EQ(12, result.get<3>());
+}
+
+TEST(ReportMatrixInfoAlgorithmTests, ReportsNumberOfNonzeroElementsForSparse)
+{
+  ReportMatrixInfoAlgorithm algo;
+
+  MatrixHandle m(matrix1Sparse());
+  ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
+
+  EXPECT_EQ(3, result.get<3>());
 }
 
 TEST(ReportMatrixInfoAlgorithmTests, ReportsMinimumAndMaximum)
 {
   ReportMatrixInfoAlgorithm algo;
 
-  DenseMatrixHandle m(matrix1a());
+  MatrixHandle m(matrix1Dense());
   ReportMatrixInfoAlgorithm::Outputs result = algo.run(m);
   EXPECT_EQ(-5, result.get<4>());
   EXPECT_EQ(4, result.get<5>());
+  m = matrix1Sparse();
+  result = algo.run(m);
+  EXPECT_EQ(-1, result.get<4>());
+  EXPECT_EQ(2, result.get<5>());
 }
 
 TEST(ReportMatrixInfoAlgorithmTests, NullInputThrows)
@@ -112,11 +135,11 @@ TEST(BigVectorFieldFile, DISABLED_MakeIt)
   size_t col = 0;
   for (int d = 0; d < 3; ++d)
   {
-    for (size_t i = 0; i < dim; ++i)
+    for (int i = 0; i < dim; ++i)
     {
-      for (size_t j = 0; j < dim; ++j)
+      for (int j = 0; j < dim; ++j)
       {
-        for (size_t k = 0; k < dim; ++k)
+        for (int k = 0; k < dim; ++k)
         {
           m(0, col) = (col % 3) == 0;
           m(1, col) = (col % 3) == 1;

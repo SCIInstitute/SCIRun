@@ -28,23 +28,106 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <iostream>
 
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Datatypes;
+
+
+
+struct NumberOfElements : MatrixVisitor
+{
+  size_t value() const { return value_; }
+  
+  NumberOfElements() : value_(-1) {}
+  size_t value_;
+
+  virtual void visit(DenseMatrix& m)
+  {
+    value_ = m.rows() * m.cols();
+  }
+
+  virtual void visit(DenseColumnMatrix& m)
+  {
+    value_ = m.nrows();
+  }
+
+  virtual void visit(SparseRowMatrix& m)
+  {
+    value_ = m.nonZeros();
+  }
+};
+
+struct MinimumCoefficient : MatrixVisitor
+{
+  double value() const { return value_; }
+
+  MinimumCoefficient() : value_(-1) {}
+  double value_;
+
+  virtual void visit(DenseMatrix& m)
+  {
+    value_ = m.minCoeff();
+  }
+
+  virtual void visit(DenseColumnMatrix& m)
+  {
+    value_ = m.minCoeff();
+  }
+
+  virtual void visit(SparseRowMatrix& m)
+  {
+    //std::copy(m.nonZerosBegin(), m.nonZerosEnd(), std::ostream_iterator<double>(std::cout, ", "));
+    value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+  }
+};
+
+struct MaximumCoefficient : MatrixVisitor
+{
+  double value() const { return value_; }
+
+  MaximumCoefficient() : value_(-1) {}
+  double value_;
+
+  virtual void visit(DenseMatrix& m)
+  {
+    value_ = m.maxCoeff();
+  }
+
+  virtual void visit(DenseColumnMatrix& m)
+  {
+    value_ = m.maxCoeff();
+  }
+
+  virtual void visit(SparseRowMatrix& m)
+  {
+    //std::copy(m.valuePtr(), m.valuePtr() + m.nonZeros(), std::ostream_iterator<double>(std::cout, ", "));
+    value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+  }
+};
 
 ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input matrix");
 
-  const std::string type = typeid(*input).name();  //TODO: need dynamic type name
+  const std::string type = matrix_is::whatType(input);
+
+  NumberOfElements num;
+  input->accept(num);
+  MinimumCoefficient min;
+  input->accept(min);
+  MaximumCoefficient max;
+  input->accept(max);
 
   return Outputs(type, 
     input->nrows(), 
     input->ncols(), 
-    input->nrows() * input->ncols(),  //TODO: sparse is different
-    //TODO: need a clean way, don't want to reimplement with lots of virtual fns on MatrixBase
-    //input->minCoeff(), 
-    //input->maxCoeff()
-    0,0
+    num.value(),
+    min.value(),
+    max.value()
     );
 }

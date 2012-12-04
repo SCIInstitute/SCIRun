@@ -41,7 +41,7 @@ namespace Math {
   class SCISHARE ReportMatrixInfoAlgorithm : public AlgorithmBase
   {
   public:
-    typedef SCIRun::Core::Datatypes::MatrixConstHandle Inputs;
+    typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
     typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
     typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 

@@ -73,6 +73,132 @@ namespace Datatypes {
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
 
+    virtual void accept(MatrixVisitorGeneric<T>& visitor)
+    {
+      visitor.visit(*this);
+    }
+
+    //TODO!
+#if 0
+    class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>
+    {
+    public:
+      typedef NonZeroIterator my_type;
+      typedef this_type matrix_type;
+      typedef typename std::iterator<std::forward_iterator_tag, value_type> my_base;
+      //typedef typename my_base::value_type value_type;
+      typedef typename my_base::pointer pointer;
+
+    private:
+      const matrix_type* matrix_;
+      typedef typename matrix_type::EigenBase::InnerIterator IteratorPrivate;
+      boost::scoped_ptr<IteratorPrivate> impl_;
+      //size_type block_i_, block_j_, rowInBlock_;
+
+      //typedef typename ElementType::ImplType block_impl_type;
+      //typedef typename boost::numeric::ublas::matrix_row<const block_impl_type> block_row_type;
+      //typedef typename block_row_type::iterator block_row_iterator;
+
+      //boost::shared_ptr<block_row_type> currentRow_;
+      //block_row_iterator rowIter_;
+      //size_type numRowPartitions_, numColPartitions_;
+      int currentRow_;
+      bool isEnd_;
+
+    public:
+      explicit NonZeroIterator(const matrix_type* matrix = 0) : matrix_(matrix),
+        currentRow_(0)
+        //block_i_(0), block_j_(0), rowInBlock_(0)
+      {
+        if (matrix && matrix->nonZeros() > 0)
+        {
+          impl_.reset(new IteratorPrivate(matrix,0));
+          isEnd_ = !*impl_;
+        }
+        else
+        {
+          isEnd_ = true;
+        }
+      }
+    //private:
+    //  void resetRow()
+    //  {
+    //    currentRow_.reset(new block_row_type((*blockMatrix_)(block_i_, block_j_).impl_, rowInBlock_));
+    //    rowIter_ = currentRow_->begin();
+    //  }
+
+    //  void setCurrentBlockRows()
+    //  {
+    //    currentBlockRows_ = (*blockMatrix_)(block_i_, block_j_).rows();
+    //  }
+
+    public:
+      const value_type& operator*() const
+      {
+        if (isEnd_)
+          throw std::out_of_range("Cannot dereference end iterator");
+
+        if (impl_)
+          return impl_->value();
+        throw std::logic_error("null iterator impl");
+      }
+
+      const pointer operator->() const
+      {
+        return &(**this);
+      }
+
+      my_type& operator++()
+      {
+        if (!isEnd_)
+        {
+          ++(*impl_);
+          if (!*impl_ && )
+          {
+            // move to next row.
+
+          }
+        }
+
+        return *this;
+      }
+
+      my_type operator++(int)
+      {
+        my_type orig(*this);
+        ++(*this);
+        return orig;
+      }
+
+      bool operator==(const my_type& rhs)
+      {
+        if (isEnd_ && rhs.isEnd_)
+          return true;
+
+        if (isEnd_ != rhs.isEnd_)
+          return false;
+
+        return matrix_ == rhs.matrix_
+          && impl_ == rhs.impl_;
+      }
+
+      bool operator!=(const my_type& rhs)
+      {
+        return !(*this == rhs);
+      }
+
+      /*SparseMatrix<double> mat(rows,cols);
+      for (int k=0; k<mat.outerSize(); ++k)
+      for (SparseMatrix<double>::InnerIterator it(mat,k); it; ++it)
+      {
+      it.value();
+      }*/
+    };
+
+    NonZeroIterator nonZerosBegin() { return NonZeroIterator(this); }
+    NonZeroIterator nonZerosEnd() { return NonZeroIterator(); }
+#endif
+
     const MatrixBase<T>& castForPrinting() const { return *this; } //TODO: lame...figure out a better way
 
   private:

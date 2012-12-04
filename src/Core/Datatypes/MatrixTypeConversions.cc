@@ -63,6 +63,19 @@ bool matrix_is::column(const MatrixHandle& mh)
   return matrix_cast::as_column(mh) != 0; 
 }
 
+std::string matrix_is::whatType(const MatrixHandle& mh)
+{
+  if (!mh)
+    return "<null>";
+  if (matrix_is::column(mh))
+    return "DenseColumnMatrix";
+  else if (matrix_is::dense(mh))
+    return "DenseMatrix";
+  else if (matrix_is::sparse(mh))
+    return "SparseRowMatrix";
+  return typeid(*mh).name(); 
+}
+
 DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 {
   auto col = matrix_cast::as_column(mh);

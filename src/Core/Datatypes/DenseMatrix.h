@@ -70,6 +70,12 @@ namespace Datatypes {
 
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
+
+    virtual void accept(MatrixVisitorGeneric<T>& visitor)
+    {
+      visitor.visit(*this);
+    }
+
   private:
     virtual void print(std::ostream& o) const
     {

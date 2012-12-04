@@ -66,6 +66,11 @@ namespace Datatypes {
       return new DenseColumnMatrixGeneric(*this);
     }
 
+    virtual void accept(MatrixVisitorGeneric<T>& visitor)
+    {
+      visitor.visit(*this);
+    }
+
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
   private:
