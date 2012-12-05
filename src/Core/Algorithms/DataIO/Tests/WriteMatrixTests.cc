@@ -131,7 +131,7 @@ TEST(WriteMatrixTest, CanPrintSparseMatrix)
   //std::cout << m << std::endl;
 
   std::ostringstream ostr;
-  ostr << static_cast<const MatrixBase<double>&>(m);
+  ostr << m.castForPrinting();
   EXPECT_EQ("1 0 0 \n0 0 -1.4 \n0 0 0 \n", ostr.str());
 }
 

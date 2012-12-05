@@ -159,7 +159,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
     std::cout << "file does not exist, skipping test." << std::endl;
 }
 
-TEST(ReadMatrixAlgorithmTest, TestLargeSparseFromRealASCIIMatFile)
+TEST(ReadMatrixAlgorithmTest, DISABLED_TestLargeSparseFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
   const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
