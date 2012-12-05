@@ -49,6 +49,7 @@ public:
   virtual void moduleAddedSlot(const std::string&, ModuleHandle) = 0;
   virtual void moduleRemovedSlot(const std::string& id) = 0;
   virtual void connectionAddedSlot(const ConnectionDescription&) = 0;
+  virtual void connectionRemovedSlot(const ConnectionId&) = 0;
 };
 
 class DummySlotClassForNetworkEditorController : public SlotClassForNetworkEditorController
@@ -57,6 +58,7 @@ public:
   MOCK_METHOD2(moduleAddedSlot, void(const std::string&, ModuleHandle));
   MOCK_METHOD1(moduleRemovedSlot, void(const std::string&));
   MOCK_METHOD1(connectionAddedSlot, void(const ConnectionDescription&));
+  MOCK_METHOD1(connectionRemovedSlot, void(const ConnectionId&));
 };
 
 class NetworkEditorControllerTests : public ::testing::Test
@@ -93,12 +95,22 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
   NetworkEditorController controller(mockNetwork_);
 
   controller.connectConnectionAdded(boost::bind(&SlotClassForNetworkEditorController::connectionAddedSlot, &slots_, _1));
+  controller.connectConnectionRemoved(boost::bind(&SlotClassForNetworkEditorController::connectionRemovedSlot, &slots_, _1));
 
   EXPECT_CALL(slots_, connectionAddedSlot(_)).Times(1);
   EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(1).WillOnce(Return(ConnectionId("non empty string")));
-  controller.addConnection(ConnectionDescription(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2)));
+  ConnectionDescription desc(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2));
+  controller.addConnection(desc);
 
+  {
+    EXPECT_CALL(slots_, connectionRemovedSlot(_)).Times(1);
+    EXPECT_CALL(*mockNetwork_, disconnect(_)).Times(1).WillOnce(Return(true));
+    controller.removeConnection(ConnectionId::create(desc));
+  }
 
-  //TODO
-  //EXPECT_TRUE(false);
+  {
+    EXPECT_CALL(slots_, connectionRemovedSlot(_)).Times(0);
+    EXPECT_CALL(*mockNetwork_, disconnect(_)).Times(1).WillRepeatedly(Return(false));
+    controller.removeConnection(ConnectionId::create(desc));
+  }
 }

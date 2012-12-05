@@ -40,8 +40,7 @@ namespace Engine {
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
-  //TODO..needed for provenance.
-  typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
 
   class SCISHARE NetworkEditorController 
@@ -57,6 +56,7 @@ namespace Engine {
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
+    boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
 
     void executeAll(const Networks::ExecutableLookup& lookup, Networks::NetworkExecutionFinishedCallback func = 0);
 
@@ -73,6 +73,7 @@ namespace Engine {
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;
+    ConnectionRemovedSignalType connectionRemoved_;
   };
 
 }

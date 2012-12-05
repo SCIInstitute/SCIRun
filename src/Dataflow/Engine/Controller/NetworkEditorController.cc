@@ -59,7 +59,8 @@ ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
-  realModule->connectErrorListener(boost::bind(&NetworkInterface::incrementErrorCode, theNetwork_.get(), _1));
+  if (realModule)
+    realModule->connectErrorListener(boost::bind(&NetworkInterface::incrementErrorCode, theNetwork_.get(), _1));
   /*emit*/ moduleAdded_(moduleName, realModule);
   printNetwork();
   return realModule;
@@ -95,7 +96,8 @@ void NetworkEditorController::addConnection(const SCIRun::Dataflow::Networks::Co
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
 {
-  theNetwork_->disconnect(id);
+  if (theNetwork_->disconnect(id))
+    connectionRemoved_(id);
   printNetwork();
 }
 
@@ -112,6 +114,11 @@ boost::signals2::connection NetworkEditorController::connectModuleRemoved(const 
 boost::signals2::connection NetworkEditorController::connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber)
 {
   return connectionAdded_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber)
+{
+  return connectionRemoved_.connect(subscriber);
 }
 
 NetworkXMLHandle NetworkEditorController::saveNetwork() const
