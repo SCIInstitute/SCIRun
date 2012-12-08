@@ -236,7 +236,6 @@ TEST(ParallelLinearAlgebraTests, CanCopyContentsOfVectorMulti)
   EXPECT_EQ(v1.size_, v2.size_);
   for (size_t i = 0; i < size; ++i)
   {
-    //std::cout << i << std::endl;
     EXPECT_EQ(v2.data_[i], v1.data_[i]);
   }
   v1.data_[7]++;

@@ -29,20 +29,22 @@
 #include <gtest/gtest.h>
 
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 namespace
 {
   DenseMatrixHandle matrix1()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++ i)
-      for (size_t j = 0; j < m->cols(); ++ j)
+    for (int i = 0; i < m->rows(); ++ i)
+      for (int j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
@@ -76,12 +78,10 @@ TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, CanMultiply)
   EXPECT_EQ(*m * *m, *result);
 }
 
-TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, NullInputReturnsNull)
+TEST(EvaluateLinearAlgebraBinaryAlgorithmTests, NullInputThrowsException)
 {
   EvaluateLinearAlgebraBinaryAlgorithm algo;
 
-  DenseMatrixHandle result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), matrix1()), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
-  EXPECT_FALSE(result);
-  result = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(matrix1(), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD);
-  EXPECT_FALSE(result);
+  EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(DenseMatrixHandle(), matrix1()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
+  EXPECT_THROW(algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(matrix1(), DenseMatrixHandle()), EvaluateLinearAlgebraBinaryAlgorithm::ADD), AlgorithmInputException);
 }

@@ -30,33 +30,14 @@
 
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 using namespace TestUtils;
-//
-//namespace
-//{
-//  DenseMatrix matrix1()
-//  {
-//    DenseMatrix m (3, 3);
-//    for (size_t i = 0; i < m.nrows(); ++ i)
-//      for (size_t j = 0; j < m.ncols(); ++ j)
-//        m(i, j) = 3.0 * i + j;
-//    return m;
-//  }
-//  DenseMatrix matrixNonSquare()
-//  {
-//    DenseMatrix m (3, 4);
-//    for (size_t i = 0; i < m.nrows(); ++ i)
-//      for (size_t j = 0; j < m.ncols(); ++ j)
-//        m(i, j) = 3.0 * i + j;
-//    return m;
-//  }
-//  const DenseMatrix Zero(DenseMatrix::zero_matrix(3,3));
-//}
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegate)
 {
@@ -86,10 +67,9 @@ TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanScalarMultiply)
   EXPECT_EQ(2.5* *m, *result);
 }
 
-TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, NullInputReturnsNull)
+TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, NullInputThrowsException)
 {
   EvaluateLinearAlgebraUnaryAlgorithm algo;
 
-  DenseMatrixHandle result = algo.run(DenseMatrixHandle(), EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  EXPECT_FALSE(result);
+  EXPECT_THROW(algo.run(DenseMatrixHandle(), EvaluateLinearAlgebraUnaryAlgorithm::NEGATE), AlgorithmInputException);
 }
