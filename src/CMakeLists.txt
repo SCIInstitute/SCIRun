@@ -71,6 +71,7 @@ IF(BUILD_TESTING)
   MARK_AS_ADVANCED(BUILDNAME)
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
+  OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 ENDIF()
 
 
