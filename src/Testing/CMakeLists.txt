@@ -28,3 +28,13 @@
 #
 
 ADD_SUBDIRECTORY(Utils)
+
+########################################################################
+# Configure test support
+# TODO: eventually move to a Testing directory along with regression test support
+
+IF(RUN_UNIT_TESTS)
+  FOREACH(test ${UNIT_TEST_LIST})
+    ADD_TEST("${test}" "../${EXE_DIRPATH}/${test}")
+  ENDFOREACH(test ${UNIT_TEST_LIST})
+ENDIF()
