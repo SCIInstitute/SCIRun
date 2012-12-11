@@ -59,8 +59,6 @@ ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
-  if (realModule)
-    realModule->connectErrorListener(boost::bind(&NetworkInterface::incrementErrorCode, theNetwork_.get(), _1));
   /*emit*/ moduleAdded_(moduleName, realModule);
   printNetwork();
   return realModule;

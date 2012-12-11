@@ -491,6 +491,11 @@ void NetworkEditor::setConnectionPipelineType(int type)
   ModuleWidget::connectionFactory_->setType(ConnectionDrawType(type));
 }
 
+int NetworkEditor::errorCode() const
+{
+  return controller_->errorCode();
+}
+
 ModuleEventProxy::ModuleEventProxy()
 {
   qRegisterMetaType<std::string>("std::string");

@@ -81,3 +81,8 @@ int NetworkEditorControllerGuiProxy::numModules() const
 {
   return controller_->getNetwork()->nmodules();
 }
+
+int NetworkEditorControllerGuiProxy::errorCode() const
+{
+  return controller_->getNetwork()->errorCode();
+}

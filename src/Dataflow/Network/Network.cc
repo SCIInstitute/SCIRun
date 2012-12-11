@@ -53,6 +53,10 @@ ModuleHandle Network::add_module(const ModuleLookupInfo& info)
 {
   ModuleHandle module = moduleFactory_->create(moduleFactory_->lookupDescription(info));
   modules_.push_back(module);
+  if (module)
+  {
+    module->connectErrorListener(boost::bind(&NetworkInterface::incrementErrorCode, this, _1));
+  }
   return module;
 }
 
