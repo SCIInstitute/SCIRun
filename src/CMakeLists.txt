@@ -30,11 +30,25 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
 
 PROJECT(SCIRun5Prototype)
 
+###############################################################################
+# Don't allow the user to build in the src directory...
+#  
+
+IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+  MESSAGE( "" )
+  MESSAGE( "Building SCIRun in the source directory is not allowed." )
+  MESSAGE( "(In order to clean up, you now need to run: rm -rf CMakeFiles CMakeCache.txt" )
+  MESSAGE( "" )
+  MESSAGE( FATAL_ERROR "Goodbye." ) 
+ENDIF()
+
+
 ########################################################################
 # Build shared libraries by default
 
 OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
 MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
+
 
 ########################################################################
 # SCIRUN version number.
