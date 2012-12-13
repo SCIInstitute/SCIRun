@@ -219,5 +219,5 @@ int Network::errorCode() const
 void Network::incrementErrorCode(const std::string& moduleId)
 {
   errorCode_++;
-  //TODO: store errored modules in a list of something
+  //TODO: store errored modules in a list or something
 }
