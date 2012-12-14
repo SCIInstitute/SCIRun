@@ -44,7 +44,8 @@ Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, siz
   iport_ = imod_->get_input_port(iportno);
   ENSURE_NOT_NULL(iport_, "input port is null");
 
-  //TODO: check for matching types here
+  if (oport_->get_colorname() != iport_->get_colorname())
+    THROW_INVALID_ARGUMENT("Ports do not have matching type.");
 
   oport_->attach(this);
   iport_->attach(this);

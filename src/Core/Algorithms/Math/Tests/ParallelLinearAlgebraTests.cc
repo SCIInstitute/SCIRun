@@ -242,11 +242,13 @@ TEST(ParallelLinearAlgebraTests, CanCopyContentsOfVectorMulti)
   EXPECT_NE(v1.data_[7], v2.data_[7]);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
 {
   EXPECT_TRUE(false);
@@ -270,6 +272,7 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVector)
   EXPECT_EQ(1, max2);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(), 4);
@@ -281,66 +284,79 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshold)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThresholdMulti)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelLinearAlgebraTests, CanFillVectorWithOnes)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanMultiplyMatrixByVector)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanMultiplyMatrixByVectorMulti)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanSubtractVectors)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanCompute2Norm)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanComputeDotProduct)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanSubtractVectorsMulti)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanCompute2NormMulti)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
 {
   EXPECT_TRUE(false);
 }
 
+//TODO: by intern
 TEST(ParallelArithmeticTests, CanComputeDotProductMulti)
 {
   EXPECT_TRUE(false);

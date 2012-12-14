@@ -113,18 +113,20 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 
 TEST_F(PortTests, CannotConnectPortsWithDifferentDatatypes)
 {
-  std::cout << "TODO" << std::endl;
-  EXPECT_TRUE(false);
+  Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
+  Port::ConstructionParams pcp2("Field", "VectorField", "yellow");
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp1, DatatypeSinkInterfaceHandle()));
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp2, DatatypeSourceInterfaceHandle()));
+  EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
+  EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
+
+  ASSERT_EQ(0, inputPort->nconnections());
+  ASSERT_EQ(0, outputPort->nconnections());
+  {
+    EXPECT_THROW(Connection c(outputModule, 1, inputModule, 2, "test"), InvalidArgumentException);
+    //connection constructor should throw for type mismatch
+    ASSERT_EQ(0, inputPort->nconnections());
+    ASSERT_EQ(0, outputPort->nconnections());
+  }
 }
 
-TEST_F(PortTests, CannotConnectInputPortToInputPort)
-{
-  std::cout << "TODO" << std::endl;
-  EXPECT_TRUE(false);
-}
-
-TEST_F(PortTests, CannotConnectOutputPortToOutputPort)
-{
-  std::cout << "TODO" << std::endl;
-  EXPECT_TRUE(false);
-}

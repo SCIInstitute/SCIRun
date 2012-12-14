@@ -38,9 +38,12 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
+using ::testing::DefaultValue;
 
 TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
 {
+  DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
+
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
   ModuleStateFactoryHandle sf(new MockModuleStateFactory);
   Network network(moduleFactory, sf);
@@ -51,13 +54,10 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
   mli.module_name_ = "Module1";
   ModuleHandle m = network.add_module(mli);
   EXPECT_EQ(mli.module_name_, m->get_module_name());
-
   EXPECT_EQ(1, network.nmodules());
   EXPECT_EQ(m, network.module(0));
-
   EXPECT_TRUE(network.remove_module(m->get_id()));
   EXPECT_EQ(0, network.nmodules());
-
   EXPECT_FALSE(network.remove_module("not in the network"));
 }
 
