@@ -26,15 +26,29 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.9 FATAL_ERROR)
 
 PROJECT(SCIRun5Prototype)
+
+###############################################################################
+# Don't allow the user to build in the src directory...
+#  
+
+IF(${CMAKE_SOURCE_DIR} MATCHES ${CMAKE_BINARY_DIR})
+  MESSAGE( "" )
+  MESSAGE( "Building SCIRun in the source directory is not allowed." )
+  MESSAGE( "(In order to clean up, you now need to run: rm -rf CMakeFiles CMakeCache.txt" )
+  MESSAGE( "" )
+  MESSAGE( FATAL_ERROR "Goodbye." ) 
+ENDIF()
+
 
 ########################################################################
 # Build shared libraries by default
 
 OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
 MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
+
 
 ########################################################################
 # SCIRUN version number.
@@ -71,7 +85,6 @@ IF(BUILD_TESTING)
   MARK_AS_ADVANCED(BUILDNAME)
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
-  OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 ENDIF()
 
 
@@ -79,28 +92,26 @@ ENDIF()
 # Custom compiler flags and definitions
 
 # Better compiler check for OS X?
-IF(CMAKE_COMPILER_IS_GNUCC)
-  IF(UNIX)
-    SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++11")
-    CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX11_FLAG)
-    IF(NOT USE_CXX11_FLAG)
-      SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++0x")
-      CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX0x_FLAG)
-      IF(NOT USE_CXX0x_FLAG)
-        SET(CXX_LANGUAGE_STANDARD_FLAG "")
-      ENDIF()
+# Try CMAKE_<LANG>_COMPILER_ID MATCHES Clang? Or check for Intel, GNU?
+IF(UNIX)
+  SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++11")
+  CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX11_FLAG)
+  IF(NOT USE_CXX11_FLAG)
+    SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++0x")
+    CHECK_CXX_COMPILER_FLAG(${CXX_LANGUAGE_STANDARD_FLAG} USE_CXX0x_FLAG)
+    IF(NOT USE_CXX0x_FLAG)
+      SET(CXX_LANGUAGE_STANDARD_FLAG "")
     ENDIF()
-
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG}")
   ENDIF()
 
-  IF(APPLE)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-    SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG}")
+ENDIF()
 
-    ADD_DEFINITIONS(-DGTEST_USE_OWN_TR1_TUPLE=1)
-  ENDIF()
+IF(APPLE)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-Wshorten-64-to-32 ${CMAKE_CXX_FLAGS_DEBUG}")
 
+  ADD_DEFINITIONS(-DGTEST_USE_OWN_TR1_TUPLE=1)
 ENDIF()
 
 
@@ -166,7 +177,7 @@ INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 ########################################################################
 # Find and configure Qt
 
-SET(QT_MIN_VERSION "4.7.0")
+SET(QT_MIN_VERSION "4.8.0")
 FIND_PACKAGE(Qt4 REQUIRED)
 
 IF(QT_FOUND)
@@ -176,7 +187,7 @@ IF(QT_FOUND)
 
   INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
 ELSE()
-  MESSAGE(FATAL_ERROR "QT 4.7 or greater is required to build SCIRun5Prototype")
+  MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
 ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
@@ -301,6 +312,17 @@ SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
+
+
+########################################################################
+# Configure test support
+# TODO: eventually move to a Testing directory along with regression test support
+
+IF(RUN_UNIT_TESTS)
+  FOREACH(test ${UNIT_TEST_LIST})
+    ADD_TEST("${test}" "${EXE_DIRPATH}/${test}")
+  ENDFOREACH(test ${UNIT_TEST_LIST})
+ENDIF()
 
 
 ########################################################################
