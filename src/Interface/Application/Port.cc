@@ -139,12 +139,17 @@ namespace SCIRun {
       explicit DeleteCurrentConnectionAtEndOfBlock(PortWidget* p) : p_(p) {}
       ~DeleteCurrentConnectionAtEndOfBlock()
       {
-        delete p_->currentConnection_;
-        p_->currentConnection_ = 0;
+        p_->cancelConnectionsInProgress();
       }
       PortWidget* p_;
     };
   }
+}
+
+void PortWidget::cancelConnectionsInProgress()
+{
+  delete currentConnection_;
+  currentConnection_ = 0;
 }
 
 void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
@@ -163,18 +168,22 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
 void PortWidget::makeConnection(const QPointF& pos)
 {
+  //std::cout << "-----------makeConnection" << std::endl;
   DeleteCurrentConnectionAtEndOfBlock deleter(this);
   QList<QGraphicsItem*> items = TheScene->items(pos);
   Q_FOREACH (QGraphicsItem* item, items)
   {
+    //std::cout << "---makeConnection: item" << std::endl;
     if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
     {
       ModuleWidget* overModule = mpw->getModuleWidget();
       if (overModule != moduleParent_)
       {
+        //std::cout << "landed on another module..." << std::endl;
         const ModuleWidget::Ports& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();
         Q_FOREACH (PortWidget* port, ports)
         {
+          //std::cout << "looping through " << (isInput() ? "output" : "input") << " ports" << std::endl;
           if (tryConnectPort(pos, port))
             return;
         }
@@ -189,7 +198,9 @@ void PortWidget::makeConnection(const QPointF& pos)
 
 bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 {
+  //std::cout << "tryConnectPort" << std::endl;
   int distance = (pos - port->position()).manhattanLength();
+  //std::cout << "distance: " << distance << std::endl;
   if (distance <= PORT_CONNECTION_THRESHOLD)
   {
     if (canBeConnected(port))
@@ -210,6 +221,7 @@ bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
       GuiLogger::Instance().log("input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!");
     }
   }
+  //std::cout << "---tryConnectPort returns false" << std::endl;
   return false;
 }
 
@@ -220,7 +232,6 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     PortWidget* out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
     PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
     SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
-    //TODO: move into factory
     ConnectionLine* c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
@@ -235,12 +246,28 @@ bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription
 //TODO: push this verification down to the domain layer!  make this layer as dumb as possible
 bool PortWidget::canBeConnected(PortWidget* other) const
 {
+  //std::cout << "in PortWidget::canBeConnected" << std::endl;
   if (!other)
     return false;
   if (other->isInput() && !other->connections_.empty())
+  {
+    //std::cout << "can't connect since input ports can only take one connection" << std::endl;
     return false;
-  return color() == other->color() &&
-    isInput() != other->isInput();
+  }
+  if (color() != other->color())
+  {
+    //std::cout << "can't connect since colors don't match" << std::endl;
+    return false;
+  }
+  if (isInput() == other->isInput())
+  {
+    //std::cout << "can't connect since input/output not compatible" << std::endl;
+    return false;
+  }
+  return true;
+
+//   return color() == other->color() &&
+//     isInput() != other->isInput();
 }
 
 void PortWidget::performDrag(const QPointF& endPos)
@@ -264,8 +291,7 @@ void PortWidget::removeConnection(ConnectionLine* c)
 
 void PortWidget::deleteConnections()
 {
-  Q_FOREACH (ConnectionLine* c, connections_)
-    delete c;
+  qDeleteAll(connections_);
   connections_.clear();
 }
 
@@ -282,7 +308,6 @@ QPointF PortWidget::position() const
   return pos();
 }
 
-
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
   : PortWidget(name, color, moduleId, index, true, connectionFactory, parent)
 {
@@ -292,5 +317,3 @@ OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, con
   : PortWidget(name, color, moduleId, index, false, connectionFactory, parent)
 {
 }
-
-

@@ -90,6 +90,7 @@ Q_SIGNALS:
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();
   void updateProgressBarSignal(double percent);
+  void cancelConnectionsInProgress();
 private:
   Ports inputPorts_;
   Ports outputPorts_;

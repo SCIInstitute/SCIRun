@@ -121,6 +121,7 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   connect(module, SIGNAL(removeModule(const std::string&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     this, SLOT(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
@@ -412,6 +413,13 @@ void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
   
 void NetworkEditor::dragMoveEvent(QDragMoveEvent* event)
 {
+}
+
+void NetworkEditor::mousePressEvent(QMouseEvent *event)
+{
+  if (event->button() != Qt::LeftButton)
+    Q_EMIT networkEditorMouseButtonPressed();
+  QGraphicsView::mousePressEvent(event);
 }
 
 SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions()

@@ -246,6 +246,7 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
     this, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
   connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
+  connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
 }
 
 void ModuleWidget::addPort(OutputPortWidget* port)

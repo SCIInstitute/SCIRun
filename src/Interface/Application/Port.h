@@ -84,6 +84,7 @@ public:
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
 public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
+  void cancelConnectionsInProgress();
 Q_SIGNALS:
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);

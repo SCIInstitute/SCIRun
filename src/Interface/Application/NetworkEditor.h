@@ -92,6 +92,7 @@ Q_SIGNALS:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
+    void mousePressEvent(QMouseEvent *event);
   public Q_SLOTS:
     void addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -106,6 +107,7 @@ Q_SIGNALS:
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void modified();
     void networkExecuted();
+    void networkEditorMouseButtonPressed();
   private Q_SLOTS:
     void del();
     void cut();
