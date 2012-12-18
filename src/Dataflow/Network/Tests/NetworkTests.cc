@@ -115,3 +115,36 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
   EXPECT_EQ(1, network.nconnections());
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 }
+
+TEST(NetworkTests, CannotConnectInputPortToInputPort)
+{
+  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
+  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
+  Network network(moduleFactory, sf);
+
+  ModuleLookupInfo mli1;
+  mli1.module_name_ = "Module1";
+  ModuleHandle m1 = network.add_module(mli1);
+  ModuleLookupInfo mli2;
+  mli2.module_name_ = "Module2";
+  ModuleHandle m2 = network.add_module(mli2);
+
+  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
+
+  //Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
+  //InputPortHandle inputPort1(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
+  //InputPortHandle inputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
+  //EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort1));
+  //EXPECT_CALL(*outputModule, get_input_port(1)).WillOnce(Return(inputPort2));
+
+  //ASSERT_EQ(0, inputPort->nconnections());
+  //ASSERT_EQ(0, outputPort->nconnections());
+  //{
+  //  Connection c(outputModule, 1, inputModule, 2, "test");
+  //  //connection added on construction
+  //  ASSERT_EQ(0, inputPort->nconnections());
+  //  ASSERT_EQ(0, outputPort->nconnections());
+  //}
+
+  EXPECT_TRUE(false);
+}

@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <QtGui>
+#include <boost/range/join.hpp>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
@@ -45,7 +46,6 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const QString& 
   bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
   : QWidget(parent), 
   name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
-  moduleParent_(parent),
   connectionFactory_(connectionFactory)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -166,34 +166,52 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
   }
 }
 
+//TODO: extract this class as GUI collaborator to remove Scene dependency
+class ClosestPortFinder
+{
+public:
+  ClosestPortFinder(QGraphicsScene* scene) : scene_(scene) {}
+
+  PortWidget* closestPort(const QPointF& pos)
+  {
+    Q_FOREACH (QGraphicsItem* item, scene_->items(pos))
+    {
+      if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        auto overModule = mpw->getModuleWidget();
+        
+        auto ports = boost::join(overModule->getInputPorts(), overModule->getOutputPorts());
+        return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
+      }
+    }
+    return 0;
+  }
+private:
+  QGraphicsScene* scene_;
+
+  int distance(const QPointF& pos, PortWidget* port) const
+  {
+    return (pos - port->position()).manhattanLength();
+  }
+
+  bool lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
+  {
+    return distance(pos, lhs) < distance(pos, rhs);
+  }
+};
+
 void PortWidget::makeConnection(const QPointF& pos)
 {
   //std::cout << "-----------makeConnection" << std::endl;
   DeleteCurrentConnectionAtEndOfBlock deleter(this);
-  QList<QGraphicsItem*> items = TheScene->items(pos);
-  Q_FOREACH (QGraphicsItem* item, items)
-  {
-    //std::cout << "---makeConnection: item" << std::endl;
-    if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      ModuleWidget* overModule = mpw->getModuleWidget();
-      if (overModule != moduleParent_)
-      {
-        //std::cout << "landed on another module..." << std::endl;
-        const ModuleWidget::Ports& ports = isInput() ? overModule->getOutputPorts() : overModule->getInputPorts();
-        Q_FOREACH (PortWidget* port, ports)
-        {
-          //std::cout << "looping through " << (isInput() ? "output" : "input") << " ports" << std::endl;
-          if (tryConnectPort(pos, port))
-            return;
-        }
-      }
-      else
-      {
-        GuiLogger::Instance().log("trying to connect a module with itself, let's not allow circular connections yet.");
-      }
-    }
-  }
+
+  ClosestPortFinder finder(TheScene);
+  auto port = finder.closestPort(pos);
+  if (port)
+    tryConnectPort(pos, port);
+
+  //else
+  //  std::cout << "null port from ClosestPortFinder" << std::endl;
 }
 
 bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
@@ -243,31 +261,56 @@ bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription
     || (!isInput() && cd.out_.moduleId_ == moduleId_.toStdString() && cd.out_.port_ == index_);
 }
 
+//TODO: extract this class as a collaborator, change PortWidget to PortDescriptionInterface, and unit test in a lower layer
+class PortConnectionDeterminer
+{
+public:
+  bool canBeConnected(const PortWidget& port1, const PortWidget& port2) const
+  {
+    //std::cout << "in PortConnectionDeterminer::canBeConnected" << std::endl;
+    if (port1.isFullInputPort() || port2.isFullInputPort())
+    {
+      //std::cout << "can't connect since input ports can only take one connection" << std::endl;
+      return false;
+    }
+    if (port1.color() != port2.color())
+    {
+      //std::cout << "can't connect since colors don't match" << std::endl;
+      return false;
+    }
+    if (port1.isInput() == port2.isInput())
+    {
+      //std::cout << "can't connect since input/output not compatible" << std::endl;
+      return false;
+    }
+    if (port1.sharesParentModule(port2))
+    {
+      //std::cout << "can't connect since it's the same module" << std::endl;
+      return false;
+    }
+    return true;
+  }
+};
+
+bool PortWidget::sharesParentModule(const PortWidget& other) const
+{
+  return moduleId_ == other.moduleId_;
+}
+
+bool PortWidget::isFullInputPort() const
+{
+  return isInput() && !connections_.empty();
+}
+
 //TODO: push this verification down to the domain layer!  make this layer as dumb as possible
 bool PortWidget::canBeConnected(PortWidget* other) const
 {
   //std::cout << "in PortWidget::canBeConnected" << std::endl;
   if (!other)
     return false;
-  if (other->isInput() && !other->connections_.empty())
-  {
-    //std::cout << "can't connect since input ports can only take one connection" << std::endl;
-    return false;
-  }
-  if (color() != other->color())
-  {
-    //std::cout << "can't connect since colors don't match" << std::endl;
-    return false;
-  }
-  if (isInput() == other->isInput())
-  {
-    //std::cout << "can't connect since input/output not compatible" << std::endl;
-    return false;
-  }
-  return true;
 
-//   return color() == other->color() &&
-//     isInput() != other->isInput();
+  PortConnectionDeterminer q;
+  return q.canBeConnected(*this, *other);
 }
 
 void PortWidget::performDrag(const QPointF& endPos)

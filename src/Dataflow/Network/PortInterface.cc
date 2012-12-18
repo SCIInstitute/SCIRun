@@ -31,6 +31,10 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
+PortDescriptionInterface::~PortDescriptionInterface()
+{
+}
+
 PortInterface::~PortInterface()
 {
 }

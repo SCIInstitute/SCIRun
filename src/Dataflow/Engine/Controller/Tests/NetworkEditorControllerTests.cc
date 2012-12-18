@@ -117,6 +117,11 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
 
 TEST_F(NetworkEditorControllerTests, CannotConnectInputPortToInputPort)
 {
+  NetworkEditorController controller(mockNetwork_);
+
+  ConnectionDescription desc(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2));
+  controller.addConnection(desc);
+
   //Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
   //InputPortHandle inputPort1(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
   //InputPortHandle inputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));

@@ -77,6 +77,9 @@ public:
 
   QPointF position() const;
 
+  bool sharesParentModule(const PortWidget& other) const;
+  bool isFullInputPort() const;
+
   //TODO: yuck?
   static QGraphicsScene* TheScene;
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
@@ -108,7 +111,6 @@ private:
   bool isConnected_;
   bool lightOn_;
   QPointF startPos_;
-  QWidget* moduleParent_;
   ConnectionInProgress* currentConnection_;
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
