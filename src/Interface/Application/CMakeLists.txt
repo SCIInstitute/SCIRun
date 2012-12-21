@@ -33,6 +33,7 @@
 
 
 SET(Interface_Application_SOURCES 
+  ClosestPortFinder.cc
   GuiApplication.cc
   GuiLogger.cc
   ModuleLogWindow.cc
@@ -48,6 +49,7 @@ SET(Interface_Application_SOURCES
 )
 
 SET(Interface_Application_HEADERS
+  ClosestPortFinder.h
   GuiApplication.h
   GuiLogger.h
   ModuleLogWindow.h

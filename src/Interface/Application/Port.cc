@@ -28,14 +28,12 @@
 
 #include <iostream>
 #include <QtGui>
-#include <boost/range/join.hpp>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Utility.h>
-#include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/ClosestPortFinder.h>
 
 using namespace SCIRun::Gui;
 
@@ -165,40 +163,6 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
     }
   }
 }
-
-//TODO: extract this class as GUI collaborator to remove Scene dependency
-class ClosestPortFinder
-{
-public:
-  ClosestPortFinder(QGraphicsScene* scene) : scene_(scene) {}
-
-  PortWidget* closestPort(const QPointF& pos)
-  {
-    Q_FOREACH (QGraphicsItem* item, scene_->items(pos))
-    {
-      if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
-      {
-        auto overModule = mpw->getModuleWidget();
-        
-        auto ports = boost::join(overModule->getInputPorts(), overModule->getOutputPorts());
-        return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
-      }
-    }
-    return 0;
-  }
-private:
-  QGraphicsScene* scene_;
-
-  int distance(const QPointF& pos, PortWidget* port) const
-  {
-    return (pos - port->position()).manhattanLength();
-  }
-
-  bool lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
-  {
-    return distance(pos, lhs) < distance(pos, rhs);
-  }
-};
 
 void PortWidget::makeConnection(const QPointF& pos)
 {
