@@ -37,14 +37,16 @@
 
 using namespace SCIRun::Gui;
 
-QGraphicsScene* PortWidget::TheScene = 0;
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index,
-  bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
+  bool isInput, 
+  boost::shared_ptr<ConnectionFactory> connectionFactory,
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
   : QWidget(parent), 
   name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
-  connectionFactory_(connectionFactory)
+  connectionFactory_(connectionFactory),
+  closestPortFinder_(closestPortFinder)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
@@ -169,8 +171,7 @@ void PortWidget::makeConnection(const QPointF& pos)
   //std::cout << "-----------makeConnection" << std::endl;
   DeleteCurrentConnectionAtEndOfBlock deleter(this);
 
-  ClosestPortFinder finder(TheScene);
-  auto port = finder.closestPort(pos);
+  auto port = closestPortFinder_->closestPort(pos);
   if (port)
     tryConnectPort(pos, port);
 
@@ -315,12 +316,18 @@ QPointF PortWidget::position() const
   return pos();
 }
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, true, connectionFactory, parent)
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+  boost::shared_ptr<ConnectionFactory> connectionFactory, 
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, true, connectionFactory, closestPortFinder, parent)
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, false, connectionFactory, parent)
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+  boost::shared_ptr<ConnectionFactory> connectionFactory, 
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, false, connectionFactory, closestPortFinder, parent)
 {
 }
