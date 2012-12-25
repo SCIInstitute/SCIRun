@@ -28,25 +28,25 @@
 
 #include <iostream>
 #include <QtGui>
-#include <boost/range/join.hpp>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Utility.h>
-#include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/ModuleWidget.h>
+#include <Interface/Application/ClosestPortFinder.h>
 
 using namespace SCIRun::Gui;
 
-QGraphicsScene* PortWidget::TheScene = 0;
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index,
-  bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
+  bool isInput, 
+  boost::shared_ptr<ConnectionFactory> connectionFactory,
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
   : QWidget(parent), 
   name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
-  connectionFactory_(connectionFactory)
+  connectionFactory_(connectionFactory),
+  closestPortFinder_(closestPortFinder)
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
@@ -166,47 +166,12 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
   }
 }
 
-//TODO: extract this class as GUI collaborator to remove Scene dependency
-class ClosestPortFinder
-{
-public:
-  ClosestPortFinder(QGraphicsScene* scene) : scene_(scene) {}
-
-  PortWidget* closestPort(const QPointF& pos)
-  {
-    Q_FOREACH (QGraphicsItem* item, scene_->items(pos))
-    {
-      if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
-      {
-        auto overModule = mpw->getModuleWidget();
-        
-        auto ports = boost::join(overModule->getInputPorts(), overModule->getOutputPorts());
-        return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
-      }
-    }
-    return 0;
-  }
-private:
-  QGraphicsScene* scene_;
-
-  int distance(const QPointF& pos, PortWidget* port) const
-  {
-    return (pos - port->position()).manhattanLength();
-  }
-
-  bool lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
-  {
-    return distance(pos, lhs) < distance(pos, rhs);
-  }
-};
-
 void PortWidget::makeConnection(const QPointF& pos)
 {
   //std::cout << "-----------makeConnection" << std::endl;
   DeleteCurrentConnectionAtEndOfBlock deleter(this);
 
-  ClosestPortFinder finder(TheScene);
-  auto port = finder.closestPort(pos);
+  auto port = closestPortFinder_->closestPort(pos);
   if (port)
     tryConnectPort(pos, port);
 
@@ -351,12 +316,18 @@ QPointF PortWidget::position() const
   return pos();
 }
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, true, connectionFactory, parent)
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+  boost::shared_ptr<ConnectionFactory> connectionFactory, 
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, true, connectionFactory, closestPortFinder, parent)
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, false, connectionFactory, parent)
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+  boost::shared_ptr<ConnectionFactory> connectionFactory, 
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+  QWidget* parent /* = 0 */)
+  : PortWidget(name, color, moduleId, index, false, connectionFactory, closestPortFinder, parent)
 {
 }

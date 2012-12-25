@@ -39,6 +39,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
+#include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <boost/bind.hpp>
@@ -54,8 +55,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
   scene_->setBackgroundBrush(Qt::darkGray);
-  PortWidget::TheScene = scene_;
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
+  ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
 
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);

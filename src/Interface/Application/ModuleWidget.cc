@@ -38,6 +38,7 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/ModuleLogWindow.h>
+#include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -225,7 +226,7 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, connectionFactory_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
@@ -233,7 +234,7 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, connectionFactory_, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     addPort(w);
   }
@@ -339,6 +340,7 @@ void ModuleWidget::makeOptionsDialog()
 }
 
 boost::shared_ptr<ConnectionFactory> ModuleWidget::connectionFactory_;
+boost::shared_ptr<ClosestPortFinder> ModuleWidget::closestPortFinder_;
 
 void ModuleWidget::showOptionsDialog()
 {

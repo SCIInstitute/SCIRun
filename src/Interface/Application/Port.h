@@ -48,12 +48,14 @@ class ConnectionLine;
 class PositionProvider;
 class ConnectionInProgress;
 class ConnectionFactory;
+class ClosestPortFinder;
 
 class PortWidget : public QWidget, public NeedsScenePositionProvider
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent = 0);
+  PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory,
+    boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
   ~PortWidget();
 
   QString name() const { return name_; }
@@ -80,8 +82,6 @@ public:
   bool sharesParentModule(const PortWidget& other) const;
   bool isFullInputPort() const;
 
-  //TODO: yuck?
-  static QGraphicsScene* TheScene;
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
@@ -115,6 +115,7 @@ private:
   friend struct DeleteCurrentConnectionAtEndOfBlock;
   std::set<ConnectionLine*> connections_;
   boost::shared_ptr<ConnectionFactory> connectionFactory_;
+  boost::shared_ptr<ClosestPortFinder> closestPortFinder_;
 
   //TODO
   typedef boost::tuple<std::string, size_t, bool> Key;
@@ -124,13 +125,19 @@ private:
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent = 0);
+  InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+    boost::shared_ptr<ConnectionFactory> connectionFactory, 
+    boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+    QWidget* parent = 0);
 };
 
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, boost::shared_ptr<ConnectionFactory> connectionFactory, QWidget* parent = 0);
+  OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+    boost::shared_ptr<ConnectionFactory> connectionFactory, 
+    boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
+    QWidget* parent = 0);
 };
 
 }

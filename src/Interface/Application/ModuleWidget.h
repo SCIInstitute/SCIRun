@@ -72,8 +72,9 @@ public:
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
 
-  //TODO
+  //TODO: initialize in a new class
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
+  static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
   
 public Q_SLOTS:
   virtual void execute();
