@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>796</width>
-         <height>516</height>
+         <width>793</width>
+         <height>477</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,15 +60,23 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <widget class="QMenu" name="menuRecent_Networks">
+     <property name="title">
+      <string>Recent Networks</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
     <addaction name="actionLoad_"/>
+    <addaction name="menuRecent_Networks"/>
     <addaction name="actionInsert_"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_"/>
     <addaction name="actionSave_As_"/>
     <addaction name="separator"/>
@@ -464,7 +472,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -477,7 +485,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
