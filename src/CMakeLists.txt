@@ -51,6 +51,15 @@ MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 
 
 ########################################################################
+# Set default CMAKE_BUILD_TYPE
+# if empty for Unix Makefile builds
+
+IF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+ENDIF (CMAKE_GENERATOR MATCHES "Unix Makefiles" AND NOT CMAKE_BUILD_TYPE)
+
+
+########################################################################
 # SCIRUN version number.
 
 SET(SCIRUN_VERSION_MAJOR "5")
@@ -58,6 +67,7 @@ SET(SCIRUN_VERSION_MINOR "0")
 SET(SCIRUN_VERSION_PATCH "0")
 
 SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
+
 
 ########################################################################
 # Standard tests
@@ -85,14 +95,13 @@ IF(BUILD_TESTING)
   MARK_AS_ADVANCED(BUILDNAME)
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
-  OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 ENDIF()
 
 
 ########################################################################
 # Custom compiler flags and definitions
 
-# Better compiler check for OS X?
+# TODO: Better compiler check for OS X?
 # Try CMAKE_<LANG>_COMPILER_ID MATCHES Clang? Or check for Intel, GNU?
 IF(UNIX)
   SET(CXX_LANGUAGE_STANDARD_FLAG "-std=c++11")
@@ -130,18 +139,33 @@ ENDIF()
 
 # TODO: make macro
 
+ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB=1)
+
 SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
 SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
 
 SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)
 SET(SCI_BOOST_LIBRARY boost CACHE INTERNAL "Boost library name." FORCE)
 
-SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+IF(WIN32)
+#  # See cmake-2.8/Modules/FindBoost.cmake
+#  #SET(boost_LIB_PREFIX "lib")
+  SET(boost_LIB_PREFIX "")
+ELSE()
+  SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+ENDIF()
+
+
+SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 # other configuration options are RELWITHDEBINFO and MINSIZEREL
-SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${CMAKE_STATIC_LIBRARY_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${CMAKE_STATIC_LIBRARY_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+
 
 # TODO: fix install step
+#
+# If CMake ever allows overriding the checkout command or adding flags,
+# git checkout -q will silence message about detached head (harmless).
 ExternalProject_Add(Boost_external
   PREFIX ${boost_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
@@ -161,23 +185,31 @@ ExternalProject_Add(Boost_external
 ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED GLOBAL)
 
 # adding Boost as a build target and dependency
+#
+# TODO: how to make boost include dependent on Boost_external?
 ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
 ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
 
-# TODO: change to install location
-SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-  PROPERTIES
-    IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
-    IMPORTED_LOCATION_RELEASE ${boost_LIBRARY_PATH_RELEASE}
-    IMPORTED_LOCATION_DEBUG ${boost_LIBRARY_PATH_DEBUG}
-    IMPORTED_LOCATION ${boost_LIBRARY_PATH}
-)
+IF (CMAKE_GENERATOR MATCHES "Makefiles")
+  SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
+    PROPERTIES
+      IMPORTED_LOCATION ${boost_LIBRARY_PATH}
+  )
+ELSE() # Xcode, VS, others...
+  SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
+    PROPERTIES
+      IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
+      IMPORTED_LOCATION_RELEASE ${boost_LIBRARY_PATH_RELEASE}
+      IMPORTED_LOCATION_DEBUG ${boost_LIBRARY_PATH_DEBUG}
+  )
+ENDIF()
 
 INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 
 ########################################################################
 # Find and configure Qt
 
+# TODO: update to 4.8.3 before next release
 SET(QT_MIN_VERSION "4.8.0")
 FIND_PACKAGE(Qt4 REQUIRED)
 
@@ -313,6 +345,18 @@ SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
+
+
+########################################################################
+# Configure test support
+# TODO: eventually move to a Testing directory along with regression test support
+
+IF(RUN_UNIT_TESTS)
+  FOREACH(test ${UNIT_TEST_LIST})
+    ADD_TEST("${test}" "${EXE_DIRPATH}/${test}")
+  ENDFOREACH(test ${UNIT_TEST_LIST})
+ENDIF()
+
 
 ########################################################################
 # CPack
