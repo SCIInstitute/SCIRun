@@ -38,7 +38,9 @@ using namespace SCIRun::Dataflow::Networks;
 
 ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun")),
   renderer_(0)
-{}
+{
+  //TODO: create spire objects.
+}
 
 void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
 {
@@ -47,24 +49,7 @@ void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
 
 void ViewScene::execute()
 {
-  auto strInput = getRequiredInput(RenderedString);
-  auto matrixInput = getRequiredInput(RenderedMatrixAsVectorField);
+  // render updated 
 
-  if (renderer_)
-  {
-    renderer_->clearScene();
-    status("Renderer set! Attempting to visualize some data.");
-
-    renderer_->setText(strInput->get_underlying()->as<String>()->value().c_str());
-
-    const DenseMatrix* dm = matrixInput->get_underlying()->as<DenseMatrix>();
-    if (dm)
-       renderer_->setVectorField(*dm);
-
-    renderer_->bringToFront();
-  }
-  else
-  {
-    error("Renderer not set, nothing to do here!");
-  }
+  error("Renderer not set, nothing to do here!");
 }

@@ -39,3 +39,5 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
 }
+
+//TODO: Qt/OpenGL hookup

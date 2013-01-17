@@ -41,7 +41,6 @@ namespace SCIRun {
 namespace Gui {
   
 class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::ViewScene
 {
 	Q_OBJECT
