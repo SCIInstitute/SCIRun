@@ -299,7 +299,8 @@ void PortWidget::removeConnection(ConnectionLine* c)
 
 void PortWidget::deleteConnections()
 {
-  qDeleteAll(connections_);
+  Q_FOREACH (ConnectionLine* c, connections_)
+    delete c;
   connections_.clear();
 }
 
