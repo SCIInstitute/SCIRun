@@ -50,6 +50,11 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull() {}
+
+private:
+
+  GLWidget*                   mGLWidget;    ///< GL widget containing context.
+
 };
 
 }
