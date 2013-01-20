@@ -99,6 +99,7 @@ TARGET_LINK_LIBRARIES(Interface_Application
   Core_Logging
   Interface_Modules_Base
   Interface_Modules_Factory
+  ${SCI_SPIRE_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}

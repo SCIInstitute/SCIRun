@@ -45,7 +45,9 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   fmt.setRgba(true);
   mGLWidget = new GLWidget(fmt);
 
-  setCentralWidget(mGLWidget);
+  // Hook up the GLWidget
+  glLayout->addWidget(mGLWidget);
+  glLayout->update();
 }
 
 ViewSceneDialog::~ViewSceneDialog()

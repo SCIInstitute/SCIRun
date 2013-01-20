@@ -35,6 +35,9 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/Share.h>
 
+#include "Spire/Interface.h"
+#include "GLWidget.h"
+
 //TODO: needs to inherit from ModuleWidget somehow
 
 namespace SCIRun {
@@ -49,6 +52,7 @@ public:
   ViewSceneDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
+  ~ViewSceneDialog();
   virtual void pull() {}
 
 private:

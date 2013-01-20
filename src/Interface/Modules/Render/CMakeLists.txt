@@ -38,6 +38,8 @@ SET(Interface_Modules_Render_HEADERS
 
 SET(Interface_Modules_Render_SOURCES 
   ViewScene.cc
+  GLWidget.cc
+  GLContext.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
@@ -55,6 +57,9 @@ ADD_LIBRARY(Interface_Modules_Render
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render 
   Interface_Modules_Base
+  ${QT_OPENGL_LIBRARY}
+  ${OPENGL_LIBRARIES}
+  ${SCI_SPIRE_LIBRARY}
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
