@@ -299,9 +299,8 @@ class FileOpenCommand
 {
 public:
   FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-  void execute()
+  bool execute()
   {
-    networkEditor_->clear();
     GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
 
     try
@@ -310,18 +309,20 @@ public:
 
       if (xml)
       {
+        networkEditor_->clear();
         networkEditor_->loadNetwork(xml->network);
         networkEditor_->moveModules(xml->modulePositions);
+        GuiLogger::Instance().log("File load done.");
+        return true;
       }
       else
         GuiLogger::Instance().log("File load failed.");
-
-      GuiLogger::Instance().log("File load done.");
     }
     catch (...)
     {
       GuiLogger::Instance().log("File load failed.");
     }
+    return false;
   }
 private:
   std::string filename_;
@@ -342,12 +343,19 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
   if (!filename.isEmpty())
   {
     FileOpenCommand command(filename.toStdString(), networkEditor_);
-    command.execute();
-
-    setCurrentFile(filename);
-    statusBar()->showMessage(tr("File loaded"), 2000);
-    networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+    if (command.execute())
+    {
+      setCurrentFile(filename);
+      statusBar()->showMessage(tr("File loaded"), 2000);
+      networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+      addToRecent(filename);
+    }
   }
+}
+
+void SCIRunMainWindow::addToRecent(const QString& filename)
+{
+  recentNetworksMenu_->addAction(new QAction(filename, this));
 }
 
 bool SCIRunMainWindow::clearNetwork()

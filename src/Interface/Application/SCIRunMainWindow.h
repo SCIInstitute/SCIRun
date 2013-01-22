@@ -70,6 +70,7 @@ private:
   QString strippedName(const QString& fillFileName);
   void setActionIcons();
   void makeFilterButtonMenu();
+  void addToRecent(const QString& filename);
   QString currentFile_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
 private Q_SLOTS:
