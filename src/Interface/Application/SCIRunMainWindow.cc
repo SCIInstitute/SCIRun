@@ -163,8 +163,14 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->horizontalScrollBar()->setValue(0);
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
+  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
   actionSave_->setStatusTip(tr("Save network"));
+  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
   actionLoad_->setStatusTip(tr("Load network"));
+  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
+  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
+  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
+
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
@@ -195,6 +201,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   QToolBar* standardBar = addToolBar("Standard");
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
+  standardBar->addAction(actionEnterWhatsThisMode_);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
@@ -358,14 +365,8 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       setCurrentFile(filename);
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      //addToRecent(filename);
     }
   }
-}
-
-void SCIRunMainWindow::addToRecent(const QString& filename)
-{
-  //recentNetworksMenu_->addAction(new QAction(filename, this));
 }
 
 bool SCIRunMainWindow::clearNetwork()
@@ -608,3 +609,11 @@ void SCIRunMainWindow::writeSettings()
   //settings.setValue("showGrid", showGridAction->isChecked());
   //settings.setValue("autoRecalc", autoRecalcAction->isChecked());
 }
+
+//void SCIRunMainWindow::toggleWhatsThisMode()
+//{
+//  if (QWhatsThis::inWhatsThisMode())
+//    QWhatsThis::leaveWhatsThisMode();
+//  else
+//    QWhatsThis::enterWhatsThisMode();
+//}
