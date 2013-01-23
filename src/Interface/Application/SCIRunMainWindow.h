@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_SCIRUN_MAIN_WINDOW_H
 
 #include <QDialog>
+#include <QDir>
 #include <boost/shared_ptr.hpp>
 #include "ui_SCIRunMainWindow.h"
 
@@ -77,6 +78,7 @@ private:
   //QAction *separatorRecentFileAction_;
   QStringList recentFiles_;
   QString currentFile_;
+  QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
 private Q_SLOTS:
   void saveNetworkAs();
