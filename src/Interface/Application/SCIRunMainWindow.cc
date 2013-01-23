@@ -146,7 +146,7 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
 }
 
 
-SCIRunMainWindow::SCIRunMainWindow()
+SCIRunMainWindow::SCIRunMainWindow() : recentFileActions_(MaxRecentFiles)
 {
 	setupUi(this);
 
@@ -305,7 +305,7 @@ public:
 
     try
     {
-      boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename_);
+      auto xml = XMLSerializer::load_xml<NetworkFile>(filename_);
 
       if (xml)
       {
@@ -348,14 +348,14 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       setCurrentFile(filename);
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      addToRecent(filename);
+      //addToRecent(filename);
     }
   }
 }
 
 void SCIRunMainWindow::addToRecent(const QString& filename)
 {
-  recentNetworksMenu_->addAction(new QAction(filename, this));
+  //recentNetworksMenu_->addAction(new QAction(filename, this));
 }
 
 bool SCIRunMainWindow::clearNetwork()
@@ -377,9 +377,9 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
   if (!currentFile_.isEmpty())
   {
     shownName = strippedName(currentFile_);
-    //recentFiles.removeAll(curFile);
-    //recentFiles.prepend(curFile);
-    //updateRecentFileActions();
+    recentFiles_.removeAll(currentFile_);
+    recentFiles_.prepend(currentFile_);
+    updateRecentFileActions();
   }
   setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun 5 Prototype")));
 }
@@ -387,6 +387,37 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
 {
   return QFileInfo(fullFileName).fileName();
+}
+
+void SCIRunMainWindow::updateRecentFileActions()
+{
+  QMutableStringListIterator i(recentFiles_);
+  while (i.hasNext()) {
+    if (!QFile::exists(i.next()))
+      i.remove();
+  }
+
+  for (int j = 0; j < MaxRecentFiles; ++j) 
+  {
+    if (!recentFileActions_[j])
+      recentFileActions_[j] = recentNetworksMenu_->addAction("");
+
+    if (j < recentFiles_.count()) 
+    {
+      QString text = tr("&%1 %2")
+        .arg(j + 1)
+        .arg(strippedName(recentFiles_[j]));
+      
+      recentFileActions_[j]->setText(text);
+      recentFileActions_[j]->setData(recentFiles_[j]);
+      recentFileActions_[j]->setVisible(true);
+    } 
+    else 
+    {
+      recentFileActions_[j]->setVisible(false);
+    }
+  }
+  //separatorRecentFileAction_->setVisible(!recentFiles_.isEmpty());
 }
 
 void SCIRunMainWindow::closeEvent(QCloseEvent* event)
@@ -529,4 +560,30 @@ void SCIRunMainWindow::makePipesEuclidean()
 void SCIRunMainWindow::makePipesManhattan()
 {
   //TODO
+}
+
+void SCIRunMainWindow::readSettings()
+{
+  //QSettings settings("Software Inc.", "Spreadsheet");
+
+  //restoreGeometry(settings.value("geometry").toByteArray());
+
+  //recentFiles = settings.value("recentFiles").toStringList();
+  //updateRecentFileActions();
+
+  //bool showGrid = settings.value("showGrid", true).toBool();
+  //showGridAction->setChecked(showGrid);
+
+  //bool autoRecalc = settings.value("autoRecalc", true).toBool();
+  //autoRecalcAction->setChecked(autoRecalc);
+}
+
+void SCIRunMainWindow::writeSettings()
+{
+  //QSettings settings("Software Inc.", "Spreadsheet");
+
+  //settings.setValue("geometry", saveGeometry());
+  //settings.setValue("recentFiles", recentFiles);
+  //settings.setValue("showGrid", showGridAction->isChecked());
+  //settings.setValue("autoRecalc", autoRecalcAction->isChecked());
 }

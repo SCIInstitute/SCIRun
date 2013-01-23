@@ -70,7 +70,12 @@ private:
   QString strippedName(const QString& fillFileName);
   void setActionIcons();
   void makeFilterButtonMenu();
+  
   void addToRecent(const QString& filename);
+  enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
+  std::vector<QAction*> recentFileActions_;
+  //QAction *separatorRecentFileAction_;
+  QStringList recentFiles_;
   QString currentFile_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
 private Q_SLOTS:
@@ -83,6 +88,8 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
+  void writeSettings();
+  void readSettings();
 };
 
 }
