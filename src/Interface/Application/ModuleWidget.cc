@@ -168,6 +168,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
   makeOptionsDialog();
 
+  connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
+
   setupModuleActions();
 
   progressBar_->setTextVisible(false);
@@ -360,4 +362,15 @@ void ModuleWidget::updateProgressBar(double percent)
 void ModuleWidget::updateModuleTime()
 {
   progressBar_->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
+}
+
+void ModuleWidget::launchDocumentation()
+{
+  //TODO: push this help url construction to module layer
+  std::string url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + getModule()->get_module_name();
+
+  QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
+  
+  if (!QDesktopServices::openUrl(qurl))
+    GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
 }
