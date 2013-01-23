@@ -146,7 +146,7 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
 }
 
 
-SCIRunMainWindow::SCIRunMainWindow() : recentFileActions_(MaxRecentFiles)
+SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
 
@@ -231,6 +231,14 @@ SCIRunMainWindow::SCIRunMainWindow() : recentFileActions_(MaxRecentFiles)
   //TODO: will be a user or network setting
   makePipesEuclidean();
   
+  for (int i = 0; i < MaxRecentFiles; ++i) 
+  {
+    recentFileActions_.push_back(new QAction(this));
+    recentFileActions_[i]->setVisible(false);
+    recentNetworksMenu_->addAction(recentFileActions_[i]);
+    connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
+  }
+
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
@@ -399,9 +407,6 @@ void SCIRunMainWindow::updateRecentFileActions()
 
   for (int j = 0; j < MaxRecentFiles; ++j) 
   {
-    if (!recentFileActions_[j])
-      recentFileActions_[j] = recentNetworksMenu_->addAction("");
-
     if (j < recentFiles_.count()) 
     {
       QString text = tr("&%1 %2")
@@ -418,6 +423,16 @@ void SCIRunMainWindow::updateRecentFileActions()
     }
   }
   //separatorRecentFileAction_->setVisible(!recentFiles_.isEmpty());
+}
+
+void SCIRunMainWindow::loadRecentNetwork()
+{
+  if (okToContinue()) 
+  {
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+      loadNetworkFile(action->data().toString());
+  }
 }
 
 void SCIRunMainWindow::closeEvent(QCloseEvent* event)

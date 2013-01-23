@@ -82,6 +82,7 @@ private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
+  void loadRecentNetwork();
   bool clearNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
