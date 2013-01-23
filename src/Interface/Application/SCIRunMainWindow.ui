@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>793</width>
-         <height>477</height>
+         <width>796</width>
+         <height>516</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,7 +60,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -74,7 +74,6 @@
      <property name="title">
       <string>Recent Networks</string>
      </property>
-     <addaction name="separator"/>
     </widget>
     <addaction name="actionLoad_"/>
     <addaction name="recentNetworksMenu_"/>
@@ -475,7 +474,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -488,7 +487,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -816,6 +815,11 @@
   <action name="actionRenderer">
    <property name="text">
     <string>Renderer</string>
+   </property>
+  </action>
+  <action name="actionClear_Recent">
+   <property name="text">
+    <string>Clear Recent</string>
    </property>
   </action>
  </widget>
