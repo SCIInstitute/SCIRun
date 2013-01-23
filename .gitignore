@@ -5,6 +5,7 @@
 *.idb
 *.swp
 *.vcxproj*
+*DS_Store
 bin*/*/*
 bin64/*
 doc/*
