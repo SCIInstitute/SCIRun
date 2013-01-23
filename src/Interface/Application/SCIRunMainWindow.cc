@@ -239,6 +239,8 @@ SCIRunMainWindow::SCIRunMainWindow()
     connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
   }
 
+  readSettings();
+
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
@@ -280,7 +282,7 @@ void SCIRunMainWindow::saveNetwork()
 
 void SCIRunMainWindow::saveNetworkAs()
 {
-  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
+  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
   if (!filename.isEmpty())
     saveNetworkFile(filename);
 }
@@ -341,7 +343,7 @@ void SCIRunMainWindow::loadNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
+    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
     loadNetworkFile(filename);
   }
 }
@@ -394,7 +396,9 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
 {
-  return QFileInfo(fullFileName).fileName();
+  QFileInfo info(fullFileName);
+  latestNetworkDirectory_ = info.dir();
+  return info.fileName();
 }
 
 void SCIRunMainWindow::updateRecentFileActions()
@@ -439,7 +443,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 {
   if (okToContinue())
   {
-    //writeSettings();
+    writeSettings();
     event->accept();
   }
   else
@@ -579,12 +583,14 @@ void SCIRunMainWindow::makePipesManhattan()
 
 void SCIRunMainWindow::readSettings()
 {
-  //QSettings settings("Software Inc.", "Spreadsheet");
+  QSettings settings("SCI:CIBC Software", "SCIRun5");
 
   //restoreGeometry(settings.value("geometry").toByteArray());
 
-  //recentFiles = settings.value("recentFiles").toStringList();
-  //updateRecentFileActions();
+  latestNetworkDirectory_ = settings.value("networkDirectory").toString();
+
+  recentFiles_ = settings.value("recentFiles").toStringList();
+  updateRecentFileActions();
 
   //bool showGrid = settings.value("showGrid", true).toBool();
   //showGridAction->setChecked(showGrid);
@@ -595,10 +601,10 @@ void SCIRunMainWindow::readSettings()
 
 void SCIRunMainWindow::writeSettings()
 {
-  //QSettings settings("Software Inc.", "Spreadsheet");
+  QSettings settings("SCI:CIBC Software", "SCIRun5");
 
-  //settings.setValue("geometry", saveGeometry());
-  //settings.setValue("recentFiles", recentFiles);
+  settings.setValue("networkDirectory", latestNetworkDirectory_.path());
+  settings.setValue("recentFiles", recentFiles_);
   //settings.setValue("showGrid", showGridAction->isChecked());
   //settings.setValue("autoRecalc", autoRecalcAction->isChecked());
 }
