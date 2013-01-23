@@ -84,6 +84,7 @@ public Q_SLOTS:
   void resetProgressBar();
   void updateProgressBar(double percent);
   void updateModuleTime();
+  void launchDocumentation();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
