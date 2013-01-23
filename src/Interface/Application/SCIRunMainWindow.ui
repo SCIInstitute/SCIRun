@@ -178,6 +178,12 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Module Filter</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click here to choose either simple filtering by name, or with wildcards (? and *)</string>
+         </property>
          <property name="text">
           <string>Filter:</string>
          </property>
@@ -187,7 +193,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="moduleFilterLineEdit_"/>
+        <widget class="QLineEdit" name="moduleFilterLineEdit_">
+         <property name="whatsThis">
+          <string>Enter a filter string here. The module list below will display only those modules whose name matches the filter (either by exact string or wildcard).</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="clearFilterButton_">
@@ -196,6 +206,12 @@
            <width>40</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Clear filter text</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to clear the filter text and see all available modules.</string>
          </property>
          <property name="text">
           <string>Clear</string>
@@ -206,30 +222,6 @@
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <pointsize>7</pointsize>
-         <weight>50</weight>
-         <italic>true</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="text">
-        <string>Drag and drop module name from here to editor to place</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
      </item>
      <item>
       <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
@@ -244,6 +236,9 @@
          <width>200</width>
          <height>100</height>
         </size>
+       </property>
+       <property name="whatsThis">
+        <string>List of available modules. Drag an item from here and drop onto the network editor to instantiate a new instance of that module.</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -820,6 +815,17 @@
   <action name="actionClear_Recent">
    <property name="text">
     <string>Clear Recent</string>
+   </property>
+  </action>
+  <action name="actionEnterWhatsThisMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Enter &quot;What's This?&quot; Mode</string>
    </property>
   </action>
  </widget>

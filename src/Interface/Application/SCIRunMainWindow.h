@@ -61,6 +61,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   QActionGroup* filterActionGroup_;
+  QAction* actionEnterWhatsThisMode_;
   
 private:
   bool okToContinue();
@@ -71,8 +72,8 @@ private:
   QString strippedName(const QString& fillFileName);
   void setActionIcons();
   void makeFilterButtonMenu();
-  
-  void addToRecent(const QString& filename);
+  void writeSettings();
+  void readSettings();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   //QAction *separatorRecentFileAction_;
@@ -91,8 +92,6 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
-  void writeSettings();
-  void readSettings();
 };
 
 }
