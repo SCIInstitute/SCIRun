@@ -536,9 +536,11 @@ void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle modu
 void NetworkEditor::disableInputWidgets()
 {
   deleteAction_->setDisabled(true);
+  deleteAction_->setShortcut(QKeySequence());
 }
 
 void NetworkEditor::enableInputWidgets()
 {
   deleteAction_->setEnabled(true);
+  deleteAction_->setShortcut(Qt::Key_Delete);
 }

@@ -237,8 +237,11 @@
          <height>100</height>
         </size>
        </property>
+       <property name="toolTip">
+        <string>Drag or double-click to add a module</string>
+       </property>
        <property name="whatsThis">
-        <string>List of available modules. Drag an item from here and drop onto the network editor to instantiate a new instance of that module.</string>
+        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module.</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -410,6 +413,9 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QTabWidget" name="optionsTabWidget_">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -534,6 +540,9 @@
         </widget>
        </widget>
        <widget class="QWidget" name="optionsTab_">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <attribute name="title">
          <string>Options*</string>
         </attribute>
