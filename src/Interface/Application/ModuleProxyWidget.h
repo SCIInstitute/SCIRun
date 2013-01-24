@@ -49,6 +49,7 @@ namespace SCIRun
       void highlightIfSelected();
     Q_SIGNALS:
       void selected();
+      void widgetMoved();
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
@@ -62,6 +63,7 @@ namespace SCIRun
       ModuleWidget* module_;
       bool grabbedByWidget_;
       QWidget* pressedSubWidget_;
+      QPointF position_;
     };
 
   }
