@@ -51,7 +51,7 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 public:
 	static SCIRunMainWindow* Instance();
   void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
-  void doInitialStuff();
+  void initialize();
 protected Q_SLOTS:
   void ToggleRenderer();
 protected:
@@ -92,6 +92,7 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
+  //void disableInputWidgets(); //TODO! when executing
 };
 
 }

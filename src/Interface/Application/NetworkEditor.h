@@ -94,11 +94,12 @@ Q_SIGNALS:
     virtual void dragMoveEvent(QDragMoveEvent* event);
     void mousePressEvent(QMouseEvent *event);
   public Q_SLOTS:
-    void addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func = 0);
     void clear();
     void setConnectionPipelineType(int type);
+    void addModuleViaDoubleClickedTreeItem();
 
     //TODO: break out, unit test
     SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
@@ -129,6 +130,7 @@ Q_SIGNALS:
     ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
+    void addNewModuleAtPosition(const QPoint& position);
     
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
@@ -148,6 +150,7 @@ Q_SIGNALS:
     int seqNumber_;
 
     QPointF lastModulePosition_;
+    QPoint defaultModulePosition_;
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;

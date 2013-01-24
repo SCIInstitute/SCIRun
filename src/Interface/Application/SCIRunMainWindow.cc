@@ -251,13 +251,14 @@ SCIRunMainWindow::SCIRunMainWindow()
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
 
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   makeFilterButtonMenu();
   activateWindow();
 }
 
-void SCIRunMainWindow::doInitialStuff()
+void SCIRunMainWindow::initialize()
 {
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
@@ -609,11 +610,3 @@ void SCIRunMainWindow::writeSettings()
   //settings.setValue("showGrid", showGridAction->isChecked());
   //settings.setValue("autoRecalc", autoRecalcAction->isChecked());
 }
-
-//void SCIRunMainWindow::toggleWhatsThisMode()
-//{
-//  if (QWhatsThis::inWhatsThisMode())
-//    QWhatsThis::leaveWhatsThisMode();
-//  else
-//    QWhatsThis::enterWhatsThisMode();
-//}

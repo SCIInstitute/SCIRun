@@ -83,7 +83,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   if (controller_) 
   {
     disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
-      this, SLOT(addModule(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -94,14 +94,14 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   if (controller_) 
   {
     connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
-      this, SLOT(addModule(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
     
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }
 
-void NetworkEditor::addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
@@ -401,10 +401,21 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    lastModulePosition_ = mapToScene(event->pos());
-    controller_->addModule(moduleSelectionGetter_->text().toStdString());
-    Q_EMIT modified();
+    addNewModuleAtPosition(event->pos());
   }
+}
+
+void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
+{
+  lastModulePosition_ = mapToScene(position);
+  controller_->addModule(moduleSelectionGetter_->text().toStdString());
+  Q_EMIT modified();
+}
+
+void NetworkEditor::addModuleViaDoubleClickedTreeItem()
+{
+  defaultModulePosition_ += QPoint(10,10);
+  addNewModuleAtPosition(defaultModulePosition_);
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)

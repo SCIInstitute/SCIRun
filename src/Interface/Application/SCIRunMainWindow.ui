@@ -288,6 +288,9 @@
           <property name="text">
            <string>ShowMesh</string>
           </property>
+          <property name="whatsThis">
+           <string>This module takes a mesh object as input and outputs renderable geometry. Options are given for color, shading, etc.</string>
+          </property>
          </item>
          <item>
           <property name="text">
