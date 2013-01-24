@@ -38,11 +38,12 @@ using namespace SCIRun::Dataflow::Networks;
 
 struct LinearExecution
 {
-  LinearExecution(const ExecutableLookup& lookup, ModuleExecutionOrder order, NetworkExecutionFinishedCallback func) : lookup_(lookup), order_(order), func_(func)
+  LinearExecution(const ExecutableLookup& lookup, ModuleExecutionOrder order, ExecuteAllStartsSignalType& start, ExecuteAllFinishesSignalType& finish) : lookup_(lookup), order_(order), start_(start), finish_(finish)
   {
   }
   void operator()() const
   {
+    start_();
     BOOST_FOREACH(const std::string& id, order_)
     {
       ExecutableObject* obj = lookup_.lookupExecutable(id);
@@ -51,16 +52,16 @@ struct LinearExecution
         obj->execute();
       }
     }
-    if (func_)
-      func_(lookup_.errorCode());
+    finish_(lookup_.errorCode());
   }
   const ExecutableLookup& lookup_;
   ModuleExecutionOrder order_;
-  NetworkExecutionFinishedCallback func_;
+  ExecuteAllStartsSignalType& start_;
+  ExecuteAllFinishesSignalType& finish_;
 };
 
 void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order)
 {
-  LinearExecution runner(lookup, order, finishedFunc_);
+  LinearExecution runner(lookup, order, executeStarts_, executeFinishes_);
   boost::thread execution = boost::thread(runner);
 }

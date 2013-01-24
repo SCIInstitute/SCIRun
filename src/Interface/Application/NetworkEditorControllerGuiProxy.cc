@@ -40,6 +40,8 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
 {
   controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2));
   controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1));
+  controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
+  controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
 }
 
 void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
@@ -72,9 +74,9 @@ void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networ
   return controller_->loadNetwork(xml);
 }
 
-void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func)
+void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup)
 {
-  controller_->executeAll(lookup, func);
+  controller_->executeAll(lookup);
 }
 
 int NetworkEditorControllerGuiProxy::numModules() const 

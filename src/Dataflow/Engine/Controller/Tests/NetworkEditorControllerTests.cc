@@ -72,11 +72,12 @@ protected:
   }
   MockNetworkPtr mockNetwork_;
   DummySlotClassForNetworkEditorController slots_;
+  NetworkExecutorHandle null_;
 };
 
 TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
 {
-  NetworkEditorController controller(mockNetwork_);
+  NetworkEditorController controller(mockNetwork_, null_);
   
   controller.connectModuleAdded(boost::bind(&SlotClassForNetworkEditorController::moduleAddedSlot, &slots_, _1, _2));
   controller.connectModuleRemoved(boost::bind(&SlotClassForNetworkEditorController::moduleRemovedSlot, &slots_, _1));
@@ -92,7 +93,7 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
 
 TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
 {
-  NetworkEditorController controller(mockNetwork_);
+  NetworkEditorController controller(mockNetwork_, null_);
 
   controller.connectConnectionAdded(boost::bind(&SlotClassForNetworkEditorController::connectionAddedSlot, &slots_, _1));
   controller.connectConnectionRemoved(boost::bind(&SlotClassForNetworkEditorController::connectionRemovedSlot, &slots_, _1));
@@ -117,7 +118,7 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
 
 TEST_F(NetworkEditorControllerTests, CannotConnectInputPortToInputPort)
 {
-  NetworkEditorController controller(mockNetwork_);
+  NetworkEditorController controller(mockNetwork_, null_);
 
   ConnectionDescription desc(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2));
   controller.addConnection(desc);
@@ -143,5 +144,5 @@ TEST_F(NetworkEditorControllerTests, CannotConnectInputPortToInputPort)
 TEST_F(NetworkEditorControllerTests, CannotConnectOutputPortToOutputPort)
 {
   std::cout << "TODO" << std::endl;
-  EXPECT_TRUE(false);
+  FAIL();
 }

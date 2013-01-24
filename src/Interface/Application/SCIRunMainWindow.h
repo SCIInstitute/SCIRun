@@ -92,7 +92,8 @@ private Q_SLOTS:
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
-  //void disableInputWidgets(); //TODO! when executing
+  void disableInputWidgets(); 
+  void enableInputWidgets();
 };
 
 }

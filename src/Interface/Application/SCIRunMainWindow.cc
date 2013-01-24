@@ -174,7 +174,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-
+  connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(disableInputWidgets()));
+  connect(networkEditor_, SIGNAL(networkExecutionFinished()), this, SLOT(enableInputWidgets()));
+  
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
@@ -275,7 +277,8 @@ void SCIRunMainWindow::initialize()
       //TODO: exit code should be from network execution for regression testing.
       //TODO: don't like passing the callback all the way down...better way to do it?--yes, when network done event is available, just have to add a quit() subscriber.
       // for exit code: qApp->exit(code); 
-      networkEditor_->executeAll([this](int code) {close(); qApp->exit(code);});
+      //networkEditor_->ge
+      //networkEditor_->executeAll([this](int code) {close(); qApp->exit(code);});
     }
   }
 }
@@ -609,4 +612,22 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("recentFiles", recentFiles_);
   //settings.setValue("showGrid", showGridAction->isChecked());
   //settings.setValue("autoRecalc", autoRecalcAction->isChecked());
+}
+
+void SCIRunMainWindow::disableInputWidgets()
+{
+  actionExecute_All_->setDisabled(true);
+  actionSave_->setDisabled(true);
+  actionLoad_->setDisabled(true);
+  actionSave_As_->setDisabled(true);
+  moduleSelectorTreeWidget_->setDisabled(true);
+}
+
+void SCIRunMainWindow::enableInputWidgets()
+{
+  actionExecute_All_->setEnabled(true);
+  actionSave_->setEnabled(true);
+  actionLoad_->setEnabled(true);
+  actionSave_As_->setEnabled(true);
+  moduleSelectorTreeWidget_->setEnabled(true);
 }

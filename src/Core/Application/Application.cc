@@ -33,6 +33,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
+#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::CommandLine;
@@ -82,9 +83,11 @@ boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> Application
 {
   if (!private_->controller_)
   {
+    //TODO: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf));
+    NetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe));
   }
   return private_->controller_;
 }

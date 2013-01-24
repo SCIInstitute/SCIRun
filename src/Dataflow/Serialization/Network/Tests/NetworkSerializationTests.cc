@@ -50,6 +50,7 @@
 #include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 using namespace SCIRun;
@@ -182,7 +183,8 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  NetworkEditorController controller(mf, sf);
+  NetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
+  NetworkEditorController controller(mf, sf, exe);
   
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
   ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
@@ -228,7 +230,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   XMLSerializer::save_xml(*xml, ostr, "network");
   std::cout << ostr.str() << std::endl;
 
-  NetworkEditorController controller2(mf, sf);
+  NetworkEditorController controller2(mf, sf, exe);
   controller2.loadNetwork(*xml);
 
   NetworkHandle deserialized = controller2.getNetwork();

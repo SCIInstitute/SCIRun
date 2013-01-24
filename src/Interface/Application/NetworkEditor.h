@@ -96,7 +96,7 @@ Q_SIGNALS:
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
-    void executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func = 0);
+    void executeAll();
     void clear();
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
@@ -109,6 +109,7 @@ Q_SIGNALS:
     void modified();
     void networkExecuted();
     void networkEditorMouseButtonPressed();
+    void networkExecutionFinished(); //TODO: hook up to exit call rather than use ugly callback
   private Q_SLOTS:
     void del();
     void cut();
