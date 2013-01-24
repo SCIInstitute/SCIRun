@@ -101,6 +101,11 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   }
 }
 
+boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEditorController() const
+{
+  return controller_;
+}
+
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
@@ -526,4 +531,14 @@ void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle modu
 {
   module->connectExecuteBegins(boost::bind(&ModuleEventProxy::moduleExecuteStart, this, _1));
   module->connectExecuteEnds(boost::bind(&ModuleEventProxy::moduleExecuteEnd, this, _1));
+}
+
+void NetworkEditor::disableInputWidgets()
+{
+  deleteAction_->setDisabled(true);
+}
+
+void NetworkEditor::enableInputWidgets()
+{
+  deleteAction_->setEnabled(true);
 }

@@ -77,6 +77,7 @@ Q_SIGNALS:
     QList<QAction*> getModuleSpecificActions() const;
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
+    boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
     void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
@@ -87,6 +88,9 @@ Q_SIGNALS:
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
     virtual int errorCode() const;
+
+    void disableInputWidgets();
+    void enableInputWidgets();
 
   protected:
     virtual void dropEvent(QDropEvent* event);
@@ -108,8 +112,8 @@ Q_SIGNALS:
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void modified();
     void networkExecuted();
+    void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
-    void networkExecutionFinished(); //TODO: hook up to exit call rather than use ugly callback
   private Q_SLOTS:
     void del();
     void cut();

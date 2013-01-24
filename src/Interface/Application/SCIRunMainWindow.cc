@@ -150,6 +150,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
 
+  regressionMode_ = false;
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
@@ -175,8 +176,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
   connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(disableInputWidgets()));
-  connect(networkEditor_, SIGNAL(networkExecutionFinished()), this, SLOT(enableInputWidgets()));
-  
+    
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
@@ -262,6 +262,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 void SCIRunMainWindow::initialize()
 {
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
   {
@@ -274,13 +276,18 @@ void SCIRunMainWindow::initialize()
     else if (SCIRun::Core::Application::Instance().parameters()->executeNetworkAndQuit())
     {
       // -E
-      //TODO: exit code should be from network execution for regression testing.
-      //TODO: don't like passing the callback all the way down...better way to do it?--yes, when network done event is available, just have to add a quit() subscriber.
-      // for exit code: qApp->exit(code); 
-      //networkEditor_->ge
-      //networkEditor_->executeAll([this](int code) {close(); qApp->exit(code);});
+      connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
+      regressionMode_ = true;
+      networkEditor_->executeAll();
     }
   }
+}
+
+void SCIRunMainWindow::exitApplication(int code)
+{
+  //std::cout << "~~~exiting with code " << code << std::endl;
+  close(); 
+  /*qApp->*/exit(code);
 }
 
 void SCIRunMainWindow::saveNetwork()
@@ -457,7 +464,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified())
+  if (isWindowModified() && !regressionMode_)  //TODO: regressionMode
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -621,6 +628,7 @@ void SCIRunMainWindow::disableInputWidgets()
   actionLoad_->setDisabled(true);
   actionSave_As_->setDisabled(true);
   moduleSelectorTreeWidget_->setDisabled(true);
+  networkEditor_->disableInputWidgets();
 }
 
 void SCIRunMainWindow::enableInputWidgets()
@@ -630,4 +638,5 @@ void SCIRunMainWindow::enableInputWidgets()
   actionLoad_->setEnabled(true);
   actionSave_As_->setEnabled(true);
   moduleSelectorTreeWidget_->setEnabled(true);
+  networkEditor_->enableInputWidgets();
 }

@@ -76,11 +76,11 @@ private:
   void readSettings();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
-  //QAction *separatorRecentFileAction_;
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
+  bool regressionMode_;
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -94,6 +94,7 @@ private Q_SLOTS:
   void makePipesManhattan();
   void disableInputWidgets(); 
   void enableInputWidgets();
+  void exitApplication(int code);
 };
 
 }
