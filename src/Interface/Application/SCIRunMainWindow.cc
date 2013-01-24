@@ -629,6 +629,7 @@ void SCIRunMainWindow::disableInputWidgets()
   actionSave_As_->setDisabled(true);
   moduleSelectorTreeWidget_->setDisabled(true);
   networkEditor_->disableInputWidgets();
+  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
 }
 
 void SCIRunMainWindow::enableInputWidgets()
@@ -639,4 +640,5 @@ void SCIRunMainWindow::enableInputWidgets()
   actionSave_As_->setEnabled(true);
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
+  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 }

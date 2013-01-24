@@ -310,18 +310,12 @@ QPointF ModuleWidget::outputPortPosition() const
   return pos();
 }
 
-void ModuleWidget::ModuleExecutionRunner::operator()()
-{
-  module_->theModule_->do_execute();
-  module_->updateProgressBar(1);
-}
-
 void ModuleWidget::execute()
 {
   {
     timer_.restart();
-    ModuleExecutionRunner runner(this);
-    runner();
+    theModule_->do_execute();
+    Q_EMIT updateProgressBarSignal(1);
   }
   Q_EMIT moduleExecuted();
 }

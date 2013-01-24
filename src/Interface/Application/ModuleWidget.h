@@ -115,15 +115,6 @@ private:
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 
-  class ModuleExecutionRunner
-  {
-  public:
-    explicit ModuleExecutionRunner(ModuleWidget* module) : module_(module) {}
-    void operator()();
-  private:
-    ModuleWidget* module_;
-  };
-
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;
   QHBoxLayout* inputPortLayout_;
