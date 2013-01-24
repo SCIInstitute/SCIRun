@@ -271,6 +271,18 @@
        </column>
        <column>
         <property name="text">
+         <string>STATUS</string>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <italic>true</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
          <string>Description</string>
         </property>
        </column>
@@ -278,13 +290,41 @@
         <property name="text">
          <string>SCIRun</string>
         </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
         <item>
          <property name="text">
           <string>Visualization</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>ShowString</string>
+          </property>
+          <property name="font">
+           <font>
+            <strikeout>true</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Not working yet.</string>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
@@ -294,15 +334,53 @@
           <property name="whatsThis">
            <string>This module takes a mesh object as input and outputs renderable geometry. Options are given for color, shading, etc.</string>
           </property>
+          <property name="text">
+           <string>Work in progress</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>ShowField</string>
           </property>
+          <property name="font">
+           <font>
+            <strikeout>true</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Not working yet.</string>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>MatrixAsVectorField</string>
+          </property>
+          <property name="font">
+           <font>
+            <strikeout>true</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Not working yet.</string>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -310,9 +388,21 @@
          <property name="text">
           <string>String</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>CreateString</string>
+          </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -320,9 +410,21 @@
          <property name="text">
           <string>Render</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>ViewScene</string>
+          </property>
+          <property name="text">
+           <string>Work in progress</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -330,9 +432,21 @@
          <property name="text">
           <string>NewField</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>CreateLatVolBasic</string>
+          </property>
+          <property name="text">
+           <string>Work in progress</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -340,34 +454,76 @@
          <property name="text">
           <string>Math</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>SolveLinearSystem</string>
+          </property>
+          <property name="text">
+           <string>One algorithm available.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>ReportMatrixInfo</string>
           </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>EvaluateLinearAlgebraUnary</string>
+          </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>EvaluateLinearAlgebraBinary</string>
           </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>CreateMatrix</string>
           </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>AppendMatrix</string>
+          </property>
+          <property name="text">
+           <string>Fully functional.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -375,24 +531,54 @@
          <property name="text">
           <string>DataIO</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>WriteMatrix</string>
+          </property>
+          <property name="text">
+           <string>Functional, outputs text files only.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>SendScalar</string>
           </property>
+          <property name="text">
+           <string>For testing.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>ReceiveScalar</string>
           </property>
+          <property name="text">
+           <string>For testing.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>ReadMatrix</string>
+          </property>
+          <property name="text">
+           <string>Functional, needs GUI and algorithm work (file types, performance).</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
