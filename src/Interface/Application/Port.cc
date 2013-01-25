@@ -37,6 +37,7 @@
 #include <Interface/Application/ClosestPortFinder.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
@@ -227,37 +228,6 @@ bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription
     || (!isInput() && cd.out_.moduleId_ == moduleId_.toStdString() && cd.out_.port_ == index_);
 }
 
-//TODO: extract this class as a collaborator, change PortWidget to PortDescriptionInterface, and unit test in a lower layer
-class PortConnectionDeterminer
-{
-public:
-  bool canBeConnected(const SCIRun::Dataflow::Networks::PortDescriptionInterface& port1, const SCIRun::Dataflow::Networks::PortDescriptionInterface& port2) const
-  {
-    //std::cout << "in PortConnectionDeterminer::canBeConnected" << std::endl;
-    if (isFullInputPort(port1) || isFullInputPort(port2))
-    {
-      //std::cout << "can't connect since input ports can only take one connection" << std::endl;
-      return false;
-    }
-    if (port1.get_colorname() != port2.get_colorname())
-    {
-      //std::cout << "can't connect since colors don't match" << std::endl;
-      return false;
-    }
-    if (port1.isInput() == port2.isInput())
-    {
-      //std::cout << "can't connect since input/output not compatible" << std::endl;
-      return false;
-    }
-    if (sharesParentModule(port1, port2))
-    {
-      //std::cout << "can't connect since it's the same module" << std::endl;
-      return false;
-    }
-    return true;
-  }
-};
-
 bool PortWidget::sharesParentModule(const PortWidget& other) const
 {
   return moduleId_ == other.moduleId_;
@@ -268,10 +238,8 @@ bool PortWidget::isFullInputPort() const
   return isInput() && !connections_.empty();
 }
 
-//TODO: push this verification down to the domain layer!  make this layer as dumb as possible
 bool PortWidget::canBeConnected(PortWidget* other) const
 {
-  //std::cout << "in PortWidget::canBeConnected" << std::endl;
   if (!other)
     return false;
 

@@ -50,9 +50,6 @@ namespace Networks {
     virtual std::string getUnderlyingModuleId() const = 0;
   };
 
-  SCISHARE bool isFullInputPort(const PortDescriptionInterface& port);
-  SCISHARE bool sharesParentModule(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2);
-
   class SCISHARE PortInterface : public PortDescriptionInterface
   {
   public:
@@ -79,6 +76,13 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
   };
+
+  class SCISHARE PortConnectionDeterminer
+  {
+  public:
+    bool canBeConnected(const SCIRun::Dataflow::Networks::PortDescriptionInterface& port1, const SCIRun::Dataflow::Networks::PortDescriptionInterface& port2) const;
+  };
+
 }}}
 
 #endif
