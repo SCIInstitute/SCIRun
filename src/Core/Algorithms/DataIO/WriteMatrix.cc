@@ -27,6 +27,7 @@
 */
 
 #include <fstream>
+#include <boost/filesystem.hpp>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -44,4 +45,6 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 
   std::ofstream writer(filename.c_str());
   writer << *inputMatrix;
+  if (!boost::filesystem::exists(filename))
+    THROW_ALGORITHM_PROCESSING_ERROR("file failed to be written!");
 }

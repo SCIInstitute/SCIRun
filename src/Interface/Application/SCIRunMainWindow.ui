@@ -575,7 +575,7 @@
            <string>ReadMatrix</string>
           </property>
           <property name="text">
-           <string>Functional, needs GUI and algorithm work (file types, performance).</string>
+           <string>Functional, needs GUI and algorithm work.</string>
           </property>
           <property name="text">
            <string/>

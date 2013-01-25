@@ -47,7 +47,7 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
   
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
-  connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
 }
 
 void WriteMatrixDialog::pull()
@@ -55,9 +55,9 @@ void WriteMatrixDialog::pull()
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(WriteMatrixAlgorithm::Filename).getString()));
 }
 
-void WriteMatrixDialog::pushFileNameToState(const QString& str) 
+void WriteMatrixDialog::pushFileNameToState() 
 {
-  state_->setValue(WriteMatrixAlgorithm::Filename, str.toStdString());
+  state_->setValue(WriteMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void WriteMatrixDialog::saveFile()

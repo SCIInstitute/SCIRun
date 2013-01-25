@@ -253,6 +253,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
+  moduleSelectorTreeWidget_->resizeColumnToContents(0);
+  moduleSelectorTreeWidget_->resizeColumnToContents(1);
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
@@ -643,8 +645,7 @@ void SCIRunMainWindow::enableInputWidgets()
 
 void SCIRunMainWindow::updateRegressionTestDataDir()
 {
-  if (regressionTestDataDir_.isEmpty())
-    regressionTestDataDir_ = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
+  regressionTestDataDir_ = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
   setRegressionTestDataDir();
 }
 

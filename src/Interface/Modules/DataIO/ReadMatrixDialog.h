@@ -51,7 +51,7 @@ public:
   virtual void pull();
 
 private Q_SLOTS:
-  void pushFileNameToState(const QString& str);
+  void pushFileNameToState();
   void openFile();
 };
 
