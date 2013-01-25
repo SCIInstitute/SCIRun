@@ -170,43 +170,36 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
 void PortWidget::makeConnection(const QPointF& pos)
 {
-  //std::cout << "-----------makeConnection" << std::endl;
-  DeleteCurrentConnectionAtEndOfBlock deleter(this);
+  DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 
-  auto port = closestPortFinder_->closestPort(pos);
+  auto port = closestPortFinder_->closestPort(pos);  //GUI concern
   if (port)
     tryConnectPort(pos, port);
-
-  //else
-  //  std::cout << "null port from ClosestPortFinder" << std::endl;
 }
 
 bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 {
-  //std::cout << "tryConnectPort" << std::endl;
-  int distance = (pos - port->position()).manhattanLength();
-  //std::cout << "distance: " << distance << std::endl;
-  if (distance <= PORT_CONNECTION_THRESHOLD)
+  int distance = (pos - port->position()).manhattanLength();     //GUI concern
+  if (distance <= PORT_CONNECTION_THRESHOLD)                 //GUI concern
   {
-    if (canBeConnected(port))
+    if (canBeConnected(port))   //NONE gui, can reuse
     {
-      PortWidget* out = this->isInput() ? port : this;
-      PortWidget* in = this->isInput() ? this : port;
+      PortWidget* out = this->isInput() ? port : this;     //NONE gui, can reuse
+      PortWidget* in = this->isInput() ? this : port;      //NONE gui, can reuse
 
-      SCIRun::Dataflow::Networks::ConnectionDescription cd(
+      SCIRun::Dataflow::Networks::ConnectionDescription cd(          //NONE gui, can reuse
         SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->moduleId_.toStdString(), out->index_), 
         SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->moduleId_.toStdString(), in->index_));
 
-      Q_EMIT needConnection(cd);
+      Q_EMIT needConnection(cd);       //NONE gui, can reuse
 
       return true;
     }
-    else
-    {
+    else   //NONE gui, can reuse
+    {    //NONE gui, can reuse
       GuiLogger::Instance().log("input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!");
     }
   }
-  //std::cout << "---tryConnectPort returns false" << std::endl;
   return false;
 }
 
