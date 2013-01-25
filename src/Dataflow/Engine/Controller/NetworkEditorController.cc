@@ -153,16 +153,19 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)
 {
-  BoostGraphSerialScheduler scheduler;
+  ModuleExecutionOrder order;
   try
   {
-    executor_->executeAll(lookup, scheduler.schedule(*theNetwork_));
+    BoostGraphSerialScheduler scheduler;
+    order = scheduler.schedule(*theNetwork_);
   }
   catch (NetworkHasCyclesException&)
   {
     //TODO: use real logger here--or just let this exception bubble up--needs testing. 
     std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+    return;
   }  
+  executor_->executeAll(lookup, order);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const 

@@ -47,6 +47,7 @@ namespace Engine {
     typedef ModuleIdList::iterator iterator;
     typedef ModuleIdList::const_iterator const_iterator;
 
+    ModuleExecutionOrder();
     explicit ModuleExecutionOrder(const ModuleIdList& list);
     const_iterator begin() const;
     const_iterator end() const;

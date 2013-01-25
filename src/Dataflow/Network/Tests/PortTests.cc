@@ -60,10 +60,10 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(Port(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue")),  NullPointerException);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue")),  InvalidArgumentException);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue")),  InvalidArgumentException);
-  ASSERT_THROW(Port(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "")),            InvalidArgumentException);
+  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue"), DatatypeSinkInterfaceHandle()),  NullPointerException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue"), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue"), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  ""), DatatypeSinkInterfaceHandle()),            InvalidArgumentException);
 }
 
 TEST_F(PortTests, AggregatesConnections)

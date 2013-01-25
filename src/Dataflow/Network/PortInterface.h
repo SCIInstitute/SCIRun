@@ -46,7 +46,12 @@ namespace Networks {
     virtual size_t nconnections() const = 0;
     virtual std::string get_colorname() const = 0;
     virtual std::string get_portname() const = 0;
+    virtual bool isInput() const = 0;
+    virtual std::string getUnderlyingModuleId() const = 0;
   };
+
+  SCISHARE bool isFullInputPort(const PortDescriptionInterface& port);
+  SCISHARE bool sharesParentModule(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2);
 
   class SCISHARE PortInterface : public PortDescriptionInterface
   {

@@ -65,6 +65,8 @@ public:
   virtual void reset() {}
   virtual void finish() {}
 
+  virtual std::string getUnderlyingModuleId() const;
+
   //TODO:
   // light interface
 
@@ -90,6 +92,7 @@ public:
   virtual Core::Datatypes::DatatypeHandleOption getData();
   virtual void attach(Connection* conn);
   virtual DatatypeSinkInterfaceHandle sink();
+  virtual bool isInput() const { return true; } //boo
 private:
   DatatypeSinkInterfaceHandle sink_;
 };
@@ -101,6 +104,7 @@ public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
+  virtual bool isInput() const { return false; } //boo
 private:
   DatatypeSourceInterfaceHandle source_;
 };

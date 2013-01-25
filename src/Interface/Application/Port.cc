@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <QtGui>
+#include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
@@ -230,15 +231,15 @@ bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription
 class PortConnectionDeterminer
 {
 public:
-  bool canBeConnected(const PortWidget& port1, const PortWidget& port2) const
+  bool canBeConnected(const SCIRun::Dataflow::Networks::PortDescriptionInterface& port1, const SCIRun::Dataflow::Networks::PortDescriptionInterface& port2) const
   {
     //std::cout << "in PortConnectionDeterminer::canBeConnected" << std::endl;
-    if (port1.isFullInputPort() || port2.isFullInputPort())
+    if (isFullInputPort(port1) || isFullInputPort(port2))
     {
       //std::cout << "can't connect since input ports can only take one connection" << std::endl;
       return false;
     }
-    if (port1.color() != port2.color())
+    if (port1.get_colorname() != port2.get_colorname())
     {
       //std::cout << "can't connect since colors don't match" << std::endl;
       return false;
@@ -248,7 +249,7 @@ public:
       //std::cout << "can't connect since input/output not compatible" << std::endl;
       return false;
     }
-    if (port1.sharesParentModule(port2))
+    if (sharesParentModule(port1, port2))
     {
       //std::cout << "can't connect since it's the same module" << std::endl;
       return false;
@@ -315,6 +316,26 @@ QPointF PortWidget::position() const
   if (positionProvider_)
     return positionProvider_->currentPosition();
   return pos();
+}
+
+size_t PortWidget::nconnections() const
+{
+  return connections_.size();
+}
+
+std::string PortWidget::get_colorname() const
+{
+  return color().name().toStdString();
+}
+
+std::string PortWidget::get_portname() const
+{
+  return name_.toStdString();
+}
+
+std::string PortWidget::getUnderlyingModuleId() const
+{
+  return moduleId_.toStdString();
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 

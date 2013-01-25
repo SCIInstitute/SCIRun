@@ -37,6 +37,7 @@
 #include <QColor>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
+#include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 
 class QGraphicsScene;
@@ -50,7 +51,7 @@ class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
 
-class PortWidget : public QWidget, public NeedsScenePositionProvider
+class PortWidget : public QWidget, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
   Q_OBJECT
 public:
@@ -60,9 +61,14 @@ public:
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
-  bool isInput() const { return isInput_; }
+  virtual bool isInput() const { return isInput_; }
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected);
+
+  virtual size_t nconnections() const;
+  virtual std::string get_colorname() const;
+  virtual std::string get_portname() const;
+  virtual std::string getUnderlyingModuleId() const;
 
   void toggleLight();
   void turn_on_light();

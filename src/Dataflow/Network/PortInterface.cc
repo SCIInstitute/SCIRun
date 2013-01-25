@@ -50,3 +50,13 @@ OutputPortInterface::~OutputPortInterface()
 RendererInterface::~RendererInterface() 
 {
 }
+
+bool SCIRun::Dataflow::Networks::isFullInputPort(const PortDescriptionInterface& port)
+{
+  return port.isInput() && port.nconnections() == 1;
+}
+
+bool SCIRun::Dataflow::Networks::sharesParentModule(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2)
+{
+  return port1.getUnderlyingModuleId() == port2.getUnderlyingModuleId();
+}
