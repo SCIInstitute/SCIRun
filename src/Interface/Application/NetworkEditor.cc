@@ -41,6 +41,7 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Network/NetworkSettings.h> //TODO: push
 
 #include <boost/bind.hpp>
 
@@ -543,4 +544,9 @@ void NetworkEditor::enableInputWidgets()
 {
   deleteAction_->setEnabled(true);
   deleteAction_->setShortcut(Qt::Key_Delete);
+}
+
+void NetworkEditor::setRegressionTestDataDir(const QString& dir)
+{
+  controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
 }

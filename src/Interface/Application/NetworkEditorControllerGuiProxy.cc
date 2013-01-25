@@ -29,6 +29,7 @@
 #include <iostream>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/NetworkSettings.h>
 #include <Dataflow/Network/Network.h>
 
 using namespace SCIRun::Dataflow::Engine;
@@ -87,4 +88,9 @@ int NetworkEditorControllerGuiProxy::numModules() const
 int NetworkEditorControllerGuiProxy::errorCode() const
 {
   return controller_->getNetwork()->errorCode();
+}
+
+SCIRun::Dataflow::Networks::NetworkGlobalSettings& NetworkEditorControllerGuiProxy::getSettings()
+{
+  return controller_->getSettings();
 }

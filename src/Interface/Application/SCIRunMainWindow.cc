@@ -254,8 +254,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   moduleSelectorTreeWidget_->expandAll();
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
-
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
+  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   makeFilterButtonMenu();
   activateWindow();
 }
@@ -263,6 +263,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 void SCIRunMainWindow::initialize()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+  setRegressionTestDataDir();
 
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
@@ -438,7 +439,6 @@ void SCIRunMainWindow::updateRecentFileActions()
       recentFileActions_[j]->setVisible(false);
     }
   }
-  //separatorRecentFileAction_->setVisible(!recentFiles_.isEmpty());
 }
 
 void SCIRunMainWindow::loadRecentNetwork()
@@ -600,15 +600,14 @@ void SCIRunMainWindow::readSettings()
   //restoreGeometry(settings.value("geometry").toByteArray());
 
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
+  GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
 
   recentFiles_ = settings.value("recentFiles").toStringList();
   updateRecentFileActions();
+  GuiLogger::Instance().log("Setting read: recent network file list");
 
-  //bool showGrid = settings.value("showGrid", true).toBool();
-  //showGridAction->setChecked(showGrid);
-
-  //bool autoRecalc = settings.value("autoRecalc", true).toBool();
-  //autoRecalcAction->setChecked(autoRecalc);
+  regressionTestDataDir_ = settings.value("regressionTestDataDirectory").toString();
+  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir_);
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -617,8 +616,7 @@ void SCIRunMainWindow::writeSettings()
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
-  //settings.setValue("showGrid", showGridAction->isChecked());
-  //settings.setValue("autoRecalc", autoRecalcAction->isChecked());
+  settings.setValue("regressionTestDataDirectory", regressionTestDataDir_);
 }
 
 void SCIRunMainWindow::disableInputWidgets()
@@ -641,4 +639,17 @@ void SCIRunMainWindow::enableInputWidgets()
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+}
+
+void SCIRunMainWindow::updateRegressionTestDataDir()
+{
+  if (regressionTestDataDir_.isEmpty())
+    regressionTestDataDir_ = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
+  setRegressionTestDataDir();
+}
+
+void SCIRunMainWindow::setRegressionTestDataDir()
+{
+  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
+  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
 }

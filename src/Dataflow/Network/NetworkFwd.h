@@ -57,6 +57,7 @@ class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
 struct ModulePositions;
+class NetworkGlobalSettings;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

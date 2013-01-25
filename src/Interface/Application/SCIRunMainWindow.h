@@ -81,6 +81,7 @@ private:
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   bool regressionMode_;
+  QString regressionTestDataDir_;
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -94,6 +95,8 @@ private Q_SLOTS:
   void makePipesManhattan();
   void disableInputWidgets(); 
   void enableInputWidgets();
+  void setRegressionTestDataDir();
+  void updateRegressionTestDataDir();
   void exitApplication(int code);
 };
 

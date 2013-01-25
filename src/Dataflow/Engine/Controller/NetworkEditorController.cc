@@ -169,3 +169,8 @@ NetworkHandle NetworkEditorController::getNetwork() const
 {
   return theNetwork_;
 }
+
+NetworkGlobalSettings& NetworkEditorController::getSettings() 
+{
+  return theNetwork_->settings();
+}

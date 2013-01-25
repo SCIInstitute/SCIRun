@@ -33,6 +33,7 @@
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/NetworkSettings.h>
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
@@ -61,6 +62,7 @@ namespace Networks {
     virtual ConnectionDescriptionList connections() const;
     virtual int errorCode() const;
     virtual void incrementErrorCode(const std::string& moduleId);
+    virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
   private:
     ModuleFactoryHandle moduleFactory_;
@@ -68,6 +70,7 @@ namespace Networks {
     Modules modules_;
     Connections connections_;
     int errorCode_;
+    NetworkGlobalSettings settings_;
   };
 
 }}}

@@ -67,6 +67,7 @@ namespace Engine {
     void loadNetwork(const Networks::NetworkXML& xml);
 
     Networks::NetworkHandle getNetwork() const;
+    Networks::NetworkGlobalSettings& getSettings();
 
   private:
     void printNetwork() const;

@@ -92,6 +92,9 @@ Q_SIGNALS:
     void disableInputWidgets();
     void enableInputWidgets();
 
+    //TODO: this class is getting too big and messy, schedule refactoring
+    void setRegressionTestDataDir(const QString& dir);
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);

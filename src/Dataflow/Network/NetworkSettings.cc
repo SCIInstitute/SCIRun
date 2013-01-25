@@ -26,15 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Fields/CreateLatVolBasic.h>
+#include <Dataflow/Network/NetworkSettings.h>
 
-using namespace SCIRun;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+using namespace SCIRun::Dataflow::Networks;
 
-//TODO DAN
+std::string NetworkGlobalSettings::value(const std::string& key) const
+{
+  auto iter = settings_.find(key);
+  return iter != settings_.end() ? iter->second : "";
+}
+
+void NetworkGlobalSettings::setValue(const std::string& key, const std::string& value)
+{
+  settings_[key] = value;
+}
+
+NetworkPathSettings::NetworkPathSettings(const NetworkGlobalSettings& globalSettings) : settings_(globalSettings) {}
+
+boost::filesystem::path NetworkPathSettings::regressionTestDataDirectory() const
+{
+  return settings_.value("regressionTestDataDir");
+}
