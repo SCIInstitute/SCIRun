@@ -258,6 +258,21 @@ INCLUDE_DIRECTORIES(${SCI_SPIRE_INCLUDE})
 # OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
 
+# Copy shaders.
+install(DIRECTORY ${SPIRE_SOURCE_DIR}/Spire/Shaders
+        DESTINATION ${CMAKE_INSTALL_DIR}
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+        DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                              GROUP_READ
+                              WORLD_READ WORLD EXECUTE)
+
+file(COPY ${SPIRE_SOURCE_DIR}/Spire/Shaders
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+     DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                           GROUP_READ
+                           WORLD_READ WORLD_EXECUTE)
+
 ########################################################################
 # Find and configure Qt
 

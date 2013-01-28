@@ -41,7 +41,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
 {
   std::vector<std::string> shaderSearchDirs = {"Shaders"};
 
-  // Create a threaded spire renderer.
+  // Create a threaded spire renderer. This should be created at the module
+  // level once it has access to the context, should be passed using Transients.
   mGraphics = std::shared_ptr<Spire::Interface>(
       new Spire::Interface(&mContext, shaderSearchDirs, true));
 
