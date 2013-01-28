@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Utils/Exception.h>
+#include <boost/signals2.hpp>
 #include <list>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -64,23 +65,23 @@ namespace Engine {
   };
 
   //TODO: types for ParallelScheduler, etc
-  
-  
-  //ToDO: network begin/end signal.
-  //typedef boost::signals2::signal<int (const std::string&)> ExecuteBeginsSignalType;
-  //typedef boost::signals2::signal<void (const std::string&)> ExecuteEndsSignalType;
+
+  typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
+  typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
 
   class SCISHARE NetworkExecutor
   {
   public:
     virtual ~NetworkExecutor();
     virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
-    void setNetworkFinishedCallback(Networks::NetworkExecutionFinishedCallback func) { finishedFunc_ = func; }
-    //TODO
-    // virtual void connectNetworkFinishedListener()...
+    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
   protected:
-    Networks::NetworkExecutionFinishedCallback finishedFunc_;
+    ExecuteAllStartsSignalType executeStarts_;
+    ExecuteAllFinishesSignalType executeFinishes_;
   };
+
+  typedef boost::shared_ptr<NetworkExecutor> NetworkExecutorHandle;
 
 }
 }}

@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_SCIRUN_MAIN_WINDOW_H
 
 #include <QDialog>
+#include <QDir>
 #include <boost/shared_ptr.hpp>
 #include "ui_SCIRunMainWindow.h"
 
@@ -50,7 +51,7 @@ class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 public:
 	static SCIRunMainWindow* Instance();
   void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
-  void doInitialStuff();
+  void initialize();
 protected Q_SLOTS:
   void ToggleRenderer();
 protected:
@@ -60,6 +61,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   QActionGroup* filterActionGroup_;
+  QAction* actionEnterWhatsThisMode_;
   
 private:
   bool okToContinue();
@@ -70,18 +72,32 @@ private:
   QString strippedName(const QString& fillFileName);
   void setActionIcons();
   void makeFilterButtonMenu();
+  void writeSettings();
+  void readSettings();
+  enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
+  std::vector<QAction*> recentFileActions_;
+  QStringList recentFiles_;
   QString currentFile_;
+  QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
+  bool regressionMode_;
+  QString regressionTestDataDir_;
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
   void loadNetwork();
+  void loadRecentNetwork();
   bool clearNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();
   void makePipesCubicBezier();
   void makePipesManhattan();
+  void disableInputWidgets(); 
+  void enableInputWidgets();
+  void setRegressionTestDataDir();
+  void updateRegressionTestDataDir();
+  void exitApplication(int code);
 };
 
 }

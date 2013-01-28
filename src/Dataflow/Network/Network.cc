@@ -221,3 +221,8 @@ void Network::incrementErrorCode(const std::string& moduleId)
   errorCode_++;
   //TODO: store errored modules in a list or something
 }
+
+NetworkGlobalSettings& Network::settings()
+{
+  return settings_;
+}

@@ -79,6 +79,7 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
   {
     QGraphicsItem::mousePressEvent(event);
     grabbedByWidget_ = false;
+    position_ = pos();
     Q_EMIT selected();
   }
 }
@@ -96,6 +97,11 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   }
   else
   {
+    if (position_ != pos())
+    {
+      Q_EMIT widgetMoved();
+    }
+    
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;

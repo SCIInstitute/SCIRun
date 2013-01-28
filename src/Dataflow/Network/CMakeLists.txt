@@ -35,6 +35,7 @@ SET(Dataflow_Network_SRCS
   ModuleInterface.cc
   ModuleStateInterface.cc
   Network.cc
+  NetworkSettings.cc
   NullModuleState.cc
   Port.cc
   PortInterface.cc
@@ -53,6 +54,7 @@ SET(Dataflow_Network_HEADERS
   Network.h
   NetworkFwd.h
   NetworkInterface.h
+  NetworkSettings.h
   NullModuleState.h
   Port.h
   PortInterface.h

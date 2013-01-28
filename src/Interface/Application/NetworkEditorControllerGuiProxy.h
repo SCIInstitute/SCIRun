@@ -50,12 +50,16 @@ namespace Gui {
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
-    void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func = 0);
+    void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
     int numModules() const;
     int errorCode() const;
+  public:
+    SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
+    void executionStarted();
+    void executionFinished(int returnCode);
   private:
     boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   };

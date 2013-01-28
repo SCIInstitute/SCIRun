@@ -47,7 +47,7 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
-  connect(fileNameLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(pushFileNameToState(const QString&)));
+  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
 }
 
 void ReadMatrixDialog::pull()
@@ -55,9 +55,9 @@ void ReadMatrixDialog::pull()
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
 }
 
-void ReadMatrixDialog::pushFileNameToState(const QString& str) 
+void ReadMatrixDialog::pushFileNameToState() 
 {
-  state_->setValue(ReadMatrixAlgorithm::Filename, str.toStdString());
+  state_->setValue(ReadMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void ReadMatrixDialog::openFile()

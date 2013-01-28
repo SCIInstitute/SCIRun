@@ -42,14 +42,14 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf) : moduleFactory_(mf), stateFactory_(sf)
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, NetworkExecutorHandle exe) : moduleFactory_(mf), stateFactory_(sf), executor_(exe)
 {
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network)
-  : theNetwork_(network)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, NetworkExecutorHandle exe)
+  : theNetwork_(network), executor_(exe)
 {
 }
 
@@ -119,6 +119,16 @@ boost::signals2::connection NetworkEditorController::connectConnectionRemoved(co
   return connectionRemoved_.connect(subscriber);
 }
 
+boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+{
+  return executor_->connectNetworkExecutionStarts(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+{
+  return executor_->connectNetworkExecutionFinished(subscriber);
+}
+
 NetworkXMLHandle NetworkEditorController::saveNetwork() const
 {
   NetworkToXML conv;
@@ -141,14 +151,12 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
   }
 }
 
-void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup, NetworkExecutionFinishedCallback func)
+void NetworkEditorController::executeAll(const ExecutableLookup& lookup)
 {
   BoostGraphSerialScheduler scheduler;
-  LinearSerialNetworkExecutor executor;
-  executor.setNetworkFinishedCallback(func);
   try
   {
-    executor.executeAll(lookup, scheduler.schedule(*theNetwork_));
+    executor_->executeAll(lookup, scheduler.schedule(*theNetwork_));
   }
   catch (NetworkHasCyclesException&)
   {
@@ -160,4 +168,9 @@ void NetworkEditorController::executeAll(const SCIRun::Dataflow::Networks::Execu
 NetworkHandle NetworkEditorController::getNetwork() const 
 {
   return theNetwork_;
+}
+
+NetworkGlobalSettings& NetworkEditorController::getSettings() 
+{
+  return theNetwork_->settings();
 }

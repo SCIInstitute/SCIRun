@@ -84,6 +84,7 @@ public Q_SLOTS:
   void resetProgressBar();
   void updateProgressBar(double percent);
   void updateModuleTime();
+  void launchDocumentation();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
@@ -113,15 +114,6 @@ private:
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
-
-  class ModuleExecutionRunner
-  {
-  public:
-    explicit ModuleExecutionRunner(ModuleWidget* module) : module_(module) {}
-    void operator()();
-  private:
-    ModuleWidget* module_;
-  };
 
   void addPortLayouts();
   QHBoxLayout* outputPortLayout_;

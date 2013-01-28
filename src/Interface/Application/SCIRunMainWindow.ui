@@ -41,8 +41,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>793</width>
-         <height>477</height>
+         <width>796</width>
+         <height>516</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,21 +60,23 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <widget class="QMenu" name="menuRecent_Networks">
+    <widget class="QMenu" name="recentNetworksMenu_">
+     <property name="acceptDrops">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Recent Networks</string>
      </property>
-     <addaction name="separator"/>
     </widget>
     <addaction name="actionLoad_"/>
-    <addaction name="menuRecent_Networks"/>
+    <addaction name="recentNetworksMenu_"/>
     <addaction name="actionInsert_"/>
     <addaction name="separator"/>
     <addaction name="actionSave_"/>
@@ -176,6 +178,12 @@
            <height>16777215</height>
           </size>
          </property>
+         <property name="toolTip">
+          <string>Module Filter</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click here to choose either simple filtering by name, or with wildcards (? and *)</string>
+         </property>
          <property name="text">
           <string>Filter:</string>
          </property>
@@ -185,7 +193,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="moduleFilterLineEdit_"/>
+        <widget class="QLineEdit" name="moduleFilterLineEdit_">
+         <property name="whatsThis">
+          <string>Enter a filter string here. The module list below will display only those modules whose name matches the filter (either by exact string or wildcard).</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QPushButton" name="clearFilterButton_">
@@ -194,6 +206,12 @@
            <width>40</width>
            <height>16777215</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>Clear filter text</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to clear the filter text and see all available modules.</string>
          </property>
          <property name="text">
           <string>Clear</string>
@@ -204,30 +222,6 @@
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="font">
-        <font>
-         <pointsize>7</pointsize>
-         <weight>50</weight>
-         <italic>true</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="text">
-        <string>Drag and drop module name from here to editor to place</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
      </item>
      <item>
       <widget class="QTreeWidget" name="moduleSelectorTreeWidget_">
@@ -242,6 +236,12 @@
          <width>200</width>
          <height>100</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Drag or double-click to add a module</string>
+       </property>
+       <property name="whatsThis">
+        <string>List of available modules. Drag an item from here and drop onto the network editor, or double-click an item, to instantiate a new instance of that module.</string>
        </property>
        <property name="autoFillBackground">
         <bool>false</bool>
@@ -271,6 +271,18 @@
        </column>
        <column>
         <property name="text">
+         <string>STATUS</string>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <italic>true</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+       </column>
+       <column>
+        <property name="text">
          <string>Description</string>
         </property>
        </column>
@@ -278,28 +290,97 @@
         <property name="text">
          <string>SCIRun</string>
         </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
         <item>
          <property name="text">
           <string>Visualization</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>ShowString</string>
+          </property>
+          <property name="font">
+           <font>
+            <strikeout>true</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Not working yet.</string>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>ShowMesh</string>
           </property>
+          <property name="whatsThis">
+           <string>This module takes a mesh object as input and outputs renderable geometry. Options are given for color, shading, etc.</string>
+          </property>
+          <property name="text">
+           <string>Work in progress</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>ShowField</string>
           </property>
+          <property name="font">
+           <font>
+            <strikeout>true</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Not working yet.</string>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>MatrixAsVectorField</string>
+          </property>
+          <property name="font">
+           <font>
+            <strikeout>true</strikeout>
+           </font>
+          </property>
+          <property name="text">
+           <string>Not working yet.</string>
+          </property>
+          <property name="font">
+           <font>
+            <italic>true</italic>
+           </font>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -307,9 +388,21 @@
          <property name="text">
           <string>String</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>CreateString</string>
+          </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -317,9 +410,21 @@
          <property name="text">
           <string>Render</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>ViewScene</string>
+          </property>
+          <property name="text">
+           <string>Work in progress</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -327,9 +432,21 @@
          <property name="text">
           <string>NewField</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>CreateLatVolBasic</string>
+          </property>
+          <property name="text">
+           <string>Work in progress</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -337,34 +454,76 @@
          <property name="text">
           <string>Math</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>SolveLinearSystem</string>
+          </property>
+          <property name="text">
+           <string>One algorithm available.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>ReportMatrixInfo</string>
           </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>EvaluateLinearAlgebraUnary</string>
+          </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>EvaluateLinearAlgebraBinary</string>
           </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>CreateMatrix</string>
           </property>
+          <property name="text">
+           <string>Functional, needs GUI work.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>AppendMatrix</string>
+          </property>
+          <property name="text">
+           <string>Fully functional.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -372,24 +531,54 @@
          <property name="text">
           <string>DataIO</string>
          </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
          <item>
           <property name="text">
            <string>WriteMatrix</string>
+          </property>
+          <property name="text">
+           <string>Functional, outputs text files only.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
          <item>
           <property name="text">
            <string>SendScalar</string>
           </property>
+          <property name="text">
+           <string>For testing.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>ReceiveScalar</string>
           </property>
+          <property name="text">
+           <string>For testing.</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>ReadMatrix</string>
+          </property>
+          <property name="text">
+           <string>Functional, needs GUI and algorithm work.</string>
+          </property>
+          <property name="text">
+           <string/>
           </property>
          </item>
         </item>
@@ -410,6 +599,9 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QTabWidget" name="optionsTabWidget_">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -472,7 +664,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -485,7 +677,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -534,6 +726,9 @@
         </widget>
        </widget>
        <widget class="QWidget" name="optionsTab_">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <attribute name="title">
          <string>Options*</string>
         </attribute>
@@ -665,6 +860,44 @@
           </layout>
          </item>
         </layout>
+       </widget>
+       <widget class="QWidget" name="advancedTab_">
+        <attribute name="title">
+         <string>Advanced</string>
+        </attribute>
+        <widget class="QWidget" name="layoutWidget">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>531</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Regression test data directory:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="regressionTestDataDirLineEdit_">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="regressionTestDataButton_">
+            <property name="text">
+             <string>Browse...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
        <widget class="QWidget" name="logTab">
         <attribute name="title">
@@ -813,6 +1046,22 @@
   <action name="actionRenderer">
    <property name="text">
     <string>Renderer</string>
+   </property>
+  </action>
+  <action name="actionClear_Recent">
+   <property name="text">
+    <string>Clear Recent</string>
+   </property>
+  </action>
+  <action name="actionEnterWhatsThisMode_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Enter &quot;What's This?&quot; Mode</string>
    </property>
   </action>
  </widget>

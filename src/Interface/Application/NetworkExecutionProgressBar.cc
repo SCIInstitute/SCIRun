@@ -36,10 +36,14 @@ NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numM
 {
   barAction_ = new QWidgetAction(parent);
   barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
+  progressBar_->setToolTip("Percentage of completed modules");
+  progressBar_->setWhatsThis("This displays the percentage of completed modules while the network is executing.");
   barAction_->setVisible(true);
 
   counterAction_ = new QWidgetAction(parent);
   counterAction_->setDefaultWidget(counterLabel_ = new QLabel(counterLabelString(), parent));
+  counterLabel_->setToolTip("modules done executing / total modules");
+  counterLabel_->setWhatsThis("This shows the fraction of completed modules while the network is executing.");
   counterAction_->setVisible(true);
 }
 
@@ -50,7 +54,6 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
 
 void NetworkExecutionProgressBar::updateTotalModules(int count)
 {
-  //std::cout << "updateTotalModules: " << count << std::endl;
   if (count >= 0 && count != totalModules_)
   {
     totalModules_ = count;
@@ -63,7 +66,6 @@ void NetworkExecutionProgressBar::updateTotalModules(int count)
 }
 void NetworkExecutionProgressBar::incrementModulesDone()
 {
-  //std::cout << "incrementModulesDone: " << numModulesDone_ << std::endl;
   if (numModulesDone_ < totalModules_)
   {
     numModulesDone_++;
@@ -74,7 +76,6 @@ void NetworkExecutionProgressBar::incrementModulesDone()
 
 void NetworkExecutionProgressBar::resetModulesDone()
 {
-  //std::cout << "resetModulesDone: " << std::endl;
   numModulesDone_ = 0;
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);

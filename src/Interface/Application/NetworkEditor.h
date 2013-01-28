@@ -77,6 +77,7 @@ Q_SIGNALS:
     QList<QAction*> getModuleSpecificActions() const;
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
+    boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
     virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
     void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
 
@@ -88,17 +89,24 @@ Q_SIGNALS:
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
     virtual int errorCode() const;
 
+    void disableInputWidgets();
+    void enableInputWidgets();
+
+    //TODO: this class is getting too big and messy, schedule refactoring
+    void setRegressionTestDataDir(const QString& dir);
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dragMoveEvent(QDragMoveEvent* event);
     void mousePressEvent(QMouseEvent *event);
   public Q_SLOTS:
-    void addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
-    void executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func = 0);
+    void executeAll();
     void clear();
     void setConnectionPipelineType(int type);
+    void addModuleViaDoubleClickedTreeItem();
 
     //TODO: break out, unit test
     SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
@@ -107,6 +115,7 @@ Q_SIGNALS:
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void modified();
     void networkExecuted();
+    void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
   private Q_SLOTS:
     void del();
@@ -129,6 +138,7 @@ Q_SIGNALS:
     ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
+    void addNewModuleAtPosition(const QPoint& position);
     
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
@@ -148,6 +158,7 @@ Q_SIGNALS:
     int seqNumber_;
 
     QPointF lastModulePosition_;
+    QPoint defaultModulePosition_;
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;

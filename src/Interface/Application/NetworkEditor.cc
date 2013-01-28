@@ -41,6 +41,7 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Network/NetworkSettings.h> //TODO: push
 
 #include <boost/bind.hpp>
 
@@ -83,7 +84,7 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   if (controller_) 
   {
     disconnect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
-      this, SLOT(addModule(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
 
     disconnect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -94,14 +95,19 @@ void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorCo
   if (controller_) 
   {
     connect(controller_.get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
-      this, SLOT(addModule(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+      this, SLOT(addModuleWidget(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
     
     connect(this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
       controller_.get(), SLOT(removeConnection(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }
 
-void NetworkEditor::addModule(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEditorController() const
+{
+  return controller_;
+}
+
+void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
@@ -139,6 +145,7 @@ void NetworkEditor::setupModule(ModuleWidget* module)
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
+  connect(proxy, SIGNAL(widgetMoved()), this, SIGNAL(modified()));
   proxy->createPortPositionProviders();
 
   scene_->addItem(proxy);
@@ -400,10 +407,21 @@ void NetworkEditor::dropEvent(QDropEvent* event)
   //TODO: mime check here to ensure this only gets called for drags from treewidget
   if (moduleSelectionGetter_->isModule())
   {
-    lastModulePosition_ = mapToScene(event->pos());
-    controller_->addModule(moduleSelectionGetter_->text().toStdString());
-    Q_EMIT modified();
+    addNewModuleAtPosition(event->pos());
   }
+}
+
+void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
+{
+  lastModulePosition_ = mapToScene(position);
+  controller_->addModule(moduleSelectionGetter_->text().toStdString());
+  Q_EMIT modified();
+}
+
+void NetworkEditor::addModuleViaDoubleClickedTreeItem()
+{
+  defaultModulePosition_ += QPoint(10,10);
+  addNewModuleAtPosition(defaultModulePosition_);
 }
 
 void NetworkEditor::dragEnterEvent(QDragEnterEvent* event)
@@ -437,9 +455,9 @@ SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePosit
   return positions;
 }
 
-void NetworkEditor::executeAll(SCIRun::Dataflow::Networks::NetworkExecutionFinishedCallback func)
+void NetworkEditor::executeAll()
 {
-  controller_->executeAll(*this, func);
+  controller_->executeAll(*this);
   //TODO: not sure about this right now.
   //Q_EMIT modified();
   Q_EMIT networkExecuted();
@@ -514,4 +532,21 @@ void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle modu
 {
   module->connectExecuteBegins(boost::bind(&ModuleEventProxy::moduleExecuteStart, this, _1));
   module->connectExecuteEnds(boost::bind(&ModuleEventProxy::moduleExecuteEnd, this, _1));
+}
+
+void NetworkEditor::disableInputWidgets()
+{
+  deleteAction_->setDisabled(true);
+  deleteAction_->setShortcut(QKeySequence());
+}
+
+void NetworkEditor::enableInputWidgets()
+{
+  deleteAction_->setEnabled(true);
+  deleteAction_->setShortcut(Qt::Key_Delete);
+}
+
+void NetworkEditor::setRegressionTestDataDir(const QString& dir)
+{
+  controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
 }

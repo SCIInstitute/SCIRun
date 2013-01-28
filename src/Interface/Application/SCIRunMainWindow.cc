@@ -150,6 +150,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
 
+  regressionMode_ = false;
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
@@ -163,12 +164,19 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->horizontalScrollBar()->setValue(0);
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
+  actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
   actionSave_->setStatusTip(tr("Save network"));
+  actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
   actionLoad_->setStatusTip(tr("Load network"));
+  actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
+  actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
+  actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
+
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-
+  connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(disableInputWidgets()));
+    
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
 	QWidgetAction* moduleSearchAction = new QWidgetAction(this);
@@ -195,6 +203,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   QToolBar* standardBar = addToolBar("Standard");
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
+  standardBar->addAction(actionEnterWhatsThisMode_);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
 	executeBar->addAction(actionExecute_All_);
@@ -231,17 +240,33 @@ SCIRunMainWindow::SCIRunMainWindow()
   //TODO: will be a user or network setting
   makePipesEuclidean();
   
+  for (int i = 0; i < MaxRecentFiles; ++i) 
+  {
+    recentFileActions_.push_back(new QAction(this));
+    recentFileActions_[i]->setVisible(false);
+    recentNetworksMenu_->addAction(recentFileActions_[i]);
+    connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
+  }
+
+  readSettings();
+
   setCurrentFile("");
 
   moduleSelectorTreeWidget_->expandAll();
-
+  moduleSelectorTreeWidget_->resizeColumnToContents(0);
+  moduleSelectorTreeWidget_->resizeColumnToContents(1);
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
+  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   makeFilterButtonMenu();
   activateWindow();
 }
 
-void SCIRunMainWindow::doInitialStuff()
+void SCIRunMainWindow::initialize()
 {
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+  setRegressionTestDataDir();
+
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
   {
@@ -254,12 +279,18 @@ void SCIRunMainWindow::doInitialStuff()
     else if (SCIRun::Core::Application::Instance().parameters()->executeNetworkAndQuit())
     {
       // -E
-      //TODO: exit code should be from network execution for regression testing.
-      //TODO: don't like passing the callback all the way down...better way to do it?--yes, when network done event is available, just have to add a quit() subscriber.
-      // for exit code: qApp->exit(code); 
-      networkEditor_->executeAll([this](int code) {close(); qApp->exit(code);});
+      connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
+      regressionMode_ = true;
+      networkEditor_->executeAll();
     }
   }
+}
+
+void SCIRunMainWindow::exitApplication(int code)
+{
+  //std::cout << "~~~exiting with code " << code << std::endl;
+  close(); 
+  /*qApp->*/exit(code);
 }
 
 void SCIRunMainWindow::saveNetwork()
@@ -272,7 +303,7 @@ void SCIRunMainWindow::saveNetwork()
 
 void SCIRunMainWindow::saveNetworkAs()
 {
-  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", ".", "*.srn5");
+  QString filename = QFileDialog::getSaveFileName(this, "Save Network...", latestNetworkDirectory_.path(), "*.srn5");
   if (!filename.isEmpty())
     saveNetworkFile(filename);
 }
@@ -299,29 +330,30 @@ class FileOpenCommand
 {
 public:
   FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-  void execute()
+  bool execute()
   {
-    networkEditor_->clear();
     GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
 
     try
     {
-      boost::shared_ptr<NetworkFile> xml = XMLSerializer::load_xml<NetworkFile>(filename_);
+      auto xml = XMLSerializer::load_xml<NetworkFile>(filename_);
 
       if (xml)
       {
+        networkEditor_->clear();
         networkEditor_->loadNetwork(xml->network);
         networkEditor_->moveModules(xml->modulePositions);
+        GuiLogger::Instance().log("File load done.");
+        return true;
       }
       else
         GuiLogger::Instance().log("File load failed.");
-
-      GuiLogger::Instance().log("File load done.");
     }
     catch (...)
     {
       GuiLogger::Instance().log("File load failed.");
     }
+    return false;
   }
 private:
   std::string filename_;
@@ -332,7 +364,7 @@ void SCIRunMainWindow::loadNetwork()
 {
   if (okToContinue())
   {
-    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", ".", "*.srn5");
+    QString filename = QFileDialog::getOpenFileName(this, "Load Network...", latestNetworkDirectory_.path(), "*.srn5");
     loadNetworkFile(filename);
   }
 }
@@ -342,11 +374,12 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
   if (!filename.isEmpty())
   {
     FileOpenCommand command(filename.toStdString(), networkEditor_);
-    command.execute();
-
-    setCurrentFile(filename);
-    statusBar()->showMessage(tr("File loaded"), 2000);
-    networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+    if (command.execute())
+    {
+      setCurrentFile(filename);
+      statusBar()->showMessage(tr("File loaded"), 2000);
+      networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+    }
   }
 }
 
@@ -369,23 +402,62 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
   if (!currentFile_.isEmpty())
   {
     shownName = strippedName(currentFile_);
-    //recentFiles.removeAll(curFile);
-    //recentFiles.prepend(curFile);
-    //updateRecentFileActions();
+    recentFiles_.removeAll(currentFile_);
+    recentFiles_.prepend(currentFile_);
+    updateRecentFileActions();
   }
   setWindowTitle(tr("%1[*] - %2").arg(shownName).arg(tr("SCIRun 5 Prototype")));
 }
 
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
 {
-  return QFileInfo(fullFileName).fileName();
+  QFileInfo info(fullFileName);
+  latestNetworkDirectory_ = info.dir();
+  return info.fileName();
+}
+
+void SCIRunMainWindow::updateRecentFileActions()
+{
+  QMutableStringListIterator i(recentFiles_);
+  while (i.hasNext()) {
+    if (!QFile::exists(i.next()))
+      i.remove();
+  }
+
+  for (int j = 0; j < MaxRecentFiles; ++j) 
+  {
+    if (j < recentFiles_.count()) 
+    {
+      QString text = tr("&%1 %2")
+        .arg(j + 1)
+        .arg(strippedName(recentFiles_[j]));
+      
+      recentFileActions_[j]->setText(text);
+      recentFileActions_[j]->setData(recentFiles_[j]);
+      recentFileActions_[j]->setVisible(true);
+    } 
+    else 
+    {
+      recentFileActions_[j]->setVisible(false);
+    }
+  }
+}
+
+void SCIRunMainWindow::loadRecentNetwork()
+{
+  if (okToContinue()) 
+  {
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+      loadNetworkFile(action->data().toString());
+  }
 }
 
 void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 {
   if (okToContinue())
   {
-    //writeSettings();
+    writeSettings();
     event->accept();
   }
   else
@@ -394,7 +466,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified())
+  if (isWindowModified() && !regressionMode_)  //TODO: regressionMode
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -521,4 +593,64 @@ void SCIRunMainWindow::makePipesEuclidean()
 void SCIRunMainWindow::makePipesManhattan()
 {
   //TODO
+}
+
+void SCIRunMainWindow::readSettings()
+{
+  QSettings settings("SCI:CIBC Software", "SCIRun5");
+
+  //restoreGeometry(settings.value("geometry").toByteArray());
+
+  latestNetworkDirectory_ = settings.value("networkDirectory").toString();
+  GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
+
+  recentFiles_ = settings.value("recentFiles").toStringList();
+  updateRecentFileActions();
+  GuiLogger::Instance().log("Setting read: recent network file list");
+
+  regressionTestDataDir_ = settings.value("regressionTestDataDirectory").toString();
+  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir_);
+}
+
+void SCIRunMainWindow::writeSettings()
+{
+  QSettings settings("SCI:CIBC Software", "SCIRun5");
+
+  settings.setValue("networkDirectory", latestNetworkDirectory_.path());
+  settings.setValue("recentFiles", recentFiles_);
+  settings.setValue("regressionTestDataDirectory", regressionTestDataDir_);
+}
+
+void SCIRunMainWindow::disableInputWidgets()
+{
+  actionExecute_All_->setDisabled(true);
+  actionSave_->setDisabled(true);
+  actionLoad_->setDisabled(true);
+  actionSave_As_->setDisabled(true);
+  moduleSelectorTreeWidget_->setDisabled(true);
+  networkEditor_->disableInputWidgets();
+  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+}
+
+void SCIRunMainWindow::enableInputWidgets()
+{
+  actionExecute_All_->setEnabled(true);
+  actionSave_->setEnabled(true);
+  actionLoad_->setEnabled(true);
+  actionSave_As_->setEnabled(true);
+  moduleSelectorTreeWidget_->setEnabled(true);
+  networkEditor_->enableInputWidgets();
+  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+}
+
+void SCIRunMainWindow::updateRegressionTestDataDir()
+{
+  regressionTestDataDir_ = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
+  setRegressionTestDataDir();
+}
+
+void SCIRunMainWindow::setRegressionTestDataDir()
+{
+  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
+  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
 }

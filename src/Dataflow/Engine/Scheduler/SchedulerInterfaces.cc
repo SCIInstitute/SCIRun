@@ -29,6 +29,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
 
 Scheduler::~Scheduler()
 {
@@ -36,6 +37,16 @@ Scheduler::~Scheduler()
 
 NetworkExecutor::~NetworkExecutor() 
 {
+}
+
+boost::signals2::connection NetworkExecutor::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+{
+  return executeStarts_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkExecutor::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+{
+  return executeFinishes_.connect(subscriber);
 }
 
 ModuleExecutionOrder::ModuleExecutionOrder(const ModuleExecutionOrder::ModuleIdList& list) : list_(list)

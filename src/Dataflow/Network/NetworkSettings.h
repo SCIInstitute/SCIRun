@@ -26,15 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Fields/CreateLatVolBasic.h>
+#ifndef DATAFLOW_NETWORK_NETWORK_SETTINGS_H
+#define DATAFLOW_NETWORK_NETWORK_SETTINGS_H 
 
-using namespace SCIRun;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <map>
+#include <boost/noncopyable.hpp>
+#include <boost/filesystem/path.hpp>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/Share.h>
 
-//TODO DAN
+namespace SCIRun {
+namespace Dataflow {
+namespace Networks {
+
+  class SCISHARE NetworkGlobalSettings : boost::noncopyable
+  {
+  public:
+    //mirror QSettings interface.
+    std::string value(const std::string& key) const;
+    void setValue(const std::string& key, const std::string& value);
+  private:
+    std::map<std::string,std::string> settings_;
+  };
+
+  class SCISHARE NetworkPathSettings
+  {
+  public:
+    explicit NetworkPathSettings(const NetworkGlobalSettings& globalSettings);
+    boost::filesystem::path regressionTestDataDirectory() const;
+  private:
+    const NetworkGlobalSettings& settings_;
+  };
+
+}}}
+
+#endif

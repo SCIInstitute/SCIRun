@@ -107,7 +107,7 @@ namespace Gui {
         << disabled(new QAction("ID: " + QString::fromStdString(moduleId), parent))
         << separatorAction(parent)
         << disabled(new QAction("Execute", parent))
-        << disabled(new QAction("Help", parent))
+        << new QAction("Help", parent)
         << disabled(new QAction("Notes", parent))
         << disabled(new QAction("Duplicate", parent))
         << disabled(new QAction("Replace With->(TODO)", parent))
@@ -168,6 +168,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(optionsButton_, SIGNAL(clicked()), this, SLOT(showOptionsDialog()));
   makeOptionsDialog();
 
+  connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
+
   setupModuleActions();
 
   progressBar_->setTextVisible(false);
@@ -179,6 +181,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(actionsMenu_->getAction("Show Log"), SIGNAL(triggered()), logWindow_, SLOT(raise()));
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
+  connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
@@ -307,18 +310,12 @@ QPointF ModuleWidget::outputPortPosition() const
   return pos();
 }
 
-void ModuleWidget::ModuleExecutionRunner::operator()()
-{
-  module_->theModule_->do_execute();
-  module_->updateProgressBar(1);
-}
-
 void ModuleWidget::execute()
 {
   {
     timer_.restart();
-    ModuleExecutionRunner runner(this);
-    runner();
+    theModule_->do_execute();
+    Q_EMIT updateProgressBarSignal(1);
   }
   Q_EMIT moduleExecuted();
 }
@@ -360,4 +357,15 @@ void ModuleWidget::updateProgressBar(double percent)
 void ModuleWidget::updateModuleTime()
 {
   progressBar_->setFormat(QString("%1 s : %p%").arg(timer_.elapsed()));
+}
+
+void ModuleWidget::launchDocumentation()
+{
+  //TODO: push this help url construction to module layer
+  std::string url = "http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Documentation:SCIRun:Reference:SCIRun:" + getModule()->get_module_name();
+
+  QUrl qurl(QString::fromStdString(url), QUrl::TolerantMode);
+  
+  if (!QDesktopServices::openUrl(qurl))
+    GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
 }

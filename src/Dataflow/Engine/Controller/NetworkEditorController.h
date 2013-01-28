@@ -29,8 +29,8 @@
 #ifndef ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 #define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 
-#include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
@@ -46,8 +46,8 @@ namespace Engine {
   class SCISHARE NetworkEditorController 
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf);
-    explicit NetworkEditorController(Networks::NetworkHandle network);
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe);
+    explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe);
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void addConnection(const Networks::ConnectionDescription& desc);
@@ -57,19 +57,24 @@ namespace Engine {
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
+    
+    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
-    void executeAll(const Networks::ExecutableLookup& lookup, Networks::NetworkExecutionFinishedCallback func = 0);
+    void executeAll(const Networks::ExecutableLookup& lookup);
 
     Networks::NetworkXMLHandle saveNetwork() const;
     void loadNetwork(const Networks::NetworkXML& xml);
 
     Networks::NetworkHandle getNetwork() const;
+    Networks::NetworkGlobalSettings& getSettings();
 
   private:
     void printNetwork() const;
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
+    NetworkExecutorHandle executor_;
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;
