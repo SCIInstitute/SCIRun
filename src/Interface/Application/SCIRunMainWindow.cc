@@ -149,6 +149,7 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
 SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   regressionMode_ = false;
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
@@ -289,7 +290,6 @@ void SCIRunMainWindow::initialize()
 
 void SCIRunMainWindow::exitApplication(int code)
 {
-  //std::cout << "~~~exiting with code " << code << std::endl;
   close(); 
   /*qApp->*/exit(code);
 }

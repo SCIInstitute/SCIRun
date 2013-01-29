@@ -550,3 +550,8 @@ void NetworkEditor::setRegressionTestDataDir(const QString& dir)
 {
   controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
 }
+
+NetworkEditor::~NetworkEditor()
+{
+  clear();
+}

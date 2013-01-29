@@ -74,6 +74,7 @@ Q_SIGNALS:
 	
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
+    ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
