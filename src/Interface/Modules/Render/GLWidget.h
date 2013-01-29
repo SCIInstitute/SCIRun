@@ -44,12 +44,15 @@ namespace Gui {
   
 class GLWidget : public QGLWidget
 {
+  Q_OBJECT
+
 public:
   GLWidget(const QGLFormat& format);
+  ~GLWidget();
 
 protected:
-  void resizeEvent(QResizeEvent *evt);
-  void closeEvent(QCloseEvent *evt);
+  virtual void resizeEvent(QResizeEvent *evt);
+  virtual void closeEvent(QCloseEvent *evt);
 
 private:
 

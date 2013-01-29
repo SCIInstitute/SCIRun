@@ -34,6 +34,7 @@ SET(Interface_Modules_Render_FORMS
 SET(Interface_Modules_Render_HEADERS
   Share.h
   ViewScene.h
+  GLWidget.h
 )
 
 SET(Interface_Modules_Render_SOURCES 

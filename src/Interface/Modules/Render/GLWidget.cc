@@ -50,6 +50,11 @@ GLWidget::GLWidget(const QGLFormat& format) :
   setAutoBufferSwap(false);
 }
 
+GLWidget::~GLWidget()
+{
+  mGraphics.reset();
+}
+
 void GLWidget::resizeEvent(QResizeEvent *evt)
 {
   /// @todo Inform the renderer that screen dimensions have changed.
