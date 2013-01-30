@@ -40,6 +40,7 @@ namespace Engine {
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle)> ModuleAddedSignalType;
   typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
 
@@ -50,13 +51,14 @@ namespace Engine {
     explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe);
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
-    void addConnection(const Networks::ConnectionDescription& desc);
+    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
+    boost::signals2::connection connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber);
     
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
@@ -79,6 +81,7 @@ namespace Engine {
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;
     ConnectionRemovedSignalType connectionRemoved_;
+    InvalidConnectionSignalType invalidConnection_;
   };
 
 }

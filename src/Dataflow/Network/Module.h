@@ -144,8 +144,8 @@ namespace Networks {
     boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
 
     friend class Builder;
-    void add_input_port(InputPortHandle);
-    void add_output_port(OutputPortHandle);
+    size_t add_input_port(InputPortHandle);
+    size_t add_output_port(OutputPortHandle);
     bool has_ui_;
    
     ModuleStateHandle state_;

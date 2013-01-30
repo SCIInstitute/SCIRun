@@ -87,7 +87,7 @@ public Q_SLOTS:
   void launchDocumentation();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
-  void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+  void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleExecuted();

@@ -45,7 +45,7 @@ ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& i
   ModuleDescription d;
   d.lookupInfo_ = info;
   d.output_ports_ += OutputPortDescription("o1", "d1", "c1");
-  d.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1");
+  d.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1"), InputPortDescription("i3", "d2", "c2");
   return d;
 }
 
@@ -60,6 +60,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   BOOST_FOREACH(const InputPortDescription& d, info.input_ports_)
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
+    EXPECT_CALL(*inputPort, get_colorname()).WillRepeatedly(Return(d.color));
     EXPECT_CALL(*module, get_input_port(portIndex)).WillRepeatedly(Return(inputPort));
     portIndex++;
   }
@@ -69,6 +70,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   BOOST_FOREACH(const OutputPortDescription& d, info.output_ports_)
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
+    EXPECT_CALL(*outputPort, get_colorname()).WillRepeatedly(Return(d.color));
     EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
     portIndex++;
   }

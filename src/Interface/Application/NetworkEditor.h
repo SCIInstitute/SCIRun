@@ -103,7 +103,7 @@ Q_SIGNALS:
     void mousePressEvent(QMouseEvent *event);
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
-    void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
+    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void executeAll();
     void clear();
     void setConnectionPipelineType(int type);

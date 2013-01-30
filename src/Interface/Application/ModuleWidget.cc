@@ -246,8 +246,8 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
 
 void ModuleWidget::hookUpSignals(PortWidget* port) const
 {
-  connect(port, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
-    this, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(port, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
+    this, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
   connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));

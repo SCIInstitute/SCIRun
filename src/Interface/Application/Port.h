@@ -69,6 +69,7 @@ public:
   virtual std::string get_colorname() const;
   virtual std::string get_portname() const;
   virtual std::string getUnderlyingModuleId() const;
+  virtual size_t getIndex() const;
 
   void toggleLight();
   void turn_on_light();
@@ -95,7 +96,7 @@ public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();
 Q_SIGNALS:
-  void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+  void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
   void mousePressEvent(QMouseEvent* event);
@@ -104,9 +105,9 @@ protected:
   void paintEvent(QPaintEvent* event);
 private:
   void performDrag(const QPointF& endPos);
-  bool canBeConnected(PortWidget* other) const;
+  //bool canBeConnected(PortWidget* other) const;
   void makeConnection(const QPointF& pos);
-  bool tryConnectPort(const QPointF& pos, PortWidget* port);
+  void tryConnectPort(const QPointF& pos, PortWidget* port);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;

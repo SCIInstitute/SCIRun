@@ -82,6 +82,11 @@ std::string Port::getUnderlyingModuleId() const
   return module_->get_id();
 }
 
+size_t Port::getIndex() const 
+{
+  return index_;
+}
+
 InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
   : Port(module, params), sink_(sink)
 {

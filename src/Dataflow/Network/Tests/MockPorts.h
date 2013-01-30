@@ -53,6 +53,8 @@ namespace SCIRun {
           MOCK_METHOD0(sink, DatatypeSinkInterfaceHandle());
           MOCK_CONST_METHOD0(isInput, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, std::string());
+          MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_METHOD1(setIndex, void(size_t));
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -71,6 +73,8 @@ namespace SCIRun {
           MOCK_METHOD1(sendData, void(Core::Datatypes::DatatypeHandle));
           MOCK_CONST_METHOD0(isInput, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, std::string());
+          MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_METHOD1(setIndex, void(size_t));
         };
 
         typedef boost::shared_ptr<MockOutputPort> MockOutputPortPtr;

@@ -156,14 +156,16 @@ void Module::set_state(ModuleStateHandle state)
   state_ = state;
 }
 
-void Module::add_input_port(InputPortHandle h)
+size_t Module::add_input_port(InputPortHandle h)
 {
   iports_.add(h);
+  return iports_.size() - 1;
 }
 
-void Module::add_output_port(OutputPortHandle h)
+size_t Module::add_output_port(OutputPortHandle h)
 {
   oports_.add(h);
+  return oports_.size() - 1;
 }
 
 SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
@@ -234,7 +236,7 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
   {
     DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
     InputPortHandle port(new InputPort(module_.get(), params, sink));
-    module_->add_input_port(port);
+    port->setIndex(module_->add_input_port(port));
   }
   return *this;
 }
@@ -245,7 +247,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   {
     DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : 0);
     OutputPortHandle port(new OutputPort(module_.get(), params, source));
-    module_->add_output_port(port);
+    port->setIndex(module_->add_output_port(port));
   }
   return *this;
 }

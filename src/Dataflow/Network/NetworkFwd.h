@@ -41,6 +41,7 @@ class ModuleInterface;
 class ModuleStateInterface;
 class ModuleStateInterfaceFactory;
 class PortInterface;
+class PortDescriptionInterface;
 class Connection;
 class InputPortInterface;
 class OutputPortInterface;

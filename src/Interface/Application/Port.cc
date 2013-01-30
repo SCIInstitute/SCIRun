@@ -129,6 +129,11 @@ void PortWidget::mouseReleaseEvent(QMouseEvent* event)
   doMouseRelease(event->button(), event->pos());
 }
 
+size_t PortWidget::getIndex() const
+{
+  return index_;
+}
+
 namespace
 {
   const int PORT_CONNECTION_THRESHOLD = 12;
@@ -172,45 +177,28 @@ void PortWidget::makeConnection(const QPointF& pos)
 {
   DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 
-  auto port = closestPortFinder_->closestPort(pos);  //GUI concern
+  auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
   if (port)
     tryConnectPort(pos, port);
 }
 
-bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
+void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 {
-  int distance = (pos - port->position()).manhattanLength();     //GUI concern
-  if (distance <= PORT_CONNECTION_THRESHOLD)                 //GUI concern
+  int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
+  if (distance <= PORT_CONNECTION_THRESHOLD)                 //GUI concern: needs unit test
   {
-    if (canBeConnected(port))   //NONE gui, can reuse
-    {
-      PortWidget* out = this->isInput() ? port : this;     //NONE gui, can reuse
-      PortWidget* in = this->isInput() ? this : port;      //NONE gui, can reuse
-
-      SCIRun::Dataflow::Networks::ConnectionDescription cd(          //NONE gui, can reuse
-        SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->moduleId_.toStdString(), out->index_), 
-        SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->moduleId_.toStdString(), in->index_));
-
-      Q_EMIT needConnection(cd);       //NONE gui, can reuse
-
-      return true;
-    }
-    else   //NONE gui, can reuse
-    {    //NONE gui, can reuse
-      GuiLogger::Instance().log("input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!");
-    }
+    Q_EMIT requestConnection(this, port);
   }
-  return false;
 }
 
 void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) 
 {
   if (matches(cd))
   {
-    PortWidget* out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
-    PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
-    SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
-    ConnectionLine* c = connectionFactory_->makeFinishedConnection(out, in, id);
+    auto out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
+    auto in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
+    auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
+    auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }
@@ -229,15 +217,6 @@ bool PortWidget::sharesParentModule(const PortWidget& other) const
 bool PortWidget::isFullInputPort() const
 {
   return isInput() && !connections_.empty();
-}
-
-bool PortWidget::canBeConnected(PortWidget* other) const
-{
-  if (!other)
-    return false;
-
-  PortConnectionDeterminer q;
-  return q.canBeConnected(*this, *other);
 }
 
 void PortWidget::performDrag(const QPointF& endPos)
