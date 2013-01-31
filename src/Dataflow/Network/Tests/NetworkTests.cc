@@ -40,13 +40,24 @@ using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
 using ::testing::DefaultValue;
 
-TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
-{
-  DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
 
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+class NetworkTests : public ::testing::Test
+{
+protected:
+  virtual void SetUp()
+  {
+    DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
+    moduleFactory_.reset(new MockModuleFactory);
+    sf_.reset(new MockModuleStateFactory);
+  }
+
+  ModuleFactoryHandle moduleFactory_;
+  ModuleStateFactoryHandle sf_;
+};
+
+TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
+{
+  Network network(moduleFactory_, sf_);
  
   EXPECT_EQ(0, network.nmodules());
 
@@ -61,11 +72,9 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
   EXPECT_FALSE(network.remove_module("not in the network"));
 }
 
-TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
+TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -86,11 +95,9 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
   EXPECT_EQ(0, network.nconnections());
 }
 
-TEST(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
+TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -116,11 +123,9 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 }
 
-TEST(NetworkTests, ConnectionsMustHaveMatchingPortTypes)
+TEST_F(NetworkTests, ConnectionsMustHaveMatchingPortTypes)
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -132,11 +137,9 @@ TEST(NetworkTests, ConnectionsMustHaveMatchingPortTypes)
   EXPECT_THROW(network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 2)), SCIRun::Core::InvalidArgumentException);
 }
 
-TEST(NetworkTests, CannotConnectNonExistentPorts)
+TEST_F(NetworkTests, CannotConnectNonExistentPorts)
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
