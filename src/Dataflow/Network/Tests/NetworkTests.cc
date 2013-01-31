@@ -33,12 +33,14 @@
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Tests/MockModule.h>
+#include <Dataflow/Network/Tests/MockPorts.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
 using ::testing::DefaultValue;
+using ::testing::NiceMock;
 
 
 class NetworkTests : public ::testing::Test
@@ -46,6 +48,8 @@ class NetworkTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
+    DefaultValue<InputPortHandle>::Set(InputPortHandle(new NiceMock<MockInputPort>));
+    DefaultValue<OutputPortHandle>::Set(OutputPortHandle(new NiceMock<MockOutputPort>));
     DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
     moduleFactory_.reset(new MockModuleFactory);
   }
@@ -130,7 +134,8 @@ TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 }
 
-TEST_F(NetworkTests, ConnectionsMustHaveMatchingPortTypes)
+//TODO: this verification pushed up to higher layer.
+TEST_F(NetworkTests, DISABLED_ConnectionsMustHaveMatchingPortTypes)
 {
   Network network(moduleFactory_, sf_);
 

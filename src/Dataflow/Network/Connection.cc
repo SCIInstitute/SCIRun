@@ -44,8 +44,9 @@ Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, siz
   iport_ = imod_->get_input_port(iportno);
   ENSURE_NOT_NULL(iport_, "input port is null");
 
-  if (oport_->get_colorname() != iport_->get_colorname())
-    THROW_INVALID_ARGUMENT("Ports do not have matching type.");
+  //TODO: this is already checked in the controller layer. Do we need a redundant check here? 
+  //if (oport_->get_colorname() != iport_->get_colorname())
+  //  THROW_INVALID_ARGUMENT("Ports do not have matching type.");
 
   oport_->attach(this);
   iport_->attach(this);

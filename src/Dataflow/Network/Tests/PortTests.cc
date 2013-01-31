@@ -111,7 +111,8 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
   EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), InvalidArgumentException);
 }
 
-TEST_F(PortTests, CannotConnectPortsWithDifferentDatatypes)
+//TODO: this verification pushed up to higher layer.
+TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
 {
   Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
   Port::ConstructionParams pcp2("Field", "VectorField", "yellow");
