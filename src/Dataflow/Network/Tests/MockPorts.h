@@ -36,8 +36,21 @@
 namespace SCIRun {
   namespace Dataflow {
     namespace Networks {
-      namespace Mocks
-      {
+      namespace Mocks {
+
+        class MockPortDescription : public PortDescriptionInterface
+        {
+        public:
+          MOCK_CONST_METHOD0(nconnections, size_t());
+          MOCK_CONST_METHOD0(get_colorname, std::string());
+          MOCK_CONST_METHOD0(get_portname, std::string());
+          MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(getUnderlyingModuleId, std::string());
+          MOCK_CONST_METHOD0(getIndex, size_t());
+        };
+
+        typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
+
         class MockInputPort : public InputPortInterface  
         {
         public:

@@ -108,7 +108,7 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   else
   {
     //TODO: use real logger
-    std::cout << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type: should not be connected." << std::endl;
+    std::cout << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
     invalidConnection_(desc);
   }
 }
@@ -138,6 +138,11 @@ boost::signals2::connection NetworkEditorController::connectConnectionAdded(cons
 boost::signals2::connection NetworkEditorController::connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber)
 {
   return connectionRemoved_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber)
+{
+  return invalidConnection_.connect(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)

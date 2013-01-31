@@ -33,12 +33,14 @@
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/NetworkSettings.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Dataflow/Network/Tests/MockPorts.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
@@ -50,6 +52,7 @@ public:
   virtual void moduleAddedSlot(const std::string&, ModuleHandle) = 0;
   virtual void moduleRemovedSlot(const std::string& id) = 0;
   virtual void connectionAddedSlot(const ConnectionDescription&) = 0;
+  virtual void invalidConnectionSlot(const ConnectionDescription&) = 0;
   virtual void connectionRemovedSlot(const ConnectionId&) = 0;
 };
 
@@ -59,6 +62,7 @@ public:
   MOCK_METHOD2(moduleAddedSlot, void(const std::string&, ModuleHandle));
   MOCK_METHOD1(moduleRemovedSlot, void(const std::string&));
   MOCK_METHOD1(connectionAddedSlot, void(const ConnectionDescription&));
+  MOCK_METHOD1(invalidConnectionSlot, void(const ConnectionDescription&));
   MOCK_METHOD1(connectionRemovedSlot, void(const ConnectionId&));
 };
 
@@ -70,10 +74,56 @@ protected:
     DefaultValue<ModuleHandle>::Set(ModuleHandle());
     DefaultValue<ConnectionId>::Set(ConnectionId(""));
     mockNetwork_.reset(new NiceMock<MockNetwork>);
+    port1.reset(new NiceMock<MockPortDescription>);
+    port2.reset(new NiceMock<MockPortDescription>);
   }
+
+  std::string portsHaveSameType()
+  {
+    std::string color("c1");
+    EXPECT_CALL(*port1, get_colorname()).WillRepeatedly(Return(color));
+    EXPECT_CALL(*port2, get_colorname()).WillRepeatedly(Return(color));
+    return color;
+  }
+
+  void portsHaveDifferentType()
+  {
+    std::string color1("c1");
+    std::string color2("c2");
+    EXPECT_CALL(*port1, get_colorname()).WillRepeatedly(Return(color1));
+    EXPECT_CALL(*port2, get_colorname()).WillRepeatedly(Return(color2));
+  }
+
+  std::pair<std::string,std::string> portsAreOnDifferentModules()
+  {
+    std::string moduleId1("m1");
+    std::string moduleId2("m2");
+    EXPECT_CALL(*port1, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId1));
+    EXPECT_CALL(*port2, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId2));
+    return std::make_pair(moduleId1, moduleId2);
+  }
+
+  std::pair<std::string,std::string> portsAreOnSameModule()
+  {
+    std::string moduleId1("m1");
+    EXPECT_CALL(*port1, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId1));
+    EXPECT_CALL(*port2, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId1));
+    return std::make_pair(moduleId1, moduleId1);
+  }
+
+  std::pair<size_t,size_t> setPortIndices()
+  {
+    size_t index1 = 1;
+    size_t index2 = 2;
+    EXPECT_CALL(*port1, getIndex()).WillRepeatedly(Return(index1));
+    EXPECT_CALL(*port2, getIndex()).WillRepeatedly(Return(index2));
+    return std::make_pair(index1, index2);
+  }
+
   MockNetworkPtr mockNetwork_;
   DummySlotClassForNetworkEditorController slots_;
   NetworkExecutorHandle null_;
+  MockPortDescriptionPtr port1, port2;
 };
 
 TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
@@ -92,8 +142,7 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
   controller.removeModule("m1");
 }
 
-//TODO UNIT TESTS
-TEST_F(NetworkEditorControllerTests, DISABLED_CanAddAndRemoveConnectionWithSignalling)
+TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
 {
   NetworkEditorController controller(mockNetwork_, null_);
 
@@ -102,10 +151,18 @@ TEST_F(NetworkEditorControllerTests, DISABLED_CanAddAndRemoveConnectionWithSigna
 
   EXPECT_CALL(slots_, connectionAddedSlot(_)).Times(1);
   EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(1).WillOnce(Return(ConnectionId("non empty string")));
-  ConnectionDescription desc(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2));
-  //controller.addConnection(desc);
-  //controller.requestConnection()
 
+  portsHaveSameType();
+  auto modIds = portsAreOnDifferentModules();
+  auto indices = setPortIndices();
+
+  EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*port2, nconnections()).WillOnce(Return(0));
+  
+  controller.requestConnection(port1.get(), port2.get());
+
+  ConnectionDescription desc(OutgoingConnectionDescription(modIds.first, indices.first), IncomingConnectionDescription(modIds.second, indices.second));
   {
     EXPECT_CALL(slots_, connectionRemovedSlot(_)).Times(1);
     EXPECT_CALL(*mockNetwork_, disconnect(_)).Times(1).WillOnce(Return(true));
@@ -119,35 +176,104 @@ TEST_F(NetworkEditorControllerTests, DISABLED_CanAddAndRemoveConnectionWithSigna
   }
 }
 
-TEST_F(NetworkEditorControllerTests, DISABLED_CannotConnectInputPortToInputPort)
+TEST_F(NetworkEditorControllerTests, CannotConnectInputPortToInputPort)
 {
   NetworkEditorController controller(mockNetwork_, null_);
+  controller.connectInvalidConnection(boost::bind(&SlotClassForNetworkEditorController::invalidConnectionSlot, &slots_, _1));
+  
+  EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(0);
 
-  ConnectionDescription desc(OutgoingConnectionDescription("m1", 1), IncomingConnectionDescription("m2", 2));
-  //controller.addConnection(desc);
+  portsHaveSameType();
+  auto modIds = portsAreOnDifferentModules();
+  auto indices = setPortIndices();
 
-  //Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
-  //InputPortHandle inputPort1(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
-  //InputPortHandle inputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  //EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort1));
-  //EXPECT_CALL(*outputModule, get_input_port(1)).WillOnce(Return(inputPort2));
+  EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*port2, nconnections()).WillOnce(Return(0));
 
-  //ASSERT_EQ(0, inputPort->nconnections());
-  //ASSERT_EQ(0, outputPort->nconnections());
-  //{
-  //  Connection c(outputModule, 1, inputModule, 2, "test");
-  //  //connection added on construction
-  //  ASSERT_EQ(0, inputPort->nconnections());
-  //  ASSERT_EQ(0, outputPort->nconnections());
-  //}
+  ConnectionDescription desc(OutgoingConnectionDescription(modIds.second, indices.second), IncomingConnectionDescription(modIds.first, indices.first));
+  EXPECT_CALL(slots_, invalidConnectionSlot(Eq(desc))).Times(1);
 
-  //TODO FIX_UNIT_TESTS
-  //EXPECT_TRUE(false);
+  controller.requestConnection(port1.get(), port2.get());
 }
 
-TEST_F(NetworkEditorControllerTests, DISABLED_CannotConnectOutputPortToOutputPort)
+TEST_F(NetworkEditorControllerTests, CannotConnectOutputPortToOutputPort)
 {
-  //TODO FIX_UNIT_TESTS
-  std::cout << "TODO" << std::endl;
-  //FAIL();
+  NetworkEditorController controller(mockNetwork_, null_);
+  controller.connectInvalidConnection(boost::bind(&SlotClassForNetworkEditorController::invalidConnectionSlot, &slots_, _1));
+
+  EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(0);
+
+  portsHaveSameType();
+  auto modIds = portsAreOnDifferentModules();
+  auto indices = setPortIndices();
+
+  EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));
+
+  ConnectionDescription desc(OutgoingConnectionDescription(modIds.first, indices.first), IncomingConnectionDescription(modIds.second, indices.second));
+  EXPECT_CALL(slots_, invalidConnectionSlot(Eq(desc))).Times(1);
+
+  controller.requestConnection(port1.get(), port2.get());
+}
+
+TEST_F(NetworkEditorControllerTests, CannotConnectToFullInputPort)
+{
+  NetworkEditorController controller(mockNetwork_, null_);
+  controller.connectInvalidConnection(boost::bind(&SlotClassForNetworkEditorController::invalidConnectionSlot, &slots_, _1));
+
+  EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(0);
+
+  portsHaveSameType();
+  auto modIds = portsAreOnDifferentModules();
+  auto indices = setPortIndices();
+
+  EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*port1, nconnections()).WillOnce(Return(1));
+  EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));
+
+  ConnectionDescription desc(OutgoingConnectionDescription(modIds.second, indices.second), IncomingConnectionDescription(modIds.first, indices.first));
+  EXPECT_CALL(slots_, invalidConnectionSlot(Eq(desc))).Times(1);
+
+  controller.requestConnection(port1.get(), port2.get());
+}
+
+TEST_F(NetworkEditorControllerTests, CannotConnectBetweenSameModule)
+{
+  NetworkEditorController controller(mockNetwork_, null_);
+  controller.connectInvalidConnection(boost::bind(&SlotClassForNetworkEditorController::invalidConnectionSlot, &slots_, _1));
+
+  EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(0);
+
+  portsHaveSameType();
+  auto modIds = portsAreOnSameModule();
+  auto indices = setPortIndices();
+
+  EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));
+
+  ConnectionDescription desc(OutgoingConnectionDescription(modIds.second, indices.second), IncomingConnectionDescription(modIds.first, indices.first));
+  EXPECT_CALL(slots_, invalidConnectionSlot(Eq(desc))).Times(1);
+
+  controller.requestConnection(port1.get(), port2.get());
+}
+
+TEST_F(NetworkEditorControllerTests, CannotConnectBetweenDifferentPortTypes)
+{
+  NetworkEditorController controller(mockNetwork_, null_);
+  controller.connectInvalidConnection(boost::bind(&SlotClassForNetworkEditorController::invalidConnectionSlot, &slots_, _1));
+
+  EXPECT_CALL(*mockNetwork_, connect(_,_)).Times(0);
+
+  portsHaveDifferentType();
+  auto modIds = portsAreOnDifferentModules();
+  auto indices = setPortIndices();
+
+  EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));
+
+  ConnectionDescription desc(OutgoingConnectionDescription(modIds.second, indices.second), IncomingConnectionDescription(modIds.first, indices.first));
+  EXPECT_CALL(slots_, invalidConnectionSlot(Eq(desc))).Times(1);
+
+  controller.requestConnection(port1.get(), port2.get());
 }

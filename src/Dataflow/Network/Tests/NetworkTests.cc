@@ -132,7 +132,7 @@ TEST(NetworkTests, ConnectionsMustHaveMatchingPortTypes)
   EXPECT_THROW(network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 2)), SCIRun::Core::InvalidArgumentException);
 }
 
-TEST(NetworkTests, DISABLED_CannotConnectInputPortToInputPort)
+TEST(NetworkTests, CannotConnectNonExistentPorts)
 {
   ModuleFactoryHandle moduleFactory(new MockModuleFactory);
   ModuleStateFactoryHandle sf(new MockModuleStateFactory);
@@ -145,23 +145,6 @@ TEST(NetworkTests, DISABLED_CannotConnectInputPortToInputPort)
   mli2.module_name_ = "Module2";
   ModuleHandle m2 = network.add_module(mli2);
 
-  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 2));
-
-  //Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
-  //InputPortHandle inputPort1(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
-  //InputPortHandle inputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  //EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort1));
-  //EXPECT_CALL(*outputModule, get_input_port(1)).WillOnce(Return(inputPort2));
-
-  //ASSERT_EQ(0, inputPort->nconnections());
-  //ASSERT_EQ(0, outputPort->nconnections());
-  //{
-  //  Connection c(outputModule, 1, inputModule, 2, "test");
-  //  //connection added on construction
-  //  ASSERT_EQ(0, inputPort->nconnections());
-  //  ASSERT_EQ(0, outputPort->nconnections());
-  //}
-
-  //TODO FIX_UNIT_TESTS
-  //EXPECT_TRUE(false);
+  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2));
+  EXPECT_EQ("", connId.id_);
 }

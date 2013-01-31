@@ -262,7 +262,7 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVector)
   EXPECT_EQ(1, max2);
 }
 
-//TODO FIX_UNIT_TESTS
+//TODO FIX_UNIT_TESTS--Intern.
 #if 0
 //TODO: by intern
 TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
