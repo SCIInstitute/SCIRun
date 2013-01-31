@@ -111,23 +111,27 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
-  setupModule(moduleWidget);
+  
+  //TODO: this depends on the ModuleWidget's dialog being created, since that will change some module state.
+  module->preExecutionInitialization();
+
+  setupModuleWidget(moduleWidget);
   Q_EMIT modified();
 }
 
-void NetworkEditor::needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
 {
-  controller_->addConnection(cd);
+  controller_->requestConnection(from, to);
   Q_EMIT modified();
 }
 
-void NetworkEditor::setupModule(ModuleWidget* module)
+void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
   connect(module, SIGNAL(removeModule(const std::string&)), this, SIGNAL(modified()));
-  connect(module, SIGNAL(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
-    this, SLOT(needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
+    this, SLOT(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
@@ -549,4 +553,9 @@ void NetworkEditor::enableInputWidgets()
 void NetworkEditor::setRegressionTestDataDir(const QString& dir)
 {
   controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
+}
+
+NetworkEditor::~NetworkEditor()
+{
+  clear();
 }

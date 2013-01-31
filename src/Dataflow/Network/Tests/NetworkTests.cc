@@ -33,20 +33,42 @@
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Tests/MockModule.h>
+#include <Dataflow/Network/Tests/MockPorts.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace boost::assign;
 using ::testing::DefaultValue;
+using ::testing::NiceMock;
 
-TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
+
+class NetworkTests : public ::testing::Test
 {
-  DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
+protected:
+  virtual void SetUp()
+  {
+    DefaultValue<InputPortHandle>::Set(InputPortHandle(new NiceMock<MockInputPort>));
+    DefaultValue<OutputPortHandle>::Set(OutputPortHandle(new NiceMock<MockOutputPort>));
+    DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
+    moduleFactory_.reset(new MockModuleFactory);
+  }
 
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  virtual void TearDown()
+  {
+    moduleFactory_.reset();
+    sf_.reset();
+  }
+
+  ModuleFactoryHandle moduleFactory_;
+  static ModuleStateFactoryHandle sf_;
+};
+
+ModuleStateFactoryHandle NetworkTests::sf_;
+
+TEST_F(NetworkTests, CanAddAndRemoveModules)
+{
+  Network network(moduleFactory_, sf_);
  
   EXPECT_EQ(0, network.nmodules());
 
@@ -61,11 +83,9 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
   EXPECT_FALSE(network.remove_module("not in the network"));
 }
 
-TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
+TEST_F(NetworkTests, CanAddAndRemoveConnections)
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -86,11 +106,9 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
   EXPECT_EQ(0, network.nconnections());
 }
 
-TEST(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
+TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -116,11 +134,10 @@ TEST(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
   EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
 }
 
-TEST(NetworkTests, CannotConnectInputPortToInputPort)
+//TODO: this verification pushed up to higher layer.
+TEST_F(NetworkTests, DISABLED_ConnectionsMustHaveMatchingPortTypes)
 {
-  ModuleFactoryHandle moduleFactory(new MockModuleFactory);
-  ModuleStateFactoryHandle sf(new MockModuleStateFactory);
-  Network network(moduleFactory, sf);
+  Network network(moduleFactory_, sf_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -129,22 +146,20 @@ TEST(NetworkTests, CannotConnectInputPortToInputPort)
   mli2.module_name_ = "Module2";
   ModuleHandle m2 = network.add_module(mli2);
 
-  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
+  EXPECT_THROW(network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 2)), SCIRun::Core::InvalidArgumentException);
+}
 
-  //Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
-  //InputPortHandle inputPort1(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
-  //InputPortHandle inputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
-  //EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort1));
-  //EXPECT_CALL(*outputModule, get_input_port(1)).WillOnce(Return(inputPort2));
+TEST_F(NetworkTests, CannotConnectNonExistentPorts)
+{
+  Network network(moduleFactory_, sf_);
 
-  //ASSERT_EQ(0, inputPort->nconnections());
-  //ASSERT_EQ(0, outputPort->nconnections());
-  //{
-  //  Connection c(outputModule, 1, inputModule, 2, "test");
-  //  //connection added on construction
-  //  ASSERT_EQ(0, inputPort->nconnections());
-  //  ASSERT_EQ(0, outputPort->nconnections());
-  //}
+  ModuleLookupInfo mli1;
+  mli1.module_name_ = "Module1";
+  ModuleHandle m1 = network.add_module(mli1);
+  ModuleLookupInfo mli2;
+  mli2.module_name_ = "Module2";
+  ModuleHandle m2 = network.add_module(mli2);
 
-  EXPECT_TRUE(false);
+  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2));
+  EXPECT_EQ("", connId.id_);
 }

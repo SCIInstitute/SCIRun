@@ -71,6 +71,9 @@
            <height>27</height>
           </size>
          </property>
+         <property name="whatsThis">
+          <string>Title of the module.</string>
+         </property>
          <property name="lineWidth">
           <number>-4</number>
          </property>
@@ -101,6 +104,9 @@
          </property>
          <property name="toolTip">
           <string>General module actions</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click here for a menu of general module options.</string>
          </property>
          <property name="text">
           <string/>
@@ -178,6 +184,9 @@
          <property name="toolTip">
           <string>Module-specific options</string>
          </property>
+         <property name="whatsThis">
+          <string>Click this button to open the module's options dialog.</string>
+         </property>
          <property name="text">
           <string>UI</string>
          </property>
@@ -196,6 +205,9 @@
            <width>100</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="whatsThis">
+          <string>Module execution progress bar.</string>
          </property>
          <property name="value">
           <number>24</number>
@@ -232,7 +244,10 @@
           </size>
          </property>
          <property name="toolTip">
-          <string>Launch Documentation Browser*</string>
+          <string>Launch Documentation Browser</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to launch the module's help page in your browser.</string>
          </property>
          <property name="text">
           <string>?</string>
@@ -261,6 +276,9 @@
          </property>
          <property name="toolTip">
           <string>Open Log Window</string>
+         </property>
+         <property name="whatsThis">
+          <string>Click this button to open the module log in a separate window.</string>
          </property>
          <property name="text">
           <string>i</string>

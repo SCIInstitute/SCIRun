@@ -49,6 +49,10 @@ boost::signals2::connection NetworkExecutor::connectNetworkExecutionFinished(con
   return executeFinishes_.connect(subscriber);
 }
 
+ModuleExecutionOrder::ModuleExecutionOrder()
+{
+}
+
 ModuleExecutionOrder::ModuleExecutionOrder(const ModuleExecutionOrder::ModuleIdList& list) : list_(list)
 {
 }

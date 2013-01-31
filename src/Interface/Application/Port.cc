@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <QtGui>
+#include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/Connection.h>
@@ -36,6 +37,7 @@
 #include <Interface/Application/ClosestPortFinder.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
@@ -127,6 +129,11 @@ void PortWidget::mouseReleaseEvent(QMouseEvent* event)
   doMouseRelease(event->button(), event->pos());
 }
 
+size_t PortWidget::getIndex() const
+{
+  return index_;
+}
+
 namespace
 {
   const int PORT_CONNECTION_THRESHOLD = 12;
@@ -168,54 +175,30 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 
 void PortWidget::makeConnection(const QPointF& pos)
 {
-  //std::cout << "-----------makeConnection" << std::endl;
-  DeleteCurrentConnectionAtEndOfBlock deleter(this);
+  DeleteCurrentConnectionAtEndOfBlock deleter(this);  //GUI concern: could go away if we got a NO-CONNECT signal from service layer
 
-  auto port = closestPortFinder_->closestPort(pos);
+  auto port = closestPortFinder_->closestPort(pos);  //GUI concern: needs unit test
   if (port)
     tryConnectPort(pos, port);
-
-  //else
-  //  std::cout << "null port from ClosestPortFinder" << std::endl;
 }
 
-bool PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
+void PortWidget::tryConnectPort(const QPointF& pos, PortWidget* port)
 {
-  //std::cout << "tryConnectPort" << std::endl;
-  int distance = (pos - port->position()).manhattanLength();
-  //std::cout << "distance: " << distance << std::endl;
-  if (distance <= PORT_CONNECTION_THRESHOLD)
+  int distance = (pos - port->position()).manhattanLength();     //GUI concern: needs unit test
+  if (distance <= PORT_CONNECTION_THRESHOLD)                 //GUI concern: needs unit test
   {
-    if (canBeConnected(port))
-    {
-      PortWidget* out = this->isInput() ? port : this;
-      PortWidget* in = this->isInput() ? this : port;
-
-      SCIRun::Dataflow::Networks::ConnectionDescription cd(
-        SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->moduleId_.toStdString(), out->index_), 
-        SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->moduleId_.toStdString(), in->index_));
-
-      Q_EMIT needConnection(cd);
-
-      return true;
-    }
-    else
-    {
-      GuiLogger::Instance().log("input port is full, or ports are different datatype or same i/o type: should not be connected.  this message should come from the domain layer!");
-    }
+    Q_EMIT requestConnection(this, port);
   }
-  //std::cout << "---tryConnectPort returns false" << std::endl;
-  return false;
 }
 
 void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) 
 {
   if (matches(cd))
   {
-    PortWidget* out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
-    PortWidget* in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
-    SCIRun::Dataflow::Networks::ConnectionId id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
-    ConnectionLine* c = connectionFactory_->makeFinishedConnection(out, in, id);
+    auto out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
+    auto in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
+    auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
+    auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   }
 }
@@ -226,37 +209,6 @@ bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription
     || (!isInput() && cd.out_.moduleId_ == moduleId_.toStdString() && cd.out_.port_ == index_);
 }
 
-//TODO: extract this class as a collaborator, change PortWidget to PortDescriptionInterface, and unit test in a lower layer
-class PortConnectionDeterminer
-{
-public:
-  bool canBeConnected(const PortWidget& port1, const PortWidget& port2) const
-  {
-    //std::cout << "in PortConnectionDeterminer::canBeConnected" << std::endl;
-    if (port1.isFullInputPort() || port2.isFullInputPort())
-    {
-      //std::cout << "can't connect since input ports can only take one connection" << std::endl;
-      return false;
-    }
-    if (port1.color() != port2.color())
-    {
-      //std::cout << "can't connect since colors don't match" << std::endl;
-      return false;
-    }
-    if (port1.isInput() == port2.isInput())
-    {
-      //std::cout << "can't connect since input/output not compatible" << std::endl;
-      return false;
-    }
-    if (port1.sharesParentModule(port2))
-    {
-      //std::cout << "can't connect since it's the same module" << std::endl;
-      return false;
-    }
-    return true;
-  }
-};
-
 bool PortWidget::sharesParentModule(const PortWidget& other) const
 {
   return moduleId_ == other.moduleId_;
@@ -265,17 +217,6 @@ bool PortWidget::sharesParentModule(const PortWidget& other) const
 bool PortWidget::isFullInputPort() const
 {
   return isInput() && !connections_.empty();
-}
-
-//TODO: push this verification down to the domain layer!  make this layer as dumb as possible
-bool PortWidget::canBeConnected(PortWidget* other) const
-{
-  //std::cout << "in PortWidget::canBeConnected" << std::endl;
-  if (!other)
-    return false;
-
-  PortConnectionDeterminer q;
-  return q.canBeConnected(*this, *other);
 }
 
 void PortWidget::performDrag(const QPointF& endPos)
@@ -315,6 +256,26 @@ QPointF PortWidget::position() const
   if (positionProvider_)
     return positionProvider_->currentPosition();
   return pos();
+}
+
+size_t PortWidget::nconnections() const
+{
+  return connections_.size();
+}
+
+std::string PortWidget::get_colorname() const
+{
+  return color().name().toStdString();
+}
+
+std::string PortWidget::get_portname() const
+{
+  return name_.toStdString();
+}
+
+std::string PortWidget::getUnderlyingModuleId() const
+{
+  return moduleId_.toStdString();
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 

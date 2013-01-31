@@ -83,13 +83,34 @@ void NetworkEditorController::printNetwork() const
   }
 }
 
-void NetworkEditorController::addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc)
+void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
 {
-  ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.port_),
-    ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.port_));
-  if (!id.id_.empty())
-    connectionAdded_(desc);
-  printNetwork();
+  ENSURE_NOT_NULL(from, "from port");
+  ENSURE_NOT_NULL(to, "to port");
+
+  auto out = from->isInput() ? to : from;     
+  auto in = from->isInput() ? from : to;     
+
+  SCIRun::Dataflow::Networks::ConnectionDescription desc(
+    SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
+    SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
+
+  PortConnectionDeterminer q;
+  if (q.canBeConnected(*from, *to))
+  {
+    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.port_),
+      ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.port_));
+    if (!id.id_.empty())
+      connectionAdded_(desc);
+    
+    printNetwork();
+  }
+  else
+  {
+    //TODO: use real logger
+    std::cout << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
+    invalidConnection_(desc);
+  }
 }
 
 void NetworkEditorController::removeConnection(const ConnectionId& id)
@@ -117,6 +138,11 @@ boost::signals2::connection NetworkEditorController::connectConnectionAdded(cons
 boost::signals2::connection NetworkEditorController::connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber)
 {
   return connectionRemoved_.connect(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber)
+{
+  return invalidConnection_.connect(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
@@ -153,16 +179,19 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)
 {
-  BoostGraphSerialScheduler scheduler;
+  ModuleExecutionOrder order;
   try
   {
-    executor_->executeAll(lookup, scheduler.schedule(*theNetwork_));
+    BoostGraphSerialScheduler scheduler;
+    order = scheduler.schedule(*theNetwork_);
   }
   catch (NetworkHasCyclesException&)
   {
     //TODO: use real logger here--or just let this exception bubble up--needs testing. 
     std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+    return;
   }  
+  executor_->executeAll(lookup, order);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const 

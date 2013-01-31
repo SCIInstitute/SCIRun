@@ -55,9 +55,9 @@ void NetworkEditorControllerGuiProxy::removeModule(const std::string& id)
   controller_->removeModule(id);
 }
 
-void NetworkEditorControllerGuiProxy::addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc)
+void NetworkEditorControllerGuiProxy::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
 {
-  controller_->addConnection(desc);
+  controller_->requestConnection(from, to);
 }
 
 void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id)

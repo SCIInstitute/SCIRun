@@ -57,7 +57,7 @@ public:
 
   std::string get_typename() const { return typeName_; }
   std::string get_colorname() const { return colorName_; }
-  std::string get_portname() const {return portName_; }
+  std::string get_portname() const { return portName_; }
 
   virtual void attach(Connection* conn);
   virtual void detach(Connection* conn);
@@ -65,12 +65,16 @@ public:
   virtual void reset() {}
   virtual void finish() {}
 
+  virtual std::string getUnderlyingModuleId() const;
+  virtual size_t getIndex() const;
+
   //TODO:
   // light interface
 
 protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;
+  size_t index_;
 
 private:
   std::string typeName_;
@@ -90,6 +94,8 @@ public:
   virtual Core::Datatypes::DatatypeHandleOption getData();
   virtual void attach(Connection* conn);
   virtual DatatypeSinkInterfaceHandle sink();
+  virtual bool isInput() const { return true; } //boo
+  virtual void setIndex(size_t index) { index_ = index; }
 private:
   DatatypeSinkInterfaceHandle sink_;
 };
@@ -101,6 +107,8 @@ public:
   OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source);
   virtual ~OutputPort();
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
+  virtual bool isInput() const { return false; } //boo
+  virtual void setIndex(size_t index) { index_ = index; }
 private:
   DatatypeSourceInterfaceHandle source_;
 };

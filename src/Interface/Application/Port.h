@@ -37,6 +37,7 @@
 #include <QColor>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
+#include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 
 class QGraphicsScene;
@@ -50,7 +51,7 @@ class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
 
-class PortWidget : public QWidget, public NeedsScenePositionProvider
+class PortWidget : public QWidget, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
   Q_OBJECT
 public:
@@ -60,9 +61,15 @@ public:
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
-  bool isInput() const { return isInput_; }
+  virtual bool isInput() const { return isInput_; }
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected);
+
+  virtual size_t nconnections() const;
+  virtual std::string get_colorname() const;
+  virtual std::string get_portname() const;
+  virtual std::string getUnderlyingModuleId() const;
+  virtual size_t getIndex() const;
 
   void toggleLight();
   void turn_on_light();
@@ -89,7 +96,7 @@ public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();
 Q_SIGNALS:
-  void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+  void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
 protected:
   void mousePressEvent(QMouseEvent* event);
@@ -98,9 +105,9 @@ protected:
   void paintEvent(QPaintEvent* event);
 private:
   void performDrag(const QPointF& endPos);
-  bool canBeConnected(PortWidget* other) const;
+  //bool canBeConnected(PortWidget* other) const;
   void makeConnection(const QPointF& pos);
-  bool tryConnectPort(const QPointF& pos, PortWidget* port);
+  void tryConnectPort(const QPointF& pos, PortWidget* port);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;

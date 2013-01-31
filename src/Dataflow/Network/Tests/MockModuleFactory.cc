@@ -45,7 +45,7 @@ ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& i
   ModuleDescription d;
   d.lookupInfo_ = info;
   d.output_ports_ += OutputPortDescription("o1", "d1", "c1");
-  d.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1");
+  d.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1"), InputPortDescription("i3", "d2", "c2");
   return d;
 }
 
@@ -53,34 +53,39 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
 {
   MockModulePtr module(new NiceMock<MockModule>);
 
-  EXPECT_CALL(*module, get_module_name()).WillRepeatedly(Return(info.lookupInfo_.module_name_));
+  ON_CALL(*module, get_module_name()).WillByDefault(Return(info.lookupInfo_.module_name_));
 
-  EXPECT_CALL(*module, num_input_ports()).WillRepeatedly(Return(info.input_ports_.size()));
+  ON_CALL(*module, num_input_ports()).WillByDefault(Return(info.input_ports_.size()));
   size_t portIndex = 0;
   BOOST_FOREACH(const InputPortDescription& d, info.input_ports_)
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
-    EXPECT_CALL(*module, get_input_port(portIndex)).WillRepeatedly(Return(inputPort));
+    ON_CALL(*inputPort, get_colorname()).WillByDefault(Return(d.color));
+    //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
+    //EXPECT_CALL(*module, get_input_port(portIndex)).WillRepeatedly(Return(inputPort));
     portIndex++;
   }
   
-  EXPECT_CALL(*module, num_output_ports()).WillRepeatedly(Return(info.output_ports_.size()));
+  ON_CALL(*module, num_output_ports()).WillByDefault(Return(info.output_ports_.size()));
   portIndex = 0;
   BOOST_FOREACH(const OutputPortDescription& d, info.output_ports_)
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
-    EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
+    ON_CALL(*outputPort, get_colorname()).WillByDefault(Return(d.color));
+    //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
+    //EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
     portIndex++;
   }
   
-  EXPECT_CALL(*module, get_id()).WillRepeatedly(Return("module" + boost::lexical_cast<std::string>(++moduleCounter_)));
+  ON_CALL(*module, get_id()).WillByDefault(Return("module" + boost::lexical_cast<std::string>(++moduleCounter_)));
 
-  if (stateFactory_)
-  {
-    ModuleStateHandle state(stateFactory_->make_state(info.lookupInfo_.module_name_));
-    stateMap_[module] = state;
-    EXPECT_CALL(*module, get_state()).WillRepeatedly(Return(state));
-  }
+  //not used now, commenting out.
+  //if (stateFactory_)
+  //{
+  //  ModuleStateHandle state(stateFactory_->make_state(info.lookupInfo_.module_name_));
+  //  stateMap_[module] = state;
+  //  EXPECT_CALL(*module, get_state()).WillRepeatedly(Return(state));
+  //}
 
   return module;
 }

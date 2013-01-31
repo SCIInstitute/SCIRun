@@ -74,6 +74,7 @@ Q_SIGNALS:
 	
   public:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
+    ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -102,7 +103,7 @@ Q_SIGNALS:
     void mousePressEvent(QMouseEvent *event);
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
-    void needConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
+    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void executeAll();
     void clear();
     void setConnectionPipelineType(int type);
@@ -133,7 +134,7 @@ Q_SIGNALS:
     //void createMenus();
     //void createToolBars();
     void setZValue(int z);
-    void setupModule(ModuleWidget* node);
+    void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
     ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;

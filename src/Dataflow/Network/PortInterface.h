@@ -46,6 +46,9 @@ namespace Networks {
     virtual size_t nconnections() const = 0;
     virtual std::string get_colorname() const = 0;
     virtual std::string get_portname() const = 0;
+    virtual bool isInput() const = 0;
+    virtual std::string getUnderlyingModuleId() const = 0;
+    virtual size_t getIndex() const = 0;
   };
 
   class SCISHARE PortInterface : public PortDescriptionInterface
@@ -55,6 +58,7 @@ namespace Networks {
     virtual void attach(Connection* conn) = 0;
     virtual void detach(Connection* conn) = 0;
     virtual const Connection* connection(size_t) const = 0;
+    virtual void setIndex(size_t index) = 0;
 
     virtual void reset() = 0;
     virtual void finish() = 0;
@@ -74,6 +78,13 @@ namespace Networks {
     virtual ~OutputPortInterface();
     virtual void sendData(Core::Datatypes::DatatypeHandle data) = 0;
   };
+
+  class SCISHARE PortConnectionDeterminer
+  {
+  public:
+    bool canBeConnected(const SCIRun::Dataflow::Networks::PortDescriptionInterface& port1, const SCIRun::Dataflow::Networks::PortDescriptionInterface& port2) const;
+  };
+
 }}}
 
 #endif

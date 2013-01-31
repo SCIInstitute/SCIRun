@@ -149,6 +149,7 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
 SCIRunMainWindow::SCIRunMainWindow()
 {
 	setupUi(this);
+  setAttribute(Qt::WA_DeleteOnClose);
 
   regressionMode_ = false;
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
@@ -175,7 +176,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
-  connect(networkEditor_, SIGNAL(networkExecuted()), this, SLOT(disableInputWidgets()));
     
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
@@ -264,7 +264,9 @@ SCIRunMainWindow::SCIRunMainWindow()
 
 void SCIRunMainWindow::initialize()
 {
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+  
   setRegressionTestDataDir();
 
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
@@ -288,7 +290,6 @@ void SCIRunMainWindow::initialize()
 
 void SCIRunMainWindow::exitApplication(int code)
 {
-  //std::cout << "~~~exiting with code " << code << std::endl;
   close(); 
   /*qApp->*/exit(code);
 }

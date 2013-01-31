@@ -33,6 +33,9 @@
       <property name="acceptDrops">
        <bool>true</bool>
       </property>
+      <property name="whatsThis">
+       <string>The network editor pane. Displays modules and connetions in the loaded network file.</string>
+      </property>
       <property name="widgetResizable">
        <bool>true</bool>
       </property>
@@ -41,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>796</width>
-         <height>516</height>
+         <width>793</width>
+         <height>477</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -60,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1119</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -589,6 +592,9 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="configurationDockWidget_">
+   <property name="whatsThis">
+    <string>Configuration options and general application settings are found in this pane.</string>
+   </property>
    <property name="windowTitle">
     <string>Configuration</string>
    </property>
@@ -608,6 +614,9 @@
          <height>200</height>
         </size>
        </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
        <property name="tabPosition">
         <enum>QTabWidget::North</enum>
        </property>
@@ -618,6 +627,9 @@
         <number>0</number>
        </property>
        <widget class="QWidget" name="networkEditorTab_">
+        <property name="whatsThis">
+         <string>Display options for the network editor.</string>
+        </property>
         <attribute name="title">
          <string>Network Editor*</string>
         </attribute>
@@ -664,7 +676,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -677,7 +689,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string>moduleSizeButtonGroup_</string>
+                <string notr="true">moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -697,6 +709,9 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="whatsThis">
+                <string>Switch to classic dataflow pipelines.</string>
+               </property>
                <property name="text">
                 <string>Manhattan</string>
                </property>
@@ -704,6 +719,9 @@
              </item>
              <item>
               <widget class="QRadioButton" name="cubicPipesRadioButton_">
+               <property name="whatsThis">
+                <string>Switch to curved dataflow pipelines.</string>
+               </property>
                <property name="text">
                 <string>Cubic Bézier</string>
                </property>
@@ -711,6 +729,9 @@
              </item>
              <item>
               <widget class="QRadioButton" name="euclideanPipesRadioButton_">
+               <property name="whatsThis">
+                <string>Switch to straight, direct dataflow pipelines.</string>
+               </property>
                <property name="text">
                 <string>Euclidean</string>
                </property>
@@ -728,6 +749,9 @@
        <widget class="QWidget" name="optionsTab_">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+        <property name="whatsThis">
+         <string>Stored paths available for use in module I/O.</string>
         </property>
         <attribute name="title">
          <string>Options*</string>
@@ -862,6 +886,9 @@
         </layout>
        </widget>
        <widget class="QWidget" name="advancedTab_">
+        <property name="whatsThis">
+         <string>Additional options for running and testing networks.</string>
+        </property>
         <attribute name="title">
          <string>Advanced</string>
         </attribute>
@@ -871,7 +898,7 @@
            <x>10</x>
            <y>10</y>
            <width>531</width>
-           <height>31</height>
+           <height>34</height>
           </rect>
          </property>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -900,6 +927,9 @@
         </widget>
        </widget>
        <widget class="QWidget" name="logTab">
+        <property name="whatsThis">
+         <string>The global network log. Events of general importance are logged here.</string>
+        </property>
         <attribute name="title">
          <string>Log</string>
         </attribute>

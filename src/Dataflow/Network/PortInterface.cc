@@ -50,3 +50,43 @@ OutputPortInterface::~OutputPortInterface()
 RendererInterface::~RendererInterface() 
 {
 }
+
+namespace
+{
+  bool isFullInputPort(const PortDescriptionInterface& port)
+  {
+    return port.isInput() && port.nconnections() == 1;
+  }
+
+  bool sharesParentModule(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2)
+  {
+    return port1.getUnderlyingModuleId() == port2.getUnderlyingModuleId();
+  }
+}
+
+//TODO: unit test
+bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2) const
+{
+  //std::cout << "in PortConnectionDeterminer::canBeConnected" << std::endl;
+  if (isFullInputPort(port1) || isFullInputPort(port2))
+  {
+    //std::cout << "can't connect since input ports can only take one connection" << std::endl;
+    return false;
+  }
+  if (port1.get_colorname() != port2.get_colorname())
+  {
+    //std::cout << "can't connect since colors don't match" << std::endl;
+    return false;
+  }
+  if (port1.isInput() == port2.isInput())
+  {
+    //std::cout << "can't connect since input/output not compatible" << std::endl;
+    return false;
+  }
+  if (sharesParentModule(port1, port2))
+  {
+    //std::cout << "can't connect since it's the same module" << std::endl;
+    return false;
+  }
+  return true;
+}

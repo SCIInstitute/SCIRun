@@ -46,7 +46,7 @@ namespace Gui {
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
-    void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
+    void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
