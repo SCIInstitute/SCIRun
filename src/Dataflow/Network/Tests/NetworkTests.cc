@@ -66,7 +66,7 @@ protected:
 
 ModuleStateFactoryHandle NetworkTests::sf_;
 
-TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
+TEST_F(NetworkTests, CanAddAndRemoveModules)
 {
   Network network(moduleFactory_, sf_);
  
@@ -83,7 +83,7 @@ TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
   EXPECT_FALSE(network.remove_module("not in the network"));
 }
 
-TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
+TEST_F(NetworkTests, CanAddAndRemoveConnections)
 {
   Network network(moduleFactory_, sf_);
 
@@ -106,7 +106,7 @@ TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveConnections))
   EXPECT_EQ(0, network.nconnections());
 }
 
-TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CannotMakeSameConnectionTwice))
+TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 {
   Network network(moduleFactory_, sf_);
 
