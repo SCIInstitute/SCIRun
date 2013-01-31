@@ -50,6 +50,10 @@ namespace Render {
     /// Used to initialize spire with the context given in the Transient state.
     virtual void preExecutionInitialization();
 
+    /// Used to join/destroy the spire thread before the rendering context
+    /// is destroyed.
+    virtual void preDestruction();
+
     INPUT_PORT(0, RenderedString, GeometryObject);
     INPUT_PORT(1, RenderedMatrixAsVectorField, GeometryObject);
 

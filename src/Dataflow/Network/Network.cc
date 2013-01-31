@@ -65,6 +65,8 @@ bool Network::remove_module(const std::string& id)
   Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   if (loc != modules_.end())
   {
+    // Inform the module that it is about to be erased from the network...
+    (*loc)->preDestruction();
     modules_.erase(loc);
     return true;
   }

@@ -79,6 +79,11 @@ void ViewScene::preExecutionInitialization()
   ///       the context is lost.
 }
 
+void ViewScene::preDestruction()
+{
+  // Destroy spire.
+  mSpire.reset();
+}
 
 void ViewScene::execute()
 {
