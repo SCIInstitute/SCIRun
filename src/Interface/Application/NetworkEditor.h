@@ -134,7 +134,7 @@ Q_SIGNALS:
     //void createMenus();
     //void createToolBars();
     void setZValue(int z);
-    void setupModule(ModuleWidget* node);
+    void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
     ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;

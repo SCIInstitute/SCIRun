@@ -111,7 +111,11 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
 {
   ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
-  setupModule(moduleWidget);
+  
+  //TODO: this depends on the ModuleWidget's dialog being created, since that will change some module state.
+  module->preExecutionInitialization();
+
+  setupModuleWidget(moduleWidget);
   Q_EMIT modified();
 }
 
@@ -121,7 +125,7 @@ void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDesc
   Q_EMIT modified();
 }
 
-void NetworkEditor::setupModule(ModuleWidget* module)
+void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
   connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
