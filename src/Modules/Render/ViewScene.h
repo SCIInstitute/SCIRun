@@ -32,6 +32,8 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Render/Share.h>
 
+#include "Spire/Interface.h"
+
 namespace SCIRun {
 namespace Modules {
 namespace Render {
@@ -50,6 +52,8 @@ namespace Render {
 
   private:
     SCIRun::Dataflow::Networks::RendererInterface* renderer_;
+
+    std::shared_ptr<Spire::Interface>   mSpire;
   };
 }}}
 

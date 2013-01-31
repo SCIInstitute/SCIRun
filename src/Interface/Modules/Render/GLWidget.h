@@ -50,13 +50,15 @@ public:
   GLWidget(const QGLFormat& format);
   ~GLWidget();
 
+  std::shared_ptr<GLContext> getContext() const   {return mContext;}
+
 protected:
   virtual void resizeEvent(QResizeEvent *evt);
   virtual void closeEvent(QCloseEvent *evt);
 
 private:
 
-  GLContext                         mContext;
+  std::shared_ptr<GLContext>        mContext;
   std::shared_ptr<Spire::Interface> mGraphics;
 };
 

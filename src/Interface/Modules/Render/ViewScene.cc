@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Modules/Render/ViewScene.h>
+#include <Dataflow/Network/ModuleStateInterface.h>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
@@ -48,6 +49,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   // Hook up the GLWidget
   glLayout->addWidget(mGLWidget);
   glLayout->update();
+
+  // Grab the context and pass that to the module (via the state).
+  std::weak_ptr<Spire::Context> ctx = std::weak_ptr<Spire::Context>(
+      std::dynamic_pointer_cast<Spire::Context>(mGLWidget->getContext()));
+  state->setTransientValue("glContext", ctx);
 }
 
 ViewSceneDialog::~ViewSceneDialog()

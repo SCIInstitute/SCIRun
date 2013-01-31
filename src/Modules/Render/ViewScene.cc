@@ -32,6 +32,8 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Dataflow/Network/RendererInterface.h>
 
+#include "Spire/Interface.h"
+
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -39,7 +41,33 @@ using namespace SCIRun::Dataflow::Networks;
 ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun")),
   renderer_(0)
 {
-  //TODO: create spire objects.
+  // Lookup state information in order to create Spire
+  boost::any context = get_state()->getTransientValue("glContext");
+  std::vector<std::string> shaderDirs;
+
+  if (!context.empty())
+  {
+    try
+    {
+      std::shared_ptr<Spire::Context> glContext = 
+          boost::any_cast<std::weak_ptr<Spire::Context>>(context).lock();
+
+      // Note: On windows, we *need* to create a non-threaded renderer.
+      mSpire = std::shared_ptr<Spire::Interface>(
+          new Spire::Interface(glContext, shaderDirs, true));
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+      error("Unable to cast glContext transient value to boost::any.");
+    }
+  }
+  else
+  {
+    error("Unable to find transient context value.");
+  }
+
+  /// \todo Add signal that terminates spire (resets the shared pointer) when
+  ///       the context is lost.
 }
 
 void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)

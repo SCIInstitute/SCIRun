@@ -37,14 +37,14 @@ using namespace SCIRun::Gui;
 
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
-    mContext(this)
+    mContext(new GLContext(this))
 {
-  std::vector<std::string> shaderSearchDirs = {"Shaders"};
+  //std::vector<std::string> shaderSearchDirs = {"Shaders"};
 
   // Create a threaded spire renderer. This should be created at the module
   // level once it has access to the context, should be passed using Transients.
-  mGraphics = std::shared_ptr<Spire::Interface>(
-      new Spire::Interface(&mContext, shaderSearchDirs, true));
+  //mGraphics = std::shared_ptr<Spire::Interface>(
+  //    new Spire::Interface(&mContext, shaderSearchDirs, true));
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -52,19 +52,22 @@ GLWidget::GLWidget(const QGLFormat& format) :
 
 GLWidget::~GLWidget()
 {
-  mGraphics.reset();
+  // Need to inform module that the context is being destroyed.
+  //mGraphics.reset();
 }
 
 void GLWidget::resizeEvent(QResizeEvent *evt)
 {
   /// @todo Inform the renderer that screen dimensions have changed.
   //mGraphics.resizeViewport(evt->size());
+
+  /// \todo Send resize event to the module.
 }
 
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   // Kill off the graphics thread.
-  mGraphics.reset();
-  QGLWidget::closeEvent(evt);
+  //mGraphics.reset();
+  //QGLWidget::closeEvent(evt);
 }
 
