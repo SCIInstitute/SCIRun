@@ -41,6 +41,15 @@ using namespace SCIRun::Dataflow::Networks;
 ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun")),
   renderer_(0)
 {
+}
+
+void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
+{
+  renderer_ = r;
+}
+
+void ViewScene::preExecutionInitialization()
+{
   // Lookup state information in order to create Spire
   boost::any context = get_state()->getTransientValue("glContext");
   std::vector<std::string> shaderDirs;
@@ -70,10 +79,6 @@ ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun"
   ///       the context is lost.
 }
 
-void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
-{
-  renderer_ = r;
-}
 
 void ViewScene::execute()
 {

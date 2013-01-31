@@ -47,6 +47,9 @@ namespace Render {
 
     void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r);
 
+    /// Used to initialize spire with the context given in the Transient state.
+    virtual void preExecutionInitialization();
+
     INPUT_PORT(0, RenderedString, GeometryObject);
     INPUT_PORT(1, RenderedMatrixAsVectorField, GeometryObject);
 
