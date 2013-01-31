@@ -52,24 +52,20 @@ protected:
     DefaultValue<InputPortHandle>::Set(InputPortHandle());
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle());
     DefaultValue<DatatypeSinkInterfaceHandle>::Set(sink_);
-    
-    inputModule.reset(new NiceMock<MockModule>);
-    outputModule.reset(new NiceMock<MockModule>);
   }
-
-  MockModulePtr inputModule;
-  MockModulePtr outputModule;
   DatatypeSinkInterfaceHandle sink_;
 };
 
-TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(SendSomeData))
+TEST_F(OutputPortTest, SendSomeData)
 {
   Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
+  MockModulePtr outputModule(new NiceMock<MockModule>);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
 
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
+  MockModulePtr inputModule(new NiceMock<MockModule>);
   EXPECT_CALL(*inputPort, get_colorname()).WillRepeatedly(Return(pcp.color_name));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
@@ -83,8 +79,10 @@ TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(SendSomeData))
   outputPort->sendData(dataToPush);
 }
 
-TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(DataNotSentWhenNoConnectionsOnPort))
+TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 {
+  MockModulePtr outputModule(new NiceMock<MockModule>);
+  
   Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
@@ -97,15 +95,17 @@ TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(DataNotSentWhenNoConnectionsOnPort))
   outputPort->sendData(dataToPush);
 }
 
-TEST_F(OutputPortTest, ENABLE_ON_WINDOWS(CanSendDataToMultipleConnections))
+TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
 {
   Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
+  MockModulePtr outputModule(new NiceMock<MockModule>);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
 
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
   MockInputPortPtr inputPort2(new NiceMock<MockInputPort>);
+  MockModulePtr inputModule(new NiceMock<MockModule>);
   EXPECT_CALL(*inputModule, get_input_port(1)).WillRepeatedly(Return(inputPort));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort2));
   EXPECT_CALL(*inputPort, get_colorname()).WillRepeatedly(Return(pcp.color_name));
