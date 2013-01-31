@@ -77,12 +77,12 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   
   EXPECT_CALL(*module, get_id()).WillRepeatedly(Return("module" + boost::lexical_cast<std::string>(++moduleCounter_)));
 
-  if (stateFactory_)
-  {
-    ModuleStateHandle state(stateFactory_->make_state(info.lookupInfo_.module_name_));
-    stateMap_[module] = state;
-    EXPECT_CALL(*module, get_state()).WillRepeatedly(Return(state));
-  }
+  //if (stateFactory_)
+  //{
+  //  ModuleStateHandle state(stateFactory_->make_state(info.lookupInfo_.module_name_));
+  //  stateMap_[module] = state;
+  //  EXPECT_CALL(*module, get_state()).WillRepeatedly(Return(state));
+  //}
 
   return module;
 }

@@ -48,12 +48,19 @@ protected:
   {
     DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
     moduleFactory_.reset(new MockModuleFactory);
-    sf_.reset(new MockModuleStateFactory);
+  }
+
+  virtual void TearDown()
+  {
+    moduleFactory_.reset();
+    sf_.reset();
   }
 
   ModuleFactoryHandle moduleFactory_;
-  ModuleStateFactoryHandle sf_;
+  static ModuleStateFactoryHandle sf_;
 };
+
+ModuleStateFactoryHandle NetworkTests::sf_;
 
 TEST_F(NetworkTests, ENABLE_ON_WINDOWS(CanAddAndRemoveModules))
 {
