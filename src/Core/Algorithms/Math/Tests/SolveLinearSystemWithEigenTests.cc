@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 
 #include <fstream>
+#include <boost/filesystem.hpp>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -229,6 +230,14 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
   EigenMatrixFromScirunAsciiFormatConverter converter;
 
   const std::string file = "E:\\stuff\\sp2.mat";
+
+  if (!boost::filesystem::exists(file))
+  {
+    std::cout << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl;
+    std::cout << "Once that issue is done however, this will be a user setup error." << std::endl;
+    return;
+  }
+
   std::string matStr = converter.readFile(file);
 
   //2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}
