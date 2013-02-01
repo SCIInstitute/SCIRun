@@ -1,4 +1,3 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -31,12 +30,56 @@ SET(SCIRunGUIPrototype_SOURCES
   scirunMain.cc 
 )
 
-ADD_EXECUTABLE(SCIRunGUIPrototype
+IF(APPLE)
+  SET(SCIRunGUIPrototype_SOURCES ${SCIRunGUIPrototype_SOURCES} "${APPLICATION_OSX_ICON_FULL_PATH}")
+  SET_SOURCE_FILES_PROPERTIES(${APPLICATION_OSX_ICON_FULL_PATH}
+                              PROPERTIES
+                              MACOSX_PACKAGE_LOCATION Resources)
+  SET(MACOSX_BUNDLE_ICON_FILE "${APPLICATION_OSX_ICON}" )
+  ADD_EXECUTABLE(${APPLICATION_NAME} MACOSX_BUNDLE ${SCIRunGUIPrototype_SOURCES})
+
+# TODO: ELSE IF WIN32 with NSIS settings, generic Unix build
+ELSE()
+
+ADD_EXECUTABLE(${APPLICATION_NAME}
   ${SCIRunGUIPrototype_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(SCIRunGUIPrototype 
+ENDIF()
+
+TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
 )
+
+IF(APPLE)
+# TODO: Xcode settings go here, once Xcode build is working
+# IF(${CMAKE_GENERATOR} MATCHES "Xcode")
+
+  IF(${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
+    ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
+       POST_BUILD
+       COMMAND cp -rf "${QT_QTCORE_LIBRARY_RELEASE}/Versions/4/QtCore" "${APPLICATION_NAME}.app/Contents/MacOS/"
+       COMMAND cp -rf "${QT_QTGUI_LIBRARY_RELEASE}/Versions/4/QtGui" "${APPLICATION_NAME}.app/Contents/MacOS/"
+       COMMAND cp -rf "${QT_QTOPENGL_LIBRARY_RELEASE}/Versions/4/QtOpenGL" "${APPLICATION_NAME}.app/Contents/MacOS/"
+       COMMAND install_name_tool -id QtCore ${APPLICATION_NAME}.app/Contents/MacOS/QtCore
+       COMMAND install_name_tool -id QtGui ${APPLICATION_NAME}.app/Contents/MacOS/QtGui
+       COMMAND install_name_tool -id QtOpenGL ${APPLICATION_NAME}.app/Contents/MacOS/QtOpenGL
+       COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/QtGui
+       COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/QtOpenGL
+       COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/QtGui ${APPLICATION_NAME}.app/Contents/MacOS/QtOpenGL
+       COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/QtGui ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+       COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+       COMMAND install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/QtOpenGL ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+       COMMAND cp "-rf" "${QT_QTGUI_LIBRARY_RELEASE}/Versions/Current/Resources" "${APPLICATION_NAME}.app/Contents"
+       COMMAND [ -d ${APPLICATION_NAME}.app/Contents/MacOS/plugins ] || mkdir ${APPLICATION_NAME}.app/Contents/MacOS/plugins
+       COMMAND cp -rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
+       
+       WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+  ENDIF()
+
+  INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
+
+
+ENDIF()
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

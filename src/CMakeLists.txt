@@ -361,7 +361,7 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules")
 #
 # Based on Seg3D settings...
 
-SET(APPLICATION_NAME "SCIRun" CACHE INTERNAL "Application name" FORCE)
+SET(APPLICATION_NAME "SCIRunGUIPrototype" CACHE INTERNAL "Application name" FORCE)
 # add others?
 SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
 SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
