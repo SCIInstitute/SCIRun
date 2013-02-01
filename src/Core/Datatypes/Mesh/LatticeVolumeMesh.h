@@ -44,7 +44,7 @@
 
 #include <Core/Datatypes/Mesh/FieldIterator.h>
 #include <Core/Datatypes/Mesh/Mesh.h>
-//#include <Core/Datatypes/VMesh.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
 //#include <Core/Datatypes/FieldRNG.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h> //TODO
 #include <Core/Datatypes/Mesh/VirtualMeshFactory.h>
