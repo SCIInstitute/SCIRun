@@ -296,14 +296,6 @@ public:
   inline size_type num_delems() const
   { DElem::index_type s; size(s); return(static_cast<size_t>(s)); }  
 
-
-
-
-
-
-
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
   //! iterators for the virtual topology indices. These are not strictly needed
   //! but make the concepts in line with previous version. All iterators now
   //! go from 0 to number of elements, using consecutive unique numbers   
@@ -323,31 +315,20 @@ public:
     { it = 0; }
 
   inline void end(Node::iterator &it) const
-    { Node::size_type s; size(s); it = static_cast<index_type>(s); }
+  { Node::size_type s; size(s); it = static_cast<index_type>(s); }
   inline void end(ENode::iterator &it) const
-    { Node::size_type s; size(s); it = static_cast<index_type>(s); }
+  { Node::size_type s; size(s); it = static_cast<index_type>(s); }
   inline void end(Edge::iterator &it) const
-    { Edge::size_type s; size(s); it = static_cast<index_type>(s); }
+  { Edge::size_type s; size(s); it = static_cast<index_type>(s); }
   inline void end(Face::iterator &it) const
-    { Face::size_type s; size(s); it = static_cast<index_type>(s); }
+  { Face::size_type s; size(s); it = static_cast<index_type>(s); }
   inline void end(Cell::iterator &it) const
-    { Cell::size_type s; size(s); it = static_cast<index_type>(s); }
+  { Cell::size_type s; size(s); it = static_cast<index_type>(s); }
   inline void end(Elem::iterator &it) const
-    { Elem::size_type s; size(s); it = static_cast<index_type>(s); }
+  { Elem::size_type s; size(s); it = static_cast<index_type>(s); }
   inline void end(DElem::iterator &it) const
-    { DElem::size_type s; size(s); it = static_cast<index_type>(s); }
+  { DElem::size_type s; size(s); it = static_cast<index_type>(s); }
 
-  
-  
-  
-  //! NOTE NOT VALID FOR EACH MESH:
-  virtual LockingHandle<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
-  virtual LockingHandle<SearchGridT<SCIRun::index_type> > get_node_search_grid();
-
-  //! test for special case where the mesh is empty
-  //! empoty meshes may need a special treatment
-  inline bool is_empty() const
-    { Node::index_type s; size(s); return (s == 0); }
   
   //! Topological functions: note that currently most meshes have an incomplete
   //! set implemented. Currently each mesh has:
@@ -364,17 +345,6 @@ public:
   virtual void get_nodes(Node::array_type& nodes, Cell::index_type i) const;
   virtual void get_nodes(Node::array_type& nodes, Elem::index_type i) const;
   virtual void get_nodes(Node::array_type& nodes, DElem::index_type i) const;
-
-
-  //! Get the nodes that make up an element
-  //! Depending on the geometry not every function may be available
-  virtual void get_enodes(ENode::array_type& nodes, Node::index_type i) const;
-  virtual void get_enodes(ENode::array_type& nodes, Edge::index_type i) const;
-  virtual void get_enodes(ENode::array_type& nodes, Face::index_type i) const;
-  virtual void get_enodes(ENode::array_type& nodes, Cell::index_type i) const;
-  virtual void get_enodes(ENode::array_type& nodes, Elem::index_type i) const;
-  virtual void get_enodes(ENode::array_type& nodes, DElem::index_type i) const;
-  
 
   //! Get the edges that make up an element
   //! or get the edges that contain certain nodes
@@ -415,6 +385,65 @@ public:
   virtual void get_elems(Elem::array_type& elems, Elem::index_type i) const;
   virtual void get_elems(Elem::array_type& elems, DElem::index_type i) const;
 
+  //! Get the location of a point. As the old interface used both get_point and
+  //! get_center, these are short cuts to the one implementation that is done
+  //! under the name get_center.                             
+  inline void get_point(Geometry::Point &point, Node::index_type i) const
+  { 
+    get_center(point,i); 
+  }
+  
+  inline void get_point(Geometry::Point &point, ENode::index_type i) const
+  { 
+    get_center(point,i); 
+  }
+  
+  inline Geometry::Point get_point(Node::index_type i) const
+  { 
+    Geometry::Point p; 
+    get_point(p,i); 
+    return (p); 
+  } 
+
+  inline Geometry::Point get_point(ENode::index_type i) const
+  { 
+    Geometry::Point p; 
+    get_point(p,i); 
+    return (p); 
+  } 
+
+  //! Get the center of a certain mesh element
+  virtual void get_center(Geometry::Point &point, Node::index_type i) const;
+  virtual void get_center(Geometry::Point &point, ENode::index_type i) const;
+  virtual void get_center(Geometry::Point &point, Edge::index_type i) const;
+  virtual void get_center(Geometry::Point &point, Face::index_type i) const;
+  virtual void get_center(Geometry::Point &point, Cell::index_type i) const;
+  virtual void get_center(Geometry::Point &point, Elem::index_type i) const;
+  virtual void get_center(Geometry::Point &point, DElem::index_type i) const;
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+  //! NOTE NOT VALID FOR EACH MESH:
+  virtual LockingHandle<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
+  virtual LockingHandle<SearchGridT<SCIRun::index_type> > get_node_search_grid();
+
+  //! test for special case where the mesh is empty
+  //! empty meshes may need a special treatment
+  inline bool is_empty() const
+    { Node::index_type s; size(s); return (s == 0); }
+  
+
+
+  //! Get the nodes that make up an element
+  //! Depending on the geometry not every function may be available
+  virtual void get_enodes(ENode::array_type& nodes, Node::index_type i) const;
+  virtual void get_enodes(ENode::array_type& nodes, Edge::index_type i) const;
+  virtual void get_enodes(ENode::array_type& nodes, Face::index_type i) const;
+  virtual void get_enodes(ENode::array_type& nodes, Cell::index_type i) const;
+  virtual void get_enodes(ENode::array_type& nodes, Elem::index_type i) const;
+  virtual void get_enodes(ENode::array_type& nodes, DElem::index_type i) const;
+  
+
+
   //! Get the derived element index that contains the specified component
   //! Depending on the geometry not every function may be available
   virtual void get_delems(DElem::array_type& delems, Node::index_type i) const;
@@ -431,14 +460,7 @@ public:
   virtual bool get_face(Face::index_type& face, Node::array_type& nodes) const;
   virtual bool get_edge(Edge::index_type& edge, Node::array_type& nodes) const;
 
-  //! Get the center of a certain mesh element
-  virtual void get_center(Point &point, Node::index_type i) const;
-  virtual void get_center(Point &point, ENode::index_type i) const;
-  virtual void get_center(Point &point, Edge::index_type i) const;
-  virtual void get_center(Point &point, Face::index_type i) const;
-  virtual void get_center(Point &point, Cell::index_type i) const;
-  virtual void get_center(Point &point, Elem::index_type i) const;
-  virtual void get_center(Point &point, DElem::index_type i) const;
+
 
   //! Get the centers of a series of nodes
   virtual void get_centers(Point* points, Node::array_type& array) const;
@@ -765,17 +787,7 @@ public:
   virtual void get_random_point(Point &p, 
                                 Elem::index_type i,FieldRNG &rng) const;
                                 
-  //! Get the location of a point. As the old interface used both get_point and
-  //! get_center, these are short cuts to the one implementation that is done
-  //! under the name get_center.                             
-  inline  void get_point(Point &point, Node::index_type i) const
-    { get_center(point,i); }
-  inline  void get_point(Point &point, ENode::index_type i) const
-    { get_center(point,i); }
-  inline Point get_point(Node::index_type i) const
-    { Point p; get_point(p,i); return (p); } 
-  inline Point get_point(ENode::index_type i) const
-    { Point p; get_point(p,i); return (p); } 
+
       
   //! Set the location of a point.
   //! Note: one must be the single user of the mesh to do this

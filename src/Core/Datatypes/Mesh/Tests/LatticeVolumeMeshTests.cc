@@ -41,20 +41,46 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 using namespace boost::assign;
 
-TEST(LatticeVolumeMeshTests, BasicCubeTests)
+class LatticeVolumeMeshTests : public ::testing::Test
 {
-  int basisOrder = 1;
-  FieldInformation lfi("LatVolMesh", basisOrder, "double");
-  int sizex,sizey,sizez;
-  sizex = sizey = sizez = 2;
-  Point minb(0,0,0);
-  Point maxb(1,1,1);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-  ASSERT_TRUE(mesh);
+protected:
+  virtual void SetUp()
+  {
+    int basisOrder = 1;
+    FieldInformation lfi("LatVolMesh", basisOrder, "double");
+    int sizex,sizey,sizez;
+    sizex = sizey = sizez = 2;
+    Point minb(0,0,0);
+    Point maxb(1,1,1);
+    mesh_ = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+  }
 
-  ASSERT_TRUE(mesh->vmesh());
+  MeshHandle mesh_;
+};
+
+namespace
+{
+  template <typename T>
+  std::string join(const T& list)
+  {
+    std::ostringstream oss;
+    const int SIZE = list.size();
+    for (int i = 0; i < SIZE; ++i)
+    {
+      oss << list[i];
+      if (i < SIZE - 1)
+        oss << ", ";
+    }
+    return oss.str();
+  }
+}
+
+TEST_F(LatticeVolumeMeshTests, BasicCubeTests)
+{
+  ASSERT_TRUE(mesh_);
   
-  auto latVolVMesh = mesh->vmesh();
+  auto latVolVMesh = mesh_->vmesh();
+  ASSERT_TRUE(latVolVMesh);
 
   VirtualMesh::dimension_type dims;
   latVolVMesh->get_dimensions(dims);
@@ -73,4 +99,69 @@ TEST(LatticeVolumeMeshTests, BasicCubeTests)
 
   ASSERT_FALSE(latVolVMesh->has_normals());
 #endif
+}
+
+TEST_F(LatticeVolumeMeshTests, CubeIterationTests)
+{
+  auto latVolVMesh = mesh_->vmesh();
+
+  VirtualMesh::Edge::iterator meshEdgeIter;
+  VirtualMesh::Edge::iterator meshEdgeEnd;
+
+  VirtualMesh::Node::array_type nodesFromEdge(2);
+
+  latVolVMesh->end(meshEdgeEnd);
+
+  for (latVolVMesh->begin(meshEdgeIter); meshEdgeIter != meshEdgeEnd; ++meshEdgeIter)
+  {
+    // get nodes from edge
+
+    VirtualMesh::Edge::index_type edgeID = *meshEdgeIter;
+    latVolVMesh->get_nodes(nodesFromEdge, edgeID);
+    Point p0, p1;
+    latVolVMesh->get_point(p0, nodesFromEdge[0]);
+    latVolVMesh->get_point(p1, nodesFromEdge[1]);
+    std::cout << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
+      << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
+  }
+
+  VirtualMesh::Face::iterator meshFaceIter;
+  VirtualMesh::Face::iterator meshFaceEnd;
+
+  VirtualMesh::Edge::array_type edgesFromFace(4);
+  VirtualMesh::Node::array_type nodesFromFace(4);
+
+  latVolVMesh->end(meshFaceEnd);
+
+  for (latVolVMesh->begin(meshFaceIter); meshFaceIter != meshFaceEnd; ++meshFaceIter)
+  {
+    // get edges and nodes from face
+
+    VirtualMesh::Face::index_type faceID = *meshFaceIter;
+    latVolVMesh->get_edges(edgesFromFace, faceID);
+    std::cout << "Face " << faceID << " edges=[" << join(edgesFromFace) << "]" << std::endl;
+
+    latVolVMesh->get_nodes(nodesFromFace, faceID);
+    std::cout << "Face " << faceID << " nodes=[" << join(nodesFromFace) << "]" << std::endl;
+  }
+
+  VirtualMesh::Cell::iterator meshCellIter;
+  VirtualMesh::Cell::iterator meshCellEnd;
+
+  VirtualMesh::Edge::array_type edgesFromCell(12);
+  VirtualMesh::Node::array_type nodesFromCell(8);
+
+  latVolVMesh->end(meshCellEnd);
+
+  for (latVolVMesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
+  {
+    // get edges and nodes from mesh element
+
+    VirtualMesh::Cell::index_type elemID = *meshCellIter;
+    latVolVMesh->get_edges(edgesFromCell, elemID);
+    std::cout << "Cell " << elemID << " edges=[" << join(edgesFromCell) << "]" << std::endl;
+
+    latVolVMesh->get_nodes(nodesFromCell, elemID);
+    std::cout << "Cell " << elemID << " nodes=["<< join(nodesFromCell) << "]" << std::endl;
+  }
 }
