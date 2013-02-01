@@ -70,6 +70,23 @@ SET(SCIRUN_VERSION_STRING "${SCIRUN_VERSION_MAJOR}.${SCIRUN_VERSION_MINOR}")
 
 
 ########################################################################
+# APPLICATION Information (used by CPack)
+#
+# Based on Seg3D settings...
+
+SET(APPLICATION_NAME "SCIRunGUIPrototype" CACHE INTERNAL "Application name" FORCE)
+# TODO: temporary hack to allow testing
+SET(TEST_APPLICATION_NAME "SCIRunGUIPrototype_test" CACHE INTERNAL "Application name" FORCE)
+# add others?
+SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
+SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
+SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
+SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
+SET(APPLICATION_WINDOWS_ICON "${CMAKE_SOURCE_DIR}/Interface/Application\\\\scirun-icon-large.ico" CACHE INTERNAL "Windows icon" FORCE)
+SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Interface/Application/scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
+SET(APPLICATION_OSX_ICON "scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
+
+########################################################################
 # Standard tests
 
 INCLUDE(CMakeBackwardCompatibilityC)
@@ -134,6 +151,22 @@ IF(NOT GIT_FOUND)
   MESSAGE(FATAL_ERROR "Git not found.")
 ENDIF()
 
+########################################################################
+# Find and configure Awk & Sed  {(OS X only), needed to build app bundle
+
+# should be installed by default, searching system paths only
+IF(APPLE)
+  FIND_PROGRAM(AWK
+    NAMES awk
+  )
+  MARK_AS_ADVANCED(AWK)
+
+  FIND_PROGRAM(SED
+    NAMES sed
+  )
+  MARK_AS_ADVANCED(SED)
+ENDIF()
+
 
 ########################################################################
 # Configure Boost external project
@@ -196,7 +229,7 @@ IF (CMAKE_GENERATOR MATCHES "Makefiles")
     PROPERTIES
       IMPORTED_LOCATION ${boost_LIBRARY_PATH}
   )
-ELSE() # Xcode, VS, others...
+ELSE() # IDEs: Xcode, VS, others...
   SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
     PROPERTIES
       IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
@@ -210,7 +243,7 @@ INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 ########################################################################
 # Find and configure Qt
 
-# TODO: update to 4.8.3 before next release
+# TODO: exclude for headless
 SET(QT_MIN_VERSION "4.8.0")
 FIND_PACKAGE(Qt4 REQUIRED)
 
@@ -220,11 +253,17 @@ IF(QT_FOUND)
   # build issues haven't been corrected in CMake 2.8.7 and newer
 
   INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+  INCLUDE(${QT_USE_FILE})
+  ADD_DEFINITIONS(${QT_DEFINITIONS})
 ELSE()
   MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
 ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
+
+
+########################################################################
+# Includes
 
 INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -266,8 +305,10 @@ ADD_SUBDIRECTORY(Interface)
 ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
-ADD_SUBDIRECTORY(Main)
 ADD_SUBDIRECTORY(Externals)
+
+ADD_SUBDIRECTORY(Main)
+
 ADD_SUBDIRECTORY(Testing)
 
 
@@ -355,21 +396,6 @@ SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake/Modules")
 ########################################################################
 # CPack
 
-
-########################################################################
-# APPLICATION Information
-#
-# Based on Seg3D settings...
-
-SET(APPLICATION_NAME "SCIRunGUIPrototype" CACHE INTERNAL "Application name" FORCE)
-# add others?
-SET(APPLICATION_EXTENSION ".net" CACHE INTERNAL "Network file extension" FORCE)
-SET(APPLICATION_URL "www.scirun.org" CACHE INTERNAL "Project URL" FORCE)
-SET(APPLICATION_VENDOR "SCI" CACHE INTERNAL "Vendor information" FORCE)
-SET(APPLICATION_CONTACT "scirun-users@sci.utah.edu" CACHE INTERNAL "Contact information" FORCE)
-SET(APPLICATION_WINDOWS_ICON "${CMAKE_SOURCE_DIR}/Interface/Application\\\\scirun-icon-large.ico" CACHE INTERNAL "Windows icon" FORCE)
-SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Interface/Application/scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
-SET(APPLICATION_OSX_ICON "scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
 
 ########################################################################
 # PACKAGING Information

@@ -43,9 +43,6 @@ SET(Interface_Modules_Render_SOURCES
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Render_HEADERS_MOC ${Interface_Modules_Render_HEADERS})
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
 ADD_LIBRARY(Interface_Modules_Render 
   ${Interface_Modules_Render_HEADERS}
   ${Interface_Modules_Render_FORMS_HEADERS}
