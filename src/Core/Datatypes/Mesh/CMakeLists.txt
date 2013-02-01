@@ -43,6 +43,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   FieldIterator.h
   LatticeVolumeMesh.h
   Mesh.h
+  MeshFacade.h
   MeshFactory.h
   MeshTraits.h
   VirtualMeshFactory.h
