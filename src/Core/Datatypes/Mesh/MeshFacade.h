@@ -50,8 +50,21 @@ namespace Datatypes {
     virtual Nodes nodes() const = 0;
     virtual Edges edges() const = 0;
     virtual Faces faces() const = 0;
+
+    virtual size_t numNodes() const = 0;
+    virtual size_t numEdges() const = 0;
+    virtual size_t numFaces() const = 0;
+    virtual size_t numElements() const = 0;
   };
 
+  /*
+    IDEA: Mesh iterators should iterate over entire values, not just indexes, producing values on demand. 
+    A "SmartIndex" for the mesh.
+    E.G. for LatVols:
+    class NodeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point> >
+    class EdgeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[2]> >
+    class FaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[4],SmartIndex<Edge>[4]> >
+  */
 
 }}}
 
