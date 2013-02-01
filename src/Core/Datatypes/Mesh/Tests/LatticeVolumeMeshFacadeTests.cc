@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
+#include <boost/foreach.hpp>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
@@ -62,31 +63,35 @@ protected:
 class LatticeVolumeMeshFacade : public MeshFacade
 {
 public:
-  explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) {}
+  explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) 
+  {
+    if (!vmesh->is_latvolmesh())
+      THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
+  }
 
   virtual Edges edges() const 
   {
-    return Edges();
+    return Edges(SmartEdgeIterator(vmesh_.get()), SmartEdgeIterator(vmesh_.get(), true));
   }
 
   virtual size_t numNodes() const
   {
-    return 0;
+    return vmesh_->num_nodes();
   }
 
   virtual size_t numEdges() const
   {
-    return 0;
+    return vmesh_->num_edges();
   }
   
   virtual size_t numFaces() const 
   {
-    return 0;
+    return vmesh_->num_faces();
   }
 
   virtual size_t numElements() const 
   {
-    return 0;
+    return vmesh_->num_elems();
   }
 private:
   VirtualMeshHandle vmesh_;
@@ -106,29 +111,19 @@ TEST_F(LatticeVolumeMeshFacadeTests, BasicCubeTests)
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeIterationTests)
 {
-
-  /*
-  VirtualMesh::Edge::iterator meshEdgeIter;
-  VirtualMesh::Edge::iterator meshEdgeEnd;
-
-  VirtualMesh::Node::array_type nodesFromEdge(2);
-
-  latVolVMesh->end(meshEdgeEnd);
-
-  for (latVolVMesh->begin(meshEdgeIter); meshEdgeIter != meshEdgeEnd; ++meshEdgeIter)
-  {
-    // get nodes from edge
-
-    VirtualMesh::Edge::index_type edgeID = *meshEdgeIter;
-    latVolVMesh->get_nodes(nodesFromEdge, edgeID);
-    Point p0, p1;
-    latVolVMesh->get_point(p0, nodesFromEdge[0]);
-    latVolVMesh->get_point(p1, nodesFromEdge[1]);
-    std::cout << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
-      << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
-  }*/
+  LatticeVolumeMeshFacade facade(mesh_->vmesh());
 
   std::ostringstream ostr;
+  std::cout << "Begin smart iterating edges" << std::endl;
+  BOOST_FOREACH(const SmartEdgeIndex& edge, facade.edges())
+  {
+    auto nodesFromEdge = edge.nodeIndices();
+    auto nodePoints = edge.nodePoints();
+    ostr << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
+      << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
+  }
+  std::cout << ostr.str() << std::endl;
+  std::cout << "End smart iterating edges" << std::endl;
 
   EXPECT_EQ(
     "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"

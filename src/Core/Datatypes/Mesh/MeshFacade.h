@@ -29,7 +29,9 @@
 #ifndef CORE_DATATYPES_MESH_FACADE_H
 #define CORE_DATATYPES_MESH_FACADE_H 
 
-#include <iterator>
+#include <boost/iterator/iterator_facade.hpp>
+#include <Core/Utils/Exception.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
@@ -42,15 +44,66 @@ namespace Datatypes {
   class SmartEdgeIndex
   {
   public:
-    VirtualMesh::Edge::index_type index() const;
-    VirtualMesh::Node::array_type nodeIndices() const;
-    std::vector<Geometry::Point> nodePoints() const;
+    VirtualMesh::Edge::index_type index() const { return index_; }
+    VirtualMesh::Node::array_type nodeIndices() const
+    {
+      VirtualMesh::Node::array_type nodesFromEdge(2);
+      vmesh_->get_nodes(nodesFromEdge, index_);
+      return nodesFromEdge;
+    }
+    std::vector<Geometry::Point> nodePoints() const 
+    {
+      auto indices = nodeIndices();
+      std::vector<Geometry::Point> ps(2);
+      vmesh_->get_point(ps[0], indices[0]);
+      vmesh_->get_point(ps[1], indices[1]);
+      return ps;
+    }
+  private:
+    friend class SmartEdgeIterator;
+    explicit SmartEdgeIndex(VirtualMesh* mesh) : index_(0), vmesh_(mesh) {}
+    void setIndex(VirtualMesh::Edge::index_type i) { index_ = i; }
+    VirtualMesh::Edge::index_type index_;
+    VirtualMesh* vmesh_;
   };
 
-  class SmartEdgeIterator : public std::iterator<std::forward_iterator_tag, SmartEdgeIndex>
+  class SmartEdgeIterator : public boost::iterator_facade<SmartEdgeIterator, SmartEdgeIndex, boost::bidirectional_traversal_tag>
   {
   public:
+    explicit SmartEdgeIterator(VirtualMesh* vmesh = 0, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
+    {
+      ENSURE_NOT_NULL(vmesh, "virtual mesh");
+      if (!isEnd)
+      {
+        vmesh_->begin(iter_);
+      }
+      else
+      {
+        vmesh_->end(iter_);
+      }
+      current_.setIndex(*iter_);
+    }
+  private:
+    friend class boost::iterator_core_access;
 
+    void increment() { ++iter_; }
+    void decrement() { --iter_; }
+
+    bool equal(const SmartEdgeIterator& other) const
+    {
+      return this->vmesh_ == other.vmesh_ 
+        && this->iter_ == other.iter_;
+    }
+
+    SmartEdgeIndex& dereference() const
+    { 
+      current_.setIndex(*iter_);
+      return current_; 
+    }
+
+    VirtualMesh::Edge::iterator iter_;
+    VirtualMesh* vmesh_;
+    mutable SmartEdgeIndex current_;
   };
 
   //class SmartFaceIterator {};

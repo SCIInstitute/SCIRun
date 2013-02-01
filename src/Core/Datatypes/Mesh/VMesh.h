@@ -420,6 +420,22 @@ public:
   virtual void get_center(Geometry::Point &point, Cell::index_type i) const;
   virtual void get_center(Geometry::Point &point, Elem::index_type i) const;
   virtual void get_center(Geometry::Point &point, DElem::index_type i) const;
+
+  //! check the type of mesh
+  virtual bool is_pointcloudmesh()     { return (false); }
+  virtual bool is_curvemesh()          { return (false); }
+  virtual bool is_scanlinemesh()       { return (false); }
+  virtual bool is_structcurvemesh()    { return (false); }
+  virtual bool is_trisurfmesh()        { return (false); }
+  virtual bool is_quadsurfmesh()       { return (false); }
+  virtual bool is_imagemesh()          { return (false); }
+  virtual bool is_structquadsurfmesh() { return (false); }
+  virtual bool is_tetvolmesh()         { return (false); }
+  virtual bool is_prismvolmesh()       { return (false); }
+  virtual bool is_hexvolmesh()         { return (false); }
+  virtual bool is_latvolmesh()         { return (false); }
+  virtual bool is_structhexvolmesh()   { return (false); }
+
 #if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
   //! NOTE NOT VALID FOR EACH MESH:
@@ -1019,20 +1035,7 @@ public:
   //! This one is generally 1e-7*length diagonal of the bounding box
   virtual double get_epsilon() const;
 
-  //! check the type of mesh
-  virtual bool is_pointcloudmesh()     { return (false); }
-  virtual bool is_curvemesh()          { return (false); }
-  virtual bool is_scanlinemesh()       { return (false); }
-  virtual bool is_structcurvemesh()    { return (false); }
-  virtual bool is_trisurfmesh()        { return (false); }
-  virtual bool is_quadsurfmesh()       { return (false); }
-  virtual bool is_imagemesh()          { return (false); }
-  virtual bool is_structquadsurfmesh() { return (false); }
-  virtual bool is_tetvolmesh()         { return (false); }
-  virtual bool is_prismvolmesh()       { return (false); }
-  virtual bool is_hexvolmesh()         { return (false); }
-  virtual bool is_latvolmesh()         { return (false); }
-  virtual bool is_structhexvolmesh()   { return (false); }
+  
 
   //! Check order of mesh
   inline bool is_constantmesh()        { return (basis_order_ == 0); }

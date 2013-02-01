@@ -61,16 +61,10 @@ class FieldVIteratorBase
 
 protected:
   T index_;
-#ifdef __digital__
-public:
-#else
 private:
-#endif
   //! Hide this in private to prevent it from being called.
-  FieldVIteratorBase<T> operator ++(int) {
-    FieldVIteratorBase<T> tmp(*this); ++index_; return tmp; }
-  FieldVIteratorBase<T> operator --(int) {
-    FieldVIteratorBase<T> tmp(*this); --index_; return tmp; }
+  FieldVIteratorBase<T> operator ++(int);
+  FieldVIteratorBase<T> operator --(int);
 };
 
 
@@ -116,7 +110,7 @@ struct VEdgeIterator : public FieldVIteratorBase<T> {
 
   //! Required interface for an FieldIterator.
   inline 
-  VEdgeIndex<T> operator*() { return VEdgeIndex<T>(this->index_); }
+  VEdgeIndex<T> operator*() const { return VEdgeIndex<T>(this->index_); }
 
   typedef VEdgeIndex<T> value_type;
   typedef VEdgeIndex<T>* pointer;
