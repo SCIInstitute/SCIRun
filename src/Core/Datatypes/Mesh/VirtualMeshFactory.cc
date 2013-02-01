@@ -160,6 +160,8 @@ public:
   virtual void get_centers(Point* points, VirtualMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points, VirtualMesh::Elem::array_type& array) const;
 
+  virtual void get_dimensions(VirtualMesh::dimension_type& dim);
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual double get_size(VirtualMesh::Node::index_type i) const;
   virtual double get_size(VirtualMesh::Edge::index_type i) const;
@@ -253,7 +255,7 @@ public:
     VirtualMesh::Elem::array_type& elems, 
     const Point &p) const;  
 
-  virtual void get_dimensions(VirtualMesh::dimension_type& dim);
+  
   virtual void get_elem_dimensions(VirtualMesh::dimension_type& dim);  
 
   virtual Transform get_transform() const;
@@ -1656,6 +1658,16 @@ void
   }
 } 
 
+template <class MESH>
+void 
+  VirtualLatticeVolumeMesh<MESH>::get_dimensions(VirtualMesh::dimension_type& dims)
+{
+  dims.resize(3);
+  dims[0] = this->ni_;
+  dims[1] = this->nj_;
+  dims[2] = this->nk_;
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class MESH>
@@ -1991,15 +2003,7 @@ void
   this->mesh_->get_random_point(p,vi,rng);
 }
 
-template <class MESH>
-void 
-  VirtualLatticeVolumeMesh<MESH>::get_dimensions(VirtualMesh::dimension_type& dims)
-{
-  dims.resize(3);
-  dims[0] = this->ni_;
-  dims[1] = this->nj_;
-  dims[2] = this->nk_;
-}
+
 
 template <class MESH>
 void 
