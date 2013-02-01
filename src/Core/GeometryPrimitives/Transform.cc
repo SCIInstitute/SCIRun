@@ -431,7 +431,7 @@ Vector
     mat[2][0]*p.x()+mat[2][1]*p.y()+mat[2][2]*p.z());
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 Point
 Transform::project(const Point& p) const
 {
@@ -440,7 +440,7 @@ Transform::project(const Point& p) const
                mat[2][0]*p.x()+mat[2][1]*p.y()+mat[2][2]*p.z()+mat[2][3],
                mat[3][0]*p.x()+mat[3][1]*p.y()+mat[3][2]*p.z()+mat[3][3]);
 }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void
 Transform::project(const Vector& p, Vector& res) const
 {

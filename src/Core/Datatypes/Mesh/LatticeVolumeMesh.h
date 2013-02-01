@@ -356,6 +356,7 @@ public:
   index_type get_ni() const { return ni_; }
   index_type get_nj() const { return nj_; }
   index_type get_nk() const { return nk_; }
+  const Geometry::Transform& get_transform() const { return transform_; }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual bool get_dim(std::vector<size_type>&) const;
   virtual void set_dim(const std::vector<size_type>& dims);

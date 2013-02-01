@@ -45,12 +45,14 @@ SET(Core_Datatypes_Mesh_HEADERS
   FieldVIndex.h
   FieldVIterator.h
   LatticeVolumeMesh.h
+  LatticeVolumeMeshTemplateImpl.h
   Mesh.h
   MeshFacade.h
   MeshFactory.h
   MeshTraits.h
   VirtualMeshFactory.h
   VMesh.h
+  VMeshShared.h
   Share.h
 )
 

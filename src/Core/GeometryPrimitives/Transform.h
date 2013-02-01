@@ -105,6 +105,7 @@ class SCISHARE Transform  //: public Persistent
     void compute_imat() const;
 
     Geometry::Vector project(const Geometry::Vector& p) const;
+    Geometry::Point project(const Geometry::Point& p) const;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     void pre_shear(const Geometry::Vector&, const Plane&);
@@ -121,7 +122,7 @@ class SCISHARE Transform  //: public Persistent
     Geometry::Vector unproject(const Geometry::Vector& p) const;
     void unproject(const Geometry::Vector& v, Geometry::Vector& res) const;
     void unproject_inplace(Geometry::Vector& v) const;
-    Geometry::Point project(const Geometry::Point& p) const;
+    
     void project(const Geometry::Point& p, Geometry::Point& res) const;
     void project_inplace(Geometry::Point& p) const;
     

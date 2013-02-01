@@ -90,21 +90,21 @@ namespace Core
   };
 
 #define ENSURE_DIMENSIONS_MATCH(var1, var2, message)  if (var1 != var2) \
-  BOOST_THROW_EXCEPTION(DimensionMismatch() << DimensionMismatchInfo( \
-    DimensionMismatchInfo::value_type( \
+  BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() << SCIRun::Core::DimensionMismatchInfo( \
+    SCIRun::Core::DimensionMismatchInfo::value_type( \
       std::string(message) )))
 
 #define REPORT_INVALID_ARGUMENT_VALUE(message) \
-  BOOST_THROW_EXCEPTION(InvalidArgumentValue() << InvalidArgumentValueInfo( \
-    InvalidArgumentValueInfo::value_type( \
+  BOOST_THROW_EXCEPTION(SCIRun::Core::InvalidArgumentValue() << SCIRun::Core::InvalidArgumentValueInfo( \
+    SCIRun::Core::InvalidArgumentValueInfo::value_type( \
       std::string(message) )))
   
 // TODO: should not need this in production code.
 //
 // Any prototype code using this exception should be reviewed and improved!!!
 #define REPORT_NOT_IMPLEMENTED(message) \
-  BOOST_THROW_EXCEPTION(NotImplemented() << NotImplementedInfo( \
-    NotImplementedInfo::value_type( \
+  BOOST_THROW_EXCEPTION(SCIRun::Core::NotImplemented() << SCIRun::Core::NotImplementedInfo( \
+    SCIRun::Core::NotImplementedInfo::value_type( \
       std::string(message) )))
 
 }
