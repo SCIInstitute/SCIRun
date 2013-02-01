@@ -62,9 +62,11 @@ TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
 
 SET(BUILD_BUNDLE TRUE)
 
-IF(${AWK} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND")
-  SET(BUILD_BUNDLE FALSE)
-  MESSAGE(WARNING "Awk and sed are required to build the SCIRun app bundle. Please ensure that both are installed and in your path.")
+IF(APPLE)
+  IF(${AWK} MATCHES "NOTFOUND" OR ${SED} MATCHES "NOTFOUND")
+    SET(BUILD_BUNDLE FALSE)
+    MESSAGE(WARNING "Awk and sed are required to build the SCIRun app bundle. Please ensure that both are installed and in your path.")
+  ENDIF()
 ENDIF()
 
 IF(APPLE AND BUILD_BUNDLE)
