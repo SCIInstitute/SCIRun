@@ -112,6 +112,7 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTests)
 
   latVolVMesh->end(meshEdgeEnd);
 
+  std::ostringstream ostr;
   for (latVolVMesh->begin(meshEdgeIter); meshEdgeIter != meshEdgeEnd; ++meshEdgeIter)
   {
     // get nodes from edge
@@ -121,9 +122,25 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTests)
     Point p0, p1;
     latVolVMesh->get_point(p0, nodesFromEdge[0]);
     latVolVMesh->get_point(p1, nodesFromEdge[1]);
-    std::cout << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
+    ostr << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
       << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
   }
+  std::cout << ostr.str() << std::endl;
+
+  EXPECT_EQ(
+    "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
+  "Edge 1 nodes=[2 point=[0, 1, 0], 3 point=[1, 1, 0]]\n"
+  "Edge 2 nodes=[4 point=[0, 0, 1], 5 point=[1, 0, 1]]\n"
+  "Edge 3 nodes=[6 point=[0, 1, 1], 7 point=[1, 1, 1]]\n"
+  "Edge 4 nodes=[0 point=[0, 0, 0], 2 point=[0, 1, 0]]\n"
+  "Edge 5 nodes=[4 point=[0, 0, 1], 6 point=[0, 1, 1]]\n"
+  "Edge 6 nodes=[1 point=[1, 0, 0], 3 point=[1, 1, 0]]\n"
+  "Edge 7 nodes=[5 point=[1, 0, 1], 7 point=[1, 1, 1]]\n"
+  "Edge 8 nodes=[0 point=[0, 0, 0], 4 point=[0, 0, 1]]\n"
+  "Edge 9 nodes=[1 point=[1, 0, 0], 5 point=[1, 0, 1]]\n"
+  "Edge 10 nodes=[2 point=[0, 1, 0], 6 point=[0, 1, 1]]\n"
+  "Edge 11 nodes=[3 point=[1, 1, 0], 7 point=[1, 1, 1]]\n"
+    , ostr.str());
 
   VirtualMesh::Face::iterator meshFaceIter;
   VirtualMesh::Face::iterator meshFaceEnd;

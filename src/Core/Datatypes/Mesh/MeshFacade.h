@@ -29,27 +29,45 @@
 #ifndef CORE_DATATYPES_MESH_FACADE_H
 #define CORE_DATATYPES_MESH_FACADE_H 
 
+#include <iterator>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
+  //class SmartNodeIterator {};
+
+  //TODO: templatize with traits and stuff. for now, a specialized version for edges.
+  class SmartEdgeIndex
+  {
+  public:
+    VirtualMesh::Edge::index_type index() const;
+    VirtualMesh::Node::array_type nodeIndices() const;
+    std::vector<Geometry::Point> nodePoints() const;
+  };
+
+  class SmartEdgeIterator : public std::iterator<std::forward_iterator_tag, SmartEdgeIndex>
+  {
+  public:
+
+  };
+
+  //class SmartFaceIterator {};
   
-  template <class Mesh>
   class SCISHARE MeshFacade
   {
   public:
-    virtual ~MeshFacade();
+    virtual ~MeshFacade() {}
 
     // prototype this for use with BOOST_FOREACH, so use pairs of iterators. When upgrading to C++11, will need to support a range concept.
-    typedef std::pair<typename Mesh::NodeIterator, typename Mesh::NodeIterator> Nodes;
-    typedef std::pair<typename Mesh::EdgeIterator, typename Mesh::EdgeIterator> Edges;
-    typedef std::pair<typename Mesh::FaceIterator, typename Mesh::FaceIterator> Faces;
+    //typedef std::pair<SmartNodeIterator, SmartNodeIterator> Nodes;
+    typedef std::pair<SmartEdgeIterator, SmartEdgeIterator> Edges;
+    //typedef std::pair<SmartFaceIterator, SmartFaceIterator> Faces;
 
-    virtual Nodes nodes() const = 0;
+    //virtual Nodes nodes() const = 0;
     virtual Edges edges() const = 0;
-    virtual Faces faces() const = 0;
+    //virtual Faces faces() const = 0;
 
     virtual size_t numNodes() const = 0;
     virtual size_t numEdges() const = 0;
@@ -61,9 +79,9 @@ namespace Datatypes {
     IDEA: Mesh iterators should iterate over entire values, not just indexes, producing values on demand. 
     A "SmartIndex" for the mesh.
     E.G. for LatVols:
-    class NodeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point> >
-    class EdgeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[2]> >
-    class FaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[4],SmartIndex<Edge>[4]> >
+    class SmartNodeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point> >
+    class SmartEdgeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[2]> >
+    class SmartFaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[4],SmartIndex<Edge>[4]> >
   */
 
 }}}
