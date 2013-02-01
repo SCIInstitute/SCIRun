@@ -114,8 +114,8 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeIterationTests)
   LatticeVolumeMeshFacade facade(mesh_->vmesh());
 
   std::ostringstream ostr;
-  std::cout << "Begin smart iterating edges" << std::endl;
-  BOOST_FOREACH(const SmartEdgeIndex& edge, facade.edges())
+  std::cout << "Begin iterating edges" << std::endl;
+  BOOST_FOREACH(const EdgeInfo& edge, facade.edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -123,7 +123,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeIterationTests)
       << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
   }
   std::cout << ostr.str() << std::endl;
-  std::cout << "End smart iterating edges" << std::endl;
+  std::cout << "End iterating edges" << std::endl;
 
   EXPECT_EQ(
     "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"

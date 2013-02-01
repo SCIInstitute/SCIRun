@@ -41,7 +41,7 @@ namespace Datatypes {
   //class SmartNodeIterator {};
 
   //TODO: templatize with traits and stuff. for now, a specialized version for edges.
-  class SmartEdgeIndex
+  class EdgeInfo
   {
   public:
     VirtualMesh::Edge::index_type index() const { return index_; }
@@ -61,15 +61,16 @@ namespace Datatypes {
     }
   private:
     friend class SmartEdgeIterator;
-    explicit SmartEdgeIndex(VirtualMesh* mesh) : index_(0), vmesh_(mesh) {}
+    explicit EdgeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) {}
     void setIndex(VirtualMesh::Edge::index_type i) { index_ = i; }
     VirtualMesh::Edge::index_type index_;
     VirtualMesh* vmesh_;
   };
 
-  class SmartEdgeIterator : public boost::iterator_facade<SmartEdgeIterator, SmartEdgeIndex, boost::bidirectional_traversal_tag>
+  class SmartEdgeIterator : public boost::iterator_facade<SmartEdgeIterator, EdgeInfo, boost::bidirectional_traversal_tag>
   {
   public:
+    //TODO: need to look up pattern for creating "end" iterators.
     explicit SmartEdgeIterator(VirtualMesh* vmesh = 0, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
     {
       ENSURE_NOT_NULL(vmesh, "virtual mesh");
@@ -95,7 +96,7 @@ namespace Datatypes {
         && this->iter_ == other.iter_;
     }
 
-    SmartEdgeIndex& dereference() const
+    EdgeInfo& dereference() const
     { 
       current_.setIndex(*iter_);
       return current_; 
@@ -103,7 +104,7 @@ namespace Datatypes {
 
     VirtualMesh::Edge::iterator iter_;
     VirtualMesh* vmesh_;
-    mutable SmartEdgeIndex current_;
+    mutable EdgeInfo current_;
   };
 
   //class SmartFaceIterator {};
