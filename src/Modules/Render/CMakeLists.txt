@@ -37,7 +37,7 @@ SET(Modules_Render_HEADERS
 
 FIND_PACKAGE(OpenGL REQUIRED)
 
-# Frame work for spire
+# Framework for spire
 if(UNIX)
   if(APPLE)
     find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)

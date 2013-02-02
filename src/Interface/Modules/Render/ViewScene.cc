@@ -54,10 +54,27 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   std::weak_ptr<Spire::Context> ctx = std::weak_ptr<Spire::Context>(
       std::dynamic_pointer_cast<Spire::Context>(mGLWidget->getContext()));
   state->setTransientValue("glContext", ctx);
+
+  // Now use the context to create an instance of Spire and set the Spire
+  // transient value.
+  std::vector<std::string> shaderDirs;
+  mSpire = std::shared_ptr<Spire::Interface>(
+      new Spire::Interface(ctx.lock(), shaderDirs, true));
+  state->setTransientValue("spire", std::weak_ptr<Spire::Interface>(mSpire));
+
+  // Spire has two separate incoming communication queues. 
+  // Spire's behavior upon reading the queues are identical, but there exists
+  // two queues so that commands can be sent from two separate threads.
+
+  // There is only one communication queue back from spire primarily because
+  // there should only be one thread that is capable of modifying data inside
+  // of sci-run.
 }
 
 ViewSceneDialog::~ViewSceneDialog()
 {
+  // Terminate spire and join it's thread.
+  mSpire->terminate();
   delete mGLWidget;
 }
 

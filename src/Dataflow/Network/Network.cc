@@ -66,7 +66,6 @@ bool Network::remove_module(const std::string& id)
   if (loc != modules_.end())
   {
     // Inform the module that it is about to be erased from the network...
-    (*loc)->preDestruction();
     modules_.erase(loc);
     return true;
   }

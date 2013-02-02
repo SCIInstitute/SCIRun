@@ -50,33 +50,47 @@ void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
 
 void ViewScene::preExecutionInitialization()
 {
-  // Lookup state information in order to create Spire
-  boost::any context = get_state()->getTransientValue("glContext");
-  std::vector<std::string> shaderDirs;
+  // TODO: Detect if we are running headless; if so, cerate a system-specifc
+  //       OpenGL context *and* spire. Otherwise, just lookup via transient
+  //       values.
 
-  if (!context.empty())
+  boost::any spireTransient = get_state()->getTransientValue("spire");
+  if (!spireTransient.empty())
   {
     try
     {
-      std::shared_ptr<Spire::Context> glContext = 
-          boost::any_cast<std::weak_ptr<Spire::Context>>(context).lock();
-
-      // Note: On windows, we *need* to create a non-threaded renderer.
-      mSpire = std::shared_ptr<Spire::Interface>(
-          new Spire::Interface(glContext, shaderDirs, true));
+      mSpire = boost::any_cast<std::weak_ptr<Spire::Interface>>(spireTransient).lock();
     }
     catch (const boost::bad_any_cast& e)
     {
-      error("Unable to cast glContext transient value to boost::any.");
+      error("Unable to cast boost::any transient value to spire pointer.");
     }
   }
-  else
-  {
-    error("Unable to find transient context value.");
-  }
 
-  /// \todo Add signal that terminates spire (resets the shared pointer) when
-  ///       the context is lost.
+  //// Lookup state information in order to create Spire
+  //boost::any context = get_state()->getTransientValue("glContext");
+  //std::vector<std::string> shaderDirs;
+
+  //if (!context.empty())
+  //{
+  //  try
+  //  {
+  //    std::shared_ptr<Spire::Context> glContext = 
+  //        boost::any_cast<std::weak_ptr<Spire::Context>>(context).lock();
+
+  //    // Note: On windows, we *need* to create a non-threaded renderer.
+  //    mSpire = std::shared_ptr<Spire::Interface>(
+  //        new Spire::Interface(glContext, shaderDirs, true));
+  //  }
+  //  catch (const boost::bad_any_cast& e)
+  //  {
+  //    error("Unable to cast boost::any transient value to spire pointer.");
+  //  }
+  //}
+  //else
+  //{
+  //  error("Unable to find transient context value.");
+  //}
 }
 
 void ViewScene::preDestruction()

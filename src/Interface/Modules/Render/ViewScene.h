@@ -57,7 +57,8 @@ public:
 
 private:
 
-  GLWidget*                   mGLWidget;    ///< GL widget containing context.
+  GLWidget*                         mGLWidget;  ///< GL widget containing context.
+  std::shared_ptr<Spire::Interface> mSpire;     ///< Instance of Spire.
 
 };
 
