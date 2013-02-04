@@ -99,7 +99,7 @@ public:
 
   virtual Nodes nodes() const
   {
-    throw 0;
+    return Nodes(SmartNodeIterator(vmesh_.get()), SmartNodeIterator(vmesh_.get(), true));
   }
 
   virtual size_t numNodes() const
@@ -149,7 +149,6 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
     ostr << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
       << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
   }
-  //std::cout << ostr.str() << std::endl;
 
   EXPECT_EQ(
     "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
@@ -180,7 +179,6 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
     ostr << "Face " << faceID << " edges=[" << join(edges) << "]" << std::endl;
     ostr << "Face " << faceID << " nodes=[" << join(nodes) << "]" << std::endl;
   }
-  //std::cout << ostr.str() << std::endl;
 
   EXPECT_EQ("Face 0 edges=[0, 1, 4, 6]\n"
     "Face 0 nodes=[0, 1, 3, 2]\n"
@@ -195,8 +193,6 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
     "Face 5 edges=[1, 3, 10, 11]\n"
     "Face 5 nodes=[2, 3, 7, 6]\n"
     ,ostr.str());
-
-  //FAIL();
 }
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
@@ -204,17 +200,10 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
   LatticeVolumeMeshFacade facade(mesh_->vmesh());
 
   std::ostringstream ostr;
-  //std::cout << "Begin iterating nodes" << std::endl;
-  //BOOST_FOREACH(const NodeInfo& node, facade.nodes())
-  //{
-  //  auto index = node.index();
-  //  auto point = node.point();
-  //  auto edges = node.edges();
-  //  ostr << "Edge " << edge.index() << " nodes=[" << nodesFromEdge[0] << " point=" << nodePoints[0].get_string()
-  //    << ", " << nodesFromEdge[1] << " point=" << nodePoints[1].get_string() << "]" << std::endl;
-  //}
-  //std::cout << ostr.str() << std::endl;
-  //std::cout << "End iterating nodes" << std::endl;
+  BOOST_FOREACH(const NodeInfo& node, facade.nodes())
+  {
+    ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(node.edgeIndices()) << "]" << std::endl;
+  }
 
   EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 4, 8]\n"
     "Node 1 point=[1, 0, 0] edges=[0, 6, 9]\n"
@@ -225,6 +214,4 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
     "Node 6 point=[0, 1, 1] edges=[3, 7, 11]\n"
     "Node 7 point=[1, 1, 1] edges=[3, 9, 12]\n",
     ostr.str());
-  
-  FAIL();
 }

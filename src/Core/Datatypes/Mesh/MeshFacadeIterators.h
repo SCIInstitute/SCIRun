@@ -166,24 +166,18 @@ namespace Datatypes {
     void setIndex(VirtualMesh::Node::index_type i) { index_ = i; }
 
     VirtualMesh::Node::index_type index() const { return index_; }
-    //VirtualMesh::Node::array_type nodeIndices() const
-    //{
-    //  VirtualMesh::Node::array_type nodesFromFace(4);
-    //  vmesh_->get_nodes(nodesFromFace, index_);
-    //  return nodesFromFace;
-    //}
-    //std::vector<Geometry::Point> nodePoints() const 
-    //{
-    //  auto indices = nodeIndices();
-    //  std::vector<Geometry::Point> ps(4);
-    //  for (size_t i = 0; i < ps.size(); ++i)
-    //    vmesh_->get_point(ps[i], indices[i]);
-    //  return ps;
-    //}
-    //VirtualMesh::Edge::array_type edgeIndices() const
-    //{
-    //  throw 0;
-    //}
+    Geometry::Point point() const 
+    {
+      Geometry::Point p;
+      vmesh_->get_point(p, index_);
+      return p;
+    }
+    VirtualMesh::Edge::array_type edgeIndices() const
+    {
+      VirtualMesh::Edge::array_type edgesFromNode(6);
+      vmesh_->get_edges(edgesFromNode, index_);
+      return edgesFromNode;
+    }
   private:
     VirtualMesh::Node::index_type index_;
     VirtualMesh* vmesh_;
