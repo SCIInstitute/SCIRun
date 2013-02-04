@@ -48,6 +48,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   LatticeVolumeMeshTemplateImpl.h
   Mesh.h
   MeshFacade.h
+  MeshFacadeIterators.h
   MeshFactory.h
   MeshTraits.h
   VirtualMeshFactory.h

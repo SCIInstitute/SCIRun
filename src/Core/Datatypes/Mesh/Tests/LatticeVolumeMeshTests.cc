@@ -75,7 +75,7 @@ namespace
   }
 }
 
-TEST_F(LatticeVolumeMeshTests, BasicCubeTests)
+TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
 {
   ASSERT_TRUE(mesh_);
   
@@ -101,84 +101,147 @@ TEST_F(LatticeVolumeMeshTests, BasicCubeTests)
 #endif
 }
 
-TEST_F(LatticeVolumeMeshTests, CubeIterationTests)
+TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
 {
   auto latVolVMesh = mesh_->vmesh();
 
-  VirtualMesh::Edge::iterator meshEdgeIter;
-  VirtualMesh::Edge::iterator meshEdgeEnd;
-
-  VirtualMesh::Node::array_type nodesFromEdge(2);
-
-  latVolVMesh->end(meshEdgeEnd);
-
-  std::ostringstream ostr;
-  for (latVolVMesh->begin(meshEdgeIter); meshEdgeIter != meshEdgeEnd; ++meshEdgeIter)
   {
-    // get nodes from edge
+    VirtualMesh::Edge::iterator meshEdgeIter;
+    VirtualMesh::Edge::iterator meshEdgeEnd;
 
-    VirtualMesh::Edge::index_type edgeID = *meshEdgeIter;
-    latVolVMesh->get_nodes(nodesFromEdge, edgeID);
-    Point p0, p1;
-    latVolVMesh->get_point(p0, nodesFromEdge[0]);
-    latVolVMesh->get_point(p1, nodesFromEdge[1]);
-    ostr << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
-      << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
-  }
-  std::cout << ostr.str() << std::endl;
+    VirtualMesh::Node::array_type nodesFromEdge(2);
 
-  EXPECT_EQ(
-    "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
-  "Edge 1 nodes=[2 point=[0, 1, 0], 3 point=[1, 1, 0]]\n"
-  "Edge 2 nodes=[4 point=[0, 0, 1], 5 point=[1, 0, 1]]\n"
-  "Edge 3 nodes=[6 point=[0, 1, 1], 7 point=[1, 1, 1]]\n"
-  "Edge 4 nodes=[0 point=[0, 0, 0], 2 point=[0, 1, 0]]\n"
-  "Edge 5 nodes=[4 point=[0, 0, 1], 6 point=[0, 1, 1]]\n"
-  "Edge 6 nodes=[1 point=[1, 0, 0], 3 point=[1, 1, 0]]\n"
-  "Edge 7 nodes=[5 point=[1, 0, 1], 7 point=[1, 1, 1]]\n"
-  "Edge 8 nodes=[0 point=[0, 0, 0], 4 point=[0, 0, 1]]\n"
-  "Edge 9 nodes=[1 point=[1, 0, 0], 5 point=[1, 0, 1]]\n"
-  "Edge 10 nodes=[2 point=[0, 1, 0], 6 point=[0, 1, 1]]\n"
-  "Edge 11 nodes=[3 point=[1, 1, 0], 7 point=[1, 1, 1]]\n"
-    , ostr.str());
+    latVolVMesh->end(meshEdgeEnd);
 
-  VirtualMesh::Face::iterator meshFaceIter;
-  VirtualMesh::Face::iterator meshFaceEnd;
+    std::ostringstream ostr;
+    for (latVolVMesh->begin(meshEdgeIter); meshEdgeIter != meshEdgeEnd; ++meshEdgeIter)
+    {
+      // get nodes from edge
 
-  VirtualMesh::Edge::array_type edgesFromFace(4);
-  VirtualMesh::Node::array_type nodesFromFace(4);
+      VirtualMesh::Edge::index_type edgeID = *meshEdgeIter;
+      latVolVMesh->get_nodes(nodesFromEdge, edgeID);
+      Point p0, p1;
+      latVolVMesh->get_point(p0, nodesFromEdge[0]);
+      latVolVMesh->get_point(p1, nodesFromEdge[1]);
+      ostr << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
+        << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
+    }
+    //std::cout << ostr.str() << std::endl;
 
-  latVolVMesh->end(meshFaceEnd);
-
-  for (latVolVMesh->begin(meshFaceIter); meshFaceIter != meshFaceEnd; ++meshFaceIter)
-  {
-    // get edges and nodes from face
-
-    VirtualMesh::Face::index_type faceID = *meshFaceIter;
-    latVolVMesh->get_edges(edgesFromFace, faceID);
-    std::cout << "Face " << faceID << " edges=[" << join(edgesFromFace) << "]" << std::endl;
-
-    latVolVMesh->get_nodes(nodesFromFace, faceID);
-    std::cout << "Face " << faceID << " nodes=[" << join(nodesFromFace) << "]" << std::endl;
+    EXPECT_EQ(
+      "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
+      "Edge 1 nodes=[2 point=[0, 1, 0], 3 point=[1, 1, 0]]\n"
+      "Edge 2 nodes=[4 point=[0, 0, 1], 5 point=[1, 0, 1]]\n"
+      "Edge 3 nodes=[6 point=[0, 1, 1], 7 point=[1, 1, 1]]\n"
+      "Edge 4 nodes=[0 point=[0, 0, 0], 2 point=[0, 1, 0]]\n"
+      "Edge 5 nodes=[4 point=[0, 0, 1], 6 point=[0, 1, 1]]\n"
+      "Edge 6 nodes=[1 point=[1, 0, 0], 3 point=[1, 1, 0]]\n"
+      "Edge 7 nodes=[5 point=[1, 0, 1], 7 point=[1, 1, 1]]\n"
+      "Edge 8 nodes=[0 point=[0, 0, 0], 4 point=[0, 0, 1]]\n"
+      "Edge 9 nodes=[1 point=[1, 0, 0], 5 point=[1, 0, 1]]\n"
+      "Edge 10 nodes=[2 point=[0, 1, 0], 6 point=[0, 1, 1]]\n"
+      "Edge 11 nodes=[3 point=[1, 1, 0], 7 point=[1, 1, 1]]\n"
+      , ostr.str());
   }
 
-  VirtualMesh::Cell::iterator meshCellIter;
-  VirtualMesh::Cell::iterator meshCellEnd;
-
-  VirtualMesh::Edge::array_type edgesFromCell(12);
-  VirtualMesh::Node::array_type nodesFromCell(8);
-
-  latVolVMesh->end(meshCellEnd);
-
-  for (latVolVMesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
   {
-    // get edges and nodes from mesh element
+    VirtualMesh::Face::iterator meshFaceIter;
+    VirtualMesh::Face::iterator meshFaceEnd;
 
-    VirtualMesh::Cell::index_type elemID = *meshCellIter;
-    latVolVMesh->get_edges(edgesFromCell, elemID);
-    std::cout << "Cell " << elemID << " edges=[" << join(edgesFromCell) << "]" << std::endl;
+    VirtualMesh::Edge::array_type edgesFromFace(4);
+    VirtualMesh::Node::array_type nodesFromFace(4);
 
-    latVolVMesh->get_nodes(nodesFromCell, elemID);
-    std::cout << "Cell " << elemID << " nodes=["<< join(nodesFromCell) << "]" << std::endl;
+    latVolVMesh->end(meshFaceEnd);
+
+    std::ostringstream ostr;
+    for (latVolVMesh->begin(meshFaceIter); meshFaceIter != meshFaceEnd; ++meshFaceIter)
+    {
+      // get edges and nodes from face
+
+      VirtualMesh::Face::index_type faceID = *meshFaceIter;
+      latVolVMesh->get_edges(edgesFromFace, faceID);
+      ostr << "Face " << faceID << " edges=[" << join(edgesFromFace) << "]" << std::endl;
+
+      latVolVMesh->get_nodes(nodesFromFace, faceID);
+      ostr << "Face " << faceID << " nodes=[" << join(nodesFromFace) << "]" << std::endl;
+    }
+
+    EXPECT_EQ("Face 0 edges=[0, 1, 4, 6]\n"
+      "Face 0 nodes=[0, 1, 3, 2]\n"
+      "Face 1 edges=[2, 3, 5, 7]\n"
+      "Face 1 nodes=[4, 6, 7, 5]\n"
+      "Face 2 edges=[4, 5, 8, 10]\n"
+      "Face 2 nodes=[0, 2, 6, 4]\n"
+      "Face 3 edges=[6, 7, 9, 11]\n"
+      "Face 3 nodes=[1, 5, 7, 3]\n"
+      "Face 4 edges=[0, 2, 8, 9]\n"
+      "Face 4 nodes=[0, 4, 5, 1]\n"
+      "Face 5 edges=[1, 3, 10, 11]\n"
+      "Face 5 nodes=[2, 3, 7, 6]\n"
+      ,ostr.str());
+
+    //std::cout << ostr.str() << std::endl;
+  }
+
+  {
+    VirtualMesh::Cell::iterator meshCellIter;
+    VirtualMesh::Cell::iterator meshCellEnd;
+
+    VirtualMesh::Edge::array_type edgesFromCell(12);
+    VirtualMesh::Node::array_type nodesFromCell(8);
+
+    latVolVMesh->end(meshCellEnd);
+    std::ostringstream ostr;
+
+    for (latVolVMesh->begin(meshCellIter); meshCellIter != meshCellEnd; ++meshCellIter)
+    {
+      // get edges and nodes from mesh element
+
+      VirtualMesh::Cell::index_type elemID = *meshCellIter;
+      latVolVMesh->get_edges(edgesFromCell, elemID);
+      ostr << "Cell " << elemID << " edges=[" << join(edgesFromCell) << "]" << std::endl;
+
+      latVolVMesh->get_nodes(nodesFromCell, elemID);
+      ostr << "Cell " << elemID << " nodes=["<< join(nodesFromCell) << "]" << std::endl;
+    }
+    //std::cout << ostr.str() << std::endl;
+
+    EXPECT_EQ(
+      "Cell 0 edges=[0, 1, 2, 3, 4, 6, 5, 7, 8, 9, 10, 11]\n"
+      "Cell 0 nodes=[0, 1, 3, 2, 4, 5, 7, 6]\n",
+      ostr.str());
+  }
+
+  {
+    VirtualMesh::Node::iterator meshNodeIter;
+    VirtualMesh::Node::iterator meshNodeEnd;
+
+    VirtualMesh::Edge::array_type edgesFromNode(3);
+
+    latVolVMesh->end(meshNodeEnd);
+    std::ostringstream ostr;
+
+    for (latVolVMesh->begin(meshNodeIter); meshNodeIter != meshNodeEnd; ++meshNodeIter)
+    {
+      // get edges and point from mesh node
+
+      VirtualMesh::Node::index_type nodeID = *meshNodeIter;
+      Point p;
+      latVolVMesh->get_point(p, nodeID);
+      ostr << "Node " << nodeID << " point=" << p.get_string();
+      latVolVMesh->get_edges(edgesFromNode, nodeID);
+      ostr << " edges=[" << join(edgesFromNode) << "]" << std::endl;
+    }
+    //std::cout << ostr.str() << std::endl;
+
+    EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 4, 8]\n"
+      "Node 1 point=[1, 0, 0] edges=[0, 6, 9]\n"
+      "Node 2 point=[0, 1, 0] edges=[1, 6, 10]\n"
+      "Node 3 point=[1, 1, 0] edges=[1, 8, 11]\n"
+      "Node 4 point=[0, 0, 1] edges=[2, 5, 9]\n"
+      "Node 5 point=[1, 0, 1] edges=[2, 7, 10]\n"
+      "Node 6 point=[0, 1, 1] edges=[3, 7, 11]\n"
+      "Node 7 point=[1, 1, 1] edges=[3, 9, 12]\n",
+      ostr.str());
   }
 }
