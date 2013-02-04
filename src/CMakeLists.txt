@@ -223,6 +223,7 @@ SET(SPIRE_LIBRARY_PATH "${SPIRE_BINARY_DIR}/${SPIRE_LIBRARY_PREFIX}${SCI_SPIRE_L
 SET(SPIRE_LIBRARY_PATH_RELEASE "${SPIRE_BINARY_DIR}/Release/${SPIRE_LIBRARY_PREFIX}${SCI_SPIRE_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 SET(SPIRE_LIBRARY_PATH_DEBUG "${SPIRE_BINARY_DIR}/Debug/${SPIRE_LIBRARY_PREFIX}${SCI_SPIRE_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
+
 # Todo re-add the null update command.
 ExternalProject_Add(Spire_external
   PREFIX ${spire_BINARY_DIR}
@@ -235,6 +236,15 @@ ExternalProject_Add(Spire_external
   INSTALL_COMMAND ""
 )
 #  GIT_TAG "v0.1.0"
+
+# Custom build step to install shaders afetr the build has completed.
+ExternalProject_Add_Step(Spire_external e1
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${SPIRE_SOURCE_DIR}/Spire/Shaders ${CMAKE_CURRENT_BINARY_DIR}/Shaders
+  COMMENT "Copies spire shaders to binary directory."
+  DEPENDEES download
+  DEPENDERS build
+  ALWAYS 1
+)
 
 ADD_LIBRARY(${SCI_SPIRE_LIBRARY} STATIC IMPORTED GLOBAL)
 ADD_DEPENDENCIES(${SCI_SPIRE_LIBRARY} Spire_external)
@@ -265,13 +275,6 @@ install(DIRECTORY ${SPIRE_SOURCE_DIR}/Spire/Shaders
         DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
                               GROUP_READ
                               WORLD_READ WORLD_EXECUTE)
-
-file(COPY ${SPIRE_SOURCE_DIR}/Spire/Shaders
-     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/
-     FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-     DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                           GROUP_READ
-                           WORLD_READ WORLD_EXECUTE)
 
 ########################################################################
 # Find and configure Qt
