@@ -65,7 +65,7 @@
          <x>10</x>
          <y>20</y>
          <width>291</width>
-         <height>131</height>
+         <height>132</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
@@ -101,13 +101,20 @@
         </item>
         <item row="3" column="0">
          <widget class="QLabel" name="label_4">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Pad Percentage</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QDoubleSpinBox" name="padPercentageSpinBox_"/>
+         <widget class="QDoubleSpinBox" name="padPercentageSpinBox_">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -130,6 +137,9 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QRadioButton" name="dataAtNodesButton_">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Nodes (linear basis)</string>
           </property>
@@ -137,6 +147,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="dataAtCellsButton_">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Cells (constant basis)</string>
           </property>
@@ -144,6 +157,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="dataAtNoneButton_">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>None</string>
           </property>
