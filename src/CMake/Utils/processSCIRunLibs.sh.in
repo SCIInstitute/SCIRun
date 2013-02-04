@@ -36,7 +36,7 @@ EXECUTABLE_APP_NAME=@APPLICATION_NAME@
 
 OCD=`pwd`
 
-cd ${RESOURCES_DIR}/lib
+cd ${MACOS_DIR}/lib
 
 # TODO: check return values!
 
@@ -47,43 +47,34 @@ for library_file in ${SCIRUN_LIBS}; do
   echo "${COMMAND}"
   sh -c "${COMMAND}"
 
-  COMMAND=`otool -L $library_file | @SED@ -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1" @executable_path/../lib/"$1" " lib }'`
+  COMMAND=`otool -L $library_file | @SED@ -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1" @executable_path/lib/"$1" " lib }'`
   echo "${COMMAND}"
   sh -c "${COMMAND}"
 
-  echo "install_name_tool -id @executable_path/../lib/${library_file} ${library_file}"
-  install_name_tool -id "@executable_path/../lib/${library_file}" ${library_file}
-done
+  # TODO: this works, but should be filtered to see if Qt libraries are actually in list returned by otool -L
+  echo "install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${library_file}"
+  install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${library_file}
 
-#cd $OCD
-#cd ${RESOURCES_DIR}/bin
-#SCIRUN_APPS=`ls -1`
-#
-#for library_file in ${SCIRUN_APPS}; do
-#  COMMAND=`otool -L $library_file | sed -n 's:@SCIRUN_CORE_BINARY_DIR@/lib/:& :p' | awk -v lib=$library_file '{print "install_name_tool -change "$1$2" "$2" " lib }'`
-#  echo "${COMMAND}"
-#  sh -c "${COMMAND}"
-#
-#  COMMAND=`otool -L $library_file | sed -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | awk -v lib=$library_file '{print "install_name_tool -change "$1" @executable_path/../lib/"$1" " lib }'`
-#  echo "${COMMAND}"
-#  sh -c "${COMMAND}"
-#
-#  COMMAND=`otool -L $library_file | sed -n 's:/usr/X11/:& :p' | awk -v lib=$library_file '{print "install_name_tool -change "$1$2" /usr/X11R6/"$2" " lib }'`
-#  echo "${COMMAND}"
-#  sh -c "${COMMAND}"
-#
-#  # process ITK library references (if built with ITK support)
-#  @DISABLE_ITK@COMMAND=`otool -L $library_file | sed -n 's:@ITK_DIR@/bin/:& :p' | awk -v lib=$library_file '{print "install_name_tool -change "$1$2" @executable_path/../lib/"$2" " lib }'`
-#  @DISABLE_ITK@echo "${COMMAND}"
-#  @DISABLE_ITK@sh -c "${COMMAND}"
-#done
+  echo "install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${library_file}"
+  install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${library_file}
+
+  echo "install_name_tool -id @executable_path/lib/${library_file} ${library_file}"
+  install_name_tool -id "@executable_path/lib/${library_file}" ${library_file}
+done
 
 cd $OCD
 cd ${MACOS_DIR}
 
-COMMAND=`otool -L $EXECUTABLE_APP_NAME | @SED@ -n 's:@SCIRUN_CORE_BINARY_DIR@/lib/:& :p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1$2" "$2" " lib }'`
+COMMAND=`otool -L $EXECUTABLE_APP_NAME | @SED@ -n 's:@SCIRUN_CORE_BINARY_DIR@/lib/:& :p' | @AWK@ -v lib=$EXECUTABLE_APP_NAME '{print "install_name_tool -change "$1$2" "$2" " lib }'`
 echo "${COMMAND}"
 sh -c "${COMMAND}"
+
+COMMAND=`otool -L $EXECUTABLE_APP_NAME | @SED@ -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | @AWK@ -v lib=$EXECUTABLE_APP_NAME '{print "install_name_tool -change "$1" @executable_path/lib/"$1" " lib }'`
+echo "${COMMAND}"
+sh -c "${COMMAND}"
+
+#echo "install_name_tool -id @executable_path/lib/${library_file} ${library_file}"
+#install_name_tool -id "@executable_path/lib/${library_file}" ${library_file}
 
 cd $OCD
 

@@ -81,27 +81,29 @@ IF(APPLE AND BUILD_BUNDLE)
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
       POST_BUILD
         # configure Qt libs
-        COMMAND cp -rf "${QT_QTCORE_LIBRARY_RELEASE}/Versions/4/QtCore" "${APPLICATION_NAME}.app/Contents/MacOS/"
-        COMMAND cp -rf "${QT_QTGUI_LIBRARY_RELEASE}/Versions/4/QtGui" "${APPLICATION_NAME}.app/Contents/MacOS/"
-        COMMAND cp -rf "${QT_QTOPENGL_LIBRARY_RELEASE}/Versions/4/QtOpenGL" "${APPLICATION_NAME}.app/Contents/MacOS/"
+        #
+        # TODO: make sure permissions are OK
+        COMMAND mkdir "${APPLICATION_NAME}.app/Contents/Frameworks"
+        COMMAND cp -R ${QT_QTCORE_LIBRARY_RELEASE} "${APPLICATION_NAME}.app/Contents/Frameworks"
+        COMMAND cp -R ${QT_QTGUI_LIBRARY_RELEASE} "${APPLICATION_NAME}.app/Contents/Frameworks"
+        #COMMAND cp -R ${QT_QTOPENGL_LIBRARY_RELEASE} "${APPLICATION_NAME}.app/Contents/Frameworks"
 
-        COMMAND install_name_tool -id QtCore ${APPLICATION_NAME}.app/Contents/MacOS/QtCore
-        COMMAND install_name_tool -id QtGui ${APPLICATION_NAME}.app/Contents/MacOS/QtGui
-        COMMAND install_name_tool -id QtOpenGL ${APPLICATION_NAME}.app/Contents/MacOS/QtOpenGL
+        COMMAND install_name_tool -id @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/Frameworks/QtCore.framework/Versions/4/QtCore
+        COMMAND install_name_tool -id @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${APPLICATION_NAME}.app/Contents/Frameworks/QtGui.framework/Versions/4/QtGui
+        #COMMAND install_name_tool -id @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${APPLICATION_NAME}.app/Contents/Frameworks/Versions/4/QtOpenGL
 
-        COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/QtGui
-        COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/QtOpenGL
-        COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/QtGui ${APPLICATION_NAME}.app/Contents/MacOS/QtOpenGL
+        COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/Frameworks/QtGui.framework/Versions/4/QtGui
+        #COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/Frameworks/QtGui.framework/Versions/4/QtOpenGL
+        #COMMAND install_name_tool -change QtGui.framework/Versions/4/QtCore @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${APPLICATION_NAME}.app/Contents/Frameworks/QtGui.framework/Versions/4/QtOpenGL
 
-        COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/QtGui ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-        COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-        COMMAND install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/QtOpenGL ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+        COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+        COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
+        #COMMAND install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
 
-        COMMAND cp "-rf" "${QT_QTGUI_LIBRARY_RELEASE}/Versions/Current/Resources" "${APPLICATION_NAME}.app/Contents"
-        COMMAND [ -d ${APPLICATION_NAME}.app/Contents/MacOS/plugins ] || mkdir ${APPLICATION_NAME}.app/Contents/MacOS/plugins
-        COMMAND cp -rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
+        COMMAND cp -Rf "${QT_QTGUI_LIBRARY_RELEASE}/Versions/Current/Resources" "${APPLICATION_NAME}.app/Contents"
+        COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
 
-        COMMAND cp -rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${APPLICATION_NAME}.app/Contents/Resources
+        COMMAND cp -Rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${APPLICATION_NAME}.app/Contents/MacOS
         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/processSCIRunLibs.sh
 
         WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
