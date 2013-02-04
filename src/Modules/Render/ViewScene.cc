@@ -59,7 +59,7 @@ void ViewScene::preExecutionInitialization()
   {
     try
     {
-      mSpire = boost::any_cast<std::weak_ptr<Spire::Interface>>(spireTransient).lock();
+      mSpire = boost::any_cast<std::weak_ptr<Spire::SCIRun::SRInterface>>(spireTransient);
     }
     catch (const boost::bad_any_cast& e)
     {

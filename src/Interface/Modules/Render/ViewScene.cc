@@ -58,7 +58,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   state->setTransientValue("glContext", ctx);
 
   // Set spire transient value (should no longer be used).
-  mSpire = std::weak_ptr<Spire::Interface>(mGLWidget->getSpire());
+  mSpire = std::weak_ptr<Spire::SCIRun::SRInterface>(mGLWidget->getSpire());
   state->setTransientValue("spire", mSpire);
 }
 

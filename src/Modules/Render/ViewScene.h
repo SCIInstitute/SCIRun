@@ -33,6 +33,7 @@
 #include <Modules/Render/Share.h>
 
 #include "Spire/Interface.h"
+#include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
 namespace SCIRun {
 namespace Modules {
@@ -60,7 +61,7 @@ namespace Render {
   private:
     SCIRun::Dataflow::Networks::RendererInterface* renderer_;
 
-    std::shared_ptr<Spire::Interface>   mSpire;
+    std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;
   };
 }}}
 

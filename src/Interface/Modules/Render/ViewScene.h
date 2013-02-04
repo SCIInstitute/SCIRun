@@ -36,6 +36,7 @@
 #include <Interface/Modules/Render/Share.h>
 
 #include "Spire/Interface.h"
+#include "Spire/AppSpecific/SCIRun/SRInterface.h"
 #include "GLWidget.h"
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -57,8 +58,8 @@ public:
 
 private:
 
-  GLWidget*                         mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<Spire::Interface>   mSpire;     ///< Instance of Spire.
+  GLWidget*                                   mGLWidget;  ///< GL widget containing context.
+  std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;     ///< Instance of Spire.
 
 };
 

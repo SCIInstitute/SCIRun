@@ -38,6 +38,7 @@
 
 #include "GLContext.h"
 #include "Spire/Interface.h"
+#include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
 namespace SCIRun {
 namespace Gui {
@@ -50,8 +51,8 @@ public:
   GLWidget(const QGLFormat& format);
   ~GLWidget();
 
-  std::shared_ptr<Spire::Interface> getSpire() const      {return mGraphics;}
-  std::shared_ptr<GLContext>        getContext() const    {return mContext;}
+  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const      {return mGraphics;}
+  std::shared_ptr<GLContext>                  getContext() const    {return mContext;}
 
 protected:
   virtual void closeEvent(QCloseEvent *evt);
@@ -63,8 +64,8 @@ protected:
 
 private:
 
-  std::shared_ptr<GLContext>        mContext;       ///< Graphics context.
-  std::shared_ptr<Spire::Interface> mGraphics;      ///< Interface to spire.
+  std::shared_ptr<GLContext>                  mContext;   ///< Graphics context.
+  std::shared_ptr<Spire::SCIRun::SRInterface> mGraphics;  ///< Interface to spire.
 
   //Vector2<int>                      mLastMousePos;  ///< Last mouse position.
 };

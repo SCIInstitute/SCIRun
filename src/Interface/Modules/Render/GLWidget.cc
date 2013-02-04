@@ -44,8 +44,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
 
   // Create a threaded spire renderer. This should be created at the module
   // level once it has access to the context, should be passed using Transients.
-  mGraphics = std::shared_ptr<Spire::Interface>(
-      new Spire::Interface(
+  mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
+      new Spire::SCIRun::SRInterface(
           std::dynamic_pointer_cast<Spire::Context>(mContext),
           shaderSearchDirs, true));
 
