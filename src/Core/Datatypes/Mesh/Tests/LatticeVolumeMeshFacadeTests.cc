@@ -33,8 +33,7 @@
 #include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
-#include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Mesh/MeshFacadeIterators.h>
+#include <Core/Datatypes/Mesh/LatticeVolumeMeshFacade.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -78,71 +77,24 @@ namespace
   }
 }
 
-class LatticeVolumeMeshFacade : public MeshFacade
-{
-public:
-  explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) 
-  {
-    if (!vmesh->is_latvolmesh())
-      THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
-  }
-
-  virtual Edges edges() const 
-  {
-    return Edges(SmartEdgeIterator(vmesh_.get()), SmartEdgeIterator(vmesh_.get(), true));
-  }
-
-  virtual Faces faces() const 
-  {
-    return Faces(SmartFaceIterator(vmesh_.get()), SmartFaceIterator(vmesh_.get(), true));
-  }
-
-  virtual Nodes nodes() const
-  {
-    return Nodes(SmartNodeIterator(vmesh_.get()), SmartNodeIterator(vmesh_.get(), true));
-  }
-
-  virtual size_t numNodes() const
-  {
-    return vmesh_->num_nodes();
-  }
-
-  virtual size_t numEdges() const
-  {
-    return vmesh_->num_edges();
-  }
-  
-  virtual size_t numFaces() const 
-  {
-    return vmesh_->num_faces();
-  }
-
-  virtual size_t numElements() const 
-  {
-    return vmesh_->num_elems();
-  }
-private:
-  VirtualMeshHandle vmesh_;
-};
-
 TEST_F(LatticeVolumeMeshFacadeTests, BasicCubeTest)
 {
   ASSERT_TRUE(mesh_);
   
-  LatticeVolumeMeshFacade facade(mesh_->vmesh());
+  MeshFacadeHandle facade(mesh_->getFacade());
 
-  EXPECT_EQ(8, facade.numNodes());
-  EXPECT_EQ(12, facade.numEdges());
-  EXPECT_EQ(6, facade.numFaces());
-  EXPECT_EQ(1, facade.numElements());
+  EXPECT_EQ(8, facade->numNodes());
+  EXPECT_EQ(12, facade->numEdges());
+  EXPECT_EQ(6, facade->numFaces());
+  EXPECT_EQ(1, facade->numElements());
 }
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
 {
-  LatticeVolumeMeshFacade facade(mesh_->vmesh());
+  MeshFacadeHandle facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo& edge, facade.edges())
+  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -168,10 +120,10 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
 {
-  LatticeVolumeMeshFacade facade(mesh_->vmesh());
+  MeshFacadeHandle facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo& face, facade.faces())
+  BOOST_FOREACH(const FaceInfo& face, facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -197,10 +149,10 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
 {
-  LatticeVolumeMeshFacade facade(mesh_->vmesh());
+  MeshFacadeHandle facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo& node, facade.nodes())
+  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
   {
     ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(node.edgeIndices()) << "]" << std::endl;
   }

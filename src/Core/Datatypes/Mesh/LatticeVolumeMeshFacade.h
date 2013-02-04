@@ -30,31 +30,62 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_MESHTRAITS_H
-#define CORE_DATATYPES_MESHTRAITS_H 
+#ifndef CORE_DATATYPES_MESH_LATVOLMESHFACADE_H
+#define CORE_DATATYPES_MESH_LATVOLMESHFACADE_H 
 
-#include <vector>
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE MeshTraits 
+  class LatticeVolumeMeshFacade : public MeshFacade
   {
-  public: 
-    typedef SCIRun::mask_type                  mask_type;  
-    typedef SCIRun::index_type                 under_type;  
-    typedef SCIRun::index_type                 index_type;
-    typedef SCIRun::index_type                 size_type;
-    typedef std::vector<index_type>            array_type;
-    typedef std::vector<size_type>             dimension_type;
-  };
+  public:
+    explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) 
+    {
+      if (!vmesh->is_latvolmesh())
+        THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
+    }
 
-  class MeshFacade;
-  typedef boost::shared_ptr<MeshFacade> MeshFacadeHandle;
+    virtual Edges edges() const 
+    {
+      return Edges(SmartEdgeIterator(vmesh_.get()), SmartEdgeIterator(vmesh_.get(), true));
+    }
+
+    virtual Faces faces() const 
+    {
+      return Faces(SmartFaceIterator(vmesh_.get()), SmartFaceIterator(vmesh_.get(), true));
+    }
+
+    virtual Nodes nodes() const
+    {
+      return Nodes(SmartNodeIterator(vmesh_.get()), SmartNodeIterator(vmesh_.get(), true));
+    }
+
+    virtual size_t numNodes() const
+    {
+      return vmesh_->num_nodes();
+    }
+
+    virtual size_t numEdges() const
+    {
+      return vmesh_->num_edges();
+    }
+
+    virtual size_t numFaces() const 
+    {
+      return vmesh_->num_faces();
+    }
+
+    virtual size_t numElements() const 
+    {
+      return vmesh_->num_elems();
+    }
+  private:
+    VirtualMeshHandle vmesh_;
+  };
 
 }}}
 

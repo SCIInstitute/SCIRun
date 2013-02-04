@@ -281,11 +281,12 @@ public:
   LatVolMesh(const LatVolMesh &copy);
   virtual LatVolMesh *clone() const;
   virtual ~LatVolMesh();
-  virtual VirtualMeshHandle vmesh();
+  virtual VirtualMeshHandle vmesh() const;
   virtual int basis_order();
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
   virtual bool is_editable() const { return false; }
+  virtual MeshFacadeHandle getFacade() const;
 
   Basis &get_basis() { return basis_; }
 

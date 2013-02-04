@@ -52,7 +52,9 @@ namespace Datatypes {
     //! Get the virtual mesh interface, this returns the pointer to an internal
     //! object that has all the virtual functions. This object will be destroyed
     //! when the mesh is destroyed. The user does not need to destroy the VMesh.
-    virtual VirtualMeshHandle vmesh();
+    virtual VirtualMeshHandle vmesh() const;
+
+    virtual MeshFacadeHandle getFacade() const = 0;
 
     virtual int basis_order();
 
