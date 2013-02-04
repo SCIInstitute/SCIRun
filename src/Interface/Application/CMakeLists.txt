@@ -83,9 +83,6 @@ QT4_WRAP_UI(Interface_Application_FORMS_HEADERS ${Interface_Application_FORMS})
 QT4_WRAP_CPP(Interface_Application_HEADERS_MOC ${Interface_Application_HEADERS})
 QT4_ADD_RESOURCES(Interface_Application_RESOURCES_RCC ${Interface_Application_RESOURCES})
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
 ADD_LIBRARY(Interface_Application
   ${Interface_Application_SOURCES}
   ${Interface_Application_HEADERS}

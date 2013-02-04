@@ -45,9 +45,6 @@ SET(Interface_Modules_Base_SOURCES
 QT4_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS ${Interface_Modules_Base_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Base_HEADERS_MOC ${Interface_Modules_Base_HEADERS})
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
 ADD_LIBRARY(Interface_Modules_Base 
   ${Interface_Modules_Base_HEADERS}
   ${Interface_Modules_Base_FORMS_HEADERS}
