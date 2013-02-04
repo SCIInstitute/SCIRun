@@ -50,16 +50,23 @@ public:
   GLWidget(const QGLFormat& format);
   ~GLWidget();
 
-  std::shared_ptr<GLContext> getContext() const   {return mContext;}
+  std::shared_ptr<Spire::Interface> getSpire() const      {return mGraphics;}
+  std::shared_ptr<GLContext>        getContext() const    {return mContext;}
 
 protected:
-  virtual void resizeEvent(QResizeEvent *evt);
   virtual void closeEvent(QCloseEvent *evt);
+  virtual void mousePressEvent(QMouseEvent* event);
+  virtual void mouseMoveEvent(QMouseEvent* event);
+  virtual void mouseReleaseEvent(QMouseEvent* event);
+  virtual void initializeGL();
+  virtual void resizeGL(int width, int height);
 
 private:
 
-  std::shared_ptr<GLContext>        mContext;
-  std::shared_ptr<Spire::Interface> mGraphics;
+  std::shared_ptr<GLContext>        mContext;       ///< Graphics context.
+  std::shared_ptr<Spire::Interface> mGraphics;      ///< Interface to spire.
+
+  //Vector2<int>                      mLastMousePos;  ///< Last mouse position.
 };
 
 } // end of namespace SCIRun

@@ -35,39 +35,71 @@
 
 using namespace SCIRun::Gui;
 
+//------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
     mContext(new GLContext(this))
 {
-  //std::vector<std::string> shaderSearchDirs = {"Shaders"};
+  std::vector<std::string> shaderSearchDirs;
 
   // Create a threaded spire renderer. This should be created at the module
   // level once it has access to the context, should be passed using Transients.
-  //mGraphics = std::shared_ptr<Spire::Interface>(
-  //    new Spire::Interface(&mContext, shaderSearchDirs, true));
+  mGraphics = std::shared_ptr<Spire::Interface>(
+      new Spire::Interface(
+          std::dynamic_pointer_cast<Spire::Context>(mContext),
+          shaderSearchDirs, true));
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }
 
+//------------------------------------------------------------------------------
 GLWidget::~GLWidget()
 {
   // Need to inform module that the context is being destroyed.
-  //mGraphics.reset();
+  mGraphics.reset();
 }
 
-void GLWidget::resizeEvent(QResizeEvent *evt)
+//------------------------------------------------------------------------------
+void GLWidget::initializeGL()
 {
-  /// @todo Inform the renderer that screen dimensions have changed.
-  //mGraphics.resizeViewport(evt->size());
-
-  /// \todo Send resize event to the module.
+  /// \todo Implement this intelligently. This function is called everytime
+  ///       there is a new graphics context.
 }
 
+//------------------------------------------------------------------------------
+void GLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+  /// \todo Send mouse move event to SCIRun's spire interface.
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::mousePressEvent(QMouseEvent* event)
+{
+  //mLastMousePos.x = event->x();
+  //mLastMousePos.y = event->y();
+
+  /// \todo Send mouse down event to SCIRun's spire interface.
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+  /// \todo Send mouse up event to SCIRun's spire interface.
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::resizeGL(int width, int height)
+{
+  /// \todo Inform Spire that the GL window has changed in dimensions.
+}
+
+//------------------------------------------------------------------------------
 void GLWidget::closeEvent(QCloseEvent *evt)
 {
   // Kill off the graphics thread.
-  //mGraphics.reset();
+  mGraphics->terminate();
+  mGraphics.reset();
   //QGLWidget::closeEvent(evt);
 }
 
