@@ -56,18 +56,18 @@ CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleSt
   connect(xSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   connect(ySizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
 void CreateLatVolMeshDialog::push()
 {
-  std::cout << "CLVMD::push()" << std::endl;
   state_->setValue(CreateLatVolMesh::XSize, xSizeSpinBox_->value());
   state_->setValue(CreateLatVolMesh::YSize, ySizeSpinBox_->value());
   state_->setValue(CreateLatVolMesh::ZSize, zSizeSpinBox_->value());
+  state_->setValue(CreateLatVolMesh::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
 }
 
 void CreateLatVolMeshDialog::pull()
 {
-  std::cout << "CLVMD::pull()" << std::endl;
-  //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }

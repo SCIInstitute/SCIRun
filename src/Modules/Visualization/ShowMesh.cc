@@ -28,7 +28,9 @@
 
 #include <Modules/Visualization/ShowMesh.h>
 #include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Geometry.h>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
@@ -39,6 +41,21 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 void ShowMeshModule::execute()
 {
   auto mesh = getRequiredInput(Mesh);
+  
+  {  //TODO: temporary code to sanity-check CreateLatVolMesh.
+    auto facade = mesh->getFacade();
+
+    if (facade)
+    {
+      std::cout << "Hey, I got a mesh facade!" << std::endl;
+      std::cout << "Here are the nodes:" << std::endl;
+
+      BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+      {
+        std::cout << "Node " << node.index() << " point=" << node.point().get_string() << std::endl;
+      }
+    }
+  }
 
   GeometryHandle geom(new GeometryObject(mesh));
   sendOutput(SceneGraph, geom);

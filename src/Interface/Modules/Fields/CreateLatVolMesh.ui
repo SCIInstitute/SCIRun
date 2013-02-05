@@ -210,6 +210,9 @@
           <property name="text">
            <string>Between (-1,-1,-1) and (1,1,1)</string>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>

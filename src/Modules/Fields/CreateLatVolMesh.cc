@@ -132,7 +132,7 @@ void CreateLatVolMesh::execute()
     auto sizey = std::max(2, get_state()->getValue(YSize).getInt());
     auto sizez = std::max(2, get_state()->getValue(ZSize).getInt());
 
-    std::cout << "CreateLatVolMesh: dimensions are " << sizex << " x " << sizey << " x " << sizez << std::endl;
+    //std::cout << "CreateLatVolMesh: dimensions are " << sizex << " x " << sizey << " x " << sizez << std::endl;
 
 		Point minb, maxb;
 
@@ -147,11 +147,13 @@ void CreateLatVolMesh::execute()
 #endif
       if (get_state()->getValue(ElementSizeNormalized).getBool())
       {
+        //std::cout << "LatVol will live between 1,1,1 and -1,-1,-1" << std::endl;
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
       }
       else
       {
+        //std::cout << "LatVol will live between 0,0,0 and (nx,ny,nz)" << std::endl;
         minb = Point(0.0,0.0,0.0);
         maxb = Point(static_cast<double>(sizex-1),
                      static_cast<double>(sizey-1),
