@@ -29,6 +29,7 @@
 SET(Core_Datatypes_Mesh_Tests_SRCS
   FieldTests.cc
   LatticeVolumeMeshTests.cc
+  LatticeVolumeMeshFacadeTests.cc
   MeshFactoryTests.cc
 )
 

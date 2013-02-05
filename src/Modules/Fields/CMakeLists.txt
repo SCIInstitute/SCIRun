@@ -27,11 +27,11 @@
 #
 
 SET(Modules_Fields_SRCS
-  CreateLatVolBasic.cc
+  CreateLatVolMesh.cc
 )
 
 SET(Modules_Fields_HEADERS
-  CreateLatVolBasic.h
+  CreateLatVolMesh.h
   Share.h
 )
 

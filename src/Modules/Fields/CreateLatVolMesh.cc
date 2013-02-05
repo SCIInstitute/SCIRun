@@ -41,7 +41,7 @@
  *
  */
 
-#include <Modules/Fields/CreateLatVolBasic.h>
+#include <Modules/Fields/CreateLatVolMesh.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -58,18 +58,18 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName CreateLatVolBasic::XSize("X size");
-AlgorithmParameterName CreateLatVolBasic::YSize("Y size");
-AlgorithmParameterName CreateLatVolBasic::ZSize("Z size");
-AlgorithmParameterName CreateLatVolBasic::PadPercent("Pad Percentage");
-AlgorithmParameterName CreateLatVolBasic::ElementSizeNormalized("ElementSizeNormalized");
+AlgorithmParameterName CreateLatVolMesh::XSize("X size");
+AlgorithmParameterName CreateLatVolMesh::YSize("Y size");
+AlgorithmParameterName CreateLatVolMesh::ZSize("Z size");
+AlgorithmParameterName CreateLatVolMesh::PadPercent("Pad Percentage");
+AlgorithmParameterName CreateLatVolMesh::ElementSizeNormalized("ElementSizeNormalized");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 DECLARE_MAKER(CreateLatVol)
 #endif
 
-CreateLatVolBasic::CreateLatVolBasic()
-  : Module(ModuleLookupInfo("CreateLatVolBasic", "NewField", "SCIRun"))
+CreateLatVolMesh::CreateLatVolMesh()
+  : Module(ModuleLookupInfo("CreateLatVolMesh", "NewField", "SCIRun"))
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   , size_x_(get_ctx()->subVar("sizex"), 16),
     size_y_(get_ctx()->subVar("sizey"), 16),
@@ -81,7 +81,7 @@ CreateLatVolBasic::CreateLatVolBasic()
 {
 }
 
-void CreateLatVolBasic::execute()
+void CreateLatVolMesh::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldHandle   ifieldhandle;
@@ -130,7 +130,10 @@ void CreateLatVolBasic::execute()
     // Create blank mesh.
     auto sizex = std::max(2, get_state()->getValue(XSize).getInt());
     auto sizey = std::max(2, get_state()->getValue(YSize).getInt());
-    auto sizez = std::max(2, get_state()->getValue(ZSize).getInt());		
+    auto sizez = std::max(2, get_state()->getValue(ZSize).getInt());
+
+    //std::cout << "CreateLatVolMesh: dimensions are " << sizex << " x " << sizey << " x " << sizez << std::endl;
+
 		Point minb, maxb;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -144,11 +147,13 @@ void CreateLatVolBasic::execute()
 #endif
       if (get_state()->getValue(ElementSizeNormalized).getBool())
       {
+        //std::cout << "LatVol will live between 1,1,1 and -1,-1,-1" << std::endl;
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
       }
       else
       {
+        //std::cout << "LatVol will live between 0,0,0 and (nx,ny,nz)" << std::endl;
         minb = Point(0.0,0.0,0.0);
         maxb = Point(static_cast<double>(sizex-1),
                      static_cast<double>(sizey-1),
@@ -174,6 +179,7 @@ void CreateLatVolBasic::execute()
     }
 #endif
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     double padScalar = get_state()->getValue(PadPercent).getDouble() / 100.0;
     Vector diag((maxb - minb) * padScalar);
     minb -= diag;
@@ -189,6 +195,10 @@ void CreateLatVolBasic::execute()
     {
       THROW_ALGORITHM_INPUT_ERROR("Unsupported data_at location " + data_at + ".");
     }
+#else
+    int basis_order = 1;
+#endif
+    
     
     FieldInformation lfi("LatVolMesh", basis_order, "double");
 

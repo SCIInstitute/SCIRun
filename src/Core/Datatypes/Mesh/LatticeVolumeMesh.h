@@ -44,7 +44,7 @@
 
 #include <Core/Datatypes/Mesh/FieldIterator.h>
 #include <Core/Datatypes/Mesh/Mesh.h>
-//#include <Core/Datatypes/VMesh.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
 //#include <Core/Datatypes/FieldRNG.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h> //TODO
 #include <Core/Datatypes/Mesh/VirtualMeshFactory.h>
@@ -281,11 +281,12 @@ public:
   LatVolMesh(const LatVolMesh &copy);
   virtual LatVolMesh *clone() const;
   virtual ~LatVolMesh();
-  virtual VirtualMeshHandle vmesh();
+  virtual VirtualMeshHandle vmesh() const;
   virtual int basis_order();
   virtual bool has_normals() const { return false; }
   virtual bool has_face_normals() const { return false; }
   virtual bool is_editable() const { return false; }
+  virtual MeshFacadeHandle getFacade() const;
 
   Basis &get_basis() { return basis_; }
 
@@ -356,6 +357,7 @@ public:
   index_type get_ni() const { return ni_; }
   index_type get_nj() const { return nj_; }
   index_type get_nk() const { return nk_; }
+  const Geometry::Transform& get_transform() const { return transform_; }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual bool get_dim(std::vector<size_type>&) const;
   virtual void set_dim(const std::vector<size_type>& dims);

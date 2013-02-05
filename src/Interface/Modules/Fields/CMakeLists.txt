@@ -28,16 +28,16 @@
 #
 
 SET(Interface_Modules_Fields_FORMS
-  CreateLatVol.ui
+  CreateLatVolMesh.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
-  CreateLatVolBasicDialog.h
+  CreateLatVolMeshDialog.h
   Share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 
-  CreateLatVolBasicDialog.cc
+  CreateLatVolMeshDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

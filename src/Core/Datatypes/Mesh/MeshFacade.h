@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATE_LATVOLBASIC_H
-#define INTERFACE_MODULES_CREATE_LATVOLBASIC_H
+#ifndef CORE_DATATYPES_MESH_FACADE_H
+#define CORE_DATATYPES_MESH_FACADE_H 
 
-#include "Interface/Modules/Fields/ui_CreateLatVol.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/Share.h>
+#include <Core/Datatypes/Mesh/MeshFacadeIterators.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE CreateLatVolBasicDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::CreateLatVol
-{
-	Q_OBJECT
-	
-public:
-  CreateLatVolBasicDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
+namespace Core {
+namespace Datatypes {
 
-private Q_SLOTS:
-  void push();
-};
+  class SCISHARE MeshFacade
+  {
+  public:
+    virtual ~MeshFacade() {}
 
-}
-}
+    // prototype this for use with BOOST_FOREACH, so use pairs of iterators. When upgrading to C++11, will need to support a range concept.
+    typedef std::pair<SmartNodeIterator, SmartNodeIterator> Nodes;
+    typedef std::pair<SmartEdgeIterator, SmartEdgeIterator> Edges;
+    typedef std::pair<SmartFaceIterator, SmartFaceIterator> Faces;
+
+    virtual Nodes nodes() const = 0;
+    virtual Edges edges() const = 0;
+    virtual Faces faces() const = 0;
+
+    virtual size_t numNodes() const = 0;
+    virtual size_t numEdges() const = 0;
+    virtual size_t numFaces() const = 0;
+    virtual size_t numElements() const = 0;
+  };
+
+}}}
 
 #endif
+

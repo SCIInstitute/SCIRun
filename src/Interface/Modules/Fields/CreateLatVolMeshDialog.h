@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
+#ifndef INTERFACE_MODULES_CREATE_LATVOLMESH_H
+#define INTERFACE_MODULES_CREATE_LATVOLMESH_H
 
-#ifndef CORE_DATATYPES_MESHTRAITS_H
-#define CORE_DATATYPES_MESHTRAITS_H 
-
-#include <vector>
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Datatypes/Types.h>
-#include <Core/Datatypes/Mesh/Share.h>
+#include "Interface/Modules/Fields/ui_CreateLatVolMesh.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/Share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+namespace Gui {
+  
+class SCISHARE CreateLatVolMeshDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::CreateLatVol
+{
+	Q_OBJECT
+	
+public:
+  CreateLatVolMeshDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 
-  class SCISHARE MeshTraits 
-  {
-  public: 
-    typedef SCIRun::mask_type                  mask_type;  
-    typedef SCIRun::index_type                 under_type;  
-    typedef SCIRun::index_type                 index_type;
-    typedef SCIRun::index_type                 size_type;
-    typedef std::vector<index_type>            array_type;
-    typedef std::vector<size_type>             dimension_type;
-  };
+private Q_SLOTS:
+  void push();
+};
 
-  class MeshFacade;
-  typedef boost::shared_ptr<MeshFacade> MeshFacadeHandle;
-
-}}}
+}
+}
 
 #endif
-

@@ -646,8 +646,12 @@ void SCIRunMainWindow::enableInputWidgets()
 
 void SCIRunMainWindow::updateRegressionTestDataDir()
 {
-  regressionTestDataDir_ = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
-  setRegressionTestDataDir();
+  auto newDir = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
+  if (!newDir.isEmpty())
+  {
+    regressionTestDataDir_ = newDir;
+    setRegressionTestDataDir();
+  }
 }
 
 void SCIRunMainWindow::setRegressionTestDataDir()

@@ -30,33 +30,56 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_MESHTRAITS_H
-#define CORE_DATATYPES_MESHTRAITS_H 
+/*
+ *  CreateLatVol.cc:  Make an ImageField that fits the source field.
+ *
+ *  Written by:
+ *   Michael Callahan
+ *   Department of Computer Science
+ *   University of Utah
+ *   March 2001
+ *
+ */
 
-#include <vector>
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Datatypes/Types.h>
-#include <Core/Datatypes/Mesh/Share.h>
+#ifndef MODULES_FIELDS_CREATELATVOLMESH_H
+#define MODULES_FIELDS_CREATELATVOLMESH_H
+
+#include <Dataflow/Network/Module.h>
+#include <Modules/Fields/Share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+  namespace Modules {
+    namespace Fields {
 
-  class SCISHARE MeshTraits 
-  {
-  public: 
-    typedef SCIRun::mask_type                  mask_type;  
-    typedef SCIRun::index_type                 under_type;  
-    typedef SCIRun::index_type                 index_type;
-    typedef SCIRun::index_type                 size_type;
-    typedef std::vector<index_type>            array_type;
-    typedef std::vector<size_type>             dimension_type;
-  };
+class SCISHARE CreateLatVolMesh : public SCIRun::Dataflow::Networks::Module,
+  public Has1OutputPort<MeshPortTag>
+{
+  public:
+    CreateLatVolMesh();
 
-  class MeshFacade;
-  typedef boost::shared_ptr<MeshFacade> MeshFacadeHandle;
+    virtual void execute();
+
+    OUTPUT_PORT(0, OutputSampleField, Mesh);
+
+    static Core::Algorithms::AlgorithmParameterName XSize;
+    static Core::Algorithms::AlgorithmParameterName YSize;
+    static Core::Algorithms::AlgorithmParameterName ZSize;
+    static Core::Algorithms::AlgorithmParameterName PadPercent;
+    static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+
+  private:
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    GuiInt size_x_;
+    GuiInt size_y_;
+    GuiInt size_z_;
+    GuiDouble padpercent_;
+    GuiString data_at_;
+    GuiString element_size_;
+
+    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+#endif 
+};
 
 }}}
 
 #endif
-
