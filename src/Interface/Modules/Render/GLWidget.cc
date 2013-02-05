@@ -31,9 +31,12 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <QMouseEvent>
+
 #include "GLWidget.h"
 
 using namespace SCIRun::Gui;
+using Spire::Vector2;
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(const QGLFormat& format) :
@@ -70,28 +73,29 @@ void GLWidget::initializeGL()
 //------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  /// \todo Send mouse move event to SCIRun's spire interface.
+  /// \todo Include specific button info.
+  mGraphics->inputMouseMove(Vector2<int32_t>(event->x(), event->y()));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  //mLastMousePos.x = event->x();
-  //mLastMousePos.y = event->y();
-
-  /// \todo Send mouse down event to SCIRun's spire interface.
+  /// \todo Include specific button info.
+  mGraphics->inputMouseDown(Vector2<int32_t>(event->x(), event->y()));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  /// \todo Send mouse up event to SCIRun's spire interface.
+  /// \todo Include specific button info.
+  mGraphics->inputMouseUp(Vector2<int32_t>(event->x(), event->y()));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
-  /// \todo Inform Spire that the GL window has changed in dimensions.
+  mGraphics->eventResize(static_cast<int32_t>(width),
+                         static_cast<int32_t>(height));
 }
 
 //------------------------------------------------------------------------------
