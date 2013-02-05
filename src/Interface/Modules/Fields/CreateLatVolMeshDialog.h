@@ -29,7 +29,7 @@
 #ifndef INTERFACE_MODULES_CREATE_LATVOLMESH_H
 #define INTERFACE_MODULES_CREATE_LATVOLMESH_H
 
-#include "Interface/Modules/Fields/ui_CreateLatVol.h"
+#include "Interface/Modules/Fields/ui_CreateLatVolMesh.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/Share.h>
 
