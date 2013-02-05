@@ -130,7 +130,10 @@ void CreateLatVolMesh::execute()
     // Create blank mesh.
     auto sizex = std::max(2, get_state()->getValue(XSize).getInt());
     auto sizey = std::max(2, get_state()->getValue(YSize).getInt());
-    auto sizez = std::max(2, get_state()->getValue(ZSize).getInt());		
+    auto sizez = std::max(2, get_state()->getValue(ZSize).getInt());
+
+    std::cout << "CreateLatVolMesh: dimensions are " << sizex << " x " << sizey << " x " << sizez << std::endl;
+
 		Point minb, maxb;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -174,6 +177,7 @@ void CreateLatVolMesh::execute()
     }
 #endif
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     double padScalar = get_state()->getValue(PadPercent).getDouble() / 100.0;
     Vector diag((maxb - minb) * padScalar);
     minb -= diag;
@@ -189,6 +193,10 @@ void CreateLatVolMesh::execute()
     {
       THROW_ALGORITHM_INPUT_ERROR("Unsupported data_at location " + data_at + ".");
     }
+#else
+    int basis_order = 1;
+#endif
+    
     
     FieldInformation lfi("LatVolMesh", basis_order, "double");
 

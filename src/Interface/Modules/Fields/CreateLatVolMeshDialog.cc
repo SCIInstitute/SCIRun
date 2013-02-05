@@ -51,14 +51,23 @@ CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleSt
   zSizeSpinBox_->setValue(16);
   dataAtNodesButton_->setChecked(true);
   elementSizeNormalizedButton_->setChecked(true);
+  push();
+
+  connect(xSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  connect(ySizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
 }
 
 void CreateLatVolMeshDialog::push()
 {
-  //state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
+  std::cout << "CLVMD::push()" << std::endl;
+  state_->setValue(CreateLatVolMesh::XSize, xSizeSpinBox_->value());
+  state_->setValue(CreateLatVolMesh::YSize, ySizeSpinBox_->value());
+  state_->setValue(CreateLatVolMesh::ZSize, zSizeSpinBox_->value());
 }
 
 void CreateLatVolMeshDialog::pull()
 {
+  std::cout << "CLVMD::pull()" << std::endl;
   //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }
