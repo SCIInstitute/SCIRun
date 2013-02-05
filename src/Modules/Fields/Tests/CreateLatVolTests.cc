@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 //#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Fields/CreateLatVolBasic.h>
+#include <Modules/Fields/CreateLatVolMesh.h>
 
 using namespace SCIRun;
 using ::testing::_;

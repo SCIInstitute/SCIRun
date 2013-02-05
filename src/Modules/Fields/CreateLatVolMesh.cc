@@ -41,7 +41,7 @@
  *
  */
 
-#include <Modules/Fields/CreateLatVolBasic.h>
+#include <Modules/Fields/CreateLatVolMesh.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -58,18 +58,18 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName CreateLatVolBasic::XSize("X size");
-AlgorithmParameterName CreateLatVolBasic::YSize("Y size");
-AlgorithmParameterName CreateLatVolBasic::ZSize("Z size");
-AlgorithmParameterName CreateLatVolBasic::PadPercent("Pad Percentage");
-AlgorithmParameterName CreateLatVolBasic::ElementSizeNormalized("ElementSizeNormalized");
+AlgorithmParameterName CreateLatVolMesh::XSize("X size");
+AlgorithmParameterName CreateLatVolMesh::YSize("Y size");
+AlgorithmParameterName CreateLatVolMesh::ZSize("Z size");
+AlgorithmParameterName CreateLatVolMesh::PadPercent("Pad Percentage");
+AlgorithmParameterName CreateLatVolMesh::ElementSizeNormalized("ElementSizeNormalized");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 DECLARE_MAKER(CreateLatVol)
 #endif
 
-CreateLatVolBasic::CreateLatVolBasic()
-  : Module(ModuleLookupInfo("CreateLatVolBasic", "NewField", "SCIRun"))
+CreateLatVolMesh::CreateLatVolMesh()
+  : Module(ModuleLookupInfo("CreateLatVolMesh", "NewField", "SCIRun"))
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   , size_x_(get_ctx()->subVar("sizex"), 16),
     size_y_(get_ctx()->subVar("sizey"), 16),
@@ -81,7 +81,7 @@ CreateLatVolBasic::CreateLatVolBasic()
 {
 }
 
-void CreateLatVolBasic::execute()
+void CreateLatVolMesh::execute()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldHandle   ifieldhandle;

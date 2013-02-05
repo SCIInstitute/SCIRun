@@ -41,8 +41,8 @@
  *
  */
 
-#ifndef MODULES_FIELDS_CREATELATVOLBASIC_H
-#define MODULES_FIELDS_CREATELATVOLBASIC_H
+#ifndef MODULES_FIELDS_CREATELATVOLMESH_H
+#define MODULES_FIELDS_CREATELATVOLMESH_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/Share.h>
@@ -51,11 +51,11 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-class SCISHARE CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<MeshPortTag> //TODO
+class SCISHARE CreateLatVolMesh : public SCIRun::Dataflow::Networks::Module,
+  public Has1OutputPort<MeshPortTag>
 {
   public:
-    CreateLatVolBasic();
+    CreateLatVolMesh();
 
     virtual void execute();
 

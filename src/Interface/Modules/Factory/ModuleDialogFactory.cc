@@ -39,7 +39,7 @@
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
-#include <Interface/Modules/Fields/CreateLatVolBasicDialog.h>
+#include <Interface/Modules/Fields/CreateLatVolMeshDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -82,8 +82,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new ViewSceneDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SolveLinearSystem") != std::string::npos)
     return new SolveLinearSystemDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("CreateLatVolBasic") != std::string::npos)
-    return new CreateLatVolBasicDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("CreateLatVolMesh") != std::string::npos)
+    return new CreateLatVolMeshDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

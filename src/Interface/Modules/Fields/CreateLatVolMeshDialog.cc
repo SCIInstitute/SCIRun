@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CreateLatVolBasicDialog.h>
-#include <Modules/Fields/CreateLatVolBasic.h>
+#include <Interface/Modules/Fields/CreateLatVolMeshDialog.h>
+#include <Modules/Fields/CreateLatVolMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-CreateLatVolBasicDialog::CreateLatVolBasicDialog(const std::string& name, ModuleStateHandle state,
+CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -53,12 +53,12 @@ CreateLatVolBasicDialog::CreateLatVolBasicDialog(const std::string& name, Module
   elementSizeNormalizedButton_->setChecked(true);
 }
 
-void CreateLatVolBasicDialog::push()
+void CreateLatVolMeshDialog::push()
 {
   //state_->setValue(CreateMatrixModule::TextEntry, matrixTextEdit_->toPlainText().toStdString());
 }
 
-void CreateLatVolBasicDialog::pull()
+void CreateLatVolMeshDialog::pull()
 {
   //matrixTextEdit_->setPlainText(QString::fromStdString(state_->getValue(CreateMatrixModule::TextEntry).getString()));
 }

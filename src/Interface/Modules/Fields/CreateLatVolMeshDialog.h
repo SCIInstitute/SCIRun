@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATE_LATVOLBASIC_H
-#define INTERFACE_MODULES_CREATE_LATVOLBASIC_H
+#ifndef INTERFACE_MODULES_CREATE_LATVOLMESH_H
+#define INTERFACE_MODULES_CREATE_LATVOLMESH_H
 
 #include "Interface/Modules/Fields/ui_CreateLatVol.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -36,14 +36,14 @@
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE CreateLatVolBasicDialog : public ModuleDialogGeneric, 
+class SCISHARE CreateLatVolMeshDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
   public Ui::CreateLatVol
 {
 	Q_OBJECT
 	
 public:
-  CreateLatVolBasicDialog(const std::string& name, 
+  CreateLatVolMeshDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();
