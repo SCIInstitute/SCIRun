@@ -92,9 +92,9 @@ void ViewSceneDialog::moduleExecuted()
     
     spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
     spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
-    spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
+    spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
 
     spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
-    spire->renderHACKSetUCEdgeColor(Spire::V4(0.7f, 0.7f, 0.7f, 1.0f));
+    spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
   }
 }
