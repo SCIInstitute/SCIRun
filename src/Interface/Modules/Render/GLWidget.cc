@@ -32,6 +32,7 @@
 ///         auxiliary file to the ViewScene render module.
 
 #include <QMouseEvent>
+#include <QWheelEvent>
 
 #include "GLWidget.h"
 
@@ -89,6 +90,12 @@ void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   /// \todo Include specific button info.
   mGraphics->inputMouseUp(Vector2<int32_t>(event->x(), event->y()));
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::wheelEvent(QWheelEvent * event)
+{
+  mGraphics->inputMouseWheel(event->delta());
 }
 
 //------------------------------------------------------------------------------
