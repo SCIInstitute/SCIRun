@@ -26,31 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_SHOW_MESH_H
-#define MODULES_VISUALIZATION_SHOW_MESH_H
+#include <Interface/Modules/Visualization/ShowMeshDialog.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <QFileDialog>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/Share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun {
-namespace Modules {
-namespace Visualization {
-
-  class SCISHARE ShowMeshModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MeshPortTag>,
-    public Has1OutputPort<GeometryPortTag>
-  {
-  public:
-    ShowMeshModule();
-    virtual void execute();
-
-    static Core::Algorithms::AlgorithmParameterName ShowEdges;
-    static Core::Algorithms::AlgorithmParameterName ShowFaces;
-    static Core::Algorithms::AlgorithmParameterName ZTestOn;
-
-    INPUT_PORT(0, Mesh, Mesh);
-    OUTPUT_PORT(0, SceneGraph, GeometryObject);
-  };
-}}}
-
-#endif
+ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  //executeButton_->setEnabled(false);
+  
+  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+}

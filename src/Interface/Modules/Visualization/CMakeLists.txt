@@ -30,6 +30,7 @@
 SET(Interface_Modules_Visualization_FORMS
   MatrixAsVectorField.ui
   ShowField.ui
+  ShowMesh.ui
   ShowString.ui
 )
 
@@ -37,12 +38,14 @@ SET(Interface_Modules_Visualization_HEADERS
   MatrixAsVectorFieldDialog.h
   Share.h
   ShowFieldDialog.h
+  ShowMeshDialog.h
   ShowStringDialog.h
 )
 
 SET(Interface_Modules_Visualization_SOURCES 
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
+  ShowMeshDialog.cc
   ShowStringDialog.cc
 )
 

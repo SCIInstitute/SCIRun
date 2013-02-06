@@ -35,6 +35,7 @@
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")) {}
 
@@ -42,6 +43,10 @@ void ShowMeshModule::execute()
 {
   auto mesh = getRequiredInput(Mesh);
   MeshFacadeHandle facade(mesh->getFacade());
+
+  bool showEdges = get_state()->getValue(ShowEdges).getBool();
+  bool showfaces = get_state()->getValue(ShowFaces).getBool();
+  bool zTestOn = get_state()->getValue(ZTestOn).getBool();
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
@@ -107,3 +112,7 @@ void ShowMeshModule::execute()
   geom->iboEdgesSize = iboEdgesSize;
   sendOutput(SceneGraph, geom);
 }
+
+AlgorithmParameterName ShowMeshModule::ShowEdges("Show edges");
+AlgorithmParameterName ShowMeshModule::ShowFaces("Show faces");
+AlgorithmParameterName ShowMeshModule::ZTestOn("Z Test");
