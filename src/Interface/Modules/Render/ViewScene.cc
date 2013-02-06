@@ -95,6 +95,6 @@ void ViewSceneDialog::moduleExecuted()
     spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
 
     spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
-    spire->renderHACKSetUCEdgeColor(Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+    spire->renderHACKSetUCEdgeColor(Spire::V4(0.7f, 0.7f, 0.7f, 1.0f));
   }
 }
