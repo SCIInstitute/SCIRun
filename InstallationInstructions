@@ -26,6 +26,8 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+An installer is available for OS X (10.7 or greater).
+
 SCIRun 5 prototype build instructions
 
 Required:
@@ -34,7 +36,7 @@ Windows:
 	Visual C++ 2010
 
 OS X (tested on 10.7 and 10.8)
-	gcc 4.2
+	Apple clang 4.1
 
 Linux (tested on OpenSuSE 12.1, Ubuntu 12.10):
 	gcc 4.6, 4.7
