@@ -317,6 +317,7 @@ install(DIRECTORY ${SPIRE_SOURCE_DIR}/Spire/Shaders
 # TODO: exclude for headless
 SET(QT_MIN_VERSION "4.8.0")
 FIND_PACKAGE(Qt4 REQUIRED)
+SET(QT_USE_QTOPENGL TRUE)
 
 IF(QT_FOUND)
   # TODO: configure Qt OpenGL?
