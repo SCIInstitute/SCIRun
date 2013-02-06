@@ -88,7 +88,13 @@ void ViewSceneDialog::moduleExecuted()
     }
 
     // Send buffers to spire...
-    mSpire.lock()->renderHACKSetUCFace(geomData->vboFaces, geomData->vboFacesSize, geomData->iboFaces, geomData->iboFacesSize);
-    mSpire.lock()->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+    std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
+    
+    spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
+    spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
+    spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.3f));
+
+    spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
+    spire->renderHACKSetUCEdgeColor(Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
   }
 }

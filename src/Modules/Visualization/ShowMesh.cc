@@ -73,7 +73,7 @@ void ShowMeshModule::execute()
   i = 0;
   BOOST_FOREACH(const FaceInfo& face, facade->faces())
   {
-    // There should *only* be fourc indicies. TODO: assert that...
+    // There should *only* be four indicies.
     VirtualMesh::Node::array_type nodes = face.nodeIndices();
     assert(nodes.size() == 4);
     // Winding order looks good from tests.
@@ -83,10 +83,27 @@ void ShowMeshModule::execute()
     i += 6;
   }
 
+  // Build the edges
+  size_t iboEdgesSize = sizeof(uint32_t) * facade->numEdges() * 2;
+  uint32_t* iboEdges = static_cast<uint32_t*>(std::malloc(iboEdgesSize));
+  i = 0;
+  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+  {
+    // There should *only* be two indicies (linestrip would be better...)
+    VirtualMesh::Node::array_type nodes = edge.nodeIndices();
+    assert(nodes.size() == 2);
+    // Winding order looks good from tests.
+    // Render two triangles.
+    iboEdges[i] = nodes[0]; iboEdges[i+1] = nodes[1];
+    i += 2;
+  }
+
   GeometryHandle geom(new GeometryObject(mesh));
-  geom->vboFaces = (uint8_t*)vbo;
-  geom->vboFacesSize = vboSize;
+  geom->vboCommon = (uint8_t*)vbo;
+  geom->vboCommonSize = vboSize;
   geom->iboFaces = (uint8_t*)iboFaces;
   geom->iboFacesSize = iboFacesSize;
+  geom->iboEdges = (uint8_t*)iboEdges;
+  geom->iboEdgesSize = iboEdgesSize;
   sendOutput(SceneGraph, geom);
 }

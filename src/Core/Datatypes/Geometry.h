@@ -50,14 +50,12 @@ namespace Datatypes {
     //         to be taken into account (rendering settings).
     /// \todo Change to std::array
     /// \todo Combine vboFaces and vboEdges, they use the *SAME* VBO.
-    uint8_t* vboFaces;
-    size_t   vboFacesSize;
-    uint8_t* iboFaces;
-    size_t   iboFacesSize;
-    uint8_t* vboEdges;
-    size_t   vboEdgesSize;
-    uint8_t* iboEdges;
-    size_t   iboEdgesSize;
+    uint8_t*  vboCommon;
+    size_t    vboCommonSize;
+    uint8_t*  iboFaces;
+    size_t    iboFacesSize;
+    uint8_t*  iboEdges;
+    size_t    iboEdgesSize;
 
   private:
     DatatypeConstHandle data_;
