@@ -51,9 +51,9 @@ ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
 
 void ShowMeshDialog::push()
 {
-  state_->setValue(ShowMeshModule::ShowEdges, showEdgesCheckBox_->checked());
-  state_->setValue(ShowMeshModule::ShowFaces, showFacesCheckBox_->checked());
-  state_->setValue(ShowMeshModule::ZTestOn, zTestCheckBox_->checked());
+  state_->setValue(ShowMeshModule::ShowEdges, showEdgesCheckBox_->isChecked());
+  state_->setValue(ShowMeshModule::ShowFaces, showFacesCheckBox_->isChecked());
+  state_->setValue(ShowMeshModule::ZTestOn, zTestCheckBox_->isChecked());
 }
 
 //TODO: pull()
