@@ -94,23 +94,18 @@ void ViewSceneDialog::moduleExecuted()
     {
       spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
 
-      if (geomData->iboFaces != nullptr)
-      {
-        spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
-        if (geomData->useZTest == true)
-          spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
-        else
-          spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
-      }
+      // We want iboFaces and iboEdges to enter as nullptr's if they are.
+      spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
+      if (geomData->useZTest == true)
+        spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
+      else
+        spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
 
-      if (geomData->iboEdges != nullptr)
-      {
-        spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
-        if (geomData->useZTest == true)
-          spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
-        else
-          spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
-      }
+      spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
+      if (geomData->useZTest == true)
+        spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
+      else
+        spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
     }
   }
 }
