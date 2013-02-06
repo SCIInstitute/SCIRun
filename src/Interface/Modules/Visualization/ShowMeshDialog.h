@@ -26,31 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_VISUALIZATION_SHOW_MESH_H
-#define MODULES_VISUALIZATION_SHOW_MESH_H
+#ifndef INTERFACE_MODULES_SHOW_MESH_H
+#define INTERFACE_MODULES_SHOW_MESH_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/Share.h>
+#include "Interface/Modules/Visualization/ui_ShowMesh.h"
+#include <boost/shared_ptr.hpp>
+#include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Visualization/Share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Visualization {
+namespace Gui {
+  
+class SCISHARE ShowMeshDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::ShowMesh
+{
+	Q_OBJECT
+	
+public:
+  ShowMeshDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull() {}
 
-  class SCISHARE ShowMeshModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MeshPortTag>,
-    public Has1OutputPort<GeometryPortTag>
-  {
-  public:
-    ShowMeshModule();
-    virtual void execute();
+private Q_SLOTS:
+  //void pushFileNameToState(const QString& str);
+  //void saveFile();
+};
 
-    static Core::Algorithms::AlgorithmParameterName ShowEdges;
-    static Core::Algorithms::AlgorithmParameterName ShowFaces;
-    static Core::Algorithms::AlgorithmParameterName ZTestOn;
-
-    INPUT_PORT(0, Mesh, Mesh);
-    OUTPUT_PORT(0, SceneGraph, GeometryObject);
-  };
-}}}
+}
+}
 
 #endif
