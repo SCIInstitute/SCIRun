@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
+#include <Core/Datatypes/Geometry.h>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
@@ -68,3 +69,26 @@ ViewSceneDialog::~ViewSceneDialog()
   delete mGLWidget;
 }
 
+//------------------------------------------------------------------------------
+void ViewSceneDialog::moduleExecuted()
+{
+  // Grab the geomData transient value.
+  boost::any geomDataTransient = state_->getTransientValue("geomData");
+  if (!geomDataTransient.empty())
+  {
+    boost::shared_ptr<Core::Datatypes::GeometryObject> geomData;
+    try
+    {
+      geomData = boost::any_cast<boost::shared_ptr<Core::Datatypes::GeometryObject>>(geomDataTransient);
+    }
+    catch (const boost::bad_any_cast& e)
+    {
+      //error("Unable to cast boost::any transient value to spire pointer.");
+      return;
+    }
+
+    // Send buffers to spire...
+    mSpire.lock()->renderHACKSetUCFace(geomData->vboFaces, geomData->vboFacesSize, geomData->iboFaces, geomData->iboFacesSize);
+    mSpire.lock()->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+  }
+}

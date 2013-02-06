@@ -45,6 +45,20 @@ namespace Datatypes {
     GeometryObject& operator=(const GeometryObject& other);
     DatatypeConstHandle get_underlying() const;
     virtual GeometryObject* clone() const { return new GeometryObject(*this); }
+
+    // HACKED. This will in general be what we transmit, but extra factors need
+    //         to be taken into account (rendering settings).
+    /// \todo Change to std::array
+    /// \todo Combine vboFaces and vboEdges, they use the *SAME* VBO.
+    uint8_t* vboFaces;
+    size_t   vboFacesSize;
+    uint8_t* iboFaces;
+    size_t   iboFacesSize;
+    uint8_t* vboEdges;
+    size_t   vboEdgesSize;
+    uint8_t* iboEdges;
+    size_t   iboEdgesSize;
+
   private:
     DatatypeConstHandle data_;
   };

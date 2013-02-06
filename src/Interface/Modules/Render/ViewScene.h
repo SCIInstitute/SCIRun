@@ -56,6 +56,7 @@ public:
   ~ViewSceneDialog();
   virtual void pull() {}
 
+  virtual void moduleExecuted();
 private:
 
   GLWidget*                                   mGLWidget;  ///< GL widget containing context.

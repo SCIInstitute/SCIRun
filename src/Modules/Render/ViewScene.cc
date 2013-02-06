@@ -66,31 +66,6 @@ void ViewScene::preExecutionInitialization()
       error("Unable to cast boost::any transient value to spire pointer.");
     }
   }
-
-  //// Lookup state information in order to create Spire
-  //boost::any context = get_state()->getTransientValue("glContext");
-  //std::vector<std::string> shaderDirs;
-
-  //if (!context.empty())
-  //{
-  //  try
-  //  {
-  //    std::shared_ptr<Spire::Context> glContext = 
-  //        boost::any_cast<std::weak_ptr<Spire::Context>>(context).lock();
-
-  //    // Note: On windows, we *need* to create a non-threaded renderer.
-  //    mSpire = std::shared_ptr<Spire::Interface>(
-  //        new Spire::Interface(glContext, shaderDirs, true));
-  //  }
-  //  catch (const boost::bad_any_cast& e)
-  //  {
-  //    error("Unable to cast boost::any transient value to spire pointer.");
-  //  }
-  //}
-  //else
-  //{
-  //  error("Unable to find transient context value.");
-  //}
 }
 
 void ViewScene::preDestruction()
@@ -101,7 +76,20 @@ void ViewScene::preDestruction()
 
 void ViewScene::execute()
 {
-  // render updated 
+  // Grab geometry inputs and pass them along in a transient value to the GUI
+  // thread where they will be transported to Spire.
+  // NOTE: I'm not implementing mutex locks for this now. But for production
+  // purposes, they NEED to be in there!
+  //std::shared_ptr<GeometryObject> geom = getRequiredInput(GeneralGeom);
+  boost::shared_ptr<GeometryObject> geom = getRequiredInput(GeneralGeom);
 
-  error("Renderer not set, nothing to do here!");
+  // Pass geometry object up through transient... really need to be concerned
+  // about the lifetimes of the buffers we have in GeometryObject. Need to
+  // switch to std::shared_ptr on an std::array when in production.
+
+  /// \todo Need to make this data transfer mechanism thread safe!
+  // I thought about dynamic casting geometry object to a weak_ptr, but I don't
+  // know where it will be destroyed. For now, it will have have stale pointer
+  // data lying around in it... yuck.
+  get_state()->setTransientValue("geomData", geom);
 }

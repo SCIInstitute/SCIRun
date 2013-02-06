@@ -41,22 +41,52 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 void ShowMeshModule::execute()
 {
   auto mesh = getRequiredInput(Mesh);
-  
-  {  //TODO: temporary code to sanity-check CreateLatVolMesh.
-    auto facade = mesh->getFacade();
+  MeshFacadeHandle facade(mesh->getFacade());
 
-    if (facade)
-    {
-      std::cout << "Hey, I got a mesh facade!" << std::endl;
-      std::cout << "Here are the nodes:" << std::endl;
+  /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
+  ///       eek out better coherency and use a 16 bit index buffer instead of
+  ///       a 32 bit index buffer.
 
-      BOOST_FOREACH(const NodeInfo& node, facade->nodes())
-      {
-        std::cout << "Node " << node.index() << " point=" << node.point().get_string() << std::endl;
-      }
-    }
+  // We are going to get no lighting in this first pass. The unfortunate reality
+  // is that I cannot get access to face normals in vertex shaders based off of
+  // the winding orders of the incoming geometry.
+
+  // Allocate memory for vertex buffer (*NOT* the index buffer, which is a
+  // a function of the number of faces). Only allocating enough memory to hold
+  // points associated with the faces.
+  // Edges *and* faces should use the same vbo!
+  size_t vboSize = sizeof(float) * 3 * facade->numNodes();
+  float* vbo = static_cast<float*>(std::malloc(vboSize));
+
+  // Build index buffer. Based off of the node indices that came out of old
+  // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
+  size_t i = 0;
+  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  {
+    vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
+    i+=3;
+  }
+
+  // Build the faces.
+  size_t iboFacesSize = sizeof(uint32_t) * facade->numFaces() * 6;
+  uint32_t* iboFaces = static_cast<uint32_t*>(std::malloc(iboFacesSize));
+  i = 0;
+  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  {
+    // There should *only* be fourc indicies. TODO: assert that...
+    VirtualMesh::Node::array_type nodes = face.nodeIndices();
+    assert(nodes.size() == 4);
+    // Winding order looks good from tests.
+    // Render two triangles.
+    iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
+    iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
+    i += 6;
   }
 
   GeometryHandle geom(new GeometryObject(mesh));
+  geom->vboFaces = (uint8_t*)vbo;
+  geom->vboFacesSize = vboSize;
+  geom->iboFaces = (uint8_t*)iboFaces;
+  geom->iboFacesSize = iboFacesSize;
   sendOutput(SceneGraph, geom);
 }

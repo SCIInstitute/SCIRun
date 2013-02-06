@@ -55,7 +55,7 @@ namespace Render {
     /// is destroyed.
     virtual void preDestruction();
 
-    INPUT_PORT(0, RenderedString, GeometryObject);
+    INPUT_PORT(0, GeneralGeom, GeometryObject);
     INPUT_PORT(1, RenderedMatrixAsVectorField, GeometryObject);
 
   private:
