@@ -45,7 +45,7 @@ void ShowMeshModule::execute()
   MeshFacadeHandle facade(mesh->getFacade());
 
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
-  bool showfaces = get_state()->getValue(ShowFaces).getBool();
+  bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool zTestOn = get_state()->getValue(ZTestOn).getBool();
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
@@ -74,33 +74,41 @@ void ShowMeshModule::execute()
 
   // Build the faces.
   size_t iboFacesSize = sizeof(uint32_t) * facade->numFaces() * 6;
-  uint32_t* iboFaces = static_cast<uint32_t*>(std::malloc(iboFacesSize));
-  i = 0;
-  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  uint32_t* iboFaces = nullptr;
+  if (showFaces)
   {
-    // There should *only* be four indicies.
-    VirtualMesh::Node::array_type nodes = face.nodeIndices();
-    assert(nodes.size() == 4);
-    // Winding order looks good from tests.
-    // Render two triangles.
-    iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
-    iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
-    i += 6;
+    iboFaces = static_cast<uint32_t*>(std::malloc(iboFacesSize));
+    i = 0;
+    BOOST_FOREACH(const FaceInfo& face, facade->faces())
+    {
+      // There should *only* be four indicies.
+      VirtualMesh::Node::array_type nodes = face.nodeIndices();
+      assert(nodes.size() == 4);
+      // Winding order looks good from tests.
+      // Render two triangles.
+      iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
+      iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
+      i += 6;
+    }
   }
 
   // Build the edges
   size_t iboEdgesSize = sizeof(uint32_t) * facade->numEdges() * 2;
-  uint32_t* iboEdges = static_cast<uint32_t*>(std::malloc(iboEdgesSize));
-  i = 0;
-  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+  uint32_t* iboEdges = nullptr;
+  if (showEdges)
   {
-    // There should *only* be two indicies (linestrip would be better...)
-    VirtualMesh::Node::array_type nodes = edge.nodeIndices();
-    assert(nodes.size() == 2);
-    // Winding order looks good from tests.
-    // Render two triangles.
-    iboEdges[i] = nodes[0]; iboEdges[i+1] = nodes[1];
-    i += 2;
+    iboEdges = static_cast<uint32_t*>(std::malloc(iboEdgesSize));
+    i = 0;
+    BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+    {
+      // There should *only* be two indicies (linestrip would be better...)
+      VirtualMesh::Node::array_type nodes = edge.nodeIndices();
+      assert(nodes.size() == 2);
+      // Winding order looks good from tests.
+      // Render two triangles.
+      iboEdges[i] = nodes[0]; iboEdges[i+1] = nodes[1];
+      i += 2;
+    }
   }
 
   GeometryHandle geom(new GeometryObject(mesh));
@@ -110,6 +118,7 @@ void ShowMeshModule::execute()
   geom->iboFacesSize = iboFacesSize;
   geom->iboEdges = (uint8_t*)iboEdges;
   geom->iboEdgesSize = iboEdgesSize;
+  geom->useZTest = zTestOn;
   sendOutput(SceneGraph, geom);
 }
 
