@@ -62,9 +62,13 @@ const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& par
 
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
-  stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
+  auto oldLocation = stateMap_.find(parameterName);
+  bool newValue = oldLocation != stateMap_.end() && !(oldLocation->second.value_ == value);
 
-  stateChangedSignal_();
+  stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
+  
+  if (newValue)
+    stateChangedSignal_();
 }
 
 boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)

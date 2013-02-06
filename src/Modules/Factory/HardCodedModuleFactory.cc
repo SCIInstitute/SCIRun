@@ -44,7 +44,7 @@
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
-#include <Modules/Fields/CreateLatVolBasic.h>
+#include <Modules/Fields/CreateLatVolMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/String/CreateString.h>
@@ -215,10 +215,10 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
     description.output_ports_ += ShowMeshModule::outputPortDescription(ShowMeshModule::outputPort0Name());
     description.maker_ = boost::factory<ShowMeshModule*>();
   }
-  else if (name.find("CreateLatVolBasic") != std::string::npos)
+  else if (name.find("CreateLatVolMesh") != std::string::npos)
   {
-    description.output_ports_ += CreateLatVolBasic::outputPortDescription(CreateLatVolBasic::outputPort0Name());
-    description.maker_ = boost::factory<CreateLatVolBasic*>();
+    description.output_ports_ += CreateLatVolMesh::outputPortDescription(CreateLatVolMesh::outputPort0Name());
+    description.maker_ = boost::factory<CreateLatVolMesh*>();
   }
   else if (name.find("MatrixAsVectorField") != std::string::npos)
   {

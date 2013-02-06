@@ -53,6 +53,9 @@ namespace Datatypes {
     typedef std::vector<size_type>             dimension_type;
   };
 
+  class MeshFacade;
+  typedef boost::shared_ptr<MeshFacade> MeshFacadeHandle;
+
 }}}
 
 #endif

@@ -58,7 +58,7 @@ int Mesh::basis_order()
   return (-1);
 }
 
-VirtualMeshHandle Mesh::vmesh()
+VirtualMeshHandle Mesh::vmesh() const
 {
   return VirtualMeshHandle();
 } 

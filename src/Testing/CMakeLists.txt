@@ -31,7 +31,6 @@ ADD_SUBDIRECTORY(Utils)
 
 ########################################################################
 # Configure test support
-# TODO: eventually move to a Testing directory along with regression test support
 
 IF(RUN_UNIT_TESTS)
   FOREACH(test ${UNIT_TEST_LIST})
@@ -45,15 +44,18 @@ IF(RUN_BASIC_REGRESSION_TESTS)
    IF(WIN32)
      SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/${BUILD_TYPE}/SCIRunGUIPrototype.exe CACHE PATH "Path to SCIRun executable")
    ELSE(WIN32)
-    SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/SCIRunGUIPrototype CACHE PATH "Path to SCIRun executable")
-   ENDIF(WIN32)
+     # TODO: change once testing works with app bundle
+     IF(APPLE)
+       SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/${TEST_APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
+     ELSE()
+       SET(EXE_LOC ${SCIRun5Prototype_BINARY_DIR}/${APPLICATION_NAME} CACHE PATH "Path to SCIRun executable")
+     ENDIF()
+   ENDIF()
    MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
    
   # Run all the possible .srn files in src/ExampleNets
   FILE(GLOB_RECURSE scirun_srns "${SCIRun5Prototype_SOURCE_DIR}/ExampleNets/*.srn5")
-  MESSAGE("${SCIRun5Prototype_SOURCE_DIR}/ExampleNets/*.srn5")
   FOREACH(srn ${scirun_srns})
-    MESSAGE(${srn})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     #SET(SRN_ROOT_NAMES "${SRN_ROOT_NAMES} ${srn_name}" CACHE INTERNAL "List of root net names that correspond with image names")
     ADD_TEST(".Test.Samples.${srn_name}_srn" ${EXE_LOC} -E ${srn})
@@ -61,6 +63,6 @@ IF(RUN_BASIC_REGRESSION_TESTS)
     #STRING(REGEX MATCH "ViewScene" contains_ViewScene ${temp_srn})
     #IF(contains_ViewScene)
       #SET(srns_with_viewscene "${srns_with_viewscene} ${srn_name}" CACHE INTERNAL "srns with ViewScene module")
-    #ENDIF(contains_ViewScene)
-  ENDFOREACH(srn ${scirun_srns})
-ENDIF(RUN_BASIC_REGRESSION_TESTS)
+    #ENDIF()
+  ENDFOREACH()
+ENDIF()

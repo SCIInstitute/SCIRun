@@ -30,56 +30,64 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-/*
- *  CreateLatVol.cc:  Make an ImageField that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+#ifndef CORE_DATATYPES_MESH_LATVOLMESHFACADE_H
+#define CORE_DATATYPES_MESH_LATVOLMESHFACADE_H 
 
-#ifndef MODULES_FIELDS_CREATELATVOLBASIC_H
-#define MODULES_FIELDS_CREATELATVOLBASIC_H
-
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
+namespace Core {
+namespace Datatypes {
 
-class SCISHARE CreateLatVolBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<MeshPortTag> //TODO
-{
+  class LatticeVolumeMeshFacade : public MeshFacade
+  {
   public:
-    CreateLatVolBasic();
+    explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) 
+    {
+      if (!vmesh->is_latvolmesh())
+        THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
+    }
 
-    virtual void execute();
+    virtual Edges edges() const 
+    {
+      return Edges(SmartEdgeIterator(vmesh_.get()), SmartEdgeIterator(vmesh_.get(), true));
+    }
 
-    OUTPUT_PORT(0, OutputSampleField, Mesh);
+    virtual Faces faces() const 
+    {
+      return Faces(SmartFaceIterator(vmesh_.get()), SmartFaceIterator(vmesh_.get(), true));
+    }
 
-    static Core::Algorithms::AlgorithmParameterName XSize;
-    static Core::Algorithms::AlgorithmParameterName YSize;
-    static Core::Algorithms::AlgorithmParameterName ZSize;
-    static Core::Algorithms::AlgorithmParameterName PadPercent;
-    static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+    virtual Nodes nodes() const
+    {
+      return Nodes(SmartNodeIterator(vmesh_.get()), SmartNodeIterator(vmesh_.get(), true));
+    }
 
+    virtual size_t numNodes() const
+    {
+      return vmesh_->num_nodes();
+    }
+
+    virtual size_t numEdges() const
+    {
+      return vmesh_->num_edges();
+    }
+
+    virtual size_t numFaces() const 
+    {
+      return vmesh_->num_faces();
+    }
+
+    virtual size_t numElements() const 
+    {
+      return vmesh_->num_elems();
+    }
   private:
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    GuiInt size_x_;
-    GuiInt size_y_;
-    GuiInt size_z_;
-    GuiDouble padpercent_;
-    GuiString data_at_;
-    GuiString element_size_;
-
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-#endif 
-};
+    VirtualMeshHandle vmesh_;
+  };
 
 }}}
 
 #endif
+

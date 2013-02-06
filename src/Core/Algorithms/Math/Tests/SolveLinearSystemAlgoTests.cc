@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 
 #include <fstream>
+#include <boost/filesystem.hpp>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
@@ -51,11 +52,20 @@ using namespace ::testing;
 
 TEST(SolveLinearSystemTests, CanSolveDarrell)
 {
+  const std::string Afile = "E:\\stuff\\CGDarrell\\A_txt.mat";
+  const std::string rhsFile = "E:\\stuff\\CGDarrell\\RHS_text.mat";
+  if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
+  {
+    std::cout << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl;
+    std::cout << "Once that issue is done however, this will be a user setup error." << std::endl;
+    return;
+  }
+
   ReadMatrixAlgorithm reader;
   SparseRowMatrixHandle A;
   {
     ScopedTimer t("reading sparse matrix");
-    A = matrix_cast::as_sparse(reader.run("E:\\stuff\\CGDarrell\\A_txt.mat"));
+    A = matrix_cast::as_sparse(reader.run(Afile));
   }
   ASSERT_TRUE(A);
   EXPECT_EQ(428931, A->nrows());
@@ -64,7 +74,7 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   DenseMatrixHandle rhs;
   {
     ScopedTimer t("reading rhs");
-    rhs = matrix_cast::as_dense(reader.run("E:\\stuff\\CGDarrell\\RHS_text.mat"));
+    rhs = matrix_cast::as_dense(reader.run(rhsFile));
   }
   ASSERT_TRUE(rhs);
   EXPECT_EQ(428931, rhs->nrows());

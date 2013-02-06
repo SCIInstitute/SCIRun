@@ -58,9 +58,6 @@ SET(Interface_Modules_Math_SOURCES
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Math_HEADERS_MOC ${Interface_Modules_Math_HEADERS})
 
-INCLUDE(${QT_USE_FILE})
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
 ADD_LIBRARY(Interface_Modules_Math
   ${Interface_Modules_Math_HEADERS}
   ${Interface_Modules_Math_FORMS_HEADERS}

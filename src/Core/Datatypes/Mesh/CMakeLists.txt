@@ -33,6 +33,7 @@ SET(Core_Datatypes_Mesh_SRCS
   Mesh.cc
   MeshFactory.cc
   VirtualMeshFactory.cc
+  VMesh.cc
 )
 
 SET(Core_Datatypes_Mesh_HEADERS
@@ -41,11 +42,18 @@ SET(Core_Datatypes_Mesh_HEADERS
   FieldIndex.h
   FieldInformation.h
   FieldIterator.h
+  FieldVIndex.h
+  FieldVIterator.h
   LatticeVolumeMesh.h
+  LatticeVolumeMeshTemplateImpl.h
   Mesh.h
+  MeshFacade.h
+  MeshFacadeIterators.h
   MeshFactory.h
   MeshTraits.h
   VirtualMeshFactory.h
+  VMesh.h
+  VMeshShared.h
   Share.h
 )
 
