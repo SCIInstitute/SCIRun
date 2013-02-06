@@ -27,11 +27,13 @@
 */
 
 #include <Interface/Modules/Visualization/ShowMeshDialog.h>
+#include <Modules/Visualization/ShowMesh.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Visualization;
 
 ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
