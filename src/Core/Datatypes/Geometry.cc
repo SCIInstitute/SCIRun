@@ -38,6 +38,7 @@ GeometryObject::GeometryObject(DatatypeConstHandle dh) :
     iboFacesSize(0),
     iboEdges(nullptr),
     iboEdgesSize(0),
+    useZTest(false),
     data_(dh)
 {
 }

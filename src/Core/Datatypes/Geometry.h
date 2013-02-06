@@ -57,6 +57,8 @@ namespace Datatypes {
     uint8_t*  iboEdges;
     size_t    iboEdgesSize;
 
+    bool      useZTest;
+
   private:
     DatatypeConstHandle data_;
   };

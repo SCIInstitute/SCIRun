@@ -90,11 +90,27 @@ void ViewSceneDialog::moduleExecuted()
     // Send buffers to spire...
     std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
     
-    spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
-    spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
-    spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
+    if (geomData->vboCommon != nullptr)
+    {
+      spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
 
-    spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
-    spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
+      if (geomData->iboFaces != nullptr)
+      {
+        spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
+        if (geomData->useZTest == true)
+          spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
+        else
+          spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
+      }
+
+      if (geomData->iboEdges != nullptr)
+      {
+        spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
+        if (geomData->useZTest == true)
+          spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
+        else
+          spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
+      }
+    }
   }
 }
