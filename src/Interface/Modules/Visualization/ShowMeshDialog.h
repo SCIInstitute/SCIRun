@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_SHOW_FIELD_H
-#define INTERFACE_MODULES_SHOW_FIELD_H
+#ifndef INTERFACE_MODULES_SHOW_MESH_H
+#define INTERFACE_MODULES_SHOW_MESH_H
 
 #include "Interface/Modules/Visualization/ui_ShowMesh.h"
 #include <boost/shared_ptr.hpp>
