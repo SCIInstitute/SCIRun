@@ -42,4 +42,16 @@ ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
   //executeButton_->setEnabled(false);
   
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  connect(showEdgesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(showFacesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(zTestCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
 }
+
+void ShowMeshDialog::push()
+{
+  state_->setValue(ShowMeshModule::ShowEdges, showEdgesCheckBox_->checked());
+  state_->setValue(ShowMeshModule::ShowFaces, showFacesCheckBox_->checked());
+  state_->setValue(ShowMeshModule::ZTestOn, zTestCheckBox_->checked());
+}
+
+//TODO: pull()
