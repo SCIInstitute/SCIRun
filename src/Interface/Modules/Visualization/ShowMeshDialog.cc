@@ -41,9 +41,8 @@ ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  //executeButton_->setEnabled(false);
+  fixSize();
   
-  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(showEdgesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(showFacesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(zTestCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
@@ -51,9 +50,18 @@ ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
 
 void ShowMeshDialog::push()
 {
-  state_->setValue(ShowMeshModule::ShowEdges, showEdgesCheckBox_->isChecked());
-  state_->setValue(ShowMeshModule::ShowFaces, showFacesCheckBox_->isChecked());
-  state_->setValue(ShowMeshModule::ZTestOn, zTestCheckBox_->isChecked());
+  if (!pulling_)
+  {
+    state_->setValue(ShowMeshModule::ShowEdges, showEdgesCheckBox_->isChecked());
+    state_->setValue(ShowMeshModule::ShowFaces, showFacesCheckBox_->isChecked());
+    state_->setValue(ShowMeshModule::ZTestOn, zTestCheckBox_->isChecked());
+  }
 }
 
-//TODO: pull()
+void ShowMeshDialog::pull()
+{
+  Pulling p(this);
+  showEdgesCheckBox_->setChecked(state_->getValue(ShowMeshModule::ShowEdges).getBool());
+  showFacesCheckBox_->setChecked(state_->getValue(ShowMeshModule::ShowFaces).getBool());
+  zTestCheckBox_->setChecked(state_->getValue(ShowMeshModule::ZTestOn).getBool());
+}
