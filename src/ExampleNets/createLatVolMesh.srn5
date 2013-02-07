@@ -16,8 +16,56 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
+							<count>4</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>ElementSizeNormalized</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>ElementSizeNormalized</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>X size</name>
+								</first>
+								<second>
+									<name>X size</name>
+									<value>
+										<which>0</which>
+										<value>70</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Y size</name>
+								</first>
+								<second>
+									<name>Y size</name>
+									<value>
+										<which>0</which>
+										<value>9</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Z size</name>
+								</first>
+								<second>
+									<name>Z size</name>
+									<value>
+										<which>0</which>
+										<value>4</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -55,10 +103,10 @@
 				</second>
 			</item>
 		</modules>
-		<connections class_id="8" tracking_level="0" version="0">
+		<connections class_id="12" tracking_level="0" version="0">
 			<count>2</count>
 			<item_version>0</item_version>
-			<item class_id="9" tracking_level="0" version="0">
+			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVolMesh2</moduleId1_>
 				<port1_>0</port1_>
 				<moduleId2_>ShowMesh0</moduleId2_>
@@ -72,13 +120,13 @@
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="10" tracking_level="0" version="0">
+	<modulePositions class_id="14" tracking_level="0" version="0">
 		<count>3</count>
 		<item_version>0</item_version>
-		<item class_id="11" tracking_level="0" version="0">
+		<item class_id="15" tracking_level="0" version="0">
 			<first>CreateLatVolMesh2</first>
-			<second class_id="12" tracking_level="0" version="0">
-				<first>113</first>
+			<second class_id="16" tracking_level="0" version="0">
+				<first>114</first>
 				<second>61</second>
 			</second>
 		</item>

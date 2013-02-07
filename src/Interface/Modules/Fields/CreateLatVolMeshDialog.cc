@@ -46,12 +46,7 @@ CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleSt
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   //TODO: here is where to start on standardizing module dialog buttons.
   //connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
-  xSizeSpinBox_->setValue(16);
-  ySizeSpinBox_->setValue(16);
-  zSizeSpinBox_->setValue(16);
-  dataAtNodesButton_->setChecked(true);
-  elementSizeNormalizedButton_->setChecked(true);
-  push();
+  //push();
 
   connect(xSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   connect(ySizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
@@ -62,12 +57,27 @@ CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleSt
 
 void CreateLatVolMeshDialog::push()
 {
-  state_->setValue(CreateLatVolMesh::XSize, xSizeSpinBox_->value());
-  state_->setValue(CreateLatVolMesh::YSize, ySizeSpinBox_->value());
-  state_->setValue(CreateLatVolMesh::ZSize, zSizeSpinBox_->value());
-  state_->setValue(CreateLatVolMesh::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
+  if (!pulling_)
+  {
+    state_->setValue(CreateLatVolMesh::XSize, xSizeSpinBox_->value());
+    state_->setValue(CreateLatVolMesh::YSize, ySizeSpinBox_->value());
+    state_->setValue(CreateLatVolMesh::ZSize, zSizeSpinBox_->value());
+    state_->setValue(CreateLatVolMesh::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
+  }
 }
 
 void CreateLatVolMeshDialog::pull()
 {
+  Pulling p(this);
+  int newValue = state_->getValue(CreateLatVolMesh::XSize).getInt();
+  if (newValue != xSizeSpinBox_->value())
+    xSizeSpinBox_->setValue(newValue);
+  newValue = state_->getValue(CreateLatVolMesh::YSize).getInt();
+  if (newValue != ySizeSpinBox_->value())
+    ySizeSpinBox_->setValue(newValue);
+  newValue = state_->getValue(CreateLatVolMesh::ZSize).getInt();
+  if (newValue != zSizeSpinBox_->value())
+    zSizeSpinBox_->setValue(newValue);
+  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolMesh::ElementSizeNormalized).getBool());
+  elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
 }
