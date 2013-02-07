@@ -151,6 +151,14 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
+  //TODO: ultra ugly. no other place for this code right now.
+  if (name == "ViewScene")
+  {
+    optionsButton_->setText("VIEW");
+    optionsButton_->setToolTip("View renderer output");
+    optionsButton_->resize(100, optionsButton_->height());
+    //progressBar_->setVisible(false); //this looks bad, need to insert a spacer or something. TODO later
+  }
   progressBar_->setMaximum(100);
   progressBar_->setMinimum(0);
   progressBar_->setValue(0);
