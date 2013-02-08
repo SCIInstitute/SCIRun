@@ -80,8 +80,44 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>3</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>Show edges</name>
+								</first>
+								<second>
+									<name>Show edges</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Show faces</name>
+								</first>
+								<second>
+									<name>Show faces</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Z Test</name>
+								</first>
+								<second>
+									<name>Z Test</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
