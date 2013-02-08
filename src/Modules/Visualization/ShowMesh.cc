@@ -37,7 +37,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")) {}
+ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")) 
+{
+  get_state()->setValue(ShowEdges, true);
+  get_state()->setValue(ShowFaces, true);
+}
 
 void ShowMeshModule::execute()
 {
