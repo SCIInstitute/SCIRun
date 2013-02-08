@@ -29,6 +29,9 @@
 #ifndef INTERFACE_MODULES_VIEW_SCENE_H
 #define INTERFACE_MODULES_VIEW_SCENE_H
 
+/// \todo Make this definition specific to windows.
+#define NOMINMAX
+
 #include "Interface/Modules/Render/ui_ViewScene.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>

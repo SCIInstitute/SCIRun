@@ -81,7 +81,7 @@ void ViewSceneDialog::moduleExecuted()
     {
       geomData = boost::any_cast<boost::shared_ptr<Core::Datatypes::GeometryObject>>(geomDataTransient);
     }
-    catch (const boost::bad_any_cast& e)
+    catch (const boost::bad_any_cast&)
     {
       //error("Unable to cast boost::any transient value to spire pointer.");
       return;

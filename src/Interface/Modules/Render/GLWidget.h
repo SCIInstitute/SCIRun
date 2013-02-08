@@ -34,6 +34,10 @@
 #ifndef INTERFACE_MODULES_GLWIDGET_H
 #define INTERFACE_MODULES_GLWIDGET_H
 
+// For windows.
+/// \todo Make this definition specific to windows.
+#define NOMINMAX
+
 #include <QtOpenGL/QGLWidget>
 
 #include "GLContext.h"

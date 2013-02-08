@@ -34,6 +34,10 @@
 #ifndef TOOLS_VIEW_GLCONTEXT_H
 #define TOOLS_VIEW_GLCONTEXT_H
 
+// For windows.
+/// \todo Make this definition specific to windows.
+#define NOMINMAX
+
 #include <QtOpenGL/QGLWidget>
 
 #include "Spire/Interface.h"
