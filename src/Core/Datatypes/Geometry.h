@@ -30,6 +30,7 @@
 #ifndef CORE_DATATYPES_GEOMETRY_H
 #define CORE_DATATYPES_GEOMETRY_H 
 
+#include <cstdint>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Share.h>
 
