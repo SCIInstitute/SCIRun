@@ -58,6 +58,9 @@ for library_file in ${SCIRUN_LIBS}; do
   echo "install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${library_file}"
   install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${library_file}
 
+  echo "install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${library_file}"
+  install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${library_file}
+
   echo "install_name_tool -id @executable_path/lib/${library_file} ${library_file}"
   install_name_tool -id "@executable_path/lib/${library_file}" ${library_file}
 done
