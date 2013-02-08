@@ -105,10 +105,16 @@ IF(APPLE AND BUILD_BUNDLE)
         COMMAND cp -Rf "${QT_QTGUI_LIBRARY_RELEASE}/Versions/Current/Resources" "${APPLICATION_NAME}.app/Contents"
         COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
 
-        COMMAND cp -Rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} ${APPLICATION_NAME}.app/Contents/MacOS
+        # configure shaders (copied from build directory)
+        COMMAND rm -Rf "${APPLICATION_NAME}.app/Contents/MacOS/Shaders"
+        COMMAND cp -Rf "${SCIRUN_CORE_BINARY_DIR}/Shaders" "${APPLICATION_NAME}.app/Contents/MacOS"
+
+        # configure SCIRun shared libraries
+        COMMAND cp -Rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} "${APPLICATION_NAME}.app/Contents/MacOS"
         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/processSCIRunLibs.sh
 
-        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    )
   ENDIF()
 
   INSTALL(TARGETS ${APPLICATION_NAME} RUNTIME DESTINATION . BUNDLE DESTINATION . )
