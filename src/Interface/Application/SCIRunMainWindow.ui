@@ -338,7 +338,7 @@
            <string>This module takes a mesh object as input and outputs renderable geometry. Options are given for color, shading, etc.</string>
           </property>
           <property name="text">
-           <string>Work in progress</string>
+           <string>Some basic options available, still work in progress.</string>
           </property>
           <property name="text">
            <string/>
@@ -424,7 +424,7 @@
            <string>ViewScene</string>
           </property>
           <property name="text">
-           <string>Work in progress</string>
+           <string>Can display LatVolMeshes, rotate and zoom.</string>
           </property>
           <property name="text">
            <string/>
@@ -446,7 +446,7 @@
            <string>CreateLatVolMesh</string>
           </property>
           <property name="text">
-           <string>Work in progress</string>
+           <string>Can create lat vol meshes of arbitrary size.</string>
           </property>
           <property name="text">
            <string/>
