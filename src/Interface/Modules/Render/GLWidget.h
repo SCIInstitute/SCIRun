@@ -63,12 +63,18 @@ protected:
   virtual void initializeGL();
   virtual void resizeGL(int width, int height);
 
+public Q_SLOTS:
+  // Only use when not using threading.
+  void updateRenderer();
+
 private:
 
   std::shared_ptr<GLContext>                  mContext;   ///< Graphics context.
   std::shared_ptr<Spire::SCIRun::SRInterface> mGraphics;  ///< Interface to spire.
 
-  //Vector2<int>                      mLastMousePos;  ///< Last mouse position.
+#ifndef SPIRE_USE_STD_THREADS
+  QTimer*                                     mTimer;
+#endif
 };
 
 } // end of namespace SCIRun

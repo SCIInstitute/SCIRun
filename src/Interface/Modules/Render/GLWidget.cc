@@ -33,6 +33,7 @@
 
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QTimer>
 
 #include "GLWidget.h"
 
@@ -46,12 +47,20 @@ GLWidget::GLWidget(const QGLFormat& format) :
 {
   std::vector<std::string> shaderSearchDirs;
 
-  // Create a threaded spire renderer. This should be created at the module
-  // level once it has access to the context, should be passed using Transients.
+#ifdef SPIRE_USE_STD_THREADS
   mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
       new Spire::SCIRun::SRInterface(
           std::dynamic_pointer_cast<Spire::Context>(mContext),
           shaderSearchDirs, true));
+#else
+  mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
+      new Spire::SCIRun::SRInterface(
+          std::dynamic_pointer_cast<Spire::Context>(mContext),
+          shaderSearchDirs, false));
+  mTimer = new QTimer(this);
+  connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
+  mTimer->start(35);
+#endif
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -113,4 +122,12 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   mGraphics.reset();
   //QGLWidget::closeEvent(evt);
 }
+
+//------------------------------------------------------------------------------
+void GLWidget::updateRenderer()
+{
+  // Update the renderer.
+  mGraphics->doFrame();
+}
+
 
