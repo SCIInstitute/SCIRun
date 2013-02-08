@@ -106,8 +106,8 @@ IF(APPLE AND BUILD_BUNDLE)
         COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
 
         # configure shaders (copied from build directory)
-        COMMAND rm -Rf "${APPLICATION_NAME}.app/Contents/MacOS/Shaders"
-        COMMAND cp -Rf "${SCIRUN_CORE_BINARY_DIR}/Shaders" "${APPLICATION_NAME}.app/Contents/MacOS"
+        COMMAND cp -f "${SCIRUN_CORE_BINARY_DIR}/Shaders/*.vs" "${APPLICATION_NAME}.app/Contents/Resources"
+        COMMAND cp -f "${SCIRUN_CORE_BINARY_DIR}/Shaders/*.fs" "${APPLICATION_NAME}.app/Contents/Resources"
 
         # configure SCIRun shared libraries
         COMMAND cp -Rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} "${APPLICATION_NAME}.app/Contents/MacOS"
