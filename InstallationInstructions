@@ -45,7 +45,7 @@ Required:
     Qt 4.8
       Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
 
-  Linux (tested on OpenSuSE 12.1, Ubuntu 12.10):
+  Linux (tested on Ubuntu 12.10):
     gcc 4.6, 4.7
 
     Qt 4.8
@@ -67,7 +67,7 @@ CMake Build Generators:
   OS X (tested on 10.7 and 10.8):
     Unix Makfiles (Xcode not currently supported)
 
-  Linux (tested on OpenSuSE 12.1, Ubuntu 12.10):
+  Linux (tested on Ubuntu 12.10):
     Unix Makfiles
 
 Unix Makefiles notes:
