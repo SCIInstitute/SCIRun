@@ -113,7 +113,7 @@
          </property>
          <property name="icon">
           <iconset resource="scirun5.qrc">
-           <normaloff>:/gear/Gear.ico</normaloff>:/gear/Gear.ico</iconset>
+           <normaloff>:/gear/Gear.png</normaloff>:/gear/Gear.png</iconset>
          </property>
          <property name="iconSize">
           <size>
