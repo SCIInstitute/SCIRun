@@ -329,6 +329,9 @@
           <property name="text">
            <string/>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+          </property>
          </item>
          <item>
           <property name="text">
@@ -364,6 +367,9 @@
           <property name="text">
            <string/>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+          </property>
          </item>
          <item>
           <property name="text">
@@ -384,6 +390,9 @@
           </property>
           <property name="text">
            <string/>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
           </property>
          </item>
         </item>
