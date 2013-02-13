@@ -555,6 +555,16 @@ void NetworkEditor::setRegressionTestDataDir(const QString& dir)
   controller_->getSettings().setValue("regressionTestDataDir", dir.toStdString());
 }
 
+void NetworkEditor::setBackground(const QBrush& brush)
+{
+  scene_->setBackgroundBrush(brush);
+}
+
+QBrush NetworkEditor::background() const
+{
+  return scene_->backgroundBrush();
+}
+
 NetworkEditor::~NetworkEditor()
 {
   clear();

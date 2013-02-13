@@ -96,6 +96,9 @@ Q_SIGNALS:
     //TODO: this class is getting too big and messy, schedule refactoring
     void setRegressionTestDataDir(const QString& dir);
 
+    void setBackground(const QBrush& brush);
+    QBrush background() const;
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
