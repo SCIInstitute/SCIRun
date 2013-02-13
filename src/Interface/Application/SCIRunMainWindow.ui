@@ -132,7 +132,7 @@
     </property>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
-    <addaction name="actionHistory"/>
+    <addaction name="actionHistory_"/>
    </widget>
    <addaction name="menuFile_"/>
    <addaction name="menuModules_"/>
@@ -1129,7 +1129,10 @@
     <string>Enter &quot;What's This?&quot; Mode</string>
    </property>
   </action>
-  <action name="actionHistory">
+  <action name="actionHistory_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>History</string>
    </property>

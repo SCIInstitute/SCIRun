@@ -44,6 +44,7 @@ namespace SCIRun {
 namespace Gui {
 
 class NetworkEditor;
+class HistoryWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -60,6 +61,7 @@ private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+  HistoryWindow* historyWindow_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   

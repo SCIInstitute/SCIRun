@@ -33,6 +33,7 @@
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/HistoryWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
@@ -260,6 +261,14 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
+
+
+  historyWindow_ = new HistoryWindow(this);
+  historyWindow_->setVisible(false);
+  addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
+  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
+  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
+
   makeFilterButtonMenu();
   activateWindow();
 }
@@ -382,6 +391,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       setCurrentFile(filename);
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+      historyWindow_->showFile(filename);
     }
   }
 }

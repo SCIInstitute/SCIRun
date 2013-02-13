@@ -35,18 +35,18 @@ using namespace SCIRun::Gui;
 HistoryWindow::HistoryWindow(QWidget* parent /* = 0 */) : QDockWidget(parent) 
 {
   setupUi(this);
+  networkXMLTextEdit_->setTabStopWidth(15);
 }
 
 void HistoryWindow::showFile(const QString& path)
 {
-  std::cout << path.toStdString() << std::endl;
+  setWindowTitle("History: " + path);
+  QFile xmlFile(path);
+  if(!xmlFile.open( QIODevice::ReadOnly | QIODevice::Text ) )
+  {
+    std::cout << "Could not open file: " << path.toStdString() << std::endl;
+    return;
+  }
+ 
+  networkXMLTextEdit_->setPlainText(xmlFile.readAll());
 }
-
-//ModuleLogWindow::ModuleLogWindow(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
-//{
-
-//  setModal(false);
-//  setWindowTitle("Log for " + moduleName);
-//  setVisible(false);
-//  connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
-//}
