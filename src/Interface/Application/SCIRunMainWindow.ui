@@ -1185,6 +1185,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>moduleSelectorDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionModule_Selector</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>configurationDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionConfiguration_</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>559</x>
+     <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
   <buttongroup name="moduleSizeButtonGroup_"/>
