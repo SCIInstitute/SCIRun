@@ -36,6 +36,7 @@ SET(Interface_Application_SOURCES
   ClosestPortFinder.cc
   GuiApplication.cc
   GuiLogger.cc
+  HistoryWindow.cc
   ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
@@ -52,6 +53,7 @@ SET(Interface_Application_HEADERS
   ClosestPortFinder.h
   GuiApplication.h
   GuiLogger.h
+  HistoryWindow.h
   ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
@@ -65,6 +67,7 @@ SET(Interface_Application_HEADERS
 )
 
 SET(Interface_Application_FORMS
+  HistoryWindow.ui
   Module.ui
   ModuleLogWindow.ui
   SCIRunMainWindow.ui
@@ -72,11 +75,7 @@ SET(Interface_Application_FORMS
 )
 
 SET(Interface_Application_RESOURCES
-#Gear.ico
 scirun5.qrc
-#Interface/Application/scirun-icon-small.ico
-#Interface/Application/scirun-icon-large.ico
-#Interface/Application/lin_agt_wrench-32.png
 )
 
 QT4_WRAP_UI(Interface_Application_FORMS_HEADERS ${Interface_Application_FORMS})
