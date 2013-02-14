@@ -36,15 +36,13 @@ namespace SCIRun
 {
   namespace Core
   {
-    namespace GlobalCommands
+    namespace Commands
     {
-      class GlobalCommand;
-
       class SCISHARE CommandFactory 
       {
       public:
         virtual ~CommandFactory();
-        virtual GlobalCommand* create(Commands command) = 0;
+        virtual CommandHandle create(GlobalCommands command) = 0;
       };
     }
   }

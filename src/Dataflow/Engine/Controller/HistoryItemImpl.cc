@@ -26,10 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <iostream>
 
-//TODO
+#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
+
+HistoryItemBase::HistoryItemBase(CommandHandle command, NetworkHandle network) : command_(command), network_(network)
+{
+
+}
+
+CommandHandle HistoryItemBase::command() const
+{
+  return command_;
+}
+
+NetworkXMLHandle HistoryItemBase::undoMemento() const
+{
+  throw "not implemented";
+}
+
+NetworkXMLHandle HistoryItemBase::redoMemento() const
+{
+  throw "not implemented";
+}
+
+ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, CommandHandle command, NetworkHandle network)
+  : HistoryItemBase(command, network), moduleName_(moduleName)
+{
+
+}
+
+std::string ModuleAddHistoryItem::name() const
+{
+  return moduleName_;
+}

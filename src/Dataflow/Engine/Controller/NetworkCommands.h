@@ -26,10 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#ifndef ENGINE_NETWORK_NETWORKCOMMANDS_H
+#define ENGINE_NETWORK_NETWORKCOMMANDS_H
 
-//TODO
+#include <boost/noncopyable.hpp>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Command/Command.h>
+#include <Dataflow/Engine/Controller/Share.h>
+
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+  
+  class SCISHARE ModuleAddCommand : public Core::Commands::RedoableCommand
+  {
+  public:
+    virtual void execute();
+    virtual void undo();
+    virtual void redo();
+  };
+  
+}
+}
+}
+
+#endif

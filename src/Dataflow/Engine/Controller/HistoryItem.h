@@ -26,10 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#ifndef ENGINE_NETWORK_HISTORYITEM_H
+#define ENGINE_NETWORK_HISTORYITEM_H
 
-//TODO
+#include <boost/noncopyable.hpp>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Command/Command.h>
+#include <Dataflow/Engine/Controller/Share.h>
+
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+  
+  class SCISHARE HistoryItem : boost::noncopyable
+  {
+  public:
+    ~HistoryItem();
+    virtual Core::Commands::CommandHandle command() const = 0;
+    virtual Networks::NetworkXMLHandle undoMemento() const = 0;
+    virtual Networks::NetworkXMLHandle redoMemento() const = 0;
+    virtual std::string name() const = 0;
+  };
+
+  typedef boost::shared_ptr<HistoryItem> HistoryItemHandle;
+
+}
+}
+}
+
+#endif

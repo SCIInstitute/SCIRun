@@ -28,10 +28,18 @@
 
 SET(Engine_Network_SRCS
   NetworkEditorController.cc
+  HistoryItem.cc
+  HistoryItemFactory.cc
+  HistoryItemImpl.cc
+  NetworkCommands.cc
 )
 
 SET(Engine_Network_HEADERS
   NetworkEditorController.h
+  HistoryItem.h
+  HistoryItemFactory.h
+  HistoryItemImpl.h
+  NetworkCommands.h
   Share.h
 )
 
@@ -43,6 +51,7 @@ ADD_LIBRARY(Engine_Network
 TARGET_LINK_LIBRARIES(Engine_Network
   Dataflow_Network
   Core_Serialization_Network
+  Core_Command
   Engine_Scheduler
 )
 

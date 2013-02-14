@@ -49,6 +49,7 @@ namespace Engine {
   public:
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe);
     explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe);
+
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);

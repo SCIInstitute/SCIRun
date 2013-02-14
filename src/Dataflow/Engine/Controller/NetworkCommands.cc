@@ -26,10 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Dataflow/Engine/Controller/NetworkCommands.h>
 
-//TODO
+using namespace SCIRun::Dataflow::Engine;
+
+void ModuleAddCommand::execute()
+{
+  throw "not implemented";
+}
+
+void ModuleAddCommand::undo()
+{
+  throw "not implemented";
+}
+
+void ModuleAddCommand::redo()
+{
+  throw "not implemented";
+}

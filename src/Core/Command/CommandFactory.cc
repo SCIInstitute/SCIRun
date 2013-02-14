@@ -28,7 +28,7 @@
 
 #include <Core/Command/CommandFactory.h>
 
-using namespace SCIRun::Core::GlobalCommands;
+using namespace SCIRun::Core::Commands;
 
 CommandFactory::~CommandFactory()
 {}

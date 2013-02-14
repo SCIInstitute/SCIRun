@@ -26,10 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#ifndef ENGINE_NETWORK_HISTORYITEMIMPL_H
+#define ENGINE_NETWORK_HISTORYITEMIMPL_H
 
-//TODO
+#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/Share.h>
+
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+  
+  class SCISHARE HistoryItemBase : public HistoryItem
+  {
+  public:
+    HistoryItemBase(Core::Commands::CommandHandle command, Networks::NetworkHandle network);
+    virtual Core::Commands::CommandHandle command() const;
+    virtual Networks::NetworkXMLHandle undoMemento() const;
+    virtual Networks::NetworkXMLHandle redoMemento() const;
+  protected:
+    Core::Commands::CommandHandle command_;
+    Networks::NetworkHandle network_;
+  };
+
+  class SCISHARE ModuleAddHistoryItem : public HistoryItemBase
+  {
+  public:
+    ModuleAddHistoryItem(const std::string& moduleName, Core::Commands::CommandHandle command, Networks::NetworkHandle network);
+    virtual std::string name() const;
+  private:
+    std::string moduleName_;
+  };
+
+}
+}
+}
+
+#endif

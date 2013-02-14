@@ -26,10 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#ifndef ENGINE_NETWORK_HISTORYITEMFACTORY_H
+#define ENGINE_NETWORK_HISTORYITEMFACTORY_H
 
-//TODO
+#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/Share.h>
+
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+  
+  class SCISHARE HistoryItemFactory : boost::noncopyable
+  {
+  public:
+    HistoryItemHandle make(...);
+  };
+  
+
+}
+}
+}
+
+#endif

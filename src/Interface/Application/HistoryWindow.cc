@@ -31,6 +31,7 @@
 #include <Interface/Application/HistoryWindow.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Engine;
 
 HistoryWindow::HistoryWindow(QWidget* parent /* = 0 */) : QDockWidget(parent) 
 {
@@ -49,4 +50,9 @@ void HistoryWindow::showFile(const QString& path)
   }
  
   networkXMLTextEdit_->setPlainText(xmlFile.readAll());
+}
+
+void HistoryWindow::addHistoryItem(HistoryItemHandle item)
+{
+  std::cout << "addHistoryItem: " << item->name() << std::endl;
 }

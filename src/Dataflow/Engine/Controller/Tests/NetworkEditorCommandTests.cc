@@ -26,10 +26,55 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <Dataflow/Engine/Controller/NetworkCommands.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
 
-//TODO
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+
+
+class NetworkEditorCommandTests : public ::testing::Test
+{
+protected:
+  virtual void SetUp()
+  {
+    DefaultValue<ModuleHandle>::Set(ModuleHandle());
+    DefaultValue<ConnectionId>::Set(ConnectionId(""));
+    mockNetwork_.reset(new NiceMock<MockNetwork>);
+  }
+  
+  MockNetworkPtr mockNetwork_;
+  NetworkExecutorHandle null_;
+};
+
+TEST_F(NetworkEditorCommandTests, ModuleAddCommandAddsAModule)
+{
+  NetworkEditorController controller(mockNetwork_, null_);
+
+  EXPECT_CALL(*mockNetwork_, add_module(_)).Times(1);
+
+  ModuleAddCommand add(...);
+
+  FAIL() << "not written yet";
+}
+
+TEST_F(NetworkEditorCommandTests, CanUndoModuleAddCommand)
+{
+  FAIL() << "not written yet";
+}
+
+TEST_F(NetworkEditorCommandTests, CanRedoModuleAddCommand)
+{
+  FAIL() << "not written yet";
+}

@@ -29,30 +29,54 @@
 #ifndef CORE_COMMAND_COMMAND_H
 #define CORE_COMMAND_COMMAND_H
 
+#include <boost/shared_ptr.hpp>
 #include <Core/Command/Share.h>
 
 namespace SCIRun
 {
   namespace Core
   {
-    namespace GlobalCommands
+    namespace Commands
     {
-      class SCISHARE GlobalCommand
+      class SCISHARE Command
       {
       public:
-        virtual ~GlobalCommand();
+        virtual ~Command();
         virtual void execute() = 0;
       };
 
-      class SCISHARE CommandWithGui : public GlobalCommand
+      typedef boost::shared_ptr<Command> CommandHandle;
+
+      class SCISHARE UndoableCommand : public Command
       {
+      public:
+        virtual ~UndoableCommand();
+        virtual void undo() = 0;
       };
 
-      class SCISHARE HeadlessCommand : public GlobalCommand
+      class SCISHARE RedoableCommand : public UndoableCommand
       {
+      public:
+        virtual ~RedoableCommand();
+        virtual void redo() = 0;
       };
 
-      enum Commands
+      //class SCISHARE GlobalCommand
+      //{
+      //public:
+      //  virtual ~GlobalCommand();
+      //  virtual void execute() = 0;
+      //};
+
+      //class SCISHARE CommandWithGui : public GlobalCommand
+      //{
+      //};
+
+      //class SCISHARE HeadlessCommand : public GlobalCommand
+      //{
+      //};
+
+      enum GlobalCommands
       {
         LoadNetworkFile,
         ExecuteCurrentNetwork,

@@ -26,10 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <gtest/gtest.h>
-//#include <gmock/gmock.h>
-//#include <Dataflow/Network/ModuleInterface.h>
-//#include <Dataflow/Network/ConnectionId.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <iostream>
 
-//TODO
+#include <Dataflow/Engine/Controller/HistoryItem.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
+
+HistoryItem::~HistoryItem()
+{
+}

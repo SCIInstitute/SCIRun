@@ -31,7 +31,8 @@
 
 #include "ui_HistoryWindow.h"
 
-//#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Controller/HistoryItem.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -44,11 +45,9 @@ public:
   explicit HistoryWindow(QWidget* parent = 0);
 public Q_SLOTS:
   void showFile(const QString& path);
-//  void popupMessageBox(const QString& message);
+  void addHistoryItem(Dataflow::Engine::HistoryItemHandle item);
 Q_SIGNALS:
-  //void messageReceived(const QColor& color);
 private:
-  //QString moduleName_;
 };
 
 
