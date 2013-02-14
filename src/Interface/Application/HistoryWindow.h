@@ -45,11 +45,21 @@ public:
   explicit HistoryWindow(QWidget* parent = 0);
 public Q_SLOTS:
   void showFile(const QString& path);
-  void addHistoryItem(Dataflow::Engine::HistoryItemHandle item);
+  void clear();
+  void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 Q_SIGNALS:
 private:
 };
 
+//TODO: will become several classes
+class GuiActionCommandHistoryConverter : public QObject
+{
+  Q_OBJECT
+public Q_SLOTS:
+  void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+Q_SIGNALS:
+  void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
+};
 
 }
 }
