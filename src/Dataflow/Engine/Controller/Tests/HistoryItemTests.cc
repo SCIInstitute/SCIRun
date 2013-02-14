@@ -65,7 +65,7 @@ TEST_F(HistoryItemTests, CanCreateAddModule)
   const std::string name = "ComputeSVD";
   ModuleAddHistoryItem item(name, cmd, mockNetwork_);
 
-  EXPECT_EQ(name, item.name());
+  EXPECT_EQ("Module Added: " + name, item.name());
 
   //FAIL();
 }

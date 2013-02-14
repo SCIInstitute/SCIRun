@@ -76,12 +76,14 @@ private:
   void makeFilterButtonMenu();
   void writeSettings();
   void readSettings();
+  void setupHistoryWindow();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
+  boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
   bool regressionMode_;
   QString regressionTestDataDir_;
 private Q_SLOTS:

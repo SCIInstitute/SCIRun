@@ -41,7 +41,6 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Application/Application.h>
 
-
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
@@ -262,12 +261,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
-
-  historyWindow_ = new HistoryWindow(this);
-  historyWindow_->setVisible(false);
-  addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
-  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
-  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
+  setupHistoryWindow();
 
   makeFilterButtonMenu();
   activateWindow();
@@ -277,6 +271,9 @@ void SCIRunMainWindow::initialize()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
+    commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
   
   setRegressionTestDataDir();
 
@@ -391,6 +388,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       setCurrentFile(filename);
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+      historyWindow_->clear();
       historyWindow_->showFile(filename);
     }
   }
@@ -700,4 +698,18 @@ void SCIRunMainWindow::resetBackgroundColor()
   QColor defaultColor(Qt::darkGray);
   networkEditor_->setBackground(defaultColor);
   GuiLogger::Instance().log("Background color set to " + defaultColor.name());
+}
+
+void SCIRunMainWindow::setupHistoryWindow()
+{
+  historyWindow_ = new HistoryWindow(this);
+  historyWindow_->setVisible(false);
+  addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
+
+  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
+  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
+  
+  commandConverter_.reset(new GuiActionCommandHistoryConverter);
+
+  connect(commandConverter_.get(), SIGNAL(historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle)), historyWindow_, SLOT(addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle)));
 }

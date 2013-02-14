@@ -26,8 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-
+#include <string>
 #include <Dataflow/Engine/Controller/HistoryItemImpl.h>
 
 using namespace SCIRun;
@@ -63,5 +62,5 @@ ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, Comman
 
 std::string ModuleAddHistoryItem::name() const
 {
-  return moduleName_;
+  return "Module Added: " + moduleName_;
 }

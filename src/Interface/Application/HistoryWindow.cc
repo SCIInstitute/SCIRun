@@ -30,8 +30,13 @@
 #include <iostream>
 #include <Interface/Application/HistoryWindow.h>
 
+//TODO: factory
+#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Core::Commands;
 
 HistoryWindow::HistoryWindow(QWidget* parent /* = 0 */) : QDockWidget(parent) 
 {
@@ -54,5 +59,18 @@ void HistoryWindow::showFile(const QString& path)
 
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)
 {
-  std::cout << "addHistoryItem: " << item->name() << std::endl;
+  new QListWidgetItem(QString::fromStdString(item->name()), historyListWidget_);
+}
+
+void HistoryWindow::clear()
+{
+  historyListWidget_->clear();
+  networkXMLTextEdit_->clear();
+}
+
+//TODO: separate out
+void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+{
+  HistoryItemHandle item(new ModuleAddHistoryItem(name, CommandHandle(), NetworkHandle()));
+  Q_EMIT historyItemCreated(item);
 }
