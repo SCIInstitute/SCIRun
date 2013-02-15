@@ -49,3 +49,19 @@ TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
   MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
   ASSERT_TRUE(mesh);
 }
+
+TEST(MeshFactoryTests, CanCreateTriSurfMesh)
+{
+	//TODO
+	FAIL();
+#if 0
+  int basisOrder = 1;
+  FieldInformation lfi("LatVolMesh", basisOrder, "double");
+  int sizex,sizey,sizez;
+  sizex = sizey = sizez = 4;
+  Point minb(0,0,0);
+  Point maxb(4,4,4);
+  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+  ASSERT_TRUE(mesh);
+  #endif
+}
