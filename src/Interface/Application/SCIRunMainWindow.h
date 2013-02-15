@@ -97,6 +97,8 @@ private Q_SLOTS:
   void enableInputWidgets();
   void setRegressionTestDataDir();
   void updateRegressionTestDataDir();
+  void chooseBackgroundColor();
+  void resetBackgroundColor();
   void exitApplication(int code);
 };
 

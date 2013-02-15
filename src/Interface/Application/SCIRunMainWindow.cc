@@ -258,6 +258,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
+  connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
+  connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
   makeFilterButtonMenu();
   activateWindow();
 }
@@ -611,6 +613,14 @@ void SCIRunMainWindow::readSettings()
 
   regressionTestDataDir_ = settings.value("regressionTestDataDirectory").toString();
   GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir_);
+
+  //TODO: make a separate class for these keys, bad duplication.
+  const QString colorKey = "backgroundColor";
+  if (settings.contains(colorKey))
+  {
+    networkEditor_->setBackground(QColor(settings.value(colorKey).toString()));
+    GuiLogger::Instance().log("Setting read: background color = " + networkEditor_->background().color().name());
+  }
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -620,6 +630,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", regressionTestDataDir_);
+  settings.setValue("backgroundColor", networkEditor_->background().color().name());
 }
 
 void SCIRunMainWindow::disableInputWidgets()
@@ -658,4 +669,25 @@ void SCIRunMainWindow::setRegressionTestDataDir()
 {
   regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
   networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
+}
+
+void SCIRunMainWindow::chooseBackgroundColor()
+{
+  auto brush = networkEditor_->background();
+  auto oldColor = brush.color();
+
+  auto newColor = QColorDialog::getColor(oldColor, this, "Choose background color");
+  if (newColor.isValid())
+  {
+    networkEditor_->setBackground(newColor);
+    GuiLogger::Instance().log("Background color set to " + newColor.name());
+  }
+}
+
+void SCIRunMainWindow::resetBackgroundColor()
+{
+  //TODO: standardize these defaults
+  QColor defaultColor(Qt::darkGray);
+  networkEditor_->setBackground(defaultColor);
+  GuiLogger::Instance().log("Background color set to " + defaultColor.name());
 }
