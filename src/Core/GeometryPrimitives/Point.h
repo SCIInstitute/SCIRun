@@ -55,12 +55,10 @@ public:
   inline Point(const Point&);
   inline Point();
   inline Point& operator=(const Point&);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   inline Vector operator+(const Point&) const;
   inline Vector operator-(const Point&) const;
   inline Point operator+(const Vector&) const;
   inline Point operator-(const Vector&) const;
-#endif
   inline Point operator*(double) const;
   inline Point& operator*=(const double);
   Point& operator+=(const Vector&);
@@ -155,6 +153,14 @@ inline double Point::z() const
   return d_[2];
 }
 
+inline Point& Point::operator*=(const double d)
+{
+  d_[0]*=d;
+  d_[1]*=d;
+  d_[2]*=d;
+  return *this;
+}
+
 // Actual declarations of these functions (as 'friend' above doesn't
 // (depending on the compiler) actually declare them.
 SCISHARE Point AffineCombination(const Point&, double, const Point&, double,
@@ -201,30 +207,6 @@ inline Point::Point(const Vector& v)
   d_[2] = v.d_[2];
 }
 
-
-
-inline Vector Point::operator+(const Point& p) const
-{
-  return Vector(d_[0]+p.d_[0], d_[1]+p.d_[1], d_[2]+p.d_[2]);
-}
-
-inline Vector Point::operator-(const Point& p) const
-{
-  return Vector(d_[0]-p.d_[0], d_[1]-p.d_[1], d_[2]-p.d_[2]);
-}
-
-inline Point Point::operator+(const Vector& v) const
-{
-  return Point(d_[0]+v.d_[0], d_[1]+v.d_[1], d_[2]+v.d_[2]);
-}
-
-inline Point Point::operator-(const Vector& v) const
-{
-  return Point(d_[0]-v.d_[0], d_[1]-v.d_[1], d_[2]-v.d_[2]);
-}
-
-
-
 inline Point& Point::operator+=(const Point& v)
 {
   d_[0]+=v.d_[0];
@@ -242,13 +224,7 @@ inline Point& Point::operator-=(const Point& v)
 }
 
 
-inline Point& Point::operator*=(const double d)
-{
-  d_[0]*=d;
-  d_[1]*=d;
-  d_[2]*=d;
-  return *this;
-}
+
 
 inline Point& Point::operator/=(const double d)
 {
@@ -312,23 +288,23 @@ inline Vector &Point::asVector() const
   return reinterpret_cast<Vector &>(const_cast<Point &>(*this));
 }
 #endif
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 inline Point Min(const Point& p1, const Point& p2)
 {
-  double x=std::min(p1.d_[0], p2.d_[0]);
-  double y=std::min(p1.d_[1], p2.d_[1]);
-  double z=std::min(p1.d_[2], p2.d_[2]);
+  double x=std::min(p1[0], p2[0]);
+  double y=std::min(p1[1], p2[1]);
+  double z=std::min(p1[2], p2[2]);
   return Point(x,y,z);
 }
 
 inline Point Max(const Point& p1, const Point& p2)
 {
-  double x=std::max(p1.d_[0], p2.d_[0]);
-  double y=std::max(p1.d_[1], p2.d_[1]);
-  double z=std::max(p1.d_[2], p2.d_[2]);
+  double x=std::max(p1[0], p2[0]);
+  double y=std::max(p1[1], p2[1]);
+  double z=std::max(p1[2], p2[2]);
   return Point(x,y,z);
 }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline double Dot(const Point& p, const Vector& v)
 {
   return p.d_[0]*v.d_[0]+p.d_[1]*v.d_[1]+p.d_[2]*v.d_[2];

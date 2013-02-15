@@ -27,12 +27,14 @@
 #
 
 SET(Core_GeometryPrimitives_SRCS
+  BBox.cc
   Point.cc
   Transform.cc
   Vector.cc
 )
 
 SET(Core_GeometryPrimitives_HEADERS
+  BBox.h
   GeomFwd.h
   Point.h
   PointVectorOperators.h

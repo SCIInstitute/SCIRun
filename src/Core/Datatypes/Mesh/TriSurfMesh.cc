@@ -44,7 +44,6 @@ public:
 
   virtual bool is_trisurfmesh()        { return (true); }
 
-  //! constructor and descructor
   VTriSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VTriSurfMesh")      

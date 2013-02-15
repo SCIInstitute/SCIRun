@@ -52,10 +52,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-//class BBox;
 class VirtualMesh;
-//class Transform;
-//class TypeDescription;
 
 typedef boost::shared_ptr<VirtualMesh> VirtualMeshHandle;
 

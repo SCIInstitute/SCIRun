@@ -37,7 +37,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
-//#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Vector.h>
 //#include <Core/GeometryPrimitives/CompGeom.h>
 //#include <Core/Containers/StackVector.h>
@@ -309,10 +309,8 @@ public:
   virtual int topology_geometry() const 
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Get the bounding box of the field    
   virtual BBox get_bounding_box() const;
-#endif
   
   //! Return the transformation that takes a 0-1 space bounding box 
   //! to the current bounding box of this mesh.  

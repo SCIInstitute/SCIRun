@@ -39,7 +39,7 @@
 #include <Core/Basis/Locate.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Transform.h>
-//#include <Core/Geometry/BBox.h>
+#include <Core/GeometryPrimitives/BBox.h>
 //#include <Core/Math/MiscMath.h>
 
 #include <Core/Datatypes/Mesh/FieldIterator.h>
@@ -358,7 +358,6 @@ public:
   index_type get_nj() const { return nj_; }
   index_type get_nk() const { return nk_; }
   const Geometry::Transform& get_transform() const { return transform_; }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual bool get_dim(std::vector<size_type>&) const;
   virtual void set_dim(const std::vector<size_type>& dims);
   Geometry::Vector diagonal() const;
@@ -366,7 +365,6 @@ public:
   virtual BBox get_bounding_box() const;
   virtual void transform(const Transform &t);
   virtual void get_canonical_transform(Transform &t);
-#endif
 
   //! set the mesh statistics
   void set_min_i(index_type i) {min_i_ = i; }
