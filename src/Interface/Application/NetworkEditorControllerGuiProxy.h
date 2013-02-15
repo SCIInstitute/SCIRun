@@ -57,6 +57,7 @@ namespace Gui {
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void moduleRemoved(const std::string& name);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void executionStarted();
     void executionFinished(int returnCode);

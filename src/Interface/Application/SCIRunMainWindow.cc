@@ -274,6 +274,8 @@ void SCIRunMainWindow::initialize()
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
     commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const std::string&)), 
+    commandConverter_.get(), SLOT(moduleRemoved(const std::string&)));
   
   setRegressionTestDataDir();
 

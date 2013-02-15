@@ -74,3 +74,9 @@ void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIR
   HistoryItemHandle item(new ModuleAddHistoryItem(name, CommandHandle(), NetworkHandle()));
   Q_EMIT historyItemCreated(item);
 }
+
+void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& name)
+{
+  HistoryItemHandle item(new ModuleRemovedHistoryItem(name, CommandHandle(), NetworkHandle()));
+  Q_EMIT historyItemCreated(item);
+}

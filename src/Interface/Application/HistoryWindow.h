@@ -57,6 +57,7 @@ class GuiActionCommandHistoryConverter : public QObject
   Q_OBJECT
 public Q_SLOTS:
   void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+  void moduleRemoved(const std::string& name);
 Q_SIGNALS:
   void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 };

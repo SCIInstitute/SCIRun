@@ -40,6 +40,7 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   : controller_(controller)
 {
   controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2));
+  controller_->connectModuleRemoved(boost::bind(&NetworkEditorControllerGuiProxy::moduleRemoved, this, _1));
   controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1));
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));

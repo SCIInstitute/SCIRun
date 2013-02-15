@@ -44,13 +44,20 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QListWidget" name="historyListWidget_"/>
+      <widget class="QListWidget" name="historyListWidget_">
+       <property name="toolTip">
+        <string>List of historical actions</string>
+       </property>
+      </widget>
       <widget class="QTextEdit" name="networkXMLTextEdit_">
        <property name="minimumSize">
         <size>
          <width>500</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Network XML as of this change</string>
        </property>
        <property name="readOnly">
         <bool>true</bool>

@@ -57,6 +57,14 @@ namespace Engine {
     std::string moduleName_;
   };
 
+  class SCISHARE ModuleRemovedHistoryItem : public HistoryItemBase
+  {
+  public:
+    ModuleRemovedHistoryItem(const std::string& moduleName, Core::Commands::CommandHandle command, Networks::NetworkHandle network);
+    virtual std::string name() const;
+  private:
+    std::string moduleName_;
+  };
 }
 }
 }

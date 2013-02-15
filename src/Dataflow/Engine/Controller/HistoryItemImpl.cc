@@ -64,3 +64,15 @@ std::string ModuleAddHistoryItem::name() const
 {
   return "Module Added: " + moduleName_;
 }
+
+
+ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, CommandHandle command, NetworkHandle network)
+  : HistoryItemBase(command, network), moduleName_(moduleName)
+{
+
+}
+
+std::string ModuleRemovedHistoryItem::name() const
+{
+  return "Module Removed: " + moduleName_;
+}

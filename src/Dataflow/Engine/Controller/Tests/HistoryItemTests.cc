@@ -69,3 +69,14 @@ TEST_F(HistoryItemTests, CanCreateAddModule)
 
   //FAIL();
 }
+
+TEST_F(HistoryItemTests, CanCreateRemoveModule)
+{
+  CommandHandle cmd;
+  const std::string name = "ComputeSVD";
+  ModuleRemovedHistoryItem item(name, cmd, mockNetwork_);
+
+  EXPECT_EQ("Module Removed: " + name, item.name());
+
+  //FAIL();
+}
