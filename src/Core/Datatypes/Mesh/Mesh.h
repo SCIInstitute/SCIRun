@@ -58,7 +58,6 @@ namespace Datatypes {
 
     virtual int basis_order();
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     enum
     { 
       UNKNOWN		= 0,
@@ -94,6 +93,7 @@ namespace Datatypes {
       FIND_CLOSEST_E = FIND_CLOSEST_NODE_E | FIND_CLOSEST_ELEM_E
     };
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     virtual bool synchronize(mask_type) { return false; }
     virtual bool unsynchronize(mask_type) { return false; }
 #endif

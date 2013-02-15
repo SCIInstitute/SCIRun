@@ -47,11 +47,11 @@ public:
 
   VTriSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
-    DEBUG_CONSTRUCTOR("VTriSurfMesh")      
+    //DEBUG_CONSTRUCTOR("VTriSurfMesh")
   }
   virtual ~VTriSurfMesh() 
   {
-    DEBUG_DESTRUCTOR("VTriSurfMesh")      
+    //DEBUG_DESTRUCTOR("VTriSurfMesh")
   }
   
   virtual void get_nodes(VirtualMesh::Node::array_type& nodes, 

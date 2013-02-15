@@ -35,6 +35,7 @@
 //#include <Core/Containers/Handle.h>
 //#include <Core/Containers/StackVector.h>
 
+#include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
@@ -216,7 +217,7 @@ public:
     typename Edge::array_type         edges_;
   };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   friend class Synchronize;
   
   class Synchronize : public Runnable
@@ -276,7 +277,7 @@ public:
       TriSurfMesh<Basis>& mesh_;
       mask_type  sync_;
   };
-
+#endif
 
   //////////////////////////////////////////////////////////////////
   
@@ -294,7 +295,7 @@ public:
   virtual ~TriSurfMesh();
   
   //! Access point to virtual interface
-  virtual VirtualMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VirtualMeshHandle vmesh() { return vmesh_; }
     
   //! This one should go at some point, should be reroute through the
   //! virtual interface
@@ -376,7 +377,7 @@ public:
   void get_nodes(typename Node::array_type &array, typename Face::index_type idx) const
     { get_nodes_from_face(array,idx); }
   void get_nodes(typename Node::array_type&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_nodes has not been implemented for cells"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_nodes has not been implemented for cells"); }
 
   void get_edges(typename Edge::array_type &array, typename Node::index_type idx) const
     { get_edges_from_node(array,idx); }
@@ -385,7 +386,7 @@ public:
   void get_edges(typename Edge::array_type &array, typename Face::index_type idx) const
     { get_edges_from_face(array,idx); }
   void get_edges(typename Edge::array_type&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_edges has not been implemented for cells"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_edges has not been implemented for cells"); }
 
   void get_faces(typename Face::array_type &array, typename Node::index_type idx) const
     { get_faces_from_node(array,idx); }
@@ -394,16 +395,16 @@ public:
   void get_faces(typename Face::array_type &array, typename Face::index_type idx) const
     { array.resize(1); array[0]= idx; }
   void get_faces(typename Face::array_type&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_faces has not been implemented for cells"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_faces has not been implemented for cells"); }
 
   void get_cells(typename Cell::array_type&, typename Node::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_cells has not been implemented"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_cells has not been implemented"); }
   void get_cells(typename Cell::array_type&, typename Edge::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_cells has not been implemented"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_cells has not been implemented"); }
   void get_cells(typename Cell::array_type&, typename Face::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_cells has not been implemented"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_cells has not been implemented"); }
   void get_cells(typename Cell::array_type&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_cells has not been implemented"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_cells has not been implemented"); }
 
   void get_elems(typename Elem::array_type &array, typename Node::index_type idx) const
     { get_faces_from_node(array,idx); }
@@ -412,7 +413,7 @@ public:
   void get_elems(typename Elem::array_type &array, typename Face::index_type idx) const
     { array.resize(1); array[0]= idx; }
   void get_elems(typename Face::array_type&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_elems has not been implemented for cells"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_elems has not been implemented for cells"); }
 
   void get_delems(typename DElem::array_type &array, typename Node::index_type idx) const
     { get_edges_from_node(array,idx); }
@@ -421,7 +422,7 @@ public:
   void get_delems(typename DElem::array_type &array, typename Face::index_type idx) const
     { get_edges_from_face(array,idx); }
   void get_delems(typename DElem::array_type&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_delems has not been implemented for cells"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_delems has not been implemented for cells"); }
 
   //! Generate the list of points that make up a sufficiently accurate
   //! piecewise linear approximation of an edge.
@@ -453,7 +454,7 @@ public:
   void get_center(Geometry::Point &result, typename Face::index_type idx) const
     { get_face_center(result, idx); }
   void get_center(Geometry::Point&, typename Cell::index_type) const
-    { ASSERTFAIL("TriSurfMesh: get_cneter has not been implemented for cells"); }
+    { REPORT_NOT_IMPLEMENTED("TriSurfMesh: get_cneter has not been implemented for cells"); }
 
   //! Get the size of an elemnt (length, area, volume)
   double get_size(typename Node::index_type /*idx*/) const 
@@ -527,10 +528,10 @@ public:
   //! of the basis functions....
   int get_weights(const Geometry::Point &p, typename Node::array_type &l, double *w);
   int get_weights(const Geometry::Point&, typename Edge::array_type&, double*)
-    {ASSERTFAIL("TriSurfMesh::get_weights(Edges) not supported."); }
+    {REPORT_NOT_IMPLEMENTED("TriSurfMesh::get_weights(Edges) not supported."); }
   int get_weights(const Geometry::Point &p, typename Face::array_type &l, double *w);
   int get_weights(const Geometry::Point&, typename Cell::array_type&, double*)
-    {ASSERTFAIL("TriSurfMesh::get_weights(Cells) not supported."); }
+    {REPORT_NOT_IMPLEMENTED("TriSurfMesh::get_weights(Cells) not supported."); }
 
   //! Access the nodes of the mesh
   void get_point(Geometry::Point &result, typename Node::index_type index) const
@@ -539,7 +540,7 @@ public:
     { points_[index] = point; }
 
   void get_random_point(Geometry::Point &, typename Elem::index_type, FieldRNG &rng) const;
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Normals for visualizations      
   void get_normal(Geometry::Vector &result, typename Node::index_type index) const
     {
@@ -731,7 +732,6 @@ public:
       
     return (min_jacobian);
   }
-
 
   template <class INDEX>
   bool find_closest_node(double& pdist, Geometry::Point &result, 
@@ -1126,8 +1126,6 @@ public:
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }
 
-
-
   template <class INDEX>
   inline bool search_node(INDEX &loc, const Geometry::Point &p) const
   {
@@ -1255,7 +1253,7 @@ public:
     pdist = sqrt(dmin);
     return (true);
   }
-
+#endif
 
   double get_epsilon() const
     { return (epsilon_); }
@@ -1598,6 +1596,7 @@ protected:
     } 
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Locate a node inside the mesh using the lookup table
   template <class INDEX>
   inline bool locate_node(INDEX &node, const Geometry::Point &p) const
@@ -1758,7 +1757,6 @@ protected:
     return (false);
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   template <class ARRAY>
   inline bool locate_elems(ARRAY &array, const BBox &b) const
   {
@@ -1788,7 +1786,7 @@ protected:
         
     return (array.size() > 0);
   }
-#endif
+
   template <class INDEX, class ARRAY>
   inline bool locate_elem(INDEX &elem, ARRAY &coords, const Geometry::Point &p) const
   {
@@ -1831,8 +1829,6 @@ protected:
     return (false);
   }
 
-
-
   template <class INDEX>
   void get_node_center(Geometry::Point &p, INDEX idx) const
   {
@@ -1862,7 +1858,7 @@ protected:
     result.asVector() += points_[arr[2]].asVector();
     result.asVector() *= (1.0/3.0);
   }
-
+#endif
 
   void walk_face_orient(typename Face::index_type face,
                         std::vector<bool> &tested, std::vector<bool> &flip);
@@ -2041,16 +2037,16 @@ TriSurfMesh<Basis>::TriSurfMesh()
     faces_(0),
     edge_neighbors_(0),
     node_neighbors_(0),
-    node_grid_(0),
-    elem_grid_(0),
-    synchronize_lock_("TriSurfMesh lock"),
-    synchronize_cond_("TriSurfMesh condition variable"),
+    //node_grid_(0),
+    //elem_grid_(0),
+    //synchronize_lock_("TriSurfMesh lock"),
+    //synchronize_cond_("TriSurfMesh condition variable"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
     synchronizing_(0),
     epsilon_(0.0),
     epsilon2_(0.0)
 {
-  DEBUG_CONSTRUCTOR("TriSurfMesh")      
+  //DEBUG_CONSTRUCTOR("TriSurfMesh")
 
   //! Initialize the virtual interface when the mesh is created
   vmesh_ = CreateVTriSurfMesh(this);
@@ -2067,21 +2063,21 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
     edge_neighbors_(0),
     normals_(0),
     node_neighbors_(0),
-    node_grid_(0),
-    elem_grid_(0),
-    synchronize_lock_("TriSurfMesh lock"),
-    synchronize_cond_("TriSurfMesh condition variable"),
+    //node_grid_(0),
+    //elem_grid_(0),
+    //synchronize_lock_("TriSurfMesh lock"),
+    //synchronize_cond_("TriSurfMesh condition variable"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
     synchronizing_(0),
     epsilon_(0.0),
     epsilon2_(0.0)
 {
-  DEBUG_CONSTRUCTOR("TriSurfMesh")      
+  //DEBUG_CONSTRUCTOR("TriSurfMesh")
 
   //! We need to lock before we can copy these as these
   //! structures are generate dynamically when they are
   //! needed.  
-  copy.synchronize_lock_.lock();
+  //copy.synchronize_lock_.lock();
 
   points_ = copy.points_;
 
@@ -2100,7 +2096,7 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
   node_neighbors_ = copy.node_neighbors_;
   synchronized_ |= copy.synchronized_ & Mesh::NODE_NEIGHBORS_E;
 
-  copy.synchronize_lock_.unlock();
+  //copy.synchronize_lock_.unlock();
 
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
@@ -2112,7 +2108,7 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
 template <class Basis>
 TriSurfMesh<Basis>::~TriSurfMesh()
 {
-  DEBUG_DESTRUCTOR("TriSurfMesh")      
+  //DEBUG_DESTRUCTOR("TriSurfMesh")
 }
 
 
@@ -2141,7 +2137,7 @@ template <class Basis>
 Geometry::BBox
 TriSurfMesh<Basis>::get_bounding_box() const
 {
-  BBox result;
+  Geometry::BBox result;
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);
@@ -2158,11 +2154,12 @@ void
 TriSurfMesh<Basis>::get_canonical_transform(Geometry::Transform &t) const
 {
   t.load_identity();
-  BBox bbox = get_bounding_box();
+  Geometry::BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
   t.pre_translate(Geometry::Vector(bbox.min()));
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 void
 TriSurfMesh<Basis>::transform(const Geometry::Transform &t)
@@ -2202,8 +2199,11 @@ TriSurfMesh<Basis>::transform(const Geometry::Transform &t)
 
   synchronize_lock_.unlock();
 }
+#endif
 
-
+      
+//TODO: ASSERTMSG...
+#define ASSERTMSG(x,y)
 template <class Basis>
 void
 TriSurfMesh<Basis>::begin(typename TriSurfMesh::Node::iterator &itr) const
@@ -2350,6 +2350,7 @@ template <class Basis>
 bool
 TriSurfMesh<Basis>::synchronize(mask_type sync)
 {
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Conversion table
   if (sync & (Mesh::DELEMS_E)) 
   { sync |= Mesh::EDGES_E; sync &= ~(Mesh::DELEMS_E); }
@@ -2486,7 +2487,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   }
 
   synchronize_lock_.unlock();
-
+#endif
   return (true);
 }
 
@@ -2501,7 +2502,7 @@ template <class Basis>
 bool
 TriSurfMesh<Basis>::clear_synchronization()
 {
-  synchronize_lock_.lock();
+  //synchronize_lock_.lock();
   // Undo marking the synchronization 
   synchronized_ = Mesh::NODES_E | Mesh::ELEMS_E | Mesh::FACES_E | Mesh::CELLS_E;
 
@@ -2511,15 +2512,15 @@ TriSurfMesh<Basis>::clear_synchronization()
   edge_neighbors_.clear();
   normals_.clear();             
   edges_.clear();
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  //node_grid_ = 0;
+  //elem_grid_ = 0;
 
-  synchronize_lock_.unlock(); 
+  //synchronize_lock_.unlock();
   return (true);
 }
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 void
 TriSurfMesh<Basis>::compute_normals()
@@ -3831,7 +3832,7 @@ TriSurfMesh<Basis>::get_neighbor(index_type &nbr_half_edge,
   nbr_half_edge = edge_neighbors_[half_edge];
   return nbr_half_edge != MESH_NO_NEIGHBOR;
 }
-
+#endif
 }
 }
 }

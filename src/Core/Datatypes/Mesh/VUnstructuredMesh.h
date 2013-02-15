@@ -39,12 +39,12 @@ namespace SCIRun {
     namespace Datatypes {
 
 template <class MESH>
-class SCISHARE VUnstructuredMesh : public VMeshShared<MESH> {
+class SCISHARE VUnstructuredMesh : public VirtualMeshShared<MESH> {
 public:
   
   //! Constructor: This will initialize VMeshShared and VirtualMesh
   VUnstructuredMesh(MESH* mesh) :
-    VMeshShared<MESH>(mesh)
+    VirtualMeshShared<MESH>(mesh)
   {}
 
   virtual void size(VirtualMesh::Node::size_type& size) const;
@@ -724,7 +724,7 @@ set_point(const Geometry::Point &point, VirtualMesh::ENode::index_type i)
   }
   else
   {
-    ASSERTFAIL("CurveMesh does not contain Lagrangian nodes that can be edited");
+    THROW_INVALID_ARGUMENT("CurveMesh does not contain Lagrangian nodes that can be edited");
   }
 }
 
@@ -836,7 +836,7 @@ get_interpolate_weights(const Geometry::Point& point,
       ei.num_hderivs = this->basis_->num_hderivs();
       return;
   }
-  ASSERTFAIL("Interpolation of unknown order requested");
+  THROW_INVALID_ARGUMENT("Interpolation of unknown order requested");
 }
 
 template <class MESH>
@@ -872,7 +872,7 @@ get_interpolate_weights(const VirtualMesh::coords_type& coords,
       ei.num_hderivs = this->basis_->num_hderivs();
       return;
   }
-  ASSERTFAIL("Interpolation of unknown order requested");
+  THROW_INVALID_ARGUMENT("Interpolation of unknown order requested");
 }
                                                      
 
@@ -980,7 +980,7 @@ get_minterpolate_weights(const std::vector<Geometry::Point>& point,
       }
       return;
   }
-  ASSERTFAIL("Interpolation of unknown order requested");
+  THROW_INVALID_ARGUMENT("Interpolation of unknown order requested");
 }
 
 template <class MESH>
@@ -1030,7 +1030,7 @@ get_minterpolate_weights(const std::vector<VirtualMesh::coords_type>& coords,
       }
       return;
   }
-  ASSERTFAIL("Interpolation of unknown order requested");
+  THROW_INVALID_ARGUMENT("Interpolation of unknown order requested");
 }
 
 
@@ -1054,7 +1054,7 @@ get_gradient_weights(const VirtualMesh::coords_type& coords,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1064,7 +1064,7 @@ get_gradient_weights(const VirtualMesh::coords_type& coords,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       this->mesh_->get_edges_from_elem(eg.edge_index,elem);
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1074,12 +1074,12 @@ get_gradient_weights(const VirtualMesh::coords_type& coords,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
   }
-  ASSERTFAIL("Gradient of unknown order requested");
+  THROW_INVALID_ARGUMENT("Gradient of unknown order requested");
 }
 
 
@@ -1116,7 +1116,7 @@ get_gradient_weights(const Geometry::Point& point,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1126,7 +1126,7 @@ get_gradient_weights(const Geometry::Point& point,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       this->mesh_->get_edges_from_elem(eg.edge_index,elem);
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1136,12 +1136,12 @@ get_gradient_weights(const Geometry::Point& point,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
   }
-  ASSERTFAIL("Gradient of unknown order requested");
+  THROW_INVALID_ARGUMENT("Gradient of unknown order requested");
 }
 
 
@@ -1189,7 +1189,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
             this->basis_->get_linear_derivate_weights(coords,&(eg[i].weights[0]));
             this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
 
-            eg[i].inverse_jacobian.resize(9);
+            //eg[i].inverse_jacobian.resize(9);
             this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -1216,7 +1216,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
             this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
             this->mesh_->get_edges_from_elem(eg[i].edge_index,elem);
 
-            eg[i].inverse_jacobian.resize(9);
+            //eg[i].inverse_jacobian.resize(9);
             this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -1231,7 +1231,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
     case 3:
       {
         typename MESH::Elem::index_type elem;
-        StackBasedVector<double,3> coords;
+        StackBasedVector<double> coords;
         for (size_t i=0; i< point.size(); i++)
         {
           eg[i].basis_order = basis_order;            
@@ -1244,7 +1244,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
             this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
             eg[i].num_hderivs = this->basis_->num_hderivs();
 
-            eg[i].inverse_jacobian.resize(9);
+            //eg[i].inverse_jacobian.resize(9);
             this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -1256,7 +1256,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
       }
       return;
   }
-  ASSERTFAIL("Gradient of unknown order requested");
+  THROW_INVALID_ARGUMENT("Gradient of unknown order requested");
 }
 
 
@@ -1287,7 +1287,7 @@ get_mgradient_weights(const std::vector<VirtualMesh::coords_type>& coords,
         this->basis_->get_linear_derivate_weights(coords[i],&(eg[i].weights[0]));
         this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
 
-        eg[i].inverse_jacobian.resize(9);
+        //eg[i].inverse_jacobian.resize(9);
         this->mesh_->inverse_jacobian(coords[i],typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -1300,7 +1300,7 @@ get_mgradient_weights(const std::vector<VirtualMesh::coords_type>& coords,
         this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
         this->mesh_->get_edges_from_elem(eg[i].edge_index,elem);
 
-        eg[i].inverse_jacobian.resize(9);
+        //eg[i].inverse_jacobian.resize(9);
         this->mesh_->inverse_jacobian(coords[i],typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -1313,13 +1313,13 @@ get_mgradient_weights(const std::vector<VirtualMesh::coords_type>& coords,
         this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
         eg[i].num_hderivs = this->basis_->num_hderivs();
 
-        eg[i].inverse_jacobian.resize(9);
+        //eg[i].inverse_jacobian.resize(9);
         this->mesh_->inverse_jacobian(coords[i],typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
       return;
   }
-  ASSERTFAIL("Gradient of unknown order requested");
+  THROW_INVALID_ARGUMENT("Gradient of unknown order requested");
 }
 
 
