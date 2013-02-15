@@ -34,6 +34,7 @@
 #define CORE_GEOMETRY_VECTOR_H 
 
 #include <string>
+#include <boost/array.hpp>
 #include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
@@ -497,5 +498,15 @@ inline Vector Max(const Vector &v1, const Vector &v2)
 
 } // End namespace SCIRun
 #endif
-}}}
+}
+
+template <class T, size_t N>
+class StackVector : public boost::array<T,N>
+{
+public:
+  StackVector() {}
+  StackVector(size_t s) {}
+};
+
+}}
 #endif

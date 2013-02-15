@@ -31,7 +31,7 @@
 #include <boost/assign.hpp>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/TriangleSurfaceMesh.h>
+#include <Core/Datatypes/Mesh/TriSurfMesh.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;

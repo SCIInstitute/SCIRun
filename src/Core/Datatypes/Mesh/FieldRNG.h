@@ -30,9 +30,11 @@
 #ifndef CORE_DATATYPES_FIELDRNG_H
 #define CORE_DATATYPES_FIELDRNG_H 1
 
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Datatypes {
 
 class SCISHARE FieldRNG {
   int d[16], n[16];
@@ -56,6 +58,6 @@ public:
   double operator()();
 };
 
-} // end namespace
+}}}
 
 #endif

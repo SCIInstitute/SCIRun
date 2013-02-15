@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/FieldRNG.h>
+#include <Core/Datatypes/Mesh/FieldRNG.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Datatypes;
 
 FieldRNG::FieldRNG( int seed )
 {
@@ -102,6 +102,4 @@ FieldRNG::operator()()
 			+b8)/16.0+b7)/16.0+b6)/16.0+b5)/16.0+b4)/16.0
 		   +b3)/16.0+b2)/16.0+b1)/16.0;
   return random;
-}
-
 }

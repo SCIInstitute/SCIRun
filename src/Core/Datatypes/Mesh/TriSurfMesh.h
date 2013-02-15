@@ -29,44 +29,43 @@
 #ifndef CORE_DATATYPES_TRISURFMESH_H
 #define CORE_DATATYPES_TRISURFMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it sci-defs
-#include <Core/Datatypes/MeshSupport.h>
+//#include <Core/Datatypes/MeshSupport.h>
 
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/Handle.h>
-#include <Core/Containers/StackVector.h>
+//#include <Core/Containers/LockingHandle.h>
+//#include <Core/Containers/Handle.h>
+//#include <Core/Containers/StackVector.h>
 
-#include <Core/Geometry/Transform.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/BBox.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/CompGeom.h>
-#include <Core/Containers/StackVector.h>
-#include <Core/Containers/SearchGridT.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Point.h>
+//#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Vector.h>
+//#include <Core/GeometryPrimitives/CompGeom.h>
+//#include <Core/Containers/StackVector.h>
+//#include <Core/Containers/SearchGridT.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/TriLinearLgn.h>
 #include <Core/Basis/TriQuadraticLgn.h>
 #include <Core/Basis/TriCubicHmt.h>
 
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/FieldIterator.h>
-#include <Core/Datatypes/FieldRNG.h>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
+#include <Core/Datatypes/Mesh/FieldIterator.h>
+#include <Core/Datatypes/Mesh/FieldRNG.h>
+//#include <Core/Datatypes/Mesh/Types.h>
 
-#include <Core/Thread/Mutex.h>
-#include <Core/Thread/ConditionVariable.h>
-#include <Core/Thread/Runnable.h>
-#include <Core/Thread/Thread.h>
+//#include <Core/Thread/Mutex.h>
+//#include <Core/Thread/ConditionVariable.h>
+//#include <Core/Thread/Runnable.h>
+//#include <Core/Thread/Thread.h>
 
 //! Needed for some specialized functions
 #include <set>
 
-//! Incude needed for Windows: declares SCISHARE
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
+  namespace Core {
+    namespace Datatypes {
 
 /////////////////////////////////////////////////////
 // Declarations for virtual interface
@@ -76,28 +75,17 @@ namespace SCIRun {
 template<class MESH> class TriSurfMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
-VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
+VirtualMesh* CreateVTriSurfMesh(MESH*) { return (0); }
 
-#if (SCIRUN_TRISURF_SUPPORT > 0)
 //! Declare that these can be found in a library that is already
 //! precompiled. So dynamic compilation will not instantiate them again.
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh);
-#if (SCIRUN_QUADRATIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh);
-#endif
-#if (SCIRUN_CUBIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh);
-#endif
+SCISHARE VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<Basis::TriLinearLgn<Geometry::Point> >* mesh);
+SCISHARE VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<Basis::TriQuadraticLgn<Geometry::Point> >* mesh);
+SCISHARE VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<Basis::TriCubicHmt<Geometry::Point> >* mesh);
 
-#endif
-/////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////
-// Declarations for TriSurfMesh class
 
 template <class Basis>
 class TriSurfMesh : public Mesh
@@ -115,7 +103,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
    
-  typedef LockingHandle<TriSurfMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<TriSurfMesh<Basis> > handle_type;
   typedef Basis                              basis_type;
 
   //! Index and Iterator types required for Mesh Concept.
@@ -207,15 +195,15 @@ public:
     }
 
     inline
-    const Point &node0() const {
+    const Geometry::Point &node0() const {
       return mesh_.points_[node0_index()];
     }
     inline
-    const Point &node1() const {
+    const Geometry::Point &node1() const {
       return mesh_.points_[node1_index()];
     }
     inline
-    const Point &node2() const {
+    const Geometry::Point &node2() const {
       return mesh_.points_[node2_index()];
     }
 
@@ -306,9 +294,9 @@ public:
   virtual ~TriSurfMesh();
   
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VirtualMesh* vmesh() { return (vmesh_.get_rep()); }
     
-  //! This one should go at some point, should be reroute throught the
+  //! This one should go at some point, should be reroute through the
   //! virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
@@ -320,16 +308,18 @@ public:
   //! regular    = no node location data
   virtual int topology_geometry() const 
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
-    
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Get the bounding box of the field    
   virtual BBox get_bounding_box() const;
+#endif
   
   //! Return the transformation that takes a 0-1 space bounding box 
   //! to the current bounding box of this mesh.  
-  virtual void get_canonical_transform(Transform &t) const;
+  virtual void get_canonical_transform(Geometry::Transform &t) const;
   
-  //! Transform a field (transform all nodes using this transformation matrix)  
-  virtual void transform(const Transform &t);
+  //! Geometry::Transform a field (transform all nodes using this transformation matrix)  
+  virtual void transform(const Geometry::Transform &t);
 
   //! Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return (true); }
@@ -458,13 +448,13 @@ public:
   }  
 
   //! get the center point (in object space) of an element  
-  void get_center(Point &result, typename Node::index_type idx) const
+  void get_center(Geometry::Point &result, typename Node::index_type idx) const
     { get_node_center(result, idx); }
-  void get_center(Point &result, typename Edge::index_type idx) const
+  void get_center(Geometry::Point &result, typename Edge::index_type idx) const
     { get_edge_center(result, idx); }
-  void get_center(Point &result, typename Face::index_type idx) const
+  void get_center(Geometry::Point &result, typename Face::index_type idx) const
     { get_face_center(result, idx); }
-  void get_center(Point&, typename Cell::index_type) const
+  void get_center(Geometry::Point&, typename Cell::index_type) const
     { ASSERTFAIL("TriSurfMesh: get_cneter has not been implemented for cells"); }
 
   //! Get the size of an elemnt (length, area, volume)
@@ -482,9 +472,9 @@ public:
   {
     typename Node::array_type ra;
     get_nodes(ra,idx);
-    const Point &p0 = points_[ra[0]];
-    const Point &p1 = points_[ra[1]];
-    const Point &p2 = points_[ra[2]];
+    const Geometry::Point &p0 = points_[ra[0]];
+    const Geometry::Point &p1 = points_[ra[1]];
+    const Geometry::Point &p2 = points_[ra[2]];
     return (Cross(p0-p1,p2-p0)).length()*0.5;
   }
   
@@ -521,39 +511,39 @@ public:
     { get_elem_neighbors(array,elem); }
 
   //! Locate a point in a mesh, find which is the closest node
-  bool locate(typename Node::index_type &loc, const Point &p) const
+  bool locate(typename Node::index_type &loc, const Geometry::Point &p) const
     { return (locate_node(loc,p)); }
-  bool locate(typename Edge::index_type &loc, const Point &p) const
+  bool locate(typename Edge::index_type &loc, const Geometry::Point &p) const
     { return (locate_edge(loc,p)); }
-  bool locate(typename Face::index_type &loc, const Point &p) const
+  bool locate(typename Face::index_type &loc, const Geometry::Point &p) const
     { return (locate_elem(loc,p)); }
-  bool locate(typename Cell::index_type&, const Point&) const
+  bool locate(typename Cell::index_type&, const Geometry::Point&) const
     { return (false); }
 
   bool locate(typename Elem::index_type& elem, 
               std::vector<double>& coords,
-              const Point& p)
+              const Geometry::Point& p)
     { return(locate_elem(elem,coords,p)); }
     
   //! These should become obsolete soon, they do not follow the concept
   //! of the basis functions....
-  int get_weights(const Point &p, typename Node::array_type &l, double *w);
-  int get_weights(const Point&, typename Edge::array_type&, double*)
+  int get_weights(const Geometry::Point &p, typename Node::array_type &l, double *w);
+  int get_weights(const Geometry::Point&, typename Edge::array_type&, double*)
     {ASSERTFAIL("TriSurfMesh::get_weights(Edges) not supported."); }
-  int get_weights(const Point &p, typename Face::array_type &l, double *w);
-  int get_weights(const Point&, typename Cell::array_type&, double*)
+  int get_weights(const Geometry::Point &p, typename Face::array_type &l, double *w);
+  int get_weights(const Geometry::Point&, typename Cell::array_type&, double*)
     {ASSERTFAIL("TriSurfMesh::get_weights(Cells) not supported."); }
 
   //! Access the nodes of the mesh
-  void get_point(Point &result, typename Node::index_type index) const
+  void get_point(Geometry::Point &result, typename Node::index_type index) const
     { result = points_[index]; }
-  void set_point(const Point &point, typename Node::index_type index)
+  void set_point(const Geometry::Point &point, typename Node::index_type index)
     { points_[index] = point; }
 
-  void get_random_point(Point &, typename Elem::index_type, FieldRNG &rng) const;
+  void get_random_point(Geometry::Point &, typename Elem::index_type, FieldRNG &rng) const;
 
   //! Normals for visualizations      
-  void get_normal(Vector &result, typename Node::index_type index) const
+  void get_normal(Geometry::Vector &result, typename Node::index_type index) const
     {
       ASSERTMSG(synchronized_ & Mesh::NORMALS_E,
           "Must call synchronize NORMALS_E on TriSurfMesh first"); 
@@ -562,20 +552,20 @@ public:
 
   //! Get the normals at the outside of the element
   template<class VECTOR, class INDEX1, class INDEX2>
-  void get_normal(Vector &result, VECTOR &coords,
+  void get_normal(Geometry::Vector &result, VECTOR &coords,
                   INDEX1 eidx, INDEX2 /*fidx*/)
   {
 
     ElemData ed(*this, eidx);
-    std::vector<Point> Jv;
+    std::vector<Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
     result = Cross(Jv[0].asVector(), Jv[1].asVector());
     result.normalize();
   }
 
     //! Add a new node to the mesh
-  typename Node::index_type add_point(const Point &p);
-  typename Node::index_type add_node(const Point &p)
+  typename Node::index_type add_point(const Geometry::Point &p);
+  typename Node::index_type add_node(const Geometry::Point &p)
     { return(add_point(p)); }
 
     //! Add a new element to the mesh
@@ -600,7 +590,7 @@ public:
   //! This function uses a couple of newton iterations to find the local
   //! coordinate of a point
   template<class VECTOR, class INDEX>
-  bool get_coords(VECTOR &coords, const Point &p, INDEX idx) const
+  bool get_coords(VECTOR &coords, const Geometry::Point &p, INDEX idx) const
   {
     ElemData ed(*this, idx);
     return basis_.get_coords(coords, p, ed);
@@ -609,7 +599,7 @@ public:
   //! Find the location in the global coordinate system for a local coordinate
   //! This function is the opposite of get_coords.
   template<class VECTOR, class INDEX>
-  void interpolate(Point &pt, VECTOR &coords, INDEX idx) const
+  void interpolate(Geometry::Point &pt, VECTOR &coords, INDEX idx) const
   {
     ElemData ed(*this, idx);
     pt = basis_.interpolate(coords, ed);
@@ -641,10 +631,10 @@ public:
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
   {
-    StackVector<Point,2> Jv;
+    StackVector<Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -663,11 +653,11 @@ public:
   template<class VECTOR, class INDEX>
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
     Jv[2] = v.asPoint();
 
     return (InverseMatrix3P(Jv,Ji));
@@ -676,12 +666,12 @@ public:
   template<class INDEX>
   double scaled_jacobian_metric(INDEX idx) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
 
     double temp;
     
-    Point p0, p1, p2;
+    Geometry::Point p0, p1, p2;
     typename Node::array_type nodes;
     get_nodes(nodes,idx);
     get_center(p0,nodes[0]);
@@ -698,7 +688,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     size_t num_vertices = basis_.number_of_vertices();
@@ -719,14 +709,14 @@ public:
   template<class INDEX>
   double jacobian_metric(INDEX idx) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
 
     double temp;
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     
@@ -746,15 +736,15 @@ public:
 
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Point &result, 
-                         INDEX &node, const Point &p) const
+  bool find_closest_node(double& pdist, Geometry::Point &result, 
+                         INDEX &node, const Geometry::Point &p) const
   {
     return(find_closest_node(pdist,result,node,p,-1.0));
   }
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Point &result, 
-                         INDEX &node, const Point &p, double maxdist) const
+  bool find_closest_node(double& pdist, Geometry::Point &result, 
+                         INDEX &node, const Geometry::Point &p, double maxdist) const
   {
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename Node::size_type sz; size(sz);
@@ -764,7 +754,7 @@ public:
     
     if (node >= 0 && node < sz)
     {
-      Point point = points_[node]; 
+      Geometry::Point point = points_[node]; 
       double dist = (p-point).length2();
       
       if ( dist < epsilon2_ )
@@ -823,7 +813,7 @@ public:
 
                 while (it != eit)
                 {
-                  const Point point = points_[*it];
+                  const Geometry::Point point = points_[*it];
                   const double dist  = (p-point).length2();
 
                   if (dist < dmin) 
@@ -860,7 +850,7 @@ public:
   }
 
   template <class ARRAY>
-  bool find_closest_nodes(ARRAY &nodes, const Point &p, double maxdist) const
+  bool find_closest_nodes(ARRAY &nodes, const Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
     
@@ -875,8 +865,8 @@ public:
     // Convert to grid coordinates.
     index_type bi, bj, bk, ei, ej, ek;
 
-    Point max = p+Vector(maxdist,maxdist,maxdist);
-    Point min = p+Vector(-maxdist,-maxdist,-maxdist);
+    Geometry::Point max = p+Geometry::Vector(maxdist,maxdist,maxdist);
+    Geometry::Point min = p+Geometry::Vector(-maxdist,-maxdist,-maxdist);
 
     node_grid_->unsafe_locate(bi, bj, bk, min);
     node_grid_->unsafe_locate(ei, ej, ek, max);
@@ -905,7 +895,7 @@ public:
 
             while (it != eit)
             {
-              const Point point = points_[*it];
+              const Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
               if (dist < maxdist2) 
@@ -924,7 +914,7 @@ public:
 
 
   template <class ARRAY1, class ARRAY2>
-  bool find_closest_nodes(ARRAY1 &distances, ARRAY2 &nodes, const Point &p, double maxdist) const
+  bool find_closest_nodes(ARRAY1 &distances, ARRAY2 &nodes, const Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
     distances.clear();
@@ -940,8 +930,8 @@ public:
     // Convert to grid coordinates.
     index_type bi, bj, bk, ei, ej, ek;
 
-    Point max = p+Vector(maxdist,maxdist,maxdist);
-    Point min = p+Vector(-maxdist,-maxdist,-maxdist);
+    Geometry::Point max = p+Geometry::Vector(maxdist,maxdist,maxdist);
+    Geometry::Point min = p+Geometry::Vector(-maxdist,-maxdist,-maxdist);
 
     node_grid_->unsafe_locate(bi, bj, bk, min);
     node_grid_->unsafe_locate(ei, ej, ek, max);
@@ -970,7 +960,7 @@ public:
 
             while (it != eit)
             {
-              const Point point = points_[*it];
+              const Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
               if (dist < maxdist2) 
@@ -993,10 +983,10 @@ public:
   //! element that is the closest
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
-                         Point &result,
+                         Geometry::Point &result,
                          ARRAY &coords, 
                          INDEX &face, 
-                         const Point &p) const
+                         const Geometry::Point &p) const
   {
     return (find_closest_elem(pdist,result,coords,face,p,-1.0));
   }
@@ -1005,10 +995,10 @@ public:
   //! element that is the closest
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
-                         Point &result,
+                         Geometry::Point &result,
                          ARRAY &coords, 
                          INDEX &face, 
-                         const Point &p,
+                         const Geometry::Point &p,
                          double maxdist) const
   {
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
@@ -1081,7 +1071,7 @@ public:
 
                 while (it != eit)
                 {
-                  Point r;
+                  Geometry::Point r;
                   index_type idx = (*it) * 3;
                   closest_point_on_tri(r, p,
                                        points_[faces_[idx  ]],
@@ -1130,9 +1120,9 @@ public:
 
   template <class INDEX>
   bool find_closest_elem(double& pdist, 
-                         Point &result, 
+                         Geometry::Point &result, 
                          INDEX &elem, 
-                         const Point &p) const
+                         const Geometry::Point &p) const
   { 
     StackVector<double,2> coords;
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
@@ -1141,7 +1131,7 @@ public:
 
 
   template <class INDEX>
-  inline bool search_node(INDEX &loc, const Point &p) const
+  inline bool search_node(INDEX &loc, const Geometry::Point &p) const
   {
     typename Node::iterator ni, nie;
     begin(ni);
@@ -1174,8 +1164,8 @@ public:
   //! located on a node or edge. All bordering elements are returned in that 
   //! case. 
   template<class ARRAY>
-  bool find_closest_elems(double& pdist, Point &result, 
-                          ARRAY &elems, const Point &p) const
+  bool find_closest_elems(double& pdist, Geometry::Point &result, 
+                          ARRAY &elems, const Geometry::Point &p) const
   {
     elems.clear();
   
@@ -1231,7 +1221,7 @@ public:
 
                 while (it != eit)
                 {
-                  Point rtmp;
+                  Geometry::Point rtmp;
                   index_type idx = (*it) * 3;
                   closest_point_on_tri(rtmp, p,
                                        points_[faces_[idx  ]],
@@ -1272,9 +1262,7 @@ public:
   double get_epsilon() const
     { return (epsilon_); }
 
-  ///////////////////////////////////////////////////
-  // STATIC VARIABLES AND FUNCTIONS
-  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Export this class using the old Pio system
   virtual void io(Piostream&);
   
@@ -1284,6 +1272,7 @@ public:
   //! Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
+#endif
 
   //! Type description, used for finding names of the mesh class for
   //! dynamic compilation purposes. Some of this should be obsolete  
@@ -1294,9 +1283,11 @@ public:
   static const TypeDescription* cell_type_description();
   static const TypeDescription* elem_type_description()
     { return face_type_description(); }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
+#endif
+
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return new TriSurfMesh<Basis>(); }
   
@@ -1305,14 +1296,14 @@ public:
   // Mesh specific functions (these are not implemented in every mesh)
  
   // Extra functionality needed by this specific geometry.
-  typename Node::index_type add_find_point(const Point &p,
+  typename Node::index_type add_find_point(const Geometry::Point &p,
 					   double err = 1.0e-3);
   typename Elem::index_type add_triangle(typename Node::index_type,
 					 typename Node::index_type,
 					 typename Node::index_type);
-  typename Elem::index_type add_triangle(const Point& p0,
-					 const Point& p1,
-					 const Point& p2);
+  typename Elem::index_type add_triangle(const Geometry::Point& p0,
+					 const Geometry::Point& p1,
+					 const Geometry::Point& p2);
 
 
   //! swap the shared edge between 2 faces, if they share an edge.
@@ -1328,28 +1319,28 @@ public:
 
 
   //! Subdivision Methods
-  bool insert_node(const Point &p);
-  void insert_node(typename Face::index_type face, const Point &p);
+  bool insert_node(const Geometry::Point &p);
+  void insert_node(typename Face::index_type face, const Geometry::Point &p);
   void bisect_element(const typename Face::index_type);
 
   bool              insert_node_in_edge_aux(typename Face::array_type &tris,
                                           typename Node::index_type &ni,
                                           index_type halfedge,
-                                          const Point &p);
+                                          const Geometry::Point &p);
 
   bool              insert_node_in_face_aux(typename Face::array_type &tris,
                                             typename Node::index_type &ni,
                                             typename Face::index_type face,
-                                            const Point &p);
+                                            const Geometry::Point &p);
 
   bool                  insert_node_in_face(typename Face::array_type &tris,
                                             typename Node::index_type &ni,
                                             typename Face::index_type face,
-                                            const Point &p);
+                                            const Geometry::Point &p);
 
 
 
-  const Point &point(typename Node::index_type i) { return points_[i]; }
+  const Geometry::Point &point(typename Node::index_type i) { return points_[i]; }
 
   // This one should be made obsolete
   bool get_neighbor(index_type &nbr_half_edge,
@@ -1611,7 +1602,7 @@ protected:
 
   //! Locate a node inside the mesh using the lookup table
   template <class INDEX>
-  inline bool locate_node(INDEX &node, const Point &p) const
+  inline bool locate_node(INDEX &node, const Geometry::Point &p) const
   {
     typename Node::size_type sz; size(sz);
 
@@ -1674,7 +1665,7 @@ protected:
 
                 while (it != eit)
                 {
-                  const Point point = points_[*it];
+                  const Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
 
                   if (dist < dmin) 
@@ -1704,7 +1695,7 @@ protected:
   //! Locate an edge inside the mesh using the lookup table
   //! This currently an exhaustive search
   template <class INDEX>
-  inline bool locate_edge(INDEX &loc, const Point &p) const
+  inline bool locate_edge(INDEX &loc, const Geometry::Point &p) const
   {
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "Must call synchronize EDGES_E on TriSurfMesh first");
@@ -1735,7 +1726,7 @@ protected:
 
   //! Locate an element inside the mesh using the lookup table
   template <class INDEX>
-  inline bool locate_elem(INDEX &elem, const Point &p) const
+  inline bool locate_elem(INDEX &elem, const Geometry::Point &p) const
   {
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -1769,6 +1760,7 @@ protected:
     return (false);
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   template <class ARRAY>
   inline bool locate_elems(ARRAY &array, const BBox &b) const
   {
@@ -1798,9 +1790,9 @@ protected:
         
     return (array.size() > 0);
   }
-
+#endif
   template <class INDEX, class ARRAY>
-  inline bool locate_elem(INDEX &elem, ARRAY &coords, const Point &p) const
+  inline bool locate_elem(INDEX &elem, ARRAY &coords, const Geometry::Point &p) const
   {
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -1844,14 +1836,14 @@ protected:
 
 
   template <class INDEX>
-  void get_node_center(Point &p, INDEX idx) const
+  void get_node_center(Geometry::Point &p, INDEX idx) const
   {
     p = points_[idx];     
   }
 
 
   template <class INDEX>
-  void get_edge_center(Point &result, INDEX idx) const
+  void get_edge_center(Geometry::Point &result, INDEX idx) const
   {
     typename Node::array_type arr;
     get_nodes_from_edge(arr, idx);
@@ -1862,7 +1854,7 @@ protected:
 
 
   template <class INDEX>
-  void get_face_center(Point &result, INDEX idx) const
+  void get_face_center(Geometry::Point &result, INDEX idx) const
   {
     // NEED TO OPTIMIZE THIS ONE
     typename Node::array_type arr;
@@ -1896,40 +1888,44 @@ protected:
 
   void debug_test_edge_neighbors();
 
-  bool inside3_p(index_type face_times_three, const Point &p) const;
+  bool inside3_p(index_type face_times_three, const Geometry::Point &p) const;
 
   static index_type next(index_type i) { return ((i%3)==2) ? (i-2) : (i+1); }
   static index_type prev(index_type i) { return ((i%3)==0) ? (i+2) : (i-1); }
 
   //! Actual paramters
-  std::vector<Point>         points_;              // Location of vertices
+  std::vector<Geometry::Point>         points_;              // Location of vertices
   std::vector<std::vector<index_type> >    edges_;               // edges->halfedge map
   std::vector<index_type>    halfedge_to_edge_;    // halfedge->edge map
   std::vector<index_type>    faces_;               // Connectivity of this mesh
   std::vector<index_type>    edge_neighbors_;      // Neighbor connectivity
-  std::vector<Vector>        normals_;             // normalized per node normal.
+  std::vector<Geometry::Vector>        normals_;             // normalized per node normal.
   std::vector<std::vector<index_type> > node_neighbors_; // Node neighbor connectivity
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   LockingHandle<SearchGridT<index_type> > node_grid_; // Lookup table for nodes
   LockingHandle<SearchGridT<index_type> > elem_grid_; // Lookup table for elements
 
   // Lock and Condition Variable for hand shaking
   mutable Mutex         synchronize_lock_;
   ConditionVariable     synchronize_cond_;
-  
+#endif
+
   // Which tables have been computed
   mask_type             synchronized_;
   // Which tables are currently being computed
   mask_type             synchronizing_;
   
   Basis                 basis_;             // Interpolation basis
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   BBox                  bbox_;
+#endif
+
   double                epsilon_;           // Epsilon to use for computation 1e-8 of bbox diagonal
   double                epsilon2_;          // Square of epsilon
 
-  Handle<VMesh>         vmesh_;             // Handle to virtual function table
+  boost::shared_ptr<VirtualMesh>         vmesh_;             // Handle to virtual function table
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #ifdef HAVE_HASH_MAP
 
   struct edgehash
@@ -2002,7 +1998,7 @@ protected:
   typedef std::map<std::pair<index_type, index_type>, std::vector<index_type>, edgecompare> EdgeMapType2;
 
 #endif
-
+#endif
 };
 
 
@@ -2014,7 +2010,7 @@ struct less_int
   }
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 PersistentTypeID
 TriSurfMesh<Basis>::trisurf_typeid(TriSurfMesh<Basis>::type_name(-1), "Mesh", maker);
@@ -2039,7 +2035,7 @@ TriSurfMesh<Basis>::type_name(int n)
     return find_type_name((Basis *)0);
   }
 }
-
+#endif
 
 template <class Basis>
 TriSurfMesh<Basis>::TriSurfMesh()
@@ -2125,7 +2121,7 @@ TriSurfMesh<Basis>::~TriSurfMesh()
 
 template <class Basis>
 void
-TriSurfMesh<Basis>::get_random_point(Point &p,
+TriSurfMesh<Basis>::get_random_point(Geometry::Point &p,
                                      typename Elem::index_type ei,
                                      FieldRNG &rng) const
 {
@@ -2135,9 +2131,9 @@ TriSurfMesh<Basis>::get_random_point(Point &p,
   if (u + v > 1.0) { u = 1.0 - u; v = 1.0 - v; }
   
   // Compute the position of the random point.
-  const Point& p0 = points_[faces_[ei*3+0]];
-  const Point& p1 = points_[faces_[ei*3+1]];
-  const Point& p2 = points_[faces_[ei*3+2]];
+  const Geometry::Point& p0 = points_[faces_[ei*3+0]];
+  const Geometry::Point& p1 = points_[faces_[ei*3+1]];
+  const Geometry::Point& p2 = points_[faces_[ei*3+2]];
   p = p0+((p1-p0)*u)+((p2-p0)*v);
   
 }
@@ -2161,21 +2157,21 @@ TriSurfMesh<Basis>::get_bounding_box() const
 
 template <class Basis>
 void 
-TriSurfMesh<Basis>::get_canonical_transform(Transform &t) const
+TriSurfMesh<Basis>::get_canonical_transform(Geometry::Transform &t) const
 {
   t.load_identity();
   BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
-  t.pre_translate(Vector(bbox.min()));
+  t.pre_translate(Geometry::Vector(bbox.min()));
 }
 
 template <class Basis>
 void
-TriSurfMesh<Basis>::transform(const Transform &t)
+TriSurfMesh<Basis>::transform(const Geometry::Transform &t)
 {
   synchronize_lock_.lock();
-  std::vector<Point>::iterator itr = points_.begin();
-  std::vector<Point>::iterator eitr = points_.end();
+  std::vector<Geometry::Point>::iterator itr = points_.begin();
+  std::vector<Geometry::Point>::iterator eitr = points_.end();
   while (itr != eitr)
   {
     *itr = t.project(*itr);
@@ -2292,7 +2288,7 @@ TriSurfMesh<Basis>::end(typename TriSurfMesh::Cell::iterator &itr) const
 
 template <class Basis>
 int
-TriSurfMesh<Basis>::get_weights(const Point &p, typename Face::array_type &l,
+TriSurfMesh<Basis>::get_weights(const Geometry::Point &p, typename Face::array_type &l,
                                 double *w)
 {
   typename Face::index_type idx;
@@ -2309,7 +2305,7 @@ TriSurfMesh<Basis>::get_weights(const Point &p, typename Face::array_type &l,
 
 template <class Basis>
 int
-TriSurfMesh<Basis>::get_weights(const Point &p, typename Node::array_type &l,
+TriSurfMesh<Basis>::get_weights(const Geometry::Point &p, typename Node::array_type &l,
                                 double *w)
 {
   typename Face::index_type idx;
@@ -2329,16 +2325,16 @@ TriSurfMesh<Basis>::get_weights(const Point &p, typename Node::array_type &l,
 
 template <class Basis>
 bool
-TriSurfMesh<Basis>::inside3_p(index_type i, const Point &p) const
+TriSurfMesh<Basis>::inside3_p(index_type i, const Geometry::Point &p) const
 {
-  const Point &p0 = points_[faces_[i+0]];
-  const Point &p1 = points_[faces_[i+1]];
-  const Point &p2 = points_[faces_[i+2]];
-  Vector v01(p0-p1);
-  Vector v02(p0-p2);
-  Vector v0(p0-p);
-  Vector v1(p1-p);
-  Vector v2(p2-p);
+  const Geometry::Point &p0 = points_[faces_[i+0]];
+  const Geometry::Point &p1 = points_[faces_[i+1]];
+  const Geometry::Point &p2 = points_[faces_[i+2]];
+  Geometry::Vector v01(p0-p1);
+  Geometry::Vector v02(p0-p2);
+  Geometry::Vector v0(p0-p);
+  Geometry::Vector v1(p1-p);
+  Geometry::Vector v2(p2-p);
   const double a = Cross(v01, v02).length(); // area of the whole triangle (2x)
   const double a0 = Cross(v1, v2).length();  // area opposite p0
   const double a1 = Cross(v2, v0).length();  // area opposite p1
@@ -2535,7 +2531,7 @@ TriSurfMesh<Basis>::compute_normals()
   // build table of faces that touch each node
   std::vector<std::vector<typename Face::index_type> > node_in_faces(points_.size());
   //! face normals (not normalized) so that magnitude is also the area.
-  std::vector<Vector> face_normals(faces_.size());
+  std::vector<Geometry::Vector> face_normals(faces_.size());
   // Computing normal per face.
   typename Node::array_type nodes(3);
   typename Face::iterator iter, iter_end;
@@ -2545,7 +2541,7 @@ TriSurfMesh<Basis>::compute_normals()
   {
     get_nodes(nodes, *iter);
 
-    Point p1, p2, p3;
+    Geometry::Point p1, p2, p3;
     get_point(p1, nodes[0]);
     get_point(p2, nodes[1]);
     get_point(p3, nodes[2]);
@@ -2554,9 +2550,9 @@ TriSurfMesh<Basis>::compute_normals()
     node_in_faces[nodes[1]].push_back(*iter);
     node_in_faces[nodes[2]].push_back(*iter);
 
-    Vector v0 = p2 - p1;
-    Vector v1 = p3 - p2;
-    Vector n = Cross(v0, v1);
+    Geometry::Vector v0 = p2 - p1;
+    Geometry::Vector v1 = p3 - p2;
+    Geometry::Vector n = Cross(v0, v1);
     face_normals[*iter] = n;
     ++iter;
   }
@@ -2570,7 +2566,7 @@ TriSurfMesh<Basis>::compute_normals()
     const std::vector<typename Face::index_type> &v = *nif_iter;
     typename std::vector<typename Face::index_type>::const_iterator fiter =
       v.begin();
-    Vector ave(0.L,0.L,0.L);
+    Geometry::Vector ave(0.L,0.L,0.L);
     while(fiter != v.end()) 
     {
       ave += face_normals[*fiter];
@@ -2589,7 +2585,7 @@ TriSurfMesh<Basis>::compute_normals()
 
 template <class Basis>
 void
-TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Point &p)
+TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Geometry::Point &p)
 {
   const bool do_neighbors = synchronized_ & Mesh::ELEM_NEIGHBORS_E;
   const bool do_normals = false; // synchronized_ & NORMALS_E;
@@ -2632,7 +2628,7 @@ TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Point &p)
 
   if (do_normals)
   {
-    Vector normal = Vector( (p.asVector() +
+    Geometry::Vector normal = Geometry::Vector( (p.asVector() +
                              normals_[faces_[f0]] +
                              normals_[faces_[f1]] +
                              normals_[faces_[f2]]).safe_normalize() );
@@ -2658,7 +2654,7 @@ TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Point &p)
 
 template <class Basis>
 bool
-TriSurfMesh<Basis>::insert_node(const Point &p)
+TriSurfMesh<Basis>::insert_node(const Geometry::Point &p)
 {
   typename Face::index_type face;
   if (!locate(face,p)) return false;
@@ -2686,7 +2682,7 @@ bool
 TriSurfMesh<Basis>::insert_node_in_edge_aux(typename Face::array_type &tris,
                                             typename Node::index_type &ni,
                                             index_type halfedge,
-                                            const Point &p)
+                                            const Geometry::Point &p)
 {
   ni = add_point(p);
 
@@ -2770,7 +2766,7 @@ bool
 TriSurfMesh<Basis>::insert_node_in_face_aux(typename Face::array_type &tris,
                                             typename Node::index_type &ni,
                                             typename Face::index_type face,
-                                            const Point &p)
+                                            const Geometry::Point &p)
 {
   ni = add_point(p);
 
@@ -2837,11 +2833,11 @@ bool
 TriSurfMesh<Basis>::insert_node_in_face(typename Face::array_type &tris,
                                         typename Node::index_type &ni,
                                         typename Face::index_type face,
-                                        const Point &p)
+                                        const Geometry::Point &p)
 {
-  const Point &p0 = point(faces_[face * 3 + 0]);
-  const Point &p1 = point(faces_[face * 3 + 1]);
-  const Point &p2 = point(faces_[face * 3 + 2]);
+  const Geometry::Point &p0 = point(faces_[face * 3 + 0]);
+  const Geometry::Point &p1 = point(faces_[face * 3 + 1]);
+  const Geometry::Point &p2 = point(faces_[face * 3 + 2]);
 
   const double a0 = Cross(p - p1, p - p2).length2();
   const double a1 = Cross(p - p2, p - p0).length2();
@@ -2854,7 +2850,7 @@ TriSurfMesh<Basis>::insert_node_in_face(typename Face::array_type &tris,
 
   if (mask == 7)
   {
-    // Point is inside the face, do a three split.
+    // Geometry::Point is inside the face, do a three split.
     return insert_node_in_face_aux(tris, ni, face, p);
   }
   else if (mask == 0)
@@ -2961,16 +2957,16 @@ TriSurfMesh<Basis>::bisect_element(const typename Face::index_type face)
   const index_type f0 = face*3;
   typename Node::array_type nodes;
   get_nodes(nodes,face);
-  std::vector<Vector> normals(3);
+  std::vector<Geometry::Vector> normals(3);
   for (index_type edge = 0; edge < 3; ++edge)
   {
-    Point p = ((points_[faces_[f0+edge]] +
+    Geometry::Point p = ((points_[faces_[f0+edge]] +
                 points_[faces_[next(f0+edge)]]) / 2.0).asPoint();
     nodes.push_back(add_point(p));
 
     if (do_normals)
     {
-      normals[edge] = Vector(normals_[faces_[f0+edge]] +
+      normals[edge] = Geometry::Vector(normals_[faces_[f0+edge]] +
                              normals_[faces_[next(f0+edge)]]);
       normals[edge].safe_normalize();
     }
@@ -3184,7 +3180,7 @@ TriSurfMesh<Basis>::compute_edges()
 
 template <class Basis>
 typename TriSurfMesh<Basis>::Node::index_type
-TriSurfMesh<Basis>::add_find_point(const Point &p, double err)
+TriSurfMesh<Basis>::add_find_point(const Geometry::Point &p, double err)
 {
   typename Node::index_type i;
   if (search_node(i, p) && (p - points_[i]).length2() < err)
@@ -3287,7 +3283,7 @@ TriSurfMesh<Basis>::remove_orphan_nodes()
         node--;
       }
     }
-    std::vector<Point>::iterator niter = points_.begin();
+    std::vector<Geometry::Point>::iterator niter = points_.begin();
     niter += i;
     points_.erase(niter);
   }
@@ -3545,7 +3541,7 @@ TriSurfMesh<Basis>::compute_elem_grid()
     const size_type s = 
       3*static_cast<size_type>((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
-    Vector diag  = bbox_.diagonal();
+    Geometry::Vector diag  = bbox_.diagonal();
     double trace = (diag.x()+diag.y()+diag.z());
     size_type sx = static_cast<size_type>(ceil(0.5+diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
@@ -3582,7 +3578,7 @@ TriSurfMesh<Basis>::compute_node_grid()
     const size_type s =  3*static_cast<size_type>
                   ((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
-    Vector diag  = bbox_.diagonal();
+    Geometry::Vector diag  = bbox_.diagonal();
     double trace = (diag.x()+diag.y()+diag.z());
     size_type sx = static_cast<size_type>(ceil(0.5+diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
@@ -3635,7 +3631,7 @@ TriSurfMesh<Basis>::compute_bounding_box()
 
 template <class Basis>
 typename TriSurfMesh<Basis>::Node::index_type
-TriSurfMesh<Basis>::add_point(const Point &p)
+TriSurfMesh<Basis>::add_point(const Geometry::Point &p)
 {
   points_.push_back(p);   
   return static_cast<typename Node::index_type>(points_.size() - 1);
@@ -3645,9 +3641,9 @@ TriSurfMesh<Basis>::add_point(const Point &p)
 
 template <class Basis>
 typename TriSurfMesh<Basis>::Elem::index_type
-TriSurfMesh<Basis>::add_triangle(const Point &p0,
-                                 const Point &p1,
-                                 const Point &p2)
+TriSurfMesh<Basis>::add_triangle(const Geometry::Point &p0,
+                                 const Geometry::Point &p1,
+                                 const Geometry::Point &p2)
 {
   return add_triangle(add_find_point(p0), add_find_point(p1), add_find_point(p2));
 }
@@ -3838,7 +3834,8 @@ TriSurfMesh<Basis>::get_neighbor(index_type &nbr_half_edge,
   return nbr_half_edge != MESH_NO_NEIGHBOR;
 }
 
-} // namespace SCIRun
-
+}
+}
+}
 
 #endif
