@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <cmath>
 #include <Core/GeometryPrimitives/BBox.h>
 //#include <Core/Persistent/Persistent.h>
 
@@ -37,9 +38,9 @@ BBox::extend_disk(const Point& cen, const Vector& normal, double r)
   if (normal.length2() < 1.e-12) { extend(cen); return; }
   Vector n(normal);
   n.safe_normalize();
-  double x=sqrt(1-n.x())*r;
-  double y=sqrt(1-n.y())*r;
-  double z=sqrt(1-n.z())*r;
+  double x = std::sqrt(1-n.x())*r;
+  double y = std::sqrt(1-n.y())*r;
+  double z = std::sqrt(1-n.z())*r;
   extend(cen+Vector(x,y,z));
   extend(cen-Vector(x,y,z));
 }

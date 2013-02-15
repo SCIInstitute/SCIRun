@@ -34,6 +34,7 @@
 #define CORE_GEOMETRY_VECTOR_H 
 
 #include <string>
+#include <cmath>
 #include <boost/array.hpp>
 #include <Core/GeometryPrimitives/Share.h>
 
@@ -244,7 +245,7 @@ SCISHARE const TypeDescription* get_type_description(Vector*);
 inline
   double Vector::safe_normalize()
 {
-  double l=sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
+  double l = std::sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
   if (l > 0.0)
   {
     d_[0]/=l;

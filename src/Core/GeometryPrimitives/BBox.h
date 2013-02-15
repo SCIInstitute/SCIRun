@@ -158,18 +158,22 @@ class BBox {
     SCISHARE void extend_disk(const Point& cen, const Vector& normal, double r);
 
     inline Point center() const  
-      { assert(is_valid_); Vector d = diagonal(); return cmin_ + (d * 0.5); }
+    {
+      //TODO: C assert: assert(is_valid_);
+      Vector d = diagonal();
+      return cmin_ + (d * 0.5);
+    }
     
     inline double longest_edge() const
     {
-      assert(is_valid_);
+      //TODO: C assert: assert(is_valid_);
       Vector diagonal(cmax_-cmin_);
       return Max(diagonal.x(), diagonal.y(), diagonal.z());
     }
 
     inline double shortest_edge() const
     {
-      assert(is_valid_);
+      //TODO: C assert: assert(is_valid_);
       Vector diagonal(cmax_-cmin_);
       return Min(diagonal.x(), diagonal.y(), diagonal.z());
     }
