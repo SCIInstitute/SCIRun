@@ -78,7 +78,7 @@ public:
                       VirtualMesh::coords_type& coords,
                       const Geometry::Point &point) const;
 
-  virtual bool locate(VirtualMesh::Elem::array_type &i, const BBox &bbox) const;
+  virtual bool locate(VirtualMesh::Elem::array_type &i, const Geometry::BBox &bbox) const;
 
   virtual void mlocate(std::vector<VirtualMesh::Node::index_type> &i, const std::vector<Geometry::Point> &point) const;
   virtual void mlocate(std::vector<VirtualMesh::Elem::index_type> &i, const std::vector<Geometry::Point> &point) const;
@@ -335,7 +335,7 @@ locate(VirtualMesh::Elem::index_type &idx, const Geometry::Point &point) const
 template <class MESH>
 bool 
 VUnstructuredMesh<MESH>::
-locate(VirtualMesh::Elem::array_type &array, const BBox &bbox) const
+locate(VirtualMesh::Elem::array_type &array, const Geometry::BBox &bbox) const
 {
   return(this->mesh_->locate_elems(array,bbox));
 }

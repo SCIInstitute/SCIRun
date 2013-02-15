@@ -310,7 +310,7 @@ public:
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   //! Get the bounding box of the field    
-  virtual BBox get_bounding_box() const;
+  virtual Geometry::BBox get_bounding_box() const;
   
   //! Return the transformation that takes a 0-1 space bounding box 
   //! to the current bounding box of this mesh.  
@@ -2138,7 +2138,7 @@ TriSurfMesh<Basis>::get_random_point(Geometry::Point &p,
 
 
 template <class Basis>
-BBox
+Geometry::BBox
 TriSurfMesh<Basis>::get_bounding_box() const
 {
   BBox result;
@@ -3646,7 +3646,7 @@ TriSurfMesh<Basis>::add_triangle(const Geometry::Point &p0,
   return add_triangle(add_find_point(p0), add_find_point(p1), add_find_point(p2));
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define TRISURFMESH_VERSION 4
 
 template <class Basis>
@@ -3682,7 +3682,7 @@ TriSurfMesh<Basis>::io(Piostream &stream)
   if (stream.reading())
     vmesh_ = CreateVTriSurfMesh(this);
 }
-
+#endif
 
 template <class Basis>
 void

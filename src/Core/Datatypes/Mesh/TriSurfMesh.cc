@@ -31,6 +31,7 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
 
 
 namespace SCIRun {
@@ -118,9 +119,10 @@ public:
                                      Point& point);
 
   virtual VirtualMesh::index_type* get_elems_pointer() const;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() { return this->mesh_->elem_grid_; }
   virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() { return this->mesh_->node_grid_; }
-
+#endif
 };
 }}}
 
@@ -136,6 +138,7 @@ public:
 //! Add the LINEAR virtual interface and the meshid for creating it 
 
 //! Create virtual interface 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
 VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh);
@@ -147,9 +150,6 @@ static MeshTypeID TriSurfMesh_MeshID1(
                   TriSurfMesh<TriLinearLgn<Point> >::mesh_maker);
                   
                   
-//! Add the QUADRATIC virtual interface and the meshid for creating it                  
-#if (SCIRUN_QUADRATIC_SUPPORT > 0)
-
 //! Create virtual interface 
 VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
 {
@@ -159,11 +159,6 @@ VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
 //! Register class maker, so we can instantiate it
 static MeshTypeID TriSurfMesh_MeshID2(TriSurfMesh<TriQuadraticLgn<Point> >::type_name(-1),
                   TriSurfMesh<TriQuadraticLgn<Point> >::mesh_maker);
-#endif
-
-
-//! Add the CUBIC virtual interface and the meshid for creating it                  
-#if (SCIRUN_CUBIC_SUPPORT > 0)
 
 //! Create virtual interface 
 VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
@@ -174,7 +169,7 @@ VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
 //! Register class maker, so we can instantiate it
 static MeshTypeID TriSurfMesh_MeshID3(TriSurfMesh<TriCubicHmt<Point> >::type_name(-1),
                   TriSurfMesh<TriCubicHmt<Point> >::mesh_maker);
-                  
+
 #endif
 
 template <class MESH>
@@ -405,9 +400,3 @@ VTriSurfMesh<MESH>::insert_node_into_elem(VirtualMesh::Elem::array_type& newelem
   this->convert_vector(array,newelems);
   newnode = VirtualMesh::Node::index_type(index);
 }
-
-
-}// namespace SCIRun
-
-#endif
-
