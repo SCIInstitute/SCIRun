@@ -264,11 +264,10 @@ ELSE()
   ADD_DEFINITIONS(-DSPIRE_USE_STD_THREADS)
 ENDIF()
 
-# Todo re-add the null update command.
 ExternalProject_Add(Spire_external
   PREFIX ${spire_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire.git"
-  GIT_TAG "v0.2.1"
+  GIT_TAG "origin/master"
   SOURCE_DIR ${SPIRE_SOURCE_DIR}
   BINARY_DIR ${SPIRE_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/spire"
@@ -277,7 +276,6 @@ ExternalProject_Add(Spire_external
   INSTALL_DIR ""
   INSTALL_COMMAND ""
 )
-#  GIT_TAG "v0.1.0"
 
 # Custom build step to install shaders afetr the build has completed.
 ExternalProject_Add_Step(Spire_external e1
