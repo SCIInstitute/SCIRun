@@ -58,6 +58,8 @@ namespace Datatypes {
 
     virtual void accept(MatrixVisitorGeneric<T>& visitor) = 0;
 
+    bool empty() const { return 0 == nrows() && 0 == ncols(); }
+
     friend std::ostream& operator<<(std::ostream& o, const MatrixBase<T>& m)
     {
       m.print(o);

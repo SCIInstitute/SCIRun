@@ -127,6 +127,19 @@ TEST(ReportMatrixInfoAlgorithmTests, NullInputThrows)
   EXPECT_THROW(algo.run(DenseMatrixHandle()), AlgorithmInputException);
 }
 
+TEST(ReportMatrixInfoAlgorithmTests, EmptyInputDoesNotThrow)
+{
+  ReportMatrixInfoAlgorithm algo;
+  DenseMatrixHandle empty(new DenseMatrix);
+
+  auto result = algo.run(empty);
+  EXPECT_EQ(0, result.get<1>());
+  EXPECT_EQ(0, result.get<2>());
+  EXPECT_EQ(0, result.get<3>());
+  EXPECT_EQ(0, result.get<4>());
+  EXPECT_EQ(0, result.get<5>());
+}
+
 TEST(BigVectorFieldFile, DISABLED_MakeIt)
 {
   const size_t dim = 10;
