@@ -46,17 +46,13 @@
 
 #include <Core/Datatypes/Mesh/Share.h>
 
-#define StackVector boost::array
 #define StackBasedVector std::vector
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-//class BBox;
 class VirtualMesh;
-//class Transform;
-//class TypeDescription;
 
 typedef boost::shared_ptr<VirtualMesh> VirtualMeshHandle;
 
@@ -233,7 +229,7 @@ public:
       StackBasedVector<double>  weights;    // weights for given points
 
       size_type                    num_derivs; // Number of derivatives in topology   
-      StackVector<double,9>        inverse_jacobian; // Inverse jacobian, for local to global tranformation
+      StackVector<double,9>        inverse_jacobian; // Inverse jacobian, for local to global transformation
       coords_type                  coords;
   };  
 

@@ -41,10 +41,10 @@ namespace SCIRun {
 namespace Core {
 namespace Geometry {
 
-  inline Vector operator-(const Point& p1, const Point& p2)
-  {
-    return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
-  }
+  //inline Vector operator-(const Point& p1, const Point& p2)
+  //{
+  //  return Vector(p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]);
+  //}
 
   inline Point& Point::operator+=(const Vector& v)
   {
@@ -67,6 +67,27 @@ namespace Geometry {
     d_[0] = p[0];
     d_[1] = p[1]; 
     d_[2] = p[2];
+  }
+
+
+  inline Vector Point::operator+(const Point& p) const
+  {
+    return Vector(d_[0]+p.d_[0], d_[1]+p.d_[1], d_[2]+p.d_[2]);
+  }
+
+  inline Vector Point::operator-(const Point& p) const
+  {
+    return Vector(d_[0]-p.d_[0], d_[1]-p.d_[1], d_[2]-p.d_[2]);
+  }
+
+  inline Point Point::operator+(const Vector& v) const
+  {
+    return Point(d_[0]+v.d_[0], d_[1]+v.d_[1], d_[2]+v.d_[2]);
+  }
+
+  inline Point Point::operator-(const Vector& v) const
+  {
+    return Point(d_[0]-v.d_[0], d_[1]-v.d_[1], d_[2]-v.d_[2]);
   }
 
 }}}

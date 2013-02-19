@@ -34,11 +34,26 @@
 #define CORE_GEOMETRY_VECTOR_H 
 
 #include <string>
+#include <cmath>
+#include <boost/array.hpp>
 #include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Geometry {
+
+  //TODO: move to math header
+  template <typename T>
+  inline const T& Min(const T& t1, const T& t2, const T& t3)
+  {
+    return std::min(std::min(t1,t2), t3);
+  }
+
+  template <typename T>
+  inline const T& Max(const T& t1, const T& t2, const T& t3)
+  {
+    return std::max(std::max(t1,t2), t3);
+  }
 
 class Point;
 
@@ -204,6 +219,20 @@ inline Vector operator*(const double s, const Vector& v) {
   return v*s;
 }
 
+inline Vector Min(const Vector &v1, const Vector &v2)
+{
+  return Vector(std::min(v1.x(), v2.x()),
+    std::min(v1.y(), v2.y()),
+    std::min(v1.z(), v2.z()));
+}
+
+inline Vector Max(const Vector &v1, const Vector &v2)
+{
+  return Vector(std::max(v1.x(), v2.x()),
+    std::max(v1.y(), v2.y()),
+    std::max(v1.z(), v2.z()));
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // For Pio system
 SCISHARE void Pio( Piostream&, Vector& );
@@ -213,18 +242,69 @@ const std::string& Vector_get_h_file_path();
 SCISHARE const TypeDescription* get_type_description(Vector*);
 #endif
 
+inline
+  double Vector::safe_normalize()
+{
+  double l = std::sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
+  if (l > 0.0)
+  {
+    d_[0]/=l;
+    d_[1]/=l;
+    d_[2]/=l;
+  }
+  return l;
+}
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline double Vector::length2() const
 {
   return d_[0]*d_[0]+d_[1]*d_[1]+d_[2]*d_[2];
 }
 
-// for initializing in dynamic code
-// one often want template<class T> T val = 0.0;
-// TO DO: see whether we can remove this now
 
+inline double Vector::minComponent() const 
+{
+  return Min(d_[0], d_[1], d_[2]);
+}
+
+inline double Vector::maxComponent() const 
+{
+  return Max(d_[0], d_[1], d_[2]);
+}
+
+inline Vector Vector::operator/(const double d) const
+{
+  return Vector(d_[0]/d, d_[1]/d, d_[2]/d);
+}
+
+inline Vector Vector::operator/(const Vector& v2) const
+{
+  return Vector(d_[0]/v2.d_[0], d_[1]/v2.d_[1], d_[2]/v2.d_[2]);
+}
+
+inline Vector Vector::operator+(const Vector& v2) const
+{
+  return Vector(d_[0]+v2.d_[0], d_[1]+v2.d_[1], d_[2]+v2.d_[2]);
+}
+
+inline Vector Vector::operator*(const Vector& v2) const
+{
+  return Vector(d_[0]*v2.d_[0], d_[1]*v2.d_[1], d_[2]*v2.d_[2]);
+}
+
+inline Vector Vector::operator-(const Vector& v2) const
+{
+  return Vector(d_[0]-v2.d_[0], d_[1]-v2.d_[1], d_[2]-v2.d_[2]);
+}
+
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+
+inline Vector Vector::operator-(const Point& v2) const
+{
+  return Vector(d_[0]-v2[0], d_[1]-v2[1], d_[2]-v2[2]);
+}
 inline Vector& Vector::operator=(const double& d)
 {
   d_[0] = d;
@@ -278,35 +358,6 @@ inline Vector& Vector::operator*=(const Vector& v)
 
 
 
-inline Vector Vector::operator/(const double d) const
-{
-  return Vector(d_[0]/d, d_[1]/d, d_[2]/d);
-}
-
-inline Vector Vector::operator/(const Vector& v2) const
-{
-  return Vector(d_[0]/v2.d_[0], d_[1]/v2.d_[1], d_[2]/v2.d_[2]);
-}
-
-inline Vector Vector::operator+(const Vector& v2) const
-{
-  return Vector(d_[0]+v2.d_[0], d_[1]+v2.d_[1], d_[2]+v2.d_[2]);
-}
-
-inline Vector Vector::operator*(const Vector& v2) const
-{
-  return Vector(d_[0]*v2.d_[0], d_[1]*v2.d_[1], d_[2]*v2.d_[2]);
-}
-
-inline Vector Vector::operator-(const Vector& v2) const
-{
-  return Vector(d_[0]-v2.d_[0], d_[1]-v2.d_[1], d_[2]-v2.d_[2]);
-}
-
-inline Vector Vector::operator-(const Point& v2) const
-{
-  return Vector(d_[0]-v2.d_[0], d_[1]-v2.d_[1], d_[2]-v2.d_[2]);
-}
 
 inline Vector& Vector::operator+=(const Vector& v2)
 {
@@ -421,18 +472,7 @@ double Vector::normalize()
   return l;
 }
 
-inline
-double Vector::safe_normalize()
-{
-  double l=sqrt(d_[0]*d_[0] + d_[1]*d_[1] + d_[2]*d_[2]);
-  if (l > 0.0)
-  {
-    d_[0]/=l;
-    d_[1]/=l;
-    d_[2]/=l;
-  }
-  return l;
-}
+
 
 
 inline const Point &Vector::point() const 
@@ -446,33 +486,6 @@ inline Point &Vector::asPoint() const
 }
 
 
-inline double Vector::minComponent() const 
-{
-  if(d_[0]<d_[1])
-  {
-    if(d_[0]<d_[2]) return d_[0];
-    else return d_[2];
-  } 
-  else 
-  {
-    if(d_[1]<d_[2]) return d_[1];
-    else return d_[2];
-  }
-}
-
-inline double Vector::maxComponent() const 
-{
-  if(d_[0]>d_[1])
-  {
-    if(d_[0]>d_[2]) return d_[0];
-    else return d_[2];
-  } 
-  else 
-  {
-    if(d_[1]>d_[2]) return d_[1];
-    else return d_[2];
-  }
-}
 
 inline void Vector::Set(double x, double y, double z)
 { 
@@ -481,21 +494,19 @@ inline void Vector::Set(double x, double y, double z)
   d_[2] = z;
 }
 
-inline Vector Min(const Vector &v1, const Vector &v2)
-{
-  return Vector(std::min(v1.x(), v2.x()),
-		std::min(v1.y(), v2.y()),
-		std::min(v1.z(), v2.z()));
-}
 
-inline Vector Max(const Vector &v1, const Vector &v2)
-{
-  return Vector(std::max(v1.x(), v2.x()),
-		std::max(v1.y(), v2.y()),
-		std::max(v1.z(), v2.z()));
-}
 
 } // End namespace SCIRun
 #endif
-}}}
+}
+
+template <class T, size_t N>
+class StackVector : public boost::array<T,N>
+{
+public:
+  StackVector() {}
+  StackVector(size_t s) {}
+};
+
+}}
 #endif

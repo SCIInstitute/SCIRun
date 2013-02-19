@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,53 +27,37 @@
 */
 
 
-#ifndef CORE_DATATYPES_MATRIX_H
-#define CORE_DATATYPES_MATRIX_H 
+#ifndef CORE_DATATYPES_FIELDRNG_H
+#define CORE_DATATYPES_FIELDRNG_H 1
 
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <iosfwd>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+  namespace Core {
+    namespace Datatypes {
 
-  template <typename T>
-  struct MatrixVisitorGeneric
-  {
-    virtual ~MatrixVisitorGeneric() {}
-    virtual void visit(DenseMatrixGeneric<T>&) = 0;
-    virtual void visit(SparseRowMatrixGeneric<T>&) = 0;
-    virtual void visit(DenseColumnMatrixGeneric<T>&) = 0;
-  };
-
-  typedef MatrixVisitorGeneric<double> MatrixVisitor;
-
-  template <typename T>
-  class MatrixBase : public Datatype
-  {
-  public:
-    virtual size_t nrows() const = 0;
-    virtual size_t ncols() const = 0;
-
-    virtual void accept(MatrixVisitorGeneric<T>& visitor) = 0;
-
-    bool empty() const { return 0 == nrows() && 0 == ncols(); }
-
-    friend std::ostream& operator<<(std::ostream& o, const MatrixBase<T>& m)
-    {
-      m.print(o);
-      return o;
-    }
-
-  private:
-    virtual void print(std::ostream&) const = 0;
-      //TODO: not much to go here for now.
-  };
-
-
+class SCISHARE FieldRNG {
+  int d[16], n[16];
+  int stab[2][32];
+  int point;
+  int d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12;
+  int a1,b1;
+  int a2,b2;
+  int a3,b3;
+  int a4,b4;
+  int a5,b5;
+  int a6,b6;
+  int a7,b7;
+  int a8,b8;
+  int a9,b9;
+  int a10,b10;
+  int a11,b11;
+  int a12,b12;
+public:
+  FieldRNG( int seed = 0 );
+  double operator()();
+};
 
 }}}
-
 
 #endif

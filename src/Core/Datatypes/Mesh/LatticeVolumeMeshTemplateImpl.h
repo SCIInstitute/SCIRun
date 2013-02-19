@@ -39,7 +39,7 @@
 //#include <Core/Basis/Locate.h>
 //#include <Core/GeometryPrimitives/Point.h>
 //#include <Core/GeometryPrimitives/Transform.h>
-////#include <Core/Geometry/BBox.h>
+#include <Core/GeometryPrimitives/BBox.h>
 ////#include <Core/Math/MiscMath.h>
 //
 //#include <Core/Datatypes/Mesh/FieldIterator.h>

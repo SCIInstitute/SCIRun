@@ -43,7 +43,7 @@ struct NumberOfElements : MatrixVisitor
 {
   size_t value() const { return value_; }
   
-  NumberOfElements() : value_(-1) {}
+  NumberOfElements() : value_(0) {}
   size_t value_;
 
   virtual void visit(DenseMatrix& m)
@@ -66,23 +66,25 @@ struct MinimumCoefficient : MatrixVisitor
 {
   double value() const { return value_; }
 
-  MinimumCoefficient() : value_(-1) {}
+  MinimumCoefficient() : value_(0) {}
   double value_;
 
   virtual void visit(DenseMatrix& m)
   {
-    value_ = m.minCoeff();
+    if (!m.empty())
+      value_ = m.minCoeff();
   }
 
   virtual void visit(DenseColumnMatrix& m)
   {
-    value_ = m.minCoeff();
+    if (!m.empty())
+      value_ = m.minCoeff();
   }
 
   virtual void visit(SparseRowMatrix& m)
   {
-    //std::copy(m.nonZerosBegin(), m.nonZerosEnd(), std::ostream_iterator<double>(std::cout, ", "));
-    value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+    if (!m.empty())
+      value_ = *std::min_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
   }
 };
 
@@ -90,23 +92,25 @@ struct MaximumCoefficient : MatrixVisitor
 {
   double value() const { return value_; }
 
-  MaximumCoefficient() : value_(-1) {}
+  MaximumCoefficient() : value_(0) {}
   double value_;
 
   virtual void visit(DenseMatrix& m)
   {
-    value_ = m.maxCoeff();
+    if (!m.empty())
+      value_ = m.maxCoeff();
   }
 
   virtual void visit(DenseColumnMatrix& m)
   {
-    value_ = m.maxCoeff();
+     if (!m.empty())
+       value_ = m.maxCoeff();
   }
 
   virtual void visit(SparseRowMatrix& m)
   {
-    //std::copy(m.valuePtr(), m.valuePtr() + m.nonZeros(), std::ostream_iterator<double>(std::cout, ", "));
-    value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
+    if (!m.empty())
+      value_ = *std::max_element(m.valuePtr(), m.valuePtr() + m.nonZeros());
   }
 };
 
