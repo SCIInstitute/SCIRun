@@ -42,6 +42,7 @@ HistoryWindow::HistoryWindow(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
   setupUi(this);
   networkXMLTextEdit_->setTabStopWidth(15);
+  connect(historyListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
 }
 
 void HistoryWindow::showFile(const QString& path)
@@ -60,6 +61,11 @@ void HistoryWindow::showFile(const QString& path)
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)
 {
   new QListWidgetItem(QString::fromStdString(item->name()), historyListWidget_);
+}
+
+void HistoryWindow::displayInfo(QListWidgetItem* item)
+{
+  networkXMLTextEdit_->setText("Here is some info from the item: " + item->text());
 }
 
 void HistoryWindow::clear()

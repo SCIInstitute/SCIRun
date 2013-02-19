@@ -45,6 +45,12 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QListWidget" name="historyListWidget_">
+       <property name="minimumSize">
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>List of historical actions</string>
        </property>

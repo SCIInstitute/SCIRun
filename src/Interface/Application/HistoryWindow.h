@@ -47,6 +47,8 @@ public Q_SLOTS:
   void showFile(const QString& path);
   void clear();
   void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);
+private Q_SLOTS:
+  void displayInfo(QListWidgetItem* item);
 Q_SIGNALS:
 private:
 };
