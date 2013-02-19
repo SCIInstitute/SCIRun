@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
+#ifndef CORE_DATATYPES_TRISURFMESHREGISTER_H
+#define CORE_DATATYPES_TRISURFMESHREGISTER_H 
 
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Core/Datatypes/Mesh/Share.h>
 
-TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
-{
-  int basisOrder = 1;
-  FieldInformation lfi("LatVolMesh", basisOrder, "double");
-  int sizex,sizey,sizez;
-  sizex = sizey = sizez = 4;
-  Point minb(0,0,0);
-  Point maxb(4,4,4);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-  ASSERT_TRUE(mesh);
-}
+namespace SCIRun {
+namespace Core {
+namespace Datatypes {
 
-TEST(MeshFactoryTests, CanCreateTriSurfMesh)
-{
-  int basisOrder = 1;
-  FieldInformation lfi("TriSurfMesh", basisOrder, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
-  ASSERT_TRUE(mesh);
-}
+  SCISHARE void registerTriSurfMeshes();
+
+}}}
+
+#endif 
+
+

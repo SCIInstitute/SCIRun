@@ -46,7 +46,7 @@ public:
   VUnstructuredMesh(MESH* mesh) :
     VirtualMeshShared<MESH>(mesh)
   {}
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void size(VirtualMesh::Node::size_type& size) const;
   virtual void size(VirtualMesh::ENode::size_type& size) const;
   virtual void size(VirtualMesh::Edge::size_type& size) const;
@@ -71,7 +71,7 @@ public:
   virtual double get_size(VirtualMesh::Cell::index_type i) const;
   virtual double get_size(VirtualMesh::Elem::index_type i) const;
   virtual double get_size(VirtualMesh::DElem::index_type i) const;
-  
+
   virtual bool locate(VirtualMesh::Node::index_type &i, const Geometry::Point &point) const;
   virtual bool locate(VirtualMesh::Elem::index_type &i, const Geometry::Point &point) const;
   virtual bool locate(VirtualMesh::Elem::index_type &i,
@@ -236,12 +236,12 @@ public:
   virtual bool find_closest_elems(double& pdist, Geometry::Point& result, 
                                   VirtualMesh::Elem::array_type &i, 
                                   const Geometry::Point &point) const;
-
+  #endif
 };
 
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 void 
 VUnstructuredMesh<MESH>::
@@ -312,8 +312,6 @@ size(VirtualMesh::Elem::size_type& sz) const
   sz = VirtualMesh::Elem::index_type(s);
 
 }
-
-
 
 template <class MESH>
 bool 
@@ -1402,7 +1400,7 @@ find_closest_elems(double& pdist, Geometry::Point& result,
 {
   return(this->mesh_->find_closest_elems(pdist,result,i,point));
 } 
-
+#endif
 
 }}}
 

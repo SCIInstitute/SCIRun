@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/Mesh.h>
 #include <Core/Datatypes/Mesh/LatticeVolumeMeshRegister.h>
+#include <Core/Datatypes/Mesh/TriSurfMeshRegister.h>
 #include <Core/GeometryPrimitives/Point.h>
 
 using namespace SCIRun::Core::Datatypes;
@@ -49,6 +50,7 @@ CORE_SINGLETON_IMPLEMENTATION( MeshRegistry )
 MeshFactory::MeshFactory() : registry_(MeshRegistry::Instance())
 {
   SCIRun::Core::Datatypes::registerLatticeVolumeMesh();
+  SCIRun::Core::Datatypes::registerTriSurfMeshes();
   //fill in all mesh types here, via their basic register functions.
 }
 
@@ -60,6 +62,14 @@ MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, const MeshConst
 {
   std::string type = info.get_mesh_type_id();
   return CreateMesh(type, params);
+}
+
+MeshHandle MeshFactory::CreateMesh(const std::string& type)
+{
+  auto ctorInfo = registry_.meshTypeIdLookup_.findConstructorInfo(type);
+  if (ctorInfo)
+    return ctorInfo->defCtor_();
+  return MeshHandle();
 }
 
 MeshHandle MeshFactory::CreateMesh(const std::string& type, const MeshConstructionParameters& params)

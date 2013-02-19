@@ -64,6 +64,9 @@
 
 #include <Core/Datatypes/Mesh/Share.h>
 
+//TODO: ASSERTMSG...
+#define ASSERTMSG(x,y)
+
 namespace SCIRun {
   namespace Core {
     namespace Datatypes {
@@ -289,7 +292,13 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.    
-  virtual TriSurfMesh *clone() { return new TriSurfMesh(*this); }
+  virtual TriSurfMesh *clone() const { return new TriSurfMesh(*this); }
+
+  virtual MeshFacadeHandle getFacade() const 
+  {
+    //TODO!!!
+    return MeshFacadeHandle();
+  }
 
   //! Destructor 
   virtual ~TriSurfMesh();
@@ -1285,7 +1294,11 @@ public:
 #endif
 
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new TriSurfMesh<Basis>(); }
+  static MeshHandle mesh_maker() 
+  { 
+    MeshHandle handle(new TriSurfMesh<Basis>()); 
+    return handle;
+  }
   
 
   //////////////////////////////////////////////////////////////////
@@ -2049,7 +2062,7 @@ TriSurfMesh<Basis>::TriSurfMesh()
   //DEBUG_CONSTRUCTOR("TriSurfMesh")
 
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVTriSurfMesh(this);
+  vmesh_.reset(CreateVTriSurfMesh(this));
 }
 
 
@@ -2101,7 +2114,7 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVTriSurfMesh(this);
+  vmesh_.reset(CreateVTriSurfMesh(this));
 }
 
 
@@ -2201,9 +2214,6 @@ TriSurfMesh<Basis>::transform(const Geometry::Transform &t)
 }
 #endif
 
-      
-//TODO: ASSERTMSG...
-#define ASSERTMSG(x,y)
 template <class Basis>
 void
 TriSurfMesh<Basis>::begin(typename TriSurfMesh::Node::iterator &itr) const
