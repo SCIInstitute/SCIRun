@@ -325,9 +325,11 @@ public:
   //! Return the transformation that takes a 0-1 space bounding box 
   //! to the current bounding box of this mesh.  
   virtual void get_canonical_transform(Geometry::Transform &t) const;
-  
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Geometry::Transform a field (transform all nodes using this transformation matrix)  
   virtual void transform(const Geometry::Transform &t);
+#endif
 
   //! Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return (true); }
@@ -1279,6 +1281,7 @@ public:
   virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
 #endif
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Type description, used for finding names of the mesh class for
   //! dynamic compilation purposes. Some of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
@@ -1288,7 +1291,7 @@ public:
   static const TypeDescription* cell_type_description();
   static const TypeDescription* elem_type_description()
     { return face_type_description(); }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
 #endif

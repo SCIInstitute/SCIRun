@@ -124,14 +124,14 @@ public:
   virtual void set_nodes(VirtualMesh::Node::array_type&,
                          VirtualMesh::Face::index_type);
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void insert_node_into_elem(VirtualMesh::Elem::array_type& newelems, 
                                      VirtualMesh::Node::index_type& newnode,
                                      VirtualMesh::Elem::index_type  elem,
                                      Point& point);
 
   virtual VirtualMesh::index_type* get_elems_pointer() const;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() { return this->mesh_->elem_grid_; }
   virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() { return this->mesh_->node_grid_; }
 #endif
@@ -151,17 +151,17 @@ public:
 
 //! Create virtual interface 
 
-VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
+VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh);
 }
 
-VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
+VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriQuadraticLgn<Point> > >(mesh);
 }
 
-VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
+VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriCubicHmt<Point> > >(mesh);
 }

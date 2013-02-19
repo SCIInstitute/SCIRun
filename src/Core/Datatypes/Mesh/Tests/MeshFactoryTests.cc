@@ -52,7 +52,7 @@ TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
 
 TEST(MeshFactoryTests, CanCreateTriSurfMesh)
 {
-  int basisOrder = 1;
+  int basisOrder = 1; // Not sure if this is being used correctly below.
   FieldInformation lfi("TriSurfMesh", basisOrder, "double");
   MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
   ASSERT_TRUE(mesh);
