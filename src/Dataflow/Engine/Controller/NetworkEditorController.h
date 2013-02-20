@@ -85,6 +85,8 @@ namespace Engine {
     InvalidConnectionSignalType invalidConnection_;
   };
 
+  typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;
+
 }
 }
 }

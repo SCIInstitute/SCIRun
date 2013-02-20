@@ -33,6 +33,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>  //TODO: Fwd.h for this
 
 namespace SCIRun {
 namespace Gui {
@@ -57,11 +58,15 @@ private:
 class GuiActionCommandHistoryConverter : public QObject
 {
   Q_OBJECT
+public:
+  explicit GuiActionCommandHistoryConverter(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller);
 public Q_SLOTS:
   void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
   void moduleRemoved(const std::string& name);
 Q_SIGNALS:
   void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
+private:
+  SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller_;
 };
 
 }

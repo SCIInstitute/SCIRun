@@ -39,19 +39,19 @@ namespace Engine {
   class SCISHARE HistoryItemBase : public HistoryItem
   {
   public:
-    HistoryItemBase(Core::Commands::CommandHandle command, Networks::NetworkHandle network);
-    virtual Core::Commands::CommandHandle command() const;
-    virtual Networks::NetworkXMLHandle undoMemento() const;
-    virtual Networks::NetworkXMLHandle redoMemento() const;
+    explicit HistoryItemBase(Networks::NetworkXMLHandle state);
+    //virtual Core::Commands::CommandHandle command() const;
+    virtual Networks::NetworkXMLHandle memento() const;
+    //virtual Networks::NetworkXMLHandle redoMemento() const;
   protected:
-    Core::Commands::CommandHandle command_;
-    Networks::NetworkHandle network_;
+    //Core::Commands::CommandHandle command_;
+    Networks::NetworkXMLHandle state_;
   };
 
   class SCISHARE ModuleAddHistoryItem : public HistoryItemBase
   {
   public:
-    ModuleAddHistoryItem(const std::string& moduleName, Core::Commands::CommandHandle command, Networks::NetworkHandle network);
+    ModuleAddHistoryItem(const std::string& moduleName, Networks::NetworkXMLHandle state);
     virtual std::string name() const;
   private:
     std::string moduleName_;
@@ -60,7 +60,7 @@ namespace Engine {
   class SCISHARE ModuleRemovedHistoryItem : public HistoryItemBase
   {
   public:
-    ModuleRemovedHistoryItem(const std::string& moduleName, Core::Commands::CommandHandle command, Networks::NetworkHandle network);
+    ModuleRemovedHistoryItem(const std::string& moduleName, Networks::NetworkXMLHandle state);
     virtual std::string name() const;
   private:
     std::string moduleName_;

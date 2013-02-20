@@ -160,7 +160,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->setModuleDumpAction(actionDump_positions);
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
 
@@ -321,15 +320,9 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
-  NetworkXMLHandle data = networkEditor_->saveNetwork();
+  NetworkFileHandle file = networkEditor_->saveNetwork();
 
-  ModulePositionsHandle positions = networkEditor_->dumpModulePositions();
-
-  NetworkFile file;
-  file.network = *data;
-  file.modulePositions = *positions;
-
-  XMLSerializer::save_xml(file, fileName.toStdString(), "networkFile");
+  XMLSerializer::save_xml(*file, fileName.toStdString(), "networkFile");
   setCurrentFile(fileName);
 
   statusBar()->showMessage(tr("File saved"), 2000);
@@ -352,8 +345,7 @@ public:
       if (xml)
       {
         networkEditor_->clear();
-        networkEditor_->loadNetwork(xml->network);
-        networkEditor_->moveModules(xml->modulePositions);
+        networkEditor_->loadNetwork(xml);
         GuiLogger::Instance().log("File load done.");
         return true;
       }
@@ -711,7 +703,7 @@ void SCIRunMainWindow::setupHistoryWindow()
   connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
   connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
   
-  commandConverter_.reset(new GuiActionCommandHistoryConverter);
+  commandConverter_.reset(new GuiActionCommandHistoryConverter(Core::Application::Instance().controller()));
 
   connect(commandConverter_.get(), SIGNAL(historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle)), historyWindow_, SLOT(addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle)));
 }

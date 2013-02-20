@@ -76,14 +76,12 @@ Q_SIGNALS:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
-    void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
-    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
-    void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const;
 
-    SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork();
-    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
+    SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork();
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
 
     int numModules() const;
 
@@ -112,8 +110,7 @@ Q_SIGNALS:
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
 
-    //TODO: break out, unit test
-    SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
+    
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -143,6 +140,11 @@ Q_SIGNALS:
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
+
+    //TODO: break out, unit test
+    SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
+    void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+
     
     //QToolBar* editToolBar_;
     //QAction* cutAction_;

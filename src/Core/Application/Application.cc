@@ -53,7 +53,7 @@ namespace SCIRun
       boost::filesystem::path app_filepath_;
       boost::filesystem::path app_filename_;	
       ApplicationParametersHandle parameters_;
-      boost::shared_ptr<NetworkEditorController> controller_;
+      NetworkEditorControllerHandle controller_;
     };
   }
 }
@@ -79,7 +79,7 @@ void Application::readCommandLine(int argc, const char* argv[])
   private_->parameters_ = private_->parser.parse(argc, argv);
 }
 
-boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> Application::controller()
+NetworkEditorControllerHandle Application::controller()
 {
   if (!private_->controller_)
   {

@@ -388,13 +388,6 @@ void NetworkEditor::createActions()
     this, SLOT(properties()));
 }
 
-void NetworkEditor::setModuleDumpAction(QAction* action)
-{
-  moduleDumpAction_ = action; 
-  if (moduleDumpAction_)
-    connect(moduleDumpAction_, SIGNAL(triggered()), this, SLOT(dumpModulePositions()));
-}
-
 QList<QAction*> NetworkEditor::getModuleSpecificActions() const
 {
   return QList<QAction*>() 
@@ -504,14 +497,22 @@ void NetworkEditor::moveModules(const ModulePositions& modulePositions)
   }
 }
 
-SCIRun::Dataflow::Networks::NetworkXMLHandle NetworkEditor::saveNetwork()
+SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork()
 {
-  return controller_->saveNetwork();
+  NetworkXMLHandle data = controller_->saveNetwork();
+
+  ModulePositionsHandle positions = dumpModulePositions();
+
+  NetworkFileHandle file(new NetworkFile);
+  file->network = *data;
+  file->modulePositions = *positions;
+  return file;
 }
 
-void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml)
+void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
-  controller_->loadNetwork(xml);
+  controller_->loadNetwork(xml->network);
+  moveModules(xml->modulePositions);
 }
 
 int NetworkEditor::numModules() const

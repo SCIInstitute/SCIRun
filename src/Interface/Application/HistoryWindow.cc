@@ -58,14 +58,34 @@ void HistoryWindow::showFile(const QString& path)
   networkXMLTextEdit_->setPlainText(xmlFile.readAll());
 }
 
+class HistoryWindowListItem : public QListWidgetItem
+{
+public:
+  HistoryWindowListItem(HistoryItemHandle info, QListWidget* parent = 0) : 
+    QListWidgetItem(QString::fromStdString(info->name()), parent),
+    info_(info) 
+  {}
+  QString xmlText() const 
+  {
+    //auto xml = 
+    return "here is the xml for this change";
+  }
+private:
+  HistoryItemHandle info_;
+};
+
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)
 {
-  new QListWidgetItem(QString::fromStdString(item->name()), historyListWidget_);
+  new HistoryWindowListItem(item, historyListWidget_);
 }
 
 void HistoryWindow::displayInfo(QListWidgetItem* item)
 {
-  networkXMLTextEdit_->setText("Here is some info from the item: " + item->text());
+  auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
+  if (historyItem)
+  {
+    networkXMLTextEdit_->setText(historyItem->xmlText());
+  }
 }
 
 void HistoryWindow::clear()
@@ -75,14 +95,17 @@ void HistoryWindow::clear()
 }
 
 //TODO: separate out
+
+GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller) : controller_(controller) {}
+
 void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  HistoryItemHandle item(new ModuleAddHistoryItem(name, CommandHandle(), NetworkHandle()));
+  HistoryItemHandle item(new ModuleAddHistoryItem(name, controller_->saveNetwork()));
   Q_EMIT historyItemCreated(item);
 }
 
 void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& name)
 {
-  HistoryItemHandle item(new ModuleRemovedHistoryItem(name, CommandHandle(), NetworkHandle()));
+  HistoryItemHandle item(new ModuleRemovedHistoryItem(name, controller_->saveNetwork()));
   Q_EMIT historyItemCreated(item);
 }

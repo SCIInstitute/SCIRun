@@ -29,6 +29,7 @@
 #ifndef ENGINE_NETWORK_HISTORYITEM_H
 #define ENGINE_NETWORK_HISTORYITEM_H
 
+#include <deque>
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Command/Command.h>
@@ -42,14 +43,33 @@ namespace Engine {
   {
   public:
     ~HistoryItem();
-    virtual Core::Commands::CommandHandle command() const = 0;
-    virtual Networks::NetworkXMLHandle undoMemento() const = 0;
-    virtual Networks::NetworkXMLHandle redoMemento() const = 0;
+    //virtual Core::Commands::CommandHandle command() const = 0;
+    //virtual Networks::NetworkXMLHandle undoMemento() const = 0;
+    virtual Networks::NetworkXMLHandle memento() const = 0;
     virtual std::string name() const = 0;
   };
 
   typedef boost::shared_ptr<HistoryItem> HistoryItemHandle;
 
+  class SCISHARE HistoryManager : boost::noncopyable
+  {
+  public:
+    typedef std::deque<HistoryItemHandle> List;
+    explicit HistoryManager(Networks::NetworkHandle network);
+    void addItem(HistoryItemHandle item);
+    HistoryItemHandle undo();
+    HistoryItemHandle redo();
+    List undoMultiple(size_t count);
+    List redoMultiple(size_t count);
+
+    size_t size() const;
+    HistoryItemHandle at(size_t index) const;
+    List::const_iterator begin() const;
+    List::const_iterator end() const;
+
+  private:
+    List list_;
+  };
 }
 }
 }

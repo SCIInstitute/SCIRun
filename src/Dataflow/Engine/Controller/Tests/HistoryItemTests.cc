@@ -61,9 +61,8 @@ protected:
 
 TEST_F(HistoryItemTests, CanCreateAddModule)
 {
-  CommandHandle cmd;
   const std::string name = "ComputeSVD";
-  ModuleAddHistoryItem item(name, cmd, mockNetwork_);
+  ModuleAddHistoryItem item(name, NetworkXMLHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
 
@@ -72,9 +71,8 @@ TEST_F(HistoryItemTests, CanCreateAddModule)
 
 TEST_F(HistoryItemTests, CanCreateRemoveModule)
 {
-  CommandHandle cmd;
   const std::string name = "ComputeSVD";
-  ModuleRemovedHistoryItem item(name, cmd, mockNetwork_);
+  ModuleRemovedHistoryItem item(name, NetworkXMLHandle());
 
   EXPECT_EQ("Module Removed: " + name, item.name());
 

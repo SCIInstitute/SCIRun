@@ -34,28 +34,23 @@ using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-HistoryItemBase::HistoryItemBase(CommandHandle command, NetworkHandle network) : command_(command), network_(network)
+HistoryItemBase::HistoryItemBase(NetworkXMLHandle state) : state_(state)
 {
 
 }
 
-CommandHandle HistoryItemBase::command() const
+//CommandHandle HistoryItemBase::command() const
+//{
+//  return command_;
+//}
+
+NetworkXMLHandle HistoryItemBase::memento() const
 {
-  return command_;
+  return state_;
 }
 
-NetworkXMLHandle HistoryItemBase::undoMemento() const
-{
-  throw "not implemented";
-}
-
-NetworkXMLHandle HistoryItemBase::redoMemento() const
-{
-  throw "not implemented";
-}
-
-ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, CommandHandle command, NetworkHandle network)
-  : HistoryItemBase(command, network), moduleName_(moduleName)
+ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, NetworkXMLHandle state)
+  : HistoryItemBase(state), moduleName_(moduleName)
 {
 
 }
@@ -66,8 +61,8 @@ std::string ModuleAddHistoryItem::name() const
 }
 
 
-ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, CommandHandle command, NetworkHandle network)
-  : HistoryItemBase(command, network), moduleName_(moduleName)
+ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, NetworkXMLHandle state)
+  : HistoryItemBase(state), moduleName_(moduleName)
 {
 
 }
