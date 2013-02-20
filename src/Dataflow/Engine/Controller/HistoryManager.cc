@@ -26,47 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+#include <iostream>
+
+#include <Dataflow/Engine/Controller/HistoryManager.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-HistoryItemBase::HistoryItemBase(NetworkFileHandle state) : state_(state)
-{
+HistoryManager::HistoryManager(NetworkHandle network) : network_(network) {}
 
+size_t HistoryManager::undoSize() const
+{
+  return undo_.size();
 }
 
-//CommandHandle HistoryItemBase::command() const
-//{
-//  return command_;
-//}
-
-NetworkFileHandle HistoryItemBase::memento() const
+size_t HistoryManager::redoSize() const
 {
-  return state_;
+  return redo_.size();
 }
 
-ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, NetworkFileHandle state)
-  : HistoryItemBase(state), moduleName_(moduleName)
+void HistoryManager::addItem(HistoryItemHandle item)
 {
-
+  undo_.push_back(item);
 }
 
-std::string ModuleAddHistoryItem::name() const
+void HistoryManager::clearAll()
 {
-  return "Module Added: " + moduleName_;
-}
-
-
-ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, NetworkFileHandle state)
-  : HistoryItemBase(state), moduleName_(moduleName)
-{
-
-}
-
-std::string ModuleRemovedHistoryItem::name() const
-{
-  return "Module Removed: " + moduleName_;
+  undo_.clear();
+  redo_.clear();
 }

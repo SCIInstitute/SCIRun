@@ -35,7 +35,6 @@
 #include <Dataflow/Engine/Controller/HistoryItemImpl.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;

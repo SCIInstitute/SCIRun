@@ -26,47 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <string>
-#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+#ifndef ENGINE_NETWORK_HISTORYMANAGER_H
+#define ENGINE_NETWORK_HISTORYMANAGER_H
 
-using namespace SCIRun;
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <deque>
+#include <boost/noncopyable.hpp>
+#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Command/Command.h>
+#include <Dataflow/Engine/Controller/Share.h>
 
-HistoryItemBase::HistoryItemBase(NetworkFileHandle state) : state_(state)
-{
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+  
+  class SCISHARE HistoryManager : boost::noncopyable
+  {
+  public:
+    typedef std::deque<HistoryItemHandle> List;
+    explicit HistoryManager(Networks::NetworkHandle network);
+    void addItem(HistoryItemHandle item);
+    HistoryItemHandle undo();
+    HistoryItemHandle redo();
+    List undoMultiple(size_t count);
+    List redoMultiple(size_t count);
+    void clearAll();
 
+    size_t undoSize() const;
+    size_t redoSize() const;
+
+    HistoryItemHandle at(size_t index) const;
+    List::const_iterator begin() const;
+    List::const_iterator end() const;
+
+  private:
+    Networks::NetworkHandle network_;
+    List undo_, redo_;
+  };
+}
+}
 }
 
-//CommandHandle HistoryItemBase::command() const
-//{
-//  return command_;
-//}
-
-NetworkFileHandle HistoryItemBase::memento() const
-{
-  return state_;
-}
-
-ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, NetworkFileHandle state)
-  : HistoryItemBase(state), moduleName_(moduleName)
-{
-
-}
-
-std::string ModuleAddHistoryItem::name() const
-{
-  return "Module Added: " + moduleName_;
-}
-
-
-ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, NetworkFileHandle state)
-  : HistoryItemBase(state), moduleName_(moduleName)
-{
-
-}
-
-std::string ModuleRemovedHistoryItem::name() const
-{
-  return "Module Removed: " + moduleName_;
-}
+#endif

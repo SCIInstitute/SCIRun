@@ -39,7 +39,6 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Core::Commands;
 
 HistoryWindow::HistoryWindow(QWidget* parent /* = 0 */) : QDockWidget(parent) 
 {

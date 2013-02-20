@@ -31,6 +31,7 @@ SET(Engine_Network_SRCS
   HistoryItem.cc
   HistoryItemFactory.cc
   HistoryItemImpl.cc
+  HistoryManager.cc
   NetworkCommands.cc
 )
 
@@ -39,6 +40,7 @@ SET(Engine_Network_HEADERS
   HistoryItem.h
   HistoryItemFactory.h
   HistoryItemImpl.h
+  HistoryManager.h
   NetworkCommands.h
   Share.h
 )

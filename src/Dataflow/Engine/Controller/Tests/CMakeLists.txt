@@ -30,6 +30,7 @@ SET(Engine_Network_Tests_SRCS
   NetworkEditorCommandTests.cc
   NetworkEditorControllerTests.cc
   HistoryItemTests.cc
+  HistoryManagerTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

@@ -28,12 +28,15 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Engine/Controller/NetworkCommands.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/HistoryItemFactory.h>
+#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+#include <Dataflow/Engine/Controller/HistoryManager.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
@@ -44,7 +47,7 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 
 
-class NetworkEditorCommandTests : public ::testing::Test
+class HistoryManagerTests : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -54,30 +57,42 @@ protected:
     mockNetwork_.reset(new NiceMock<MockNetwork>);
   }
   
+  HistoryItemHandle item(const std::string& name)
+  {
+    return HistoryItemHandle(new ModuleAddHistoryItem(name, NetworkFileHandle()));
+  }
+
   MockNetworkPtr mockNetwork_;
-  NetworkExecutorHandle null_;
 };
 
-//TODO: don't need these yet, i'm using a simpler serialization-based undo/redo stack.
-#if 0
-TEST_F(NetworkEditorCommandTests, ModuleAddCommandAddsAModule)
+TEST_F(HistoryManagerTests, CanAddItems)
 {
-  NetworkEditorController controller(mockNetwork_, null_);
+  HistoryManager manager(mockNetwork_);
+  
+  EXPECT_EQ(0, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
 
-  EXPECT_CALL(*mockNetwork_, add_module(_)).Times(1);
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
 
-  ModuleAddCommand add(...);
-
-  FAIL() << "not written yet";
+  EXPECT_EQ(2, manager.undoSize());
 }
 
-TEST_F(NetworkEditorCommandTests, CanUndoModuleAddCommand)
+TEST_F(HistoryManagerTests, CanClear)
 {
-  FAIL() << "not written yet";
-}
+  HistoryManager manager(mockNetwork_);
 
-TEST_F(NetworkEditorCommandTests, CanRedoModuleAddCommand)
-{
-  FAIL() << "not written yet";
+  EXPECT_EQ(0, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
+
+  EXPECT_EQ(2, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  manager.clearAll();
+
+  EXPECT_EQ(0, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
 }
-#endif
