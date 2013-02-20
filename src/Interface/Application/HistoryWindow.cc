@@ -29,6 +29,9 @@
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/HistoryWindow.h>
+#include <Interface/Application/NetworkEditor.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 //TODO: factory
 #include <Dataflow/Engine/Controller/HistoryItemImpl.h>
@@ -67,8 +70,14 @@ public:
   {}
   QString xmlText() const 
   {
-    //auto xml = 
-    return "here is the xml for this change";
+    auto xml = info_->memento();
+    if (xml)
+    {
+      std::ostringstream ostr;
+      XMLSerializer::save_xml(*xml, ostr, "networkFile");
+      return QString::fromStdString(ostr.str());
+    }
+    return "<Unknown state for this item>";
   }
 private:
   HistoryItemHandle info_;
@@ -84,7 +93,7 @@ void HistoryWindow::displayInfo(QListWidgetItem* item)
   auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
   if (historyItem)
   {
-    networkXMLTextEdit_->setText(historyItem->xmlText());
+    networkXMLTextEdit_->setPlainText(historyItem->xmlText());
   }
 }
 
@@ -96,16 +105,16 @@ void HistoryWindow::clear()
 
 //TODO: separate out
 
-GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller) : controller_(controller) {}
+GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor* editor) : editor_(editor) {}
 
 void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  HistoryItemHandle item(new ModuleAddHistoryItem(name, controller_->saveNetwork()));
+  HistoryItemHandle item(new ModuleAddHistoryItem(name, editor_->saveNetwork()));
   Q_EMIT historyItemCreated(item);
 }
 
 void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& name)
 {
-  HistoryItemHandle item(new ModuleRemovedHistoryItem(name, controller_->saveNetwork()));
+  HistoryItemHandle item(new ModuleRemovedHistoryItem(name, editor_->saveNetwork()));
   Q_EMIT historyItemCreated(item);
 }

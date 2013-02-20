@@ -39,19 +39,19 @@ namespace Engine {
   class SCISHARE HistoryItemBase : public HistoryItem
   {
   public:
-    explicit HistoryItemBase(Networks::NetworkXMLHandle state);
+    explicit HistoryItemBase(Networks::NetworkFileHandle state);
     //virtual Core::Commands::CommandHandle command() const;
-    virtual Networks::NetworkXMLHandle memento() const;
+    virtual Networks::NetworkFileHandle memento() const;
     //virtual Networks::NetworkXMLHandle redoMemento() const;
   protected:
     //Core::Commands::CommandHandle command_;
-    Networks::NetworkXMLHandle state_;
+    Networks::NetworkFileHandle state_;
   };
 
   class SCISHARE ModuleAddHistoryItem : public HistoryItemBase
   {
   public:
-    ModuleAddHistoryItem(const std::string& moduleName, Networks::NetworkXMLHandle state);
+    ModuleAddHistoryItem(const std::string& moduleName, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
     std::string moduleName_;
@@ -60,7 +60,7 @@ namespace Engine {
   class SCISHARE ModuleRemovedHistoryItem : public HistoryItemBase
   {
   public:
-    ModuleRemovedHistoryItem(const std::string& moduleName, Networks::NetworkXMLHandle state);
+    ModuleRemovedHistoryItem(const std::string& moduleName, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
     std::string moduleName_;

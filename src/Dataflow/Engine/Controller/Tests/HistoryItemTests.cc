@@ -62,7 +62,7 @@ protected:
 TEST_F(HistoryItemTests, CanCreateAddModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleAddHistoryItem item(name, NetworkXMLHandle());
+  ModuleAddHistoryItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
 
@@ -72,7 +72,7 @@ TEST_F(HistoryItemTests, CanCreateAddModule)
 TEST_F(HistoryItemTests, CanCreateRemoveModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleRemovedHistoryItem item(name, NetworkXMLHandle());
+  ModuleRemovedHistoryItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Removed: " + name, item.name());
 

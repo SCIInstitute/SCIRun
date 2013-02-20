@@ -58,6 +58,7 @@ class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
 struct ModulePositions;
+//TODO: rename this
 class NetworkFile;
 class NetworkGlobalSettings;
 

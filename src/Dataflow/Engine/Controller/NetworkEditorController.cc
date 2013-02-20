@@ -66,9 +66,11 @@ ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
 
 void NetworkEditorController::removeModule(const std::string& id)
 {
-  //before or after?
-  /*emit*/ moduleRemoved_(id);
   theNetwork_->remove_module(id);
+  //before or after?
+  // deciding on after: HistoryWindow/Manager wants the state *after* removal.
+  /*emit*/ moduleRemoved_(id);
+  
   printNetwork();
 }
 

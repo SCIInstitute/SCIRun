@@ -34,7 +34,7 @@ using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-HistoryItemBase::HistoryItemBase(NetworkXMLHandle state) : state_(state)
+HistoryItemBase::HistoryItemBase(NetworkFileHandle state) : state_(state)
 {
 
 }
@@ -44,12 +44,12 @@ HistoryItemBase::HistoryItemBase(NetworkXMLHandle state) : state_(state)
 //  return command_;
 //}
 
-NetworkXMLHandle HistoryItemBase::memento() const
+NetworkFileHandle HistoryItemBase::memento() const
 {
   return state_;
 }
 
-ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, NetworkXMLHandle state)
+ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, NetworkFileHandle state)
   : HistoryItemBase(state), moduleName_(moduleName)
 {
 
@@ -61,7 +61,7 @@ std::string ModuleAddHistoryItem::name() const
 }
 
 
-ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, NetworkXMLHandle state)
+ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, NetworkFileHandle state)
   : HistoryItemBase(state), moduleName_(moduleName)
 {
 

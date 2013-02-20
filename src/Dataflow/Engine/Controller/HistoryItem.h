@@ -45,7 +45,7 @@ namespace Engine {
     ~HistoryItem();
     //virtual Core::Commands::CommandHandle command() const = 0;
     //virtual Networks::NetworkXMLHandle undoMemento() const = 0;
-    virtual Networks::NetworkXMLHandle memento() const = 0;
+    virtual Networks::NetworkFileHandle memento() const = 0;
     virtual std::string name() const = 0;
   };
 

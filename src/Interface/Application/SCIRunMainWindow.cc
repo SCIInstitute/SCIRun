@@ -232,6 +232,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
+  actionQuit_->setShortcut(QKeySequence::Quit);
 
   connect(cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
@@ -697,13 +698,14 @@ void SCIRunMainWindow::resetBackgroundColor()
 void SCIRunMainWindow::setupHistoryWindow()
 {
   historyWindow_ = new HistoryWindow(this);
-  historyWindow_->setVisible(false);
+  //historyWindow_->setVisible(false);
+  historyWindow_->setFloating(true);
   addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
 
   connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
   connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
   
-  commandConverter_.reset(new GuiActionCommandHistoryConverter(Core::Application::Instance().controller()));
+  commandConverter_.reset(new GuiActionCommandHistoryConverter(networkEditor_));
 
   connect(commandConverter_.get(), SIGNAL(historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle)), historyWindow_, SLOT(addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle)));
 }
