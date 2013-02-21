@@ -28,21 +28,28 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
 #include <Dataflow/Engine/Controller/HistoryManager.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
+
+class MockNetworkIO : public NetworkIOInterface
+{
+public:
+  MOCK_CONST_METHOD0(saveNetwork, NetworkFileHandle());
+  MOCK_METHOD1(loadNetwork, void(const NetworkFileHandle&));
+};
+
+typedef boost::shared_ptr<MockNetworkIO> MockNetworkIOPtr;
 
 class HistoryManagerTests : public ::testing::Test
 {
@@ -51,8 +58,7 @@ protected:
   {
     DefaultValue<ModuleHandle>::Set(ModuleHandle());
     DefaultValue<ConnectionId>::Set(ConnectionId(""));
-    mockNetwork_.reset(new NiceMock<MockNetwork>);
-    controller_.reset(new NetworkEditorController(mockNetwork_, null_));
+    controller_.reset(new NiceMock<MockNetworkIO>);
   }
   
   class DummyHistoryItem : public HistoryItem
@@ -70,8 +76,7 @@ protected:
     return HistoryItemHandle(new DummyHistoryItem(name));
   }
 
-  MockNetworkPtr mockNetwork_;
-  NetworkEditorControllerHandle controller_;
+  MockNetworkIOPtr controller_;
   NetworkExecutorHandle null_;
 };
 
@@ -117,9 +122,109 @@ TEST_F(HistoryManagerTests, CanUndoItem)
   EXPECT_EQ(2, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
+  EXPECT_CALL(*controller_, loadNetwork(_)).Times(1);
   auto undone = manager.undo();
 
   EXPECT_EQ("2", undone->name());
   EXPECT_EQ(1, manager.undoSize());
   EXPECT_EQ(1, manager.redoSize());
+}
+
+TEST_F(HistoryManagerTests, CanRedoUndoneItem)
+{
+  HistoryManager manager(controller_);
+
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
+
+  {
+    EXPECT_CALL(*controller_, loadNetwork(_)).Times(1);
+    auto undone = manager.undo();
+
+    EXPECT_EQ("2", undone->name());
+    EXPECT_EQ(1, manager.undoSize());
+    EXPECT_EQ(1, manager.redoSize());
+  }
+
+  {
+    EXPECT_CALL(*controller_, loadNetwork(_)).Times(1);
+    auto redone = manager.redo();
+    EXPECT_EQ("2", redone->name());
+    EXPECT_EQ(2, manager.undoSize());
+    EXPECT_EQ(0, manager.redoSize());
+  }
+}
+
+TEST_F(HistoryManagerTests, CannotUndoWhenEmpty)
+{
+  HistoryManager manager(controller_);
+
+  EXPECT_EQ(0, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
+  auto undone = manager.undo();
+  EXPECT_FALSE(undone);
+}
+
+TEST_F(HistoryManagerTests, CannotRedoWhenEmpty)
+{
+  HistoryManager manager(controller_);
+
+  manager.addItem(item("1"));
+  EXPECT_EQ(1, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
+  auto redone = manager.redo();
+  EXPECT_FALSE(redone);
+}
+
+TEST_F(HistoryManagerTests, CanUndoAll)
+{
+  HistoryManager manager(controller_);
+
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
+  manager.addItem(item("3"));
+
+  EXPECT_EQ(3, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  EXPECT_CALL(*controller_, loadNetwork(_)).Times(3);
+  auto undone = manager.undoAll();
+  EXPECT_EQ(3, undone.size());
+
+  EXPECT_EQ(0, manager.undoSize());
+  EXPECT_EQ(3, manager.redoSize());
+}
+
+TEST_F(HistoryManagerTests, CanRedoAll)
+{
+  HistoryManager manager(controller_);
+
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
+  manager.addItem(item("3"));
+
+  EXPECT_EQ(3, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  {
+    EXPECT_CALL(*controller_, loadNetwork(_)).Times(3);
+    auto undone = manager.undoAll();
+    EXPECT_EQ(3, undone.size());
+
+    EXPECT_EQ(0, manager.undoSize());
+    EXPECT_EQ(3, manager.redoSize());
+  }
+
+  {
+    EXPECT_CALL(*controller_, loadNetwork(_)).Times(3);
+    auto redone = manager.redoAll();
+    EXPECT_EQ(3, redone.size());
+
+    EXPECT_EQ(3, manager.undoSize());
+    EXPECT_EQ(0, manager.redoSize());
+  }
 }

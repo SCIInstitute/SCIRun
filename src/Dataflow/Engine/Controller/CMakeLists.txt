@@ -36,6 +36,7 @@ SET(Engine_Network_SRCS
 )
 
 SET(Engine_Network_HEADERS
+  ControllerInterfaces.h
   NetworkEditorController.h
   HistoryItem.h
   HistoryItemFactory.h

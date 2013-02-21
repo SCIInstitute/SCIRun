@@ -168,22 +168,25 @@ NetworkFileHandle NetworkEditorController::saveNetwork() const
   return conv.to_xml_data(theNetwork_);
 }
 
-void NetworkEditorController::loadNetwork(const NetworkFile& xml)
+void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
-  NetworkXMLConverter conv(moduleFactory_, stateFactory_);
-  theNetwork_ = conv.from_xml_data(xml.network);
-  for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
+  if (xml)
   {
-    ModuleHandle module = theNetwork_->module(i);
-    moduleAdded_(module->get_module_name(), module);
+    NetworkXMLConverter conv(moduleFactory_, stateFactory_);
+    theNetwork_ = conv.from_xml_data(xml->network);
+    for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
+    {
+      ModuleHandle module = theNetwork_->module(i);
+      moduleAdded_(module->get_module_name(), module);
+    }
+    BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+    {
+      ConnectionId id = ConnectionId::create(cd);
+      connectionAdded_(cd);
+    }
+    if (modulePositionEditor_)
+      modulePositionEditor_->moveModules(xml->modulePositions);
   }
-  BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
-  {
-    ConnectionId id = ConnectionId::create(cd);
-    connectionAdded_(cd);
-  }
-  if (modulePositionEditor_)
-    modulePositionEditor_->moveModules(xml.modulePositions);
 }
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)

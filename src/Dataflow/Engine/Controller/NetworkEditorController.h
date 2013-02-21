@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
@@ -44,7 +45,7 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
 
-  class SCISHARE NetworkEditorController 
+  class SCISHARE NetworkEditorController : public NetworkIOInterface
   {
   public:
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
@@ -67,7 +68,7 @@ namespace Engine {
     void executeAll(const Networks::ExecutableLookup& lookup);
 
     Networks::NetworkFileHandle saveNetwork() const;
-    void loadNetwork(const Networks::NetworkFile& xml);
+    void loadNetwork(const Networks::NetworkFileHandle& xml);
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();

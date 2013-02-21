@@ -79,16 +79,16 @@ namespace
   DenseMatrixHandle matrix1()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
   DenseMatrixHandle matrix2()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
         (*m)(i, j) = -2.0 * i + j;
     return m;
   }
@@ -231,7 +231,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   std::cout << ostr.str() << std::endl;
 
   NetworkEditorController controller2(mf, sf, exe);
-  controller2.loadNetwork(*xml);
+  controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();
   ASSERT_TRUE(deserialized);

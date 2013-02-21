@@ -26,46 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_HISTORYMANAGER_H
-#define ENGINE_NETWORK_HISTORYMANAGER_H
+#ifndef ENGINE_NETWORK_CONTROLLERINTERFACES_H
+#define ENGINE_NETWORK_CONTROLLERINTERFACES_H
 
-#include <stack>
-#include <boost/noncopyable.hpp>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
-#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-  
-  class SCISHARE HistoryManager : boost::noncopyable
+
+  class SCISHARE NetworkIOInterface
   {
   public:
-    typedef std::stack<HistoryItemHandle> Stack;
-    typedef Stack::container_type List;
-
-    explicit HistoryManager(Engine::NetworkIOHandle networkIO);
-    void addItem(HistoryItemHandle item);
-    HistoryItemHandle undo();
-    HistoryItemHandle redo();
-    
-    List undoAll();
-    List redoAll();
-
-    void clearAll();
-
-    size_t undoSize() const;
-    size_t redoSize() const;
-
-    //HistoryItemHandle at(size_t index) const;
-    //List::const_iterator begin() const;
-    //List::const_iterator end() const;
-
-  private:
-    Engine::NetworkIOHandle networkIO_;
-    Stack undo_, redo_;
+    ~NetworkIOInterface() {}
+    virtual Networks::NetworkFileHandle saveNetwork() const = 0;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml) = 0;
   };
+
+  typedef boost::shared_ptr<NetworkIOInterface> NetworkIOHandle;
+
 }
 }
 }

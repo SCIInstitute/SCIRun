@@ -49,7 +49,7 @@ namespace Gui {
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
-    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFile& xml);
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
     size_t numModules() const;
     int errorCode() const;

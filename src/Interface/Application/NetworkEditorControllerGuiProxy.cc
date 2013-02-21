@@ -71,7 +71,7 @@ NetworkFileHandle NetworkEditorControllerGuiProxy::saveNetwork() const
   return controller_->saveNetwork();
 }
 
-void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFile& xml)
+void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
   return controller_->loadNetwork(xml);
 }

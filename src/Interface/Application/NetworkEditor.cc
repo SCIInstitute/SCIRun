@@ -499,18 +499,12 @@ void NetworkEditor::moveModules(const ModulePositions& modulePositions)
 
 SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork()
 {
-  /*ModulePositionsHandle positions = dumpModulePositions();
-
-  NetworkFileHandle file(new NetworkFile);
-  file->network = *data;
-  file->modulePositions = *positions;*/
   return controller_->saveNetwork();
 }
 
 void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
-  controller_->loadNetwork(*xml);
-  //moveModules(xml->modulePositions);
+  controller_->loadNetwork(xml);
 }
 
 size_t NetworkEditor::numModules() const

@@ -33,7 +33,7 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-HistoryManager::HistoryManager(NetworkEditorControllerHandle network) : networkController_(network) {}
+HistoryManager::HistoryManager(NetworkIOHandle networkIO) : networkIO_(networkIO) {}
 
 size_t HistoryManager::undoSize() const
 {
@@ -47,21 +47,53 @@ size_t HistoryManager::redoSize() const
 
 void HistoryManager::addItem(HistoryItemHandle item)
 {
-  undo_.push_back(item);
+  undo_.push(item);
 }
 
 void HistoryManager::clearAll()
 {
-  undo_.clear();
-  redo_.clear();
+  Stack().swap(undo_);
+  Stack().swap(redo_);
 }
 
 HistoryItemHandle HistoryManager::undo()
 {
-  auto undone = undo_.back();
-  undo_.pop_back();
-  if (undone->memento())
-    networkController_->loadNetwork(*undone->memento());
-  redo_.push_back(undone);
+  if (!undo_.empty())
+  {
+    auto undone = undo_.top();
+    undo_.pop();
+    networkIO_->loadNetwork(undone->memento());
+    redo_.push(undone);
+    return undone;
+  }
+  return HistoryItemHandle();
+}
+
+HistoryItemHandle HistoryManager::redo()
+{
+  if (!redo_.empty())
+  {
+    auto redone = redo_.top();
+    redo_.pop();
+    networkIO_->loadNetwork(redone->memento());
+    undo_.push(redone);
+    return redone;
+  }
+  return HistoryItemHandle();
+}
+
+HistoryManager::List HistoryManager::undoAll()
+{
+  List undone;
+  while (0 != undoSize())
+    undone.push_back(undo());
   return undone;
+}
+
+HistoryManager::List HistoryManager::redoAll()
+{
+  List redone;
+  while (0 != redoSize())
+    redone.push_back(redo());
+  return redone;
 }
