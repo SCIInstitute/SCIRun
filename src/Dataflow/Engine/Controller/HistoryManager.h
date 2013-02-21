@@ -32,8 +32,7 @@
 #include <deque>
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Command/Command.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
@@ -44,7 +43,7 @@ namespace Engine {
   {
   public:
     typedef std::deque<HistoryItemHandle> List;
-    explicit HistoryManager(Networks::NetworkHandle network);
+    explicit HistoryManager(Engine::NetworkEditorControllerHandle network);
     void addItem(HistoryItemHandle item);
     HistoryItemHandle undo();
     HistoryItemHandle redo();
@@ -60,7 +59,7 @@ namespace Engine {
     List::const_iterator end() const;
 
   private:
-    Networks::NetworkHandle network_;
+    Engine::NetworkEditorControllerHandle networkController_;
     List undo_, redo_;
   };
 }

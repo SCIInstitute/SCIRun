@@ -35,6 +35,7 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 
@@ -42,14 +43,18 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, NetworkExecutorHandle exe) : moduleFactory_(mf), stateFactory_(sf), executor_(exe)
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, ModulePositionEditor* mpg) : 
+  moduleFactory_(mf), 
+  stateFactory_(sf), 
+  executor_(exe),
+  modulePositionEditor_(mpg)
 {
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, NetworkExecutorHandle exe)
-  : theNetwork_(network), executor_(exe)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, NetworkExecutorHandle exe, ModulePositionEditor* mpg)
+  : theNetwork_(network), executor_(exe), modulePositionEditor_(mpg)
 {
 }
 
@@ -157,16 +162,16 @@ boost::signals2::connection NetworkEditorController::connectNetworkExecutionFini
   return executor_->connectNetworkExecutionFinished(subscriber);
 }
 
-NetworkXMLHandle NetworkEditorController::saveNetwork() const
+NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
-  NetworkToXML conv;
+  NetworkToXML conv(modulePositionEditor_);
   return conv.to_xml_data(theNetwork_);
 }
 
-void NetworkEditorController::loadNetwork(const NetworkXML& xml)
+void NetworkEditorController::loadNetwork(const NetworkFile& xml)
 {
   NetworkXMLConverter conv(moduleFactory_, stateFactory_);
-  theNetwork_ = conv.from_xml_data(xml);
+  theNetwork_ = conv.from_xml_data(xml.network);
   for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
   {
     ModuleHandle module = theNetwork_->module(i);
@@ -177,6 +182,8 @@ void NetworkEditorController::loadNetwork(const NetworkXML& xml)
     ConnectionId id = ConnectionId::create(cd);
     connectionAdded_(cd);
   }
+  if (modulePositionEditor_)
+    modulePositionEditor_->moveModules(xml.modulePositions);
 }
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)

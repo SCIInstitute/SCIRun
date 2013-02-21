@@ -26,15 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-
 #include <Dataflow/Engine/Controller/HistoryManager.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-HistoryManager::HistoryManager(NetworkHandle network) : network_(network) {}
+HistoryManager::HistoryManager(NetworkEditorControllerHandle network) : networkController_(network) {}
 
 size_t HistoryManager::undoSize() const
 {
@@ -55,4 +54,14 @@ void HistoryManager::clearAll()
 {
   undo_.clear();
   redo_.clear();
+}
+
+HistoryItemHandle HistoryManager::undo()
+{
+  auto undone = undo_.back();
+  undo_.pop_back();
+  if (undone->memento())
+    networkController_->loadNetwork(*undone->memento());
+  redo_.push_back(undone);
+  return undone;
 }

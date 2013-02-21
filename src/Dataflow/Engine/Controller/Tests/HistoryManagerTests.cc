@@ -31,12 +31,9 @@
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
-#include <Dataflow/Engine/Controller/HistoryItemFactory.h>
-#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
 #include <Dataflow/Engine/Controller/HistoryManager.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
@@ -55,19 +52,32 @@ protected:
     DefaultValue<ModuleHandle>::Set(ModuleHandle());
     DefaultValue<ConnectionId>::Set(ConnectionId(""));
     mockNetwork_.reset(new NiceMock<MockNetwork>);
+    controller_.reset(new NetworkEditorController(mockNetwork_, null_));
   }
   
+  class DummyHistoryItem : public HistoryItem
+  {
+  public:
+    explicit DummyHistoryItem(const std::string& name) : name_(name) {}
+    virtual std::string name() const { return name_; }
+    virtual NetworkFileHandle memento() const { return NetworkFileHandle(); }
+  private:
+    std::string name_;
+  };
+
   HistoryItemHandle item(const std::string& name)
   {
-    return HistoryItemHandle(new ModuleAddHistoryItem(name, NetworkFileHandle()));
+    return HistoryItemHandle(new DummyHistoryItem(name));
   }
 
   MockNetworkPtr mockNetwork_;
+  NetworkEditorControllerHandle controller_;
+  NetworkExecutorHandle null_;
 };
 
 TEST_F(HistoryManagerTests, CanAddItems)
 {
-  HistoryManager manager(mockNetwork_);
+  HistoryManager manager(controller_);
   
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -80,7 +90,7 @@ TEST_F(HistoryManagerTests, CanAddItems)
 
 TEST_F(HistoryManagerTests, CanClear)
 {
-  HistoryManager manager(mockNetwork_);
+  HistoryManager manager(controller_);
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -95,4 +105,21 @@ TEST_F(HistoryManagerTests, CanClear)
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
+}
+
+TEST_F(HistoryManagerTests, CanUndoItem)
+{
+  HistoryManager manager(controller_);
+
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
+
+  EXPECT_EQ(2, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  auto undone = manager.undo();
+
+  EXPECT_EQ("2", undone->name());
+  EXPECT_EQ(1, manager.undoSize());
+  EXPECT_EQ(1, manager.redoSize());
 }

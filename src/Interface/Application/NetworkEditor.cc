@@ -440,7 +440,7 @@ void NetworkEditor::mousePressEvent(QMouseEvent *event)
   QGraphicsView::mousePressEvent(event);
 }
 
-SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions()
+SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(new ModulePositions);
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -499,23 +499,21 @@ void NetworkEditor::moveModules(const ModulePositions& modulePositions)
 
 SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork()
 {
-  NetworkXMLHandle data = controller_->saveNetwork();
-
-  ModulePositionsHandle positions = dumpModulePositions();
+  /*ModulePositionsHandle positions = dumpModulePositions();
 
   NetworkFileHandle file(new NetworkFile);
   file->network = *data;
-  file->modulePositions = *positions;
-  return file;
+  file->modulePositions = *positions;*/
+  return controller_->saveNetwork();
 }
 
 void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
-  controller_->loadNetwork(xml->network);
-  moveModules(xml->modulePositions);
+  controller_->loadNetwork(*xml);
+  //moveModules(xml->modulePositions);
 }
 
-int NetworkEditor::numModules() const
+size_t NetworkEditor::numModules() const
 {
   return controller_->numModules();
 }

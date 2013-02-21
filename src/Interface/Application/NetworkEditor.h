@@ -34,6 +34,7 @@
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 
 class QMenu;
 class QToolBar;
@@ -68,7 +69,7 @@ Q_SIGNALS:
   class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
-  class NetworkEditor : public QGraphicsView, public SCIRun::Dataflow::Networks::ExecutableLookup
+  class NetworkEditor : public QGraphicsView, public SCIRun::Dataflow::Networks::ExecutableLookup, public SCIRun::Dataflow::Networks::ModulePositionEditor
   {
 	  Q_OBJECT
 	
@@ -83,7 +84,10 @@ Q_SIGNALS:
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork();
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
 
-    int numModules() const;
+    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const;
+    virtual void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+
+    size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
     virtual int errorCode() const;
@@ -141,11 +145,6 @@ Q_SIGNALS:
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
 
-    //TODO: break out, unit test
-    SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
-    void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
-
-    
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;

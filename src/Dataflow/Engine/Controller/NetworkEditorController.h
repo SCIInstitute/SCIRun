@@ -47,8 +47,8 @@ namespace Engine {
   class SCISHARE NetworkEditorController 
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe);
-    explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe);
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
+    explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
 
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
@@ -66,11 +66,14 @@ namespace Engine {
 
     void executeAll(const Networks::ExecutableLookup& lookup);
 
-    Networks::NetworkXMLHandle saveNetwork() const;
-    void loadNetwork(const Networks::NetworkXML& xml);
+    Networks::NetworkFileHandle saveNetwork() const;
+    void loadNetwork(const Networks::NetworkFile& xml);
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();
+
+    //TODO: eek, getting bloated here. Figure out a better way to wire this one in.
+    void setModulePositionEditor(Networks::ModulePositionEditor* editor) { modulePositionEditor_ = editor; }
 
   private:
     void printNetwork() const;
@@ -78,6 +81,8 @@ namespace Engine {
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
     NetworkExecutorHandle executor_;
+    Networks::ModulePositionEditor* modulePositionEditor_;
+
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;

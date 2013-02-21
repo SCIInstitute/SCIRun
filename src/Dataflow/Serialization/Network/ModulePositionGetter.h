@@ -27,47 +27,31 @@
 */
 
 
-#ifndef CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
-#define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
+#ifndef CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H
+#define CORE_SERIALIZATION_NETWORK_MODULE_POSITION_GETTER_H 
 
+#include <map>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <iosfwd>
-#include <boost/noncopyable.hpp>
 #include <Dataflow/Serialization/Network/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  class SCISHARE NetworkXMLConverter : boost::noncopyable
+  struct SCISHARE ModulePositions
   {
-  public:
-    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, ModulePositionEditor* mpg = 0);
-    NetworkHandle from_xml_data(const NetworkXML& data);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network);
-  private:
-    ModuleFactoryHandle moduleFactory_;
-    ModuleStateFactoryHandle stateFactory_;
-    ModulePositionEditor* mpg_;
+    typedef std::map<std::string, std::pair<double,double> > Data;
+    Data modulePositions;
   };
 
-  class SCISHARE NetworkToXML : boost::noncopyable
+  class SCISHARE ModulePositionEditor
   {
   public:
-    explicit NetworkToXML(ModulePositionEditor* mpg = 0);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network);
-  private:
-    ModulePositionEditor* mpg_;
+    virtual ~ModulePositionEditor() {}
+    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const = 0;
+    virtual void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions) = 0;
   };
 
-  class SCISHARE NetworkXMLSerializer : boost::noncopyable
-  {
-  public:
-    void save_xml(const NetworkXML& data, const std::string& filename);
-    void save_xml(const NetworkXML& data, std::ostream& ostr);
-    NetworkXMLHandle load_xml(const std::string& filename);
-    NetworkXMLHandle load_xml(std::istream& istr);
-  };
 }}}
 
 #endif

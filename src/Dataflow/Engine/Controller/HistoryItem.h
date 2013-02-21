@@ -31,7 +31,6 @@
 
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
-//#include <Core/Command/Command.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
@@ -42,8 +41,6 @@ namespace Engine {
   {
   public:
     ~HistoryItem();
-    //virtual Core::Commands::CommandHandle command() const = 0;
-    //virtual Networks::NetworkXMLHandle undoMemento() const = 0;
     virtual Networks::NetworkFileHandle memento() const = 0;
     virtual std::string name() const = 0;
   };

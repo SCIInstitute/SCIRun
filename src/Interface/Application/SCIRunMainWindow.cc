@@ -39,6 +39,7 @@
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Core/Application/Application.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -143,6 +144,8 @@ void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine:
 {
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
+  //TODO: need better way to wire this up
+  controller->setModulePositionEditor(networkEditor_);
 }
 
 

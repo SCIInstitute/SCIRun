@@ -59,8 +59,9 @@ class ExecutableObject;
 class NetworkXML;
 struct ModulePositions;
 //TODO: rename this
-class NetworkFile;
+struct NetworkFile;
 class NetworkGlobalSettings;
+class ModulePositionEditor;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

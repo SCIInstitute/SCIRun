@@ -60,26 +60,35 @@ void HistoryWindow::showFile(const QString& path)
   networkXMLTextEdit_->setPlainText(xmlFile.readAll());
 }
 
+//TODO:
+/*
+Key thing: when undoing/redoing, since we're loading from scratch, need to scoped-switch off the signals for history window.
+*/
+
 class HistoryWindowListItem : public QListWidgetItem
 {
 public:
   HistoryWindowListItem(HistoryItemHandle info, QListWidget* parent = 0) : 
     QListWidgetItem(QString::fromStdString(info->name()), parent),
     info_(info) 
-  {}
-  QString xmlText() const 
   {
     auto xml = info_->memento();
     if (xml)
     {
       std::ostringstream ostr;
       XMLSerializer::save_xml(*xml, ostr, "networkFile");
-      return QString::fromStdString(ostr.str());
+      xmlText_ = QString::fromStdString(ostr.str());
     }
-    return "<Unknown state for this item>";
+    else
+      xmlText_ = "<Unknown state for this item>";
+  }
+  QString xmlText() const 
+  {
+    return xmlText_;
   }
 private:
   HistoryItemHandle info_;
+  QString xmlText_;
 };
 
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)

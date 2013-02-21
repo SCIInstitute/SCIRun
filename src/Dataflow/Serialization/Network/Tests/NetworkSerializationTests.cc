@@ -169,11 +169,11 @@ TEST(SerializeNetworkTest, RoundTripObject)
   NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network);
-  NetworkXMLHandle xml2 = converter.to_xml_data(network);
+  auto xml2 = converter.to_xml_data(network);
   ASSERT_TRUE(xml2);
 
   std::ostringstream ostr2;
-  serializer.save_xml(*xml2, ostr2);
+  serializer.save_xml(xml2->network, ostr2);
 
   EXPECT_EQ(ostr1.str(), ostr2.str());
 }
@@ -224,7 +224,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
   add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
 
-  NetworkXMLHandle xml = controller.saveNetwork();
+  auto xml = controller.saveNetwork();
 
   std::ostringstream ostr;
   XMLSerializer::save_xml(*xml, ostr, "network");
