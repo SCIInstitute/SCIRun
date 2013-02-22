@@ -40,6 +40,7 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
+#include <Dataflow/Engine/Controller/HistoryManager.h>
 #include <Core/Application/Application.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
@@ -140,8 +141,9 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
   return instance_;
 }
 
-void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller)
+void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
 {
+  controller_ = controller;
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
   //TODO: need better way to wire this up
@@ -700,7 +702,8 @@ void SCIRunMainWindow::resetBackgroundColor()
 
 void SCIRunMainWindow::setupHistoryWindow()
 {
-  historyWindow_ = new HistoryWindow(this);
+  boost::shared_ptr<Dataflow::Engine::HistoryManager> historyManager(new Dataflow::Engine::HistoryManager(controller_));
+  historyWindow_ = new HistoryWindow(historyManager, this);
   //historyWindow_->setVisible(false);
   historyWindow_->setFloating(true);
   addDockWidget(Qt::RightDockWidgetArea, historyWindow_);

@@ -228,3 +228,25 @@ TEST_F(HistoryManagerTests, CanRedoAll)
     EXPECT_EQ(0, manager.redoSize());
   }
 }
+
+TEST_F(HistoryManagerTests, AddItemWipesOutRedoStack)
+{
+  HistoryManager manager(controller_);
+
+  manager.addItem(item("1"));
+  manager.addItem(item("2"));
+  manager.addItem(item("3"));
+
+  EXPECT_EQ(3, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+
+  manager.undo();
+
+  EXPECT_EQ(2, manager.undoSize());
+  EXPECT_EQ(1, manager.redoSize());
+
+  manager.addItem(item("4"));
+
+  EXPECT_EQ(3, manager.undoSize());
+  EXPECT_EQ(0, manager.redoSize());
+}

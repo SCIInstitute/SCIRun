@@ -48,6 +48,7 @@ size_t HistoryManager::redoSize() const
 void HistoryManager::addItem(HistoryItemHandle item)
 {
   undo_.push(item);
+  Stack().swap(redo_);
 }
 
 void HistoryManager::clearAll()

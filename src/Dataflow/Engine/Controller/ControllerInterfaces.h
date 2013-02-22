@@ -46,6 +46,8 @@ namespace Engine {
 
   typedef boost::shared_ptr<NetworkIOInterface> NetworkIOHandle;
 
+  class HistoryManager;
+  typedef boost::shared_ptr<Dataflow::Engine::HistoryManager> HistoryManagerHandle;
 }
 }
 }

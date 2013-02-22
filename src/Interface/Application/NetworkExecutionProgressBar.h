@@ -43,7 +43,7 @@ public:
   QList<class QAction*> actions() const;
 
   public Q_SLOTS:
-    void updateTotalModules(int count);
+    void updateTotalModules(size_t count);
     void incrementModulesDone();
     void resetModulesDone();
 
@@ -52,8 +52,8 @@ private:
   class QProgressBar* progressBar_;
   class QWidgetAction* counterAction_;
   class QLabel* counterLabel_;
-  int numModulesDone_;
-  int totalModules_;
+  size_t numModulesDone_;
+  size_t totalModules_;
 
   QString counterLabelString() const;
 };

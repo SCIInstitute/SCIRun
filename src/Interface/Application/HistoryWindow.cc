@@ -40,11 +40,17 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
-HistoryWindow::HistoryWindow(QWidget* parent /* = 0 */) : QDockWidget(parent) 
+HistoryWindow::HistoryWindow(HistoryManagerHandle historyManager, QWidget* parent /* = 0 */) : 
+  historyManager_(historyManager),
+  lastUndoRow_(-1),
+  QDockWidget(parent) 
 {
   setupUi(this);
   networkXMLTextEdit_->setTabStopWidth(15);
+
   connect(historyListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
+  connect(undoButton_, SIGNAL(clicked()), this, SLOT(undo()));
+  connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
 }
 
 void HistoryWindow::showFile(const QString& path)
@@ -82,6 +88,20 @@ public:
     else
       xmlText_ = "<Unknown state for this item>";
   }
+  void setAsUndo()
+  {
+    QFont f = font();
+    f.setItalic(false);
+    setFont(f);
+    setBackgroundColor(Qt::white);
+  }
+  void setAsRedo()
+  {
+    QFont f = font();
+    f.setItalic(true);
+    setFont(f);
+    setBackgroundColor(Qt::lightGray);
+  }
   QString xmlText() const 
   {
     return xmlText_;
@@ -93,7 +113,14 @@ private:
 
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)
 {
+  //std::cout << "removing from " << lastUndoRow_+1 << " to " << historyListWidget_->count() -1 << std::endl;
+  for (int i = historyListWidget_->count() - 1; i > lastUndoRow_; --i)
+    delete historyListWidget_->takeItem(i);
+
   new HistoryWindowListItem(item, historyListWidget_);
+  lastUndoRow_++;
+  //std::cout << "!! HistoryWindow::addHistoryItem, rowIndex = " << lastUndoRow_ << std::endl;
+  redoButton_->setEnabled(false);
 }
 
 void HistoryWindow::displayInfo(QListWidgetItem* item)
@@ -111,6 +138,44 @@ void HistoryWindow::clear()
   networkXMLTextEdit_->clear();
 }
 
+void HistoryWindow::undo()
+{
+  //std::cout << "!! HistoryWindow::Undo pressed, rowIndex = " << lastUndoRow_ << std::endl;
+
+  auto item = historyListWidget_->item(lastUndoRow_);
+  if (item)
+  {
+    dynamic_cast<HistoryWindowListItem*>(item)->setAsRedo();
+    lastUndoRow_--;
+    redoButton_->setEnabled(true);
+    if (lastUndoRow_ == -1)
+      undoButton_->setEnabled(false);
+  }
+  else
+    std::cout << "oops, item is null" << std::endl;
+  //std::cout << "\trowIndex now = " << lastUndoRow_ << std::endl;
+}
+
+void HistoryWindow::redo()
+{
+  //std::cout << "!! HistoryWindow::Redo pressed, rowIndex = " << lastUndoRow_  << std::endl;
+
+  auto item = historyListWidget_->item(lastUndoRow_ + 1);
+  if (item)
+  {
+    dynamic_cast<HistoryWindowListItem*>(item)->setAsUndo();
+    lastUndoRow_++;
+    undoButton_->setEnabled(true);
+    if (lastUndoRow_ == historyListWidget_->count() - 1)
+      redoButton_->setEnabled(false);
+  }
+  else
+    std::cout << "oops, item is null" << std::endl;
+  //std::cout << "\trowIndex now = " << lastUndoRow_ << std::endl;
+}
+
+
+//----------------------------------------------------------
 //TODO: separate out
 
 GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor* editor) : editor_(editor) {}

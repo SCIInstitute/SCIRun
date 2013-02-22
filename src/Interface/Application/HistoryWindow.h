@@ -32,6 +32,7 @@
 #include "ui_HistoryWindow.h"
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
 
 namespace SCIRun {
@@ -44,15 +45,20 @@ class HistoryWindow : public QDockWidget, public Ui::HistoryWindow
 	Q_OBJECT
 	
 public:
-  explicit HistoryWindow(QWidget* parent = 0);
+  explicit HistoryWindow(SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager, QWidget* parent = 0);
 public Q_SLOTS:
   void showFile(const QString& path);
   void clear();
   void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 private Q_SLOTS:
   void displayInfo(QListWidgetItem* item);
+  void undo();
+  void redo();
 Q_SIGNALS:
+
 private:
+  SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager_;
+  int lastUndoRow_;
 };
 
 //TODO: will become several classes
