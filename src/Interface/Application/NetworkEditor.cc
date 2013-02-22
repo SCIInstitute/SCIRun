@@ -497,7 +497,7 @@ void NetworkEditor::moveModules(const ModulePositions& modulePositions)
   }
 }
 
-SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork()
+SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
 {
   return controller_->saveNetwork();
 }

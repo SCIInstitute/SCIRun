@@ -172,6 +172,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
   {
+    //theNetwork_->
     NetworkXMLConverter conv(moduleFactory_, stateFactory_);
     theNetwork_ = conv.from_xml_data(xml->network);
     for (size_t i = 0; i < theNetwork_->nmodules(); ++i)

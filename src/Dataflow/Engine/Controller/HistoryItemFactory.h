@@ -36,12 +36,12 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
   
-  class SCISHARE HistoryItemFactory : boost::noncopyable
-  {
-  public:
-    HistoryItemHandle make(...);
-  };
-  
+  //class SCISHARE HistoryItemFactory : boost::noncopyable
+  //{
+  //public:
+  //  HistoryItemHandle make(...);
+  //};
+  //
 
 }
 }

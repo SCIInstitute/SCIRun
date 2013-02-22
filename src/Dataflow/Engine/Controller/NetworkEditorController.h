@@ -45,7 +45,7 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
 
-  class SCISHARE NetworkEditorController : public NetworkIOInterface
+  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
   {
   public:
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
@@ -67,8 +67,9 @@ namespace Engine {
 
     void executeAll(const Networks::ExecutableLookup& lookup);
 
-    Networks::NetworkFileHandle saveNetwork() const;
-    void loadNetwork(const Networks::NetworkFileHandle& xml);
+    virtual Networks::NetworkFileHandle saveNetwork() const;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+    virtual void clear() { /*TODO*/ }
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();

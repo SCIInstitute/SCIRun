@@ -26,14 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-
 #include <Dataflow/Engine/Controller/HistoryItem.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
-
-HistoryItem::~HistoryItem()
-{
-}
+//using namespace SCIRun;
+//using namespace SCIRun::Dataflow::Engine;
+//using namespace SCIRun::Dataflow::Networks;

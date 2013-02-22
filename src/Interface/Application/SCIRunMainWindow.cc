@@ -143,7 +143,7 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
 {
-  controller_ = controller;
+  //controller_ = controller;
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
   //TODO: need better way to wire this up
@@ -702,7 +702,9 @@ void SCIRunMainWindow::resetBackgroundColor()
 
 void SCIRunMainWindow::setupHistoryWindow()
 {
-  boost::shared_ptr<Dataflow::Engine::HistoryManager> historyManager(new Dataflow::Engine::HistoryManager(controller_));
+  if (!networkEditor_)
+    throw "BAD";
+  HistoryManagerHandle historyManager(new Dataflow::Engine::HistoryManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
   historyWindow_ = new HistoryWindow(historyManager, this);
   //historyWindow_->setVisible(false);
   historyWindow_->setFloating(true);

@@ -28,6 +28,7 @@
 
 #include <QtGui>
 #include <iostream>
+#include <Dataflow/Engine/Controller/HistoryManager.h>
 #include <Interface/Application/HistoryWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -43,6 +44,7 @@ using namespace SCIRun::Dataflow::Engine;
 HistoryWindow::HistoryWindow(HistoryManagerHandle historyManager, QWidget* parent /* = 0 */) : 
   historyManager_(historyManager),
   lastUndoRow_(-1),
+  modifyingNetwork_(false),
   QDockWidget(parent) 
 {
   setupUi(this);
@@ -106,6 +108,10 @@ public:
   {
     return xmlText_;
   }
+  std::string name() const
+  {
+    return info_->name();
+  }
 private:
   HistoryItemHandle info_;
   QString xmlText_;
@@ -113,14 +119,19 @@ private:
 
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)
 {
-  //std::cout << "removing from " << lastUndoRow_+1 << " to " << historyListWidget_->count() -1 << std::endl;
-  for (int i = historyListWidget_->count() - 1; i > lastUndoRow_; --i)
-    delete historyListWidget_->takeItem(i);
+  if (!modifyingNetwork_)
+  {
+    //std::cout << "removing from " << lastUndoRow_+1 << " to " << historyListWidget_->count() -1 << std::endl;
+    for (int i = historyListWidget_->count() - 1; i > lastUndoRow_; --i)
+      delete historyListWidget_->takeItem(i);
 
-  new HistoryWindowListItem(item, historyListWidget_);
-  lastUndoRow_++;
-  //std::cout << "!! HistoryWindow::addHistoryItem, rowIndex = " << lastUndoRow_ << std::endl;
-  redoButton_->setEnabled(false);
+    new HistoryWindowListItem(item, historyListWidget_);
+    lastUndoRow_++;
+    //std::cout << "!! HistoryWindow::addHistoryItem, rowIndex = " << lastUndoRow_ << std::endl;
+    redoButton_->setEnabled(false);
+
+    historyManager_->addItem(item);
+  }
 }
 
 void HistoryWindow::displayInfo(QListWidgetItem* item)
@@ -145,7 +156,18 @@ void HistoryWindow::undo()
   auto item = historyListWidget_->item(lastUndoRow_);
   if (item)
   {
-    dynamic_cast<HistoryWindowListItem*>(item)->setAsRedo();
+    auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
+    historyItem->setAsRedo();
+    
+    {
+      modifyingNetwork_ = true;
+      auto undone = historyManager_->undo();
+      modifyingNetwork_ = false;
+      std::cout << "undoing " << undone->name() << std::endl;
+      if (undone->name() != historyItem->name())
+        std::cout << "!!!!!!!!!!!!!DOH!!!!!!!!!!!!! INCONSISTENCY" << std::endl;
+    }
+
     lastUndoRow_--;
     redoButton_->setEnabled(true);
     if (lastUndoRow_ == -1)
@@ -163,7 +185,19 @@ void HistoryWindow::redo()
   auto item = historyListWidget_->item(lastUndoRow_ + 1);
   if (item)
   {
-    dynamic_cast<HistoryWindowListItem*>(item)->setAsUndo();
+    auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
+    historyItem->setAsUndo();
+
+    {
+      modifyingNetwork_ = true;
+      auto redone = historyManager_->redo();
+      modifyingNetwork_ = false;
+      std::cout << "redoing " << redone->name() << std::endl;
+      if (redone->name() != historyItem->name())
+        std::cout << "!!!!!!!!!!!!!DOH!!!!!!!!!!!!! INCONSISTENCY" << std::endl;
+    }
+
+
     lastUndoRow_++;
     undoButton_->setEnabled(true);
     if (lastUndoRow_ == historyListWidget_->count() - 1)

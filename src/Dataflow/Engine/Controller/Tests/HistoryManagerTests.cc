@@ -28,7 +28,6 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
 #include <Dataflow/Engine/Controller/HistoryManager.h>
 
@@ -42,11 +41,12 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 
 
-class MockNetworkIO : public NetworkIOInterface
+class MockNetworkIO : public NetworkIOInterface<std::string>
 {
 public:
-  MOCK_CONST_METHOD0(saveNetwork, NetworkFileHandle());
-  MOCK_METHOD1(loadNetwork, void(const NetworkFileHandle&));
+  MOCK_CONST_METHOD0(saveNetwork, std::string());
+  MOCK_METHOD1(loadNetwork, void(const std::string&));
+  MOCK_METHOD0(clear, void());
 };
 
 typedef boost::shared_ptr<MockNetworkIO> MockNetworkIOPtr;
@@ -56,24 +56,24 @@ class HistoryManagerTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    DefaultValue<ModuleHandle>::Set(ModuleHandle());
-    DefaultValue<ConnectionId>::Set(ConnectionId(""));
+    //DefaultValue<ModuleHandle>::Set(ModuleHandle());
+//    DefaultValue<ConnectionId>::Set(ConnectionId(""));
     controller_.reset(new NiceMock<MockNetworkIO>);
   }
   
-  class DummyHistoryItem : public HistoryItem
+  class DummyHistoryItem : public HistoryItem<std::string>
   {
   public:
     explicit DummyHistoryItem(const std::string& name) : name_(name) {}
     virtual std::string name() const { return name_; }
-    virtual NetworkFileHandle memento() const { return NetworkFileHandle(); }
+    virtual std::string memento() const { return name_; }
   private:
     std::string name_;
   };
 
-  HistoryItemHandle item(const std::string& name)
+  HistoryItem<std::string>::Handle item(const std::string& name)
   {
-    return HistoryItemHandle(new DummyHistoryItem(name));
+    return HistoryItem<std::string>::Handle(new DummyHistoryItem(name));
   }
 
   MockNetworkIOPtr controller_;
@@ -82,7 +82,7 @@ protected:
 
 TEST_F(HistoryManagerTests, CanAddItems)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
   
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -95,7 +95,7 @@ TEST_F(HistoryManagerTests, CanAddItems)
 
 TEST_F(HistoryManagerTests, CanClear)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -114,7 +114,7 @@ TEST_F(HistoryManagerTests, CanClear)
 
 TEST_F(HistoryManagerTests, CanUndoItem)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -122,7 +122,8 @@ TEST_F(HistoryManagerTests, CanUndoItem)
   EXPECT_EQ(2, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
-  EXPECT_CALL(*controller_, loadNetwork(_)).Times(1);
+  EXPECT_CALL(*controller_, clear()).Times(1);
+  EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
   auto undone = manager.undo();
 
   EXPECT_EQ("2", undone->name());
@@ -132,13 +133,14 @@ TEST_F(HistoryManagerTests, CanUndoItem)
 
 TEST_F(HistoryManagerTests, CanRedoUndoneItem)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
 
   {
-    EXPECT_CALL(*controller_, loadNetwork(_)).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(1);
+    EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
     auto undone = manager.undo();
 
     EXPECT_EQ("2", undone->name());
@@ -147,7 +149,8 @@ TEST_F(HistoryManagerTests, CanRedoUndoneItem)
   }
 
   {
-    EXPECT_CALL(*controller_, loadNetwork(_)).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(1);
+    EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
     auto redone = manager.redo();
     EXPECT_EQ("2", redone->name());
     EXPECT_EQ(2, manager.undoSize());
@@ -157,11 +160,12 @@ TEST_F(HistoryManagerTests, CanRedoUndoneItem)
 
 TEST_F(HistoryManagerTests, CannotUndoWhenEmpty)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
+  EXPECT_CALL(*controller_, clear()).Times(0);
   EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
   auto undone = manager.undo();
   EXPECT_FALSE(undone);
@@ -169,7 +173,7 @@ TEST_F(HistoryManagerTests, CannotUndoWhenEmpty)
 
 TEST_F(HistoryManagerTests, CannotRedoWhenEmpty)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   EXPECT_EQ(1, manager.undoSize());
@@ -182,7 +186,7 @@ TEST_F(HistoryManagerTests, CannotRedoWhenEmpty)
 
 TEST_F(HistoryManagerTests, CanUndoAll)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -191,7 +195,9 @@ TEST_F(HistoryManagerTests, CanUndoAll)
   EXPECT_EQ(3, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
-  EXPECT_CALL(*controller_, loadNetwork(_)).Times(3);
+  EXPECT_CALL(*controller_, clear()).Times(3);
+  EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
+  EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
   auto undone = manager.undoAll();
   EXPECT_EQ(3, undone.size());
 
@@ -201,7 +207,7 @@ TEST_F(HistoryManagerTests, CanUndoAll)
 
 TEST_F(HistoryManagerTests, CanRedoAll)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -211,7 +217,9 @@ TEST_F(HistoryManagerTests, CanRedoAll)
   EXPECT_EQ(0, manager.redoSize());
 
   {
-    EXPECT_CALL(*controller_, loadNetwork(_)).Times(3);
+    EXPECT_CALL(*controller_, clear()).Times(3);
+    EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
+    EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
     auto undone = manager.undoAll();
     EXPECT_EQ(3, undone.size());
 
@@ -220,7 +228,10 @@ TEST_F(HistoryManagerTests, CanRedoAll)
   }
 
   {
-    EXPECT_CALL(*controller_, loadNetwork(_)).Times(3);
+    EXPECT_CALL(*controller_, clear()).Times(3);
+    EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
+    EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
+    EXPECT_CALL(*controller_, loadNetwork("3")).Times(1);
     auto redone = manager.redoAll();
     EXPECT_EQ(3, redone.size());
 
@@ -231,7 +242,7 @@ TEST_F(HistoryManagerTests, CanRedoAll)
 
 TEST_F(HistoryManagerTests, AddItemWipesOutRedoStack)
 {
-  HistoryManager manager(controller_);
+  HistoryManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));

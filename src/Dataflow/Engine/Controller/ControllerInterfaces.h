@@ -36,18 +36,27 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
+  template <class Memento>
   class SCISHARE NetworkIOInterface
   {
   public:
     ~NetworkIOInterface() {}
-    virtual Networks::NetworkFileHandle saveNetwork() const = 0;
-    virtual void loadNetwork(const Networks::NetworkFileHandle& xml) = 0;
+    virtual Memento saveNetwork() const = 0;
+    virtual void loadNetwork(const Memento& xml) = 0;
+    virtual void clear() = 0;
   };
 
-  typedef boost::shared_ptr<NetworkIOInterface> NetworkIOHandle;
+  typedef boost::shared_ptr<NetworkIOInterface<Networks::NetworkFileHandle>> NetworkIOHandle;
 
+  template <class Memento>
+  class HistoryItem;
+
+  typedef boost::shared_ptr<Dataflow::Engine::HistoryItem<Networks::NetworkFileHandle> > HistoryItemHandle;
+
+  template <class Memento>
   class HistoryManager;
-  typedef boost::shared_ptr<Dataflow::Engine::HistoryManager> HistoryManagerHandle;
+
+  typedef boost::shared_ptr<Dataflow::Engine::HistoryManager<Networks::NetworkFileHandle> > HistoryManagerHandle;
 }
 }
 }

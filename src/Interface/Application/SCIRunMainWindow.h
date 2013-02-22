@@ -84,7 +84,7 @@ private:
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
-  boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
+  //boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   bool regressionMode_;
   QString regressionTestDataDir_;
 private Q_SLOTS:

@@ -36,15 +36,12 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
   
-  class SCISHARE HistoryItemBase : public HistoryItem
+  class SCISHARE HistoryItemBase : public HistoryItem<Networks::NetworkFileHandle>
   {
   public:
     explicit HistoryItemBase(Networks::NetworkFileHandle state);
-    //virtual Core::Commands::CommandHandle command() const;
     virtual Networks::NetworkFileHandle memento() const;
-    //virtual Networks::NetworkXMLHandle redoMemento() const;
   protected:
-    //Core::Commands::CommandHandle command_;
     Networks::NetworkFileHandle state_;
   };
 

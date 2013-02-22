@@ -37,15 +37,16 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
   
+  template <class Memento>
   class SCISHARE HistoryItem : boost::noncopyable
   {
   public:
-    ~HistoryItem();
-    virtual Networks::NetworkFileHandle memento() const = 0;
+    typedef boost::shared_ptr<HistoryItem<Memento>> Handle;
+    ~HistoryItem() {}
+    virtual Memento memento() const = 0;
     virtual std::string name() const = 0;
   };
 
-  typedef boost::shared_ptr<HistoryItem> HistoryItemHandle;
 }
 }
 }

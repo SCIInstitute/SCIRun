@@ -39,16 +39,19 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
   
-  class SCISHARE HistoryManager : boost::noncopyable
+  template <class Memento>
+  class HistoryManager : boost::noncopyable
   {
   public:
-    typedef std::stack<HistoryItemHandle> Stack;
-    typedef Stack::container_type List;
+    typedef HistoryItem<Memento> Item;
+    typedef typename Item::Handle ItemHandle;
+    typedef std::stack<ItemHandle> Stack;
+    typedef typename Stack::container_type List;
 
-    explicit HistoryManager(Engine::NetworkIOHandle networkIO);
-    void addItem(HistoryItemHandle item);
-    HistoryItemHandle undo();
-    HistoryItemHandle redo();
+    explicit HistoryManager(Engine::NetworkIOInterface<Memento>* networkIO);
+    void addItem(ItemHandle item);
+    ItemHandle undo();
+    ItemHandle redo();
     
     List undoAll();
     List redoAll();
@@ -58,14 +61,101 @@ namespace Engine {
     size_t undoSize() const;
     size_t redoSize() const;
 
-    //HistoryItemHandle at(size_t index) const;
-    //List::const_iterator begin() const;
-    //List::const_iterator end() const;
-
   private:
-    Engine::NetworkIOHandle networkIO_;
+    Engine::NetworkIOInterface<Memento>* networkIO_;
     Stack undo_, redo_;
   };
+
+
+
+  template <class Memento>
+  HistoryManager<Memento>::HistoryManager(NetworkIOInterface<Memento>* networkIO) : networkIO_(networkIO) {}
+
+  template <class Memento>
+  size_t HistoryManager<Memento>::undoSize() const
+  {
+    return undo_.size();
+  }
+
+  template <class Memento>
+  size_t HistoryManager<Memento>::redoSize() const
+  {
+    return redo_.size();
+  }
+
+  template <class Memento>
+  void HistoryManager<Memento>::addItem(typename HistoryManager<Memento>::ItemHandle item)
+  {
+    undo_.push(item);
+    Stack().swap(redo_);
+  }
+
+  template <class Memento>
+  void HistoryManager<Memento>::clearAll()
+  {
+    Stack().swap(undo_);
+    Stack().swap(redo_);
+  }
+
+  template <class Memento>
+  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::undo()
+  {
+    if (!undo_.empty())
+    {
+      auto undone = undo_.top();
+      undo_.pop();
+      redo_.push(undone);
+
+      //clear and load previous memento
+      networkIO_->clear();
+      if (!undo_.empty())
+        networkIO_->loadNetwork(undo_.top()->memento());
+      
+      return undone;
+    }
+    return ItemHandle();
+  }
+
+  template <class Memento>
+  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::redo()
+  {
+    if (!redo_.empty())
+    {
+      auto redone = redo_.top();
+      redo_.pop();
+      undo_.push(redone);
+
+      //clear and load redone memento
+      networkIO_->clear();
+      networkIO_->loadNetwork(redone->memento());
+      
+      return redone;
+    }
+    return ItemHandle();
+  }
+
+  template <class Memento>
+  typename HistoryManager<Memento>::List HistoryManager<Memento>::undoAll()
+  {
+    List undone;
+    while (0 != undoSize())
+      undone.push_back(undo());
+    return undone;
+  }
+
+  template <class Memento>
+  typename HistoryManager<Memento>::List HistoryManager<Memento>::redoAll()
+  {
+    List redone;
+    while (0 != redoSize())
+      redone.push_back(redo());
+    return redone;
+  }
+
+
+
+
+
 }
 }
 }

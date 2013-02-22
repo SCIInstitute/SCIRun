@@ -59,6 +59,7 @@ Q_SIGNALS:
 private:
   SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager_;
   int lastUndoRow_;
+  bool modifyingNetwork_;
 };
 
 //TODO: will become several classes
