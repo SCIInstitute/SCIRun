@@ -171,7 +171,7 @@ ENDIF()
 ########################################################################
 # Configure documentation
 
-OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate doxygen-based documentation." ON)
+OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate doxygen-based documentation." OFF)
 MARK_AS_ADVANCED(BUILD_DOXYGEN_DOCUMENTATION)
 
 IF(BUILD_DOXYGEN_DOCUMENTATION)
