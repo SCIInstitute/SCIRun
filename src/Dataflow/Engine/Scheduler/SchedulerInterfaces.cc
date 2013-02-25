@@ -31,10 +31,6 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-Scheduler::~Scheduler()
-{
-}
-
 NetworkExecutor::~NetworkExecutor() 
 {
 }
@@ -65,4 +61,14 @@ ModuleExecutionOrder::const_iterator ModuleExecutionOrder::begin() const
 ModuleExecutionOrder::const_iterator ModuleExecutionOrder::end() const
 {
   return list_.end();
+}
+
+bool SCIRun::Dataflow::Engine::operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs)
+{
+  return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+bool SCIRun::Dataflow::Engine::operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs)
+{
+  return !(lhs == rhs);
 }

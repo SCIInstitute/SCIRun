@@ -46,6 +46,7 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
+#include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
 
 #include <iostream>
@@ -79,6 +80,7 @@ using ::testing::Return;
 
 using namespace std;
 using namespace boost;
+using namespace boost::assign;
 
 namespace
 {
@@ -202,8 +204,6 @@ protected:
 
 TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
 {
-  DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
-
   setupBasicNetwork();
 
   BoostGraphSerialScheduler scheduler;
@@ -280,4 +280,46 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   EXPECT_EQ(9, reportOutput.get<3>());
   EXPECT_EQ(22, reportOutput.get<4>());
   EXPECT_EQ(186, reportOutput.get<5>());
+}
+
+TEST_F(SchedulingWithBoostGraph, SerialNetworkOrder)
+{
+  setupBasicNetwork();
+
+  BoostGraphSerialScheduler scheduler;
+  ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
+
+  std::list<std::string> expected = list_of
+    ("SendTestMatrix1")
+    ("EvaluateLinearAlgebraUnary4")
+    ("SendTestMatrix0")
+    ("EvaluateLinearAlgebraUnary3")
+    ("EvaluateLinearAlgebraBinary5")
+    ("EvaluateLinearAlgebraUnary2")
+    ("EvaluateLinearAlgebraBinary6")
+    ("ReportMatrixInfo7")
+    ("ReceiveTestMatrix8");
+  EXPECT_EQ(ModuleExecutionOrder(expected), order);
+}
+
+TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
+{
+  setupBasicNetwork();
+
+  //BoostGraphMultiScheduler scheduler;
+  //auto order = scheduler.schedule(matrixMathNetwork);
+
+
+/*
+  std::list<std::string> expected = list_of
+    ("SendTestMatrix1")
+    ("EvaluateLinearAlgebraUnary4")
+    ("SendTestMatrix0")
+    ("EvaluateLinearAlgebraUnary3")
+    ("EvaluateLinearAlgebraBinary5")
+    ("EvaluateLinearAlgebraUnary2")
+    ("EvaluateLinearAlgebraBinary6")
+    ("ReportMatrixInfo7")
+    ("ReceiveTestMatrix8");
+  EXPECT_EQ(ModuleExecutionOrder(expected), order);*/
 }

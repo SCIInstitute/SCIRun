@@ -55,14 +55,18 @@ namespace Engine {
     ModuleIdList list_;
   };
 
+  SCISHARE bool operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
+  SCISHARE bool operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
+
   struct NetworkHasCyclesException : virtual Core::InvalidArgumentException {};
 
   //Serial
+  template <class OrderType>
   class SCISHARE Scheduler
   {
   public:
-    virtual ~Scheduler();
-    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network) = 0;
+    virtual ~Scheduler() {}
+    virtual OrderType schedule(const Networks::NetworkInterface& network) = 0;
   };
 
   //TODO: types for ParallelScheduler, etc
