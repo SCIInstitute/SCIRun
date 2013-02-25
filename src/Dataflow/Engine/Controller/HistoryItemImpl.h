@@ -30,6 +30,7 @@
 #define ENGINE_NETWORK_HISTORYITEMIMPL_H
 
 #include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
@@ -45,10 +46,10 @@ namespace Engine {
     Networks::NetworkFileHandle state_;
   };
 
-  class SCISHARE ModuleAddHistoryItem : public HistoryItemBase
+  class SCISHARE ModuleAddedHistoryItem : public HistoryItemBase
   {
   public:
-    ModuleAddHistoryItem(const std::string& moduleName, Networks::NetworkFileHandle state);
+    ModuleAddedHistoryItem(const std::string& moduleName, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
     std::string moduleName_;
@@ -57,10 +58,28 @@ namespace Engine {
   class SCISHARE ModuleRemovedHistoryItem : public HistoryItemBase
   {
   public:
-    ModuleRemovedHistoryItem(const std::string& moduleName, Networks::NetworkFileHandle state);
+    ModuleRemovedHistoryItem(const std::string& moduleId, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
-    std::string moduleName_;
+    std::string moduleId_;
+  };
+
+  class SCISHARE ConnectionAddedHistoryItem : public HistoryItemBase
+  {
+  public:
+    ConnectionAddedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, Networks::NetworkFileHandle state);
+    virtual std::string name() const;
+  private:
+    SCIRun::Dataflow::Networks::ConnectionDescription desc_;
+  };
+
+  class SCISHARE ConnectionRemovedHistoryItem : public HistoryItemBase
+  {
+  public:
+    ConnectionRemovedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionId& id, Networks::NetworkFileHandle state);
+    virtual std::string name() const;
+  private:
+    SCIRun::Dataflow::Networks::ConnectionId id_;
   };
 }
 }

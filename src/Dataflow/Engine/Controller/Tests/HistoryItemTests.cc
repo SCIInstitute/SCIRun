@@ -61,7 +61,7 @@ protected:
 TEST_F(HistoryItemTests, CanCreateAddModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleAddHistoryItem item(name, NetworkFileHandle());
+  ModuleAddedHistoryItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
 

@@ -163,7 +163,7 @@ void HistoryWindow::undo()
       modifyingNetwork_ = true;
       auto undone = historyManager_->undo();
       modifyingNetwork_ = false;
-      std::cout << "undoing " << undone->name() << std::endl;
+      //std::cout << "undoing " << undone->name() << std::endl;
       if (undone->name() != historyItem->name())
         std::cout << "!!!!!!!!!!!!!DOH!!!!!!!!!!!!! INCONSISTENCY" << std::endl;
     }
@@ -192,7 +192,7 @@ void HistoryWindow::redo()
       modifyingNetwork_ = true;
       auto redone = historyManager_->redo();
       modifyingNetwork_ = false;
-      std::cout << "redoing " << redone->name() << std::endl;
+      //std::cout << "redoing " << redone->name() << std::endl;
       if (redone->name() != historyItem->name())
         std::cout << "!!!!!!!!!!!!!DOH!!!!!!!!!!!!! INCONSISTENCY" << std::endl;
     }
@@ -216,12 +216,29 @@ GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor
 
 void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  HistoryItemHandle item(new ModuleAddHistoryItem(name, editor_->saveNetwork()));
+  HistoryItemHandle item(new ModuleAddedHistoryItem(name, editor_->saveNetwork()));
   Q_EMIT historyItemCreated(item);
 }
 
-void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& name)
+void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& id)
 {
-  HistoryItemHandle item(new ModuleRemovedHistoryItem(name, editor_->saveNetwork()));
+  HistoryItemHandle item(new ModuleRemovedHistoryItem(id, editor_->saveNetwork()));
   Q_EMIT historyItemCreated(item);
+}
+
+void GuiActionCommandHistoryConverter::connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+{
+  HistoryItemHandle item(new ConnectionAddedHistoryItem(cd, editor_->saveNetwork()));
+  Q_EMIT historyItemCreated(item);
+}
+
+void GuiActionCommandHistoryConverter::connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id)
+{
+  HistoryItemHandle item(new ConnectionRemovedHistoryItem(id, editor_->saveNetwork()));
+  Q_EMIT historyItemCreated(item);
+}
+
+void GuiActionCommandHistoryConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModulePositions::Data::value_type& moveData)
+{
+  std::cout << "GuiActionCHC::moduleMoved" << std::endl;
 }

@@ -117,7 +117,6 @@ Q_SIGNALS:
     virtual void clear();
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
-
     
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -126,6 +125,7 @@ Q_SIGNALS:
     void networkExecuted();
     void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
+    void moduleMoved(const SCIRun::Dataflow::Networks::ModulePositions::Data::value_type& moveData);
   private Q_SLOTS:
     void del();
     void cut();

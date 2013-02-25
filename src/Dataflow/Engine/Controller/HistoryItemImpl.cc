@@ -38,35 +38,51 @@ HistoryItemBase::HistoryItemBase(NetworkFileHandle state) : state_(state)
 
 }
 
-//CommandHandle HistoryItemBase::command() const
-//{
-//  return command_;
-//}
-
 NetworkFileHandle HistoryItemBase::memento() const
 {
   return state_;
 }
 
-ModuleAddHistoryItem::ModuleAddHistoryItem(const std::string& moduleName, NetworkFileHandle state)
+ModuleAddedHistoryItem::ModuleAddedHistoryItem(const std::string& moduleName, NetworkFileHandle state)
   : HistoryItemBase(state), moduleName_(moduleName)
 {
 
 }
 
-std::string ModuleAddHistoryItem::name() const
+std::string ModuleAddedHistoryItem::name() const
 {
   return "Module Added: " + moduleName_;
 }
 
-
-ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleName, NetworkFileHandle state)
-  : HistoryItemBase(state), moduleName_(moduleName)
+ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleId, NetworkFileHandle state)
+  : HistoryItemBase(state), moduleId_(moduleId)
 {
 
 }
 
 std::string ModuleRemovedHistoryItem::name() const
 {
-  return "Module Removed: " + moduleName_;
+  return "Module Removed: " + moduleId_;
+}
+
+ConnectionAddedHistoryItem::ConnectionAddedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state)
+  : HistoryItemBase(state), desc_(cd)
+{
+
+}
+
+std::string ConnectionAddedHistoryItem::name() const
+{
+  return "Connection added: " + ConnectionId::create(desc_).id_;
+}
+
+ConnectionRemovedHistoryItem::ConnectionRemovedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state)
+  : HistoryItemBase(state), id_(id)
+{
+
+}
+
+std::string ConnectionRemovedHistoryItem::name() const
+{
+  return "Connection Removed: " + id_.id_;
 }

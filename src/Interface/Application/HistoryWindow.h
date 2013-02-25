@@ -33,6 +33,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
+#include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <Dataflow/Engine/Controller/HistoryItem.h>
 
 namespace SCIRun {
@@ -71,6 +72,9 @@ public:
 public Q_SLOTS:
   void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
   void moduleRemoved(const std::string& name);
+  void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
+  void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
+  void moduleMoved(const SCIRun::Dataflow::Networks::ModulePositions::Data::value_type& moveData);
 Q_SIGNALS:
   void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 private:
