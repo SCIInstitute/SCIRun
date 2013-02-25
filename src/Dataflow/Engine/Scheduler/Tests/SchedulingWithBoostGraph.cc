@@ -103,6 +103,7 @@ protected:
   ModuleStateFactoryHandle sf;
   Network matrixMathNetwork;
   ModuleHandle receive, report;
+  DenseMatrix expected;
 
   virtual void SetUp()
   {
@@ -147,6 +148,8 @@ protected:
           |      |
           report receive
     */
+
+    expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
   
     ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
     ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
@@ -248,3 +251,33 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_THROW(scheduler.schedule(matrixMathNetwork), NetworkHasCyclesException);
 }
 
+TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
+{
+  setupBasicNetwork();
+
+  //TODO: classes below.
+#if 0
+  {
+    BoostGraphMultiScheduler scheduler;
+    ModuleParallelExecutionOrder order = scheduler.schedule(matrixMathNetwork);
+    MultiThreadedNetworkExecutor executor;
+    executor.executeAll(matrixMathNetwork, order);
+  }
+#endif
+
+  //TODO: let executor thread finish.  should be an event generated or something.
+  boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+
+  //grab reporting module state
+  ReportMatrixInfoAlgorithm::Outputs reportOutput = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
+  DenseMatrixHandle receivedMatrix = any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
+
+  ASSERT_TRUE(receivedMatrix);
+  //verify results
+  EXPECT_EQ(expected, *receivedMatrix);
+  EXPECT_EQ(3, reportOutput.get<1>());
+  EXPECT_EQ(3, reportOutput.get<2>());
+  EXPECT_EQ(9, reportOutput.get<3>());
+  EXPECT_EQ(22, reportOutput.get<4>());
+  EXPECT_EQ(186, reportOutput.get<5>());
+}
