@@ -287,6 +287,7 @@ void SCIRunMainWindow::initialize()
     commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(networkEditor_, SIGNAL(moduleMoved(const std::string&, double, double)), 
     commandConverter_.get(), SLOT(moduleMoved(const std::string&, double, double)));
+  connect(historyWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByHistoryManager(bool)));
   
   setRegressionTestDataDir();
 
@@ -352,12 +353,12 @@ public:
 
     try
     {
-      auto xml = XMLSerializer::load_xml<NetworkFile>(filename_);
+      openedFile_ = XMLSerializer::load_xml<NetworkFile>(filename_);
 
-      if (xml)
+      if (openedFile_)
       {
         networkEditor_->clear();
-        networkEditor_->loadNetwork(xml);
+        networkEditor_->loadNetwork(openedFile_);
         GuiLogger::Instance().log("File load done.");
         return true;
       }
@@ -370,6 +371,8 @@ public:
     }
     return false;
   }
+
+  NetworkFileHandle openedFile_;
 private:
   std::string filename_;
   NetworkEditor* networkEditor_;
@@ -395,7 +398,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
       historyWindow_->clear();
-      historyWindow_->showFile(filename);
+      historyWindow_->showFile(command.openedFile_);
     }
   }
 }

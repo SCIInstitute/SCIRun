@@ -69,7 +69,7 @@ namespace Engine {
 
     virtual Networks::NetworkFileHandle saveNetwork() const;
     virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
-    virtual void clear() { /*TODO*/ }
+    virtual void clear();
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();

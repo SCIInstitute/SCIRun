@@ -49,6 +49,7 @@ namespace Engine {
     typedef typename Stack::container_type List;
 
     explicit HistoryManager(Engine::NetworkIOInterface<Memento>* networkIO);
+    void setInitialState(const Memento& initialState);
     void addItem(ItemHandle item);
     ItemHandle undo();
     ItemHandle redo();
@@ -62,14 +63,23 @@ namespace Engine {
     size_t redoSize() const;
 
   private:
+    ItemHandle undo(bool restore);
+    ItemHandle redo(bool restore);
     Engine::NetworkIOInterface<Memento>* networkIO_;
     Stack undo_, redo_;
+    boost::optional<Memento> initialState_;
   };
 
 
 
   template <class Memento>
   HistoryManager<Memento>::HistoryManager(NetworkIOInterface<Memento>* networkIO) : networkIO_(networkIO) {}
+
+  template <class Memento>
+  void HistoryManager<Memento>::setInitialState(const Memento& initialState)
+  {
+    initialState_ = initialState;
+  }
 
   template <class Memento>
   size_t HistoryManager<Memento>::undoSize() const
@@ -100,6 +110,12 @@ namespace Engine {
   template <class Memento>
   typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::undo()
   {
+    return undo(true);
+  }
+
+  template <class Memento>
+  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::undo(bool restore)
+  {
     if (!undo_.empty())
     {
       auto undone = undo_.top();
@@ -107,17 +123,28 @@ namespace Engine {
       redo_.push(undone);
 
       //clear and load previous memento
-      networkIO_->clear();
-      if (!undo_.empty())
-        networkIO_->loadNetwork(undo_.top()->memento());
+      if (restore)
+      {
+        networkIO_->clear();
+        if (!undo_.empty())
+          networkIO_->loadNetwork(undo_.top()->memento());
+        else if (initialState_)
+          networkIO_->loadNetwork(initialState_.get());
+      }
       
       return undone;
     }
     return ItemHandle();
   }
-
+  
   template <class Memento>
   typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::redo()
+  {
+    return redo(true);
+  }
+
+  template <class Memento>
+  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::redo(bool restore)
   {
     if (!redo_.empty())
     {
@@ -126,8 +153,11 @@ namespace Engine {
       undo_.push(redone);
 
       //clear and load redone memento
-      networkIO_->clear();
-      networkIO_->loadNetwork(redone->memento());
+      if (restore)
+      {
+        networkIO_->clear();
+        networkIO_->loadNetwork(redone->memento());
+      }
       
       return redone;
     }
@@ -139,7 +169,10 @@ namespace Engine {
   {
     List undone;
     while (0 != undoSize())
-      undone.push_back(undo());
+      undone.push_back(undo(false));
+    networkIO_->clear();
+    if (initialState_)
+      networkIO_->loadNetwork(initialState_.get());
     return undone;
   }
 
@@ -148,7 +181,9 @@ namespace Engine {
   {
     List redone;
     while (0 != redoSize())
-      redone.push_back(redo());
+      redone.push_back(redo(false));
+    networkIO_->clear();
+    networkIO_->loadNetwork(undo_.top()->memento());
     return redone;
   }
 

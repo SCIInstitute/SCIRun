@@ -184,6 +184,7 @@ TEST_F(HistoryManagerTests, CannotRedoWhenEmpty)
   EXPECT_FALSE(redone);
 }
 
+//TODO: need test case (no situation for it yet) for "undo all does not completely clear the network"
 TEST_F(HistoryManagerTests, CanUndoAll)
 {
   HistoryManager<std::string> manager(controller_.get());
@@ -195,9 +196,8 @@ TEST_F(HistoryManagerTests, CanUndoAll)
   EXPECT_EQ(3, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
 
-  EXPECT_CALL(*controller_, clear()).Times(3);
-  EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
-  EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
+  EXPECT_CALL(*controller_, clear()).Times(1);
+  EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
   auto undone = manager.undoAll();
   EXPECT_EQ(3, undone.size());
 
@@ -217,9 +217,8 @@ TEST_F(HistoryManagerTests, CanRedoAll)
   EXPECT_EQ(0, manager.redoSize());
 
   {
-    EXPECT_CALL(*controller_, clear()).Times(3);
-    EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
-    EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(1);
+    EXPECT_CALL(*controller_, loadNetwork(_)).Times(0);
     auto undone = manager.undoAll();
     EXPECT_EQ(3, undone.size());
 
@@ -228,9 +227,7 @@ TEST_F(HistoryManagerTests, CanRedoAll)
   }
 
   {
-    EXPECT_CALL(*controller_, clear()).Times(3);
-    EXPECT_CALL(*controller_, loadNetwork("1")).Times(1);
-    EXPECT_CALL(*controller_, loadNetwork("2")).Times(1);
+    EXPECT_CALL(*controller_, clear()).Times(1);
     EXPECT_CALL(*controller_, loadNetwork("3")).Times(1);
     auto redone = manager.redoAll();
     EXPECT_EQ(3, redone.size());
@@ -260,4 +257,17 @@ TEST_F(HistoryManagerTests, AddItemWipesOutRedoStack)
 
   EXPECT_EQ(3, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
+}
+
+TEST_F(HistoryManagerTests, LoadFileSetsInitialState)
+{
+  HistoryManager<std::string> manager(controller_.get());
+
+  manager.setInitialState("initial");
+
+  manager.addItem(item("1"));
+
+  EXPECT_CALL(*controller_, clear()).Times(1);
+  EXPECT_CALL(*controller_, loadNetwork("initial")).Times(1);
+  manager.undo();
 }

@@ -76,7 +76,7 @@
       <item>
        <widget class="QPushButton" name="undoAllButton_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Undo All</string>
@@ -106,7 +106,7 @@
       <item>
        <widget class="QPushButton" name="redoAllButton_">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Redo All</string>

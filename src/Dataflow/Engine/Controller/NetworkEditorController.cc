@@ -172,7 +172,6 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
   {
-    //theNetwork_->
     NetworkXMLConverter conv(moduleFactory_, stateFactory_);
     theNetwork_ = conv.from_xml_data(xml->network);
     for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
@@ -187,7 +186,14 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
     }
     if (modulePositionEditor_)
       modulePositionEditor_->moveModules(xml->modulePositions);
+    else
+      std::cout << "module position editor is null" << std::endl;
   }
+}
+
+void NetworkEditorController::clear()
+{
+  //std::cout << "NetworkEditorController::clear()" << std::endl;
 }
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)

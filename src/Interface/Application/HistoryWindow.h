@@ -47,20 +47,24 @@ class HistoryWindow : public QDockWidget, public Ui::HistoryWindow
 	
 public:
   explicit HistoryWindow(SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager, QWidget* parent = 0);
+  void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
 public Q_SLOTS:
-  void showFile(const QString& path);
   void clear();
   void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 private Q_SLOTS:
   void displayInfo(QListWidgetItem* item);
   void undo();
   void redo();
+  void undoAll();
+  void redoAll();
 Q_SIGNALS:
-
+  void modifyingNetwork(bool modifying);
 private:
   SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager_;
   int lastUndoRow_;
-  bool modifyingNetwork_;
+  
+  void setUndoEnabled(bool enable);
+  void setRedoEnabled(bool enable);
 };
 
 //TODO: will become several classes
@@ -75,10 +79,12 @@ public Q_SLOTS:
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
   void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleMoved(const std::string& id, double newX, double newY);
+  void networkBeingModifiedByHistoryManager(bool inProgress);
 Q_SIGNALS:
   void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 private:
   NetworkEditor* editor_;
+  bool historyManagerModifyingNetwork_;
 };
 
 }

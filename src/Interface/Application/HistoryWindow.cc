@@ -44,28 +44,26 @@ using namespace SCIRun::Dataflow::Engine;
 HistoryWindow::HistoryWindow(HistoryManagerHandle historyManager, QWidget* parent /* = 0 */) : 
   historyManager_(historyManager),
   lastUndoRow_(-1),
-  modifyingNetwork_(false),
   QDockWidget(parent) 
 {
   setupUi(this);
   networkXMLTextEdit_->setTabStopWidth(15);
 
   connect(historyListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
+  connect(historyListWidget_, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
   connect(undoButton_, SIGNAL(clicked()), this, SLOT(undo()));
   connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
+  connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
+  connect(redoAllButton_, SIGNAL(clicked()), this, SLOT(redoAll()));
 }
 
-void HistoryWindow::showFile(const QString& path)
+void HistoryWindow::showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file)
 {
-  setWindowTitle("History: " + path);
-  QFile xmlFile(path);
-  if(!xmlFile.open( QIODevice::ReadOnly | QIODevice::Text ) )
-  {
-    std::cout << "Could not open file: " << path.toStdString() << std::endl;
-    return;
-  }
- 
-  networkXMLTextEdit_->setPlainText(xmlFile.readAll());
+  std::ostringstream ostr;
+  XMLSerializer::save_xml(*file, ostr, "networkFile");
+  QString xmlText = QString::fromStdString(ostr.str());
+  networkXMLTextEdit_->setPlainText(xmlText);
+  historyManager_->setInitialState(file);
 }
 
 //TODO:
@@ -89,6 +87,10 @@ public:
     }
     else
       xmlText_ = "<Unknown state for this item>";
+  }
+  ~HistoryWindowListItem()
+  {
+    //std::cout << "deleting " << info_->name() << std::endl;
   }
   void setAsUndo()
   {
@@ -119,19 +121,17 @@ private:
 
 void HistoryWindow::addHistoryItem(HistoryItemHandle item)
 {
-  if (!modifyingNetwork_)
-  {
-    //std::cout << "removing from " << lastUndoRow_+1 << " to " << historyListWidget_->count() -1 << std::endl;
-    for (int i = historyListWidget_->count() - 1; i > lastUndoRow_; --i)
-      delete historyListWidget_->takeItem(i);
+  //std::cout << "removing from " << lastUndoRow_+1 << " to " << historyListWidget_->count() -1 << std::endl;
+  for (int i = historyListWidget_->count() - 1; i > lastUndoRow_; --i)
+    delete historyListWidget_->takeItem(i);
 
-    new HistoryWindowListItem(item, historyListWidget_);
-    lastUndoRow_++;
-    //std::cout << "!! HistoryWindow::addHistoryItem, rowIndex = " << lastUndoRow_ << std::endl;
-    redoButton_->setEnabled(false);
+  new HistoryWindowListItem(item, historyListWidget_);
+  lastUndoRow_++;
+  //std::cout << "!! HistoryWindow::addHistoryItem, rowIndex = " << lastUndoRow_ << std::endl;
+  setRedoEnabled(false);
+  setUndoEnabled(true);
 
-    historyManager_->addItem(item);
-  }
+  historyManager_->addItem(item);
 }
 
 void HistoryWindow::displayInfo(QListWidgetItem* item)
@@ -146,7 +146,24 @@ void HistoryWindow::displayInfo(QListWidgetItem* item)
 void HistoryWindow::clear()
 {
   historyListWidget_->clear();
+  historyManager_->clearAll();
+  lastUndoRow_ = -1;
+  setUndoEnabled(false);
+  setRedoEnabled(false);
+
   networkXMLTextEdit_->clear();
+}
+
+void HistoryWindow::setUndoEnabled(bool enable)
+{
+  undoButton_->setEnabled(enable);
+  undoAllButton_->setEnabled(enable);
+}
+
+void HistoryWindow::setRedoEnabled(bool enable)
+{
+  redoButton_->setEnabled(enable);
+  redoAllButton_->setEnabled(enable);
 }
 
 void HistoryWindow::undo()
@@ -160,18 +177,20 @@ void HistoryWindow::undo()
     historyItem->setAsRedo();
     
     {
-      modifyingNetwork_ = true;
+      Q_EMIT modifyingNetwork(true);
       auto undone = historyManager_->undo();
-      modifyingNetwork_ = false;
+      Q_EMIT modifyingNetwork(false);
       //std::cout << "undoing " << undone->name() << std::endl;
       if (undone->name() != historyItem->name())
-        std::cout << "!!!!!!!!!!!!!DOH!!!!!!!!!!!!! INCONSISTENCY" << std::endl;
+        std::cout << "Inconsistency in history items. TODO: emit logical error here." << std::endl;
     }
 
     lastUndoRow_--;
-    redoButton_->setEnabled(true);
+    setRedoEnabled(true);
     if (lastUndoRow_ == -1)
-      undoButton_->setEnabled(false);
+    {
+      setUndoEnabled(false);
+    }
   }
   else
     std::cout << "oops, item is null" << std::endl;
@@ -189,25 +208,58 @@ void HistoryWindow::redo()
     historyItem->setAsUndo();
 
     {
-      modifyingNetwork_ = true;
+      Q_EMIT modifyingNetwork(true);
       auto redone = historyManager_->redo();
-      modifyingNetwork_ = false;
+      Q_EMIT modifyingNetwork(false);
       //std::cout << "redoing " << redone->name() << std::endl;
       if (redone->name() != historyItem->name())
-        std::cout << "!!!!!!!!!!!!!DOH!!!!!!!!!!!!! INCONSISTENCY" << std::endl;
+        std::cout << "Inconsistency in history items. TODO: emit logical error here." << std::endl;
     }
 
 
     lastUndoRow_++;
-    undoButton_->setEnabled(true);
+    setUndoEnabled(true);
     if (lastUndoRow_ == historyListWidget_->count() - 1)
-      redoButton_->setEnabled(false);
+    {
+      setRedoEnabled(false);
+    }
   }
   else
     std::cout << "oops, item is null" << std::endl;
   //std::cout << "\trowIndex now = " << lastUndoRow_ << std::endl;
 }
 
+void HistoryWindow::undoAll()
+{
+  for (int row = 0; row < historyListWidget_->count(); ++row)
+  {
+    auto historyItem = dynamic_cast<HistoryWindowListItem*>(historyListWidget_->item(row));
+    historyItem->setAsRedo();
+  }
+  lastUndoRow_ = -1;
+
+  Q_EMIT modifyingNetwork(true);
+  historyManager_->undoAll();
+  Q_EMIT modifyingNetwork(false);
+  setUndoEnabled(false);
+  setRedoEnabled(true);
+}
+
+void HistoryWindow::redoAll()
+{
+  for (int row = 0; row < historyListWidget_->count(); ++row)
+  {
+    auto historyItem = dynamic_cast<HistoryWindowListItem*>(historyListWidget_->item(row));
+    historyItem->setAsUndo();
+  }
+  lastUndoRow_ = historyListWidget_->count() - 1;
+
+  Q_EMIT modifyingNetwork(true);
+  historyManager_->redoAll();
+  Q_EMIT modifyingNetwork(false);
+  setUndoEnabled(true);
+  setRedoEnabled(false);
+}
 
 //----------------------------------------------------------
 //TODO: separate out
@@ -216,30 +268,50 @@ GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor
 
 void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  HistoryItemHandle item(new ModuleAddedHistoryItem(name, editor_->saveNetwork()));
-  Q_EMIT historyItemCreated(item);
+  if (!historyManagerModifyingNetwork_)
+  {
+    HistoryItemHandle item(new ModuleAddedHistoryItem(name, editor_->saveNetwork()));
+    Q_EMIT historyItemCreated(item);
+  }
 }
 
 void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& id)
 {
-  HistoryItemHandle item(new ModuleRemovedHistoryItem(id, editor_->saveNetwork()));
-  Q_EMIT historyItemCreated(item);
+  if (!historyManagerModifyingNetwork_)
+  {
+    HistoryItemHandle item(new ModuleRemovedHistoryItem(id, editor_->saveNetwork()));
+    Q_EMIT historyItemCreated(item);
+  }
 }
 
 void GuiActionCommandHistoryConverter::connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
-  HistoryItemHandle item(new ConnectionAddedHistoryItem(cd, editor_->saveNetwork()));
-  Q_EMIT historyItemCreated(item);
+  if (!historyManagerModifyingNetwork_)
+  {
+    HistoryItemHandle item(new ConnectionAddedHistoryItem(cd, editor_->saveNetwork()));
+    Q_EMIT historyItemCreated(item);
+  }
 }
 
 void GuiActionCommandHistoryConverter::connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
-  HistoryItemHandle item(new ConnectionRemovedHistoryItem(id, editor_->saveNetwork()));
-  Q_EMIT historyItemCreated(item);
+  if (!historyManagerModifyingNetwork_)
+  {
+    HistoryItemHandle item(new ConnectionRemovedHistoryItem(id, editor_->saveNetwork()));
+    Q_EMIT historyItemCreated(item);
+  }
 }
 
 void GuiActionCommandHistoryConverter::moduleMoved(const std::string& id, double newX, double newY)
 {
-  HistoryItemHandle item(new ModuleMovedHistoryItem(id, newX, newY, editor_->saveNetwork()));
-  Q_EMIT historyItemCreated(item);
+  if (!historyManagerModifyingNetwork_)
+  {
+    HistoryItemHandle item(new ModuleMovedHistoryItem(id, newX, newY, editor_->saveNetwork()));
+    Q_EMIT historyItemCreated(item);
+  }
+}
+
+void GuiActionCommandHistoryConverter::networkBeingModifiedByHistoryManager(bool inProgress)
+{
+  historyManagerModifyingNetwork_ = inProgress;
 }
