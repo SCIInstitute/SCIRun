@@ -85,6 +85,8 @@ private:
   //boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   bool regressionMode_;
   QString regressionTestDataDir_;
+Q_SIGNALS:
+  void moduleItemDoubleClicked();
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -102,6 +104,7 @@ private Q_SLOTS:
   void updateRegressionTestDataDir();
   void chooseBackgroundColor();
   void resetBackgroundColor();
+  void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void exitApplication(int code);
 };
 
