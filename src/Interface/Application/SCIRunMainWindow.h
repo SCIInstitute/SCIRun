@@ -53,8 +53,6 @@ public:
 	static SCIRunMainWindow* Instance();
   void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
   void initialize();
-protected Q_SLOTS:
-  void ToggleRenderer();
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:

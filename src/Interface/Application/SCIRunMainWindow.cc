@@ -507,16 +507,15 @@ void SCIRunMainWindow::networkModified()
   networkProgressBar_->updateTotalModules(networkEditor_->numModules());
 }
 
-void SCIRunMainWindow::ToggleRenderer()
-{
-}
-
 void SCIRunMainWindow::setActionIcons() 
 {
   actionLoad_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
   actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
+  actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
+  //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 struct HideItemsNotMatchingString
@@ -715,13 +714,20 @@ void SCIRunMainWindow::setupHistoryWindow()
     throw "BAD";
   HistoryManagerHandle historyManager(new Dataflow::Engine::HistoryManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
   historyWindow_ = new HistoryWindow(historyManager, this);
-  //historyWindow_->setVisible(false);
+  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
+  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
+
+  historyWindow_->setVisible(false);
   historyWindow_->setFloating(true);
   addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
 
-  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
-  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
-  
+  connect(actionUndo_, SIGNAL(triggered()), historyWindow_, SLOT(undo()));
+  connect(actionRedo_, SIGNAL(triggered()), historyWindow_, SLOT(redo()));
+  actionUndo_->setEnabled(false);
+  actionRedo_->setEnabled(false);
+  connect(historyWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
+  connect(historyWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+
   commandConverter_.reset(new GuiActionCommandHistoryConverter(networkEditor_));
 
   connect(commandConverter_.get(), SIGNAL(historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle)), historyWindow_, SLOT(addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle)));

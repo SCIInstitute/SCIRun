@@ -50,15 +50,17 @@ public:
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
 public Q_SLOTS:
   void clear();
-  void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);
-private Q_SLOTS:
-  void displayInfo(QListWidgetItem* item);
+  void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);  
   void undo();
   void redo();
   void undoAll();
   void redoAll();
+private Q_SLOTS:
+  void displayInfo(QListWidgetItem* item);
 Q_SIGNALS:
   void modifyingNetwork(bool modifying);
+  void undoStateChanged(bool enabled);
+  void redoStateChanged(bool enabled);
 private:
   SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager_;
   int lastUndoRow_;

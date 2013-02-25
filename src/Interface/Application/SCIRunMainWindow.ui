@@ -134,7 +134,21 @@
     <addaction name="actionModule_Selector"/>
     <addaction name="actionHistory_"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo_"/>
+    <addaction name="actionRedo_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCut_"/>
+    <addaction name="actionCopy_"/>
+    <addaction name="actionPaste_"/>
+    <addaction name="actionDelete_"/>
+    <addaction name="actionSelectAll_"/>
+   </widget>
    <addaction name="menuFile_"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
@@ -1135,6 +1149,62 @@
    </property>
    <property name="text">
     <string>History</string>
+   </property>
+  </action>
+  <action name="actionUndo_">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo_">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionCut_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionCopy_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="actionDelete_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionSelectAll_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Select All</string>
    </property>
   </action>
  </widget>

@@ -55,6 +55,8 @@ HistoryWindow::HistoryWindow(HistoryManagerHandle historyManager, QWidget* paren
   connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
   connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
   connect(redoAllButton_, SIGNAL(clicked()), this, SLOT(redoAll()));
+  setUndoEnabled(false);
+  setRedoEnabled(false);
 }
 
 void HistoryWindow::showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file)
@@ -158,12 +160,14 @@ void HistoryWindow::setUndoEnabled(bool enable)
 {
   undoButton_->setEnabled(enable);
   undoAllButton_->setEnabled(enable);
+  Q_EMIT undoStateChanged(enable);
 }
 
 void HistoryWindow::setRedoEnabled(bool enable)
 {
   redoButton_->setEnabled(enable);
   redoAllButton_->setEnabled(enable);
+  Q_EMIT redoStateChanged(enable);
 }
 
 void HistoryWindow::undo()
