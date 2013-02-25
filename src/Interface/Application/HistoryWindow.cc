@@ -238,7 +238,8 @@ void GuiActionCommandHistoryConverter::connectionRemoved(const SCIRun::Dataflow:
   Q_EMIT historyItemCreated(item);
 }
 
-void GuiActionCommandHistoryConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModulePositions::Data::value_type& moveData)
+void GuiActionCommandHistoryConverter::moduleMoved(const std::string& id, double newX, double newY)
 {
-  std::cout << "GuiActionCHC::moduleMoved" << std::endl;
+  HistoryItemHandle item(new ModuleMovedHistoryItem(id, newX, newY, editor_->saveNetwork()));
+  Q_EMIT historyItemCreated(item);
 }

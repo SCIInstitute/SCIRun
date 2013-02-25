@@ -49,7 +49,7 @@ namespace SCIRun
       void highlightIfSelected();
     Q_SIGNALS:
       void selected();
-      void widgetMoved();
+      void widgetMoved(const std::string& id, double newX, double newY);
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

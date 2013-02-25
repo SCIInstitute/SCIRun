@@ -125,7 +125,7 @@ Q_SIGNALS:
     void networkExecuted();
     void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
-    void moduleMoved(const SCIRun::Dataflow::Networks::ModulePositions::Data::value_type& moveData);
+    void moduleMoved(const std::string& id, double newX, double newY);
   private Q_SLOTS:
     void del();
     void cut();

@@ -151,7 +151,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
-  connect(proxy, SIGNAL(widgetMoved()), this, SIGNAL(modified()));
+  connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(modified()));
+  connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(moduleMoved(const std::string&, double, double)));
   proxy->createPortPositionProviders();
 
   scene_->addItem(proxy);

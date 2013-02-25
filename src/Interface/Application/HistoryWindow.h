@@ -74,7 +74,7 @@ public Q_SLOTS:
   void moduleRemoved(const std::string& name);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
   void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
-  void moduleMoved(const SCIRun::Dataflow::Networks::ModulePositions::Data::value_type& moveData);
+  void moduleMoved(const std::string& id, double newX, double newY);
 Q_SIGNALS:
   void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
 private:

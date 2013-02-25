@@ -81,6 +81,16 @@ namespace Engine {
   private:
     SCIRun::Dataflow::Networks::ConnectionId id_;
   };
+
+  class SCISHARE ModuleMovedHistoryItem : public HistoryItemBase
+  {
+  public:
+    ModuleMovedHistoryItem(const std::string& moduleId, double newX, double newY, Networks::NetworkFileHandle state);
+    virtual std::string name() const;
+  private:
+    std::string moduleId_;
+    double newX_, newY_;
+  };
 }
 }
 }

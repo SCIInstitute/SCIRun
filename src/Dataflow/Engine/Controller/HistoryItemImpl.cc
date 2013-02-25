@@ -27,6 +27,7 @@
 */
 
 #include <string>
+#include <sstream>
 #include <Dataflow/Engine/Controller/HistoryItemImpl.h>
 
 using namespace SCIRun;
@@ -35,7 +36,6 @@ using namespace SCIRun::Dataflow::Networks;
 
 HistoryItemBase::HistoryItemBase(NetworkFileHandle state) : state_(state)
 {
-
 }
 
 NetworkFileHandle HistoryItemBase::memento() const
@@ -46,7 +46,6 @@ NetworkFileHandle HistoryItemBase::memento() const
 ModuleAddedHistoryItem::ModuleAddedHistoryItem(const std::string& moduleName, NetworkFileHandle state)
   : HistoryItemBase(state), moduleName_(moduleName)
 {
-
 }
 
 std::string ModuleAddedHistoryItem::name() const
@@ -57,7 +56,6 @@ std::string ModuleAddedHistoryItem::name() const
 ModuleRemovedHistoryItem::ModuleRemovedHistoryItem(const std::string& moduleId, NetworkFileHandle state)
   : HistoryItemBase(state), moduleId_(moduleId)
 {
-
 }
 
 std::string ModuleRemovedHistoryItem::name() const
@@ -68,7 +66,6 @@ std::string ModuleRemovedHistoryItem::name() const
 ConnectionAddedHistoryItem::ConnectionAddedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state)
   : HistoryItemBase(state), desc_(cd)
 {
-
 }
 
 std::string ConnectionAddedHistoryItem::name() const
@@ -79,10 +76,21 @@ std::string ConnectionAddedHistoryItem::name() const
 ConnectionRemovedHistoryItem::ConnectionRemovedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionId& id, NetworkFileHandle state)
   : HistoryItemBase(state), id_(id)
 {
-
 }
 
 std::string ConnectionRemovedHistoryItem::name() const
 {
   return "Connection Removed: " + id_.id_;
+}
+
+ModuleMovedHistoryItem::ModuleMovedHistoryItem(const std::string& moduleId, double newX, double newY, NetworkFileHandle state)
+  : HistoryItemBase(state), moduleId_(moduleId), newX_(newX), newY_(newY)
+{
+}
+
+std::string ModuleMovedHistoryItem::name() const
+{
+  std::ostringstream ostr;
+  ostr << "Module " << moduleId_ << " moved to (" << newX_ << "," << newY_ << ")";
+  return ostr.str();
 }
