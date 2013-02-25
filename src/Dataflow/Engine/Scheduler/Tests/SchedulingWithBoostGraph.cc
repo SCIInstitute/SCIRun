@@ -102,6 +102,7 @@ protected:
   ModuleFactoryHandle mf;
   ModuleStateFactoryHandle sf;
   Network matrixMathNetwork;
+  ModuleHandle receive, report;
 
   virtual void SetUp()
   {
@@ -131,71 +132,76 @@ protected:
         (*m)(i, j) = -2.0 * i + j;
     return m;
   }
+
+  void setupBasicNetwork()
+  {
+    //Test network:
+    /* 
+    send m1             send m2
+    |         |         |
+    transpose negate    scalar mult *4
+    |         |         |
+    |           multiply
+    |           |
+          add
+          |      |
+          report receive
+    */
+  
+    ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
+    ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
+  
+    ModuleHandle transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+    ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+    ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
+
+    ModuleHandle multiply = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
+    ModuleHandle add = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
+
+    report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
+    receive = addModuleToNetwork(matrixMathNetwork, "ReceiveTestMatrix");
+  
+    EXPECT_EQ(9, matrixMathNetwork.nmodules());
+
+    //TODO: turn this into a convenience network printing function
+    //for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
+    //{
+    //  ModuleHandle m = matrixMathNetwork.module(i);
+    //  std::cout << m->get_module_name() << std::endl;
+    //  std::cout << "inputs: " << m->num_input_ports() << std::endl;
+    //  std::cout << "outputs: " << m->num_output_ports() << std::endl;
+    //  std::cout << "has ui: " << m->has_ui() << std::endl;
+    //}
+
+    EXPECT_EQ(0, matrixMathNetwork.nconnections());
+    matrixMathNetwork.connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(transpose, 0));
+    matrixMathNetwork.connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(negate, 0));
+    matrixMathNetwork.connect(ConnectionOutputPort(matrix2Send, 0), ConnectionInputPort(scalar, 0));
+    matrixMathNetwork.connect(ConnectionOutputPort(negate, 0), ConnectionInputPort(multiply, 0));
+    matrixMathNetwork.connect(ConnectionOutputPort(scalar, 0), ConnectionInputPort(multiply, 1));
+    matrixMathNetwork.connect(ConnectionOutputPort(transpose, 0), ConnectionInputPort(add, 0));
+    matrixMathNetwork.connect(ConnectionOutputPort(multiply, 0), ConnectionInputPort(add, 1));
+    matrixMathNetwork.connect(ConnectionOutputPort(add, 0), ConnectionInputPort(report, 0));
+    matrixMathNetwork.connect(ConnectionOutputPort(add, 0), ConnectionInputPort(receive, 0));
+    EXPECT_EQ(9, matrixMathNetwork.nconnections());
+
+    //Set module parameters.
+    matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
+    matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
+    transpose->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+    negate->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 4.0);
+    multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+    add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  }
 };
 
 TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
 {
   DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
 
-  //Test network:
-  /* 
-  send m1             send m2
-  |         |         |
-  transpose negate    scalar mult *4
-  |         |         |
-  |           multiply
-  |           |
-        add
-        |      |
-        report receive
-  */
-  
-  ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
-  ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
-  
-  ModuleHandle transpose = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
-  ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
-  ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
-
-  ModuleHandle multiply = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
-  ModuleHandle add = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraBinary");
-
-  ModuleHandle report = addModuleToNetwork(matrixMathNetwork, "ReportMatrixInfo");
-  ModuleHandle receive = addModuleToNetwork(matrixMathNetwork, "ReceiveTestMatrix");
-  
-  EXPECT_EQ(9, matrixMathNetwork.nmodules());
-
-  //TODO: turn this into a convenience network printing function
-  //for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
-  //{
-  //  ModuleHandle m = matrixMathNetwork.module(i);
-  //  std::cout << m->get_module_name() << std::endl;
-  //  std::cout << "inputs: " << m->num_input_ports() << std::endl;
-  //  std::cout << "outputs: " << m->num_output_ports() << std::endl;
-  //  std::cout << "has ui: " << m->has_ui() << std::endl;
-  //}
-
-  EXPECT_EQ(0, matrixMathNetwork.nconnections());
-  matrixMathNetwork.connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(transpose, 0));
-  matrixMathNetwork.connect(ConnectionOutputPort(matrix1Send, 0), ConnectionInputPort(negate, 0));
-  matrixMathNetwork.connect(ConnectionOutputPort(matrix2Send, 0), ConnectionInputPort(scalar, 0));
-  matrixMathNetwork.connect(ConnectionOutputPort(negate, 0), ConnectionInputPort(multiply, 0));
-  matrixMathNetwork.connect(ConnectionOutputPort(scalar, 0), ConnectionInputPort(multiply, 1));
-  matrixMathNetwork.connect(ConnectionOutputPort(transpose, 0), ConnectionInputPort(add, 0));
-  matrixMathNetwork.connect(ConnectionOutputPort(multiply, 0), ConnectionInputPort(add, 1));
-  matrixMathNetwork.connect(ConnectionOutputPort(add, 0), ConnectionInputPort(report, 0));
-  matrixMathNetwork.connect(ConnectionOutputPort(add, 0), ConnectionInputPort(receive, 0));
-  EXPECT_EQ(9, matrixMathNetwork.nconnections());
-
-  //Set module parameters.
-  matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
-  matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
-  transpose->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-  negate->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
-  scalar->get_state()->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 4.0);
-  multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-  add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  setupBasicNetwork();
 
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
@@ -241,3 +247,4 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   
   EXPECT_THROW(scheduler.schedule(matrixMathNetwork), NetworkHasCyclesException);
 }
+
