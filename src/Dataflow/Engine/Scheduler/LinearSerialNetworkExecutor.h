@@ -36,7 +36,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor
+  class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor<ModuleExecutionOrder>
   {
   public:
     virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order);

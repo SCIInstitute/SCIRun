@@ -75,7 +75,7 @@ protected:
   }
 
   MockNetworkIOPtr controller_;
-  NetworkExecutorHandle null_;
+  SerialNetworkExecutorHandle null_;
 };
 
 TEST_F(HistoryManagerTests, CanAddItems)

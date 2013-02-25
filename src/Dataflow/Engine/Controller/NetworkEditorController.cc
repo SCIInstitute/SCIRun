@@ -43,7 +43,7 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, ModulePositionEditor* mpg) : 
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, SerialNetworkExecutorHandle exe, ModulePositionEditor* mpg) : 
   moduleFactory_(mf), 
   stateFactory_(sf), 
   executor_(exe),
@@ -53,7 +53,7 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   theNetwork_.reset(new Network(mf, sf));
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, NetworkExecutorHandle exe, ModulePositionEditor* mpg)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, SerialNetworkExecutorHandle exe, ModulePositionEditor* mpg)
   : theNetwork_(network), executor_(exe), modulePositionEditor_(mpg)
 {
 }

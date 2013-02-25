@@ -86,7 +86,7 @@ NetworkEditorControllerHandle Application::controller()
     //TODO: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    NetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
+    SerialNetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe));
   }
   return private_->controller_;

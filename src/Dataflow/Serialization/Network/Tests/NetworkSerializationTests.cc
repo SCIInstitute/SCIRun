@@ -183,7 +183,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  NetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
+  SerialNetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
   NetworkEditorController controller(mf, sf, exe);
   
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");

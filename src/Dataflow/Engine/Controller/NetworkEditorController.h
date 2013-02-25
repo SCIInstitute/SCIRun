@@ -48,8 +48,8 @@ namespace Engine {
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
-    explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, SerialNetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
+    explicit NetworkEditorController(Networks::NetworkHandle network, SerialNetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
 
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
@@ -82,7 +82,7 @@ namespace Engine {
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
-    NetworkExecutorHandle executor_;
+    SerialNetworkExecutorHandle executor_;
     Networks::ModulePositionEditor* modulePositionEditor_;
 
     ModuleAddedSignalType moduleAdded_;

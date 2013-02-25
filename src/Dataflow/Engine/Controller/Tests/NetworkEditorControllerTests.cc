@@ -122,7 +122,7 @@ protected:
 
   MockNetworkPtr mockNetwork_;
   DummySlotClassForNetworkEditorController slots_;
-  NetworkExecutorHandle null_;
+  SerialNetworkExecutorHandle null_;
   MockPortDescriptionPtr port1, port2;
 };
 

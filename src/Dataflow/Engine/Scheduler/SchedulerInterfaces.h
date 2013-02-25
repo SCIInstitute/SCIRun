@@ -60,9 +60,8 @@ namespace Engine {
 
   struct NetworkHasCyclesException : virtual Core::InvalidArgumentException {};
 
-  //Serial
   template <class OrderType>
-  class SCISHARE Scheduler
+  class Scheduler
   {
   public:
     virtual ~Scheduler() {}
@@ -74,19 +73,28 @@ namespace Engine {
   typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
   typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
 
-  class SCISHARE NetworkExecutor
+  template <class OrderType>
+  class NetworkExecutor
   {
   public:
-    virtual ~NetworkExecutor();
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
-    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
+    virtual ~NetworkExecutor() {}
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, OrderType order) = 0;
+    
+    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+    {
+      return executeStarts_.connect(subscriber);
+    }
+    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+    {
+      return executeFinishes_.connect(subscriber);
+    }
+
   protected:
     ExecuteAllStartsSignalType executeStarts_;
     ExecuteAllFinishesSignalType executeFinishes_;
   };
 
-  typedef boost::shared_ptr<NetworkExecutor> NetworkExecutorHandle;
+  typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
 
 }
 }}
