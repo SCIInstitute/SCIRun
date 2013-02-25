@@ -82,23 +82,31 @@ using namespace boost;
 
 namespace
 {
-  DenseMatrixHandle matrix1()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = 3.0 * i + j;
-    return m;
-  }
-  DenseMatrixHandle matrix2()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = -2.0 * i + j;
-    return m;
-  }
+
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
+
+  
+}
+
+
+class SchedulingWithBoostGraph : public ::testing::Test
+{
+public:
+  SchedulingWithBoostGraph() :
+    mf(new HardCodedModuleFactory),
+    sf(new SimpleMapModuleStateFactory),
+    matrixMathNetwork(mf, sf)
+  {
+  }
+protected:
+  ModuleFactoryHandle mf;
+  ModuleStateFactoryHandle sf;
+  Network matrixMathNetwork;
+
+  virtual void SetUp()
+  {
+    
+  }
 
   ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
   {
@@ -106,9 +114,26 @@ namespace
     info.module_name_ = moduleName;
     return network.add_module(info);
   }
-}
 
-TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
+  DenseMatrixHandle matrix1()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
+        (*m)(i, j) = 3.0 * i + j;
+    return m;
+  }
+  DenseMatrixHandle matrix2()
+  {
+    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
+        (*m)(i, j) = -2.0 * i + j;
+    return m;
+  }
+};
+
+TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
 {
   DenseMatrix expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
 
@@ -124,10 +149,7 @@ TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
         |      |
         report receive
   */
-
-  ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  Network matrixMathNetwork(mf, sf);
+  
   ModuleHandle matrix1Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
   ModuleHandle matrix2Send = addModuleToNetwork(matrixMathNetwork, "SendTestMatrix");
   
@@ -197,12 +219,8 @@ TEST(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   EXPECT_EQ(186, reportOutput.get<5>());
 }
 
-TEST(SchedulingWithBoostGraph, CanDetectConnectionCycles)
+TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
 {
-  ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  Network matrixMathNetwork(mf, sf);
-  
   ModuleHandle negate = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
   ModuleHandle scalar = addModuleToNetwork(matrixMathNetwork, "EvaluateLinearAlgebraUnary");
 
