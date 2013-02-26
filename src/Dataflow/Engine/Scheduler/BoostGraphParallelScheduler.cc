@@ -42,12 +42,11 @@ using namespace SCIRun::Dataflow::Networks;
 
 ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network)
 {
-  throw 1;
-  /*boost::bimap<std::string, int> moduleIdLookup;
+  boost::bimap<std::string, int> moduleIdLookup;
 
   for (int i = 0; i < network.nmodules(); ++i)
   {
-  moduleIdLookup.left.insert(std::make_pair(network.module(i)->get_id(), i));
+    moduleIdLookup.left.insert(std::make_pair(network.module(i)->get_id(), i));
   }
 
   typedef std::pair<int,int> Edge;
@@ -56,7 +55,7 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
 
   BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
   {
-  edges.push_back(std::make_pair(moduleIdLookup.left.at(cd.out_.moduleId_), moduleIdLookup.left.at(cd.in_.moduleId_)));
+    edges.push_back(std::make_pair(moduleIdLookup.left.at(cd.out_.moduleId_), moduleIdLookup.left.at(cd.in_.moduleId_)));
   }
 
   typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
@@ -67,18 +66,34 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
   ExecutionOrder order;
   try
   {
-  boost::topological_sort(g, std::front_inserter(order));
+    boost::topological_sort(g, std::front_inserter(order));
   }
   catch (std::invalid_argument& e)
   {
-  BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << Core::ErrorMessage(e.what()));
+    BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << Core::ErrorMessage(e.what()));
   }
 
-  ModuleExecutionOrder::ModuleIdList list;
+
+  // Parallel compilation ordering
+  std::vector<int> time(network.nmodules(), 0);
+  for (ExecutionOrder::iterator i = order.begin(); i != order.end(); ++i) {    
+    // Walk through the in_edges an calculate the maximum time.
+    if (in_degree (*i, g) > 0) {
+      Graph::in_edge_iterator j, j_end;
+      int maxdist=0;
+      // Through the order from topological sort, we are sure that every 
+      // time we are using here is already initialized.
+      for (boost::tie(j, j_end) = in_edges(*i, g); j != j_end; ++j)
+        maxdist=(std::max)(time[source(*j, g)], maxdist);
+      time[*i]=maxdist+1;
+    }
+  }
+  
+  ParallelModuleExecutionOrder::ModulesByGroup map;
   for (ExecutionOrder::iterator i = order.begin(); i != order.end(); ++i) 
   {
-  list.push_back(moduleIdLookup.right.at(*i));
+    map.insert(std::make_pair(time[*i], moduleIdLookup.right.at(*i)));
   }
 
-  return ModuleExecutionOrder(list);*/
+  return ParallelModuleExecutionOrder(map);
 }

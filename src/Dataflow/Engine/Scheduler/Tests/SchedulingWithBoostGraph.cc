@@ -87,10 +87,7 @@ using namespace boost::assign;
 
 namespace
 {
-
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
-
-  
 }
 
 
@@ -312,8 +309,14 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
 
   BoostGraphParallelScheduler scheduler;
   auto order = scheduler.schedule(matrixMathNetwork);
+  auto range = std::make_pair(order.begin(), order.end());
 
+  BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& v, range)
+  {
+    std::cout << v.first << " " << v.second << std::endl;
+  }
 
+  FAIL() << "not finished yet, no assertions.";
 /*
   std::list<std::string> expected = list_of
     ("SendTestMatrix1")
