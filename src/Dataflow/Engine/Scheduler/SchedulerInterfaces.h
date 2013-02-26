@@ -32,31 +32,11 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Utils/Exception.h>
 #include <boost/signals2.hpp>
-#include <list>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-
-  //Serial
-  class SCISHARE ModuleExecutionOrder
-  {
-  public:
-    typedef std::list<std::string> ModuleIdList;
-    typedef ModuleIdList::iterator iterator;
-    typedef ModuleIdList::const_iterator const_iterator;
-
-    ModuleExecutionOrder();
-    explicit ModuleExecutionOrder(const ModuleIdList& list);
-    const_iterator begin() const;
-    const_iterator end() const;
-  private:
-    ModuleIdList list_;
-  };
-
-  SCISHARE bool operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
-  SCISHARE bool operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
 
   struct NetworkHasCyclesException : virtual Core::InvalidArgumentException {};
 
@@ -94,8 +74,8 @@ namespace Engine {
     ExecuteAllFinishesSignalType executeFinishes_;
   };
 
+  class ModuleExecutionOrder;
   typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
-
 }
 }}
 

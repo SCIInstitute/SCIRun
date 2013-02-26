@@ -26,23 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
-#define ENGINE_SCHEDULER_SERIALSCHEDULER_H
+#ifndef ENGINE_SCHEDULER_SERIAL_MODULE_EXECUTION_ORDER_H
+#define ENGINE_SCHEDULER_SERIAL_MODULE_EXECUTION_ORDER_H
 
+#include <list>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
+  //Serial
+  class SCISHARE ModuleExecutionOrder
   {
   public:
-    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network);
+    typedef std::list<std::string> ModuleIdList;
+    typedef ModuleIdList::iterator iterator;
+    typedef ModuleIdList::const_iterator const_iterator;
+
+    ModuleExecutionOrder();
+    explicit ModuleExecutionOrder(const ModuleIdList& list);
+    const_iterator begin() const;
+    const_iterator end() const;
+  private:
+    ModuleIdList list_;
   };
 
-}}}
+  SCISHARE bool operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
+  SCISHARE bool operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs);
+
+}
+}}
 
 #endif

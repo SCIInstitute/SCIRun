@@ -306,6 +306,7 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
 {
   setupBasicNetwork();
 
+
   //BoostGraphMultiScheduler scheduler;
   //auto order = scheduler.schedule(matrixMathNetwork);
 

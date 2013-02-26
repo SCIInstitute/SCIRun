@@ -29,6 +29,7 @@
 #ifndef ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
 #define ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
 
+#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 

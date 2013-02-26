@@ -26,23 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
-#define ENGINE_SCHEDULER_SERIALSCHEDULER_H
-
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
 
-  class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
-  {
-  public:
-    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network);
-  };
+ModuleExecutionOrder::ModuleExecutionOrder()
+{
+}
 
-}}}
+ModuleExecutionOrder::ModuleExecutionOrder(const ModuleExecutionOrder::ModuleIdList& list) : list_(list)
+{
+}
 
-#endif
+ModuleExecutionOrder::const_iterator ModuleExecutionOrder::begin() const
+{
+  return list_.begin();
+}
+
+ModuleExecutionOrder::const_iterator ModuleExecutionOrder::end() const
+{
+  return list_.end();
+}
+
+bool SCIRun::Dataflow::Engine::operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs)
+{
+  return std::equal(lhs.begin(), lhs.end(), rhs.begin());
+}
+
+bool SCIRun::Dataflow::Engine::operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs)
+{
+  return !(lhs == rhs);
+}
