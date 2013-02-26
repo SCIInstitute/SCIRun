@@ -330,3 +330,224 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
     ("ReceiveTestMatrix8");
   EXPECT_EQ(ModuleExecutionOrder(expected), order);*/
 }
+
+struct Unit
+{
+  Unit(const std::string& s) : id(s),
+  priority(rand() % 4),
+  ready(0 == priority), done(false),
+  runtime(rand() % 1000 + 1)
+  {
+  }
+  std::string id;
+  int priority;
+  bool ready;
+  bool done;
+  int runtime;
+};
+
+typedef boost::shared_ptr<Unit> UnitPtr;
+
+bool operator<(const Unit& lhs, const Unit& rhs)
+{
+  return lhs.priority < rhs.priority;
+}
+
+bool operator<(const UnitPtr& lhs, const UnitPtr& rhs)
+{
+  return lhs->priority < rhs->priority;
+}
+
+std::ostream& operator<<(std::ostream& o, const Unit& u)
+{
+  return o << u.id << " : "
+  << u.priority << ":"
+  << u.ready << ":" << u.done << ":"
+    << u.runtime;
+}
+
+typedef std::queue<UnitPtr> WorkQueue;  //TODO: will need to be thread-safe
+typedef std::list<UnitPtr> WaitingList;
+typedef std::list<UnitPtr> DoneList;
+
+UnitPtr makeUnit()
+{
+  return UnitPtr(new Unit(boost::lexical_cast<std::string>(rand())));
+}
+
+std::ostream& operator<<(std::ostream& o, const UnitPtr& u)
+{
+  if (u)
+    o << *u;
+  return o;
+}
+
+TEST(MultiExecutorPrototypeTest, GenerateListOfUnits)
+{
+  WaitingList list;
+  std::generate_n(std::back_inserter(list), 10, makeUnit);
+  std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+}
+
+typedef boost::mutex Mutex;
+
+class WorkUnitProducer
+{
+public:
+  WorkUnitProducer(WorkQueue& workQueue, WaitingList& list, Mutex& mutex) : work_(workQueue), waiting_(list),
+  donePushing_(false), currentPriority_(0), mutex_(mutex)
+  {
+    waiting_.sort();
+    std::cout << "Sorted work list:" << std::endl;
+    std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+  }
+  void run()
+  {
+    mutex_.lock();
+    std::cout << "Producer started." << std::endl;
+    mutex_.unlock();
+    while (!waiting_.empty())
+    {
+      for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
+      {
+        if ((*i)->ready)
+        {
+          mutex_.lock();
+          std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+          work_.push(*i);
+          mutex_.unlock();
+          waiting_.erase(i);
+        }
+      }
+      if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
+      {
+        currentPriority_ = (*waiting_.begin())->priority;
+        mutex_.lock();
+        std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
+        mutex_.unlock();
+        for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
+        {
+          if ((*i)->priority == currentPriority_)
+            (*i)->ready = true;
+        }
+      }
+      //mutex_.lock();
+      //std::cout << "\tProducer: Waiting list size = " << waiting_.size() << std::endl;
+      //std::cout << "\tProducer: work queue size = " << work_.size() << std::endl;
+      //mutex_.unlock();
+    }
+    mutex_.lock();
+    //std::cout << "Producer almost done." << std::endl;
+    //donePushing_ = true;
+    std::cout << "Producer done." << std::endl;
+    mutex_.unlock();
+  }
+  bool isDone() const
+  {
+    boost::lock_guard<Mutex> lock(mutex_);
+    return waiting_.empty();// && donePushing_;
+  }
+  bool workDone() const
+  {
+    boost::lock_guard<Mutex> lock(mutex_);
+    return work_.empty();
+  }
+private:
+  WorkQueue& work_;
+  WaitingList& waiting_;
+  bool donePushing_;
+  int currentPriority_;
+  Mutex& mutex_;
+};
+
+class WorkUnitConsumer
+{
+public:
+  explicit WorkUnitConsumer(WorkQueue& workQueue, const WorkUnitProducer& producer, DoneList& done, Mutex& mutex) :
+  work_(workQueue), producer_(producer), done_(done), mutex_(mutex)
+  {
+  }
+  void run()
+  {
+    mutex_.lock();
+    std::cout << "Consumer started." << std::endl;
+    mutex_.unlock();
+    while (!producer_.isDone())
+    {
+      mutex_.lock();
+      std::cout << "\tConsumer thinks producer is not done." << std::endl;
+      mutex_.unlock();
+      while (moreWork())
+      {
+        mutex_.lock();
+        std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
+        mutex_.unlock();
+        
+        mutex_.lock();
+        std::cout << "\tConsumer accessing front of work queue." << std::endl;
+        UnitPtr unit = work_.front();
+        std::cout << "\tConsumer popping front of work queue." << std::endl;
+        work_.pop();
+        mutex_.unlock();
+        
+        mutex_.lock();
+        std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
+        unit->runtime << " ms" << std::endl;
+        mutex_.unlock();
+        
+        boost::this_thread::sleep(boost::posix_time::milliseconds(unit->runtime));
+        unit->done = true;
+        
+        done_.push_back(unit);
+        mutex_.lock();
+        std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
+        mutex_.unlock();
+      }
+    }
+    mutex_.lock();
+    std::cout << "Consumer done." << std::endl;
+    mutex_.unlock();
+  }
+  
+  bool moreWork()
+  {
+    boost::lock_guard<Mutex> lock(mutex_);
+    return !work_.empty();
+  }
+  
+  
+private:
+  WorkQueue& work_;
+  const WorkUnitProducer& producer_;
+  DoneList& done_;
+  Mutex& mutex_;
+};
+
+
+TEST(MultiExecutorPrototypeTest, Run)
+{
+  const int size = 10;
+  WaitingList list;
+  std::generate_n(std::back_inserter(list), size, makeUnit);
+  
+  Mutex mutex;
+  WorkQueue workQ;
+  WorkUnitProducer producer(workQ, list, mutex);
+  
+  DoneList done;
+  WorkUnitConsumer consumer(workQ, producer, done, mutex);
+  
+  boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer::run, producer));
+  boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer::run, consumer));
+  
+  tR.join();
+  tC.join();
+  
+  EXPECT_EQ(size, done.size());
+  std::cout << "DONE. Finished list:" << std::endl;
+  std::copy(done.begin(), done.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+  BOOST_FOREACH(const UnitPtr& u, done)
+  {
+    EXPECT_TRUE(u->done);
+  }
+}
