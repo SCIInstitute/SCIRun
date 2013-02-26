@@ -68,6 +68,7 @@ namespace Networks {
   {
   public:
     virtual ~InputPortInterface();
+    virtual bool hasData() const = 0;
     virtual Core::Datatypes::DatatypeHandleOption getData() = 0;
     virtual DatatypeSinkInterfaceHandle sink() = 0;
   };

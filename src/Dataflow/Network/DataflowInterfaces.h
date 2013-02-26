@@ -50,6 +50,11 @@ namespace Networks {
   {
   public:
     virtual ~DatatypeSinkInterface() {}
+    
+    // "mailbox" interface
+    virtual bool hasData() const = 0;
+    virtual void setHasData(bool dataPresent) = 0;
+
     virtual void waitForData() = 0;
     virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
   };
