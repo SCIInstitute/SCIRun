@@ -55,7 +55,8 @@
 #include <iostream>
 #include <iterator>
 #include <algorithm>
-#include <time.h>
+#include <numeric>
+#include <ctime>
 
 #include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
@@ -395,36 +396,39 @@ class WorkUnitProducer
 {
 public:
   WorkUnitProducer(WorkQueue& workQueue, WaitingList& list, Mutex& mutex) : work_(workQueue), waiting_(list),
-  donePushing_(false), currentPriority_(0), mutex_(mutex)
+  /*donePushing_(false),*/ currentPriority_(0), mutex_(mutex)
   {
     waiting_.sort();
-    std::cout << "Sorted work list:" << std::endl;
-    std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+    //std::cout << "Sorted work list:" << std::endl;
+    //std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
   }
   void run()
   {
-    mutex_.lock();
-    std::cout << "Producer started." << std::endl;
-    mutex_.unlock();
+    //mutex_.lock();
+    //std::cout << "Producer started." << std::endl;
+    //mutex_.unlock();
     while (!waiting_.empty())
     {
-      for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
+      for (auto i = waiting_.begin(); i != waiting_.end(); )
       {
         if ((*i)->ready)
         {
           mutex_.lock();
-          std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+          //std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
           work_.push(*i);
+          //std::cout << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
           mutex_.unlock();
-          waiting_.erase(i);
+          i = waiting_.erase(i);
         }
+        else
+          ++i;
       }
       if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
       {
         currentPriority_ = (*waiting_.begin())->priority;
-        mutex_.lock();
-        std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
-        mutex_.unlock();
+        //mutex_.lock();
+        //std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
+        //mutex_.unlock();
         for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
         {
           if ((*i)->priority == currentPriority_)
@@ -436,11 +440,9 @@ public:
       //std::cout << "\tProducer: work queue size = " << work_.size() << std::endl;
       //mutex_.unlock();
     }
-    mutex_.lock();
-    //std::cout << "Producer almost done." << std::endl;
-    //donePushing_ = true;
-    std::cout << "Producer done." << std::endl;
-    mutex_.unlock();
+    //mutex_.lock();
+    //std::cout << "Producer done." << std::endl;
+    //mutex_.unlock();
   }
   bool isDone() const
   {
@@ -455,7 +457,7 @@ public:
 private:
   WorkQueue& work_;
   WaitingList& waiting_;
-  bool donePushing_;
+  //bool donePushing_;
   int currentPriority_;
   Mutex& mutex_;
 };
@@ -469,44 +471,45 @@ public:
   }
   void run()
   {
-    mutex_.lock();
-    std::cout << "Consumer started." << std::endl;
-    mutex_.unlock();
+    //mutex_.lock();
+    //std::cout << "Consumer started." << std::endl;
+    //mutex_.unlock();
     while (!producer_.isDone())
     {
-      mutex_.lock();
-      std::cout << "\tConsumer thinks producer is not done." << std::endl;
-      mutex_.unlock();
+      //mutex_.lock();
+      //std::cout << "\tConsumer thinks producer is not done." << std::endl;
+      //mutex_.unlock();
       while (moreWork())
       {
-        mutex_.lock();
-        std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
-        mutex_.unlock();
+        //mutex_.lock();
+        //std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
+        //mutex_.unlock();
         
         mutex_.lock();
-        std::cout << "\tConsumer accessing front of work queue." << std::endl;
+        //std::cout << "\tConsumer accessing front of work queue." << std::endl;
         UnitPtr unit = work_.front();
-        std::cout << "\tConsumer popping front of work queue." << std::endl;
+        //std::cout << "\tConsumer popping front of work queue." << std::endl;
         work_.pop();
         mutex_.unlock();
         
-        mutex_.lock();
-        std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
-        unit->runtime << " ms" << std::endl;
-        mutex_.unlock();
+        //mutex_.lock();
+        //std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
+        //unit->runtime << " ms" << std::endl;
+        //mutex_.unlock();
         
         boost::this_thread::sleep(boost::posix_time::milliseconds(unit->runtime));
         unit->done = true;
         
         done_.push_back(unit);
-        mutex_.lock();
-        std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
-        mutex_.unlock();
+
+        //mutex_.lock();
+        //std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
+        //mutex_.unlock();
       }
     }
-    mutex_.lock();
-    std::cout << "Consumer done." << std::endl;
-    mutex_.unlock();
+    //mutex_.lock();
+    //std::cout << "Consumer done." << std::endl;
+    //mutex_.unlock();
   }
   
   bool moreWork()
@@ -524,12 +527,15 @@ private:
 };
 
 
-TEST(MultiExecutorPrototypeTest, Run)
+TEST(MultiExecutorPrototypeTest, DISABLED_Run)
 {
-  const int size = 10;
+  const int size = 100;
   WaitingList list;
   std::generate_n(std::back_inserter(list), size, makeUnit);
   
+  int totalSleepTime = std::accumulate(list.begin(), list.end(), 0, [](int total, UnitPtr u){ return total + u->runtime; });
+  std::cout << size << " work units, will sleep for total of " << totalSleepTime / 1000 << " seconds" << std::endl;
+
   Mutex mutex;
   WorkQueue workQ;
   WorkUnitProducer producer(workQ, list, mutex);
@@ -544,8 +550,10 @@ TEST(MultiExecutorPrototypeTest, Run)
   tC.join();
   
   EXPECT_EQ(size, done.size());
-  std::cout << "DONE. Finished list:" << std::endl;
-  std::copy(done.begin(), done.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+  std::cout << "DONE. Finished list first 10:" << std::endl;
+  auto end = done.begin();
+  std::advance(end, 10);
+  std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
   BOOST_FOREACH(const UnitPtr& u, done)
   {
     EXPECT_TRUE(u->done);
