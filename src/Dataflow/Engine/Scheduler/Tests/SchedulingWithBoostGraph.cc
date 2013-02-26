@@ -46,6 +46,9 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
+#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
+//#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
+
 #include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
 
@@ -307,8 +310,8 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   setupBasicNetwork();
 
 
-  //BoostGraphMultiScheduler scheduler;
-  //auto order = scheduler.schedule(matrixMathNetwork);
+  BoostGraphParallelScheduler scheduler;
+  auto order = scheduler.schedule(matrixMathNetwork);
 
 
 /*

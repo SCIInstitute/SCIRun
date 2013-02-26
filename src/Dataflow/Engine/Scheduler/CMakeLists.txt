@@ -27,15 +27,19 @@
 #
 
 SET(Engine_Scheduler_SRCS
+  BoostGraphParallelScheduler.cc
   BoostGraphSerialScheduler.cc
   LinearSerialNetworkExecutor.cc
+  ParallelModuleExecutionOrder.cc
   SchedulerInterfaces.cc
   SerialModuleExecutionOrder.cc
 )
 
 SET(Engine_Scheduler_HEADERS
+  BoostGraphParallelScheduler.h
   BoostGraphSerialScheduler.h
   LinearSerialNetworkExecutor.h
+  ParallelModuleExecutionOrder.h
   SchedulerInterfaces.h
   SerialModuleExecutionOrder.h
   Share.h
