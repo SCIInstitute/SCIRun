@@ -268,7 +268,10 @@ void HistoryWindow::redoAll()
 //----------------------------------------------------------
 //TODO: separate out
 
-GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor* editor) : editor_(editor) {}
+GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor* editor) : 
+  editor_(editor),
+  historyManagerModifyingNetwork_(false)
+{}
 
 void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {

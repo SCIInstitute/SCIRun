@@ -98,12 +98,12 @@ InputPort::~InputPort()
 
 }
 
-DatatypeSinkInterfaceHandle InputPort::sink()
+DatatypeSinkInterfaceHandle InputPort::sink() const
 {
   return sink_;
 }
 
-DatatypeHandleOption InputPort::getData()
+DatatypeHandleOption InputPort::getData() const
 {
   if (0 == nconnections())
     return DatatypeHandleOption();

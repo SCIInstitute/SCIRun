@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/DataflowInterfaces.h>
 #include <Dataflow/Network/RendererInterface.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -41,6 +42,11 @@ PortInterface::~PortInterface()
 
 InputPortInterface::~InputPortInterface()
 {
+}
+
+bool InputPortInterface::hasData() const 
+{ 
+  return sink()->hasData(); 
 }
 
 OutputPortInterface::~OutputPortInterface()
