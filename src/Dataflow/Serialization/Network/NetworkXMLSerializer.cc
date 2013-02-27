@@ -40,8 +40,8 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory)
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, ModulePositionEditor* mpg)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), mpg_(mpg)
 {
 }
 
@@ -67,27 +67,34 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   return network;
 }
 
-NetworkToXML::NetworkToXML() {}
+NetworkToXML::NetworkToXML(ModulePositionEditor* mpg) 
+  : mpg_(mpg)
+{}
 
-NetworkXMLHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
+NetworkFileHandle NetworkXMLConverter::to_xml_data(const NetworkHandle& network)
 {
-  return NetworkToXML().to_xml_data(network);
+  return NetworkToXML(mpg_).to_xml_data(network);
 }
 
-NetworkXMLHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
+NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
 {
-  NetworkXMLHandle xmlData(new NetworkXML);
+  NetworkXML networkXML;
   Network::ConnectionDescriptionList conns = network->connections();
   BOOST_FOREACH(ConnectionDescription& desc, conns)
-    xmlData->connections.push_back(ConnectionDescriptionXML(desc));
+    networkXML.connections.push_back(ConnectionDescriptionXML(desc));
   for (size_t i = 0; i < network->nmodules(); ++i)
   {
     ModuleHandle module = network->module(i);
     ModuleStateHandle state = module->get_state();
     boost::shared_ptr<SimpleMapModuleStateXML> stateXML = make_state_xml(state);
-    xmlData->modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
+    networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
   }
-  return xmlData;
+
+  NetworkFileHandle file(new NetworkFile);
+  file->network = networkXML;
+  if (mpg_)
+    file->modulePositions = *mpg_->dumpModulePositions();
+  return file;
 }
 
 

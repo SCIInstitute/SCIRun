@@ -30,8 +30,6 @@
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
 
-//#include <Dataflow/Network/Module.h>
-
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 

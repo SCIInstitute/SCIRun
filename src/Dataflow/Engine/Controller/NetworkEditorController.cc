@@ -35,6 +35,7 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 
@@ -42,14 +43,18 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, NetworkExecutorHandle exe) : moduleFactory_(mf), stateFactory_(sf), executor_(exe)
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, ModulePositionEditor* mpg) : 
+  moduleFactory_(mf), 
+  stateFactory_(sf), 
+  executor_(exe),
+  modulePositionEditor_(mpg)
 {
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, NetworkExecutorHandle exe)
-  : theNetwork_(network), executor_(exe)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, NetworkExecutorHandle exe, ModulePositionEditor* mpg)
+  : theNetwork_(network), executor_(exe), modulePositionEditor_(mpg)
 {
 }
 
@@ -66,9 +71,11 @@ ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
 
 void NetworkEditorController::removeModule(const std::string& id)
 {
-  //before or after?
-  /*emit*/ moduleRemoved_(id);
   theNetwork_->remove_module(id);
+  //before or after?
+  // deciding on after: HistoryWindow/Manager wants the state *after* removal.
+  /*emit*/ moduleRemoved_(id);
+  
   printNetwork();
 }
 
@@ -155,26 +162,38 @@ boost::signals2::connection NetworkEditorController::connectNetworkExecutionFini
   return executor_->connectNetworkExecutionFinished(subscriber);
 }
 
-NetworkXMLHandle NetworkEditorController::saveNetwork() const
+NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
-  NetworkToXML conv;
+  NetworkToXML conv(modulePositionEditor_);
   return conv.to_xml_data(theNetwork_);
 }
 
-void NetworkEditorController::loadNetwork(const NetworkXML& xml)
+void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
-  NetworkXMLConverter conv(moduleFactory_, stateFactory_);
-  theNetwork_ = conv.from_xml_data(xml);
-  for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
+  if (xml)
   {
-    ModuleHandle module = theNetwork_->module(i);
-    moduleAdded_(module->get_module_name(), module);
+    NetworkXMLConverter conv(moduleFactory_, stateFactory_);
+    theNetwork_ = conv.from_xml_data(xml->network);
+    for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
+    {
+      ModuleHandle module = theNetwork_->module(i);
+      moduleAdded_(module->get_module_name(), module);
+    }
+    BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+    {
+      ConnectionId id = ConnectionId::create(cd);
+      connectionAdded_(cd);
+    }
+    if (modulePositionEditor_)
+      modulePositionEditor_->moveModules(xml->modulePositions);
+    else
+      std::cout << "module position editor is null" << std::endl;
   }
-  BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
-  {
-    ConnectionId id = ConnectionId::create(cd);
-    connectionAdded_(cd);
-  }
+}
+
+void NetworkEditorController::clear()
+{
+  //std::cout << "NetworkEditorController::clear()" << std::endl;
 }
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)

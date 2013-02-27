@@ -48,16 +48,18 @@ namespace Gui {
     void removeModule(const std::string& id);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
-    SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork() const;
-    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
+    SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
-    int numModules() const;
+    size_t numModules() const;
     int errorCode() const;
   public:
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
+    void moduleRemoved(const std::string& id);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
+    void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void executionStarted();
     void executionFinished(int returnCode);
   private:

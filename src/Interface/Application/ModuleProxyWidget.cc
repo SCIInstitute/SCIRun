@@ -99,7 +99,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     if (position_ != pos())
     {
-      Q_EMIT widgetMoved();
+      Q_EMIT widgetMoved(module_->getModuleId(), pos().x(), pos().y());
     }
     
     QGraphicsItem::mouseReleaseEvent(event);

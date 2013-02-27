@@ -27,12 +27,24 @@
 */
 
 #include <Core/Datatypes/Mesh/TriSurfMesh.h>
+#include <Core/Datatypes/Mesh/TriSurfMeshRegister.h>
 #include <Core/Datatypes/Mesh/VUnstructuredMesh.h>
+#include <Core/Datatypes/Mesh/MeshFactory.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Basis;
 
+void SCIRun::Core::Datatypes::registerTriSurfMeshes()
+{
+  //! Register class maker, so we can instantiate it
+  static MeshRegistry::MeshTypeID TriSurfMesh_MeshID1("TriSurfMesh<TriLinearLgn<Point>>", 
+    TriSurfMesh<TriLinearLgn<Point> >::mesh_maker);
+  static MeshRegistry::MeshTypeID TriSurfMesh_MeshID2("TriSurfMesh<TriQuadraticLgn<Point>>", 
+    TriSurfMesh<TriQuadraticLgn<Point> >::mesh_maker);
+  static MeshRegistry::MeshTypeID TriSurfMesh_MeshID3("TriSurfMesh<TriCubicHmt<Point>>", 
+    TriSurfMesh<TriCubicHmt<Point> >::mesh_maker);
+}
 
 namespace SCIRun {
   namespace Core {
@@ -112,14 +124,14 @@ public:
   virtual void set_nodes(VirtualMesh::Node::array_type&,
                          VirtualMesh::Face::index_type);
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void insert_node_into_elem(VirtualMesh::Elem::array_type& newelems, 
                                      VirtualMesh::Node::index_type& newnode,
                                      VirtualMesh::Elem::index_type  elem,
                                      Point& point);
 
   virtual VirtualMesh::index_type* get_elems_pointer() const;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() { return this->mesh_->elem_grid_; }
   virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() { return this->mesh_->node_grid_; }
 #endif
@@ -138,33 +150,31 @@ public:
 //! Add the LINEAR virtual interface and the meshid for creating it 
 
 //! Create virtual interface 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
+
+VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
-static MeshTypeID TriSurfMesh_MeshID1(
-                  TriSurfMesh<TriLinearLgn<Point> >::type_name(-1),
-                  TriSurfMesh<TriLinearLgn<Point> >::mesh_maker);
-                  
-                  
-//! Create virtual interface 
-VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
+VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriQuadraticLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
-static MeshTypeID TriSurfMesh_MeshID2(TriSurfMesh<TriQuadraticLgn<Point> >::type_name(-1),
-                  TriSurfMesh<TriQuadraticLgn<Point> >::mesh_maker);
-
-//! Create virtual interface 
-VirtualMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
+VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriCubicHmt<Point> > >(mesh);
 }
+
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+//! Register class maker, so we can instantiate it
+static MeshTypeID TriSurfMesh_MeshID1(
+                  TriSurfMesh<TriLinearLgn<Point> >::type_name(-1),
+                  TriSurfMesh<TriLinearLgn<Point> >::mesh_maker);
+
+//! Register class maker, so we can instantiate it
+static MeshTypeID TriSurfMesh_MeshID2(TriSurfMesh<TriQuadraticLgn<Point> >::type_name(-1),
+                  TriSurfMesh<TriQuadraticLgn<Point> >::mesh_maker);
 
 //! Register class maker, so we can instantiate it
 static MeshTypeID TriSurfMesh_MeshID3(TriSurfMesh<TriCubicHmt<Point> >::type_name(-1),
@@ -375,7 +385,7 @@ VTriSurfMesh<MESH>::set_nodes(VirtualMesh::Node::array_type& nodes,
 }
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 VirtualMesh::index_type*
 VTriSurfMesh<MESH>::
@@ -400,3 +410,4 @@ VTriSurfMesh<MESH>::insert_node_into_elem(VirtualMesh::Elem::array_type& newelem
   this->convert_vector(array,newelems);
   newnode = VirtualMesh::Node::index_type(index);
 }
+#endif

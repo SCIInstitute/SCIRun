@@ -26,48 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef ENGINE_NETWORK_HISTORYITEM_H
+#define ENGINE_NETWORK_HISTORYITEM_H
 
-#ifndef CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H
-#define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
-
-#include <Dataflow/Network/NetworkFwd.h>
-#include <iosfwd>
 #include <boost/noncopyable.hpp>
-#include <Dataflow/Serialization/Network/Share.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
-namespace Networks {
-
-  class SCISHARE NetworkXMLConverter : boost::noncopyable
+namespace Engine {
+  
+  template <class Memento>
+  class SCISHARE HistoryItem : boost::noncopyable
   {
   public:
-    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, ModulePositionEditor* mpg = 0);
-    NetworkHandle from_xml_data(const NetworkXML& data);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network);
-  private:
-    ModuleFactoryHandle moduleFactory_;
-    ModuleStateFactoryHandle stateFactory_;
-    ModulePositionEditor* mpg_;
+    typedef boost::shared_ptr<HistoryItem<Memento>> Handle;
+    ~HistoryItem() {}
+    virtual Memento memento() const = 0;
+    virtual std::string name() const = 0;
   };
 
-  class SCISHARE NetworkToXML : boost::noncopyable
-  {
-  public:
-    explicit NetworkToXML(ModulePositionEditor* mpg = 0);
-    NetworkFileHandle to_xml_data(const NetworkHandle& network);
-  private:
-    ModulePositionEditor* mpg_;
-  };
-
-  class SCISHARE NetworkXMLSerializer : boost::noncopyable
-  {
-  public:
-    void save_xml(const NetworkXML& data, const std::string& filename);
-    void save_xml(const NetworkXML& data, std::ostream& ostr);
-    NetworkXMLHandle load_xml(const std::string& filename);
-    NetworkXMLHandle load_xml(std::istream& istr);
-  };
-}}}
+}
+}
+}
 
 #endif

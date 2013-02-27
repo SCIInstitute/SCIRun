@@ -48,6 +48,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   FieldVIndex.h
   FieldVIterator.h
   LatticeVolumeMesh.h
+  LatticeVolumeMeshRegister.h
   LatticeVolumeMeshTemplateImpl.h
   Mesh.h
   MeshFacade.h
@@ -55,6 +56,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   MeshFactory.h
   MeshTraits.h
   TriSurfMesh.h
+  TriSurfMeshRegister.h
   VirtualMeshFactory.h
   VMesh.h
   VMeshShared.h

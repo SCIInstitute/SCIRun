@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2013 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -26,41 +26,8 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Engine_Network_SRCS
-  NetworkEditorController.cc
-  HistoryItem.cc
-  HistoryItemFactory.cc
-  HistoryItemImpl.cc
-  HistoryManager.cc
-  NetworkCommands.cc
-)
+SET(DOXYFILE ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+CONFIGURE_FILE(Doxyfile.in ${DOXYFILE} @ONLY NEWLINE_STYLE UNIX)
 
-SET(Engine_Network_HEADERS
-  ControllerInterfaces.h
-  NetworkEditorController.h
-  HistoryItem.h
-  HistoryItemFactory.h
-  HistoryItemImpl.h
-  HistoryManager.h
-  NetworkCommands.h
-  Share.h
-)
-
-ADD_LIBRARY(Engine_Network 
-  ${Engine_Network_HEADERS}
-  ${Engine_Network_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Engine_Network
-  Dataflow_Network
-  Core_Serialization_Network
-  Core_Command
-  Engine_Scheduler
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Engine_Network)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(Tests)
-
+# TODO: if generating documentation every time project is built is onerous, remove the ALL keyword
+ADD_CUSTOM_TARGET(Doxygen ALL COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYFILE} SOURCES ${DOXYFILE})

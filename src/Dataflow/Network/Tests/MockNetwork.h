@@ -32,6 +32,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Network/NetworkSettings.h>
 #include <gmock/gmock.h>
 
 namespace SCIRun {

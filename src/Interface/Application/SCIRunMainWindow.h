@@ -44,6 +44,7 @@ namespace SCIRun {
 namespace Gui {
 
 class NetworkEditor;
+class HistoryWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -52,14 +53,13 @@ public:
 	static SCIRunMainWindow* Instance();
   void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
   void initialize();
-protected Q_SLOTS:
-  void ToggleRenderer();
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
+  HistoryWindow* historyWindow_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   
@@ -74,14 +74,19 @@ private:
   void makeFilterButtonMenu();
   void writeSettings();
   void readSettings();
+  void setupHistoryWindow();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
+  boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
+  //boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   bool regressionMode_;
   QString regressionTestDataDir_;
+Q_SIGNALS:
+  void moduleItemDoubleClicked();
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -99,6 +104,7 @@ private Q_SLOTS:
   void updateRegressionTestDataDir();
   void chooseBackgroundColor();
   void resetBackgroundColor();
+  void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void exitApplication(int code);
 };
 

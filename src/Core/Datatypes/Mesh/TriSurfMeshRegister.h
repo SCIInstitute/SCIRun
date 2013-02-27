@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
-#define INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
+#ifndef CORE_DATATYPES_TRISURFMESHREGISTER_H
+#define CORE_DATATYPES_TRISURFMESHREGISTER_H 
 
-#include <QObject>
+#include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Core {
+namespace Datatypes {
 
-class NetworkExecutionProgressBar : public QObject
-{
-  Q_OBJECT
-public:
-  explicit NetworkExecutionProgressBar(QWidget* parent);
+  SCISHARE void registerTriSurfMeshes();
 
-  QList<class QAction*> actions() const;
+}}}
 
-  public Q_SLOTS:
-    void updateTotalModules(size_t count);
-    void incrementModulesDone();
-    void resetModulesDone();
+#endif 
 
-private:
-  class QWidgetAction* barAction_;
-  class QProgressBar* progressBar_;
-  class QWidgetAction* counterAction_;
-  class QLabel* counterLabel_;
-  size_t numModulesDone_;
-  size_t totalModules_;
 
-  QString counterLabelString() const;
-};
-
-}
-}
-#endif

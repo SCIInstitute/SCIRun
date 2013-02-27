@@ -40,7 +40,9 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   : controller_(controller)
 {
   controller_->connectModuleAdded(boost::bind(&NetworkEditorControllerGuiProxy::moduleAdded, this, _1, _2));
+  controller_->connectModuleRemoved(boost::bind(&NetworkEditorControllerGuiProxy::moduleRemoved, this, _1));
   controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1));
+  controller_->connectConnectionRemoved(boost::bind(&NetworkEditorControllerGuiProxy::connectionRemoved, this, _1));
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
 }
@@ -65,12 +67,12 @@ void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Dataflow::N
   controller_->removeConnection(id);
 }
 
-NetworkXMLHandle NetworkEditorControllerGuiProxy::saveNetwork() const
+NetworkFileHandle NetworkEditorControllerGuiProxy::saveNetwork() const
 {
   return controller_->saveNetwork();
 }
 
-void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml)
+void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
   return controller_->loadNetwork(xml);
 }
@@ -80,7 +82,7 @@ void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Network
   controller_->executeAll(lookup);
 }
 
-int NetworkEditorControllerGuiProxy::numModules() const 
+size_t NetworkEditorControllerGuiProxy::numModules() const 
 {
   return controller_->getNetwork()->nmodules();
 }

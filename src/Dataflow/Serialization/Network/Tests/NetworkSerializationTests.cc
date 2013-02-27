@@ -79,16 +79,16 @@ namespace
   DenseMatrixHandle matrix1()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
   DenseMatrixHandle matrix2()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
         (*m)(i, j) = -2.0 * i + j;
     return m;
   }
@@ -169,11 +169,11 @@ TEST(SerializeNetworkTest, RoundTripObject)
   NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network);
-  NetworkXMLHandle xml2 = converter.to_xml_data(network);
+  auto xml2 = converter.to_xml_data(network);
   ASSERT_TRUE(xml2);
 
   std::ostringstream ostr2;
-  serializer.save_xml(*xml2, ostr2);
+  serializer.save_xml(xml2->network, ostr2);
 
   EXPECT_EQ(ostr1.str(), ostr2.str());
 }
@@ -224,14 +224,14 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
   add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
 
-  NetworkXMLHandle xml = controller.saveNetwork();
+  auto xml = controller.saveNetwork();
 
   std::ostringstream ostr;
   XMLSerializer::save_xml(*xml, ostr, "network");
   std::cout << ostr.str() << std::endl;
 
   NetworkEditorController controller2(mf, sf, exe);
-  controller2.loadNetwork(*xml);
+  controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();
   ASSERT_TRUE(deserialized);

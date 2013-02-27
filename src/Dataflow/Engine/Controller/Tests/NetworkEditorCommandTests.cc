@@ -28,32 +28,56 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
+#include <Dataflow/Engine/Controller/NetworkCommands.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
 
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
+
+class NetworkEditorCommandTests : public ::testing::Test
 {
-  int basisOrder = 1;
-  FieldInformation lfi("LatVolMesh", basisOrder, "double");
-  int sizex,sizey,sizez;
-  sizex = sizey = sizez = 4;
-  Point minb(0,0,0);
-  Point maxb(4,4,4);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-  ASSERT_TRUE(mesh);
+protected:
+  virtual void SetUp()
+  {
+    DefaultValue<ModuleHandle>::Set(ModuleHandle());
+    DefaultValue<ConnectionId>::Set(ConnectionId(""));
+    mockNetwork_.reset(new NiceMock<MockNetwork>);
+  }
+  
+  MockNetworkPtr mockNetwork_;
+  NetworkExecutorHandle null_;
+};
+
+//TODO: don't need these yet, i'm using a simpler serialization-based undo/redo stack.
+#if 0
+TEST_F(NetworkEditorCommandTests, ModuleAddCommandAddsAModule)
+{
+  NetworkEditorController controller(mockNetwork_, null_);
+
+  EXPECT_CALL(*mockNetwork_, add_module(_)).Times(1);
+
+  ModuleAddCommand add(...);
+
+  FAIL() << "not written yet";
 }
 
-TEST(MeshFactoryTests, CanCreateTriSurfMesh)
+TEST_F(NetworkEditorCommandTests, CanUndoModuleAddCommand)
 {
-  int basisOrder = 1; // Not sure if this is being used correctly below.
-  FieldInformation lfi("TriSurfMesh", basisOrder, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
-  ASSERT_TRUE(mesh);
+  FAIL() << "not written yet";
 }
+
+TEST_F(NetworkEditorCommandTests, CanRedoModuleAddCommand)
+{
+  FAIL() << "not written yet";
+}
+#endif

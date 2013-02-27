@@ -35,6 +35,7 @@ SET(Core_Serialization_Network_SRCS
 
 SET(Core_Serialization_Network_HEADERS
   ModuleDescriptionSerialization.h
+  ModulePositionGetter.h
   NetworkDescriptionSerialization.h
   NetworkXMLSerializer.h
   XMLSerializer.h

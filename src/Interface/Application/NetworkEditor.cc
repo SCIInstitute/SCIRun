@@ -138,7 +138,9 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(module, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(modified()));
+  
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
+  
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
@@ -149,7 +151,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
-  connect(proxy, SIGNAL(widgetMoved()), this, SIGNAL(modified()));
+  connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(modified()));
+  connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(moduleMoved(const std::string&, double, double)));
   proxy->createPortPositionProviders();
 
   scene_->addItem(proxy);
@@ -386,13 +389,6 @@ void NetworkEditor::createActions()
     this, SLOT(properties()));
 }
 
-void NetworkEditor::setModuleDumpAction(QAction* action)
-{
-  moduleDumpAction_ = action; 
-  if (moduleDumpAction_)
-    connect(moduleDumpAction_, SIGNAL(triggered()), this, SLOT(dumpModulePositions()));
-}
-
 QList<QAction*> NetworkEditor::getModuleSpecificActions() const
 {
   return QList<QAction*>() 
@@ -445,7 +441,7 @@ void NetworkEditor::mousePressEvent(QMouseEvent *event)
   QGraphicsView::mousePressEvent(event);
 }
 
-SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions()
+SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
   ModulePositionsHandle positions(new ModulePositions);
   Q_FOREACH(QGraphicsItem* item, scene_->items())
@@ -502,17 +498,17 @@ void NetworkEditor::moveModules(const ModulePositions& modulePositions)
   }
 }
 
-SCIRun::Dataflow::Networks::NetworkXMLHandle NetworkEditor::saveNetwork()
+SCIRun::Dataflow::Networks::NetworkFileHandle NetworkEditor::saveNetwork() const
 {
   return controller_->saveNetwork();
 }
 
-void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml)
+void NetworkEditor::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
 {
   controller_->loadNetwork(xml);
 }
 
-int NetworkEditor::numModules() const
+size_t NetworkEditor::numModules() const
 {
   return controller_->numModules();
 }

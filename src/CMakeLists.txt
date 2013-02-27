@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2013 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -87,7 +87,7 @@ SET(APPLICATION_OSX_ICON_FULL_PATH "${CMAKE_SOURCE_DIR}/Interface/Application/sc
 SET(APPLICATION_OSX_ICON "scirun-icon-large.icns" CACHE INTERNAL "OSX icon" FORCE)
 
 ########################################################################
-# Standard tests
+# Standard system and compiler tests
 
 INCLUDE(CMakeBackwardCompatibilityC)
 INCLUDE(CMakeBackwardCompatibilityCXX)
@@ -167,6 +167,34 @@ IF(APPLE)
   MARK_AS_ADVANCED(SED)
 ENDIF()
 
+
+########################################################################
+# Configure documentation
+
+OPTION(BUILD_DOXYGEN_DOCUMENTATION "Generate doxygen-based documentation." OFF)
+MARK_AS_ADVANCED(BUILD_DOXYGEN_DOCUMENTATION)
+
+IF(BUILD_DOXYGEN_DOCUMENTATION)
+  FIND_PACKAGE(Doxygen)
+
+  IF(DOXYGEN_FOUND)
+    ADD_SUBDIRECTORY(Documentation/Doxygen)
+  ELSE()
+    SET(BUILD_DOXYGEN_DOCUMENTATION OFF CACHE BOOL "Generate doxygen-based documentation." FORCE)
+  ENDIF()
+ENDIF()
+
+# TODO: uncomment when LaTeX files are available
+# OPTION(BUILD_LATEX_DOCUMENTATION "Compile SCIRun LaTeX manuals and tutorials to PDF." OFF)
+# MARK_AS_ADVANCED(BUILD_LATEX_DOCUMENTATION)
+#
+# IF(BUILD_LATEX_DOCUMENTATION)
+#   FIND_PACKAGE(LATEX)
+#   IF(PDFLATEX_COMPILER)
+#     IF(BUILD_DOCUMENTATION)
+#     ADD_SUBDIRECTORY(Documentation/Manuals)
+#   ENDIF()
+# ENDIF()
 
 ########################################################################
 # Configure Boost external project

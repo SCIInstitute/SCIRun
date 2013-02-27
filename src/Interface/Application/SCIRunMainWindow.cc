@@ -33,13 +33,15 @@
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Interface/Application/HistoryWindow.h>
 #include <Interface/Application/Connection.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
+#include <Dataflow/Engine/Controller/HistoryManager.h>
 #include <Core/Application/Application.h>
-
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -139,10 +141,13 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
   return instance_;
 }
 
-void SCIRunMainWindow::setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller)
+void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
 {
+  //controller_ = controller;
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
+  //TODO: need better way to wire this up
+  controller->setModulePositionEditor(networkEditor_);
 }
 
 
@@ -160,7 +165,6 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->setModuleDumpAction(actionDump_positions);
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
 
@@ -233,6 +237,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
+  actionQuit_->setShortcut(QKeySequence::Quit);
 
   connect(cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
@@ -255,11 +260,15 @@ SCIRunMainWindow::SCIRunMainWindow()
   moduleSelectorTreeWidget_->expandAll();
   moduleSelectorTreeWidget_->resizeColumnToContents(0);
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
+  connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
+
+  setupHistoryWindow();
+
   makeFilterButtonMenu();
   activateWindow();
 }
@@ -268,6 +277,18 @@ void SCIRunMainWindow::initialize()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
+    commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const std::string&)), 
+    commandConverter_.get(), SLOT(moduleRemoved(const std::string&)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
+    commandConverter_.get(), SLOT(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)), 
+    commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
+  connect(networkEditor_, SIGNAL(moduleMoved(const std::string&, double, double)), 
+    commandConverter_.get(), SLOT(moduleMoved(const std::string&, double, double)));
+  connect(historyWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByHistoryManager(bool)));
   
   setRegressionTestDataDir();
 
@@ -313,15 +334,9 @@ void SCIRunMainWindow::saveNetworkAs()
 
 void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
 {
-  NetworkXMLHandle data = networkEditor_->saveNetwork();
+  NetworkFileHandle file = networkEditor_->saveNetwork();
 
-  ModulePositionsHandle positions = networkEditor_->dumpModulePositions();
-
-  NetworkFile file;
-  file.network = *data;
-  file.modulePositions = *positions;
-
-  XMLSerializer::save_xml(file, fileName.toStdString(), "networkFile");
+  XMLSerializer::save_xml(*file, fileName.toStdString(), "networkFile");
   setCurrentFile(fileName);
 
   statusBar()->showMessage(tr("File saved"), 2000);
@@ -339,13 +354,12 @@ public:
 
     try
     {
-      auto xml = XMLSerializer::load_xml<NetworkFile>(filename_);
+      openedFile_ = XMLSerializer::load_xml<NetworkFile>(filename_);
 
-      if (xml)
+      if (openedFile_)
       {
         networkEditor_->clear();
-        networkEditor_->loadNetwork(xml->network);
-        networkEditor_->moveModules(xml->modulePositions);
+        networkEditor_->loadNetwork(openedFile_);
         GuiLogger::Instance().log("File load done.");
         return true;
       }
@@ -358,6 +372,8 @@ public:
     }
     return false;
   }
+
+  NetworkFileHandle openedFile_;
 private:
   std::string filename_;
   NetworkEditor* networkEditor_;
@@ -382,6 +398,8 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       setCurrentFile(filename);
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
+      historyWindow_->clear();
+      historyWindow_->showFile(command.openedFile_);
     }
   }
 }
@@ -490,16 +508,15 @@ void SCIRunMainWindow::networkModified()
   networkProgressBar_->updateTotalModules(networkEditor_->numModules());
 }
 
-void SCIRunMainWindow::ToggleRenderer()
-{
-}
-
 void SCIRunMainWindow::setActionIcons() 
 {
   actionLoad_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
   actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
+  actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
+  actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
+  //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
 struct HideItemsNotMatchingString
@@ -690,4 +707,35 @@ void SCIRunMainWindow::resetBackgroundColor()
   QColor defaultColor(Qt::darkGray);
   networkEditor_->setBackground(defaultColor);
   GuiLogger::Instance().log("Background color set to " + defaultColor.name());
+}
+
+void SCIRunMainWindow::setupHistoryWindow()
+{
+  if (!networkEditor_)
+    throw "BAD";
+  HistoryManagerHandle historyManager(new Dataflow::Engine::HistoryManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
+  historyWindow_ = new HistoryWindow(historyManager, this);
+  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
+  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
+
+  historyWindow_->setVisible(false);
+  historyWindow_->setFloating(true);
+  addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
+
+  connect(actionUndo_, SIGNAL(triggered()), historyWindow_, SLOT(undo()));
+  connect(actionRedo_, SIGNAL(triggered()), historyWindow_, SLOT(redo()));
+  actionUndo_->setEnabled(false);
+  actionRedo_->setEnabled(false);
+  connect(historyWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
+  connect(historyWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+
+  commandConverter_.reset(new GuiActionCommandHistoryConverter(networkEditor_));
+
+  connect(commandConverter_.get(), SIGNAL(historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle)), historyWindow_, SLOT(addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle)));
+}
+
+void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)
+{
+  if (item && item->childCount() == 0)
+    Q_EMIT moduleItemDoubleClicked();
 }

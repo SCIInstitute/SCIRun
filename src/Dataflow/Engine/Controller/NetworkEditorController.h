@@ -31,6 +31,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
@@ -44,11 +45,12 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
 
-  class SCISHARE NetworkEditorController 
+  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe);
-    explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe);
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
+    explicit NetworkEditorController(Networks::NetworkHandle network, NetworkExecutorHandle exe, Networks::ModulePositionEditor* mpg = 0);
+
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const std::string& id);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -65,11 +67,15 @@ namespace Engine {
 
     void executeAll(const Networks::ExecutableLookup& lookup);
 
-    Networks::NetworkXMLHandle saveNetwork() const;
-    void loadNetwork(const Networks::NetworkXML& xml);
+    virtual Networks::NetworkFileHandle saveNetwork() const;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+    virtual void clear();
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();
+
+    //TODO: eek, getting bloated here. Figure out a better way to wire this one in.
+    void setModulePositionEditor(Networks::ModulePositionEditor* editor) { modulePositionEditor_ = editor; }
 
   private:
     void printNetwork() const;
@@ -77,12 +83,16 @@ namespace Engine {
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
     NetworkExecutorHandle executor_;
+    Networks::ModulePositionEditor* modulePositionEditor_;
+
     ModuleAddedSignalType moduleAdded_;
     ModuleRemovedSignalType moduleRemoved_; //not used yet
     ConnectionAddedSignalType connectionAdded_;
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
   };
+
+  typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;
 
 }
 }

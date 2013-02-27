@@ -34,6 +34,8 @@
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Dataflow/Engine/Controller/ControllerInterfaces.h>
+#include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 
 class QMenu;
 class QToolBar;
@@ -68,7 +70,10 @@ Q_SIGNALS:
   class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
-  class NetworkEditor : public QGraphicsView, public SCIRun::Dataflow::Networks::ExecutableLookup
+  class NetworkEditor : public QGraphicsView, 
+    public SCIRun::Dataflow::Networks::ExecutableLookup, 
+    public SCIRun::Dataflow::Networks::ModulePositionEditor, 
+    public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>
   {
 	  Q_OBJECT
 	
@@ -76,16 +81,17 @@ Q_SIGNALS:
     explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
-    void setModuleDumpAction(QAction* action);
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
-    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const; 
-    void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const;
 
-    SCIRun::Dataflow::Networks::NetworkXMLHandle saveNetwork();
-    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkXML& xml);
+    SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
+    void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
 
-    int numModules() const;
+    virtual SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions() const;
+    virtual void moveModules(const SCIRun::Dataflow::Networks::ModulePositions& modulePositions);
+
+    size_t numModules() const;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy() { return moduleEventProxy_; }
     virtual int errorCode() const;
@@ -108,12 +114,10 @@ Q_SIGNALS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void executeAll();
-    void clear();
+    virtual void clear();
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
-
-    //TODO: break out, unit test
-    SCIRun::Dataflow::Networks::ModulePositionsHandle dumpModulePositions();
+    
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -121,6 +125,7 @@ Q_SIGNALS:
     void networkExecuted();
     void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
+    void moduleMoved(const std::string& id, double newX, double newY);
   private Q_SLOTS:
     void del();
     void cut();
@@ -143,7 +148,7 @@ Q_SIGNALS:
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
-    
+
     //QToolBar* editToolBar_;
     //QAction* cutAction_;
     //QAction* copyAction_;

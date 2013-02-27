@@ -28,8 +28,16 @@
 
 #include <Core/Command/Command.h>
 
-using namespace SCIRun::Core::GlobalCommands;
+using namespace SCIRun::Core::Commands;
 
-GlobalCommand::~GlobalCommand()
+Command::~Command()
+{
+}
+
+UndoableCommand::~UndoableCommand()
+{
+}
+
+RedoableCommand::~RedoableCommand()
 {
 }

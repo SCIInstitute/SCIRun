@@ -132,8 +132,23 @@
     </property>
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
+    <addaction name="actionHistory_"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo_"/>
+    <addaction name="actionRedo_"/>
+    <addaction name="separator"/>
+    <addaction name="actionCut_"/>
+    <addaction name="actionCopy_"/>
+    <addaction name="actionPaste_"/>
+    <addaction name="actionDelete_"/>
+    <addaction name="actionSelectAll_"/>
    </widget>
    <addaction name="menuFile_"/>
+   <addaction name="menuEdit"/>
    <addaction name="menuModules_"/>
    <addaction name="menuSubnets_"/>
    <addaction name="menuToolkits_"/>
@@ -1128,6 +1143,70 @@
     <string>Enter &quot;What's This?&quot; Mode</string>
    </property>
   </action>
+  <action name="actionHistory_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>History</string>
+   </property>
+  </action>
+  <action name="actionUndo_">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo_">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="actionCut_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionCopy_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="actionDelete_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionSelectAll_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Select All</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -1176,6 +1255,38 @@
     <hint type="destinationlabel">
      <x>141</x>
      <y>63</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>moduleSelectorDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionModule_Selector</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>configurationDockWidget_</sender>
+   <signal>visibilityChanged(bool)</signal>
+   <receiver>actionConfiguration_</receiver>
+   <slot>setChecked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>559</x>
+     <y>696</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>

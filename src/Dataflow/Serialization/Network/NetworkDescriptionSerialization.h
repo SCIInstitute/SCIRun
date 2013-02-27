@@ -32,6 +32,7 @@
 
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/StateSerialization.h>
+#include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <Dataflow/Serialization/Network/Share.h>
@@ -72,12 +73,6 @@ namespace Networks {
       ar & BOOST_SERIALIZATION_NVP(modules);
       ar & BOOST_SERIALIZATION_NVP(connections);
     } 
-  };
-
-  struct ModulePositions
-  {
-    typedef std::map<std::string, std::pair<double,double> > Data;
-    Data modulePositions;
   };
 
   struct SCISHARE NetworkFile 

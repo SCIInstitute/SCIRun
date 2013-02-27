@@ -52,9 +52,9 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
   return QList<QAction*>() << barAction_ << counterAction_;
 }
 
-void NetworkExecutionProgressBar::updateTotalModules(int count)
+void NetworkExecutionProgressBar::updateTotalModules(size_t count)
 {
-  if (count >= 0 && count != totalModules_)
+  if (count != totalModules_)
   {
     totalModules_ = count;
     numModulesDone_ = 0;

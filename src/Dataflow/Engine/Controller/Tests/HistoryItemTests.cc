@@ -26,47 +26,54 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
-#define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/HistoryItemFactory.h>
+#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
 
-#include <QGraphicsProxyWidget>
+using namespace SCIRun;
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-namespace SCIRun
+
+class HistoryItemTests : public ::testing::Test
 {
-  namespace Gui
+protected:
+  virtual void SetUp()
   {
-    class ModuleWidget;
-
-    class ModuleProxyWidget : public QGraphicsProxyWidget
-    {
-	    Q_OBJECT
-	
-    public:
-      explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
-      void createPortPositionProviders();
-      ModuleWidget* getModuleWidget();
-    public Q_SLOTS:
-      void highlightIfSelected();
-    Q_SIGNALS:
-      void selected();
-      void widgetMoved(const std::string& id, double newX, double newY);
-    protected:
-      void mousePressEvent(QGraphicsSceneMouseEvent *event);
-      void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-      void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-      QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-    private:
-      bool isSubwidget(QWidget* alienWidget) const;
-      void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
-      void addPort();
-  
-      ModuleWidget* module_;
-      bool grabbedByWidget_;
-      QWidget* pressedSubWidget_;
-      QPointF position_;
-    };
-
+    DefaultValue<ModuleHandle>::Set(ModuleHandle());
+    DefaultValue<ConnectionId>::Set(ConnectionId(""));
+    mockNetwork_.reset(new NiceMock<MockNetwork>);
   }
+  
+  MockNetworkPtr mockNetwork_;
+};
+
+TEST_F(HistoryItemTests, CanCreateAddModule)
+{
+  const std::string name = "ComputeSVD";
+  ModuleAddedHistoryItem item(name, NetworkFileHandle());
+
+  EXPECT_EQ("Module Added: " + name, item.name());
+
+  //FAIL();
 }
 
-#endif
+TEST_F(HistoryItemTests, CanCreateRemoveModule)
+{
+  const std::string name = "ComputeSVD";
+  ModuleRemovedHistoryItem item(name, NetworkFileHandle());
+
+  EXPECT_EQ("Module Removed: " + name, item.name());
+
+  //FAIL();
+}
