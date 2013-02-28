@@ -34,6 +34,7 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/HistoryWindow.h>
+#include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
@@ -268,6 +269,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
   setupHistoryWindow();
+  setupDevConsole();
 
   makeFilterButtonMenu();
   activateWindow();
@@ -711,8 +713,6 @@ void SCIRunMainWindow::resetBackgroundColor()
 
 void SCIRunMainWindow::setupHistoryWindow()
 {
-  if (!networkEditor_)
-    throw "BAD";
   HistoryManagerHandle historyManager(new Dataflow::Engine::HistoryManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
   historyWindow_ = new HistoryWindow(historyManager, this);
   connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
@@ -738,4 +738,15 @@ void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* it
 {
   if (item && item->childCount() == 0)
     Q_EMIT moduleItemDoubleClicked();
+}
+
+void SCIRunMainWindow::setupDevConsole()
+{
+  devConsole_ = new DeveloperConsole(this);
+  connect(actionDevConsole_, SIGNAL(toggled(bool)), devConsole_, SLOT(setVisible(bool)));
+  connect(devConsole_, SIGNAL(visibilityChanged(bool)), actionDevConsole_, SLOT(setChecked(bool)));
+  devConsole_->setVisible(false);
+  devConsole_->setFloating(true);
+  addDockWidget(Qt::TopDockWidgetArea, devConsole_);
+  actionDevConsole_->setShortcut(QKeySequence("`"));
 }

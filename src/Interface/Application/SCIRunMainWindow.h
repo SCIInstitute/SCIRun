@@ -45,6 +45,7 @@ namespace Gui {
 
 class NetworkEditor;
 class HistoryWindow;
+class DeveloperConsole;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -60,6 +61,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   HistoryWindow* historyWindow_;
+  DeveloperConsole* devConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   
@@ -75,6 +77,7 @@ private:
   void writeSettings();
   void readSettings();
   void setupHistoryWindow();
+  void setupDevConsole();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;

@@ -133,6 +133,7 @@
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionHistory_"/>
+    <addaction name="actionDevConsole_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -1205,6 +1206,14 @@
    </property>
    <property name="text">
     <string>Select All</string>
+   </property>
+  </action>
+  <action name="actionDevConsole_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Developer Console</string>
    </property>
   </action>
  </widget>
