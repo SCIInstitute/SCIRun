@@ -26,42 +26,59 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
-#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
+#include <boost/utility.hpp>
+#include <boost/graph/topological_sort.hpp>
+#include <boost/foreach.hpp>
+
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network)
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network)
 {
-  NetworkGraphAnalyzer graphAnalyzer(network);
-  NetworkGraphAnalyzer::Graph& g = graphAnalyzer.graph();
-
-  // Parallel compilation ordering
-  std::vector<int> time(network.nmodules(), 0);
-  for (auto i = graphAnalyzer.topologicalBegin(); i != graphAnalyzer.topologicalEnd(); ++i) 
-  {    
-    // Walk through the in_edges an calculate the maximum time.
-    if (in_degree (*i, g) > 0) 
-    {
-      NetworkGraphAnalyzer::Graph::in_edge_iterator j, j_end;
-      int maxdist=0;
-      // Through the order from topological sort, we are sure that every 
-      // time we are using here is already initialized.
-      for (boost::tie(j, j_end) = in_edges(*i, g); j != j_end; ++j)
-        maxdist = std::max(time[source(*j, g)], maxdist);
-      time[*i] = maxdist+1;
-    }
+  for (int i = 0; i < network.nmodules(); ++i)
+  {
+    moduleIdLookup_.left.insert(std::make_pair(network.module(i)->get_id(), i));
   }
-  
-  ParallelModuleExecutionOrder::ModulesByGroup map;
 
-  std::transform(
-    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
-    std::inserter(map, map.begin()), 
-    [&](int vertex){ return std::make_pair(time[vertex], graphAnalyzer.moduleName(vertex)); }
-  );
+  std::vector<Edge> edges;
 
-  return ParallelModuleExecutionOrder(map);
+  BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
+  {
+    edges.push_back(std::make_pair(moduleIdLookup_.left.at(cd.out_.moduleId_), moduleIdLookup_.left.at(cd.in_.moduleId_)));
+  }
+
+  graph_ = Graph(edges.begin(), edges.end(), network.nmodules());
+
+  try
+  {
+    boost::topological_sort(graph_, std::front_inserter(order_));
+  }
+  catch (std::invalid_argument& e)
+  {
+    BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << SCIRun::Core::ErrorMessage(e.what()));
+  }
+}
+
+std::string NetworkGraphAnalyzer::moduleName(int vertex) const
+{
+  return moduleIdLookup_.right.at(vertex);
+}
+
+NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topologicalBegin()
+{
+  return order_.begin();
+}
+
+NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topologicalEnd()
+{
+  return order_.end();
+}
+
+NetworkGraphAnalyzer::Graph& NetworkGraphAnalyzer::graph()
+{
+  return graph_;
 }

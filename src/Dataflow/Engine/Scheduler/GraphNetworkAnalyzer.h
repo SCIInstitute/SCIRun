@@ -26,23 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
+#ifndef ENGINE_SCHEDULER_BOOST_GRAPH_NETWORK_ANALYZER_H
+#define ENGINE_SCHEDULER_BOOST_GRAPH_NETWORK_ANALYZER_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <boost/noncopyable.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/bimap.hpp>
+#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/Share.h>
 
-ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface& network)
-{
-  NetworkGraphAnalyzer graphAnalyzer(network);
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
 
-  ModuleExecutionOrder::ModuleIdList list;
-  std::transform(
-    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
-    std::back_inserter(list), 
-    [&](int vertex){ return graphAnalyzer.moduleName(vertex); }
-  );
-  
-  return ModuleExecutionOrder(list);
-}
+  class SCISHARE NetworkGraphAnalyzer : boost::noncopyable
+  {
+  public:
+    typedef std::pair<int,int> Edge;
+    typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
+    typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
+    typedef std::list<Vertex> ExecutionOrder;
+
+    explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network);
+
+    std::string moduleName(int vertex) const;
+    ExecutionOrder::iterator topologicalBegin();
+    ExecutionOrder::iterator topologicalEnd();
+    Graph& graph();
+
+  private:
+    boost::bimap<std::string, int> moduleIdLookup_;
+    ExecutionOrder order_;
+    Graph graph_;
+  };
+
+}}}
+
+#endif

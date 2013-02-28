@@ -29,6 +29,7 @@
 SET(Engine_Scheduler_SRCS
   BoostGraphParallelScheduler.cc
   BoostGraphSerialScheduler.cc
+  GraphNetworkAnalyzer.cc
   LinearSerialNetworkExecutor.cc
   ParallelModuleExecutionOrder.cc
   SchedulerInterfaces.cc
@@ -38,6 +39,7 @@ SET(Engine_Scheduler_SRCS
 SET(Engine_Scheduler_HEADERS
   BoostGraphParallelScheduler.h
   BoostGraphSerialScheduler.h
+  GraphNetworkAnalyzer.h
   LinearSerialNetworkExecutor.h
   ParallelModuleExecutionOrder.h
   SchedulerInterfaces.h

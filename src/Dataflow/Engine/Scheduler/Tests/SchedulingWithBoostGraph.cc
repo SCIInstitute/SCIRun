@@ -323,8 +323,8 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   std::string expected = 
     "0 SendTestMatrix1\n"
     "0 SendTestMatrix0\n"
-    "1 EvaluateLinearAlgebraUnary4\n"
     "1 EvaluateLinearAlgebraUnary3\n"
+    "1 EvaluateLinearAlgebraUnary4\n"
     "1 EvaluateLinearAlgebraUnary2\n"
     "2 EvaluateLinearAlgebraBinary5\n"
     "3 EvaluateLinearAlgebraBinary6\n"
