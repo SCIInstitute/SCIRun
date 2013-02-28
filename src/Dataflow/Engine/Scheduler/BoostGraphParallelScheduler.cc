@@ -46,12 +46,13 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
     if (in_degree (*i, g) > 0) 
     {
       NetworkGraphAnalyzer::Graph::in_edge_iterator j, j_end;
-      int maxdist=0;
+      int maxdist = 0;
       // Through the order from topological sort, we are sure that every 
       // time we are using here is already initialized.
       for (boost::tie(j, j_end) = in_edges(*i, g); j != j_end; ++j)
         maxdist = std::max(time[source(*j, g)], maxdist);
-      time[*i] = maxdist+1;
+
+      time[*i] = maxdist + 1;
     }
   }
   
