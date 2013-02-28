@@ -47,7 +47,7 @@
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
-//#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
+#include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
 
 #include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
@@ -77,6 +77,7 @@ using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Dataflow::Engine;
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -252,19 +253,20 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_THROW(scheduler.schedule(matrixMathNetwork), NetworkHasCyclesException);
 }
 
-TEST_F(SchedulingWithBoostGraph, DISABLED_NetworkFromMatrixCalculatorMultiThreaded)
+
+
+
+TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
 {
   setupBasicNetwork();
 
   //TODO: classes below.
-#if 0
   {
-    BoostGraphMultiScheduler scheduler;
-    ModuleParallelExecutionOrder order = scheduler.schedule(matrixMathNetwork);
-    MultiThreadedNetworkExecutor executor;
+    BoostGraphParallelScheduler scheduler;
+    auto order = scheduler.schedule(matrixMathNetwork);
+    BasicMultithreadedNetworkExecutor executor;
     executor.executeAll(matrixMathNetwork, order);
   }
-#endif
 
   //TODO: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));

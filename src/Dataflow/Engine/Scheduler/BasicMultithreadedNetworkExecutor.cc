@@ -26,36 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_PARALLEL_MODULE_EXECUTION_ORDER_H
-#define ENGINE_SCHEDULER_PARALLEL_MODULE_EXECUTION_ORDER_H
+#include <iostream>
+#include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/NetworkInterface.h>
+#include <Core/Thread/Parallel.h>
 
-#include <map>
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
+using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Thread;
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ParallelModuleExecutionOrder& order)
+{
+  executeStarts_();
 
-  class SCISHARE ParallelModuleExecutionOrder
+  for (int group = order.minGroup(); group <= order.maxGroup(); ++group)
   {
-  public:
-    typedef std::multimap<int, std::string> ModulesByGroup;
-    typedef ModulesByGroup::iterator iterator;
-    typedef ModulesByGroup::const_iterator const_iterator;
+    auto groupIter = order.getGroup(group);
 
-    ParallelModuleExecutionOrder();
-    explicit ParallelModuleExecutionOrder(const ModulesByGroup& map);
-    const_iterator begin() const;
-    const_iterator end() const;
-    int minGroup() const;
-    int maxGroup() const;
-    std::pair<const_iterator,const_iterator> getGroup(int order) const;
-  private:
-    ModulesByGroup map_;
-  };
+    std::vector<boost::function<void()>> tasks;
 
+    std::transform(groupIter.first, groupIter.second, std::back_inserter(tasks), 
+      [&](const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod) -> boost::function<void()>
+    {
+      return [&]() { lookup.lookupExecutable(mod.second)->execute(); };
+    });
+
+    std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
+    Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
+  }
+
+  executeFinishes_(lookup.errorCode());
 }
-}}
-
-#endif

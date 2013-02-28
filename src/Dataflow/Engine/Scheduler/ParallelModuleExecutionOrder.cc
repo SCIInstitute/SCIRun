@@ -49,12 +49,17 @@ ParallelModuleExecutionOrder::const_iterator ParallelModuleExecutionOrder::end()
   return map_.end();
 }
 
-//bool SCIRun::Dataflow::Engine::operator==(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs)
-//{
-//  return std::equal(lhs.begin(), lhs.end(), rhs.begin());
-//}
-//
-//bool SCIRun::Dataflow::Engine::operator!=(const ModuleExecutionOrder& lhs, const ModuleExecutionOrder& rhs)
-//{
-//  return !(lhs == rhs);
-//}
+int ParallelModuleExecutionOrder::minGroup() const
+{
+  return map_.empty() ? -1 : map_.begin()->first;
+}
+
+int ParallelModuleExecutionOrder::maxGroup() const
+{
+  return map_.empty() ? -1 : map_.rbegin()->first;
+}
+
+std::pair<ParallelModuleExecutionOrder::const_iterator, ParallelModuleExecutionOrder::const_iterator> ParallelModuleExecutionOrder::getGroup(int order) const
+{
+  return map_.equal_range(order);
+}

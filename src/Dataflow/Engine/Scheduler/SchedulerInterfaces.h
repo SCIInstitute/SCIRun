@@ -58,7 +58,7 @@ namespace Engine {
   {
   public:
     virtual ~NetworkExecutor() {}
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, OrderType order) = 0;
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, const OrderType& order) = 0;
     
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
     {

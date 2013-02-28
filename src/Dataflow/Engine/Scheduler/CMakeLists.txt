@@ -27,6 +27,7 @@
 #
 
 SET(Engine_Scheduler_SRCS
+  BasicMultithreadedNetworkExecutor.cc
   BoostGraphParallelScheduler.cc
   BoostGraphSerialScheduler.cc
   GraphNetworkAnalyzer.cc
@@ -37,6 +38,7 @@ SET(Engine_Scheduler_SRCS
 )
 
 SET(Engine_Scheduler_HEADERS
+  BasicMultithreadedNetworkExecutor.h
   BoostGraphParallelScheduler.h
   BoostGraphSerialScheduler.h
   GraphNetworkAnalyzer.h
@@ -54,6 +56,7 @@ ADD_LIBRARY(Engine_Scheduler
 
 TARGET_LINK_LIBRARIES(Engine_Scheduler
   Dataflow_Network
+  Core_Thread
 )
 
 IF(BUILD_SHARED_LIBS)

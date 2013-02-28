@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_PARALLEL_MODULE_EXECUTION_ORDER_H
-#define ENGINE_SCHEDULER_PARALLEL_MODULE_EXECUTION_ORDER_H
+#ifndef ENGINE_SCHEDULER_BASICMULTITHREADEDNETWORKEXECUTOR_H
+#define ENGINE_SCHEDULER_BASICMULTITHREADEDNETWORKEXECUTOR_H
 
-#include <map>
+#include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -37,25 +37,12 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  class SCISHARE ParallelModuleExecutionOrder
+  class SCISHARE BasicMultithreadedNetworkExecutor : public NetworkExecutor<ParallelModuleExecutionOrder>
   {
   public:
-    typedef std::multimap<int, std::string> ModulesByGroup;
-    typedef ModulesByGroup::iterator iterator;
-    typedef ModulesByGroup::const_iterator const_iterator;
-
-    ParallelModuleExecutionOrder();
-    explicit ParallelModuleExecutionOrder(const ModulesByGroup& map);
-    const_iterator begin() const;
-    const_iterator end() const;
-    int minGroup() const;
-    int maxGroup() const;
-    std::pair<const_iterator,const_iterator> getGroup(int order) const;
-  private:
-    ModulesByGroup map_;
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, const ParallelModuleExecutionOrder& order);
   };
 
-}
-}}
+}}}
 
 #endif
