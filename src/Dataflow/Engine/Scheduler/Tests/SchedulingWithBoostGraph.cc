@@ -141,15 +141,15 @@ protected:
   {
     //Test network:
     /* 
-    send m1             send m2
-    |         |         |
-    transpose negate    scalar mult *4
-    |         |         |
-    |           multiply
+    send m1(0)          send m2(0)
+    |            |             |
+    transpose(1) negate(1)    scalar mult *4(1)
+    |            |             |
+    |           multiply(2)
     |           |
-          add
+          add(3)
           |      |
-          report receive
+          report(4) receive(4)
     */
 
     expected = (-*matrix1()) * (4* *matrix2()) + matrix1()->transpose();
@@ -252,7 +252,7 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_THROW(scheduler.schedule(matrixMathNetwork), NetworkHasCyclesException);
 }
 
-TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
+TEST_F(SchedulingWithBoostGraph, DISABLED_NetworkFromMatrixCalculatorMultiThreaded)
 {
   setupBasicNetwork();
 
@@ -312,250 +312,255 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   auto order = scheduler.schedule(matrixMathNetwork);
   auto range = std::make_pair(order.begin(), order.end());
 
+  std::ostringstream ostr;
   BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& v, range)
   {
-    std::cout << v.first << " " << v.second << std::endl;
+    ostr << v.first << " " << v.second << std::endl;
   }
 
-  FAIL() << "not finished yet, no assertions.";
-/*
-  std::list<std::string> expected = list_of
-    ("SendTestMatrix1")
-    ("EvaluateLinearAlgebraUnary4")
-    ("SendTestMatrix0")
-    ("EvaluateLinearAlgebraUnary3")
-    ("EvaluateLinearAlgebraBinary5")
-    ("EvaluateLinearAlgebraUnary2")
-    ("EvaluateLinearAlgebraBinary6")
-    ("ReportMatrixInfo7")
-    ("ReceiveTestMatrix8");
-  EXPECT_EQ(ModuleExecutionOrder(expected), order);*/
+  std::cout << ostr.str() << std::endl;
+
+  std::string expected = 
+    "0 SendTestMatrix1\n"
+    "0 SendTestMatrix0\n"
+    "1 EvaluateLinearAlgebraUnary4\n"
+    "1 EvaluateLinearAlgebraUnary3\n"
+    "1 EvaluateLinearAlgebraUnary2\n"
+    "2 EvaluateLinearAlgebraBinary5\n"
+    "3 EvaluateLinearAlgebraBinary6\n"
+    "4 ReportMatrixInfo7\n"
+    "4 ReceiveTestMatrix8\n";
+
+  EXPECT_EQ(expected, ostr.str());
 }
 
-struct Unit
+namespace ThreadingPrototype
 {
-  Unit(const std::string& s) : id(s),
-  priority(rand() % 4),
-  ready(0 == priority), done(false),
-  runtime(rand() % 1000 + 1)
+  struct Unit
   {
-  }
-  std::string id;
-  int priority;
-  bool ready;
-  bool done;
-  int runtime;
-};
-
-typedef boost::shared_ptr<Unit> UnitPtr;
-
-bool operator<(const Unit& lhs, const Unit& rhs)
-{
-  return lhs.priority < rhs.priority;
-}
-
-bool operator<(const UnitPtr& lhs, const UnitPtr& rhs)
-{
-  return lhs->priority < rhs->priority;
-}
-
-std::ostream& operator<<(std::ostream& o, const Unit& u)
-{
-  return o << u.id << " : "
-  << u.priority << ":"
-  << u.ready << ":" << u.done << ":"
-    << u.runtime;
-}
-
-typedef std::queue<UnitPtr> WorkQueue;  //TODO: will need to be thread-safe
-typedef std::list<UnitPtr> WaitingList;
-typedef std::list<UnitPtr> DoneList;
-
-UnitPtr makeUnit()
-{
-  return UnitPtr(new Unit(boost::lexical_cast<std::string>(rand())));
-}
-
-std::ostream& operator<<(std::ostream& o, const UnitPtr& u)
-{
-  if (u)
-    o << *u;
-  return o;
-}
-
-TEST(MultiExecutorPrototypeTest, GenerateListOfUnits)
-{
-  WaitingList list;
-  std::generate_n(std::back_inserter(list), 10, makeUnit);
-  std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-}
-
-typedef boost::mutex Mutex;
-
-class WorkUnitProducer
-{
-public:
-  WorkUnitProducer(WorkQueue& workQueue, WaitingList& list, Mutex& mutex) : work_(workQueue), waiting_(list),
-  /*donePushing_(false),*/ currentPriority_(0), mutex_(mutex)
-  {
-    waiting_.sort();
-    //std::cout << "Sorted work list:" << std::endl;
-    //std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-  }
-  void run()
-  {
-    //mutex_.lock();
-    //std::cout << "Producer started." << std::endl;
-    //mutex_.unlock();
-    while (!waiting_.empty())
+    Unit(const std::string& s) : id(s),
+      priority(rand() % 4),
+      ready(0 == priority), done(false),
+      runtime(rand() % 1000 + 1)
     {
-      for (auto i = waiting_.begin(); i != waiting_.end(); )
+    }
+    std::string id;
+    int priority;
+    bool ready;
+    bool done;
+    int runtime;
+  };
+
+  typedef boost::shared_ptr<Unit> UnitPtr;
+
+  bool operator<(const Unit& lhs, const Unit& rhs)
+  {
+    return lhs.priority < rhs.priority;
+  }
+
+  bool operator<(const UnitPtr& lhs, const UnitPtr& rhs)
+  {
+    return lhs->priority < rhs->priority;
+  }
+
+  std::ostream& operator<<(std::ostream& o, const Unit& u)
+  {
+    return o << u.id << " : "
+      << u.priority << ":"
+      << u.ready << ":" << u.done << ":"
+      << u.runtime;
+  }
+
+  typedef std::queue<UnitPtr> WorkQueue;  //TODO: will need to be thread-safe
+  typedef std::list<UnitPtr> WaitingList;
+  typedef std::list<UnitPtr> DoneList;
+
+  UnitPtr makeUnit()
+  {
+    return UnitPtr(new Unit(boost::lexical_cast<std::string>(rand())));
+  }
+
+  std::ostream& operator<<(std::ostream& o, const UnitPtr& u)
+  {
+    if (u)
+      o << *u;
+    return o;
+  }
+
+  TEST(MultiExecutorPrototypeTest, GenerateListOfUnits)
+  {
+    WaitingList list;
+    std::generate_n(std::back_inserter(list), 10, makeUnit);
+    std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+  }
+
+  typedef boost::mutex Mutex;
+
+  class WorkUnitProducer
+  {
+  public:
+    WorkUnitProducer(WorkQueue& workQueue, WaitingList& list, Mutex& mutex) : work_(workQueue), waiting_(list),
+      /*donePushing_(false),*/ currentPriority_(0), mutex_(mutex)
+    {
+      waiting_.sort();
+      //std::cout << "Sorted work list:" << std::endl;
+      //std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+    }
+    void run()
+    {
+      //mutex_.lock();
+      //std::cout << "Producer started." << std::endl;
+      //mutex_.unlock();
+      while (!waiting_.empty())
       {
-        if ((*i)->ready)
+        for (auto i = waiting_.begin(); i != waiting_.end(); )
         {
+          if ((*i)->ready)
+          {
+            mutex_.lock();
+            //std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+            work_.push(*i);
+            //std::cout << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
+            mutex_.unlock();
+            i = waiting_.erase(i);
+          }
+          else
+            ++i;
+        }
+        if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
+        {
+          currentPriority_ = (*waiting_.begin())->priority;
+          //mutex_.lock();
+          //std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
+          //mutex_.unlock();
+          for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
+          {
+            if ((*i)->priority == currentPriority_)
+              (*i)->ready = true;
+          }
+        }
+        //mutex_.lock();
+        //std::cout << "\tProducer: Waiting list size = " << waiting_.size() << std::endl;
+        //std::cout << "\tProducer: work queue size = " << work_.size() << std::endl;
+        //mutex_.unlock();
+      }
+      //mutex_.lock();
+      //std::cout << "Producer done." << std::endl;
+      //mutex_.unlock();
+    }
+    bool isDone() const
+    {
+      boost::lock_guard<Mutex> lock(mutex_);
+      return waiting_.empty();// && donePushing_;
+    }
+    bool workDone() const
+    {
+      boost::lock_guard<Mutex> lock(mutex_);
+      return work_.empty();
+    }
+  private:
+    WorkQueue& work_;
+    WaitingList& waiting_;
+    //bool donePushing_;
+    int currentPriority_;
+    Mutex& mutex_;
+  };
+
+  class WorkUnitConsumer
+  {
+  public:
+    explicit WorkUnitConsumer(WorkQueue& workQueue, const WorkUnitProducer& producer, DoneList& done, Mutex& mutex) :
+    work_(workQueue), producer_(producer), done_(done), mutex_(mutex)
+    {
+    }
+    void run()
+    {
+      //mutex_.lock();
+      //std::cout << "Consumer started." << std::endl;
+      //mutex_.unlock();
+      while (!producer_.isDone())
+      {
+        //mutex_.lock();
+        //std::cout << "\tConsumer thinks producer is not done." << std::endl;
+        //mutex_.unlock();
+        while (moreWork())
+        {
+          //mutex_.lock();
+          //std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
+          //mutex_.unlock();
+
           mutex_.lock();
-          //std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
-          work_.push(*i);
-          //std::cout << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
+          //std::cout << "\tConsumer accessing front of work queue." << std::endl;
+          UnitPtr unit = work_.front();
+          //std::cout << "\tConsumer popping front of work queue." << std::endl;
+          work_.pop();
           mutex_.unlock();
-          i = waiting_.erase(i);
-        }
-        else
-          ++i;
-      }
-      if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
-      {
-        currentPriority_ = (*waiting_.begin())->priority;
-        //mutex_.lock();
-        //std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
-        //mutex_.unlock();
-        for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
-        {
-          if ((*i)->priority == currentPriority_)
-            (*i)->ready = true;
+
+          //mutex_.lock();
+          //std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
+          //unit->runtime << " ms" << std::endl;
+          //mutex_.unlock();
+
+          boost::this_thread::sleep(boost::posix_time::milliseconds(unit->runtime));
+          unit->done = true;
+
+          done_.push_back(unit);
+
+          //mutex_.lock();
+          //std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
+          //mutex_.unlock();
         }
       }
       //mutex_.lock();
-      //std::cout << "\tProducer: Waiting list size = " << waiting_.size() << std::endl;
-      //std::cout << "\tProducer: work queue size = " << work_.size() << std::endl;
+      //std::cout << "Consumer done." << std::endl;
       //mutex_.unlock();
     }
-    //mutex_.lock();
-    //std::cout << "Producer done." << std::endl;
-    //mutex_.unlock();
-  }
-  bool isDone() const
-  {
-    boost::lock_guard<Mutex> lock(mutex_);
-    return waiting_.empty();// && donePushing_;
-  }
-  bool workDone() const
-  {
-    boost::lock_guard<Mutex> lock(mutex_);
-    return work_.empty();
-  }
-private:
-  WorkQueue& work_;
-  WaitingList& waiting_;
-  //bool donePushing_;
-  int currentPriority_;
-  Mutex& mutex_;
-};
 
-class WorkUnitConsumer
-{
-public:
-  explicit WorkUnitConsumer(WorkQueue& workQueue, const WorkUnitProducer& producer, DoneList& done, Mutex& mutex) :
-  work_(workQueue), producer_(producer), done_(done), mutex_(mutex)
-  {
-  }
-  void run()
-  {
-    //mutex_.lock();
-    //std::cout << "Consumer started." << std::endl;
-    //mutex_.unlock();
-    while (!producer_.isDone())
+    bool moreWork()
     {
-      //mutex_.lock();
-      //std::cout << "\tConsumer thinks producer is not done." << std::endl;
-      //mutex_.unlock();
-      while (moreWork())
-      {
-        //mutex_.lock();
-        //std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
-        //mutex_.unlock();
-        
-        mutex_.lock();
-        //std::cout << "\tConsumer accessing front of work queue." << std::endl;
-        UnitPtr unit = work_.front();
-        //std::cout << "\tConsumer popping front of work queue." << std::endl;
-        work_.pop();
-        mutex_.unlock();
-        
-        //mutex_.lock();
-        //std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
-        //unit->runtime << " ms" << std::endl;
-        //mutex_.unlock();
-        
-        boost::this_thread::sleep(boost::posix_time::milliseconds(unit->runtime));
-        unit->done = true;
-        
-        done_.push_back(unit);
-
-        //mutex_.lock();
-        //std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
-        //mutex_.unlock();
-      }
+      boost::lock_guard<Mutex> lock(mutex_);
+      return !work_.empty();
     }
-    //mutex_.lock();
-    //std::cout << "Consumer done." << std::endl;
-    //mutex_.unlock();
-  }
-  
-  bool moreWork()
+
+
+  private:
+    WorkQueue& work_;
+    const WorkUnitProducer& producer_;
+    DoneList& done_;
+    Mutex& mutex_;
+  };
+
+
+  TEST(MultiExecutorPrototypeTest, DISABLED_Run)
   {
-    boost::lock_guard<Mutex> lock(mutex_);
-    return !work_.empty();
-  }
-  
-  
-private:
-  WorkQueue& work_;
-  const WorkUnitProducer& producer_;
-  DoneList& done_;
-  Mutex& mutex_;
-};
+    const int size = 100;
+    WaitingList list;
+    std::generate_n(std::back_inserter(list), size, makeUnit);
 
+    int totalSleepTime = std::accumulate(list.begin(), list.end(), 0, [](int total, UnitPtr u){ return total + u->runtime; });
+    std::cout << size << " work units, will sleep for total of " << totalSleepTime / 1000 << " seconds" << std::endl;
 
-TEST(MultiExecutorPrototypeTest, DISABLED_Run)
-{
-  const int size = 100;
-  WaitingList list;
-  std::generate_n(std::back_inserter(list), size, makeUnit);
-  
-  int totalSleepTime = std::accumulate(list.begin(), list.end(), 0, [](int total, UnitPtr u){ return total + u->runtime; });
-  std::cout << size << " work units, will sleep for total of " << totalSleepTime / 1000 << " seconds" << std::endl;
+    Mutex mutex;
+    WorkQueue workQ;
+    WorkUnitProducer producer(workQ, list, mutex);
 
-  Mutex mutex;
-  WorkQueue workQ;
-  WorkUnitProducer producer(workQ, list, mutex);
-  
-  DoneList done;
-  WorkUnitConsumer consumer(workQ, producer, done, mutex);
-  
-  boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer::run, producer));
-  boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer::run, consumer));
-  
-  tR.join();
-  tC.join();
-  
-  EXPECT_EQ(size, done.size());
-  std::cout << "DONE. Finished list first 10:" << std::endl;
-  auto end = done.begin();
-  std::advance(end, 10);
-  std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
-  BOOST_FOREACH(const UnitPtr& u, done)
-  {
-    EXPECT_TRUE(u->done);
+    DoneList done;
+    WorkUnitConsumer consumer(workQ, producer, done, mutex);
+
+    boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer::run, producer));
+    boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer::run, consumer));
+
+    tR.join();
+    tC.join();
+
+    EXPECT_EQ(size, done.size());
+    std::cout << "DONE. Finished list first 10:" << std::endl;
+    auto end = done.begin();
+    std::advance(end, 10);
+    std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+    BOOST_FOREACH(const UnitPtr& u, done)
+    {
+      EXPECT_TRUE(u->done);
+    }
   }
 }
