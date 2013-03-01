@@ -29,6 +29,7 @@
 #ifndef ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 #define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
+#include <iostream>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <boost/signals2.hpp>
 #include <Core/Utils/Exception.h>

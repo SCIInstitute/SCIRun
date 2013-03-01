@@ -49,7 +49,6 @@ namespace Engine {
       // better parallel, etc
     };
 
-    //TODO::::???? badness?
     static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
   protected:
