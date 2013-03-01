@@ -52,6 +52,11 @@
         <widget class="QComboBox" name="positionComboBox_">
          <item>
           <property name="text">
+           <string>Default</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>None</string>
           </property>
          </item>

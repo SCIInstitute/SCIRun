@@ -38,6 +38,7 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/ModuleLogWindow.h>
+#include <Interface/Application/NoteEditor.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
@@ -108,7 +109,7 @@ namespace Gui {
         << separatorAction(parent)
         << disabled(new QAction("Execute", parent))
         << new QAction("Help", parent)
-        << disabled(new QAction("Notes", parent))
+        << new QAction("Notes", parent)
         << disabled(new QAction("Duplicate", parent))
         << disabled(new QAction("Replace With->(TODO)", parent))
         << new QAction("Show Log", parent)
@@ -190,6 +191,11 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(logWindow_, SIGNAL(messageReceived(const QColor&)), this, SLOT(setLogButtonColor(const QColor&)));
   connect(this, SIGNAL(updateProgressBarSignal(double)), this, SLOT(updateProgressBar(double)));
   connect(actionsMenu_->getAction("Help"), SIGNAL(triggered()), this, SLOT(launchDocumentation()));
+
+  noteEditor_ = new NoteEditor(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
+  connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(show()));
+  connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(raise()));
+
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));

@@ -110,6 +110,7 @@ private:
   void setupModuleActions();
 
   class ModuleLogWindow* logWindow_;
+  class NoteEditor* noteEditor_;
 
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 
