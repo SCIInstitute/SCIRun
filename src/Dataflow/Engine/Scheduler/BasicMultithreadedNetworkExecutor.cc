@@ -36,10 +36,9 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 
-void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ParallelModuleExecutionOrder& order)
+void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds)
 {
-  //executeStarts_();
-
+  bounds.executeStarts_();
   for (int group = order.minGroup(); group <= order.maxGroup(); ++group)
   {
     auto groupIter = order.getGroup(group);
@@ -55,6 +54,5 @@ void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& looku
     std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
     Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
   }
-
-  //executeFinishes_(lookup.errorCode());
+  bounds.executeFinishes_(lookup.errorCode());
 }

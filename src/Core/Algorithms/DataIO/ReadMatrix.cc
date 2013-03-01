@@ -35,6 +35,7 @@
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO;
@@ -42,9 +43,27 @@ using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace DataIO {
+
+        class ReadMatrixAlgorithmPrivate
+        {
+        public:
+          static boost::mutex fileCheckMutex_;
+        };
+
+        boost::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
+      }}}}
+
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
-  ENSURE_FILE_EXISTS(filename);
+  {
+    //BOOST FILESYSTEM BUG: it is not thread-safe. TODO: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
+    boost::lock_guard<boost::mutex> guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
+    ENSURE_FILE_EXISTS(filename);
+  }
 
   if (boost::filesystem::extension(filename) == ".txt")
   {

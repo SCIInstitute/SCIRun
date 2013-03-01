@@ -211,7 +211,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
-  executor.executeAll(matrixMathNetwork, order);
+  executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
 
   //TODO: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));
@@ -260,13 +260,10 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
 {
   setupBasicNetwork();
 
-  //TODO: classes below.
-  {
-    BoostGraphParallelScheduler scheduler;
-    auto order = scheduler.schedule(matrixMathNetwork);
-    BasicMultithreadedNetworkExecutor executor;
-    executor.executeAll(matrixMathNetwork, order);
-  }
+  BoostGraphParallelScheduler scheduler;
+  auto order = scheduler.schedule(matrixMathNetwork);
+  BasicMultithreadedNetworkExecutor executor;
+  executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
 
   //TODO: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));

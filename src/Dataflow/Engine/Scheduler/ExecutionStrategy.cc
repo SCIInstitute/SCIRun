@@ -26,49 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/NetworkInterface.h>
+#include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
 
 using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+ExecutionBounds ExecutionStrategy::executionBounds_;
 
-  class SerialExecutionStrategyPrivate
-  {
-  public:
-    void executeAll(const NetworkInterface& network, const ExecutableLookup& lookup, const ExecutionBounds& bounds)
-    {
-      ModuleExecutionOrder order;
-      try
-      {
-        order = scheduler_.schedule(network);
-      }
-      catch (NetworkHasCyclesException&)
-      {
-        //TODO: use real logger here--or just let this exception bubble up--needs testing. 
-        std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
-        return;
-      }
-      executor_.executeAll(lookup, order, bounds);
-    }
-  private:
-    BoostGraphSerialScheduler scheduler_;
-    LinearSerialNetworkExecutor executor_;
-  };
-
-}}}
-
-SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionStrategyPrivate)
+boost::signals2::connection ExecutionStrategy::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
+  return executionBounds_.executeStarts_.connect(subscriber);
 }
-
-void SerialExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
+boost::signals2::connection ExecutionStrategy::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  impl_->executeAll(network, lookup, executionBounds_);
+  return executionBounds_.executeFinishes_.connect(subscriber);
 }

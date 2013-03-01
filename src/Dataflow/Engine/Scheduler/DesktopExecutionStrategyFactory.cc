@@ -52,6 +52,3 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrateg
     THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
   }
 }
-
-ExecuteAllStartsSignalType ExecutionStrategy::executeStarts_;
-ExecuteAllFinishesSignalType ExecutionStrategy::executeFinishes_;

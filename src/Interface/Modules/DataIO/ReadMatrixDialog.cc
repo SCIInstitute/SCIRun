@@ -48,6 +48,7 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }
 
 void ReadMatrixDialog::pull()
@@ -63,4 +64,5 @@ void ReadMatrixDialog::pushFileNameToState()
 void ReadMatrixDialog::openFile()
 {
   fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Matrix Text File", ".", "Text files (*.txt);;SCIRun Matrix File [ASCII] (*.mat)"));
+  pushFileNameToState();
 }

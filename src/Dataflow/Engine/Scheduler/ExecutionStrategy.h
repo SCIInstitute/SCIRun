@@ -29,16 +29,12 @@
 #ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 #define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
-#include <Dataflow/Network/NetworkFwd.h>
-#include <boost/signals2.hpp>
+#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
-
-  typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
-  typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
 
   class SCISHARE ExecutionStrategy
   {
@@ -54,17 +50,10 @@ namespace Engine {
     };
 
     //TODO::::???? badness?
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
-    {
-      return executeStarts_.connect(subscriber);
-    }
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
-    {
-      return executeFinishes_.connect(subscriber);
-    }
+    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
+    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
   protected:
-    static ExecuteAllStartsSignalType executeStarts_;
-    static ExecuteAllFinishesSignalType executeFinishes_;
+    static ExecutionBounds executionBounds_;
   };
 
   typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;

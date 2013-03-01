@@ -30,6 +30,7 @@
 #define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/signals2.hpp>
 #include <Core/Utils/Exception.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -47,14 +48,21 @@ namespace Engine {
     virtual OrderType schedule(const Networks::NetworkInterface& network) = 0;
   };
 
-  //TODO: types for ParallelScheduler, etc
+  typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
+  typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
+
+  struct SCISHARE ExecutionBounds : boost::noncopyable
+  {
+    ExecuteAllStartsSignalType executeStarts_;
+    ExecuteAllFinishesSignalType executeFinishes_;
+  };
 
   template <class OrderType>
   class NetworkExecutor
   {
   public:
     virtual ~NetworkExecutor() {}
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, const OrderType& order) = 0;
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, const OrderType& order, const ExecutionBounds& bounds) = 0;
   };
 
   class ModuleExecutionOrder;

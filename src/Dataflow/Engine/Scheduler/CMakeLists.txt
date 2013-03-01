@@ -32,6 +32,7 @@ SET(Engine_Scheduler_SRCS
   BoostGraphParallelScheduler.cc
   BoostGraphSerialScheduler.cc
   DesktopExecutionStrategyFactory.cc
+  ExecutionStrategy.cc
   GraphNetworkAnalyzer.cc
   LinearSerialNetworkExecutor.cc
   ParallelModuleExecutionOrder.cc

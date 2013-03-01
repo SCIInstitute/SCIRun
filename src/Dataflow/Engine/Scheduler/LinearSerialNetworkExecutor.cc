@@ -40,11 +40,12 @@ namespace
 {
   struct LinearExecution
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order) : lookup_(lookup), order_(order)
+    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
     {
     }
     void operator()() const
     {
+      bounds_.executeStarts_();
       BOOST_FOREACH(const std::string& id, order_)
       {
         ExecutableObject* obj = lookup_.lookupExecutable(id);
@@ -53,14 +54,16 @@ namespace
           obj->execute();
         }
       }
+      bounds_.executeFinishes_(lookup_.errorCode());
     }
     const ExecutableLookup& lookup_;
     ModuleExecutionOrder order_;
+    const ExecutionBounds& bounds_;
   };
 }
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
+void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds)
 {
-  LinearExecution runner(lookup, order);
+  LinearExecution runner(lookup, order, bounds);
   boost::thread execution = boost::thread(runner);
 }

@@ -48,6 +48,7 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(saveFileButton_, SIGNAL(clicked()), this, SLOT(saveFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
 }
 
 void WriteMatrixDialog::pull()
@@ -63,4 +64,5 @@ void WriteMatrixDialog::pushFileNameToState()
 void WriteMatrixDialog::saveFile()
 {
   fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
+  pushFileNameToState();
 }
