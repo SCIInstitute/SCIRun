@@ -212,7 +212,8 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
   LinearSerialNetworkExecutor executor;
-  executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
+  ExecutionBounds bounds;
+  executor.executeAll(matrixMathNetwork, order, bounds);
 
   //TODO: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));
