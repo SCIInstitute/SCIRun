@@ -45,6 +45,7 @@ namespace Engine {
     typedef ModulesByGroup::const_iterator const_iterator;
 
     ParallelModuleExecutionOrder();
+    ParallelModuleExecutionOrder(const ParallelModuleExecutionOrder& other);
     explicit ParallelModuleExecutionOrder(const ModulesByGroup& map);
     const_iterator begin() const;
     const_iterator end() const;

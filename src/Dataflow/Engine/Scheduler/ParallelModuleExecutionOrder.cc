@@ -35,6 +35,10 @@ ParallelModuleExecutionOrder::ParallelModuleExecutionOrder()
 {
 }
 
+ParallelModuleExecutionOrder::ParallelModuleExecutionOrder(const ParallelModuleExecutionOrder& other) : map_(other.map_)
+{
+}
+
 ParallelModuleExecutionOrder::ParallelModuleExecutionOrder(const ParallelModuleExecutionOrder::ModulesByGroup& map) : map_(map)
 {
 }

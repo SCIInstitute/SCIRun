@@ -31,16 +31,13 @@
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
 void BasicParallelExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
 {
-  //TODO ESSENTIAL: scoped start/finish signaling
   BoostGraphParallelScheduler scheduler;
-  auto order = scheduler.schedule(network);
   BasicMultithreadedNetworkExecutor executor;
-  boost::thread go([&]() { executor.executeAll(lookup, order, executionBounds_); });
+  executeWithCycleCheck(scheduler, executor, network, lookup, executionBounds_);
 }

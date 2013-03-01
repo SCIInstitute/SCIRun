@@ -44,18 +44,7 @@ namespace Engine {
   public:
     void executeAll(const NetworkInterface& network, const ExecutableLookup& lookup, const ExecutionBounds& bounds)
     {
-      ModuleExecutionOrder order;
-      try
-      {
-        order = scheduler_.schedule(network);
-      }
-      catch (NetworkHasCyclesException&)
-      {
-        //TODO: use real logger here--or just let this exception bubble up--needs testing. 
-        std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
-        return;
-      }
-      executor_.executeAll(lookup, order, bounds);
+      executeWithCycleCheck(scheduler_, executor_, network, lookup, bounds);
     }
   private:
     BoostGraphSerialScheduler scheduler_;

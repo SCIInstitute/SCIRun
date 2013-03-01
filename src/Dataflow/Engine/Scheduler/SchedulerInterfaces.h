@@ -62,11 +62,31 @@ namespace Engine {
   {
   public:
     virtual ~NetworkExecutor() {}
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, const OrderType& order, const ExecutionBounds& bounds) = 0;
+    //NOTE: OrderType passed by value so it can be copied across threads--it's more temporary than the network and the bounds objects
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, OrderType order, const ExecutionBounds& bounds) = 0;
   };
 
   class ModuleExecutionOrder;
   typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
+
+  template <class OrderType>
+  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor,
+    const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup, const ExecutionBounds& bounds)
+  {
+    OrderType order;
+    try
+    {
+      order = scheduler.schedule(network);
+    }
+    catch (NetworkHasCyclesException&)
+    {
+      //TODO: use real logger here--or just let this exception bubble up--needs testing. 
+      std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+      return;
+    }
+    executor.executeAll(lookup, order, bounds);
+  }
+
 
 }}}
 

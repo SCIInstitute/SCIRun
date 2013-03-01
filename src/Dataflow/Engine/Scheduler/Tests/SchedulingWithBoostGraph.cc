@@ -48,6 +48,7 @@
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
+#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
 
 #include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
@@ -260,10 +261,12 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
 {
   setupBasicNetwork();
 
-  BoostGraphParallelScheduler scheduler;
-  auto order = scheduler.schedule(matrixMathNetwork);
-  BasicMultithreadedNetworkExecutor executor;
-  executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
+  //BoostGraphParallelScheduler scheduler;
+  //auto order = scheduler.schedule(matrixMathNetwork);
+  //BasicMultithreadedNetworkExecutor executor;
+  //executor.executeAll(matrixMathNetwork, order, ExecutionBounds());
+  BasicParallelExecutionStrategy strategy;
+  strategy.executeAll(matrixMathNetwork, matrixMathNetwork);
 
   //TODO: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));

@@ -66,6 +66,7 @@ namespace Engine {
   };
 
   typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
+
 }
 }}
 

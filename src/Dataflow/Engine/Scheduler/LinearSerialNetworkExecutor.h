@@ -40,7 +40,7 @@ namespace Engine {
   class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor<ModuleExecutionOrder>
   {
   public:
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds);
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order, const ExecutionBounds& bounds);
   };
 
 }}}
