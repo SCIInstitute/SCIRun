@@ -301,6 +301,9 @@ ModuleWidget::~ModuleWidget()
   GuiLogger::Instance().log("Module deleted.");
   dialog_.reset();
   theModule_->setLogger(LoggerHandle());
+  delete logWindow_;
+  delete noteEditor_;
+
   Q_EMIT removeModule(moduleId_);
 }
 
