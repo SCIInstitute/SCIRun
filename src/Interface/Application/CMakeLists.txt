@@ -44,6 +44,7 @@ SET(Interface_Application_SOURCES
   NetworkExecutionProgressBar.cc
   SCIRunMainWindow.cc
   Node.cc
+  NoteEditor.cc
   Port.cc
   Connection.cc
   NetworkEditor.cc
@@ -62,6 +63,7 @@ SET(Interface_Application_HEADERS
   NetworkExecutionProgressBar.h
   SCIRunMainWindow.h
   Node.h
+  NoteEditor.h
   Connection.h
   Port.h
   NetworkEditor.h
@@ -73,6 +75,7 @@ SET(Interface_Application_FORMS
   HistoryWindow.ui
   Module.ui
   ModuleLogWindow.ui
+  NoteEditor.ui
   SCIRunMainWindow.ui
   RenderWindow.ui
 )
