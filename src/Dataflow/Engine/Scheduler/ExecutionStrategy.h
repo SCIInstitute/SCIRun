@@ -26,40 +26,58 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
-#define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
+#ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
+#define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Utils/Exception.h>
+#include <boost/signals2.hpp>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  struct NetworkHasCyclesException : virtual Core::InvalidArgumentException {};
+  typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
+  typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
 
-  template <class OrderType>
-  class Scheduler
+  class SCISHARE ExecutionStrategy
   {
   public:
-    virtual ~Scheduler() {}
-    virtual OrderType schedule(const Networks::NetworkInterface& network) = 0;
+    virtual ~ExecutionStrategy() {}
+    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup) = 0;
+
+    enum Type
+    {
+      SERIAL,
+      BASIC_PARALLEL
+      // better parallel, etc
+    };
+
+    //TODO::::???? badness?
+    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
+    {
+      return executeStarts_.connect(subscriber);
+    }
+    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
+    {
+      return executeFinishes_.connect(subscriber);
+    }
+  protected:
+    static ExecuteAllStartsSignalType executeStarts_;
+    static ExecuteAllFinishesSignalType executeFinishes_;
   };
 
-  //TODO: types for ParallelScheduler, etc
+  typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;
 
-  template <class OrderType>
-  class NetworkExecutor
+  class SCISHARE ExecutionStrategyFactory
   {
   public:
-    virtual ~NetworkExecutor() {}
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, const OrderType& order) = 0;
+    virtual ~ExecutionStrategyFactory() {}
+    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) = 0;
   };
 
-  class ModuleExecutionOrder;
-  typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
-
-}}}
+  typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
+}
+}}
 
 #endif

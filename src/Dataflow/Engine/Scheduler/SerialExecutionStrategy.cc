@@ -27,40 +27,50 @@
 */
 
 #include <iostream>
+#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-namespace
-{
-  struct LinearExecution
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+
+  class SerialExecutionStrategyPrivate
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order) : lookup_(lookup), order_(order)
+  public:
+    void executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
     {
-    }
-    void operator()() const
-    {
-      BOOST_FOREACH(const std::string& id, order_)
+      ModuleExecutionOrder order;
+      try
       {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
-        if (obj)
-        {
-          obj->execute();
-        }
+        order = scheduler_.schedule(network);
       }
+      catch (NetworkHasCyclesException&)
+      {
+        //TODO: use real logger here--or just let this exception bubble up--needs testing. 
+        std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+        return;
+      }
+      executor_.executeAll(lookup, order);
     }
-    const ExecutableLookup& lookup_;
-    ModuleExecutionOrder order_;
+  private:
+    BoostGraphSerialScheduler scheduler_;
+    LinearSerialNetworkExecutor executor_;
   };
+
+}}}
+
+SerialExecutionStrategy::SerialExecutionStrategy() : impl_(new SerialExecutionStrategyPrivate)
+{
 }
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
+void SerialExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
 {
-  LinearExecution runner(lookup, order);
-  boost::thread execution = boost::thread(runner);
+  executeStarts_();
+  impl_->executeAll(network, lookup);
+  executeFinishes_(lookup.errorCode());
 }

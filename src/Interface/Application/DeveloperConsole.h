@@ -48,9 +48,10 @@ class DeveloperConsole : public QDockWidget, public Ui::DeveloperConsole
 public:
   explicit DeveloperConsole(/*SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager, */QWidget* parent = 0);
 public Q_SLOTS:
-  //void ();
+  void executorButtonClicked();
   //void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);  
-//Q_SIGNALS:
+Q_SIGNALS:
+  void executorChosen(int type);
 //  void modifyingNetwork(bool modifying);
 //  void undoStateChanged(bool enabled);
 //  void redoStateChanged(bool enabled);

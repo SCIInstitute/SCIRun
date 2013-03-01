@@ -26,41 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/ModuleInterface.h>
+#include <Core/Utils/Exception.h>
+#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-namespace
+DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
+  serial_(new SerialExecutionStrategy),
+  parallel_(new BasicParallelExecutionStrategy)
 {
-  struct LinearExecution
+}
+ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
+{
+  switch (type)
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order) : lookup_(lookup), order_(order)
-    {
-    }
-    void operator()() const
-    {
-      BOOST_FOREACH(const std::string& id, order_)
-      {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
-        if (obj)
-        {
-          obj->execute();
-        }
-      }
-    }
-    const ExecutableLookup& lookup_;
-    ModuleExecutionOrder order_;
-  };
+  case ExecutionStrategy::SERIAL:
+    return serial_;
+  case ExecutionStrategy::BASIC_PARALLEL:
+    return parallel_;
+  default:
+    THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
+  }
 }
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
-{
-  LinearExecution runner(lookup, order);
-  boost::thread execution = boost::thread(runner);
-}
+ExecuteAllStartsSignalType ExecutionStrategy::executeStarts_;
+ExecuteAllFinishesSignalType ExecutionStrategy::executeFinishes_;

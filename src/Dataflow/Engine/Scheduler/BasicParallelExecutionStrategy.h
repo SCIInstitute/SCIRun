@@ -26,41 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
+#ifndef ENGINE_SCHEDULER_BASIC_PARALLEL_EXECUTION_STRATEGY_H
+#define ENGINE_SCHEDULER_BASIC_PARALLEL_EXECUTION_STRATEGY_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/Share.h>
 
-namespace
-{
-  struct LinearExecution
-  {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order) : lookup_(lookup), order_(order)
-    {
-    }
-    void operator()() const
-    {
-      BOOST_FOREACH(const std::string& id, order_)
+namespace SCIRun {
+  namespace Dataflow {
+    namespace Engine {
+
+      class SCISHARE BasicParallelExecutionStrategy : public ExecutionStrategy
       {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
-        if (obj)
-        {
-          obj->execute();
-        }
-      }
-    }
-    const ExecutableLookup& lookup_;
-    ModuleExecutionOrder order_;
-  };
-}
+      public:
+        virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup);
+      };
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
-{
-  LinearExecution runner(lookup, order);
-  boost::thread execution = boost::thread(runner);
-}
+    }
+  }}
+
+#endif

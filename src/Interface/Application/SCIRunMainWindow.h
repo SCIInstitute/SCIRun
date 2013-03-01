@@ -108,6 +108,7 @@ private Q_SLOTS:
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
+  void setExecutor(int type);
   void exitApplication(int code);
 };
 

@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Thread;
 
 void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ParallelModuleExecutionOrder& order)
 {
-  executeStarts_();
+  //executeStarts_();
 
   for (int group = order.minGroup(); group <= order.maxGroup(); ++group)
   {
@@ -56,5 +56,5 @@ void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& looku
     Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
   }
 
-  executeFinishes_(lookup.errorCode());
+  //executeFinishes_(lookup.errorCode());
 }

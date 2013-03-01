@@ -37,5 +37,14 @@ using namespace SCIRun::Gui;
 DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {
   setupUi(this);
-  //std::cout << "Howdy!!! I'm a developer console!" << std::endl;
+  connect(serialExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
+  connect(parallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
+}
+
+void DeveloperConsole::executorButtonClicked()
+{
+  if (serialExecutionRadioButton_->isChecked())
+    Q_EMIT executorChosen(0);
+  else if (parallelExecutionRadioButton_->isChecked())
+    Q_EMIT executorChosen(1);
 }

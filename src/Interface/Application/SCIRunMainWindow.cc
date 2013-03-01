@@ -749,4 +749,11 @@ void SCIRunMainWindow::setupDevConsole()
   devConsole_->setFloating(true);
   addDockWidget(Qt::TopDockWidgetArea, devConsole_);
   actionDevConsole_->setShortcut(QKeySequence("`"));
+  connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
+}
+
+void SCIRunMainWindow::setExecutor(int type)
+{
+  std::cout << "Executor of type " << type << " selected"  << std::endl;
+  networkEditor_->getNetworkEditorController()->setExecutorType(type);
 }

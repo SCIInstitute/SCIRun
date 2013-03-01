@@ -36,25 +36,23 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
-#include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, SerialNetworkExecutorHandle exe, ModulePositionEditor* mpg) : 
+NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg) : 
   moduleFactory_(mf), 
   stateFactory_(sf), 
-  executor_(exe),
+  executorFactory_(executorFactory),
   modulePositionEditor_(mpg)
 {
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
 }
 
-NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, SerialNetworkExecutorHandle exe, ModulePositionEditor* mpg)
-  : theNetwork_(network), executor_(exe), modulePositionEditor_(mpg)
+NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg)
+  : theNetwork_(network), executorFactory_(executorFactory), modulePositionEditor_(mpg)
 {
 }
 
@@ -154,12 +152,12 @@ boost::signals2::connection NetworkEditorController::connectInvalidConnection(co
 
 boost::signals2::connection NetworkEditorController::connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber)
 {
-  return executor_->connectNetworkExecutionStarts(subscriber);
+  return ExecutionStrategy::connectNetworkExecutionStarts(subscriber);
 }
 
 boost::signals2::connection NetworkEditorController::connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber)
 {
-  return executor_->connectNetworkExecutionFinished(subscriber);
+  return ExecutionStrategy::connectNetworkExecutionFinished(subscriber);
 }
 
 NetworkFileHandle NetworkEditorController::saveNetwork() const
@@ -198,19 +196,10 @@ void NetworkEditorController::clear()
 
 void NetworkEditorController::executeAll(const ExecutableLookup& lookup)
 {
-  ModuleExecutionOrder order;
-  try
-  {
-    BoostGraphSerialScheduler scheduler;
-    order = scheduler.schedule(*theNetwork_);
-  }
-  catch (NetworkHasCyclesException&)
-  {
-    //TODO: use real logger here--or just let this exception bubble up--needs testing. 
-    std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
-    return;
-  }  
-  executor_->executeAll(lookup, order);
+  if (!currentExecutor_)
+    currentExecutor_ = executorFactory_->create(ExecutionStrategy::SERIAL); //TODO: read some setting for default executor type
+
+  currentExecutor_->executeAll(*theNetwork_, lookup);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const 
@@ -221,4 +210,9 @@ NetworkHandle NetworkEditorController::getNetwork() const
 NetworkGlobalSettings& NetworkEditorController::getSettings() 
 {
   return theNetwork_->settings();
+}
+
+void NetworkEditorController::setExecutorType(int type)
+{
+  currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
 }

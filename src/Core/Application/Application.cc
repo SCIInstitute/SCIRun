@@ -33,7 +33,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
+#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::CommandLine;
@@ -86,7 +86,7 @@ NetworkEditorControllerHandle Application::controller()
     //TODO: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    SerialNetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe));
   }
   return private_->controller_;

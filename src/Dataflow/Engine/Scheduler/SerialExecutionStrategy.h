@@ -26,41 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
+#ifndef ENGINE_SCHEDULER_SERIAL_EXECUTION_STRATEGY_H
+#define ENGINE_SCHEDULER_SERIAL_EXECUTION_STRATEGY_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/Share.h>
 
-namespace
-{
-  struct LinearExecution
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+
+  class SerialExecutionStrategyPrivate;
+
+  class SCISHARE SerialExecutionStrategy : public ExecutionStrategy
   {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order) : lookup_(lookup), order_(order)
-    {
-    }
-    void operator()() const
-    {
-      BOOST_FOREACH(const std::string& id, order_)
-      {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
-        if (obj)
-        {
-          obj->execute();
-        }
-      }
-    }
-    const ExecutableLookup& lookup_;
-    ModuleExecutionOrder order_;
+  public:
+    SerialExecutionStrategy();
+    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup);
+  private:
+    boost::shared_ptr<SerialExecutionStrategyPrivate> impl_;
   };
-}
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
-{
-  LinearExecution runner(lookup, order);
-  boost::thread execution = boost::thread(runner);
 }
+}}
+
+#endif

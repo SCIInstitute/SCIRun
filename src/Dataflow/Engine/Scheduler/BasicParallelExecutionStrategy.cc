@@ -27,40 +27,13 @@
 */
 
 #include <iostream>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
-#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <boost/foreach.hpp>
-#include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-namespace
+void BasicParallelExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
 {
-  struct LinearExecution
-  {
-    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order) : lookup_(lookup), order_(order)
-    {
-    }
-    void operator()() const
-    {
-      BOOST_FOREACH(const std::string& id, order_)
-      {
-        ExecutableObject* obj = lookup_.lookupExecutable(id);
-        if (obj)
-        {
-          obj->execute();
-        }
-      }
-    }
-    const ExecutableLookup& lookup_;
-    ModuleExecutionOrder order_;
-  };
-}
-
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, const ModuleExecutionOrder& order)
-{
-  LinearExecution runner(lookup, order);
-  boost::thread execution = boost::thread(runner);
+  std::cout << "Basic Parallel ES not implemented yet" << std::endl;
 }
