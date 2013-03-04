@@ -41,13 +41,16 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   : QGraphicsProxyWidget(parent),
   module_(module),
   grabbedByWidget_(false),
-  pressedSubWidget_(0)
+  pressedSubWidget_(0),
+  note_(0)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
   module_->setPositionObject(pp);
   setAcceptDrops(true);
+
+  connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -141,6 +144,8 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   if (change == ItemPositionHasChanged)
   {
     module_->trackConnections();
+    if (note_)
+      note_->setPos(pos().x() + 40, pos().y() - 50);
   }
   return QGraphicsItem::itemChange(change, value);
 }
@@ -152,4 +157,18 @@ void ModuleProxyWidget::createPortPositionProviders()
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(5,5)));
     p->setPositionObject(pp);
   }
+}
+
+void ModuleProxyWidget::updateNote(const Note& note)
+{
+  //std::cout << "\n\nmodule note updated to: " << std::endl;
+  //std::cout << note.html_.toStdString() << std::endl;
+
+  if (!note_)
+  {
+    note_ = new QGraphicsTextItem(note.message_, 0, scene());
+    note_->setPos(pos().x() + 40, pos().y() - 50);
+  }
+
+  note_->setHtml(note.html_);
 }

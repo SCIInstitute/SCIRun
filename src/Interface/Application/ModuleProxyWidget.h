@@ -36,6 +36,7 @@ namespace SCIRun
   namespace Gui
   {
     class ModuleWidget;
+    struct Note;
 
     class ModuleProxyWidget : public QGraphicsProxyWidget
     {
@@ -55,15 +56,18 @@ namespace SCIRun
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    private Q_SLOTS:
+      void updateNote(const Note& note);
     private:
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-  
+
       ModuleWidget* module_;
       bool grabbedByWidget_;
       QWidget* pressedSubWidget_;
       QPointF position_;
+      QGraphicsTextItem* note_;
     };
 
   }

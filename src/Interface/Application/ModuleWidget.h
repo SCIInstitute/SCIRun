@@ -95,6 +95,7 @@ Q_SIGNALS:
   void moduleExecuted();
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
+  void noteUpdated(const Note& note);
 private:
   Ports inputPorts_;
   Ports outputPorts_;

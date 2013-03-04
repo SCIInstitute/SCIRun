@@ -44,7 +44,6 @@ class NoteEditor : public QDialog, public Ui::NoteEditor
 public:
   explicit NoteEditor(const QString& moduleName, QWidget* parent = 0);
 private Q_SLOTS:
-  //void changeFont(const QFont& font);
   void changeTextColor();
   void changeFontSize(const QString& text);
   void resetText();

@@ -390,6 +390,6 @@ void ModuleWidget::launchDocumentation()
 
 void ModuleWidget::updateNote(const Note& note)
 {
-  std::cout << "\n\nmodule note updated to: " << std::endl;
-  std::cout << note.html_.toStdString() << std::endl;
+  currentNote_ = note;
+  noteUpdated(note);
 }

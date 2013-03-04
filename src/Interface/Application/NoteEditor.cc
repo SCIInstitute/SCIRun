@@ -60,24 +60,14 @@ void NoteEditor::changeNotePosition(int index)
   updateNote();
 }
 
-//void NoteEditor::changeFont(const QFont& font)
-//{
-//  std::cout << "changeFont(): "  << font.toString().toStdString() << std::endl;
-//  textEdit_->setFont(font);
-//}
-
 void NoteEditor::changeFontSize(const QString& text)
 {
-  std::cout << "changeFontSize(): "  << text.toStdString() << std::endl;
   textEdit_->setFontPointSize(text.toDouble());
   textEdit_->setPlainText(textEdit_->toPlainText());
-  //updateNote();
 }
 
 void NoteEditor::changeTextColor()
 {
-  std::cout << "changeTextColor()" << std::endl;
-  
   auto oldColor = currentNote_.color_;
 
   auto newColor = QColorDialog::getColor(oldColor, this, "Choose text color");
@@ -86,8 +76,6 @@ void NoteEditor::changeTextColor()
     textEdit_->setTextColor(newColor);
     textEdit_->setPlainText(textEdit_->toPlainText());
     previousNote_.color_ = oldColor;
-    //GuiLogger::Instance().log("Background color set to " + newColor.name());
-    //updateNote();
   }
 }
 
@@ -97,16 +85,13 @@ void NoteEditor::resetText()
   previousNote_.html_ = textEdit_->toHtml();
 
   textEdit_->clear();
-  //updateNote();
 }
 
 void NoteEditor::resetTextColor()
 {
-  std::cout << "resetTextColor()" << std::endl;
   std::swap(previousNote_.color_, currentNote_.color_);
   textEdit_->setTextColor(currentNote_.color_);
   textEdit_->setPlainText(textEdit_->toPlainText());
-  //updateNote();
 }
 
 void NoteEditor::ok()
@@ -116,7 +101,8 @@ void NoteEditor::ok()
 
 void NoteEditor::cancel()
 {
-  textEdit_->setHtml(previousNote_.html_);
+  //TODO
+  //textEdit_->setHtml(previousNote_.html_);
   hide();
 }
 
