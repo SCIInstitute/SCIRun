@@ -26,41 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_NOTESEDITOR_H
-#define INTERFACE_APPLICATION_NOTESEDITOR_H
+#ifndef INTERFACE_APPLICATION_NOTE_H
+#define INTERFACE_APPLICATION_NOTE_H
 
-#include "ui_NoteEditor.h"
-
-#include <Interface/Application/Note.h>
-#include <Dataflow/Network/NetworkFwd.h>
+#include <QString>
+#include <QFont>
+#include <QColor>
 
 namespace SCIRun {
 namespace Gui {
 
-class NoteEditor : public QDialog, public Ui::NoteEditor
-{
-	Q_OBJECT
-	
-public:
-  explicit NoteEditor(const QString& moduleName, QWidget* parent = 0);
-private Q_SLOTS:
-  //void changeFont(const QFont& font);
-  void changeTextColor();
-  void changeFontSize(const QString& text);
-  void resetText();
-  void resetTextColor();
-  void changeNotePosition(int index);
-  void ok();
-  void cancel();
-  void updateNote();
-Q_SIGNALS:
-  void noteChanged(const Note& note);
-private:
-  QString moduleName_;
-  Note currentNote_;
-  Note previousNote_;
-  NotePosition position_;
-};
+  enum NotePosition
+  {
+    Default,
+    None,
+    Tooltip,
+    Top,
+    Left, 
+    Right, 
+    Bottom
+  };
+
+  struct Note
+  {
+    QString html_;
+    QString message_;
+    qreal fontPointSize_;
+    QColor color_;
+    NotePosition position_; 
+  };
 
 }
 }

@@ -195,6 +195,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   noteEditor_ = new NoteEditor(QString::fromStdString(moduleId_), SCIRunMainWindow::Instance());
   connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(show()));
   connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(raise()));
+  connect(noteEditor_, SIGNAL(noteChanged(const Note&)), this, SLOT(updateNote(const Note&)));
 
 
   //TODO: doh, how do i destroy myself?
@@ -385,4 +386,10 @@ void ModuleWidget::launchDocumentation()
   
   if (!QDesktopServices::openUrl(qurl))
     GuiLogger::Instance().log("Failed to open help page: " + qurl.toString());
+}
+
+void ModuleWidget::updateNote(const Note& note)
+{
+  std::cout << "\n\nmodule note updated to: " << std::endl;
+  std::cout << note.html_.toStdString() << std::endl;
 }

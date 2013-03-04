@@ -63,6 +63,7 @@ SET(Interface_Application_HEADERS
   NetworkExecutionProgressBar.h
   SCIRunMainWindow.h
   Node.h
+  Note.h
   NoteEditor.h
   Connection.h
   Port.h
