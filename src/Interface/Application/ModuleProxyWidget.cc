@@ -42,7 +42,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   module_(module),
   grabbedByWidget_(false),
   pressedSubWidget_(0),
-  note_(0)
+  note_(0),
+  notePosition_(Default)
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -51,6 +52,11 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
+}
+
+ModuleProxyWidget::~ModuleProxyWidget()
+{
+  delete note_;
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -145,7 +151,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   {
     module_->trackConnections();
     if (note_)
-      note_->setPos(pos().x() + 40, pos().y() - 50);
+      note_->setPos(pos() + relativeNotePosition());
   }
   return QGraphicsItem::itemChange(change, value);
 }
@@ -166,9 +172,36 @@ void ModuleProxyWidget::updateNote(const Note& note)
 
   if (!note_)
   {
-    note_ = new QGraphicsTextItem(note.message_, 0, scene());
-    note_->setPos(pos().x() + 40, pos().y() - 50);
+    note_ = new QGraphicsTextItem("", 0, scene());
   }
 
   note_->setHtml(note.html_);
+  //auto box = note_->boundingRect();
+  //std::cout << "note bounding rect = " << box.width() << " by " << box.height() 
+  //  << " at ";
+  //auto mapped = mapToScene(box.topLeft());
+  //std::cout << mapped.x() << "," << mapped.y() << std::endl;
+  note_->setPos(pos() + relativeNotePosition());
+}
+
+QPointF ModuleProxyWidget::relativeNotePosition()
+{
+  if (note_)
+  {
+    auto noteRect = note_->boundingRect();
+    auto thisRect = boundingRect();
+    switch (notePosition_)
+    {
+    case Default:
+      std::cout << "Default note position, TODO, falling through to default, which is TOP right now" << std::endl;
+    default:
+      auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
+      auto noteBottomCenter = noteRect.topLeft() - noteBottomMidpoint;
+      auto moduleTopHalfLength = thisRect.width() / 2;
+      noteBottomCenter.rx() += moduleTopHalfLength;
+      noteBottomCenter.ry() -= 5;
+      return noteBottomCenter;
+    }
+  }
+  return QPointF();
 }

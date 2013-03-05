@@ -50,9 +50,9 @@ namespace Gui {
   struct Note
   {
     QString html_;
-    QString message_;
-    qreal fontPointSize_;
-    QColor color_;
+    //QString message_;
+    //qreal fontPointSize_;
+    //QColor color_;
     NotePosition position_; 
   };
 

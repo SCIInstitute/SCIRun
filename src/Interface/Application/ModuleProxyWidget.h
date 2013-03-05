@@ -29,6 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
 #define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
 
+#include <Interface/Application/Note.h>
 #include <QGraphicsProxyWidget>
 
 namespace SCIRun
@@ -36,7 +37,6 @@ namespace SCIRun
   namespace Gui
   {
     class ModuleWidget;
-    struct Note;
 
     class ModuleProxyWidget : public QGraphicsProxyWidget
     {
@@ -44,6 +44,7 @@ namespace SCIRun
 	
     public:
       explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
+      ~ModuleProxyWidget();
       void createPortPositionProviders();
       ModuleWidget* getModuleWidget();
     public Q_SLOTS:
@@ -62,12 +63,14 @@ namespace SCIRun
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
+      QPointF relativeNotePosition();
 
       ModuleWidget* module_;
       bool grabbedByWidget_;
       QWidget* pressedSubWidget_;
       QPointF position_;
       QGraphicsTextItem* note_;
+      NotePosition notePosition_;
     };
 
   }

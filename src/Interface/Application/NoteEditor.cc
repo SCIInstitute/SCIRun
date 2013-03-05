@@ -43,6 +43,8 @@ NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(par
   connect(resetColorButton_, SIGNAL(clicked()), this, SLOT(resetTextColor()));
   connect(positionComboBox_, SIGNAL(activated(int)), this, SLOT(changeNotePosition(int)));
   connect(fontSizeComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeFontSize(const QString&)));
+  //TODO: sloppy.
+  //connect(alignmentComboBox_, SIGNAL(activated(const QString&)), this, SLOT(changeTextAlignment(const QString&)));
 
   connect(textEdit_, SIGNAL(textChanged()), this, SLOT(updateNote()));
 
@@ -50,7 +52,7 @@ NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(par
   connect(buttonBox_->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(ok()));
   connect(buttonBox_->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(cancel()));
 
-  currentNote_.color_ = Qt::black;
+  previousColor_ = Qt::black;
   position_ = Default;
 }
 
@@ -63,25 +65,39 @@ void NoteEditor::changeNotePosition(int index)
 void NoteEditor::changeFontSize(const QString& text)
 {
   textEdit_->setFontPointSize(text.toDouble());
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  textEdit_->setHtml(textEdit_->toHtml());
+}
+
+void NoteEditor::changeTextAlignment(const QString& text)
+{
+  Qt::Alignment alignment;
+  if (text == "Left")
+    alignment = Qt::AlignLeft;
+  else if (text == "Center")
+    alignment = Qt::AlignHCenter;
+  else if (text == "Right")
+    alignment = Qt::AlignRight;
+  else // text == "Justify")
+    alignment = Qt::AlignJustify;
+  textEdit_->setAlignment(alignment);
+  textEdit_->setHtml(textEdit_->toHtml());
 }
 
 void NoteEditor::changeTextColor()
 {
-  auto oldColor = currentNote_.color_;
+  auto oldColor = previousColor_;
 
   auto newColor = QColorDialog::getColor(oldColor, this, "Choose text color");
   if (newColor.isValid())
   {
     textEdit_->setTextColor(newColor);
-    textEdit_->setPlainText(textEdit_->toPlainText());
-    previousNote_.color_ = oldColor;
+    textEdit_->setHtml(textEdit_->toHtml());
+    previousColor_ = oldColor;
   }
 }
 
 void NoteEditor::resetText()
 {
-  previousNote_.message_ = textEdit_->toPlainText();
   previousNote_.html_ = textEdit_->toHtml();
 
   textEdit_->clear();
@@ -89,9 +105,10 @@ void NoteEditor::resetText()
 
 void NoteEditor::resetTextColor()
 {
-  std::swap(previousNote_.color_, currentNote_.color_);
-  textEdit_->setTextColor(currentNote_.color_);
-  textEdit_->setPlainText(textEdit_->toPlainText());
+  auto oldColor = textEdit_->textColor();
+  textEdit_->setTextColor(previousColor_);
+  textEdit_->setHtml(textEdit_->toHtml());
+  previousColor_ = oldColor;
 }
 
 void NoteEditor::ok()
@@ -108,10 +125,7 @@ void NoteEditor::cancel()
 
 void NoteEditor::updateNote()
 {
-  currentNote_.message_ = textEdit_->toPlainText();
   currentNote_.html_ = textEdit_->toHtml();
-  currentNote_.color_ = textEdit_->textColor();
-  currentNote_.fontPointSize_ = textEdit_->fontPointSize();
   currentNote_.position_ = position_;
   Q_EMIT noteChanged(currentNote_);
 }

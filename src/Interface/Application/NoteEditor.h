@@ -46,6 +46,7 @@ public:
 private Q_SLOTS:
   void changeTextColor();
   void changeFontSize(const QString& text);
+  void changeTextAlignment(const QString& text);
   void resetText();
   void resetTextColor();
   void changeNotePosition(int index);
@@ -58,6 +59,7 @@ private:
   QString moduleName_;
   Note currentNote_;
   Note previousNote_;
+  QColor previousColor_;
   NotePosition position_;
 };
 
