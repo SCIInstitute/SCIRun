@@ -63,6 +63,7 @@ namespace SCIRun
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
+      NotePosition getDefaultNotePosition() const;
       QPointF relativeNotePosition();
 
       ModuleWidget* module_;

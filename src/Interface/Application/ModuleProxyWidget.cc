@@ -167,20 +167,14 @@ void ModuleProxyWidget::createPortPositionProviders()
 
 void ModuleProxyWidget::updateNote(const Note& note)
 {
-  //std::cout << "\n\nmodule note updated to: " << std::endl;
-  //std::cout << note.html_.toStdString() << std::endl;
-
+  //std::cout << "update note called." << std::endl;
   if (!note_)
   {
     note_ = new QGraphicsTextItem("", 0, scene());
   }
 
   note_->setHtml(note.html_);
-  //auto box = note_->boundingRect();
-  //std::cout << "note bounding rect = " << box.width() << " by " << box.height() 
-  //  << " at ";
-  //auto mapped = mapToScene(box.topLeft());
-  //std::cout << mapped.x() << "," << mapped.y() << std::endl;
+  notePosition_ = note.position_;
   note_->setPos(pos() + relativeNotePosition());
 }
 
@@ -188,20 +182,71 @@ QPointF ModuleProxyWidget::relativeNotePosition()
 {
   if (note_)
   {
+    const int noteMargin = 2;
     auto noteRect = note_->boundingRect();
     auto thisRect = boundingRect();
-    switch (notePosition_)
+    auto position = notePosition_ == Default ? getDefaultNotePosition() : notePosition_;
+    note_->setVisible(!(Tooltip == position || None == position));
+    this->setToolTip("");
+    switch (position)
     {
-    case Default:
-      std::cout << "Default note position, TODO, falling through to default, which is TOP right now" << std::endl;
-    default:
-      auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
-      auto noteBottomCenter = noteRect.topLeft() - noteBottomMidpoint;
-      auto moduleTopHalfLength = thisRect.width() / 2;
-      noteBottomCenter.rx() += moduleTopHalfLength;
-      noteBottomCenter.ry() -= 5;
-      return noteBottomCenter;
+      case None:
+      {
+         //std::cout << "None selected: nothing to do" << std::endl;
+         break;
+      }
+      case Top:
+      {
+        //std::cout << "Top selected" << std::endl;
+        auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
+        auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
+        auto moduleTopHalfLength = thisRect.width() / 2;
+        noteBottomMidpointShift.rx() += moduleTopHalfLength;
+        noteBottomMidpointShift.ry() -= noteMargin;
+        return noteBottomMidpointShift;
+      }
+      case Bottom:
+      {
+        //std::cout << "Bottom selected" << std::endl;
+        auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
+        auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
+        auto moduleTopHalfLength = thisRect.width() / 2;
+        noteTopMidpointShift.rx() += moduleTopHalfLength;
+        noteTopMidpointShift.ry() += thisRect.height() + noteMargin;
+        return noteTopMidpointShift;
+      }
+      case Left:
+      {
+        //std::cout << "Left selected" << std::endl;
+        auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
+        auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
+        auto moduleSideHalfLength = thisRect.height() / 2;
+        noteRightMidpointShift.rx() -= noteMargin;
+        noteRightMidpointShift.ry() += moduleSideHalfLength;
+        return noteRightMidpointShift;
+      }
+      case Right:
+      {
+        //std::cout << "Right selected" << std::endl;
+        auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
+        auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
+        auto moduleSideHalfLength = thisRect.height() / 2;
+        noteLeftMidpointShift.rx() += thisRect.width() + noteMargin;
+        noteLeftMidpointShift.ry() += moduleSideHalfLength;
+        return noteLeftMidpointShift;
+      }
+      case Tooltip:
+        this->setToolTip(note_->toHtml());
+        //std::cout << "Module note Tooltip selected." << std::endl;
+        break;
     }
   }
+  //std::cout << "returning 0,0" << std::endl;
   return QPointF();
+}
+
+NotePosition ModuleProxyWidget::getDefaultNotePosition() const
+{
+  //TODO
+  return Top;
 }

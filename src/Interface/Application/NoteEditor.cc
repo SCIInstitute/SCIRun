@@ -32,12 +32,19 @@
 
 using namespace SCIRun::Gui;
 
+namespace
+{
+  int moveIncrement = 50;
+}
+
 NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)
 {
   setupUi(this);
   setModal(false);
   setWindowTitle("Note for " + moduleName);
   setVisible(false);
+  moveIncrement += moveIncrement;
+  move(moveIncrement, moveIncrement);
 
   connect(chooseColorButton_, SIGNAL(clicked()), this, SLOT(changeTextColor()));
   connect(resetColorButton_, SIGNAL(clicked()), this, SLOT(resetTextColor()));
@@ -65,7 +72,7 @@ void NoteEditor::changeNotePosition(int index)
 void NoteEditor::changeFontSize(const QString& text)
 {
   textEdit_->setFontPointSize(text.toDouble());
-  textEdit_->setHtml(textEdit_->toHtml());
+  textEdit_->setPlainText(textEdit_->toPlainText());
 }
 
 void NoteEditor::changeTextAlignment(const QString& text)
@@ -80,7 +87,7 @@ void NoteEditor::changeTextAlignment(const QString& text)
   else // text == "Justify")
     alignment = Qt::AlignJustify;
   textEdit_->setAlignment(alignment);
-  textEdit_->setHtml(textEdit_->toHtml());
+  textEdit_->setPlainText(textEdit_->toPlainText());
 }
 
 void NoteEditor::changeTextColor()
@@ -91,7 +98,7 @@ void NoteEditor::changeTextColor()
   if (newColor.isValid())
   {
     textEdit_->setTextColor(newColor);
-    textEdit_->setHtml(textEdit_->toHtml());
+    textEdit_->setPlainText(textEdit_->toPlainText());
     previousColor_ = oldColor;
   }
 }
@@ -107,7 +114,7 @@ void NoteEditor::resetTextColor()
 {
   auto oldColor = textEdit_->textColor();
   textEdit_->setTextColor(previousColor_);
-  textEdit_->setHtml(textEdit_->toHtml());
+  textEdit_->setPlainText(textEdit_->toPlainText());
   previousColor_ = oldColor;
 }
 
