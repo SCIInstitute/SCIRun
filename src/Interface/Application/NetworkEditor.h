@@ -55,6 +55,14 @@ namespace Gui {
     virtual bool isModule() const = 0;
   };
 
+  //almost just want to pass a boost::function for this one.
+  class DefaultNotePositionGetter
+  {
+  public:
+    virtual ~DefaultNotePositionGetter() {}
+    virtual NotePosition position() const = 0;
+  };
+
   class ModuleEventProxy : public QObject
   {
     Q_OBJECT
@@ -79,7 +87,7 @@ Q_SIGNALS:
 	  Q_OBJECT
 	
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -171,6 +179,7 @@ Q_SIGNALS:
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
+    boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
   };

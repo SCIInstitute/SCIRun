@@ -72,7 +72,7 @@ private:
   void loadNetworkFile(const QString& filename);
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
-  QString strippedName(const QString& fillFileName);
+  QString strippedName(const QString& fullFileName);
   void setActionIcons();
   void makeFilterButtonMenu();
   void writeSettings();
@@ -86,6 +86,7 @@ private:
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
+  boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool regressionMode_;
   QString regressionTestDataDir_;
 Q_SIGNALS:

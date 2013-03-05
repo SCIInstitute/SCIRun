@@ -49,8 +49,11 @@ using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent) : QGraphicsView(parent),
+NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
+  boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent) 
+  : QGraphicsView(parent),
   moduleSelectionGetter_(moduleSelectionGetter),
+  defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy)
 {
   scene_ = new QGraphicsScene(0, 0, 1000, 1000);
@@ -152,6 +155,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(modified()));
   connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(moduleMoved(const std::string&, double, double)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
+  proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
 
   scene_->addItem(proxy);

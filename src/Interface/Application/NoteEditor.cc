@@ -34,7 +34,7 @@ using namespace SCIRun::Gui;
 
 namespace
 {
-  int moveIncrement = 50;
+  int moveIncrement = 30;
 }
 
 NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(parent), moduleName_(moduleName)

@@ -129,6 +129,18 @@ namespace
   private:
     QTreeWidget& tree_;
   };
+
+  class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
+  {
+  public:
+    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
+    virtual NotePosition position() const
+    {
+      return NotePosition(combo_.currentIndex() + 1);
+    }
+  private:
+    QComboBox& combo_;
+  };
 }
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
@@ -161,7 +173,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
-  networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
+  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -771,5 +784,5 @@ void SCIRunMainWindow::setExecutor(int type)
 
 void SCIRunMainWindow::readDefaultNotePosition(int index)
 {
-  Q_EMIT defaultNotePositionChanged((NotePosition)(index + 1)); //TODO: unit test.
+  Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
 }
