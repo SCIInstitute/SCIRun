@@ -790,7 +790,38 @@
               </spacer>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox"/>
+              <widget class="QComboBox" name="comboBox">
+               <item>
+                <property name="text">
+                 <string>None</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Tooltip</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Top</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Left</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Right</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Bottom</string>
+                </property>
+               </item>
+              </widget>
              </item>
             </layout>
            </item>

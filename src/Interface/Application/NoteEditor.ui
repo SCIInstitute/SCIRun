@@ -84,35 +84,35 @@
        </item>
       </widget>
      </item>
-     <item row="2" column="0" colspan="2">
+     <item row="3" column="0" colspan="2">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Color:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="3" colspan="2">
+     <item row="3" column="3" colspan="2">
       <widget class="QPushButton" name="chooseColorButton_">
        <property name="text">
         <string>Choose...</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="5">
+     <item row="3" column="5">
       <widget class="QPushButton" name="resetColorButton_">
        <property name="text">
         <string>Reset</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0" colspan="6">
+     <item row="4" column="0" colspan="6">
       <widget class="QDialogButtonBox" name="buttonBox_">
        <property name="standardButtons">
         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
+     <item row="3" column="2">
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -125,14 +125,14 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Font Size:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="5">
+     <item row="2" column="5">
       <widget class="QComboBox" name="fontSizeComboBox_">
        <property name="currentIndex">
         <number>1</number>
@@ -164,7 +164,7 @@
        </item>
       </widget>
      </item>
-     <item row="1" column="4">
+     <item row="2" column="4">
       <spacer name="horizontalSpacer_4">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -177,8 +177,68 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="2">
+     <item row="2" column="2">
       <spacer name="horizontalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="5">
+      <widget class="QComboBox" name="alignmentComboBox_">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <item>
+        <property name="text">
+         <string>Left</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Right</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Center</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Justify</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Text alignment:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="1" column="4">
+      <spacer name="horizontalSpacer_6">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
