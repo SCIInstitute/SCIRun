@@ -49,6 +49,7 @@ namespace SCIRun
       ModuleWidget* getModuleWidget();
     public Q_SLOTS:
       void highlightIfSelected();
+      void setDefaultNotePosition(NotePosition position);
     Q_SIGNALS:
       void selected();
       void widgetMoved(const std::string& id, double newX, double newY);
@@ -63,15 +64,15 @@ namespace SCIRun
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-      NotePosition getDefaultNotePosition() const;
       QPointF relativeNotePosition();
+      void updateNotePosition();
 
       ModuleWidget* module_;
       bool grabbedByWidget_;
       QWidget* pressedSubWidget_;
       QPointF position_;
       QGraphicsTextItem* note_;
-      NotePosition notePosition_;
+      NotePosition notePosition_, defaultNotePosition_;
     };
 
   }

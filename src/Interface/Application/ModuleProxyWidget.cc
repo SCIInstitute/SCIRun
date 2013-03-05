@@ -43,7 +43,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   grabbedByWidget_(false),
   pressedSubWidget_(0),
   note_(0),
-  notePosition_(Default)
+  notePosition_(Default),
+  defaultNotePosition_(Top) //TODO
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
@@ -150,8 +151,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   if (change == ItemPositionHasChanged)
   {
     module_->trackConnections();
-    if (note_)
-      note_->setPos(pos() + relativeNotePosition());
+    updateNotePosition();
   }
   return QGraphicsItem::itemChange(change, value);
 }
@@ -175,7 +175,7 @@ void ModuleProxyWidget::updateNote(const Note& note)
 
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
-  note_->setPos(pos() + relativeNotePosition());
+  updateNotePosition();
 }
 
 QPointF ModuleProxyWidget::relativeNotePosition()
@@ -185,7 +185,7 @@ QPointF ModuleProxyWidget::relativeNotePosition()
     const int noteMargin = 2;
     auto noteRect = note_->boundingRect();
     auto thisRect = boundingRect();
-    auto position = notePosition_ == Default ? getDefaultNotePosition() : notePosition_;
+    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
     note_->setVisible(!(Tooltip == position || None == position));
     this->setToolTip("");
     switch (position)
@@ -245,8 +245,14 @@ QPointF ModuleProxyWidget::relativeNotePosition()
   return QPointF();
 }
 
-NotePosition ModuleProxyWidget::getDefaultNotePosition() const
+void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
 {
-  //TODO
-  return Top;
+  defaultNotePosition_ = position;
+  updateNotePosition();
+}
+
+void ModuleProxyWidget::updateNotePosition()
+{
+  if (note_)
+    note_->setPos(pos() + relativeNotePosition());
 }

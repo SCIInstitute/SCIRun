@@ -32,6 +32,7 @@
 #include <QDialog>
 #include <QDir>
 #include <boost/shared_ptr.hpp>
+#include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
 namespace SCIRun {
@@ -85,11 +86,11 @@ private:
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
-  //boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
   bool regressionMode_;
   QString regressionTestDataDir_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
+  void defaultNotePositionChanged(NotePosition position);
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -109,6 +110,7 @@ private Q_SLOTS:
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void setExecutor(int type);
+  void readDefaultNotePosition(int index);
   void exitApplication(int code);
 };
 

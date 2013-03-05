@@ -36,6 +36,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
+#include <Interface/Application/Note.h>
 
 class QMenu;
 class QToolBar;
@@ -126,6 +127,7 @@ Q_SIGNALS:
     void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
     void moduleMoved(const std::string& id, double newX, double newY);
+    void defaultNotePositionChanged(NotePosition position);
   private Q_SLOTS:
     void del();
     void cut();
@@ -158,13 +160,11 @@ Q_SIGNALS:
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
-    QAction* moduleDumpAction_;
 
     QGraphicsScene* scene_;
   
     int minZ_;
     int maxZ_;
-    int seqNumber_;
 
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
