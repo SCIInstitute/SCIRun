@@ -28,14 +28,14 @@
 
 #include <QtGui>
 #include <iostream>
-#include <Dataflow/Engine/Controller/HistoryManager.h>
-#include <Interface/Application/HistoryWindow.h>
+#include <Dataflow/Engine/Controller/ProvenanceManager.h>
+#include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 
 //TODO: factory
-#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+#include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

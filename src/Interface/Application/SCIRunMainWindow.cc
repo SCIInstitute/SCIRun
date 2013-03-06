@@ -33,7 +33,7 @@
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
-#include <Interface/Application/HistoryWindow.h>
+#include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Core/Logging/Logger.h>
@@ -41,7 +41,7 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
-#include <Dataflow/Engine/Controller/HistoryManager.h>
+#include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Core/Application/Application.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>

@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Controller/HistoryManager.h>
+#include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 using namespace SCIRun;

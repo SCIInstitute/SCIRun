@@ -28,8 +28,8 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
-#include <Dataflow/Engine/Controller/HistoryManager.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceManager.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;

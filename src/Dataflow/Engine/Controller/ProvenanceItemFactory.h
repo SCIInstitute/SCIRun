@@ -29,7 +29,7 @@
 #ifndef ENGINE_NETWORK_PROVENANCEITEMFACTORY_H
 #define ENGINE_NETWORK_PROVENANCEITEMFACTORY_H
 
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {

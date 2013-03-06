@@ -29,12 +29,12 @@
 #ifndef INTERFACE_APPLICATION_PROVENANCEWINDOW_H
 #define INTERFACE_APPLICATION_PROVENANCEWINDOW_H
 
-#include "ui_HistoryWindow.h"
+#include "ui_ProvenanceWindow.h"
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 
 namespace SCIRun {
 namespace Gui {

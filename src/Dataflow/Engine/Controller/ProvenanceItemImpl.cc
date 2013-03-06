@@ -28,7 +28,7 @@
 
 #include <string>
 #include <sstream>
-#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+#include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;

@@ -29,7 +29,7 @@
 #ifndef ENGINE_NETWORK_PROVENANCEITEMIMPL_H
 #define ENGINE_NETWORK_PROVENANCEITEMIMPL_H
 
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
