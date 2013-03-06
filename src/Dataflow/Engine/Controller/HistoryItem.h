@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_HISTORYITEM_H
-#define ENGINE_NETWORK_HISTORYITEM_H
+#ifndef ENGINE_NETWORK_PROVENANCEITEM_H
+#define ENGINE_NETWORK_PROVENANCEITEM_H
 
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -38,11 +38,11 @@ namespace Dataflow {
 namespace Engine {
   
   template <class Memento>
-  class SCISHARE HistoryItem : boost::noncopyable
+  class SCISHARE ProvenanceItem : boost::noncopyable
   {
   public:
-    typedef boost::shared_ptr<HistoryItem<Memento>> Handle;
-    ~HistoryItem() {}
+    typedef boost::shared_ptr<ProvenanceItem<Memento>> Handle;
+    ~ProvenanceItem() {}
     virtual Memento memento() const = 0;
     virtual std::string name() const = 0;
   };

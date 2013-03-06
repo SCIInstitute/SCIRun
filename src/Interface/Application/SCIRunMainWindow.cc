@@ -284,7 +284,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
-  setupHistoryWindow();
+  setupProvenanceWindow();
   setupDevConsole();
 
   makeFilterButtonMenu();
@@ -306,7 +306,7 @@ void SCIRunMainWindow::initialize()
     commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(networkEditor_, SIGNAL(moduleMoved(const std::string&, double, double)), 
     commandConverter_.get(), SLOT(moduleMoved(const std::string&, double, double)));
-  connect(historyWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByHistoryManager(bool)));
+  connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
   
   setRegressionTestDataDir();
 
@@ -416,8 +416,8 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       setCurrentFile(filename);
       statusBar()->showMessage(tr("File loaded"), 2000);
       networkProgressBar_->updateTotalModules(networkEditor_->numModules());
-      historyWindow_->clear();
-      historyWindow_->showFile(command.openedFile_);
+      provenanceWindow_->clear();
+      provenanceWindow_->showFile(command.openedFile_);
     }
   }
 }
@@ -735,27 +735,27 @@ void SCIRunMainWindow::resetBackgroundColor()
   GuiLogger::Instance().log("Background color set to " + defaultColor.name());
 }
 
-void SCIRunMainWindow::setupHistoryWindow()
+void SCIRunMainWindow::setupProvenanceWindow()
 {
-  HistoryManagerHandle historyManager(new Dataflow::Engine::HistoryManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
-  historyWindow_ = new HistoryWindow(historyManager, this);
-  connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
-  connect(historyWindow_, SIGNAL(visibilityChanged(bool)), actionHistory_, SLOT(setChecked(bool)));
+  ProvenanceManagerHandle provenanceManager(new Dataflow::Engine::ProvenanceManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
+  provenanceWindow_ = new ProvenanceWindow(provenanceManager, this);
+  connect(actionProvenance_, SIGNAL(toggled(bool)), provenanceWindow_, SLOT(setVisible(bool)));
+  connect(provenanceWindow_, SIGNAL(visibilityChanged(bool)), actionProvenance_, SLOT(setChecked(bool)));
 
-  historyWindow_->setVisible(false);
-  historyWindow_->setFloating(true);
-  addDockWidget(Qt::RightDockWidgetArea, historyWindow_);
+  provenanceWindow_->setVisible(false);
+  provenanceWindow_->setFloating(true);
+  addDockWidget(Qt::RightDockWidgetArea, provenanceWindow_);
 
-  connect(actionUndo_, SIGNAL(triggered()), historyWindow_, SLOT(undo()));
-  connect(actionRedo_, SIGNAL(triggered()), historyWindow_, SLOT(redo()));
+  connect(actionUndo_, SIGNAL(triggered()), provenanceWindow_, SLOT(undo()));
+  connect(actionRedo_, SIGNAL(triggered()), provenanceWindow_, SLOT(redo()));
   actionUndo_->setEnabled(false);
   actionRedo_->setEnabled(false);
-  connect(historyWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
-  connect(historyWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
+  connect(provenanceWindow_, SIGNAL(undoStateChanged(bool)), actionUndo_, SLOT(setEnabled(bool)));
+  connect(provenanceWindow_, SIGNAL(redoStateChanged(bool)), actionRedo_, SLOT(setEnabled(bool)));
 
-  commandConverter_.reset(new GuiActionCommandHistoryConverter(networkEditor_));
+  commandConverter_.reset(new GuiActionProvenanceConverter(networkEditor_));
 
-  connect(commandConverter_.get(), SIGNAL(historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle)), historyWindow_, SLOT(addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle)));
+  connect(commandConverter_.get(), SIGNAL(provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle)), provenanceWindow_, SLOT(addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle)));
 }
 
 void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item)

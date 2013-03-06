@@ -45,7 +45,7 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 
 
-class HistoryItemTests : public ::testing::Test
+class ProvenanceItemTests : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -58,20 +58,20 @@ protected:
   MockNetworkPtr mockNetwork_;
 };
 
-TEST_F(HistoryItemTests, CanCreateAddModule)
+TEST_F(ProvenanceItemTests, CanCreateAddModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleAddedHistoryItem item(name, NetworkFileHandle());
+  ModuleAddedProvenanceItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
 
   //FAIL();
 }
 
-TEST_F(HistoryItemTests, CanCreateRemoveModule)
+TEST_F(ProvenanceItemTests, CanCreateRemoveModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleRemovedHistoryItem item(name, NetworkFileHandle());
+  ModuleRemovedProvenanceItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Removed: " + name, item.name());
 

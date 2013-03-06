@@ -45,7 +45,7 @@ namespace SCIRun {
 namespace Gui {
 
 class NetworkEditor;
-class HistoryWindow;
+class ProvenanceWindow;
 class DeveloperConsole;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
@@ -61,7 +61,7 @@ private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
-  HistoryWindow* historyWindow_;
+  ProvenanceWindow* provenanceWindow_;
   DeveloperConsole* devConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
@@ -77,7 +77,7 @@ private:
   void makeFilterButtonMenu();
   void writeSettings();
   void readSettings();
-  void setupHistoryWindow();
+  void setupProvenanceWindow();
   void setupDevConsole();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
@@ -85,7 +85,7 @@ private:
   QString currentFile_;
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
-  boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
+  boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool regressionMode_;
   QString regressionTestDataDir_;

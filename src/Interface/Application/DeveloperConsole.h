@@ -31,11 +31,6 @@
 
 #include "ui_DeveloperConsole.h"
 
-//#include <Dataflow/Network/NetworkFwd.h>
-//#include <Dataflow/Engine/Controller/ControllerInterfaces.h>
-//#include <Dataflow/Serialization/Network/ModulePositionGetter.h>
-//#include <Dataflow/Engine/Controller/HistoryItem.h>
-
 namespace SCIRun {
 namespace Gui {
 
@@ -46,21 +41,11 @@ class DeveloperConsole : public QDockWidget, public Ui::DeveloperConsole
 	Q_OBJECT
 	
 public:
-  explicit DeveloperConsole(/*SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager, */QWidget* parent = 0);
+  explicit DeveloperConsole(QWidget* parent = 0);
 public Q_SLOTS:
   void executorButtonClicked();
-  //void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);  
 Q_SIGNALS:
   void executorChosen(int type);
-//  void modifyingNetwork(bool modifying);
-//  void undoStateChanged(bool enabled);
-//  void redoStateChanged(bool enabled);
-//private:
-//  SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager_;
-//  int lastUndoRow_;
-//  
-//  void setUndoEnabled(bool enable);
-//  void setRedoEnabled(bool enable);*/
 };
 
 }

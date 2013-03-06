@@ -41,16 +41,16 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Engine;
 
-HistoryWindow::HistoryWindow(HistoryManagerHandle historyManager, QWidget* parent /* = 0 */) : 
-  historyManager_(historyManager),
+ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QWidget* parent /* = 0 */) : 
+  provenanceManager_(provenanceManager),
   lastUndoRow_(-1),
   QDockWidget(parent) 
 {
   setupUi(this);
   networkXMLTextEdit_->setTabStopWidth(15);
 
-  connect(historyListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
-  connect(historyListWidget_, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
+  connect(provenanceListWidget_, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
+  connect(provenanceListWidget_, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(displayInfo(QListWidgetItem*)));
   connect(undoButton_, SIGNAL(clicked()), this, SLOT(undo()));
   connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
   connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
@@ -59,24 +59,24 @@ HistoryWindow::HistoryWindow(HistoryManagerHandle historyManager, QWidget* paren
   setRedoEnabled(false);
 }
 
-void HistoryWindow::showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file)
+void ProvenanceWindow::showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file)
 {
   std::ostringstream ostr;
   XMLSerializer::save_xml(*file, ostr, "networkFile");
   QString xmlText = QString::fromStdString(ostr.str());
   networkXMLTextEdit_->setPlainText(xmlText);
-  historyManager_->setInitialState(file);
+  provenanceManager_->setInitialState(file);
 }
 
 //TODO:
 /*
-Key thing: when undoing/redoing, since we're loading from scratch, need to scoped-switch off the signals for history window.
+Key thing: when undoing/redoing, since we're loading from scratch, need to scoped-switch off the signals for provenance window.
 */
 
-class HistoryWindowListItem : public QListWidgetItem
+class ProvenanceWindowListItem : public QListWidgetItem
 {
 public:
-  HistoryWindowListItem(HistoryItemHandle info, QListWidget* parent = 0) : 
+  ProvenanceWindowListItem(ProvenanceItemHandle info, QListWidget* parent = 0) : 
     QListWidgetItem(QString::fromStdString(info->name()), parent),
     info_(info) 
   {
@@ -89,10 +89,6 @@ public:
     }
     else
       xmlText_ = "<Unknown state for this item>";
-  }
-  ~HistoryWindowListItem()
-  {
-    //std::cout << "deleting " << info_->name() << std::endl;
   }
   void setAsUndo()
   {
@@ -117,38 +113,36 @@ public:
     return info_->name();
   }
 private:
-  HistoryItemHandle info_;
+  ProvenanceItemHandle info_;
   QString xmlText_;
 };
 
-void HistoryWindow::addHistoryItem(HistoryItemHandle item)
+void ProvenanceWindow::addProvenanceItem(ProvenanceItemHandle item)
 {
-  //std::cout << "removing from " << lastUndoRow_+1 << " to " << historyListWidget_->count() -1 << std::endl;
-  for (int i = historyListWidget_->count() - 1; i > lastUndoRow_; --i)
-    delete historyListWidget_->takeItem(i);
+  for (int i = provenanceListWidget_->count() - 1; i > lastUndoRow_; --i)
+    delete provenanceListWidget_->takeItem(i);
 
-  new HistoryWindowListItem(item, historyListWidget_);
+  new ProvenanceWindowListItem(item, provenanceListWidget_);
   lastUndoRow_++;
-  //std::cout << "!! HistoryWindow::addHistoryItem, rowIndex = " << lastUndoRow_ << std::endl;
   setRedoEnabled(false);
   setUndoEnabled(true);
 
-  historyManager_->addItem(item);
+  provenanceManager_->addItem(item);
 }
 
-void HistoryWindow::displayInfo(QListWidgetItem* item)
+void ProvenanceWindow::displayInfo(QListWidgetItem* item)
 {
-  auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
-  if (historyItem)
+  auto provenanceItem = dynamic_cast<ProvenanceWindowListItem*>(item);
+  if (provenanceItem)
   {
-    networkXMLTextEdit_->setPlainText(historyItem->xmlText());
+    networkXMLTextEdit_->setPlainText(provenanceItem->xmlText());
   }
 }
 
-void HistoryWindow::clear()
+void ProvenanceWindow::clear()
 {
-  historyListWidget_->clear();
-  historyManager_->clearAll();
+  provenanceListWidget_->clear();
+  provenanceManager_->clearAll();
   lastUndoRow_ = -1;
   setUndoEnabled(false);
   setRedoEnabled(false);
@@ -156,37 +150,34 @@ void HistoryWindow::clear()
   networkXMLTextEdit_->clear();
 }
 
-void HistoryWindow::setUndoEnabled(bool enable)
+void ProvenanceWindow::setUndoEnabled(bool enable)
 {
   undoButton_->setEnabled(enable);
   undoAllButton_->setEnabled(enable);
   Q_EMIT undoStateChanged(enable);
 }
 
-void HistoryWindow::setRedoEnabled(bool enable)
+void ProvenanceWindow::setRedoEnabled(bool enable)
 {
   redoButton_->setEnabled(enable);
   redoAllButton_->setEnabled(enable);
   Q_EMIT redoStateChanged(enable);
 }
 
-void HistoryWindow::undo()
+void ProvenanceWindow::undo()
 {
-  //std::cout << "!! HistoryWindow::Undo pressed, rowIndex = " << lastUndoRow_ << std::endl;
-
-  auto item = historyListWidget_->item(lastUndoRow_);
+  auto item = provenanceListWidget_->item(lastUndoRow_);
   if (item)
   {
-    auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
-    historyItem->setAsRedo();
+    auto provenanceItem = dynamic_cast<ProvenanceWindowListItem*>(item);
+    provenanceItem->setAsRedo();
     
     {
       Q_EMIT modifyingNetwork(true);
-      auto undone = historyManager_->undo();
+      auto undone = provenanceManager_->undo();
       Q_EMIT modifyingNetwork(false);
-      //std::cout << "undoing " << undone->name() << std::endl;
-      if (undone->name() != historyItem->name())
-        std::cout << "Inconsistency in history items. TODO: emit logical error here." << std::endl;
+      if (undone->name() != provenanceItem->name())
+        std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
 
     lastUndoRow_--;
@@ -197,69 +188,63 @@ void HistoryWindow::undo()
     }
   }
   else
-    std::cout << "oops, item is null" << std::endl;
-  //std::cout << "\trowIndex now = " << lastUndoRow_ << std::endl;
+    std::cout << "Logical error: provenance item is null" << std::endl;
 }
 
-void HistoryWindow::redo()
+void ProvenanceWindow::redo()
 {
-  //std::cout << "!! HistoryWindow::Redo pressed, rowIndex = " << lastUndoRow_  << std::endl;
-
-  auto item = historyListWidget_->item(lastUndoRow_ + 1);
+  auto item = provenanceListWidget_->item(lastUndoRow_ + 1);
   if (item)
   {
-    auto historyItem = dynamic_cast<HistoryWindowListItem*>(item);
-    historyItem->setAsUndo();
+    auto provenanceItem = dynamic_cast<ProvenanceWindowListItem*>(item);
+    provenanceItem->setAsUndo();
 
     {
       Q_EMIT modifyingNetwork(true);
-      auto redone = historyManager_->redo();
+      auto redone = provenanceManager_->redo();
       Q_EMIT modifyingNetwork(false);
-      //std::cout << "redoing " << redone->name() << std::endl;
-      if (redone->name() != historyItem->name())
-        std::cout << "Inconsistency in history items. TODO: emit logical error here." << std::endl;
+      if (redone->name() != provenanceItem->name())
+        std::cout << "Inconsistency in provenance items. TODO: emit logical error here." << std::endl;
     }
-
 
     lastUndoRow_++;
     setUndoEnabled(true);
-    if (lastUndoRow_ == historyListWidget_->count() - 1)
+    if (lastUndoRow_ == provenanceListWidget_->count() - 1)
     {
       setRedoEnabled(false);
     }
   }
   else
-    std::cout << "oops, item is null" << std::endl;
-  //std::cout << "\trowIndex now = " << lastUndoRow_ << std::endl;
+    std::cout << "Logical error: provenance item is null" << std::endl;
 }
 
-void HistoryWindow::undoAll()
+void ProvenanceWindow::undoAll()
 {
-  for (int row = 0; row < historyListWidget_->count(); ++row)
+  for (int row = 0; row < provenanceListWidget_->count(); ++row)
   {
-    auto historyItem = dynamic_cast<HistoryWindowListItem*>(historyListWidget_->item(row));
-    historyItem->setAsRedo();
+    auto provenanceItem = dynamic_cast<ProvenanceWindowListItem*>(provenanceListWidget_->item(row));
+    provenanceItem->setAsRedo();
   }
   lastUndoRow_ = -1;
 
   Q_EMIT modifyingNetwork(true);
-  historyManager_->undoAll();
+  provenanceManager_->undoAll();
   Q_EMIT modifyingNetwork(false);
   setUndoEnabled(false);
   setRedoEnabled(true);
 }
 
-void HistoryWindow::redoAll()
+void ProvenanceWindow::redoAll()
 {
-  for (int row = 0; row < historyListWidget_->count(); ++row)
+  for (int row = 0; row < provenanceListWidget_->count(); ++row)
   {
-    auto historyItem = dynamic_cast<HistoryWindowListItem*>(historyListWidget_->item(row));
-    historyItem->setAsUndo();
+    auto provenanceItem = dynamic_cast<ProvenanceWindowListItem*>(provenanceListWidget_->item(row));
+    provenanceItem->setAsUndo();
   }
-  lastUndoRow_ = historyListWidget_->count() - 1;
+  lastUndoRow_ = provenanceListWidget_->count() - 1;
 
   Q_EMIT modifyingNetwork(true);
-  historyManager_->redoAll();
+  provenanceManager_->redoAll();
   Q_EMIT modifyingNetwork(false);
   setUndoEnabled(true);
   setRedoEnabled(false);
@@ -268,57 +253,57 @@ void HistoryWindow::redoAll()
 //----------------------------------------------------------
 //TODO: separate out
 
-GuiActionCommandHistoryConverter::GuiActionCommandHistoryConverter(NetworkEditor* editor) : 
+GuiActionProvenanceConverter::GuiActionProvenanceConverter(NetworkEditor* editor) : 
   editor_(editor),
-  historyManagerModifyingNetwork_(false)
+  provenanceManagerModifyingNetwork_(false)
 {}
 
-void GuiActionCommandHistoryConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
+void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  if (!historyManagerModifyingNetwork_)
+  if (!provenanceManagerModifyingNetwork_)
   {
-    HistoryItemHandle item(new ModuleAddedHistoryItem(name, editor_->saveNetwork()));
-    Q_EMIT historyItemCreated(item);
+    ProvenanceItemHandle item(new ModuleAddedProvenanceItem(name, editor_->saveNetwork()));
+    Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionCommandHistoryConverter::moduleRemoved(const std::string& id)
+void GuiActionProvenanceConverter::moduleRemoved(const std::string& id)
 {
-  if (!historyManagerModifyingNetwork_)
+  if (!provenanceManagerModifyingNetwork_)
   {
-    HistoryItemHandle item(new ModuleRemovedHistoryItem(id, editor_->saveNetwork()));
-    Q_EMIT historyItemCreated(item);
+    ProvenanceItemHandle item(new ModuleRemovedProvenanceItem(id, editor_->saveNetwork()));
+    Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionCommandHistoryConverter::connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
+void GuiActionProvenanceConverter::connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
-  if (!historyManagerModifyingNetwork_)
+  if (!provenanceManagerModifyingNetwork_)
   {
-    HistoryItemHandle item(new ConnectionAddedHistoryItem(cd, editor_->saveNetwork()));
-    Q_EMIT historyItemCreated(item);
+    ProvenanceItemHandle item(new ConnectionAddedProvenanceItem(cd, editor_->saveNetwork()));
+    Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionCommandHistoryConverter::connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id)
+void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
-  if (!historyManagerModifyingNetwork_)
+  if (!provenanceManagerModifyingNetwork_)
   {
-    HistoryItemHandle item(new ConnectionRemovedHistoryItem(id, editor_->saveNetwork()));
-    Q_EMIT historyItemCreated(item);
+    ProvenanceItemHandle item(new ConnectionRemovedProvenanceItem(id, editor_->saveNetwork()));
+    Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionCommandHistoryConverter::moduleMoved(const std::string& id, double newX, double newY)
+void GuiActionProvenanceConverter::moduleMoved(const std::string& id, double newX, double newY)
 {
-  if (!historyManagerModifyingNetwork_)
+  if (!provenanceManagerModifyingNetwork_)
   {
-    HistoryItemHandle item(new ModuleMovedHistoryItem(id, newX, newY, editor_->saveNetwork()));
-    Q_EMIT historyItemCreated(item);
+    ProvenanceItemHandle item(new ModuleMovedProvenanceItem(id, newX, newY, editor_->saveNetwork()));
+    Q_EMIT provenanceItemCreated(item);
   }
 }
 
-void GuiActionCommandHistoryConverter::networkBeingModifiedByHistoryManager(bool inProgress)
+void GuiActionProvenanceConverter::networkBeingModifiedByProvenanceManager(bool inProgress)
 {
-  historyManagerModifyingNetwork_ = inProgress;
+  provenanceManagerModifyingNetwork_ = inProgress;
 }
