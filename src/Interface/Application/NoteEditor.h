@@ -55,10 +55,13 @@ private Q_SLOTS:
   void updateNote();
 Q_SIGNALS:
   void noteChanged(const Note& note);
+protected:
+  virtual void showEvent(QShowEvent* event);
 private:
   QString moduleName_;
   Note currentNote_;
-  Note previousNote_;
+  QString noteHtmlBackup_;
+  int fontSizeBackup_, positionBackup_;
   QColor previousColor_;
   NotePosition position_;
 };

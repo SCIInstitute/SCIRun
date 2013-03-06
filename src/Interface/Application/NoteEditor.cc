@@ -59,6 +59,7 @@ NoteEditor::NoteEditor(const QString& moduleName, QWidget* parent) : QDialog(par
   connect(buttonBox_->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(ok()));
   connect(buttonBox_->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), this, SLOT(cancel()));
 
+  //TODO: settable notes
   previousColor_ = Qt::black;
   position_ = Default;
 }
@@ -77,6 +78,7 @@ void NoteEditor::changeFontSize(const QString& text)
 
 void NoteEditor::changeTextAlignment(const QString& text)
 {
+  //TODO: only changes one line at a time...may just chuck this option
   Qt::Alignment alignment;
   if (text == "Left")
     alignment = Qt::AlignLeft;
@@ -92,20 +94,18 @@ void NoteEditor::changeTextAlignment(const QString& text)
 
 void NoteEditor::changeTextColor()
 {
-  auto oldColor = previousColor_;
-
-  auto newColor = QColorDialog::getColor(oldColor, this, "Choose text color");
+  auto newColor = QColorDialog::getColor(previousColor_, this, "Choose text color");
   if (newColor.isValid())
   {
+    previousColor_ = textEdit_->textColor();
     textEdit_->setTextColor(newColor);
     textEdit_->setPlainText(textEdit_->toPlainText());
-    previousColor_ = oldColor;
   }
 }
 
 void NoteEditor::resetText()
 {
-  previousNote_.html_ = textEdit_->toHtml();
+  //noteBackup_.html_ = textEdit_->toHtml();
 
   textEdit_->clear();
 }
@@ -125,8 +125,10 @@ void NoteEditor::ok()
 
 void NoteEditor::cancel()
 {
-  //TODO
-  //textEdit_->setHtml(previousNote_.html_);
+  textEdit_->setHtml(noteHtmlBackup_);
+  fontSizeComboBox_->setCurrentIndex(fontSizeBackup_);
+  //positionComboBox_->setCurrentIndex(positionBackup_);
+  //updateNote();
   hide();
 }
 
@@ -135,4 +137,12 @@ void NoteEditor::updateNote()
   currentNote_.html_ = textEdit_->toHtml();
   currentNote_.position_ = position_;
   Q_EMIT noteChanged(currentNote_);
+}
+
+void NoteEditor::showEvent(QShowEvent* event)
+{
+  noteHtmlBackup_ = textEdit_->toHtml();
+  fontSizeBackup_ = fontSizeComboBox_->currentIndex();
+  //positionBackup_ = positionComboBox_->currentIndex();
+  QDialog::showEvent(event);
 }
