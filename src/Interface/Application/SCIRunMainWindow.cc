@@ -441,6 +441,7 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
   if (!currentFile_.isEmpty())
   {
     shownName = strippedName(currentFile_);
+    latestNetworkDirectory_ = QFileInfo(currentFile_).dir();
     recentFiles_.removeAll(currentFile_);
     recentFiles_.prepend(currentFile_);
     updateRecentFileActions();
@@ -451,7 +452,6 @@ void SCIRunMainWindow::setCurrentFile(const QString& fileName)
 QString SCIRunMainWindow::strippedName(const QString& fullFileName)
 {
   QFileInfo info(fullFileName);
-  latestNetworkDirectory_ = info.dir();
   return info.fileName();
 }
 
@@ -660,7 +660,7 @@ void SCIRunMainWindow::readSettings()
   {
     int notePositionIndex = settings.value(notePositionKey).toInt();
     defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
-    GuiLogger::Instance().log(QString("Setting read: default note position = ") + notePositionIndex);
+    GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
   }
 
 }
