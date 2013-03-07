@@ -36,7 +36,7 @@
 
 DiagramWindow::DiagramWindow()
 {
-  //pythonConsole_ = new PythonConsoleWidget( this );
+  pythonConsole_ = new PythonConsoleWidget( this );
 
   scene_ = new QGraphicsScene(0, 0, 600, 500);
 
@@ -329,6 +329,5 @@ void DiagramWindow::createToolBars()
 
 void DiagramWindow::launchPython()
 {
-  std::cout << "Python launched! LOL" << std::endl;
-  //pythonConsole_->show();
+  pythonConsole_->setVisible(!pythonConsole_->isVisible());
 }

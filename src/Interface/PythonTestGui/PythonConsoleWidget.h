@@ -29,10 +29,6 @@
 #ifndef INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 #define INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
-#endif 
-
 #include <boost/shared_ptr.hpp>
 #include <QDialog>
 

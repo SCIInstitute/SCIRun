@@ -25,7 +25,6 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
-#if 0
 // Python
 // NOTE: This one has to be here: Because the Python source code is sub standard, we need to include
 // this first, to avoid trouble with the macros that Python defines.
@@ -43,7 +42,7 @@
 #include <QVBoxLayout>
 
 //#include "PythonInterpreter.h"
-#include "PythonConsoleWidget.h"
+#include <Interface/PythonTestGui/PythonConsoleWidget.h>
 
 //////////////////////////////////////////////////////////////////////////
 // Class PythonConsoleEdit
@@ -436,8 +435,11 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
 
 	this->setMinimumSize( 500, 500 );
 
+  setWindowTitle("Python console");
+
   std::cout << "!!! omitted signal/slots" << std::endl;
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   connect(Core::PythonInterpreter::Instance()->prompt_signal_, 
     SIGNAL(...), private_->console_edit_, SLOT(prompt(const QString&)));
 
@@ -448,6 +450,7 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
     SIGNAL(...), private_->console_edit_, SLOT(print_error(const QString&)));
 
   Core::PythonInterpreter::Instance()->print_banner();
+#endif
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()
@@ -455,4 +458,3 @@ PythonConsoleWidget::~PythonConsoleWidget()
 	//this->disconnect_all();
 }
 
-#endif

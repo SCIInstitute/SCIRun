@@ -361,6 +361,11 @@ ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
+########################################################################
+# Python
+
+MESSAGE(STATUS "Configuring Python")
+FIND_PACKAGE(PythonLibs REQUIRED)
 
 ########################################################################
 # Includes
