@@ -36,6 +36,7 @@ SET(QtExampleDiagram_SOURCES
   propertiesdialog.cc
   main.cc
   PythonConsoleWidget.cc
+  Python/PythonInterpreter.cc
 )
 
 SET(QtExampleDiagram_HEADERS
@@ -44,6 +45,7 @@ SET(QtExampleDiagram_HEADERS
   DiagramWindow.h
   propertiesdialog.h
   PythonConsoleWidget.h
+  Python/PythonInterpreter.h
 )
 
 SET(QtExampleDiagram_FORMS propertiesdialog.ui)

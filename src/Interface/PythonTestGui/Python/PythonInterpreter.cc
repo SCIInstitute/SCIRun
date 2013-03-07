@@ -36,12 +36,12 @@
 #include <boost/regex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
-#include <Core/Utils/Exception.h>
-#include <Core/Utils/Lockable.h>
-#include <Core/Utils/Log.h>
+//#include <Core/Utils/Exception.h>
+//#include <Core/Utils/Lockable.h>
+//#include <Core/Utils/Log.h>
 
-#include <Core/Python/PythonInterpreter.h>
-#include <Core/Python/ToPythonConverters.h>
+#include <Interface/PythonTestGui/Python/PythonInterpreter.h>
+//#include <Core/Python/ToPythonConverters.h>
 
 //////////////////////////////////////////////////////////////////////////
 // Python flags defined in pythonrun.c
@@ -69,11 +69,7 @@ extern int Py_OptimizeFlag;
 namespace Core
 {
 
-//////////////////////////////////////////////////////////////////////////
-// Class PythonInterpreterPrivate
-//////////////////////////////////////////////////////////////////////////
-
-class PythonInterpreterPrivate : public Core::Lockable
+class PythonInterpreterPrivate/* : public Core::Lockable*/
 {
 public:
 	std::string read_from_console( const int bytes = -1 );
@@ -89,8 +85,6 @@ public:
 	// Whether the Python interpreter has been initialized.
 	bool initialized_;
 	bool terminal_running_;
-	// The action context for the Python thread.
-	PythonActionContextHandle action_context_;
 	// The input buffer
 	std::string input_buffer_;
 	// Whether the interpreter is waiting for input
@@ -105,6 +99,17 @@ public:
 	// Condition variable to make sure the PythonInterpreter thread has 
 	// completed initialization before continuing the main thread.
 	boost::condition_variable thread_condition_variable_;
+
+  //copied from Core::Lockable
+	typedef boost::mutex mutex_type;
+  typedef boost::unique_lock< mutex_type > lock_type;
+  mutex_type& get_mutex() const
+  {
+    return this->mutex_;
+  }
+
+private:
+  mutable mutex_type mutex_;
 };
 
 std::string PythonInterpreterPrivate::read_from_console( const int bytes /*= -1 */ )
@@ -179,19 +184,19 @@ class PythonStdIO
 public:
 	boost::python::object read( int n )
 	{
-		std::string data = Core::PythonInterpreter::Instance()->private_->read_from_console( n );
+		std::string data = Core::PythonInterpreter::Instance().private_->read_from_console( n );
 		boost::python::str pystr( data.c_str() );
 		return pystr.encode();
 	}
 
 	std::string readline()
 	{
-		return Core::PythonInterpreter::Instance()->private_->read_from_console();
+		return Core::PythonInterpreter::Instance().private_->read_from_console();
 	}
 
 	int write( std::string data )
 	{
-		Core::PythonInterpreter::Instance()->output_signal_( data );
+		Core::PythonInterpreter::Instance().output_signal_( data );
 		return static_cast< int >( data.size() );
 	}
 };
@@ -201,7 +206,7 @@ class PythonStdErr
 public:
 	int write( std::string data )
 	{
-		Core::PythonInterpreter::Instance()->error_signal_( data );
+		Core::PythonInterpreter::Instance().error_signal_( data );
 		return static_cast< int >( data.size() );
 	}
 };
@@ -227,14 +232,14 @@ namespace Core
 CORE_SINGLETON_IMPLEMENTATION( PythonInterpreter );
 	
 PythonInterpreter::PythonInterpreter() :
-	Core::EventHandler(),
+	//Core::EventHandler(),
 	private_( new PythonInterpreterPrivate )
 {
 	this->private_->program_name_ = L"";
 	this->private_->initialized_ = false;
 	this->private_->terminal_running_ = false;
 	this->private_->waiting_for_input_ = false;
-	this->private_->action_context_.reset( new PythonActionContext );
+	//this->private_->action_context_.reset( new PythonActionContext );
 }
 
 PythonInterpreter::~PythonInterpreter()
@@ -312,15 +317,15 @@ void PythonInterpreter::initialize_eventhandler()
 
 void PythonInterpreter::initialize( wchar_t* program_name, const module_list_type& init_list )
 {
-	CORE_LOG_DEBUG( "Initializing Python ..." );
+	std::cout << ( "Initializing Python ..." ) << std::endl;
 	this->private_->program_name_ = program_name;
 	this->private_->modules_ = init_list;
 
 	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-	this->start_eventhandler();
+	//this->start_eventhandler();
 	this->private_->thread_condition_variable_.wait( lock );
 	this->private_->initialized_ = true;
-	CORE_LOG_DEBUG( "Python initialized." );
+	std::cout << ( "Python initialized." ) << std::endl;
 }
 
 void PythonInterpreter::print_banner()

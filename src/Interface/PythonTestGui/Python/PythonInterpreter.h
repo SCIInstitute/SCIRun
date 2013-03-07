@@ -29,16 +29,14 @@
 #ifndef CORE_PYTHON_PYTHONINTERPRETER_H
 #define CORE_PYTHON_PYTHONINTERPRETER_H
 
-// Boost includes
 #include <boost/python.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2/signal.hpp>
 
-// Core includes
 #include <Core/Utils/Singleton.h>
-#include <Core/Utils/StringContainer.h>
-#include <Core/EventHandler/EventHandler.h>
-#include <Core/Python/PythonActionContext.h>
+//#include <Core/Utils/StringContainer.h>
+//#include <Core/EventHandler/EventHandler.h>
+//#include <Core/Python/PythonActionContext.h>
 
 class PythonStdIO;
 
@@ -55,7 +53,7 @@ class PythonInterpreterPrivate;
 typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
 // Class definition
-class PythonInterpreter : private Core::EventHandler
+class PythonInterpreter /*: private Core::EventHandler*/
 {
 	CORE_SINGLETON( PythonInterpreter );
 	
@@ -63,7 +61,6 @@ public:
 	typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;
 	typedef std::list< module_entry_type > module_list_type;
 
-	// -- constructor/destructor --
 private:
 	PythonInterpreter();
 	virtual ~PythonInterpreter();
@@ -80,10 +77,6 @@ public:
 	/// Initialize the python interpreter with extra modules.
 	void initialize( wchar_t* program_name, const module_list_type& init_list );
 
-	// GET_ACTION_CONTEXT:
-	/// Get the action context for running actions from python.
-	PythonActionContextHandle get_action_context();
-
 	// PRINT_BANNER:
 	/// Print the basic information about the python interpreter to output_signal_.
 	void print_banner();
@@ -91,22 +84,17 @@ public:
 	// RUN_STRING:
 	/// Execute a single python command.
 	/// NOTE: The command is run in the main namespace.
-	void run_string( std::string command );
+	void run_string( const std::string& command );
 
 	// RUN_SCRIPT:
 	/// Execute a python script.
 	/// NOTE: The script is run in its own local namespace.
-	void run_script( std::string script );
-
-	// RUN_SCRIPT:
-	/// Execute a python script.
-	/// NOTE: The script is run in its own local namespace.
-	void run_script( StringVectorConstHandle script );
-
+	void run_script( const std::string& script );
+  
 	// RUN_FILE:
 	/// Execute a python script from file.
 	/// NOTE: The script is run in its own local namespace.
-	void run_file( std::string file_name );
+	void run_file( const std::string& file_name );
 
 	// INTERRUPT:
 	/// Interrupt the current execution.
@@ -118,7 +106,7 @@ public:
 
 	// -- signals --
 public:
-	typedef boost::signals2::signal< void ( std::string ) > console_output_signal_type;
+	typedef boost::signals2::signal< void ( const std::string& ) > console_output_signal_type;
 	console_output_signal_type prompt_signal_;
 	console_output_signal_type error_signal_;
 	console_output_signal_type output_signal_;
@@ -128,10 +116,6 @@ private:
 	PythonInterpreterPrivateHandle private_;
 
 public:
-	// GETACTIONCONTEXT:
-	/// Returns the action context for the python interpreter.
-	static PythonActionContextHandle GetActionContext();
-
 	// ESCAPEQUOTES:
 	/// Escape the quotes(') and backslashes(\) in a string so it can be used as a python string enclosed
 	/// by a pair of single quotes.
