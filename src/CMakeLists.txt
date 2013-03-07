@@ -491,6 +491,10 @@ SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualizati
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
+SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET Spire_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET diagram PROPERTY FOLDER "Testing Support")
+
 ########################################################################
 # Custom CMake settings for CPack
 

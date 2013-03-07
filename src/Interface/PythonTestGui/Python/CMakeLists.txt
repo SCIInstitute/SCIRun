@@ -1,9 +1,10 @@
+
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -26,6 +27,27 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Modules)
-ADD_SUBDIRECTORY(PythonTestGui)
+##################################################
+# Set sources
+##################################################
+
+SET(CORE_PYTHON_SRCS
+	Util.h
+	Util.cc
+	PythonInterpreter.h
+	PythonInterpreter.cc
+	PythonActionContext.h
+	PythonActionContext.cc
+	ToPythonConverters.h
+	ToPythonConverters.cc
+)
+
+ADD_DEFINITIONS(-DPYTHONPATH=L"${PYTHON_MODULE_SEARCH_PATH}")
+
+ADD_LIBRARY(Core_Python ${CORE_PYTHON_SRCS})
+						
+TARGET_LINK_LIBRARIES(Core_Python
+                      Core_Utils
+                      Core_Action
+                      ${SCI_PYTHON_LIBRARY}
+                      ${SCI_BOOST_LIBRARY})
