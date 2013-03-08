@@ -41,13 +41,23 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
   : QGraphicsProxyWidget(parent),
   module_(module),
   grabbedByWidget_(false),
-  pressedSubWidget_(0)
+  pressedSubWidget_(0),
+  note_(0),
+  notePosition_(Default),
+  defaultNotePosition_(Top) //TODO
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
   boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
   module_->setPositionObject(pp);
   setAcceptDrops(true);
+
+  connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
+}
+
+ModuleProxyWidget::~ModuleProxyWidget()
+{
+  delete note_;
 }
 
 void ModuleProxyWidget::updatePressedSubWidget(QGraphicsSceneMouseEvent* event)
@@ -141,6 +151,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
   if (change == ItemPositionHasChanged)
   {
     module_->trackConnections();
+    updateNotePosition();
   }
   return QGraphicsItem::itemChange(change, value);
 }
@@ -152,4 +163,96 @@ void ModuleProxyWidget::createPortPositionProviders()
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(5,5)));
     p->setPositionObject(pp);
   }
+}
+
+void ModuleProxyWidget::updateNote(const Note& note)
+{
+  //std::cout << "update note called." << std::endl;
+  if (!note_)
+  {
+    note_ = new QGraphicsTextItem("", 0, scene());
+  }
+
+  note_->setHtml(note.html_);
+  notePosition_ = note.position_;
+  updateNotePosition();
+}
+
+QPointF ModuleProxyWidget::relativeNotePosition()
+{
+  if (note_)
+  {
+    const int noteMargin = 2;
+    auto noteRect = note_->boundingRect();
+    auto thisRect = boundingRect();
+    auto position = notePosition_ == Default ? defaultNotePosition_ : notePosition_;
+    note_->setVisible(!(Tooltip == position || None == position));
+    this->setToolTip("");
+    switch (position)
+    {
+      case None:
+      {
+         //std::cout << "None selected: nothing to do" << std::endl;
+         break;
+      }
+      case Top:
+      {
+        //std::cout << "Top selected" << std::endl;
+        auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
+        auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
+        auto moduleTopHalfLength = thisRect.width() / 2;
+        noteBottomMidpointShift.rx() += moduleTopHalfLength;
+        noteBottomMidpointShift.ry() -= noteMargin;
+        return noteBottomMidpointShift;
+      }
+      case Bottom:
+      {
+        //std::cout << "Bottom selected" << std::endl;
+        auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
+        auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
+        auto moduleTopHalfLength = thisRect.width() / 2;
+        noteTopMidpointShift.rx() += moduleTopHalfLength;
+        noteTopMidpointShift.ry() += thisRect.height() + noteMargin;
+        return noteTopMidpointShift;
+      }
+      case Left:
+      {
+        //std::cout << "Left selected" << std::endl;
+        auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
+        auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
+        auto moduleSideHalfLength = thisRect.height() / 2;
+        noteRightMidpointShift.rx() -= noteMargin;
+        noteRightMidpointShift.ry() += moduleSideHalfLength;
+        return noteRightMidpointShift;
+      }
+      case Right:
+      {
+        //std::cout << "Right selected" << std::endl;
+        auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
+        auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
+        auto moduleSideHalfLength = thisRect.height() / 2;
+        noteLeftMidpointShift.rx() += thisRect.width() + noteMargin;
+        noteLeftMidpointShift.ry() += moduleSideHalfLength;
+        return noteLeftMidpointShift;
+      }
+      case Tooltip:
+        this->setToolTip(note_->toHtml());
+        //std::cout << "Module note Tooltip selected." << std::endl;
+        break;
+    }
+  }
+  //std::cout << "returning 0,0" << std::endl;
+  return QPointF();
+}
+
+void ModuleProxyWidget::setDefaultNotePosition(NotePosition position)
+{
+  defaultNotePosition_ = position;
+  updateNotePosition();
+}
+
+void ModuleProxyWidget::updateNotePosition()
+{
+  if (note_)
+    note_->setPos(pos() + relativeNotePosition());
 }

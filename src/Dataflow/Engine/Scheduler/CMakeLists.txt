@@ -27,15 +27,33 @@
 #
 
 SET(Engine_Scheduler_SRCS
+  BasicMultithreadedNetworkExecutor.cc
+  BasicParallelExecutionStrategy.cc
+  BoostGraphParallelScheduler.cc
   BoostGraphSerialScheduler.cc
+  DesktopExecutionStrategyFactory.cc
+  ExecutionStrategy.cc
+  GraphNetworkAnalyzer.cc
   LinearSerialNetworkExecutor.cc
+  ParallelModuleExecutionOrder.cc
   SchedulerInterfaces.cc
+  SerialModuleExecutionOrder.cc
+  SerialExecutionStrategy.cc
 )
 
 SET(Engine_Scheduler_HEADERS
+  BasicMultithreadedNetworkExecutor.h
+  BasicParallelExecutionStrategy.h
+  BoostGraphParallelScheduler.h
   BoostGraphSerialScheduler.h
+  DesktopExecutionStrategyFactory.h
+  GraphNetworkAnalyzer.h
+  ExecutionStrategy.h
   LinearSerialNetworkExecutor.h
+  ParallelModuleExecutionOrder.h
   SchedulerInterfaces.h
+  SerialModuleExecutionOrder.h
+  SerialExecutionStrategy.h
   Share.h
 )
 
@@ -46,6 +64,7 @@ ADD_LIBRARY(Engine_Scheduler
 
 TARGET_LINK_LIBRARIES(Engine_Scheduler
   Dataflow_Network
+  Core_Thread
 )
 
 IF(BUILD_SHARED_LIBS)

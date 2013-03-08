@@ -36,6 +36,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
+#include <Interface/Application/Note.h>
 
 class QMenu;
 class QToolBar;
@@ -52,6 +53,14 @@ namespace Gui {
     virtual ~CurrentModuleSelection() {}
     virtual QString text() const = 0;
     virtual bool isModule() const = 0;
+  };
+
+  //almost just want to pass a boost::function for this one.
+  class DefaultNotePositionGetter
+  {
+  public:
+    virtual ~DefaultNotePositionGetter() {}
+    virtual NotePosition position() const = 0;
   };
 
   class ModuleEventProxy : public QObject
@@ -78,7 +87,7 @@ Q_SIGNALS:
 	  Q_OBJECT
 	
   public:
-    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, QWidget* parent = 0);
+    explicit NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent = 0);
     ~NetworkEditor();
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
@@ -126,6 +135,7 @@ Q_SIGNALS:
     void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
     void moduleMoved(const std::string& id, double newX, double newY);
+    void defaultNotePositionChanged(NotePosition position);
   private Q_SLOTS:
     void del();
     void cut();
@@ -158,19 +168,18 @@ Q_SIGNALS:
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
-    QAction* moduleDumpAction_;
 
     QGraphicsScene* scene_;
   
     int minZ_;
     int maxZ_;
-    int seqNumber_;
 
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
 
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
+    boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
 
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
   };

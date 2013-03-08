@@ -29,62 +29,66 @@
 #ifndef ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 #define ENGINE_SCHEDULER_SCHEDULER_INTERFACES_H
 
+#include <iostream>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Core/Utils/Exception.h>
 #include <boost/signals2.hpp>
-#include <list>
+#include <Core/Utils/Exception.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  //Serial
-  class SCISHARE ModuleExecutionOrder
-  {
-  public:
-    typedef std::list<std::string> ModuleIdList;
-    typedef ModuleIdList::iterator iterator;
-    typedef ModuleIdList::const_iterator const_iterator;
-
-    ModuleExecutionOrder();
-    explicit ModuleExecutionOrder(const ModuleIdList& list);
-    const_iterator begin() const;
-    const_iterator end() const;
-  private:
-    ModuleIdList list_;
-  };
-
   struct NetworkHasCyclesException : virtual Core::InvalidArgumentException {};
 
-  //Serial
-  class SCISHARE Scheduler
+  template <class OrderType>
+  class Scheduler
   {
   public:
-    virtual ~Scheduler();
-    virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network) = 0;
+    virtual ~Scheduler() {}
+    virtual OrderType schedule(const Networks::NetworkInterface& network) = 0;
   };
-
-  //TODO: types for ParallelScheduler, etc
 
   typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
   typedef boost::signals2::signal<void(int)> ExecuteAllFinishesSignalType;
 
-  class SCISHARE NetworkExecutor
+  struct SCISHARE ExecutionBounds : boost::noncopyable
   {
-  public:
-    virtual ~NetworkExecutor();
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order) = 0;
-    boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-  protected:
     ExecuteAllStartsSignalType executeStarts_;
     ExecuteAllFinishesSignalType executeFinishes_;
   };
 
-  typedef boost::shared_ptr<NetworkExecutor> NetworkExecutorHandle;
+  template <class OrderType>
+  class NetworkExecutor
+  {
+  public:
+    virtual ~NetworkExecutor() {}
+    //NOTE: OrderType passed by value so it can be copied across threads--it's more temporary than the network and the bounds objects
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, OrderType order, const ExecutionBounds& bounds) = 0;
+  };
 
-}
-}}
+  class ModuleExecutionOrder;
+  typedef boost::shared_ptr<NetworkExecutor<ModuleExecutionOrder>> SerialNetworkExecutorHandle;
+
+  template <class OrderType>
+  void executeWithCycleCheck(Scheduler<OrderType>& scheduler, NetworkExecutor<OrderType>& executor,
+    const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup, const ExecutionBounds& bounds)
+  {
+    OrderType order;
+    try
+    {
+      order = scheduler.schedule(network);
+    }
+    catch (NetworkHasCyclesException&)
+    {
+      //TODO: use real logger here--or just let this exception bubble up--needs testing. 
+      std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+      return;
+    }
+    executor.executeAll(lookup, order, bounds);
+  }
+
+
+}}}
 
 #endif

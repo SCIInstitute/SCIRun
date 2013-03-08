@@ -32,6 +32,7 @@
 #include <QDialog>
 #include <QDir>
 #include <boost/shared_ptr.hpp>
+#include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
 namespace SCIRun {
@@ -45,6 +46,7 @@ namespace Gui {
 
 class NetworkEditor;
 class HistoryWindow;
+class DeveloperConsole;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -60,6 +62,7 @@ private:
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
   HistoryWindow* historyWindow_;
+  DeveloperConsole* devConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   
@@ -69,12 +72,13 @@ private:
   void loadNetworkFile(const QString& filename);
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
-  QString strippedName(const QString& fillFileName);
+  QString strippedName(const QString& fullFileName);
   void setActionIcons();
   void makeFilterButtonMenu();
   void writeSettings();
   void readSettings();
   void setupHistoryWindow();
+  void setupDevConsole();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
@@ -82,11 +86,12 @@ private:
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
-  //boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller_;
+  boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
   bool regressionMode_;
   QString regressionTestDataDir_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
+  void defaultNotePositionChanged(NotePosition position);
 private Q_SLOTS:
   void saveNetworkAs();
   void saveNetwork();
@@ -105,6 +110,8 @@ private Q_SLOTS:
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
+  void setExecutor(int type);
+  void readDefaultNotePosition(int index);
   void exitApplication(int code);
 };
 

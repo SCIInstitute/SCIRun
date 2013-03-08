@@ -35,6 +35,7 @@
 #include <boost/timer.hpp>
 #include <QFrame>
 #include <set>
+#include <Interface/Application/Note.h>
 #include <Interface/Application/PositionProvider.h>
 
 #include <Dataflow/Network/NetworkFwd.h>
@@ -85,6 +86,7 @@ public Q_SLOTS:
   void updateProgressBar(double percent);
   void updateModuleTime();
   void launchDocumentation();
+  void updateNote(const Note& note);
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -93,6 +95,7 @@ Q_SIGNALS:
   void moduleExecuted();
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
+  void noteUpdated(const Note& note);
 private:
   Ports inputPorts_;
   Ports outputPorts_;
@@ -110,6 +113,8 @@ private:
   void setupModuleActions();
 
   class ModuleLogWindow* logWindow_;
+  class NoteEditor* noteEditor_;
+  Note currentNote_;
 
   boost::scoped_ptr<class ModuleActionsMenu> actionsMenu_;
 

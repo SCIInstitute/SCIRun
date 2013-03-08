@@ -34,6 +34,7 @@
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Application/HistoryWindow.h>
+#include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
@@ -128,6 +129,18 @@ namespace
   private:
     QTreeWidget& tree_;
   };
+
+  class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
+  {
+  public:
+    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
+    virtual NotePosition position() const
+    {
+      return NotePosition(combo_.currentIndex() + 1);
+    }
+  private:
+    QComboBox& combo_;
+  };
 }
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
@@ -160,7 +173,8 @@ SCIRunMainWindow::SCIRunMainWindow()
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
-  networkEditor_ = new NetworkEditor(getter, scrollAreaWidgetContents_);
+  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
   networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
@@ -180,6 +194,9 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
+
+  connect(defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
+  connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), networkEditor_, SIGNAL(defaultNotePositionChanged(NotePosition)));
     
   gridLayout_5->addWidget(networkEditor_, 0, 0, 1, 1);
 	
@@ -268,6 +285,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
 
   setupHistoryWindow();
+  setupDevConsole();
 
   makeFilterButtonMenu();
   activateWindow();
@@ -619,8 +637,6 @@ void SCIRunMainWindow::readSettings()
 {
   QSettings settings("SCI:CIBC Software", "SCIRun5");
 
-  //restoreGeometry(settings.value("geometry").toByteArray());
-
   latestNetworkDirectory_ = settings.value("networkDirectory").toString();
   GuiLogger::Instance().log("Setting read: default network directory = " + latestNetworkDirectory_.path());
 
@@ -638,6 +654,15 @@ void SCIRunMainWindow::readSettings()
     networkEditor_->setBackground(QColor(settings.value(colorKey).toString()));
     GuiLogger::Instance().log("Setting read: background color = " + networkEditor_->background().color().name());
   }
+
+  const QString notePositionKey = "defaultNotePositionIndex";
+  if (settings.contains(notePositionKey))
+  {
+    int notePositionIndex = settings.value(notePositionKey).toInt();
+    defaultNotePositionComboBox_->setCurrentIndex(notePositionIndex);
+    GuiLogger::Instance().log(QString("Setting read: default note position = ") + notePositionIndex);
+  }
+
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -648,6 +673,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", regressionTestDataDir_);
   settings.setValue("backgroundColor", networkEditor_->background().color().name());
+  settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
 }
 
 void SCIRunMainWindow::disableInputWidgets()
@@ -711,8 +737,6 @@ void SCIRunMainWindow::resetBackgroundColor()
 
 void SCIRunMainWindow::setupHistoryWindow()
 {
-  if (!networkEditor_)
-    throw "BAD";
   HistoryManagerHandle historyManager(new Dataflow::Engine::HistoryManager<SCIRun::Dataflow::Networks::NetworkFileHandle>(networkEditor_));
   historyWindow_ = new HistoryWindow(historyManager, this);
   connect(actionHistory_, SIGNAL(toggled(bool)), historyWindow_, SLOT(setVisible(bool)));
@@ -738,4 +762,27 @@ void SCIRunMainWindow::filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* it
 {
   if (item && item->childCount() == 0)
     Q_EMIT moduleItemDoubleClicked();
+}
+
+void SCIRunMainWindow::setupDevConsole()
+{
+  devConsole_ = new DeveloperConsole(this);
+  connect(actionDevConsole_, SIGNAL(toggled(bool)), devConsole_, SLOT(setVisible(bool)));
+  connect(devConsole_, SIGNAL(visibilityChanged(bool)), actionDevConsole_, SLOT(setChecked(bool)));
+  devConsole_->setVisible(false);
+  devConsole_->setFloating(true);
+  addDockWidget(Qt::TopDockWidgetArea, devConsole_);
+  actionDevConsole_->setShortcut(QKeySequence("`"));
+  connect(devConsole_, SIGNAL(executorChosen(int)), this, SLOT(setExecutor(int)));
+}
+
+void SCIRunMainWindow::setExecutor(int type)
+{
+  std::cout << "Executor of type " << type << " selected"  << std::endl;
+  networkEditor_->getNetworkEditorController()->setExecutorType(type);
+}
+
+void SCIRunMainWindow::readDefaultNotePosition(int index)
+{
+  Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
 }

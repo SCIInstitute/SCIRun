@@ -30,13 +30,14 @@
 #define ENGINE_SCHEDULER_SERIALSCHEDULER_H
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  class SCISHARE BoostGraphSerialScheduler : public Scheduler
+  class SCISHARE BoostGraphSerialScheduler : public Scheduler<ModuleExecutionOrder>
   {
   public:
     virtual ModuleExecutionOrder schedule(const Networks::NetworkInterface& network);

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1119</width>
-    <height>852</height>
+    <width>1505</width>
+    <height>1042</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>796</width>
-         <height>516</height>
+         <width>1182</width>
+         <height>706</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -62,7 +62,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1119</width>
+     <width>1505</width>
      <height>21</height>
     </rect>
    </property>
@@ -133,6 +133,7 @@
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionHistory_"/>
+    <addaction name="actionDevConsole_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -662,8 +663,8 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>601</width>
-           <height>141</height>
+           <width>401</width>
+           <height>181</height>
           </rect>
          </property>
          <property name="title">
@@ -677,8 +678,8 @@
            <rect>
             <x>20</x>
             <y>20</y>
-            <width>521</width>
-            <height>111</height>
+            <width>371</width>
+            <height>141</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
@@ -690,6 +691,19 @@
                 <string>Module Size:</string>
                </property>
               </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
               <widget class="QRadioButton" name="largeModuleSizeRadioButton_">
@@ -727,6 +741,19 @@
                 <string>Dataflow Pipelines:</string>
                </property>
               </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
              </item>
              <item>
               <widget class="QRadioButton" name="manhattanPipesRadioButton_">
@@ -767,6 +794,67 @@
             </layout>
            </item>
            <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Default Note Position:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QComboBox" name="defaultNotePositionComboBox_">
+               <property name="currentIndex">
+                <number>4</number>
+               </property>
+               <item>
+                <property name="text">
+                 <string>None</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Tooltip</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Top</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Left</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Right</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Bottom</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
               <widget class="QLabel" name="backgroundColorLabel_">
@@ -776,9 +864,22 @@
               </widget>
              </item>
              <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
               <widget class="QPushButton" name="chooseBackgroundColorButton_">
                <property name="text">
-                <string>Choose Color...</string>
+                <string>Choose...</string>
                </property>
               </widget>
              </item>
@@ -1205,6 +1306,14 @@
    </property>
    <property name="text">
     <string>Select All</string>
+   </property>
+  </action>
+  <action name="actionDevConsole_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Developer Console</string>
    </property>
   </action>
  </widget>

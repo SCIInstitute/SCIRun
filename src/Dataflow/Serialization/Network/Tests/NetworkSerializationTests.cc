@@ -50,8 +50,8 @@
 #include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Dataflow/Engine/Scheduler/LinearSerialNetworkExecutor.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -183,7 +183,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  NetworkExecutorHandle exe(new LinearSerialNetworkExecutor);
+  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
   NetworkEditorController controller(mf, sf, exe);
   
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");

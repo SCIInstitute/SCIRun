@@ -29,6 +29,7 @@
 #ifndef ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
 #define ENGINE_SCHEDULER_LINEARSERIALNETWORKEXECUTOR_H
 
+#include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -36,10 +37,10 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
 
-  class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor
+  class SCISHARE LinearSerialNetworkExecutor : public NetworkExecutor<ModuleExecutionOrder>
   {
   public:
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order);
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, ModuleExecutionOrder order, const ExecutionBounds& bounds);
   };
 
 }}}

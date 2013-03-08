@@ -53,6 +53,7 @@ namespace Gui {
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
     size_t numModules() const;
     int errorCode() const;
+    void setExecutorType(int type);
   public:
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:

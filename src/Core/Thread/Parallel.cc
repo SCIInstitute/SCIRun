@@ -28,7 +28,6 @@
 
 #include <Core/Thread/Parallel.h>
 #include <boost/foreach.hpp>
-#include <boost/shared_ptr.hpp>
 #include <boost/thread/thread.hpp>
 #include <vector>
 
@@ -36,16 +35,16 @@ using namespace SCIRun::Core::Thread;
 
 void Parallel::RunTasks(IndexedTask task, int numProcs)
 {
-  std::vector<boost::shared_ptr<boost::thread>> threads(numProcs);
+  std::vector<boost::thread> threads;
 
   for (int i = 0; i < numProcs; ++i)
   {
-    threads[i].reset(new boost::thread(boost::bind(task, i)));
+    threads.push_back(boost::thread(task, i));
   }
 
-  BOOST_FOREACH(boost::shared_ptr<boost::thread> t, threads)
+  BOOST_FOREACH(boost::thread& t, threads)
   {
-    t->join();
+    t.join();
   }
 }
 

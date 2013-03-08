@@ -28,56 +28,21 @@
 
 #include <Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h>
 #include <Dataflow/Network/NetworkInterface.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
-
-#include <boost/utility.hpp>
-#include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/foreach.hpp>
-#include <boost/bimap.hpp>
+#include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
 ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface& network)
 {
-  boost::bimap<std::string, int> moduleIdLookup;
-
-  for (int i = 0; i < network.nmodules(); ++i)
-  {
-    moduleIdLookup.left.insert(std::make_pair(network.module(i)->get_id(), i));
-  }
-
-  typedef std::pair<int,int> Edge;
-
-  std::vector<Edge> edges;
-
-  BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
-  {
-    edges.push_back(std::make_pair(moduleIdLookup.left.at(cd.out_.moduleId_), moduleIdLookup.left.at(cd.in_.moduleId_)));
-  }
-
-  typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::bidirectionalS> Graph;
-  Graph g(edges.begin(), edges.end(), network.nmodules());
-
-  typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
-  typedef std::list<Vertex> ExecutionOrder;
-  ExecutionOrder order;
-  try
-  {
-    boost::topological_sort(g, std::front_inserter(order));
-  }
-  catch (std::invalid_argument& e)
-  {
-  	BOOST_THROW_EXCEPTION(NetworkHasCyclesException() << Core::ErrorMessage(e.what()));
-  }
+  NetworkGraphAnalyzer graphAnalyzer(network);
 
   ModuleExecutionOrder::ModuleIdList list;
-  for (ExecutionOrder::iterator i = order.begin(); i != order.end(); ++i) 
-  {
-    list.push_back(moduleIdLookup.right.at(*i));
-  }
-
+  std::transform(
+    graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
+    std::back_inserter(list), 
+    [&](int vertex){ return graphAnalyzer.moduleName(vertex); }
+  );
+  
   return ModuleExecutionOrder(list);
 }

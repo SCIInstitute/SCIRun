@@ -56,8 +56,6 @@ class HistoryManagerTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    //DefaultValue<ModuleHandle>::Set(ModuleHandle());
-//    DefaultValue<ConnectionId>::Set(ConnectionId(""));
     controller_.reset(new NiceMock<MockNetworkIO>);
   }
   
@@ -77,7 +75,7 @@ protected:
   }
 
   MockNetworkIOPtr controller_;
-  NetworkExecutorHandle null_;
+  SerialNetworkExecutorHandle null_;
 };
 
 TEST_F(HistoryManagerTests, CanAddItems)

@@ -52,13 +52,38 @@ namespace SCIRun
           return data_;
         }
 
+        virtual bool hasData() const { return hasData_; }
+        virtual void setHasData(bool dataPresent) 
+        { 
+          hasData_ = dataPresent; 
+          if (!hasData_)
+            data_.reset();
+        }
+
         void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
         {
           data_ = data;
+          setHasData(true);
         }
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
+        bool hasData_;
       };
+
+
+      /*
+      IDEA
+
+      // hook this up to SinkFactory. Executor needs a hook as well, to clearAllSinks.
+      class SinkCacheManager
+      {
+        void addSink(Sink, sinkId); //adds to map
+         void clearAllSinks();  // foreach sink in map, calls setHasData(false), unless cache flag is on
+         void setCached(int SinkId, bool cache) // set cache flag for specified sink
+      };
+      
+      
+      */
 
       class SimpleSource : public DatatypeSourceInterface
       {

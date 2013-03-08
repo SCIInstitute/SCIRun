@@ -34,6 +34,7 @@
 #include <Dataflow/Network/NetworkSettings.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/Network/Tests/MockPorts.h>
+#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -122,7 +123,7 @@ protected:
 
   MockNetworkPtr mockNetwork_;
   DummySlotClassForNetworkEditorController slots_;
-  NetworkExecutorHandle null_;
+  ExecutionStrategyFactoryHandle null_;
   MockPortDescriptionPtr port1, port2;
 };
 

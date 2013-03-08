@@ -36,32 +36,34 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-struct LinearExecution
+namespace
 {
-  LinearExecution(const ExecutableLookup& lookup, ModuleExecutionOrder order, ExecuteAllStartsSignalType& start, ExecuteAllFinishesSignalType& finish) : lookup_(lookup), order_(order), start_(start), finish_(finish)
+  struct LinearExecution
   {
-  }
-  void operator()() const
-  {
-    start_();
-    BOOST_FOREACH(const std::string& id, order_)
+    LinearExecution(const ExecutableLookup& lookup, const ModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
     {
-      ExecutableObject* obj = lookup_.lookupExecutable(id);
-      if (obj)
-      {
-        obj->execute();
-      }
     }
-    finish_(lookup_.errorCode());
-  }
-  const ExecutableLookup& lookup_;
-  ModuleExecutionOrder order_;
-  ExecuteAllStartsSignalType& start_;
-  ExecuteAllFinishesSignalType& finish_;
-};
+    void operator()() const
+    {
+      bounds_.executeStarts_();
+      BOOST_FOREACH(const std::string& id, order_)
+      {
+        ExecutableObject* obj = lookup_.lookupExecutable(id);
+        if (obj)
+        {
+          obj->execute();
+        }
+      }
+      bounds_.executeFinishes_(lookup_.errorCode());
+    }
+    const ExecutableLookup& lookup_;
+    ModuleExecutionOrder order_;
+    const ExecutionBounds& bounds_;
+  };
+}
 
-void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order)
+void LinearSerialNetworkExecutor::executeAll(const ExecutableLookup& lookup, ModuleExecutionOrder order, const ExecutionBounds& bounds)
 {
-  LinearExecution runner(lookup, order, executeStarts_, executeFinishes_);
-  boost::thread execution = boost::thread(runner);
+  LinearExecution runner(lookup, order, bounds);
+  boost::thread execution(runner);
 }

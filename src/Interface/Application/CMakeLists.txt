@@ -34,6 +34,7 @@
 
 SET(Interface_Application_SOURCES 
   ClosestPortFinder.cc
+  DeveloperConsole.cc
   GuiApplication.cc
   GuiLogger.cc
   HistoryWindow.cc
@@ -43,6 +44,7 @@ SET(Interface_Application_SOURCES
   NetworkExecutionProgressBar.cc
   SCIRunMainWindow.cc
   Node.cc
+  NoteEditor.cc
   Port.cc
   Connection.cc
   NetworkEditor.cc
@@ -51,6 +53,7 @@ SET(Interface_Application_SOURCES
 
 SET(Interface_Application_HEADERS
   ClosestPortFinder.h
+  DeveloperConsole.h
   GuiApplication.h
   GuiLogger.h
   HistoryWindow.h
@@ -60,6 +63,8 @@ SET(Interface_Application_HEADERS
   NetworkExecutionProgressBar.h
   SCIRunMainWindow.h
   Node.h
+  Note.h
+  NoteEditor.h
   Connection.h
   Port.h
   NetworkEditor.h
@@ -67,9 +72,11 @@ SET(Interface_Application_HEADERS
 )
 
 SET(Interface_Application_FORMS
+  DeveloperConsole.ui
   HistoryWindow.ui
   Module.ui
   ModuleLogWindow.ui
+  NoteEditor.ui
   SCIRunMainWindow.ui
   RenderWindow.ui
 )

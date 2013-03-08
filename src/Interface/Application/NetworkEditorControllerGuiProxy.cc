@@ -96,3 +96,8 @@ SCIRun::Dataflow::Networks::NetworkGlobalSettings& NetworkEditorControllerGuiPro
 {
   return controller_->getSettings();
 }
+
+void NetworkEditorControllerGuiProxy::setExecutorType(int type)
+{
+  controller_->setExecutorType(type);
+}

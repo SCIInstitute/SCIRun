@@ -55,7 +55,7 @@ protected:
   }
   
   MockNetworkPtr mockNetwork_;
-  NetworkExecutorHandle null_;
+  SerialNetworkExecutorHandle null_;
 };
 
 //TODO: don't need these yet, i'm using a simpler serialization-based undo/redo stack.

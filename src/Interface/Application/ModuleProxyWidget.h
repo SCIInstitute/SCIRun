@@ -29,6 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
 #define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
 
+#include <Interface/Application/Note.h>
 #include <QGraphicsProxyWidget>
 
 namespace SCIRun
@@ -43,10 +44,12 @@ namespace SCIRun
 	
     public:
       explicit ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent = 0);
+      ~ModuleProxyWidget();
       void createPortPositionProviders();
       ModuleWidget* getModuleWidget();
     public Q_SLOTS:
       void highlightIfSelected();
+      void setDefaultNotePosition(NotePosition position);
     Q_SIGNALS:
       void selected();
       void widgetMoved(const std::string& id, double newX, double newY);
@@ -55,15 +58,21 @@ namespace SCIRun
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
       void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
       QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    private Q_SLOTS:
+      void updateNote(const Note& note);
     private:
       bool isSubwidget(QWidget* alienWidget) const;
       void updatePressedSubWidget(QGraphicsSceneMouseEvent* event);
       void addPort();
-  
+      QPointF relativeNotePosition();
+      void updateNotePosition();
+
       ModuleWidget* module_;
       bool grabbedByWidget_;
       QWidget* pressedSubWidget_;
       QPointF position_;
+      QGraphicsTextItem* note_;
+      NotePosition notePosition_, defaultNotePosition_;
     };
 
   }
