@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_GEOMETRY_H 
 
 #include <cstdint>
+#include <list>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Share.h>
 
@@ -47,18 +48,64 @@ namespace Datatypes {
     DatatypeConstHandle get_underlying() const;
     virtual GeometryObject* clone() const { return new GeometryObject(*this); }
 
-    // HACKED. This will in general be what we transmit, but extra factors need
-    //         to be taken into account (rendering settings).
-    /// \todo Change to std::array
-    /// \todo Combine vboFaces and vboEdges, they use the *SAME* VBO.
-    uint8_t*  vboCommon;
-    size_t    vboCommonSize;
-    uint8_t*  iboFaces;
-    size_t    iboFacesSize;
-    uint8_t*  iboEdges;
-    size_t    iboEdgesSize;
+    std::string objectName;     ///< Name of this object. Should be unique 
+                                ///< across all modules in the network.
+
+    // Could require rvalue references...
+    struct SpireVBO
+    {
+      SpireVBO(const std::string& vboName, const std::vector<std::string> attribs,
+               std::shared_ptr<std::vector<uint8_t>> vboData) :
+          name(vboName),
+          attribs(attributeNames),
+          data(vboData)
+      {}
+
+      std::string                           name;
+      std::vector<std::string>              attributeNames;
+      std::shared_ptr<std::vector<uint8_t>> data;
+    };
+
+    // Could require rvalue references...
+    struct SpireIBO
+    {
+      SpireIBO(const std::string& iboName, size_t iboIndexSize,
+               std::shared_ptr<std::vector<uint8_t>> iboData) :
+          name(iboName),
+          indexSize(iboIndexSize),
+          data(iboData)
+      {}
+
+      std::string                           name;
+      size_t                                indexSize;
+      std::shared_ptr<std::vector<uint8_t>> data;
+    };
+
+    std::list<SpireVBO> mVBOs;  ///< Array of vertex buffer objects.
+    std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
+
+    /// Defines a Spire object 'pass'.
+    struct SpirePass
+    {
+      SpirePass(const std::string& name, const std::string& vbo, 
+                const std::string& ibo, const std::string& program) :
+          passName(name),
+          vboName(vbo),
+          iboName(ibo),
+          programName(program)
+      {}
+
+      std::string   passName;
+      std::string   vboName;
+      std::string   iboName;
+      std::string   programName;
+    };
+
+    /// Array of passes to setup.
+    std::list<SpirePass>  mPasses;
 
     bool      useZTest;
+    bool      useZWrite;
 
   private:
     DatatypeConstHandle data_;

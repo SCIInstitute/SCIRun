@@ -87,25 +87,79 @@ void ViewSceneDialog::moduleExecuted()
       return;
     }
 
-    // Send buffers to spire...
     std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
-    
-    if (geomData->vboCommon != nullptr)
+    if (spire == nullptr)
+      return;
+
+    // Grab objects (to be regenerated with supplied data)
+    std::shared_ptr<Spire::StuInterface> stuPipe = spire->getStuPipe();
+
+    // Try/catch is for single-threaded cases. Exceptions are handled on the
+    // spire thread when spire is threaded.
+    try
     {
-      spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
+      // Will remove all traces of old VBO's / IBO's not in use.
+      // (remember, we remove the VBOs/IBOs we added at the end of this loop,
+      //  this is to ensure there is only 1 shared_ptr reference to the IBOs
+      //  and VBOs in Spire).
+      stuPipe->removeObject(geomData->objectName);
+    }
+    catch (std::out_of_range& e)
+    {
+      // Ignore
+    }
 
-      // We want iboFaces and iboEdges to enter as nullptr's if they are.
-      spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
-      if (geomData->useZTest == true)
-        spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
-      else
-        spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
+    stuPipe->addObject(geomData->objectName);
 
-      spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
-      if (geomData->useZTest == true)
-        spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
-      else
-        spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
+    // Add vertex buffer objects.
+    for (auto it = stuPipe->mVBOs.cbegin(); it != stuPipe->mVBOs.cend(); ++it)
+    {
+      const GeometryObject::SpireVBO& vbo = *it;
+      stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
+    }
+
+    // Add index buffer objects.
+    for (auto it = stuPipe->mIBOs.cbegin(); it != stuPipe->mIBOs.cend(); ++it)
+    {
+      const GeometryObject::SpireIBO& ibo = *it;
+      StuInterface::IBO_TYPE type;
+      switch (ibo.indexSize)
+      {
+        case 1: // 8-bit
+          type = StuInterface::IBO_8BIT;
+          break;
+
+        case 2: // 16-bit
+          type = StuInterface::IBO_16BIT;
+          break;
+
+        case 4: // 32-bit
+          type = StuInterface::IBO_32BIT;
+          break;
+      }
+      stuPipe->addIBO(ibo.name, ibo.data, type);
+    }
+
+    // Add passes
+    for (auto it = stuPipe->mPasses.cbegin(); it != stuPipe->mPasses.cend(); ++it)
+    {
+      const GeometryObject::SpirePass& pass = *it;
+      stuPipe->addPassToObject(geomData->objectName, pass.passName, pass.programName,
+                               pass.vboName, pass.iboName);
+    }
+
+    // Now that we have created all of the appropriate passes, get rid of the
+    // VBOs and IBOs.
+    for (auto it = stuPipe->mVBOs.cbegin(); it != stuPipe->mVBOs.cend(); ++it)
+    {
+      const GeometryObject::SpireVBO& vbo = *it;
+      stuPipe->removeVBO(vbo.name);
+    }
+
+    for (auto it = stuPipe->mIBOs.cbegin(); it != stuPipe->mIBOs.cend(); ++it)
+    {
+      const GeometryObject::SpireIBO& ibo = *it;
+      stuPipe->removeIBO(ibo.name);
     }
   }
 }

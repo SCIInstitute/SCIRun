@@ -45,12 +45,15 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 
 void ShowMeshModule::execute()
 {
-  auto mesh = getRequiredInput(Mesh);
+  Mesh mesh = getRequiredInput(Mesh);
   MeshFacadeHandle facade(mesh->getFacade());
 
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool zTestOn = get_state()->getValue(ZTestOn).getBool();
+
+  GeometryHandle geom(new GeometryObject(mesh));
+  geom->objectName = mesh->get_id();
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
@@ -64,8 +67,16 @@ void ShowMeshModule::execute()
   // a function of the number of faces). Only allocating enough memory to hold
   // points associated with the faces.
   // Edges *and* faces should use the same vbo!
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   size_t vboSize = sizeof(float) * 3 * facade->numNodes();
-  float* vbo = static_cast<float*>(std::malloc(vboSize));
+  rawVBO->reserve(vboSize);
+  float* vbo = reinterpret_cast<float*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+
+  // Add shared VBO to the geometry object.
+  std::string primVBOName = "primaryVBO";
+  std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
+  attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
+  geom->mVBOs.emplace_back(make_tuple(primVBOName, attribs, rawVBO));
 
   // Build index buffer. Based off of the node indices that came out of old
   // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
@@ -81,7 +92,9 @@ void ShowMeshModule::execute()
   uint32_t* iboFaces = nullptr;
   if (showFaces)
   {
-    iboFaces = static_cast<uint32_t*>(std::malloc(iboFacesSize));
+    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+    rawIBO->reserve(iboFacesSize);
+    iboFaces = reinterpret_cast<uint32_t*>(&rawIBO[0]);
     i = 0;
     BOOST_FOREACH(const FaceInfo& face, facade->faces())
     {
@@ -94,6 +107,15 @@ void ShowMeshModule::execute()
       iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
       i += 6;
     }
+
+    // Add IBO for the faces.
+    std::string facesIBOName = "facesIBO";
+    geom->mIBOs.emplace_back(make_tuple(facesIBOName, sizeof(uint32_t), rawIBO));
+
+    // Build pass for the faces.
+    /// \todo Find an appropriate place to put program names like UniformColor.
+    geom->mPasses.emplace_back(SpirePass("facesPass", primVBOName,
+                                         facesIBOName, "UniformColor"))
   }
 
   // Build the edges
@@ -101,7 +123,9 @@ void ShowMeshModule::execute()
   uint32_t* iboEdges = nullptr;
   if (showEdges)
   {
-    iboEdges = static_cast<uint32_t*>(std::malloc(iboEdgesSize));
+    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+    rawIBO->reserve(iboEdgesSize);
+    iboEdges = reinterpret_cast<uint32_t*>(&rawIBO[0]);
     i = 0;
     BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
     {
@@ -113,16 +137,17 @@ void ShowMeshModule::execute()
       iboEdges[i] = nodes[0]; iboEdges[i+1] = nodes[1];
       i += 2;
     }
+
+    // Add IBO for the faces.
+    std::string edgesIBOName = "edgesIBO";
+    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(edgesIBOName, sizeof(uint32_t), rawIBO));
+
+    // Build pass for the faces.
+    /// \todo Find an appropriate place to put program names like UniformColor.
+    geom->mPasses.emplace_back(SpirePass("edgesPass", primVBOName,
+                                         edgesIBOName, "UniformColor"))
   }
 
-  GeometryHandle geom(new GeometryObject(mesh));
-  geom->vboCommon = (uint8_t*)vbo;
-  geom->vboCommonSize = vboSize;
-  geom->iboFaces = (uint8_t*)iboFaces;
-  geom->iboFacesSize = iboFacesSize;
-  geom->iboEdges = (uint8_t*)iboEdges;
-  geom->iboEdgesSize = iboEdgesSize;
-  geom->useZTest = zTestOn;
   sendOutput(SceneGraph, geom);
 }
 
