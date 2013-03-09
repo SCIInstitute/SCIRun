@@ -45,7 +45,7 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 
 void ShowMeshModule::execute()
 {
-  Mesh mesh = getRequiredInput(Mesh);
+  auto mesh = getRequiredInput(Mesh);
   MeshFacadeHandle facade(mesh->getFacade());
 
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
@@ -53,7 +53,7 @@ void ShowMeshModule::execute()
   bool zTestOn = get_state()->getValue(ZTestOn).getBool();
 
   GeometryHandle geom(new GeometryObject(mesh));
-  geom->objectName = mesh->get_id();
+  geom->objectName = get_id();
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
@@ -70,13 +70,13 @@ void ShowMeshModule::execute()
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   size_t vboSize = sizeof(float) * 3 * facade->numNodes();
   rawVBO->reserve(vboSize);
-  float* vbo = reinterpret_cast<float*>(&vboData[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 
   // Add shared VBO to the geometry object.
   std::string primVBOName = "primaryVBO";
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
-  geom->mVBOs.emplace_back(make_tuple(primVBOName, attribs, rawVBO));
+  geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
   // Build index buffer. Based off of the node indices that came out of old
   // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
@@ -94,7 +94,7 @@ void ShowMeshModule::execute()
   {
     std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
     rawIBO->reserve(iboFacesSize);
-    iboFaces = reinterpret_cast<uint32_t*>(&rawIBO[0]);
+    iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
     i = 0;
     BOOST_FOREACH(const FaceInfo& face, facade->faces())
     {
@@ -110,12 +110,14 @@ void ShowMeshModule::execute()
 
     // Add IBO for the faces.
     std::string facesIBOName = "facesIBO";
-    geom->mIBOs.emplace_back(make_tuple(facesIBOName, sizeof(uint32_t), rawIBO));
+    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
 
     // Build pass for the faces.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    geom->mPasses.emplace_back(SpirePass("facesPass", primVBOName,
-                                         facesIBOName, "UniformColor"))
+    geom->mPasses.emplace_back(
+        GeometryObject::SpirePass("facesPass", primVBOName,
+                                  facesIBOName, "UniformColor",
+                                  Spire::StuInterface::TRIANGLES));
   }
 
   // Build the edges
@@ -125,7 +127,7 @@ void ShowMeshModule::execute()
   {
     std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
     rawIBO->reserve(iboEdgesSize);
-    iboEdges = reinterpret_cast<uint32_t*>(&rawIBO[0]);
+    iboEdges = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
     i = 0;
     BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
     {
@@ -144,8 +146,10 @@ void ShowMeshModule::execute()
 
     // Build pass for the faces.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    geom->mPasses.emplace_back(SpirePass("edgesPass", primVBOName,
-                                         edgesIBOName, "UniformColor"))
+    geom->mPasses.emplace_back(
+        GeometryObject::SpirePass("edgesPass", primVBOName,
+                                  edgesIBOName, "UniformColor",
+                                  Spire::StuInterface::LINES));
   }
 
   sendOutput(SceneGraph, geom);

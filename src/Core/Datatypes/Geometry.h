@@ -32,8 +32,11 @@
 
 #include <cstdint>
 #include <list>
+#include <vector>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Share.h>
+#include "Spire/Interface.h"
+#include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
 namespace SCIRun {
 namespace Core {
@@ -57,7 +60,7 @@ namespace Datatypes {
       SpireVBO(const std::string& vboName, const std::vector<std::string> attribs,
                std::shared_ptr<std::vector<uint8_t>> vboData) :
           name(vboName),
-          attribs(attributeNames),
+          attributeNames(attribs),
           data(vboData)
       {}
 
@@ -88,7 +91,8 @@ namespace Datatypes {
     struct SpirePass
     {
       SpirePass(const std::string& name, const std::string& vbo, 
-                const std::string& ibo, const std::string& program) :
+                const std::string& ibo, const std::string& program,
+                Spire::StuInterface::PRIMITIVE_TYPES type) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
@@ -99,6 +103,7 @@ namespace Datatypes {
       std::string   vboName;
       std::string   iboName;
       std::string   programName;
+      Spire::StuInterface::PRIMITIVE_TYPES type;
     };
 
     /// Array of passes to setup.

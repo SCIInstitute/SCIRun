@@ -33,6 +33,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -112,51 +113,55 @@ void ViewSceneDialog::moduleExecuted()
     stuPipe->addObject(geomData->objectName);
 
     // Add vertex buffer objects.
-    for (auto it = stuPipe->mVBOs.cbegin(); it != stuPipe->mVBOs.cend(); ++it)
+    for (auto it = geomData->mVBOs.cbegin(); it != geomData->mVBOs.cend(); ++it)
     {
       const GeometryObject::SpireVBO& vbo = *it;
       stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
     }
 
     // Add index buffer objects.
-    for (auto it = stuPipe->mIBOs.cbegin(); it != stuPipe->mIBOs.cend(); ++it)
+    for (auto it = geomData->mIBOs.cbegin(); it != geomData->mIBOs.cend(); ++it)
     {
       const GeometryObject::SpireIBO& ibo = *it;
-      StuInterface::IBO_TYPE type;
+      Spire::StuInterface::IBO_TYPE type;
       switch (ibo.indexSize)
       {
         case 1: // 8-bit
-          type = StuInterface::IBO_8BIT;
+          type = Spire::StuInterface::IBO_8BIT;
           break;
 
         case 2: // 16-bit
-          type = StuInterface::IBO_16BIT;
+          type = Spire::StuInterface::IBO_16BIT;
           break;
 
         case 4: // 32-bit
-          type = StuInterface::IBO_32BIT;
+          type = Spire::StuInterface::IBO_32BIT;
+          break;
+
+        default:
+          type = Spire::StuInterface::IBO_32BIT;
           break;
       }
       stuPipe->addIBO(ibo.name, ibo.data, type);
     }
 
     // Add passes
-    for (auto it = stuPipe->mPasses.cbegin(); it != stuPipe->mPasses.cend(); ++it)
+    for (auto it = geomData->mPasses.cbegin(); it != geomData->mPasses.cend(); ++it)
     {
       const GeometryObject::SpirePass& pass = *it;
       stuPipe->addPassToObject(geomData->objectName, pass.passName, pass.programName,
-                               pass.vboName, pass.iboName);
+                               pass.vboName, pass.iboName, pass.type);
     }
 
     // Now that we have created all of the appropriate passes, get rid of the
     // VBOs and IBOs.
-    for (auto it = stuPipe->mVBOs.cbegin(); it != stuPipe->mVBOs.cend(); ++it)
+    for (auto it = geomData->mVBOs.cbegin(); it != geomData->mVBOs.cend(); ++it)
     {
       const GeometryObject::SpireVBO& vbo = *it;
       stuPipe->removeVBO(vbo.name);
     }
 
-    for (auto it = stuPipe->mIBOs.cbegin(); it != stuPipe->mIBOs.cend(); ++it)
+    for (auto it = geomData->mIBOs.cbegin(); it != geomData->mIBOs.cend(); ++it)
     {
       const GeometryObject::SpireIBO& ibo = *it;
       stuPipe->removeIBO(ibo.name);
