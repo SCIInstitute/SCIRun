@@ -54,6 +54,11 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
   return *this;
 }
 
+ModuleStateHandle SimpleMapModuleState::clone() const
+{
+  return ModuleStateHandle(new SimpleMapModuleState(*this));
+}
+
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
 {
   StateMap::const_iterator i = stateMap_.find(parameterName);

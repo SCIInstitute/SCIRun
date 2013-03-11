@@ -54,6 +54,7 @@ namespace Networks {
     virtual const Value getValue(const Name& name) const = 0;
     virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value) = 0;
     virtual Keys getKeys() const = 0;
+    virtual ModuleStateHandle clone() const = 0;
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;

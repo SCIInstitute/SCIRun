@@ -42,6 +42,7 @@ namespace State {
     virtual void setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&);
     virtual const Value getValue(const Name&) const;
     virtual Keys getKeys() const;
+    virtual SCIRun::Dataflow::Networks::ModuleStateHandle clone() const;
     virtual const TransientValue getTransientValue(const std::string& name) const;
     virtual void setTransientValue(const std::string& name, const TransientValue& value);
     virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);

@@ -86,6 +86,7 @@ namespace Engine {
 
   private:
     void printNetwork() const;
+    Networks::ModuleHandle addModuleImpl(const std::string& moduleName);
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;

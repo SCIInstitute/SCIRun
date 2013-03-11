@@ -58,12 +58,18 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 
 ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
 {
+  auto realModule = addModuleImpl(moduleName);
+  /*emit*/ moduleAdded_(moduleName, realModule);
+  printNetwork();
+  return realModule;
+}
+
+ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleName)
+{
   //TODO: should pass in entire info struct
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
-  /*emit*/ moduleAdded_(moduleName, realModule);
-  printNetwork();
   return realModule;
 }
 
@@ -81,7 +87,7 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
 {
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
-  auto newModule = addModule(id.name_);
+  auto newModule = addModuleImpl(id.name_);
   
   std::cout << "TODO:" << std::endl;
   
@@ -96,8 +102,10 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
     }
   }
 
-  std::cout << "\tcopy state (how?)--easy, it's a map, make a deep copy." << std::endl;
-  
+  newModule->set_state(module->get_state()->clone());
+  moduleAdded_(id.name_, newModule);
+
+  std::cout << "\tmove module to appropriate position" << std::endl;
   
   return newModule;
 }

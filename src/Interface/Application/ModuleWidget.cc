@@ -152,7 +152,9 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
+
   //TODO: ultra ugly. no other place for this code right now.
+  //TODO: to be handled in issue #212
   if (name == "ViewScene")
   {
     optionsButton_->setText("VIEW");
