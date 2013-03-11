@@ -306,7 +306,7 @@ ModuleWidget::~ModuleWidget()
   delete logWindow_;
   delete noteEditor_;
 
-  Q_EMIT removeModule(moduleId_);
+  Q_EMIT removeModule(ModuleId(moduleId_));
 }
 
 void ModuleWidget::trackConnections()
@@ -397,5 +397,5 @@ void ModuleWidget::updateNote(const Note& note)
 
 void ModuleWidget::duplicate()
 {
-  Q_EMIT duplicateModule(moduleId_);
+  Q_EMIT duplicateModule(ModuleId(moduleId_));
 }

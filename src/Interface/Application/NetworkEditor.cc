@@ -134,11 +134,11 @@ void NetworkEditor::duplicateModule(const ModuleId& id)
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
-  connect(module, SIGNAL(removeModule(const std::string&)), controller_.get(), SLOT(removeModule(const std::string&)));
-  connect(module, SIGNAL(removeModule(const std::string&)), this, SIGNAL(modified()));
+  connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
+  connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
     this, SLOT(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
-  connect(module, SIGNAL(duplicateModule(const std::string&)), this, SLOT(duplicateModule(const std::string&)));
+  connect(module, SIGNAL(duplicateModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SLOT(duplicateModule(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(this, SIGNAL(networkEditorMouseButtonPressed()), module, SIGNAL(cancelConnectionsInProgress()));
   connect(controller_.get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     module, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
