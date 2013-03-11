@@ -41,7 +41,7 @@
 #include <QScrollBar>
 #include <QVBoxLayout>
 
-//#include "PythonInterpreter.h"
+#include <Interface/PythonTestGui/Python/PythonInterpreter.h>
 #include <Interface/PythonTestGui/PythonConsoleWidget.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -378,51 +378,11 @@ void PythonConsoleEdit::print_command( const QString& text )
 	this->ensureCursorVisible();
 }
 
-//void PythonConsoleEdit::Prompt( PythonConsoleEditQWeakPointer edit, const std::string& text )
-//{
-//  std::cout << "PythonConsoleEdit::Prompt " << text << std::endl;
-//  edit->prompt(text);
-//	//Core::Interface::PostEvent( QtUtils::CheckQtPointer( edit, 
-//	//	boost::bind( &PythonConsoleEdit::prompt, edit.data(), text ) ) );
-//}
-//
-//void PythonConsoleEdit::PrintOutput( PythonConsoleEditQWeakPointer edit, const std::string& text )
-//{
-//  std::cout << "PythonConsoleEdit::PrintOutput " << text << std::endl;
-//  edit->print_output(text);
-//	//Core::Interface::PostEvent( QtUtils::CheckQtPointer( edit, 
-//	//	boost::bind( &PythonConsoleEdit::print_output, edit.data(), text ) ) );
-//}
-//
-//void PythonConsoleEdit::PrintError( PythonConsoleEditQWeakPointer edit, const std::string& text )
-//{
-//  std::cout << "PythonConsoleEdit::PrintError " << text << std::endl;
-//  edit->print_error(text);
-//	//Core::Interface::PostEvent( QtUtils::CheckQtPointer( edit, 
-//	//	boost::bind( &PythonConsoleEdit::print_error, edit.data(), text ) ) );
-//}
-//
-//void PythonConsoleEdit::PrintCommand( PythonConsoleEditQWeakPointer edit, const std::string& text )
-//{
-//  std::cout << "PythonConsoleEdit::PrintCommand " << text << std::endl;
-//  edit->print_command(text);
-//	//Core::Interface::PostEvent( QtUtils::CheckQtPointer( edit, 
-//	//	boost::bind( &PythonConsoleEdit::print_command, edit.data(), text ) ) );
-//}
-
-//////////////////////////////////////////////////////////////////////////
-// Class PythonConsoleWidgetPrivate
-//////////////////////////////////////////////////////////////////////////
-
 class PythonConsoleWidgetPrivate
 {
 public:
 	PythonConsoleEdit* console_edit_;
 };
-
-//////////////////////////////////////////////////////////////////////////
-// Class PythonConsoleWidget
-//////////////////////////////////////////////////////////////////////////
 
 PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
 	QDialog( parent ), 
@@ -437,20 +397,16 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
 
   setWindowTitle("Python console");
 
-  std::cout << "!!! omitted signal/slots" << std::endl;
+  //connect(Core::PythonInterpreter::Instance().prompt_signal_, 
+  //  SIGNAL(...), private_->console_edit_, SLOT(prompt(const QString&)));
 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-  connect(Core::PythonInterpreter::Instance()->prompt_signal_, 
-    SIGNAL(...), private_->console_edit_, SLOT(prompt(const QString&)));
+  //connect(Core::PythonInterpreter::Instance().output_signal_, 
+  //  SIGNAL(...), private_->console_edit_, SLOT(print_output(const QString&)));
 
-  connect(Core::PythonInterpreter::Instance()->output_signal_, 
-    SIGNAL(...), private_->console_edit_, SLOT(print_output(const QString&)));
+  //connect(Core::PythonInterpreter::Instance().error_signal_, 
+  //  SIGNAL(...), private_->console_edit_, SLOT(print_error(const QString&)));
 
-  connect(Core::PythonInterpreter::Instance()->error_signal_, 
-    SIGNAL(...), private_->console_edit_, SLOT(print_error(const QString&)));
-
-  Core::PythonInterpreter::Instance()->print_banner();
-#endif
+  Core::PythonInterpreter::Instance().print_banner();
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()

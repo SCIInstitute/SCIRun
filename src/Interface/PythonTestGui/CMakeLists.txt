@@ -37,6 +37,7 @@ SET(QtExampleDiagram_SOURCES
   main.cc
   PythonConsoleWidget.cc
   Python/PythonInterpreter.cc
+  Python/ToPythonConverters.cc
 )
 
 SET(QtExampleDiagram_HEADERS
@@ -45,7 +46,8 @@ SET(QtExampleDiagram_HEADERS
   DiagramWindow.h
   propertiesdialog.h
   PythonConsoleWidget.h
-  Python/PythonInterpreter.h
+  #Python/PythonInterpreter.h
+  #Python/ToPythonConverters.h
 )
 
 SET(QtExampleDiagram_FORMS propertiesdialog.ui)
@@ -68,6 +70,7 @@ ${QtExampleDiagram_RESOURCES_RCC})
 TARGET_LINK_LIBRARIES(diagram 
   ${QT_LIBRARIES}
   ${PYTHON_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
 )
 
 INCLUDE_DIRECTORIES(

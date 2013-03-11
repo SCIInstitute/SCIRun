@@ -34,7 +34,6 @@
 #include <boost/signals2/signal.hpp>
 
 #include <Core/Utils/Singleton.h>
-//#include <Core/Utils/StringContainer.h>
 //#include <Core/EventHandler/EventHandler.h>
 //#include <Core/Python/PythonActionContext.h>
 

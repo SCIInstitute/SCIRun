@@ -37,13 +37,13 @@
 
 #include <boost/python.hpp>
 
-#include <Core/Geometry/Color.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Utils/Variant.h>
+//#include <Core/Geometry/Color.h>
+//#include <Core/Geometry/Point.h>
+//#include <Core/Geometry/Vector.h>
+//#include <Core/Utils/Variant.h>
 
-#include <Core/Python/ToPythonConverters.h>
-
+#include <Interface/PythonTestGui/Python/ToPythonConverters.h>
+#if 0
 template< class T >
 class StdVectorToListConverter : public boost::python::converter::wrap_pytype< &PyList_Type >
 {
@@ -116,10 +116,6 @@ public:
 		{
 			result = boost::python::object( GetValueFromVarient< Core::Point >( v ) );
 		}
-		//else if ( value_type == typeid( std::vector< bool > ) )
-		//{
-		//	result = boost::python::object( GetValueFromVarient< std::vector< bool > >( v ) );
-		//}
 		else if ( value_type == typeid( std::vector< double > ) )
 		{
 			result = boost::python::object( GetValueFromVarient< std::vector< double > >( v ) );
@@ -127,14 +123,6 @@ public:
 		else if ( value_type == typeid( std::vector< std::string > ) )
 		{
 			result = boost::python::object( GetValueFromVarient< std::vector< std::string > >( v ) );
-		}
-		//else if ( value_type == typeid( std::vector< Core::Color > ) )
-		//{
-		//	result = boost::python::object( GetValueFromVarient< std::vector< Core::Color > >( v ) );
-		//}
-		else if ( value_type == typeid( std::vector< Core::Point > ) )
-		{
-			result = boost::python::object( GetValueFromVarient< std::vector< Core::Point > >( v ) );
 		}
 		else
 		{
@@ -172,3 +160,5 @@ void RegisterToPythonConverters()
 }
 
 } // end namespace Core
+
+#endif

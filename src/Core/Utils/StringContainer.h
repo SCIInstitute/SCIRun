@@ -26,12 +26,32 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CORE_PYTHON_TOPYTHONCONVERTERS_H
-#define CORE_PYTHON_TOPYTHONCONVERTERS_H
+#ifndef CORE_UTILS_STRINGCONTAINER_H
+#define CORE_UTILS_STRINGCONTAINER_H
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+# pragma once
+#endif 
+
+// STL includes
+#include <list>
+#include <string>
+#include <vector>
+
+// boost includes
+#include <boost/shared_ptr.hpp>
 
 namespace Core
 {
-	//void RegisterToPythonConverters();
-}
+
+typedef std::vector< std::string > StringVector;
+typedef boost::shared_ptr< StringVector > StringVectorHandle;
+typedef boost::shared_ptr< const StringVector > StringVectorConstHandle;
+
+typedef std::list< std::string > StringList;
+typedef boost::shared_ptr< StringList > StringListHandle;
+typedef boost::shared_ptr< const StringList > StringListConstHandle;
+
+} // End namespace Core
 
 #endif
