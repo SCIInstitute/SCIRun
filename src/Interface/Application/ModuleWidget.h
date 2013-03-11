@@ -87,6 +87,7 @@ public Q_SLOTS:
   void updateModuleTime();
   void launchDocumentation();
   void updateNote(const Note& note);
+  void duplicate();
 Q_SIGNALS:
   void removeModule(const std::string& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -96,6 +97,7 @@ Q_SIGNALS:
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
+  void duplicateModule(const std::string& moduleId);
 private:
   Ports inputPorts_;
   Ports outputPorts_;

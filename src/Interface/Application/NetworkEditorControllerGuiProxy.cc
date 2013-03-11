@@ -101,3 +101,8 @@ void NetworkEditorControllerGuiProxy::setExecutorType(int type)
 {
   controller_->setExecutorType(type);
 }
+
+void NetworkEditorControllerGuiProxy::duplicateModule(const std::string& id)
+{
+  controller_->duplicateModule(id);
+}

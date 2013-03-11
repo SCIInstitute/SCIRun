@@ -77,6 +77,15 @@ void NetworkEditorController::removeModule(const std::string& id)
   printNetwork();
 }
 
+ModuleHandle NetworkEditorController::duplicateModule(const std::string& id)
+{
+  std::cout << "TODO:" << std::endl;
+  std::cout << "\tcall addModule" << std::endl;
+  std::cout << "\tloop through connections and call requestConnection" << std::endl;
+  std::cout << "\tcopy state (how?)" << std::endl;
+  return ModuleHandle();
+}
+
 void NetworkEditorController::printNetwork() const
 {
   //TODO: and make this switchable

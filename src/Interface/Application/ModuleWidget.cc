@@ -110,7 +110,7 @@ namespace Gui {
         << disabled(new QAction("Execute", parent))
         << new QAction("Help", parent)
         << new QAction("Notes", parent)
-        << disabled(new QAction("Duplicate", parent))
+        << new QAction("Duplicate", parent)
         << disabled(new QAction("Replace With->(TODO)", parent))
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
@@ -197,6 +197,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(raise()));
   connect(noteEditor_, SIGNAL(noteChanged(const Note&)), this, SLOT(updateNote(const Note&)));
 
+  connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
@@ -392,4 +393,9 @@ void ModuleWidget::updateNote(const Note& note)
 {
   currentNote_ = note;
   noteUpdated(note);
+}
+
+void ModuleWidget::duplicate()
+{
+  Q_EMIT duplicateModule(moduleId_);
 }
