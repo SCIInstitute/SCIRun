@@ -78,9 +78,9 @@ TEST_F(NetworkTests, CanAddAndRemoveModules)
   EXPECT_EQ(mli.module_name_, m->get_module_name());
   EXPECT_EQ(1, network.nmodules());
   EXPECT_EQ(m, network.module(0));
-  EXPECT_TRUE(network.remove_module(m->get_id()));
+  EXPECT_TRUE(network.remove_module(ModuleId(m->get_id())));
   EXPECT_EQ(0, network.nmodules());
-  EXPECT_FALSE(network.remove_module("not in the network"));
+  EXPECT_FALSE(network.remove_module(ModuleId("not in the network4")));
 }
 
 TEST_F(NetworkTests, CanAddAndRemoveConnections)

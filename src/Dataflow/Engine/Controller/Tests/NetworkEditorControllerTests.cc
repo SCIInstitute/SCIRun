@@ -139,8 +139,8 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
   controller.addModule("m1");
   
   EXPECT_CALL(slots_, moduleRemovedSlot(_)).Times(1);
-  EXPECT_CALL(*mockNetwork_, remove_module("m1")).Times(1);
-  controller.removeModule("m1");
+  EXPECT_CALL(*mockNetwork_, remove_module(ModuleId("m1"))).Times(1);
+  controller.removeModule(ModuleId("m1"));
 }
 
 TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)

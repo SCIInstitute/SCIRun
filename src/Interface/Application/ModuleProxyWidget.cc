@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <boost/range/join.hpp>
 #include <iostream>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Port.h>
@@ -36,6 +37,7 @@
 #include <Interface/Application/PositionProvider.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
@@ -109,7 +111,7 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     if (position_ != pos())
     {
-      Q_EMIT widgetMoved(module_->getModuleId(), pos().x(), pos().y());
+      Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), pos().x(), pos().y());
     }
     
     QGraphicsItem::mouseReleaseEvent(event);

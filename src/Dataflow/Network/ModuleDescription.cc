@@ -26,7 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
@@ -43,3 +46,30 @@ ModuleLookupInfo::ModuleLookupInfo() {}
 ModuleLookupInfo::ModuleLookupInfo(const std::string& mod, const std::string& cat, const std::string& pack)
   : package_name_(pack), category_name_(cat), module_name_(mod) 
 {}
+
+ModuleId::ModuleId(const std::string& name, int idNumber)
+  : name_(name), idNumber_(idNumber)
+{
+  id_ = name + boost::lexical_cast<std::string>(idNumber);
+}
+
+ModuleId::ModuleId(const std::string& nameIdStr)
+  : id_(nameIdStr)
+{
+  static boost::regex r("(.+)(\\d+)");
+  boost::smatch what;
+  if (!regex_match(id_, what, r))
+    THROW_INVALID_ARGUMENT("Invalid Module Id");
+  name_ = std::string(what[1]);
+  idNumber_ = boost::lexical_cast<int>((std::string)what[2]);
+}
+
+bool SCIRun::Dataflow::Networks::operator==(const ModuleId& lhs, const ModuleId& rhs)
+{
+  return lhs.id_ == rhs.id_;
+}
+
+bool SCIRun::Dataflow::Networks::operator!=(const ModuleId& lhs, const ModuleId& rhs)
+{
+  return !(lhs == rhs);
+}

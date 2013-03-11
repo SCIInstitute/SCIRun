@@ -44,7 +44,7 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD1(add_module, ModuleHandle(const ModuleLookupInfo&));
-          MOCK_METHOD1(remove_module, bool(const std::string&));
+          MOCK_METHOD1(remove_module, bool(const ModuleId&));
           MOCK_CONST_METHOD0(nmodules, size_t());
           MOCK_CONST_METHOD1(module, ModuleHandle(size_t));
           MOCK_CONST_METHOD1(lookupModule, ModuleHandle(const std::string&));

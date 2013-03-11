@@ -67,7 +67,7 @@ namespace Networks {
 
     virtual ~NetworkInterface() {}
     virtual ModuleHandle add_module(const ModuleLookupInfo& info) = 0;
-    virtual bool remove_module(const std::string& id) = 0;
+    virtual bool remove_module(const ModuleId& id) = 0;
     virtual size_t nmodules() const = 0;
     virtual ModuleHandle module(size_t i) const = 0;
     virtual ModuleHandle lookupModule(const std::string& id) const = 0; 

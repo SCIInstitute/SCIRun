@@ -50,7 +50,7 @@ namespace Networks {
     ~Network();
 
     virtual ModuleHandle add_module(const ModuleLookupInfo& info);
-    virtual bool remove_module(const std::string& id);
+    virtual bool remove_module(const ModuleId& id);
     virtual size_t nmodules() const;
     virtual ModuleHandle module(size_t i) const;
     virtual ExecutableObject* lookupExecutable(const std::string& id) const;

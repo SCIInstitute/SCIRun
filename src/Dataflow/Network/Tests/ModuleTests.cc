@@ -42,3 +42,19 @@ TEST(ModuleTests, CanBuildWithPorts)
   ASSERT_EQ(1, module->num_output_ports());
   ASSERT_EQ("SolveLinearSystem", module->get_module_name());
 }
+
+TEST(ModuleIdTests, CanConstructFromString)
+{
+  ModuleId m1("ComputeSVD5");
+  EXPECT_EQ(5, m1.idNumber_);
+  EXPECT_EQ("ComputeSVD5", m1.id_);
+  EXPECT_EQ("ComputeSVD", m1.name_);
+}
+
+TEST(ModuleIdTests, WhatHappensWhenNoNumberAtEnd)
+{
+  EXPECT_THROW(ModuleId("ComputeSVD"), SCIRun::Core::InvalidArgumentException);
+  //EXPECT_EQ(5, m1.idNumber_);
+  //EXPECT_EQ("ComputeSVD", m1.id_);
+  //EXPECT_EQ("ComputeSVD", m1.name_);
+}

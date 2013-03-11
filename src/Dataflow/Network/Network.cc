@@ -60,9 +60,9 @@ ModuleHandle Network::add_module(const ModuleLookupInfo& info)
   return module;
 }
 
-bool Network::remove_module(const std::string& id)
+bool Network::remove_module(const ModuleId& id)
 {
-  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
+  Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id.id_);
   if (loc != modules_.end())
   {
     // Inform the module that it is about to be erased from the network...

@@ -126,7 +126,7 @@ void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDesc
   Q_EMIT modified();
 }
 
-void NetworkEditor::duplicateModule(const std::string& id)
+void NetworkEditor::duplicateModule(const ModuleId& id)
 {
   controller_->duplicateModule(id);
 }
@@ -158,8 +158,8 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
-  connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(modified()));
-  connect(proxy, SIGNAL(widgetMoved(const std::string&, double, double)), this, SIGNAL(moduleMoved(const std::string&, double, double)));
+  connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(modified()));
+  connect(proxy, SIGNAL(widgetMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), this, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();

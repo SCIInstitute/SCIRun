@@ -67,7 +67,7 @@ ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
   return realModule;
 }
 
-void NetworkEditorController::removeModule(const std::string& id)
+void NetworkEditorController::removeModule(const ModuleId& id)
 {
   theNetwork_->remove_module(id);
   //before or after?
@@ -77,13 +77,14 @@ void NetworkEditorController::removeModule(const std::string& id)
   printNetwork();
 }
 
-ModuleHandle NetworkEditorController::duplicateModule(const std::string& id)
+ModuleHandle NetworkEditorController::duplicateModule(const ModuleId& id)
 {
   std::cout << "TODO:" << std::endl;
   std::cout << "\tcall addModule" << std::endl;
+  auto mh = addModule(id.name_);
   std::cout << "\tloop through connections and call requestConnection" << std::endl;
   std::cout << "\tcopy state (how?)" << std::endl;
-  return ModuleHandle();
+  return mh;
 }
 
 void NetworkEditorController::printNetwork() const

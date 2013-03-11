@@ -77,10 +77,10 @@ public:
   explicit GuiActionProvenanceConverter(NetworkEditor* editor);
 public Q_SLOTS:
   void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
-  void moduleRemoved(const std::string& name);
+  void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
   void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
-  void moduleMoved(const std::string& id, double newX, double newY);
+  void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
   void networkBeingModifiedByProvenanceManager(bool inProgress);
 Q_SIGNALS:
   void provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);
