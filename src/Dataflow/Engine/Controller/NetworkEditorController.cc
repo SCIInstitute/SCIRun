@@ -88,8 +88,8 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(id.name_);
-  
-  std::cout << "TODO:" << std::endl;
+  newModule->set_state(module->get_state()->clone());
+  moduleAdded_(id.name_, newModule);
   
   for (size_t i = 0; i < module->num_input_ports(); ++i)
   {
@@ -101,9 +101,6 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
       requestConnection(source.get(), newModule->get_input_port(i).get());
     }
   }
-
-  newModule->set_state(module->get_state()->clone());
-  moduleAdded_(id.name_, newModule);
 
   std::cout << "\tmove module to appropriate position" << std::endl;
   

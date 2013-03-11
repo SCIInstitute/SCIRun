@@ -38,7 +38,8 @@ SimpleMapModuleState::SimpleMapModuleState()
 }
 
 SimpleMapModuleState::SimpleMapModuleState(const SimpleMapModuleState& rhs)
-  : stateMap_(rhs.stateMap_), transientStateMap_(rhs.transientStateMap_)
+  : stateMap_(rhs.stateMap_), 
+  transientStateMap_(rhs.transientStateMap_) //TODO: I think this is wrong, transient shouldn't be copied
 {
 }
 
@@ -47,7 +48,7 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
   if (&rhs != this)
   {
     stateMap_ = rhs.stateMap_;
-    transientStateMap_ = rhs.transientStateMap_;
+    transientStateMap_ = rhs.transientStateMap_;  //TODO: I think this is wrong, transient shouldn't be copied
     //TODO??
     //stateChangedSignal_.disconnect_all_slots();
   }
