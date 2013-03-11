@@ -56,7 +56,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy)
 {
-  scene_ = new QGraphicsScene(0, 0, 1000, 1000);
+  scene_ = new QGraphicsScene(parent);
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
@@ -126,8 +126,27 @@ void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDesc
   Q_EMIT modified();
 }
 
+namespace
+{
+  ModuleProxyWidget* findById(const QList<QGraphicsItem*>& list, const std::string& id)
+  {
+    Q_FOREACH(QGraphicsItem* item, list)
+    {
+      if (auto w = dynamic_cast<ModuleProxyWidget*>(item))
+      {
+        if (id == w->getModuleWidget()->getModuleId())
+          return w;
+      }
+    }
+    return 0;
+  }
+}
+
 void NetworkEditor::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 {
+  auto widget = findById(scene_->items(), module->get_id());
+  lastModulePosition_ = widget->scenePos() + QPointF(0, 110);
+  //TODO: need better duplicate placement. hard code it for now.
   controller_->duplicateModule(module);
 }
 
@@ -473,15 +492,8 @@ void NetworkEditor::executeAll()
 
 ExecutableObject* NetworkEditor::lookupExecutable(const std::string& id) const
 {
-  Q_FOREACH(QGraphicsItem* item, scene_->items())
-  {
-    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      if (id == w->getModuleWidget()->getModuleId())
-        return w->getModuleWidget();
-    }
-  }
-  return 0;
+  auto widget = findById(scene_->items(), id);
+  return widget ? widget->getModuleWidget() : 0;
 }
 
 void NetworkEditor::clear()

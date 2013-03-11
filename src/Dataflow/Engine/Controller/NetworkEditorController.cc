@@ -104,8 +104,6 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
       requestConnection(source.get(), newModule->get_input_port(i).get());
     }
   }
-
-  std::cout << "\tmove module to appropriate position" << std::endl;
   
   return newModule;
 }
