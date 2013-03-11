@@ -27,7 +27,7 @@
 */
 
 #include <iostream>
-
+#include <boost/thread.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -90,6 +90,9 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   auto newModule = addModuleImpl(id.name_);
   newModule->set_state(module->get_state()->clone());
   moduleAdded_(id.name_, newModule);
+
+  //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
+  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   
   for (size_t i = 0; i < module->num_input_ports(); ++i)
   {
