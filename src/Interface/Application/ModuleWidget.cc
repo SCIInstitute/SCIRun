@@ -397,5 +397,5 @@ void ModuleWidget::updateNote(const Note& note)
 
 void ModuleWidget::duplicate()
 {
-  Q_EMIT duplicateModule(ModuleId(moduleId_));
+  Q_EMIT duplicateModule(theModule_);
 }

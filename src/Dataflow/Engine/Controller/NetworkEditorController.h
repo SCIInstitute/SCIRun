@@ -57,7 +57,7 @@ namespace Engine {
 
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const Networks::ModuleId& id);
-    Networks::ModuleHandle duplicateModule(const Networks::ModuleId& id);
+    Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 

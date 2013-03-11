@@ -102,7 +102,7 @@ void NetworkEditorControllerGuiProxy::setExecutorType(int type)
   controller_->setExecutorType(type);
 }
 
-void NetworkEditorControllerGuiProxy::duplicateModule(const ModuleId& id)
+void NetworkEditorControllerGuiProxy::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
 {
-  controller_->duplicateModule(id);
+  controller_->duplicateModule(module);
 }

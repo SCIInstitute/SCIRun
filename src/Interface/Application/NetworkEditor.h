@@ -122,7 +122,7 @@ Q_SIGNALS:
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
-    void duplicateModule(const SCIRun::Dataflow::Networks::ModuleId& id);
+    void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void executeAll();
     virtual void clear();
     void setConnectionPipelineType(int type);

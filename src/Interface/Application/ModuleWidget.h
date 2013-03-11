@@ -97,7 +97,7 @@ Q_SIGNALS:
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
-  void duplicateModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
+  void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
 private:
   Ports inputPorts_;
   Ports outputPorts_;

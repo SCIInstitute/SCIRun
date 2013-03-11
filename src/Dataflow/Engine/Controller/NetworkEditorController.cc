@@ -77,14 +77,29 @@ void NetworkEditorController::removeModule(const ModuleId& id)
   printNetwork();
 }
 
-ModuleHandle NetworkEditorController::duplicateModule(const ModuleId& id)
+ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
+  ENSURE_NOT_NULL(module, "Cannot duplicate null module");
+  ModuleId id(module->get_id());
+  auto newModule = addModule(id.name_);
+  
   std::cout << "TODO:" << std::endl;
-  std::cout << "\tcall addModule" << std::endl;
-  auto mh = addModule(id.name_);
-  std::cout << "\tloop through connections and call requestConnection" << std::endl;
-  std::cout << "\tcopy state (how?)" << std::endl;
-  return mh;
+  
+  for (size_t i = 0; i < module->num_input_ports(); ++i)
+  {
+    auto input = module->get_input_port(i);
+    if (input->nconnections() == 1)
+    {
+      auto conn = input->connection(0);
+      auto source = conn->oport_;
+      requestConnection(source.get(), newModule->get_input_port(i).get());
+    }
+  }
+
+  std::cout << "\tcopy state (how?)--easy, it's a map, make a deep copy." << std::endl;
+  
+  
+  return newModule;
 }
 
 void NetworkEditorController::printNetwork() const
