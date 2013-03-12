@@ -169,7 +169,6 @@ void ModuleProxyWidget::createPortPositionProviders()
 
 void ModuleProxyWidget::updateNote(const Note& note)
 {
-  //std::cout << "update note called." << std::endl;
   if (!note_)
   {
     note_ = new QGraphicsTextItem("", 0, scene());
@@ -194,12 +193,10 @@ QPointF ModuleProxyWidget::relativeNotePosition()
     {
       case None:
       {
-         //std::cout << "None selected: nothing to do" << std::endl;
          break;
       }
       case Top:
       {
-        //std::cout << "Top selected" << std::endl;
         auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
         auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
         auto moduleTopHalfLength = thisRect.width() / 2;
@@ -209,7 +206,6 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Bottom:
       {
-        //std::cout << "Bottom selected" << std::endl;
         auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
         auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
         auto moduleTopHalfLength = thisRect.width() / 2;
@@ -219,7 +215,6 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Left:
       {
-        //std::cout << "Left selected" << std::endl;
         auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
         auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
         auto moduleSideHalfLength = thisRect.height() / 2;
@@ -229,7 +224,6 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Right:
       {
-        //std::cout << "Right selected" << std::endl;
         auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
         auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
         auto moduleSideHalfLength = thisRect.height() / 2;
@@ -239,11 +233,9 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Tooltip:
         this->setToolTip(note_->toHtml());
-        //std::cout << "Module note Tooltip selected." << std::endl;
         break;
     }
   }
-  //std::cout << "returning 0,0" << std::endl;
   return QPointF();
 }
 

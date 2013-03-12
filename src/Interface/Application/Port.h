@@ -105,7 +105,6 @@ protected:
   void paintEvent(QPaintEvent* event);
 private:
   void performDrag(const QPointF& endPos);
-  //bool canBeConnected(PortWidget* other) const;
   void makeConnection(const QPointF& pos);
   void tryConnectPort(const QPointF& pos, PortWidget* port);
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
