@@ -32,6 +32,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/bimap.hpp>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -49,7 +50,7 @@ namespace Engine {
 
     explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network);
 
-    const Networks::ModuleId& moduleName(int vertex) const;
+    const Networks::ModuleId& moduleAt(int vertex) const;
     ExecutionOrder::iterator topologicalBegin();
     ExecutionOrder::iterator topologicalEnd();
     Graph& graph();

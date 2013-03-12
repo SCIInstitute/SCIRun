@@ -490,9 +490,9 @@ void NetworkEditor::executeAll()
   Q_EMIT networkExecuted();
 }
 
-ExecutableObject* NetworkEditor::lookupExecutable(const std::string& id) const
+ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
 {
-  auto widget = findById(scene_->items(), id);
+  auto widget = findById(scene_->items(), id.id_);
   return widget ? widget->getModuleWidget() : 0;
 }
 

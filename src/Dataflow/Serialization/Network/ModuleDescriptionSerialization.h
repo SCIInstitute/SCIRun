@@ -37,6 +37,16 @@
 #include <boost/serialization/nvp.hpp>
 #include <Dataflow/Serialization/Network/Share.h>
 
+namespace boost {
+  namespace serialization {
+
+    template<class Archive>
+    void serialize(Archive& ar, SCIRun::Dataflow::Networks::ModuleId& id, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("id", id.id_);
+    }
+}}
+
 namespace SCIRun {
 namespace Dataflow {
 namespace Networks {

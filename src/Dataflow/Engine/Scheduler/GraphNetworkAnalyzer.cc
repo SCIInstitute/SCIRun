@@ -63,7 +63,7 @@ NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network)
   }
 }
 
-std::string NetworkGraphAnalyzer::moduleName(int vertex) const
+const ModuleId& NetworkGraphAnalyzer::moduleAt(int vertex) const
 {
   return moduleIdLookup_.right.at(vertex);
 }

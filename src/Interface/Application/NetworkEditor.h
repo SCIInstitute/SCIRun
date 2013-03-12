@@ -92,7 +92,7 @@ Q_SIGNALS:
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
-    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const;
+    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const SCIRun::Dataflow::Networks::ModuleId& id) const;
 
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);

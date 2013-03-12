@@ -111,14 +111,14 @@ namespace
     info3.package_name_ = "SCIRun";
 
     ConnectionDescriptionXML conn;
-    conn.out_.moduleId_ = "ReadMatrix2";
-    conn.in_.moduleId_ = "EvaluateLinearAlgebraUnary1";
+    conn.out_.moduleId_ = ModuleId("ReadMatrix", 2);
+    conn.in_.moduleId_ = ModuleId("EvaluateLinearAlgebraUnary", 1);
     conn.out_.port_ = 0;
     conn.in_.port_ = 0;
 
     ConnectionDescriptionXML conn2;
-    conn2.out_.moduleId_ = "EvaluateLinearAlgebraUnary1";
-    conn2.in_.moduleId_ = "WriteMatrix3";
+    conn2.out_.moduleId_ = ModuleId("EvaluateLinearAlgebraUnary", 1);
+    conn2.in_.moduleId_ = ModuleId("WriteMatrix", 3);
     conn2.out_.port_ = 0;
     conn2.in_.port_ = 0;
 
@@ -126,9 +126,9 @@ namespace
     connections += conn2, conn;
 
     ModuleMapXML mods;
-    mods["EvaluateLinearAlgebraUnary1"] = info1;
-    mods["ReadMatrix2"] = info2;
-    mods["WriteMatrix3"] = info3;
+    mods["EvaluateLinearAlgebraUnary:1"] = info1;
+    mods["ReadMatrix:2"] = info2;
+    mods["WriteMatrix:3"] = info3;
 
     NetworkXML network;
     network.connections = connections;
@@ -240,7 +240,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ(9, deserialized->nmodules());
   EXPECT_NE(matrixMathNetwork.get(), deserialized.get());
 
-  ModuleHandle trans2 = deserialized->lookupModule("EvaluateLinearAlgebraUnary_2");
+  ModuleHandle trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 2));
   ASSERT_TRUE(trans2);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
   EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());

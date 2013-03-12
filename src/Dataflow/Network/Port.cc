@@ -78,9 +78,9 @@ size_t Port::nconnections() const
   return connections_.size();
 }
 
-std::string Port::getUnderlyingModuleId() const 
+ModuleId Port::getUnderlyingModuleId() const 
 {
-  return module_->get_id().id_;
+  return module_->get_id();
 }
 
 size_t Port::getIndex() const 

@@ -55,7 +55,7 @@ class PortWidget : public QWidget, public NeedsScenePositionProvider, public SCI
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory,
+  PortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
   ~PortWidget();
 
@@ -68,7 +68,7 @@ public:
   virtual size_t nconnections() const;
   virtual std::string get_colorname() const;
   virtual std::string get_portname() const;
-  virtual std::string getUnderlyingModuleId() const;
+  virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
 
   void toggleLight();
@@ -111,7 +111,7 @@ private:
   bool matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const;
 
   const QString name_;
-  const QString moduleId_; 
+  const SCIRun::Dataflow::Networks::ModuleId moduleId_; 
   const size_t index_;
   const QColor color_;
   const bool isInput_;
@@ -132,7 +132,7 @@ private:
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+  InputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);
@@ -141,7 +141,7 @@ public:
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+  OutputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);

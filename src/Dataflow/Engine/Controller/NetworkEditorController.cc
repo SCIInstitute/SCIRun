@@ -127,9 +127,9 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   auto out = from->isInput() ? to : from;     
   auto in = from->isInput() ? from : to;     
 
-  SCIRun::Dataflow::Networks::ConnectionDescription desc(
-    SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
-    SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
+  ConnectionDescription desc(
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
+    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))

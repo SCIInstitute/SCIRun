@@ -293,16 +293,16 @@ TEST_F(SchedulingWithBoostGraph, SerialNetworkOrder)
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
 
-  std::list<std::string> expected = list_of
-    ("SendTestMatrix:1")
-    ("EvaluateLinearAlgebraUnary:4")
-    ("SendTestMatrix:0")
-    ("EvaluateLinearAlgebraUnary:3")
-    ("EvaluateLinearAlgebraBinary:5")
-    ("EvaluateLinearAlgebraUnary:2")
-    ("EvaluateLinearAlgebraBinary:6")
-    ("ReportMatrixInfo:7")
-    ("ReceiveTestMatrix:8");
+  std::list<ModuleId> expected = list_of
+    (ModuleId("SendTestMatrix:1"))
+    (ModuleId("EvaluateLinearAlgebraUnary:4"))
+    (ModuleId("SendTestMatrix:0"))
+    (ModuleId("EvaluateLinearAlgebraUnary:3"))
+    (ModuleId("EvaluateLinearAlgebraBinary:5"))
+    (ModuleId("EvaluateLinearAlgebraUnary:2"))
+    (ModuleId("EvaluateLinearAlgebraBinary:6"))
+    (ModuleId("ReportMatrixInfo:7"))
+    (ModuleId("ReceiveTestMatrix:8"));
   EXPECT_EQ(ModuleExecutionOrder(expected), order);
 }
 
