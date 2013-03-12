@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>43</count>
+			<count>42</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>ReadMatrix1</first>
@@ -336,46 +336,6 @@
 			</item>
 			<item>
 				<first>SolveLinearSystem15</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>SolveLinearSystem</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>2</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>MaxIterations</name>
-								</first>
-								<second>
-									<name>MaxIterations</name>
-									<value>
-										<which>0</which>
-										<value>500</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>Tolerance</name>
-								</first>
-								<second>
-									<name>Tolerance</name>
-									<value>
-										<which>1</which>
-										<value>0.00069999999999999988</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>SolveLinearSystem16</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -2129,20 +2089,20 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="14" tracking_level="0" version="0">
-		<count>43</count>
+		<count>42</count>
 		<item_version>0</item_version>
 		<item class_id="15" tracking_level="0" version="0">
 			<first>ReadMatrix1</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>146</first>
-				<second>1</second>
+				<first>161</first>
+				<second>28</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix2</first>
 			<second>
-				<first>382</first>
-				<second>1318</second>
+				<first>700</first>
+				<second>0</second>
 			</second>
 		</item>
 		<item>
@@ -2206,13 +2166,6 @@
 			<second>
 				<first>674</first>
 				<second>367</second>
-			</second>
-		</item>
-		<item>
-			<first>SolveLinearSystem16</first>
-			<second>
-				<first>535</first>
-				<second>532</second>
 			</second>
 		</item>
 		<item>
