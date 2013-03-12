@@ -38,6 +38,10 @@
 #include "Spire/Interface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
+// The following include contains AbstractUniformStateItem which allows
+// us to store uniforms to be passed, at a later time, to spire.
+#include "Spire/Core/ShaderUniformStateManTemplates.h"
+
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
@@ -105,10 +109,25 @@ namespace Datatypes {
       std::string   iboName;
       std::string   programName;
       Spire::StuInterface::PRIMITIVE_TYPES type;
+
+      template <typename T>
+      void addUniform(const std::string& uniformName, T uniformData)
+      {
+        uniforms.push_back(
+            make_pair(uniformName, std::shared_ptr<Spire::AbstractUniformStateItem>(
+                new Spire::UniformStateItem<T>(uniformData))));
+      }
+
+      // Tuple containing the name of the uniform and its contents.
+      std::list<std::tuple<
+          std::string, std::shared_ptr<Spire::AbstractUniformStateItem>>> uniforms;
     };
 
-    /// Array of passes to setup.
+    /// List of passes to setup.
     std::list<SpirePass>  mPasses;
+
+    /// \xxx  Possibly implement a list of global uniforms. Only do this if
+    ///       there is a clear need for global uniforms.
 
     bool      useZTest;
     bool      useZWrite;

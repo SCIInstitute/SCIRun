@@ -114,10 +114,13 @@ void ShowMeshModule::execute()
 
     // Build pass for the faces.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    geom->mPasses.emplace_back(
+    GeometryObject::SpirePass pass = 
         GeometryObject::SpirePass("facesPass", primVBOName,
                                   facesIBOName, "UniformColor",
-                                  Spire::StuInterface::TRIANGLES));
+                                  Spire::StuInterface::TRIANGLES);
+    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+
+    geom->mPasses.emplace_back(pass);
   }
 
   // Build the edges
@@ -146,11 +149,17 @@ void ShowMeshModule::execute()
 
     // Build pass for the faces.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    geom->mPasses.emplace_back(
+    GeometryObject::SpirePass pass = 
         GeometryObject::SpirePass("edgesPass", primVBOName,
                                   edgesIBOName, "UniformColor",
-                                  Spire::StuInterface::LINES));
+                                  Spire::StuInterface::LINES);
+
+    // Add appropriate uniforms to the pass (in this case, uColor).
+    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+
+    geom->mPasses.emplace_back(pass);
   }
+  //mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 
   sendOutput(SceneGraph, geom);
 }
