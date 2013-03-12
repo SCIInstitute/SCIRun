@@ -29,8 +29,8 @@
 SET(Engine_Network_Tests_SRCS
   NetworkEditorCommandTests.cc
   NetworkEditorControllerTests.cc
-  HistoryItemTests.cc
-  HistoryManagerTests.cc
+  ProvenanceItemTests.cc
+  ProvenanceManagerTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

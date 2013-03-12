@@ -26,31 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_HISTORYWINDOW_H
-#define INTERFACE_APPLICATION_HISTORYWINDOW_H
+#ifndef INTERFACE_APPLICATION_PROVENANCEWINDOW_H
+#define INTERFACE_APPLICATION_PROVENANCEWINDOW_H
 
-#include "ui_HistoryWindow.h"
+#include "ui_ProvenanceWindow.h"
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 
 namespace SCIRun {
 namespace Gui {
 
   class NetworkEditor;
 
-class HistoryWindow : public QDockWidget, public Ui::HistoryWindow
+class ProvenanceWindow : public QDockWidget, public Ui::ProvenanceWindow
 {
 	Q_OBJECT
 	
 public:
-  explicit HistoryWindow(SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager, QWidget* parent = 0);
+  explicit ProvenanceWindow(SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager, QWidget* parent = 0);
   void showFile(SCIRun::Dataflow::Networks::NetworkFileHandle file);
 public Q_SLOTS:
   void clear();
-  void addHistoryItem(SCIRun::Dataflow::Engine::HistoryItemHandle item);  
+  void addProvenanceItem(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);  
   void undo();
   void redo();
   void undoAll();
@@ -62,7 +62,7 @@ Q_SIGNALS:
   void undoStateChanged(bool enabled);
   void redoStateChanged(bool enabled);
 private:
-  SCIRun::Dataflow::Engine::HistoryManagerHandle historyManager_;
+  SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
   int lastUndoRow_;
   
   void setUndoEnabled(bool enable);
@@ -70,23 +70,23 @@ private:
 };
 
 //TODO: will become several classes
-class GuiActionCommandHistoryConverter : public QObject
+class GuiActionProvenanceConverter : public QObject
 {
   Q_OBJECT
 public:
-  explicit GuiActionCommandHistoryConverter(NetworkEditor* editor);
+  explicit GuiActionProvenanceConverter(NetworkEditor* editor);
 public Q_SLOTS:
   void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
   void moduleRemoved(const std::string& name);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&);
   void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void moduleMoved(const std::string& id, double newX, double newY);
-  void networkBeingModifiedByHistoryManager(bool inProgress);
+  void networkBeingModifiedByProvenanceManager(bool inProgress);
 Q_SIGNALS:
-  void historyItemCreated(SCIRun::Dataflow::Engine::HistoryItemHandle item);
+  void provenanceItemCreated(SCIRun::Dataflow::Engine::ProvenanceItemHandle item);
 private:
   NetworkEditor* editor_;
-  bool historyManagerModifyingNetwork_;
+  bool provenanceManagerModifyingNetwork_;
 };
 
 }

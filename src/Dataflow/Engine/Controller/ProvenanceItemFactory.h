@@ -26,23 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_HISTORYITEMFACTORY_H
-#define ENGINE_NETWORK_HISTORYITEMFACTORY_H
+#ifndef ENGINE_NETWORK_PROVENANCEITEMFACTORY_H
+#define ENGINE_NETWORK_PROVENANCEITEMFACTORY_H
 
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
   
-  //class SCISHARE HistoryItemFactory : boost::noncopyable
-  //{
-  //public:
-  //  HistoryItemHandle make(...);
-  //};
-  //
-
 }
 }
 }

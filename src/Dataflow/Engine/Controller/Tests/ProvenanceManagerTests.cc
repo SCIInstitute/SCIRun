@@ -28,8 +28,8 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
-#include <Dataflow/Engine/Controller/HistoryManager.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceManager.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -51,7 +51,7 @@ public:
 
 typedef boost::shared_ptr<MockNetworkIO> MockNetworkIOPtr;
 
-class HistoryManagerTests : public ::testing::Test
+class ProvenanceManagerTests : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -59,28 +59,28 @@ protected:
     controller_.reset(new NiceMock<MockNetworkIO>);
   }
   
-  class DummyHistoryItem : public HistoryItem<std::string>
+  class DummyProvenanceItem : public ProvenanceItem<std::string>
   {
   public:
-    explicit DummyHistoryItem(const std::string& name) : name_(name) {}
+    explicit DummyProvenanceItem(const std::string& name) : name_(name) {}
     virtual std::string name() const { return name_; }
     virtual std::string memento() const { return name_; }
   private:
     std::string name_;
   };
 
-  HistoryItem<std::string>::Handle item(const std::string& name)
+  ProvenanceItem<std::string>::Handle item(const std::string& name)
   {
-    return HistoryItem<std::string>::Handle(new DummyHistoryItem(name));
+    return ProvenanceItem<std::string>::Handle(new DummyProvenanceItem(name));
   }
 
   MockNetworkIOPtr controller_;
   SerialNetworkExecutorHandle null_;
 };
 
-TEST_F(HistoryManagerTests, CanAddItems)
+TEST_F(ProvenanceManagerTests, CanAddItems)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
   
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -91,9 +91,9 @@ TEST_F(HistoryManagerTests, CanAddItems)
   EXPECT_EQ(2, manager.undoSize());
 }
 
-TEST_F(HistoryManagerTests, CanClear)
+TEST_F(ProvenanceManagerTests, CanClear)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -110,9 +110,9 @@ TEST_F(HistoryManagerTests, CanClear)
   EXPECT_EQ(0, manager.redoSize());
 }
 
-TEST_F(HistoryManagerTests, CanUndoItem)
+TEST_F(ProvenanceManagerTests, CanUndoItem)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -129,9 +129,9 @@ TEST_F(HistoryManagerTests, CanUndoItem)
   EXPECT_EQ(1, manager.redoSize());
 }
 
-TEST_F(HistoryManagerTests, CanRedoUndoneItem)
+TEST_F(ProvenanceManagerTests, CanRedoUndoneItem)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -156,9 +156,9 @@ TEST_F(HistoryManagerTests, CanRedoUndoneItem)
   }
 }
 
-TEST_F(HistoryManagerTests, CannotUndoWhenEmpty)
+TEST_F(ProvenanceManagerTests, CannotUndoWhenEmpty)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   EXPECT_EQ(0, manager.undoSize());
   EXPECT_EQ(0, manager.redoSize());
@@ -169,9 +169,9 @@ TEST_F(HistoryManagerTests, CannotUndoWhenEmpty)
   EXPECT_FALSE(undone);
 }
 
-TEST_F(HistoryManagerTests, CannotRedoWhenEmpty)
+TEST_F(ProvenanceManagerTests, CannotRedoWhenEmpty)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   EXPECT_EQ(1, manager.undoSize());
@@ -183,9 +183,9 @@ TEST_F(HistoryManagerTests, CannotRedoWhenEmpty)
 }
 
 //TODO: need test case (no situation for it yet) for "undo all does not completely clear the network"
-TEST_F(HistoryManagerTests, CanUndoAll)
+TEST_F(ProvenanceManagerTests, CanUndoAll)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -203,9 +203,9 @@ TEST_F(HistoryManagerTests, CanUndoAll)
   EXPECT_EQ(3, manager.redoSize());
 }
 
-TEST_F(HistoryManagerTests, CanRedoAll)
+TEST_F(ProvenanceManagerTests, CanRedoAll)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -235,9 +235,9 @@ TEST_F(HistoryManagerTests, CanRedoAll)
   }
 }
 
-TEST_F(HistoryManagerTests, AddItemWipesOutRedoStack)
+TEST_F(ProvenanceManagerTests, AddItemWipesOutRedoStack)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.addItem(item("1"));
   manager.addItem(item("2"));
@@ -257,9 +257,9 @@ TEST_F(HistoryManagerTests, AddItemWipesOutRedoStack)
   EXPECT_EQ(0, manager.redoSize());
 }
 
-TEST_F(HistoryManagerTests, LoadFileSetsInitialState)
+TEST_F(ProvenanceManagerTests, LoadFileSetsInitialState)
 {
-  HistoryManager<std::string> manager(controller_.get());
+  ProvenanceManager<std::string> manager(controller_.get());
 
   manager.setInitialState("initial");
 

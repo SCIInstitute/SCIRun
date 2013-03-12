@@ -71,7 +71,7 @@ void NetworkEditorController::removeModule(const std::string& id)
 {
   theNetwork_->remove_module(id);
   //before or after?
-  // deciding on after: HistoryWindow/Manager wants the state *after* removal.
+  // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
   /*emit*/ moduleRemoved_(id);
   
   printNetwork();

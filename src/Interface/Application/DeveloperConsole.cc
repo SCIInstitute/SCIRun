@@ -31,8 +31,6 @@
 #include <Interface/Application/DeveloperConsole.h>
 
 using namespace SCIRun::Gui;
-//using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Engine;
 
 DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(parent)
 {

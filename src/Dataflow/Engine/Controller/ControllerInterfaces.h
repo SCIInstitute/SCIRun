@@ -49,14 +49,14 @@ namespace Engine {
   typedef boost::shared_ptr<NetworkIOInterface<Networks::NetworkFileHandle>> NetworkIOHandle;
 
   template <class Memento>
-  class HistoryItem;
+  class ProvenanceItem;
 
-  typedef boost::shared_ptr<Dataflow::Engine::HistoryItem<Networks::NetworkFileHandle> > HistoryItemHandle;
+  typedef boost::shared_ptr<Dataflow::Engine::ProvenanceItem<Networks::NetworkFileHandle> > ProvenanceItemHandle;
 
   template <class Memento>
-  class HistoryManager;
+  class ProvenanceManager;
 
-  typedef boost::shared_ptr<Dataflow::Engine::HistoryManager<Networks::NetworkFileHandle> > HistoryManagerHandle;
+  typedef boost::shared_ptr<Dataflow::Engine::ProvenanceManager<Networks::NetworkFileHandle> > ProvenanceManagerHandle;
 }
 }
 }
