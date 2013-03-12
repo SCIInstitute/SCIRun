@@ -92,11 +92,12 @@ namespace Datatypes {
     {
       SpirePass(const std::string& name, const std::string& vbo, 
                 const std::string& ibo, const std::string& program,
-                Spire::StuInterface::PRIMITIVE_TYPES type) :
+                Spire::StuInterface::PRIMITIVE_TYPES primType) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
-          programName(program)
+          programName(program),
+          type(primType)
       {}
 
       std::string   passName;
