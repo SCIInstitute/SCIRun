@@ -53,15 +53,15 @@ namespace Networks {
     virtual bool remove_module(const ModuleId& id);
     virtual size_t nmodules() const;
     virtual ModuleHandle module(size_t i) const;
-    virtual ExecutableObject* lookupExecutable(const std::string& id) const;
-    virtual ModuleHandle lookupModule(const std::string& id) const;
+    virtual ExecutableObject* lookupExecutable(const ModuleId& id) const;
+    virtual ModuleHandle lookupModule(const ModuleId& id) const;
     virtual ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&);
     virtual bool disconnect(const ConnectionId&);
     virtual size_t nconnections() const;
     virtual void disable_connection(const ConnectionId&);
     virtual ConnectionDescriptionList connections() const;
     virtual int errorCode() const;
-    virtual void incrementErrorCode(const std::string& moduleId);
+    virtual void incrementErrorCode(const ModuleId& moduleId);
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
   private:

@@ -44,7 +44,7 @@ using namespace SCIRun::Core::Logging;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
-  return m.get_module_name() + " [" + m.get_id() + "]";
+  return m.get_module_name() + " [" + m.get_id().id_ + "]";
 }
 
 /*static*/ int Module::instanceCount_ = 0;
@@ -54,9 +54,10 @@ Module::Module(const ModuleLookupInfo& info,
   ModuleStateFactoryHandle stateFactory,
   bool hasUi,
   const std::string& version)
-  : info_(info), has_ui_(hasUi), state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
+  : info_(info), has_ui_(hasUi), 
+  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
+  id_(info_.module_name_, instanceCount_++)
 {
-  id_ = info_.module_name_ + boost::lexical_cast<std::string>(instanceCount_++);
   iports_.set_module(this);
   oports_.set_module(this);
   setLogger(defaultLogger_);
@@ -94,7 +95,7 @@ size_t Module::num_output_ports() const
 void Module::do_execute() throw()
 {
   executeBegins_(id_);
-  status("STARTING MODULE: " + id_);
+  status("STARTING MODULE: " + id_.id_);
 
   // Reset all of the ports.
   oports_.resetAll();
@@ -142,7 +143,7 @@ void Module::do_execute() throw()
   //iports_.apply(boost::bind(&PortInterface::finish, _1));
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
-  status("MODULE FINISHED: " + id_);  
+  status("MODULE FINISHED: " + id_.id_);  
   executeEnds_(id_);
 }
 

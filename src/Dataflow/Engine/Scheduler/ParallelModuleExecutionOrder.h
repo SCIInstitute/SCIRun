@@ -30,6 +30,7 @@
 #define ENGINE_SCHEDULER_PARALLEL_MODULE_EXECUTION_ORDER_H
 
 #include <map>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -40,7 +41,7 @@ namespace Engine {
   class SCISHARE ParallelModuleExecutionOrder
   {
   public:
-    typedef std::multimap<int, std::string> ModulesByGroup;
+    typedef std::multimap<int, Networks::ModuleId> ModulesByGroup;
     typedef ModulesByGroup::iterator iterator;
     typedef ModulesByGroup::const_iterator const_iterator;
 

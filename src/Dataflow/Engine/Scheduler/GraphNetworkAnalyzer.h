@@ -49,13 +49,13 @@ namespace Engine {
 
     explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network);
 
-    std::string moduleName(int vertex) const;
+    const Networks::ModuleId& moduleName(int vertex) const;
     ExecutionOrder::iterator topologicalBegin();
     ExecutionOrder::iterator topologicalEnd();
     Graph& graph();
 
   private:
-    boost::bimap<std::string, int> moduleIdLookup_;
+    boost::bimap<Networks::ModuleId, int> moduleIdLookup_;
     ExecutionOrder order_;
     Graph graph_;
   };

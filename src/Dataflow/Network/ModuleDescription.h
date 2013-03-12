@@ -32,6 +32,7 @@
 
 #include <string>
 #include <vector>
+#include <iosfwd>
 #include <boost/function.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/Share.h>
@@ -77,6 +78,7 @@ namespace Networks {
     std::string name_, id_;
     int idNumber_;
 
+    ModuleId();
     ModuleId(const std::string& name, int idNumber);
     explicit ModuleId(const std::string& nameIdStr);
 
@@ -85,6 +87,8 @@ namespace Networks {
 
   SCISHARE bool operator==(const ModuleId& lhs, const ModuleId& rhs);
   SCISHARE bool operator!=(const ModuleId& lhs, const ModuleId& rhs);
+  SCISHARE bool operator<(const ModuleId& lhs, const ModuleId& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleId& id);
 
   struct SCISHARE ModuleLookupInfo
   {

@@ -46,7 +46,7 @@ namespace Networks {
   {
   public:
     virtual ~ExecutableLookup() {}
-    virtual ExecutableObject* lookupExecutable(const std::string& id) const = 0; 
+    virtual ExecutableObject* lookupExecutable(const ModuleId& id) const = 0; 
     virtual int errorCode() const = 0;
   };
 
@@ -70,14 +70,14 @@ namespace Networks {
     virtual bool remove_module(const ModuleId& id) = 0;
     virtual size_t nmodules() const = 0;
     virtual ModuleHandle module(size_t i) const = 0;
-    virtual ModuleHandle lookupModule(const std::string& id) const = 0; 
+    virtual ModuleHandle lookupModule(const ModuleId& id) const = 0; 
     
     virtual ConnectionId connect(const ConnectionOutputPort&, const ConnectionInputPort&) = 0;
     virtual bool disconnect(const ConnectionId&) = 0;
     virtual size_t nconnections() const = 0;
     virtual void disable_connection(const ConnectionId&) = 0;
     virtual ConnectionDescriptionList connections() const = 0;
-    virtual void incrementErrorCode(const std::string& moduleId) = 0;
+    virtual void incrementErrorCode(const ModuleId& moduleId) = 0;
     virtual NetworkGlobalSettings& settings() = 0;
 
     virtual std::string toString() const = 0;

@@ -240,7 +240,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ(9, deserialized->nmodules());
   EXPECT_NE(matrixMathNetwork.get(), deserialized.get());
 
-  ModuleHandle trans2 = deserialized->lookupModule("EvaluateLinearAlgebraUnary2");
+  ModuleHandle trans2 = deserialized->lookupModule("EvaluateLinearAlgebraUnary_2");
   ASSERT_TRUE(trans2);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
   EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());

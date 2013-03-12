@@ -38,23 +38,29 @@ TEST(ModuleTests, CanBuildWithPorts)
     .add_input_port(Port::ConstructionParams("Matrix", "RHS", "blue"))
     .add_output_port(Port::ConstructionParams("Matrix", "Solution", "blue"))
     .build();
-  ASSERT_EQ(2, module->num_input_ports());
-  ASSERT_EQ(1, module->num_output_ports());
-  ASSERT_EQ("SolveLinearSystem", module->get_module_name());
+  EXPECT_EQ(2, module->num_input_ports());
+  EXPECT_EQ(1, module->num_output_ports());
+  EXPECT_EQ("SolveLinearSystem", module->get_module_name());
+  EXPECT_EQ("SolveLinearSystem:0", module->get_id().id_);
 }
 
 TEST(ModuleIdTests, CanConstructFromString)
 {
-  ModuleId m1("ComputeSVD5");
+  ModuleId m1("ComputeSVD:5");
   EXPECT_EQ(5, m1.idNumber_);
-  EXPECT_EQ("ComputeSVD5", m1.id_);
+  EXPECT_EQ("ComputeSVD:5", m1.id_);
+  EXPECT_EQ("ComputeSVD", m1.name_);
+}
+
+TEST(ModuleIdTests, CanMatchMultiDigitIdNumber)
+{
+  ModuleId m1("ComputeSVD:12");
+  EXPECT_EQ(12, m1.idNumber_);
+  EXPECT_EQ("ComputeSVD:12", m1.id_);
   EXPECT_EQ("ComputeSVD", m1.name_);
 }
 
 TEST(ModuleIdTests, WhatHappensWhenNoNumberAtEnd)
 {
   EXPECT_THROW(ModuleId("ComputeSVD"), SCIRun::Core::InvalidArgumentException);
-  //EXPECT_EQ(5, m1.idNumber_);
-  //EXPECT_EQ("ComputeSVD", m1.id_);
-  //EXPECT_EQ("ComputeSVD", m1.name_);
 }

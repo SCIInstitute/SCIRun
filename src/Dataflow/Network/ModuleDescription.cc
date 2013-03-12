@@ -47,16 +47,18 @@ ModuleLookupInfo::ModuleLookupInfo(const std::string& mod, const std::string& ca
   : package_name_(pack), category_name_(cat), module_name_(mod) 
 {}
 
+ModuleId::ModuleId() : name_("<Unknown>"), id_("<Invalid>"), idNumber_(-1) {}
+
 ModuleId::ModuleId(const std::string& name, int idNumber)
   : name_(name), idNumber_(idNumber)
 {
-  id_ = name + boost::lexical_cast<std::string>(idNumber);
+  id_ = name + ':' + boost::lexical_cast<std::string>(idNumber);
 }
 
 ModuleId::ModuleId(const std::string& nameIdStr)
   : id_(nameIdStr)
 {
-  static boost::regex r("(.+)(\\d+)");
+  static boost::regex r("(.+?):?(\\d+)");
   boost::smatch what;
   if (!regex_match(id_, what, r))
     THROW_INVALID_ARGUMENT("Invalid Module Id");
@@ -72,4 +74,14 @@ bool SCIRun::Dataflow::Networks::operator==(const ModuleId& lhs, const ModuleId&
 bool SCIRun::Dataflow::Networks::operator!=(const ModuleId& lhs, const ModuleId& rhs)
 {
   return !(lhs == rhs);
+}
+
+bool SCIRun::Dataflow::Networks::operator<(const ModuleId& lhs, const ModuleId& rhs)
+{
+  return lhs.id_ < rhs.id_;
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleId& id)
+{
+  return o << id.id_;
 }
