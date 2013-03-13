@@ -1105,6 +1105,9 @@
    <property name="text">
     <string>Load...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionInsert_">
    <property name="enabled">
@@ -1118,6 +1121,9 @@
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionSave_As_">
    <property name="text">
@@ -1127,6 +1133,9 @@
   <action name="actionClear_Network_">
    <property name="text">
     <string>Clear Network</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actionSelect_All_">
@@ -1206,6 +1215,12 @@
    <property name="text">
     <string>Configuration</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+C</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
   </action>
   <action name="actionModule_Selector">
    <property name="checkable">
@@ -1216,6 +1231,9 @@
    </property>
    <property name="text">
     <string>Module Selector</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
    </property>
   </action>
   <action name="actionDump_positions">
@@ -1250,6 +1268,9 @@
    </property>
    <property name="text">
     <string>Provenance</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
    </property>
   </action>
   <action name="actionUndo_">
