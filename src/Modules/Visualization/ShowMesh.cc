@@ -69,7 +69,7 @@ void ShowMeshModule::execute()
   // Edges *and* faces should use the same vbo!
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   size_t vboSize = sizeof(float) * 3 * facade->numNodes();
-  rawVBO->reserve(vboSize);
+  rawVBO->resize(vboSize); // linear complexity.
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 
   // Add shared VBO to the geometry object.
@@ -93,7 +93,9 @@ void ShowMeshModule::execute()
   if (showFaces)
   {
     std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-    rawIBO->reserve(iboFacesSize);
+    //rawIBO->reserve(iboFacesSize);
+    rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
+                                    // use malloc to generate buffer and then vector::assign.
     iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
     i = 0;
     BOOST_FOREACH(const FaceInfo& face, facade->faces())
@@ -129,7 +131,9 @@ void ShowMeshModule::execute()
   if (showEdges)
   {
     std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-    rawIBO->reserve(iboEdgesSize);
+    //rawIBO->reserve(iboEdgesSize);
+    rawIBO->resize(iboEdgesSize);   // Linear in complexity... If we need more performance,
+                                    // use malloc to generate buffer and then vector::assign.
     iboEdges = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
     i = 0;
     BOOST_FOREACH(const EdgeInfo& edge, facade->edges())

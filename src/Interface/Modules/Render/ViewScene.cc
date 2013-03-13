@@ -140,6 +140,7 @@ void ViewSceneDialog::moduleExecuted()
 
         default:
           type = Spire::StuInterface::IBO_32BIT;
+          throw std::invalid_argument("Unable to determine index buffer depth.");
           break;
       }
       stuPipe->addIBO(ibo.name, ibo.data, type);
