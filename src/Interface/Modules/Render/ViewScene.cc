@@ -151,6 +151,15 @@ void ViewSceneDialog::moduleExecuted()
       const GeometryObject::SpirePass& pass = *it;
       stuPipe->addPassToObject(geomData->objectName, pass.passName, pass.programName,
                                pass.vboName, pass.iboName, pass.type);
+
+      // Add uniforms associated with the pass
+      for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
+      {
+        std::string uniformName = std::get<0>(*it);
+        std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+        stuPipe->addPassUniformConcrete(geomData->objectName, pass.passName,
+                                        uniformName, uniform);
+      }
     }
 
     // Now that we have created all of the appropriate passes, get rid of the
