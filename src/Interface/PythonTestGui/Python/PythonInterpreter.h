@@ -46,12 +46,9 @@ namespace Core
 /// A wrapper class of the python interpreter.
 /// It calls the python interpreter on a separate thread.
 
-// Forward declaration
-class PythonInterpreter;
 class PythonInterpreterPrivate;
 typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
-// Class definition
 class PythonInterpreter /*: private Core::EventHandler*/
 {
 	CORE_SINGLETON( PythonInterpreter );
@@ -69,7 +66,7 @@ private:
 	// INITIALIZE_EVENTHANDLER:
 	/// This function initializes the event handler associated with the singleton
 	/// class. It initializes the python interpreter.
-	virtual void initialize_eventhandler();
+	void initialize_eventhandler();
 
 public:
 	// INITIALIZE:

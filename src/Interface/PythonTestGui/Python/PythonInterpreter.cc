@@ -32,40 +32,14 @@
 
 #include <Python.h>
 #include <boost/filesystem.hpp>
-#include <boost/python.hpp>
 #include <boost/regex.hpp>
 #include <boost/thread/condition_variable.hpp>
 
 #include <Core/Utils/StringContainer.h>
-#include <Core/Utils/Exception.h>
 #include <Core/Utils/Lockable.h>
-//#include <Core/Utils/Log.h>
 
 #include <Interface/PythonTestGui/Python/PythonInterpreter.h>
 #include <Interface/PythonTestGui/Python/ToPythonConverters.h>
-
-//////////////////////////////////////////////////////////////////////////
-// Python flags defined in pythonrun.c
-//////////////////////////////////////////////////////////////////////////
-
-// Py_IgnoreEnvironmentFlag:
-// Set this flag to tell python to ignore environment variables.
-extern int Py_IgnoreEnvironmentFlag;
-
-// Py_InteractiveFlag:
-// Set this flag to run the interpreter in interactive mode when Py_Main is called.
-extern int Py_InteractiveFlag;
-
-// Py_InspectFlag:
-// Set this flag so the program won't exit at SystemError
-extern int Py_InspectFlag;
-
-// Py_NoSiteFlag:
-// Suppress 'import site'
-extern int Py_NoSiteFlag;
-
-// Py_OptimizeFlag:
-extern int Py_OptimizeFlag;
 
 namespace Core
 {
@@ -336,7 +310,7 @@ void PythonInterpreter::run_string( const std::string& command )
 		PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
 		if ( !this->private_->initialized_ )
 		{
-			THROW_INVALID_ARGUMENT( "The python interpreter hasn't been initialized!" );
+			throw std::invalid_argument( "The python interpreter hasn't been initialized!" );
 		}
 	}
 	

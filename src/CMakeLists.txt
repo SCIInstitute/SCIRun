@@ -231,7 +231,7 @@ SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI
 ExternalProject_Add(Boost_external
   PREFIX ${boost_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
-  GIT_TAG "origin/master"
+  GIT_TAG "origin/pythonAttempt"
   SOURCE_DIR ${boost_SOURCE_DIR}
   BINARY_DIR ${boost_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
@@ -366,6 +366,7 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 MESSAGE(STATUS "Configuring Python")
 FIND_PACKAGE(PythonLibs REQUIRED)
+ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
 
 ########################################################################
 # Includes
