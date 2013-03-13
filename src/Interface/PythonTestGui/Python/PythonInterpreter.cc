@@ -204,6 +204,7 @@ PythonInterpreter::PythonInterpreter() :
 	this->private_->terminal_running_ = false;
 	this->private_->waiting_for_input_ = false;
 	//this->private_->action_context_.reset( new PythonActionContext );
+  initialize_eventhandler();
 }
 
 PythonInterpreter::~PythonInterpreter()
@@ -229,16 +230,17 @@ void PythonInterpreter::initialize_eventhandler()
 		PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
 	}
 
-	Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
-	boost::filesystem::path lib_path( this->private_->program_name_ );
-	lib_path = lib_path.parent_path() / PYTHONPATH;
-	Py_SetPath( lib_path.wstring().c_str() );
+	//Py_SetProgramName( const_cast< wchar_t* >( this->private_->program_name_ ) );
+	//boost::filesystem::path lib_path( this->private_->program_name_ );
+	//lib_path = lib_path.parent_path() / PYTHONPATH;
+	//Py_SetPath( lib_path.wstring().c_str() );
 	Py_IgnoreEnvironmentFlag = 1;
 	Py_InspectFlag = 1;
 	Py_OptimizeFlag = 2;
 #if !defined( _WIN32 )
 	Py_NoSiteFlag = 1;
 #endif
+
 	Py_Initialize();
 
 	// Create the compiler object
@@ -277,6 +279,8 @@ void PythonInterpreter::initialize_eventhandler()
 	PyRun_SimpleString( "del (interpreter, __internal_compiler, __term_io, __term_err)\n" );
 
 	this->private_->thread_condition_variable_.notify_one();
+
+  this->private_->initialized_ = true;
 }
 
 void PythonInterpreter::initialize( wchar_t* program_name, const module_list_type& init_list )
@@ -299,7 +303,6 @@ void PythonInterpreter::print_banner()
 	//	this->post_event( boost::bind( &PythonInterpreter::print_banner, this ) );
 	//	return;
 	//}
-
 	PyRun_SimpleString( "print('Python %s on %s' % (sys.version, sys.platform))\n" );
 	this->prompt_signal_( this->private_->prompt1_ );
 }

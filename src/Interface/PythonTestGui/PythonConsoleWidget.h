@@ -43,6 +43,9 @@ public:
 	PythonConsoleWidget( QWidget* parent = 0 );
 	virtual ~PythonConsoleWidget();
 
+public Q_SLOTS:
+  void showBanner();
+
 private:
 	PythonConsoleWidgetPrivateHandle private_;
 };

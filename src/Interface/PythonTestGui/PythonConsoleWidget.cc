@@ -65,11 +65,16 @@ public:
 	void replace_command_buffer( const QString& text );
 	void issue_command();
 
-public Q_SLOTS:
-	void prompt( const QString& text );
-	void print_output( const QString& text );
-	void print_error( const QString& text );
-	void print_command( const QString& text );
+  void prompt( const std::string& text ) { promptImpl(QString::fromStdString(text)); }
+  void print_output( const std::string& text ){ print_outputImpl(QString::fromStdString(text)); }
+  void print_error( const std::string& text ){ print_errorImpl(QString::fromStdString(text)); }
+  void print_command( const std::string& text ){ print_commandImpl(QString::fromStdString(text)); }
+
+private:
+	void promptImpl( const QString& text );
+	void print_outputImpl( const QString& text );
+	void print_errorImpl( const QString& text );
+	void print_commandImpl( const QString& text );
 
 public:
 	// The beginning of the area of interactive input, outside which
@@ -301,11 +306,10 @@ void PythonConsoleEdit::issue_command()
 	c.insertText( "\n" );
 
 	this->interactive_position_ = this->document_end();
-  std::cout << "PYTHON RUN COMMAND: " << command.toStdString() << std::endl;
-	//Core::PythonInterpreter::Instance()->run_string( command.toStdString() );
+	Core::PythonInterpreter::Instance().run_string( command.toStdString() );
 }
 
-void PythonConsoleEdit::prompt( const QString& text )
+void PythonConsoleEdit::promptImpl( const QString& text )
 {
 	QTextCursor text_cursor( this->document() );
 	// Move the cursor to the end of the document
@@ -334,7 +338,7 @@ void PythonConsoleEdit::prompt( const QString& text )
 	this->ensureCursorVisible();
 }
 
-void PythonConsoleEdit::print_output( const QString& text )
+void PythonConsoleEdit::print_outputImpl( const QString& text )
 {
 	QTextCursor text_cursor( this->document() );
 	// Move the cursor to the end of the document
@@ -351,7 +355,7 @@ void PythonConsoleEdit::print_output( const QString& text )
 	this->ensureCursorVisible();
 }
 
-void PythonConsoleEdit::print_error( const QString& text )
+void PythonConsoleEdit::print_errorImpl( const QString& text )
 {
 	QTextCursor text_cursor( this->document() );
 	// Move the cursor to the end of the document
@@ -368,7 +372,7 @@ void PythonConsoleEdit::print_error( const QString& text )
 	this->ensureCursorVisible();
 }
 
-void PythonConsoleEdit::print_command( const QString& text )
+void PythonConsoleEdit::print_commandImpl( const QString& text )
 {
 	QTextCursor text_cursor = this->textCursor();
 	text_cursor.setPosition( this->document_end() );
@@ -397,16 +401,9 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
 
   setWindowTitle("Python console");
 
-  //connect(Core::PythonInterpreter::Instance().prompt_signal_, 
-  //  SIGNAL(...), private_->console_edit_, SLOT(prompt(const QString&)));
-
-  //connect(Core::PythonInterpreter::Instance().output_signal_, 
-  //  SIGNAL(...), private_->console_edit_, SLOT(print_output(const QString&)));
-
-  //connect(Core::PythonInterpreter::Instance().error_signal_, 
-  //  SIGNAL(...), private_->console_edit_, SLOT(print_error(const QString&)));
-
-  Core::PythonInterpreter::Instance().print_banner();
+  Core::PythonInterpreter::Instance().prompt_signal_.connect(boost::bind(&PythonConsoleEdit::prompt, private_->console_edit_, _1));
+  Core::PythonInterpreter::Instance().output_signal_.connect(boost::bind(&PythonConsoleEdit::print_output, private_->console_edit_, _1));
+  Core::PythonInterpreter::Instance().error_signal_.connect(boost::bind(&PythonConsoleEdit::print_error, private_->console_edit_, _1));
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()
@@ -414,3 +411,7 @@ PythonConsoleWidget::~PythonConsoleWidget()
 	//this->disconnect_all();
 }
 
+void PythonConsoleWidget::showBanner()
+{
+  Core::PythonInterpreter::Instance().print_banner();
+}

@@ -330,4 +330,5 @@ void DiagramWindow::createToolBars()
 void DiagramWindow::launchPython()
 {
   pythonConsole_->setVisible(!pythonConsole_->isVisible());
+  pythonConsole_->showBanner();
 }
