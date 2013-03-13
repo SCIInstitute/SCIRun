@@ -37,12 +37,14 @@ using namespace SCIRun::Gui;
 int GuiApplication::run(int argc, const char* argv[])
 {
   QApplication app(argc, const_cast<char**>(argv));
-  SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-  mainWin->setController(Core::Application::Instance().controller());
-  mainWin->show();
-  mainWin->initialize();
   try
-  {
+  {  
+    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+    mainWin->setController(Core::Application::Instance().controller());
+    mainWin->raise();
+    mainWin->show();
+    mainWin->initialize();
+
     return app.exec();
   }
   catch (std::exception& e)
