@@ -47,7 +47,7 @@ namespace Networks {
     virtual std::string get_colorname() const = 0;
     virtual std::string get_portname() const = 0;
     virtual bool isInput() const = 0;
-    virtual std::string getUnderlyingModuleId() const = 0;
+    virtual ModuleId getUnderlyingModuleId() const = 0;
     virtual size_t getIndex() const = 0;
   };
 

@@ -78,9 +78,9 @@ TEST_F(NetworkTests, CanAddAndRemoveModules)
   EXPECT_EQ(mli.module_name_, m->get_module_name());
   EXPECT_EQ(1, network.nmodules());
   EXPECT_EQ(m, network.module(0));
-  EXPECT_TRUE(network.remove_module(m->get_id()));
+  EXPECT_TRUE(network.remove_module(ModuleId(m->get_id())));
   EXPECT_EQ(0, network.nmodules());
-  EXPECT_FALSE(network.remove_module("not in the network"));
+  EXPECT_FALSE(network.remove_module(ModuleId("not in the network4")));
 }
 
 TEST_F(NetworkTests, CanAddAndRemoveConnections)
@@ -100,7 +100,7 @@ TEST_F(NetworkTests, CanAddAndRemoveConnections)
 
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
@@ -119,7 +119,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
   
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
 
   ConnectionId connIdEmpty = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
@@ -131,7 +131,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 
   connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module1_p#0_@to@_module2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
 }
 
 //TODO: this verification pushed up to higher layer.

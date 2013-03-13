@@ -28,6 +28,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 #include <Dataflow/Engine/Controller/ProvenanceItem.h>
@@ -64,16 +65,12 @@ TEST_F(ProvenanceItemTests, CanCreateAddModule)
   ModuleAddedProvenanceItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
-
-  //FAIL();
 }
 
 TEST_F(ProvenanceItemTests, CanCreateRemoveModule)
 {
-  const std::string name = "ComputeSVD";
-  ModuleRemovedProvenanceItem item(name, NetworkFileHandle());
+  const std::string id = "ComputeSVD1";
+  ModuleRemovedProvenanceItem item((ModuleId(id)), NetworkFileHandle());
 
-  EXPECT_EQ("Module Removed: " + name, item.name());
-
-  //FAIL();
+  EXPECT_EQ("Module Removed: " + id, item.name());
 }

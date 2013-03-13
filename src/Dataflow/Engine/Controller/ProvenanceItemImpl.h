@@ -29,6 +29,7 @@
 #ifndef ENGINE_NETWORK_PROVENANCEITEMIMPL_H
 #define ENGINE_NETWORK_PROVENANCEITEMIMPL_H
 
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Engine/Controller/Share.h>
@@ -58,10 +59,10 @@ namespace Engine {
   class SCISHARE ModuleRemovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleRemovedProvenanceItem(const std::string& moduleId, Networks::NetworkFileHandle state);
+    ModuleRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
-    std::string moduleId_;
+    SCIRun::Dataflow::Networks::ModuleId moduleId_;
   };
 
   class SCISHARE ConnectionAddedProvenanceItem : public ProvenanceItemBase
@@ -85,10 +86,10 @@ namespace Engine {
   class SCISHARE ModuleMovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleMovedProvenanceItem(const std::string& moduleId, double newX, double newY, Networks::NetworkFileHandle state);
+    ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
-    std::string moduleId_;
+    SCIRun::Dataflow::Networks::ModuleId moduleId_;
     double newX_, newY_;
   };
 }

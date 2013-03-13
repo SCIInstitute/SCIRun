@@ -41,7 +41,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
-PortWidget::PortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index,
+PortWidget::PortWidget(const QString& name, const QColor& color, const ModuleId& moduleId, size_t index,
   bool isInput, 
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
@@ -53,12 +53,12 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const QString& 
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(name_);
-  portWidgetMap_[boost::make_tuple(moduleId_.toStdString(), index_, isInput_)] = this;
+  portWidgetMap_[boost::make_tuple(moduleId_.id_, index_, isInput_)] = this;
 }
 
 PortWidget::~PortWidget()
 {
-  portWidgetMap_[boost::make_tuple(moduleId_.toStdString(), index_, isInput_)] = 0;
+  portWidgetMap_[boost::make_tuple(moduleId_.id_, index_, isInput_)] = 0;
 }
 
 QSize PortWidget::sizeHint() const
@@ -205,8 +205,8 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 
 bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const
 {
-  return (isInput() && cd.in_.moduleId_ == moduleId_.toStdString() && cd.in_.port_ == index_)
-    || (!isInput() && cd.out_.moduleId_ == moduleId_.toStdString() && cd.out_.port_ == index_);
+  return (isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.port_ == index_)
+    || (!isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.port_ == index_);
 }
 
 bool PortWidget::sharesParentModule(const PortWidget& other) const
@@ -273,12 +273,12 @@ std::string PortWidget::get_portname() const
   return name_.toStdString();
 }
 
-std::string PortWidget::getUnderlyingModuleId() const
+ModuleId PortWidget::getUnderlyingModuleId() const
 {
-  return moduleId_.toStdString();
+  return moduleId_;
 }
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
   boost::shared_ptr<ConnectionFactory> connectionFactory, 
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
   QWidget* parent /* = 0 */)
@@ -286,7 +286,7 @@ InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const QString& moduleId, size_t index, 
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
   boost::shared_ptr<ConnectionFactory> connectionFactory, 
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
   QWidget* parent /* = 0 */)

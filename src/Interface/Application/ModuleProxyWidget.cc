@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <boost/range/join.hpp>
 #include <iostream>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Port.h>
@@ -36,6 +37,7 @@
 #include <Interface/Application/PositionProvider.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
 
 ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent/* = 0*/)
   : QGraphicsProxyWidget(parent),
@@ -82,15 +84,17 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   if (isSubwidget(pressedSubWidget_))
   {
+    QGraphicsItem::mousePressEvent(event);
+    Q_EMIT selected();
     QGraphicsProxyWidget::mousePressEvent(event);
     grabbedByWidget_ = true;
   }
   else
   {
     QGraphicsItem::mousePressEvent(event);
+    Q_EMIT selected();
     grabbedByWidget_ = false;
     position_ = pos();
-    Q_EMIT selected();
   }
 }
 
@@ -109,9 +113,8 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
   {
     if (position_ != pos())
     {
-      Q_EMIT widgetMoved(module_->getModuleId(), pos().x(), pos().y());
+      Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), pos().x(), pos().y());
     }
-    
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;
@@ -140,6 +143,7 @@ bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 
 void ModuleProxyWidget::highlightIfSelected()
 {
+  //std::cout << "\t\thighlightIfSelected: " << module_->getModuleId() << std::endl;
   if (isSelected())
     module_->setStyleSheet("background-color: lightblue;");
   else
@@ -167,7 +171,6 @@ void ModuleProxyWidget::createPortPositionProviders()
 
 void ModuleProxyWidget::updateNote(const Note& note)
 {
-  //std::cout << "update note called." << std::endl;
   if (!note_)
   {
     note_ = new QGraphicsTextItem("", 0, scene());
@@ -176,6 +179,7 @@ void ModuleProxyWidget::updateNote(const Note& note)
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
+  note_->setZValue(zValue() - 1);
 }
 
 QPointF ModuleProxyWidget::relativeNotePosition()
@@ -192,12 +196,10 @@ QPointF ModuleProxyWidget::relativeNotePosition()
     {
       case None:
       {
-         //std::cout << "None selected: nothing to do" << std::endl;
          break;
       }
       case Top:
       {
-        //std::cout << "Top selected" << std::endl;
         auto noteBottomMidpoint = (noteRect.bottomRight() + noteRect.bottomLeft()) / 2;
         auto noteBottomMidpointShift = noteRect.topLeft() - noteBottomMidpoint;
         auto moduleTopHalfLength = thisRect.width() / 2;
@@ -207,7 +209,6 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Bottom:
       {
-        //std::cout << "Bottom selected" << std::endl;
         auto noteTopMidpoint = (noteRect.topRight() + noteRect.topLeft()) / 2;
         auto noteTopMidpointShift = noteRect.topLeft() - noteTopMidpoint;
         auto moduleTopHalfLength = thisRect.width() / 2;
@@ -217,7 +218,6 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Left:
       {
-        //std::cout << "Left selected" << std::endl;
         auto noteRightMidpoint = (noteRect.topRight() + noteRect.bottomRight()) / 2;
         auto noteRightMidpointShift = noteRect.topLeft() - noteRightMidpoint;
         auto moduleSideHalfLength = thisRect.height() / 2;
@@ -227,7 +227,6 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Right:
       {
-        //std::cout << "Right selected" << std::endl;
         auto noteLeftMidpoint = (noteRect.topLeft() + noteRect.bottomLeft()) / 2;
         auto noteLeftMidpointShift = noteRect.topLeft() - noteLeftMidpoint;
         auto moduleSideHalfLength = thisRect.height() / 2;
@@ -237,11 +236,9 @@ QPointF ModuleProxyWidget::relativeNotePosition()
       }
       case Tooltip:
         this->setToolTip(note_->toHtml());
-        //std::cout << "Module note Tooltip selected." << std::endl;
         break;
     }
   }
-  //std::cout << "returning 0,0" << std::endl;
   return QPointF();
 }
 

@@ -128,7 +128,6 @@ TEST(WriteMatrixTest, CanPrintSparseMatrix)
   m.insert(1,2) = -1.4;
 
   PRINT_MATRIX_BASE(m);
-  //std::cout << m << std::endl;
 
   std::ostringstream ostr;
   ostr << m.castForPrinting();

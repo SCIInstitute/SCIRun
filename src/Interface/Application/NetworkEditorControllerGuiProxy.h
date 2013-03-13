@@ -45,9 +45,10 @@ namespace Gui {
     explicit NetworkEditorControllerGuiProxy(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
   public Q_SLOTS:
     void addModule(const std::string& moduleName);
-    void removeModule(const std::string& id);
+    void removeModule(const SCIRun::Dataflow::Networks::ModuleId& id);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
+    void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
@@ -58,7 +59,7 @@ namespace Gui {
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
-    void moduleRemoved(const std::string& id);
+    void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void executionStarted();

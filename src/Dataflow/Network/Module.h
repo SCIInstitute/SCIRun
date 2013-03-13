@@ -59,11 +59,11 @@ namespace Networks {
     std::string get_module_name() const { return info_.module_name_; }
     std::string get_categoryname() const { return info_.category_name_; }
     std::string get_packagename() const { return info_.package_name_; }
-    std::string get_id() const { return id_; }
+    ModuleId get_id() const { return id_; }
 
     //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
-    virtual void set_id(const std::string& id) { id_ = id; }
+    virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
 
     bool has_ui() const { return has_ui_; }
     size_t num_input_ports() const;
@@ -137,7 +137,7 @@ namespace Networks {
 
   protected:
     ModuleLookupInfo info_;
-    std::string id_;
+    ModuleId id_;
 
   private:
     template <class T>

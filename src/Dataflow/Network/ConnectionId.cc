@@ -90,8 +90,8 @@ ConnectionDescription ConnectionId::describe() const
   static boost::regex r("(.+)_p#(\\d+)_@to@_(.+)_p#(\\d+)");
   boost::smatch what;
   regex_match(id_, what, r);
-  return ConnectionDescription(OutgoingConnectionDescription(what[1], 
+  return ConnectionDescription(OutgoingConnectionDescription(ModuleId(what[1]), 
     boost::lexical_cast<size_t>((std::string)what[2])), 
-    IncomingConnectionDescription(what[3], 
+    IncomingConnectionDescription(ModuleId(what[3]), 
     boost::lexical_cast<size_t>((std::string)what[4])));
 }

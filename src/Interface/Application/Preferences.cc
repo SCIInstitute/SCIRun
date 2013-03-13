@@ -26,40 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/NullModuleState.h>
+#include <QtGui>
+#include <iostream>
+#include <Interface/Application/Preferences.h>
+#include <Interface/Application/NetworkEditor.h>
 
-using namespace SCIRun::Engine::State;
-using namespace SCIRun::Dataflow::Networks;
-  
-void NullModuleState::setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&)
+using namespace SCIRun::Gui;
+
+PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor),
+  regressionMode_(false)
 {
+  setupUi(this);
+  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
 }
 
-const NullModuleState::Value NullModuleState::getValue(const Name&) const
+void PreferencesWindow::updateRegressionTestDataDir()
 {
-  return Value();
+  auto newDir = QFileDialog::getExistingDirectory(this, "Select regression data directory", ".");
+  if (!newDir.isEmpty())
+  {
+    regressionTestDataDir_ = newDir;
+    setRegressionTestDataDir();
+  }
 }
 
-NullModuleState::Keys NullModuleState::getKeys() const
+void PreferencesWindow::setRegressionTestDataDir()
 {
-  return Keys();
-}
-
-ModuleStateHandle NullModuleState::clone() const
-{
-  return ModuleStateHandle(new NullModuleState);
-}
-
-boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
-{
-  return boost::signals::connection();
-}
-
-const NullModuleState::TransientValue NullModuleState::getTransientValue(const std::string& name) const
-{
-  return TransientValue();
-}
-
-void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
-{
+  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
+  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
 }

@@ -29,6 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
 #define INTERFACE_APPLICATION_MODULEPROXYWIDGET_H
 
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Interface/Application/Note.h>
 #include <QGraphicsProxyWidget>
 
@@ -52,7 +53,7 @@ namespace SCIRun
       void setDefaultNotePosition(NotePosition position);
     Q_SIGNALS:
       void selected();
-      void widgetMoved(const std::string& id, double newX, double newY);
+      void widgetMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     protected:
       void mousePressEvent(QGraphicsSceneMouseEvent *event);
       void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);

@@ -52,16 +52,15 @@ namespace Networks {
     virtual size_t num_output_ports() const = 0;
     virtual bool has_ui() const = 0;
     virtual std::string get_module_name() const = 0;
-    virtual std::string get_id() const = 0;
+    virtual ModuleId get_id() const = 0;
     virtual const ModuleLookupInfo& get_info() const = 0;
   };
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
   
-  //TODO: nice reason to replace string with "ModuleId" class
-  typedef boost::signals2::signal<void (const std::string&)> ExecuteBeginsSignalType;
-  typedef boost::signals2::signal<void (const std::string&)> ExecuteEndsSignalType;
-  typedef boost::signals2::signal<void (const std::string&)> ErrorSignalType;
+  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
+  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteEndsSignalType;
+  typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
 
   //TODO: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ExecutableObject

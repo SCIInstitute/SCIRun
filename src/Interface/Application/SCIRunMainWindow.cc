@@ -36,6 +36,7 @@
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
+#include <Interface/Application/Preferences.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -156,20 +157,14 @@ SCIRunMainWindow* SCIRunMainWindow::Instance()
 
 void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
 {
-  //controller_ = controller;
   boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
   networkEditor_->setNetworkEditorController(controllerProxy);
   //TODO: need better way to wire this up
   controller->setModulePositionEditor(networkEditor_);
 }
 
-
-SCIRunMainWindow::SCIRunMainWindow()
+void SCIRunMainWindow::setupNetworkEditor()
 {
-	setupUi(this);
-  setAttribute(Qt::WA_DeleteOnClose);
-
-  regressionMode_ = false;
   boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
   Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
   GuiLogger::setInstance(logger);
@@ -181,6 +176,14 @@ SCIRunMainWindow::SCIRunMainWindow()
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->verticalScrollBar()->setValue(0);
   networkEditor_->horizontalScrollBar()->setValue(0);
+}
+
+SCIRunMainWindow::SCIRunMainWindow()
+{
+	setupUi(this);
+  setAttribute(Qt::WA_DeleteOnClose);
+  
+  setupNetworkEditor();
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
   actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
@@ -270,6 +273,7 @@ SCIRunMainWindow::SCIRunMainWindow()
     connect(recentFileActions_[i], SIGNAL(triggered()), this, SLOT(loadRecentNetwork()));
   }
 
+  setupPreferencesWindow();
   readSettings();
 
   setCurrentFile("");
@@ -280,10 +284,10 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
-  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
+  
   connect(chooseBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(chooseBackgroundColor()));
   connect(resetBackgroundColorButton_, SIGNAL(clicked()), this, SLOT(resetBackgroundColor()));
-
+  
   setupProvenanceWindow();
   setupDevConsole();
 
@@ -298,17 +302,17 @@ void SCIRunMainWindow::initialize()
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
     commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
-  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const std::string&)), 
-    commandConverter_.get(), SLOT(moduleRemoved(const std::string&)));
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)), 
+    commandConverter_.get(), SLOT(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), 
     commandConverter_.get(), SLOT(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     commandConverter_.get(), SLOT(connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId&)));
-  connect(networkEditor_, SIGNAL(moduleMoved(const std::string&, double, double)), 
-    commandConverter_.get(), SLOT(moduleMoved(const std::string&, double, double)));
+  connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), 
+    commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
   
-  setRegressionTestDataDir();
+  prefs_->setRegressionTestDataDir();
 
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
@@ -323,7 +327,7 @@ void SCIRunMainWindow::initialize()
     {
       // -E
       connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
-      regressionMode_ = true;
+      prefs_->setRegressionMode(true);
       networkEditor_->executeAll();
     }
   }
@@ -505,7 +509,7 @@ void SCIRunMainWindow::closeEvent(QCloseEvent* event)
 
 bool SCIRunMainWindow::okToContinue()
 {
-  if (isWindowModified() && !regressionMode_)  //TODO: regressionMode
+  if (isWindowModified() && !prefs_->isRegression())  //TODO: regressionMode
   {
     int r = QMessageBox::warning(this, tr("SCIRun 5"), tr("The document has been modified.\n" "Do you want to save your changes?"), 
       QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
@@ -644,8 +648,9 @@ void SCIRunMainWindow::readSettings()
   updateRecentFileActions();
   GuiLogger::Instance().log("Setting read: recent network file list");
 
-  regressionTestDataDir_ = settings.value("regressionTestDataDirectory").toString();
-  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir_);
+  QString regressionTestDataDir = settings.value("regressionTestDataDirectory").toString();
+  GuiLogger::Instance().log("Setting read: regression test data directory = " + regressionTestDataDir);
+  prefs_->setRegressionTestDataDir(regressionTestDataDir);
 
   //TODO: make a separate class for these keys, bad duplication.
   const QString colorKey = "backgroundColor";
@@ -671,7 +676,7 @@ void SCIRunMainWindow::writeSettings()
 
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
-  settings.setValue("regressionTestDataDirectory", regressionTestDataDir_);
+  settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue("backgroundColor", networkEditor_->background().color().name());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
 }
@@ -696,22 +701,6 @@ void SCIRunMainWindow::enableInputWidgets()
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
-}
-
-void SCIRunMainWindow::updateRegressionTestDataDir()
-{
-  auto newDir = QFileDialog::getExistingDirectory(this, "Select regression data directory", latestNetworkDirectory_.path());
-  if (!newDir.isEmpty())
-  {
-    regressionTestDataDir_ = newDir;
-    setRegressionTestDataDir();
-  }
-}
-
-void SCIRunMainWindow::setRegressionTestDataDir()
-{
-  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
-  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()
@@ -785,4 +774,13 @@ void SCIRunMainWindow::setExecutor(int type)
 void SCIRunMainWindow::readDefaultNotePosition(int index)
 {
   Q_EMIT defaultNotePositionChanged(defaultNotePositionGetter_->position()); //TODO: unit test.
+}
+
+void SCIRunMainWindow::setupPreferencesWindow()
+{
+  prefs_ = new PreferencesWindow(networkEditor_, this);
+
+  connect(actionPreferences_, SIGNAL(triggered()), prefs_, SLOT(show()));
+  //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
+  prefs_->setVisible(false);
 }

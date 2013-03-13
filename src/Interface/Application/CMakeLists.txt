@@ -46,6 +46,7 @@ SET(Interface_Application_SOURCES
   Node.cc
   NoteEditor.cc
   Port.cc
+  Preferences.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
@@ -67,6 +68,7 @@ SET(Interface_Application_HEADERS
   NoteEditor.h
   Connection.h
   Port.h
+  Preferences.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
 )
@@ -76,6 +78,7 @@ SET(Interface_Application_FORMS
   Module.ui
   ModuleLogWindow.ui
   NoteEditor.ui
+  Preferences.ui
   ProvenanceWindow.ui
   SCIRunMainWindow.ui
   RenderWindow.ui

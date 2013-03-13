@@ -243,16 +243,6 @@ namespace SCIRun {
     return (area*pEB->area(face));
   }
  
- 
-// TODO: function not implemented - useful or delete?
-//
-//  template <class VECTOR1, class VECTOR2, class T>
-//  inline double d_arc_length_type(const VECTOR1& derivs, const VECTOR2& dv, T* type)
-//  {
-//    ASSERT(0); // to do
-//    return 0;  
-//  }
-
   //! arc length calculation on points
    template <class VECTOR1, class VECTOR2>
   inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point* type)

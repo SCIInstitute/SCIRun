@@ -95,18 +95,18 @@ protected:
     EXPECT_CALL(*port2, get_colorname()).WillRepeatedly(Return(color2));
   }
 
-  std::pair<std::string,std::string> portsAreOnDifferentModules()
+  std::pair<ModuleId,ModuleId> portsAreOnDifferentModules()
   {
-    std::string moduleId1("m1");
-    std::string moduleId2("m2");
+    ModuleId moduleId1("m:1");
+    ModuleId moduleId2("m:2");
     EXPECT_CALL(*port1, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId1));
     EXPECT_CALL(*port2, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId2));
     return std::make_pair(moduleId1, moduleId2);
   }
 
-  std::pair<std::string,std::string> portsAreOnSameModule()
+  std::pair<ModuleId,ModuleId> portsAreOnSameModule()
   {
-    std::string moduleId1("m1");
+    ModuleId moduleId1("m:1");
     EXPECT_CALL(*port1, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId1));
     EXPECT_CALL(*port2, getUnderlyingModuleId()).WillRepeatedly(Return(moduleId1));
     return std::make_pair(moduleId1, moduleId1);
@@ -139,8 +139,8 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveModulesWithSignalling)
   controller.addModule("m1");
   
   EXPECT_CALL(slots_, moduleRemovedSlot(_)).Times(1);
-  EXPECT_CALL(*mockNetwork_, remove_module("m1")).Times(1);
-  controller.removeModule("m1");
+  EXPECT_CALL(*mockNetwork_, remove_module(ModuleId("m1"))).Times(1);
+  controller.removeModule(ModuleId("m1"));
 }
 
 TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
