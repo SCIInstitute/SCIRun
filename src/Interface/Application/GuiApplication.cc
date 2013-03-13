@@ -40,5 +40,13 @@ int GuiApplication::run(int argc, const char* argv[])
   mainWin->setController(Core::Application::Instance().controller());
   mainWin->show();
   mainWin->initialize();
-  return app.exec();
+  try
+  {
+    return app.exec();
+  }
+  catch (...)
+  {
+    std::cout << "Unhandled exception: exiting now." << std::endl; 	
+    return 1;
+  }
 }
