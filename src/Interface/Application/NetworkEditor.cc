@@ -197,6 +197,7 @@ void NetworkEditor::bringToFront()
 
 void ZLevelManager::bringToFront()
 {
+  //std::cout << "----bringToFront" << std::endl;
   ++maxZ_;
   setZValue(maxZ_);
 }
@@ -216,7 +217,10 @@ void ZLevelManager::setZValue(int z)
 {
   ModuleProxyWidget* node = selectedModuleProxy();
   if (node)
+  {
+    //std::cout << "\t~~~setting zlevel: module " << node->getModuleWidget()->getModuleId() << " to z = " << z << std::endl;
     node->setZValue(z);
+  }
 }
 
 ModuleProxyWidget* getModuleProxy(QGraphicsItem* item)
@@ -359,18 +363,11 @@ void NetworkEditor::updateActions()
   //copyAction_->setEnabled(isNode);
   //addLinkAction_->setEnabled(isNodePair);
   deleteAction_->setEnabled(hasSelection);
-  //bringToFrontAction_->setEnabled(isNode);
   sendToBackAction_->setEnabled(isNode);
   propertiesAction_->setEnabled(isNode || isLink);
 
   Q_FOREACH (QAction* action, actions())
     removeAction(action);
-
-  //foreach (QAction* action, editToolBar_->actions())
-  //{
-  //  if (action->isEnabled())
-  //    view_->addAction(action);
-  //}
 }
 
 void NetworkEditor::createActions()
@@ -409,11 +406,6 @@ void NetworkEditor::createActions()
   //pasteAction_->setShortcut(tr("Ctrl+V"));
   //connect(pasteAction_, SIGNAL(triggered()), this, SLOT(paste()));
 
-  //bringToFrontAction_ = new QAction(tr("Bring to &Front"), this);
-  //bringToFrontAction_->setIcon(QIcon(":/images/bringtofront.png"));
-  //connect(bringToFrontAction_, SIGNAL(triggered()),
-  //  this, SLOT(bringToFront()));
-
   sendToBackAction_ = new QAction(tr("&Send selected to back"), this);
   sendToBackAction_->setIcon(QIcon(":/images/sendtoback.png"));
   connect(sendToBackAction_, SIGNAL(triggered()),
@@ -427,7 +419,6 @@ void NetworkEditor::createActions()
 QList<QAction*> NetworkEditor::getModuleSpecificActions() const
 {
   return QList<QAction*>() 
-    //<< bringToFrontAction_
     << sendToBackAction_
     << deleteAction_;
   //widget->addAction(addNodeAction_);

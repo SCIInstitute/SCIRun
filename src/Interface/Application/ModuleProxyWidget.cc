@@ -84,15 +84,17 @@ void ModuleProxyWidget::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
   if (isSubwidget(pressedSubWidget_))
   {
+    QGraphicsItem::mousePressEvent(event);
+    Q_EMIT selected();
     QGraphicsProxyWidget::mousePressEvent(event);
     grabbedByWidget_ = true;
   }
   else
   {
     QGraphicsItem::mousePressEvent(event);
+    Q_EMIT selected();
     grabbedByWidget_ = false;
     position_ = pos();
-    Q_EMIT selected();
   }
 }
 
@@ -113,7 +115,6 @@ void ModuleProxyWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     {
       Q_EMIT widgetMoved(ModuleId(module_->getModuleId()), pos().x(), pos().y());
     }
-    
     QGraphicsItem::mouseReleaseEvent(event);
   }
   grabbedByWidget_ = false;
@@ -142,6 +143,7 @@ bool ModuleProxyWidget::isSubwidget(QWidget* alienWidget) const
 
 void ModuleProxyWidget::highlightIfSelected()
 {
+  //std::cout << "\t\thighlightIfSelected: " << module_->getModuleId() << std::endl;
   if (isSelected())
     module_->setStyleSheet("background-color: lightblue;");
   else

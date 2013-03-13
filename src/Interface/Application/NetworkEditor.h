@@ -181,7 +181,6 @@ Q_SIGNALS:
     //QAction* copyAction_;
     //QAction* pasteAction_;
     QAction* deleteAction_;
-    //QAction* bringToFrontAction_;
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
