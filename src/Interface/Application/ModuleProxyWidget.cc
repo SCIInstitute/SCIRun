@@ -177,6 +177,7 @@ void ModuleProxyWidget::updateNote(const Note& note)
   note_->setHtml(note.html_);
   notePosition_ = note.position_;
   updateNotePosition();
+  note_->setZValue(zValue() - 1);
 }
 
 QPointF ModuleProxyWidget::relativeNotePosition()
