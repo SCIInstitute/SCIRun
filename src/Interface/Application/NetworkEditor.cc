@@ -52,11 +52,12 @@ using namespace SCIRun::Dataflow::Networks;
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
   boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent) 
   : QGraphicsView(parent),
+  scene_(new QGraphicsScene(parent)),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
-  moduleEventProxy_(new ModuleEventProxy)
+  moduleEventProxy_(new ModuleEventProxy),
+  zLevelManager_(new ZLevelManager(scene_))
 {
-  scene_ = new QGraphicsScene(parent);
   scene_->setBackgroundBrush(Qt::darkGray);
   ModuleWidget::connectionFactory_.reset(new ConnectionFactory(scene_));
   ModuleWidget::closestPortFinder_.reset(new ClosestPortFinder(scene_));
@@ -65,9 +66,6 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   setDragMode(QGraphicsView::RubberBandDrag);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
   setContextMenuPolicy(Qt::ActionsContextMenu);
-
-  minZ_ = 0;
-  maxZ_ = 0;
 
   createActions();
 
@@ -170,7 +168,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
-  proxy->setZValue(maxZ_);
+  proxy->setZValue(zLevelManager_->max());
   proxy->setVisible(true);
   proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
@@ -194,17 +192,27 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 
 void NetworkEditor::bringToFront()
 {
+  zLevelManager_->bringToFront();
+}
+
+void ZLevelManager::bringToFront()
+{
   ++maxZ_;
   setZValue(maxZ_);
 }
 
 void NetworkEditor::sendToBack()
 {
+  zLevelManager_->sendToBack();
+}
+
+void ZLevelManager::sendToBack()
+{
   --minZ_;
   setZValue(minZ_);
 }
 
-void NetworkEditor::setZValue(int z)
+void ZLevelManager::setZValue(int z)
 {
   ModuleProxyWidget* node = selectedModuleProxy();
   if (node)
@@ -235,7 +243,7 @@ ModuleWidget* NetworkEditor::selectedModule() const
   return 0;
 }
 
-ModuleProxyWidget* NetworkEditor::selectedModuleProxy() const
+ModuleProxyWidget* ZLevelManager::selectedModuleProxy() const
 {
   QList<QGraphicsItem*> items = scene_->selectedItems();
   if (items.count() == 1)
@@ -584,4 +592,10 @@ QBrush NetworkEditor::background() const
 NetworkEditor::~NetworkEditor()
 {
   clear();
+}
+
+ZLevelManager::ZLevelManager(QGraphicsScene* scene)
+  : scene_(scene), minZ_(INITIAL_Z), maxZ_(INITIAL_Z)
+{
+
 }

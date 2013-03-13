@@ -73,10 +73,27 @@ Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
     void moduleExecuteEnd(const std::string& id);
   };
+
+  class ModuleProxyWidget;
   
+  class ZLevelManager
+  {
+  public:
+    explicit ZLevelManager(QGraphicsScene* scene);
+    int max() const { return maxZ_; }
+    void bringToFront();
+    void sendToBack();
+  private:
+    void setZValue(int z);
+    ModuleProxyWidget* selectedModuleProxy() const;
+    QGraphicsScene* scene_;
+    int minZ_;
+    int maxZ_;
+    enum { INITIAL_Z = 1000 };
+  };
+
   class ConnectionLine;
   class ModuleWidget;
-  class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
   class NetworkEditor : public QGraphicsView, 
@@ -155,7 +172,6 @@ Q_SIGNALS:
     void setZValue(int z);
     void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
-    ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
@@ -171,9 +187,6 @@ Q_SIGNALS:
     //QAction* executeAction_;
 
     QGraphicsScene* scene_;
-  
-    int minZ_;
-    int maxZ_;
 
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
@@ -181,10 +194,9 @@ Q_SIGNALS:
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
     boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
-
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
+    boost::shared_ptr<ZLevelManager> zLevelManager_;
   };
-
 }
 }
 

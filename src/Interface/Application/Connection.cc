@@ -91,7 +91,7 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
 
   setFlags(QGraphicsItem::ItemIsSelectable);
   //TODO: need dynamic zValue
-  setZValue(100); 
+  setZValue(1); 
   setToolTip("Left - Highlight*\nDouble-Left - Menu");
 
   trackNodes();
