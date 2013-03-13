@@ -27,48 +27,19 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-PROJECT(QtExampleDiagram)
-
-SET(QtExampleDiagram_SOURCES 
-  Link.cc
-  Node.cc
-  DiagramWindow.cc
-  propertiesdialog.cc
-  main.cc
-  PythonConsoleWidget.cc
-  Python/PythonInterpreter.cc
-  Python/ToPythonConverters.cc
+SET(PythonAPI_SOURCES 
+  Hello.cc
 )
 
-SET(QtExampleDiagram_HEADERS
-  Link.h
-  Node.h
-  DiagramWindow.h
-  propertiesdialog.h
-  PythonConsoleWidget.h
-  #Python/PythonInterpreter.h
-  #Python/ToPythonConverters.h
+SET(PythonAPI_HEADERS
+  Hello.h
 )
 
-SET(QtExampleDiagram_FORMS propertiesdialog.ui)
+ADD_LIBRARY(PythonAPI
+${PythonAPI_SOURCES}
+${PythonAPI_HEADERS})
 
-SET(QtExampleDiagram_RESOURCES resources.qrc)
-
-QT4_WRAP_CPP(QtExampleDiagram_HEADERS_MOC ${QtExampleDiagram_HEADERS})
-QT4_WRAP_UI(QtExampleDiagram_FORMS_HEADERS ${QtExampleDiagram_FORMS})
-QT4_ADD_RESOURCES(QtExampleDiagram_RESOURCES_RCC ${QtExampleDiagram_RESOURCES})
-
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
-ADD_EXECUTABLE(diagram
-${QtExampleDiagram_SOURCES}
-${QtExampleDiagram_HEADERS}
-${QtExampleDiagram_FORMS_HEADERS}
-${QtExampleDiagram_HEADERS_MOC}
-${QtExampleDiagram_RESOURCES_RCC})
-
-TARGET_LINK_LIBRARIES(diagram 
-  ${QT_LIBRARIES}
+TARGET_LINK_LIBRARIES(PythonAPI 
   ${PYTHON_LIBRARIES}
   ${SCI_BOOST_LIBRARY}
 )
@@ -77,5 +48,3 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${PYTHON_INCLUDE_DIR}
 )
-
-ADD_SUBDIRECTORY(API)
