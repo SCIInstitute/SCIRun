@@ -46,6 +46,13 @@ class DiagramWindow : public QMainWindow
 public:
   DiagramWindow();
 
+public Q_SLOTS:
+  void printNodeCount();
+  void printEdgeCount();
+public:
+  int numNodes() const;
+  int numEdges() const;
+
 private Q_SLOTS:
   void addNode();
   void addLink();
@@ -84,6 +91,8 @@ private:
   QAction* sendToBackAction_;
   QAction* propertiesAction_;
   QAction* pythonConsoleAction_;
+  QAction* countNodesAction_;
+  QAction* countEdgesAction_;
 
   QGraphicsScene* scene_;
   QGraphicsView* view_;

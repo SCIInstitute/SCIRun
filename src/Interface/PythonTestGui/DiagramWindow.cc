@@ -289,6 +289,11 @@ void DiagramWindow::createActions()
   pythonConsoleAction_->setCheckable( true );
   connect(pythonConsoleAction_, SIGNAL(triggered()),
     this, SLOT(launchPython()));
+
+  countNodesAction_ = new QAction("#Nodes", this);
+  connect(countNodesAction_, SIGNAL(triggered()), this, SLOT(printNodeCount()));
+  countEdgesAction_ = new QAction("#Edges", this);
+  connect(countEdgesAction_, SIGNAL(triggered()), this, SLOT(printEdgeCount()));
 }
 
 void DiagramWindow::createMenus()
@@ -325,10 +330,40 @@ void DiagramWindow::createToolBars()
   editToolBar_->addSeparator();
   editToolBar_->addAction(bringToFrontAction_);
   editToolBar_->addAction(sendToBackAction_);
+  editToolBar_->addSeparator();
+  editToolBar_->addAction(countNodesAction_);
+  editToolBar_->addAction(countEdgesAction_);
 }
 
 void DiagramWindow::launchPython()
 {
   pythonConsole_->setVisible(!pythonConsole_->isVisible());
   pythonConsole_->showBanner();
+}
+
+template <class U, class T>
+int countOfType(const QList<T*>& list)
+{
+  auto items = list.toStdList();
+  return std::count_if(items.begin(), items.end(), [](T* item) { return dynamic_cast<U*>(item) != 0; });
+}
+
+int DiagramWindow::numNodes() const
+{
+  return countOfType<Node>(scene_->items());
+}
+
+void DiagramWindow::printNodeCount()
+{
+  std::cout << "Number of nodes = " << numNodes() << std::endl;
+}
+
+int DiagramWindow::numEdges() const
+{
+  return countOfType<Link>(scene_->items());
+}
+
+void DiagramWindow::printEdgeCount()
+{
+  std::cout << "Number of edges = " << numEdges() << std::endl;
 }
