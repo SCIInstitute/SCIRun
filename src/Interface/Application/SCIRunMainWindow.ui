@@ -134,6 +134,7 @@
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
     <addaction name="actionDevConsole_"/>
+    <addaction name="actionPreferences_"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -663,7 +664,7 @@
           <rect>
            <x>10</x>
            <y>10</y>
-           <width>401</width>
+           <width>511</width>
            <height>181</height>
           </rect>
          </property>
@@ -678,7 +679,7 @@
            <rect>
             <x>20</x>
             <y>20</y>
-            <width>371</width>
+            <width>471</width>
             <height>141</height>
            </rect>
           </property>
@@ -1035,47 +1036,6 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="advancedTab_">
-        <property name="whatsThis">
-         <string>Additional options for running and testing networks.</string>
-        </property>
-        <attribute name="title">
-         <string>Advanced</string>
-        </attribute>
-        <widget class="QWidget" name="layoutWidget">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>10</y>
-           <width>531</width>
-           <height>34</height>
-          </rect>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Regression test data directory:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="regressionTestDataDirLineEdit_">
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="regressionTestDataButton_">
-            <property name="text">
-             <string>Browse...</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
        <widget class="QWidget" name="logTab">
         <property name="whatsThis">
          <string>The global network log. Events of general importance are logged here.</string>
@@ -1335,6 +1295,14 @@
    </property>
    <property name="text">
     <string>Developer Console</string>
+   </property>
+  </action>
+  <action name="actionPreferences_">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>
