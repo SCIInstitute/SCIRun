@@ -33,6 +33,23 @@
 #include "Link.h"
 #include "propertiesdialog.h"
 #include "PythonConsoleWidget.h"
+#include <Interface/PythonTestGui/API/DiagramView.h>
+
+class DiagramViewImpl : public DiagramViewInterface
+{
+public:
+  explicit DiagramViewImpl(DiagramWindow* window) : window_(window) {}
+  virtual int numEdges() const
+  {
+    return window_->numEdges();
+  }
+  virtual int numNodes() const
+  {
+    return window_->numNodes();
+  }
+private:
+  DiagramWindow* window_;
+};
 
 DiagramWindow::DiagramWindow()
 {
@@ -59,6 +76,9 @@ DiagramWindow::DiagramWindow()
 
   setWindowTitle(tr("Diagram"));
   updateActions();
+
+  boost::shared_ptr<DiagramViewInterface> view(new DiagramViewImpl(this));
+  DiagramView::setImpl(view);
 }
 
 void DiagramWindow::addNode()

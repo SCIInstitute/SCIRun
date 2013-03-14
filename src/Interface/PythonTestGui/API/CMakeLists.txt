@@ -28,10 +28,12 @@
 #
 
 SET(PythonAPI_SOURCES 
+  DiagramView.cc
   Hello.cc
 )
 
 SET(PythonAPI_HEADERS
+  DiagramView.h
   Hello.h
   Share.h
 )
@@ -50,6 +52,15 @@ INCLUDE_DIRECTORIES(
   ${PYTHON_INCLUDE_DIR}
 )
 
-IF(BUILD_SHARED_LIBS)
+IF ( BUILD_SHARED_LIBS)
+
+     SET_TARGET_PROPERTIES(PythonAPI
+         PROPERTIES
+         IMPORT_SUFFIX ".pyd"
+         IMPORT_PREFIX ""
+         PREFIX ""
+		 SUFFIX ".pyd"
+     )
+
   ADD_DEFINITIONS(-DBUILD_PythonicAPI)
 ENDIF(BUILD_SHARED_LIBS)

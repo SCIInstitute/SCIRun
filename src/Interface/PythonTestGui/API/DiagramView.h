@@ -26,26 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef PYTHONIC_API_HELLO_H
-#define PYTHONIC_API_HELLO_H
+#ifndef PYTHONIC_API_DIAGRAMVIEW_H
+#define PYTHONIC_API_DIAGRAMVIEW_H
 
 #include <Interface/PythonTestGui/API/Share.h>
 #include <boost/python.hpp>
 
-struct SCISHARE World
+class SCISHARE DiagramViewInterface
 {
-  void set(const std::string& msg) { this->msg = msg; }
-  std::string greet() { return msg; }
-  std::string msg;
+public:
+  virtual ~DiagramViewInterface() {}
+  virtual int numEdges() const = 0;
+  virtual int numNodes() const = 0;
 };
 
-//BOOST_PYTHON_MODULE(PythonAPI)
-//{
-//  boost::python::class_<World>("World")
-//    .def("greet", &World::greet)
-//    .def("set", &World::set)
-//    ;
-//}
+class SCISHARE DiagramView
+{
+public:
+  static int numEdges();
+  static int numNodes();
+  static void setImpl(boost::shared_ptr<DiagramViewInterface> impl) { impl_ = impl; }
+private:
+  DiagramView();
+  static boost::shared_ptr<DiagramViewInterface> impl_;
+};
+
+BOOST_PYTHON_MODULE(PythonAPI)
+{
+  //boost::python::class_<DiagramView>("DiagramView")
+    boost::python::def("numEdges", &DiagramView::numEdges);
+    boost::python::def("numNodes", &DiagramView::numNodes);
+}
 
 
 #endif

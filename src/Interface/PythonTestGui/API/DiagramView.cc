@@ -26,26 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef PYTHONIC_API_HELLO_H
-#define PYTHONIC_API_HELLO_H
+#include <iostream>
+#include <Interface/PythonTestGui/API/DiagramView.h>
 
-#include <Interface/PythonTestGui/API/Share.h>
-#include <boost/python.hpp>
+boost::shared_ptr<DiagramViewInterface> DiagramView::impl_;
 
-struct SCISHARE World
+int DiagramView::numEdges()
 {
-  void set(const std::string& msg) { this->msg = msg; }
-  std::string greet() { return msg; }
-  std::string msg;
-};
+  if (impl_)
+    return impl_->numEdges();
+  else
+  {
+    std::cout << "Null implementation: DiagramViewImpl" << std::endl;
+    return -1;
+  }
+}
 
-//BOOST_PYTHON_MODULE(PythonAPI)
-//{
-//  boost::python::class_<World>("World")
-//    .def("greet", &World::greet)
-//    .def("set", &World::set)
-//    ;
-//}
-
-
-#endif
+int DiagramView::numNodes()
+{
+  if (impl_)
+    return impl_->numNodes();
+  else
+  {
+    std::cout << "Null implementation: DiagramViewImpl" << std::endl;
+    return -1;
+  }
+}
