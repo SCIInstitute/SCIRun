@@ -26,49 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef DIAGRAMNODE_H
-#define DIAGRAMNODE_H
+#ifndef PYTHONIC_API_HELLO_H
+#define PYTHONIC_API_HELLO_H
 
-#include <QGraphicsItem>
+#include <Interface/PythonTestGui/API/Share.h>
+#include <boost/python.hpp>
 
-class Link;
-
-class Node : public QGraphicsItem
+struct SCISHARE World
 {
-	Q_DECLARE_TR_FUNCTIONS(Node)
-	
-public:
-  Node();
-  ~Node();
-  void setText(const QString& text);
-  QString text() const;
-  void setTextColor(const QColor& color);
-  QColor textColor() const;
-  void setOutlineColor(const QColor& color);
-  QColor outlineColor() const;
-  void setBackgroundColor(const QColor& color);
-  QColor backgroundColor() const;
-
-  void addLink(Link* link);
-  void removeLink(Link* link);
-
-  QRectF boundingRect() const;
-  QPainterPath shape() const;
-  void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget);
-
-protected:
-  void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
-  QVariant itemChange(GraphicsItemChange change, const QVariant& value);
-
-private:
-  QRectF outlineRect() const;
-  int roundness(double size) const;
-
-  QSet<Link*> links_;
-  QString text_;
-  QColor textColor_;
-  QColor backgroundColor_;
-  QColor outlineColor_;
+  void set(const std::string& msg) { this->msg = msg; }
+  std::string greet() { return msg; }
+  std::string msg;
 };
+
+BOOST_PYTHON_MODULE(PythonAPI)
+{
+  boost::python::class_<World>("World")
+    .def("greet", &World::greet)
+    .def("set", &World::set)
+    ;
+}
+
 
 #endif

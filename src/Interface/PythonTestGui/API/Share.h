@@ -26,6 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/PythonTestGui/API/Hello.h>
+#undef SCISHARE
 
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_PythonicAPI
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

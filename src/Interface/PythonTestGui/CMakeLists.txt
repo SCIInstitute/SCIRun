@@ -68,6 +68,7 @@ ${QtExampleDiagram_HEADERS_MOC}
 ${QtExampleDiagram_RESOURCES_RCC})
 
 TARGET_LINK_LIBRARIES(diagram 
+  PythonAPI
   ${QT_LIBRARIES}
   ${PYTHON_LIBRARIES}
   ${SCI_BOOST_LIBRARY}
