@@ -34,6 +34,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTimer>
+#include <Core/Application/Application.h>
 
 #include "GLWidget.h"
 
@@ -47,7 +48,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
 {
   std::vector<std::string> shaderSearchDirs;
   
-  Application::get some paths...append executable directory here.
+  auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
+  shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
 #ifdef SPIRE_USE_STD_THREADS
   mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(

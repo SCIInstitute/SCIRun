@@ -66,6 +66,7 @@ public:
   void readCommandLine(int argc, const char* argv[]);
   CommandLine::ApplicationParametersHandle parameters();
   boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
+  boost::filesystem::path executablePath() const;
 
   //TODO: following will be useful later
 #if 0
