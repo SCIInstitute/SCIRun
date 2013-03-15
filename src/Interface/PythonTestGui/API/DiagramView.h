@@ -29,6 +29,7 @@
 #ifndef PYTHONIC_API_DIAGRAMVIEW_H
 #define PYTHONIC_API_DIAGRAMVIEW_H
 
+#include <vector>
 #include <Interface/PythonTestGui/API/Share.h>
 #include <boost/python.hpp>
 
@@ -39,6 +40,9 @@ public:
   virtual int numEdges() const = 0;
   virtual int numNodes() const = 0;
   virtual void addNode() = 0;
+  virtual std::string firstNodeName() const = 0;
+  virtual std::string removeNode(const std::string& name) = 0;
+  virtual std::vector<std::string> listNodeNames() const = 0;
 };
 
 class SCISHARE DiagramView
@@ -47,6 +51,9 @@ public:
   static int numEdges();
   static int numNodes();
   static void addNode();
+  static std::string firstNodeName();
+  static std::vector<std::string> listNodeNames();
+  static std::string removeNode(const std::string& name);
   static void setImpl(boost::shared_ptr<DiagramViewInterface> impl) { impl_ = impl; }
 private:
   DiagramView();
@@ -59,6 +66,9 @@ BOOST_PYTHON_MODULE(PythonAPI)
     boost::python::def("numEdges", &DiagramView::numEdges);
     boost::python::def("numNodes", &DiagramView::numNodes);
     boost::python::def("addNode", &DiagramView::addNode);
+    boost::python::def("listNodeNames", &DiagramView::listNodeNames);
+    boost::python::def("firstNodeName", &DiagramView::firstNodeName);
+    boost::python::def("removeNode", &DiagramView::removeNode);
 }
 
 

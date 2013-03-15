@@ -50,7 +50,9 @@ public Q_SLOTS:
   void printNodeCount();
   void printEdgeCount();
   void addNode();
+  std::string removeNode(const std::string& name);
   void addLink();
+  std::vector<std::string> listNodeNames() const;
 public:
   int numNodes() const;
   int numEdges() const;

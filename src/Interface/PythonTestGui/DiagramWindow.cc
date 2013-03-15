@@ -34,6 +34,7 @@
 #include "propertiesdialog.h"
 #include "PythonConsoleWidget.h"
 #include <Interface/PythonTestGui/API/DiagramView.h>
+#include <Interface/PythonTestGui/Python/PythonInterpreter.h>
 
 class DiagramViewImpl : public DiagramViewInterface
 {
@@ -50,6 +51,18 @@ public:
   virtual void addNode() 
   {
     window_->addNode();
+  }
+  virtual std::string removeNode(const std::string& name)
+  {
+    return window_->removeNode(name);
+  }
+  virtual std::string firstNodeName() const 
+  {
+    return listNodeNames().at(0);
+  }
+  virtual std::vector<std::string> listNodeNames() const
+  {
+    return window_->listNodeNames();
   }
 private:
   DiagramWindow* window_;
@@ -83,6 +96,7 @@ DiagramWindow::DiagramWindow()
 
   boost::shared_ptr<DiagramViewInterface> view(new DiagramViewImpl(this));
   DiagramView::setImpl(view);
+  Core::PythonInterpreter::Instance().run_string("import PythonAPI; from PythonAPI import *");
 }
 
 void DiagramWindow::addNode()
@@ -390,4 +404,36 @@ int DiagramWindow::numEdges() const
 void DiagramWindow::printEdgeCount()
 {
   std::cout << "Number of edges = " << numEdges() << std::endl;
+}
+
+std::vector<std::string> DiagramWindow::listNodeNames() const
+{
+  auto items = scene_->items().toStdList();
+  std::vector<std::string> names;
+  std::transform(items.begin(), items.end(), std::back_inserter(names), 
+    [](QGraphicsItem* item) -> std::string
+    { 
+      auto node = dynamic_cast<Node*>(item);
+      return node ? node->text().toStdString() : "";
+    }
+  );
+  names.erase(std::remove_if(names.begin(), names.end(), [](const std::string& s) -> bool { return s.empty(); }), names.end());
+  return names;
+}
+
+std::string DiagramWindow::removeNode(const std::string& name)
+{
+  QList<QGraphicsItem*> items = scene_->items();
+  QMutableListIterator<QGraphicsItem*> i(items);
+  while (i.hasNext())
+  {
+    auto node = dynamic_cast<Node*>(i.next());
+    if (node && node->text().toStdString() == name)
+    {
+      delete node;
+      i.remove();
+      return "Removed node: " + name;
+    }
+  }
+  return "No such node: " + name;
 }

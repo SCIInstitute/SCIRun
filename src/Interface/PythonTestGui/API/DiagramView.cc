@@ -62,3 +62,36 @@ void DiagramView::addNode()
     std::cout << "Null implementation: DiagramViewImpl" << std::endl;
   }
 }
+
+std::string DiagramView::removeNode(const std::string& name)
+{
+  if (impl_)
+    return impl_->removeNode(name);
+  else
+  {
+    std::cout << "Null implementation: DiagramViewImpl" << std::endl;
+    return "";
+  }
+}
+
+std::string DiagramView::firstNodeName()
+{
+  if (impl_)
+    return impl_->firstNodeName();
+  else
+  {
+    std::cout << "Null implementation: DiagramViewImpl" << std::endl;
+    return std::string();
+  }
+}
+
+std::vector<std::string> DiagramView::listNodeNames()
+{
+  if (impl_)
+    return impl_->listNodeNames();
+  else
+  {
+    std::cout << "Null implementation: DiagramViewImpl" << std::endl;
+    return std::vector<std::string>();
+  }
+}

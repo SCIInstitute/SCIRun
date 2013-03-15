@@ -70,8 +70,6 @@ namespace Engine {
 //////////////////////End: To be Pythonized///////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 
-
-
     virtual void clear();
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
