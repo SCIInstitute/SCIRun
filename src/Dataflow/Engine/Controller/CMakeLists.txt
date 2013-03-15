@@ -56,6 +56,7 @@ TARGET_LINK_LIBRARIES(Engine_Network
   Core_Serialization_Network
   Core_Command
   Engine_Scheduler
+  SCIRunPythonAPI
 )
 
 IF(BUILD_SHARED_LIBS)
