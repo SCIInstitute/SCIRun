@@ -193,6 +193,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
   actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
   actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
+  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
 
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
