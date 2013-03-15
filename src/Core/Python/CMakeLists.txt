@@ -4,7 +4,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2013 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -27,53 +27,32 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-PROJECT(QtExampleDiagram)
-
-SET(QtExampleDiagram_SOURCES 
-  Link.cc
-  Node.cc
-  DiagramWindow.cc
-  propertiesdialog.cc
-  main.cc
-  PythonConsoleWidget.cc
+SET(Core_Python_SRCS
+  PythonInterpreter.cc
 )
 
-SET(QtExampleDiagram_HEADERS
-  Link.h
-  Node.h
-  DiagramWindow.h
-  propertiesdialog.h
-  PythonConsoleWidget.h
+SET(Core_Python_HEADERS
+  PythonInterpreter.h
+  Share.h
 )
 
-SET(QtExampleDiagram_FORMS propertiesdialog.ui)
-
-SET(QtExampleDiagram_RESOURCES resources.qrc)
-
-QT4_WRAP_CPP(QtExampleDiagram_HEADERS_MOC ${QtExampleDiagram_HEADERS})
-QT4_WRAP_UI(QtExampleDiagram_FORMS_HEADERS ${QtExampleDiagram_FORMS})
-QT4_ADD_RESOURCES(QtExampleDiagram_RESOURCES_RCC ${QtExampleDiagram_RESOURCES})
-
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
-ADD_EXECUTABLE(diagram
-${QtExampleDiagram_SOURCES}
-${QtExampleDiagram_HEADERS}
-${QtExampleDiagram_FORMS_HEADERS}
-${QtExampleDiagram_HEADERS_MOC}
-${QtExampleDiagram_RESOURCES_RCC})
-
-TARGET_LINK_LIBRARIES(diagram 
-  PythonAPI
-  Core_Python
-  ${QT_LIBRARIES}
-  ${PYTHON_LIBRARIES}
-  ${SCI_BOOST_LIBRARY}
+ADD_LIBRARY(Core_Python 
+  ${Core_Python_HEADERS}
+  ${Core_Python_SRCS}
 )
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Python)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
+
+#ADD_DEFINITIONS(-DPYTHONPATH=L"${PYTHON_MODULE_SEARCH_PATH}")
+
+TARGET_LINK_LIBRARIES(Core_Python
+                      ${PYTHON_LIBRARIES}
+                      ${SCI_BOOST_LIBRARY})
 
 INCLUDE_DIRECTORIES(
-  ${CMAKE_CURRENT_BINARY_DIR}
   ${PYTHON_INCLUDE_DIR}
 )
-
-ADD_SUBDIRECTORY(API)

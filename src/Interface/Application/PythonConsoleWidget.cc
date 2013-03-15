@@ -25,13 +25,8 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
-// Python
-// NOTE: This one has to be here: Because the Python source code is sub standard, we need to include
-// this first, to avoid trouble with the macros that Python defines.
-#include <Python.h>
 
 #include <iostream>
-// QT includes
 #include <QApplication>
 #include <QClipboard>
 #include <QKeyEvent>
@@ -42,9 +37,10 @@
 #include <QVBoxLayout>
 
 #include <Core/Python/PythonInterpreter.h>
-#include <Interface/PythonTestGui/PythonConsoleWidget.h>
+#include <Interface/Application/PythonConsoleWidget.h>
 
 using namespace SCIRun::Core;
+using namespace SCIRun::Gui;
 
 class PythonConsoleEdit;
 typedef QPointer< PythonConsoleEdit > PythonConsoleEditQWeakPointer;
@@ -411,5 +407,5 @@ PythonConsoleWidget::~PythonConsoleWidget()
 
 void PythonConsoleWidget::showBanner()
 {
-  PythonInterpreter::Instance().print_banner();
+  Core::PythonInterpreter::Instance().print_banner();
 }

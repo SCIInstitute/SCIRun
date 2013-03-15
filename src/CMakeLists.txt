@@ -455,6 +455,8 @@ SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math_Tests         PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Python_Tests         PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
@@ -500,6 +502,7 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET Spire_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET diagram PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET PythonAPI PROPERTY FOLDER "Testing Support")
 
 ########################################################################
 # Custom CMake settings for CPack

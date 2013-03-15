@@ -29,16 +29,19 @@
 #ifndef CORE_PYTHON_PYTHONINTERPRETER_H
 #define CORE_PYTHON_PYTHONINTERPRETER_H
 
-#include <boost/python.hpp>
+//#include <boost/python.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/signals2/signal.hpp>
 
 #include <Core/Utils/Singleton.h>
+#include <Core/Python/Share.h>
 //#include <Core/EventHandler/EventHandler.h>
 //#include <Core/Python/PythonActionContext.h>
 
 class PythonStdIO;
 
+namespace SCIRun 
+{
 namespace Core
 {
 
@@ -49,13 +52,12 @@ namespace Core
 class PythonInterpreterPrivate;
 typedef boost::shared_ptr< PythonInterpreterPrivate > PythonInterpreterPrivateHandle;
 
-class PythonInterpreter /*: private Core::EventHandler*/
+class SCISHARE PythonInterpreter /*: private Core::EventHandler*/
 {
 	CORE_SINGLETON( PythonInterpreter );
 	
 public:
-	typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;
-	typedef std::list< module_entry_type > module_list_type;
+	
 
 private:
 	PythonInterpreter();
@@ -69,10 +71,6 @@ private:
 	void initialize_eventhandler();
 
 public:
-	// INITIALIZE:
-	/// Initialize the python interpreter with extra modules.
-	void initialize( wchar_t* program_name, const module_list_type& init_list );
-
 	// PRINT_BANNER:
 	/// Print the basic information about the python interpreter to output_signal_.
 	void print_banner();
@@ -118,6 +116,6 @@ public:
 	static std::string EscapeSingleQuotedString( const std::string& input_str );
 };
 
-} // end namespace Core
+}}
 
 #endif

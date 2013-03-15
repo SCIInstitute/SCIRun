@@ -27,10 +27,12 @@
  */
 
 #ifdef _MSC_VER
+//#pragma warning( push )
 #pragma warning( disable: 4244 )
 #endif
 
 #include <Python.h>
+#include <boost/python.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 #include <boost/thread/condition_variable.hpp>
@@ -38,21 +40,33 @@
 #include <Core/Utils/StringContainer.h>
 #include <Core/Utils/Lockable.h>
 
-#include <Interface/PythonTestGui/Python/PythonInterpreter.h>
-#include <Interface/PythonTestGui/Python/ToPythonConverters.h>
+#include <Core/Python/PythonInterpreter.h>
 
+//#ifdef _MSC_VER
+//#pragma warning( pop )
+//#endif
+
+//#include <Interface/PythonTestGui/Python/ToPythonConverters.h>
+
+using namespace SCIRun::Core;
+
+namespace SCIRun 
+{
 namespace Core
 {
 
-class PythonInterpreterPrivate : public Core::Lockable
+class PythonInterpreterPrivate : public Lockable
 {
 public:
-	std::string read_from_console( const int bytes = -1 );
+  typedef std::pair< std::string, PyObject* ( * )( void ) > module_entry_type;
+  typedef std::list< module_entry_type > module_list_type;
+	
+  std::string read_from_console( const int bytes = -1 );
 
 	// The name of the executable
 	const wchar_t* program_name_;
 	// A list of Python extension modules that need to be initialized
-	PythonInterpreter::module_list_type modules_;
+	module_list_type modules_;
 	// An instance of python CommandCompiler object (defined in codeop.py)
 	boost::python::object compiler_;
 	// The context of the Python main module.
@@ -137,7 +151,7 @@ std::string PythonInterpreterPrivate::read_from_console( const int bytes /*= -1 
 	return result;
 }
 
-} // end namespace Core
+}}
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -148,19 +162,19 @@ class PythonStdIO
 public:
 	boost::python::object read( int n )
 	{
-		std::string data = Core::PythonInterpreter::Instance().private_->read_from_console( n );
+		std::string data = PythonInterpreter::Instance().private_->read_from_console( n );
 		boost::python::str pystr( data.c_str() );
 		return pystr.encode();
 	}
 
 	std::string readline()
 	{
-		return Core::PythonInterpreter::Instance().private_->read_from_console();
+		return PythonInterpreter::Instance().private_->read_from_console();
 	}
 
 	int write( const std::string& data )
 	{
-		Core::PythonInterpreter::Instance().output_signal_( data );
+		PythonInterpreter::Instance().output_signal_( data );
 		return static_cast< int >( data.size() );
 	}
 };
@@ -170,7 +184,7 @@ class PythonStdErr
 public:
 	int write( const std::string& data )
 	{
-		Core::PythonInterpreter::Instance().error_signal_( data );
+		PythonInterpreter::Instance().error_signal_( data );
 		return static_cast< int >( data.size() );
 	}
 };
@@ -185,13 +199,6 @@ BOOST_PYTHON_MODULE( interpreter )
 	boost::python::class_< PythonStdErr >( "terminalerr" )
 		.def( "write", &PythonStdErr::write );
 }
-
-namespace Core
-{
-
-//////////////////////////////////////////////////////////////////////////
-// Class PythonInterpreter
-//////////////////////////////////////////////////////////////////////////
 
 CORE_SINGLETON_IMPLEMENTATION( PythonInterpreter );
 	
@@ -224,7 +231,7 @@ void PythonInterpreter::initialize_eventhandler()
 
 	// Add the extension modules
 	PyImport_AppendInittab( "interpreter", PyInit_interpreter );
-	for ( module_list_type::iterator it = this->private_->modules_.begin(); 
+	for ( auto it = this->private_->modules_.begin(); 
 		it != this->private_->modules_.end(); ++it )
 	{
 		PyImport_AppendInittab( ( *it ).first.c_str(), ( *it ).second );
@@ -283,18 +290,18 @@ void PythonInterpreter::initialize_eventhandler()
   this->private_->initialized_ = true;
 }
 
-void PythonInterpreter::initialize( wchar_t* program_name, const module_list_type& init_list )
-{
-	std::cout << ( "Initializing Python ..." ) << std::endl;
-	this->private_->program_name_ = program_name;
-	this->private_->modules_ = init_list;
-
-	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
-	//this->start_eventhandler();
-	this->private_->thread_condition_variable_.wait( lock );
-	this->private_->initialized_ = true;
-	std::cout << ( "Python initialized." ) << std::endl;
-}
+//void PythonInterpreter::initialize( wchar_t* program_name, const module_list_type& init_list )
+//{
+//	std::cout << ( "Initializing Python ..." ) << std::endl;
+//	this->private_->program_name_ = program_name;
+//	this->private_->modules_ = init_list;
+//
+//	PythonInterpreterPrivate::lock_type lock( this->private_->get_mutex() );
+//	//this->start_eventhandler();
+//	this->private_->thread_condition_variable_.wait( lock );
+//	this->private_->initialized_ = true;
+//	std::cout << ( "Python initialized." ) << std::endl;
+//}
 
 void PythonInterpreter::print_banner()
 {
@@ -583,5 +590,3 @@ std::string PythonInterpreter::EscapeSingleQuotedString( const std::string& str 
 	static const boost::regex reg( "[\\\\']" );
 	return boost::regex_replace( str, reg, "\\\\$&", boost::regex_constants::format_default );
 }
-
-} // end namespace Core

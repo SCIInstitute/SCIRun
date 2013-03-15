@@ -1,4 +1,3 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -27,53 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-PROJECT(QtExampleDiagram)
-
-SET(QtExampleDiagram_SOURCES 
-  Link.cc
-  Node.cc
-  DiagramWindow.cc
-  propertiesdialog.cc
-  main.cc
-  PythonConsoleWidget.cc
+SET(Core_Python_Tests_SRCS
+  PythonInterpreterTests.cc
 )
 
-SET(QtExampleDiagram_HEADERS
-  Link.h
-  Node.h
-  DiagramWindow.h
-  propertiesdialog.h
-  PythonConsoleWidget.h
+SCIRUN_ADD_UNIT_TEST(Core_Python_Tests
+  ${Core_Python_Tests_SRCS}
 )
 
-SET(QtExampleDiagram_FORMS propertiesdialog.ui)
-
-SET(QtExampleDiagram_RESOURCES resources.qrc)
-
-QT4_WRAP_CPP(QtExampleDiagram_HEADERS_MOC ${QtExampleDiagram_HEADERS})
-QT4_WRAP_UI(QtExampleDiagram_FORMS_HEADERS ${QtExampleDiagram_FORMS})
-QT4_ADD_RESOURCES(QtExampleDiagram_RESOURCES_RCC ${QtExampleDiagram_RESOURCES})
-
-ADD_DEFINITIONS(${QT_DEFINITIONS})
-
-ADD_EXECUTABLE(diagram
-${QtExampleDiagram_SOURCES}
-${QtExampleDiagram_HEADERS}
-${QtExampleDiagram_FORMS_HEADERS}
-${QtExampleDiagram_HEADERS_MOC}
-${QtExampleDiagram_RESOURCES_RCC})
-
-TARGET_LINK_LIBRARIES(diagram 
-  PythonAPI
+TARGET_LINK_LIBRARIES(Core_Python_Tests
   Core_Python
-  ${QT_LIBRARIES}
-  ${PYTHON_LIBRARIES}
-  ${SCI_BOOST_LIBRARY}
+  gtest_main
+  gtest
+  gmock
 )
-
-INCLUDE_DIRECTORIES(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${PYTHON_INCLUDE_DIR}
-)
-
-ADD_SUBDIRECTORY(API)

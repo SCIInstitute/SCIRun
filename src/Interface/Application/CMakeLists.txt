@@ -47,6 +47,7 @@ SET(Interface_Application_SOURCES
   NoteEditor.cc
   Port.cc
   Preferences.cc
+  PythonConsoleWidget.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
@@ -69,6 +70,7 @@ SET(Interface_Application_HEADERS
   Connection.h
   Port.h
   Preferences.h
+  PythonConsoleWidget.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
 )
@@ -103,6 +105,7 @@ TARGET_LINK_LIBRARIES(Interface_Application
   Dataflow_Network
   Core_Application
   Core_Logging
+  Core_Python
   Interface_Modules_Base
   Interface_Modules_Factory
   ${SCI_SPIRE_LIBRARY}

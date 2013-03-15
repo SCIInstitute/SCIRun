@@ -33,12 +33,13 @@
 # pragma once
 #endif 
 
-// Boost includes
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/noncopyable.hpp>
 
+namespace SCIRun 
+{
 namespace Core
 {
 
@@ -99,6 +100,6 @@ private:
 	mutable mutex_type mutex_;
 };
 
-} // end namespace Core
+}}
 
 #endif

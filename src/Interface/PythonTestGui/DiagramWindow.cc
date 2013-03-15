@@ -34,7 +34,7 @@
 #include "propertiesdialog.h"
 #include "PythonConsoleWidget.h"
 #include <Interface/PythonTestGui/API/DiagramView.h>
-#include <Interface/PythonTestGui/Python/PythonInterpreter.h>
+#include <Core/Python/PythonInterpreter.h>
 
 class DiagramViewImpl : public DiagramViewInterface
 {
@@ -96,7 +96,7 @@ DiagramWindow::DiagramWindow()
 
   boost::shared_ptr<DiagramViewInterface> view(new DiagramViewImpl(this));
   DiagramView::setImpl(view);
-  Core::PythonInterpreter::Instance().run_string("import PythonAPI; from PythonAPI import *");
+  SCIRun::Core::PythonInterpreter::Instance().run_string("import PythonAPI; from PythonAPI import *");
 }
 
 void DiagramWindow::addNode()
