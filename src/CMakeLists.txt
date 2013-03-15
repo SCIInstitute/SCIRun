@@ -115,6 +115,7 @@ IF(BUILD_TESTING)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 ENDIF()
 
+OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ########################################################################
 # Custom compiler flags and definitions
@@ -223,6 +224,12 @@ SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRA
 SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
+# Fixes Mac build for now, without extra boost/python cmake magic.
+IF(BUILD_WITH_PYTHON)
+  SET(boost_GIT_TAG "origin/pythonAttempt")
+ELSE()
+  SET(boost_GIT_TAG "origin/master")
+ENDIF()
 
 # TODO: fix install step
 #
@@ -231,7 +238,7 @@ SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI
 ExternalProject_Add(Boost_external
   PREFIX ${boost_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
-  GIT_TAG "origin/pythonAttempt"
+  GIT_TAG ${boost_GIT_TAG}
   SOURCE_DIR ${boost_SOURCE_DIR}
   BINARY_DIR ${boost_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
@@ -364,9 +371,11 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ########################################################################
 # Python
 
-MESSAGE(STATUS "Configuring Python")
-FIND_PACKAGE(PythonLibs REQUIRED)
-ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+IF(BUILD_WITH_PYTHON)
+  MESSAGE(STATUS "Configuring Python")
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+ENDIF(BUILD_WITH_PYTHON)  
 
 ########################################################################
 # Includes
