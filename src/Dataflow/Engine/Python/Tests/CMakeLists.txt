@@ -26,6 +26,17 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Controller)
-ADD_SUBDIRECTORY(Python)
-ADD_SUBDIRECTORY(Scheduler)
+SET(Engine_Python_Tests_SRCS
+  NetworkEditorPythonAPITests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Engine_Python_Tests
+  ${Engine_Python_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Engine_Python_Tests
+  SCIRunPythonAPI
+  gtest_main
+  gtest
+  gmock
+)

@@ -463,6 +463,8 @@ SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Network_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 SET_PROPERTY(TARGET Engine_Scheduler         PROPERTY FOLDER "Dataflow/Engine")
 SET_PROPERTY(TARGET Engine_Scheduler_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
+SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
 SET_PROPERTY(TARGET Dataflow_State         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET Dataflow_State_Tests   PROPERTY FOLDER "Dataflow/Tests")
 

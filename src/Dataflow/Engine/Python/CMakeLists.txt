@@ -26,6 +26,45 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Controller)
-ADD_SUBDIRECTORY(Python)
-ADD_SUBDIRECTORY(Scheduler)
+SET(SCIRunPythonAPI_SRCS
+  NetworkEditorPythonAPI.cc
+)
+
+SET(SCIRunPythonAPI_HEADERS
+  NetworkEditorPythonAPI.h
+  NetworkEditorPythonInterface.h
+  SCIRunPythonModule.h
+  Share.h
+)
+
+ADD_LIBRARY(SCIRunPythonAPI 
+  ${SCIRunPythonAPI_HEADERS}
+  ${SCIRunPythonAPI_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(SCIRunPythonAPI
+  ${PYTHON_LIBRARIES}
+  ${SCI_BOOST_LIBRARY}
+)
+
+INCLUDE_DIRECTORIES(
+  ${PYTHON_INCLUDE_DIR}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_SCIRunPythonAPI)
+    
+IF(WIN32)
+     SET_TARGET_PROPERTIES(SCIRunPythonAPI
+         PROPERTIES
+         IMPORT_SUFFIX ".pyd"
+         IMPORT_PREFIX ""
+         PREFIX ""
+		 SUFFIX ".pyd"
+     )
+ENDIF()
+    
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
+

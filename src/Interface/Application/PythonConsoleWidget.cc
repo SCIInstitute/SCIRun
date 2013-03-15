@@ -398,6 +398,7 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
   PythonInterpreter::Instance().error_signal_.connect(boost::bind(&PythonConsoleEdit::print_error, private_->console_edit_, _1));
 
   showBanner();
+  PythonInterpreter::Instance().run_string("import SCIRunPythonAPI; from SCIRunPythonAPI import *");
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()
@@ -407,5 +408,5 @@ PythonConsoleWidget::~PythonConsoleWidget()
 
 void PythonConsoleWidget::showBanner()
 {
-  Core::PythonInterpreter::Instance().print_banner();
+  PythonInterpreter::Instance().print_banner();
 }
