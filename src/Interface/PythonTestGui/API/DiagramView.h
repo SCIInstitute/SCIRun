@@ -38,6 +38,7 @@ public:
   virtual ~DiagramViewInterface() {}
   virtual int numEdges() const = 0;
   virtual int numNodes() const = 0;
+  virtual void addNode() = 0;
 };
 
 class SCISHARE DiagramView
@@ -45,6 +46,7 @@ class SCISHARE DiagramView
 public:
   static int numEdges();
   static int numNodes();
+  static void addNode();
   static void setImpl(boost::shared_ptr<DiagramViewInterface> impl) { impl_ = impl; }
 private:
   DiagramView();
@@ -56,6 +58,7 @@ BOOST_PYTHON_MODULE(PythonAPI)
   //boost::python::class_<DiagramView>("DiagramView")
     boost::python::def("numEdges", &DiagramView::numEdges);
     boost::python::def("numNodes", &DiagramView::numNodes);
+    boost::python::def("addNode", &DiagramView::addNode);
 }
 
 

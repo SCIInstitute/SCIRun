@@ -49,13 +49,13 @@ public:
 public Q_SLOTS:
   void printNodeCount();
   void printEdgeCount();
+  void addNode();
+  void addLink();
 public:
   int numNodes() const;
   int numEdges() const;
 
 private Q_SLOTS:
-  void addNode();
-  void addLink();
   void del();
   void cut();
   void copy();

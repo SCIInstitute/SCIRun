@@ -52,3 +52,13 @@ int DiagramView::numNodes()
     return -1;
   }
 }
+
+void DiagramView::addNode()
+{
+  if (impl_)
+    impl_->addNode();
+  else
+  {
+    std::cout << "Null implementation: DiagramViewImpl" << std::endl;
+  }
+}

@@ -47,6 +47,10 @@ public:
   {
     return window_->numNodes();
   }
+  virtual void addNode() 
+  {
+    window_->addNode();
+  }
 private:
   DiagramWindow* window_;
 };
