@@ -46,6 +46,8 @@ GLWidget::GLWidget(const QGLFormat& format) :
     mContext(new GLContext(this))
 {
   std::vector<std::string> shaderSearchDirs;
+  
+  Application::get some paths...append executable directory here.
 
 #ifdef SPIRE_USE_STD_THREADS
   mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
