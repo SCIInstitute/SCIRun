@@ -37,6 +37,7 @@
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Preferences.h>
+#include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -291,6 +292,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   
   setupProvenanceWindow();
   setupDevConsole();
+  setupPythonConsole();
 
   makeFilterButtonMenu();
   activateWindow();
@@ -784,4 +786,14 @@ void SCIRunMainWindow::setupPreferencesWindow()
   connect(actionPreferences_, SIGNAL(triggered()), prefs_, SLOT(show()));
   //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
   prefs_->setVisible(false);
+}
+
+void SCIRunMainWindow::setupPythonConsole()
+{
+  pythonConsole_ = new PythonConsoleWidget(this);
+  connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
+  connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
+  pythonConsole_->setVisible(false);
+  pythonConsole_->setFloating(true);
+  addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
 }

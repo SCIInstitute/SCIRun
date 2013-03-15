@@ -30,7 +30,7 @@
 #define INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 
 #include <boost/shared_ptr.hpp>
-#include <QDialog>
+#include <QDockWidget>
 
 class PythonConsoleWidgetPrivate;
 typedef boost::shared_ptr< PythonConsoleWidgetPrivate > PythonConsoleWidgetPrivateHandle;
@@ -40,7 +40,7 @@ namespace SCIRun
 namespace Gui
 {
 
-class PythonConsoleWidget : public QDialog
+class PythonConsoleWidget : public QDockWidget
 {
 	Q_OBJECT
 

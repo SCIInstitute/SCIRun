@@ -133,6 +133,8 @@
     <addaction name="actionConfiguration_"/>
     <addaction name="actionModule_Selector"/>
     <addaction name="actionProvenance_"/>
+    <addaction name="separator"/>
+    <addaction name="actionPythonConsole_"/>
     <addaction name="actionDevConsole_"/>
     <addaction name="actionPreferences_"/>
    </widget>
@@ -1303,6 +1305,17 @@
    </property>
    <property name="text">
     <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionPythonConsole_">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Python Console</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+Y</string>
    </property>
   </action>
  </widget>

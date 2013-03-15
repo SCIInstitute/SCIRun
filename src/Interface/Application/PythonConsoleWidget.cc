@@ -383,13 +383,11 @@ public:
 };
 
 PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
-	QDialog( parent ), 
+	QDockWidget( parent ), 
 	private_( new PythonConsoleWidgetPrivate )
 {
 	this->private_->console_edit_ = new PythonConsoleEdit( this );
-	QVBoxLayout* const layout = new QVBoxLayout( this );
-	layout->setMargin( 0 );
-	layout->addWidget( this->private_->console_edit_ );
+	setWidget( this->private_->console_edit_ );
 
 	this->setMinimumSize( 500, 500 );
 
@@ -398,6 +396,8 @@ PythonConsoleWidget::PythonConsoleWidget( QWidget* parent ) :
   PythonInterpreter::Instance().prompt_signal_.connect(boost::bind(&PythonConsoleEdit::prompt, private_->console_edit_, _1));
   PythonInterpreter::Instance().output_signal_.connect(boost::bind(&PythonConsoleEdit::print_output, private_->console_edit_, _1));
   PythonInterpreter::Instance().error_signal_.connect(boost::bind(&PythonConsoleEdit::print_error, private_->console_edit_, _1));
+
+  showBanner();
 }
 
 PythonConsoleWidget::~PythonConsoleWidget()
