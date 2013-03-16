@@ -30,13 +30,14 @@ SET(Algorithms_DataIO_SRCS
   ReadMatrix.cc
   WriteMatrix.cc
   EigenMatrixFromScirunAsciiFormatConverter.cc
+  TextToTriSurfField.cc
 )
 
 SET(Algorithms_DataIO_HEADERS
   ReadMatrix.h
   WriteMatrix.h
   EigenMatrixFromScirunAsciiFormatConverter.h
-  Share.h
+  TextToTriSurfField.h
 )
 
 ADD_LIBRARY(Algorithms_DataIO 
