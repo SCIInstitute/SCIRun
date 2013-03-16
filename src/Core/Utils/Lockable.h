@@ -45,7 +45,7 @@ class Lockable : public boost::noncopyable
 {
 public:
   typedef boost::mutex MutexType;
-  typedef boost::uniqueLock< MutexType > LockType;
+  typedef boost::unique_lock< MutexType > LockType;
   
   Lockable() {}
   ~Lockable() {}

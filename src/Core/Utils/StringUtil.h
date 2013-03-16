@@ -27,13 +27,16 @@
  */
 
 #ifndef CORE_UTILS_STRINGUTIL_H
-#define CORE_UTILS_STRINGUTIL_H
+#define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
 #include <Core/Utils/Share.h>
 
 namespace SCIRun 
 {
+namespace Core
+{
+    
 
 template <typename T>
 std::string to_string(const T& t)
@@ -52,6 +55,6 @@ std::vector<T> parseLineOfNumbers(const std::string& line)
   return numbers;
 }
 
-}
+}}
 
 #endif

@@ -27,15 +27,17 @@
  */
 
 #ifndef CORE_UTILS_FILEUTIL_H
-#define CORE_UTILS_FILEUTIL_H
+#define CORE_UTILS_FILEUTIL_H 1
 
 #include <sstream>
 #include <Core/Utils/Share.h>
 
 namespace SCIRun
 {
+namespace Core
+{
 
-bool fileContainsString(const std::string& filename, const std::string& str)
+inline bool fileContainsString(const std::string& filename, const std::string& str)
 {
   std::ifstream input(filename.c_str());
   std::string line;
@@ -50,7 +52,7 @@ bool fileContainsString(const std::string& filename, const std::string& str)
   return false;
 }
 
-void replaceDelimitersWithWhitespace(std::string& line)
+inline void replaceDelimitersWithWhitespace(std::string& line)
 {
   // replace comma's, tabs etc. with white spaces
   for (auto &c : line)
@@ -60,13 +62,15 @@ void replaceDelimitersWithWhitespace(std::string& line)
   }
 }
 
-bool lineStartsWithComment(const std::string& line)
+inline bool lineStartsWithComment(const std::string& line)
 {
   if ( line.empty() ) return false;
   
   if ( (line[0] == '#') || (line[0] == '%') ) return true;
+
+  return false;
 }
 
-}
+}}
 
 #endif
