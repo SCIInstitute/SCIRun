@@ -106,7 +106,7 @@ inline ::testing::AssertionResult compare_with_two_norm(const Core::Datatypes::D
     ::testing::AssertionSuccess() :
   ::testing::AssertionFailure() <<
     "Vectors are " << delta << " apart, expect less than " << error << " distance apart.\n" <<
-    "ColumnMatrix 1: \n"<< to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << to_string(xhat).substr(0, printSize);
+    "ColumnMatrix 1: \n"<< Core::to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << Core::to_string(xhat).substr(0, printSize);
 }
  
 //TODO improve failure reporting

@@ -47,6 +47,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO::internal;
+using namespace SCIRun::Core;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
