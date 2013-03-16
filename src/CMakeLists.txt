@@ -132,7 +132,7 @@ IF(UNIX)
     ENDIF()
   ENDIF()
 
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
 ENDIF()
 
 IF(APPLE)
@@ -141,7 +141,6 @@ IF(APPLE)
 
   ADD_DEFINITIONS(-DGTEST_USE_OWN_TR1_TUPLE=1)
 ENDIF()
-
 
 ########################################################################
 # Find and configure Git
