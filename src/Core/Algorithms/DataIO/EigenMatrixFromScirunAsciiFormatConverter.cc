@@ -26,52 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <boost/timer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <streambuf>
+
+#include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Utils/FileUtil.h>
+#include <Core/Utils/StringUtil.h>
+
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms::DataIO::internal;
-
-namespace
-{
-  template <typename T>
-  std::vector<T> parseLineOfNumbers(const std::string& line)
-  {
-    std::istringstream stream(line);
-    std::vector<T> numbers((std::istream_iterator<T>(stream)), (std::istream_iterator<T>()));
-
-    return numbers;
-  }
-
-  bool fileContainsString(const std::string& filename, const std::string& str)
-  {
-    std::ifstream input(filename.c_str());
-    std::string line;
-
-    while (std::getline(input, line)) 
-    {
-      auto index = line.find(str);
-      if (index != std::string::npos && line.find('\0') > index)
-        return true;
-    }
-
-    return false;
-  }
-}
 
 EigenMatrixFromScirunAsciiFormatConverter::EigenMatrixFromScirunAsciiFormatConverter(const ProgressReporter* reporter) : reporter_(reporter)
 {
