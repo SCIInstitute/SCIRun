@@ -145,6 +145,7 @@ namespace
 
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
+  deletedFromGui_(true),
   moduleId_(theModule->get_id()),
   theModule_(theModule),
   inputPortLayout_(0),
@@ -308,7 +309,8 @@ ModuleWidget::~ModuleWidget()
   delete logWindow_;
   delete noteEditor_;
 
-  Q_EMIT removeModule(ModuleId(moduleId_));
+  if (deletedFromGui_)
+    Q_EMIT removeModule(ModuleId(moduleId_));
 }
 
 void ModuleWidget::trackConnections()

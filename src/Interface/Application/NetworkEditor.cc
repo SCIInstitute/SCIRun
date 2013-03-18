@@ -495,6 +495,17 @@ ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
   return widget ? widget->getModuleWidget() : 0;
 }
 
+void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id)
+{
+  auto widget = findById(scene_->items(), id.id_);
+  if (widget)
+  {
+    widget->getModuleWidget()->setDeletedFromGui(false);
+    delete widget;
+    Q_EMIT modified();
+  }
+}
+
 void NetworkEditor::clear()
 {
   scene_->clear();

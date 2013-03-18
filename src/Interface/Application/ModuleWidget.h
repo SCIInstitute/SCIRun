@@ -73,6 +73,8 @@ public:
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
 
+  void setDeletedFromGui(bool b) { deletedFromGui_ = b; }
+
   //TODO: initialize in a new class
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
@@ -102,6 +104,7 @@ private:
   Ports inputPorts_;
   Ports outputPorts_;
   boost::timer timer_;
+  bool deletedFromGui_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 

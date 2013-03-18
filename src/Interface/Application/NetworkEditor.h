@@ -141,6 +141,7 @@ Q_SIGNALS:
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void executeAll();
+    void removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id);
     virtual void clear();
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
