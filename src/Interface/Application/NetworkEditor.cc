@@ -53,6 +53,8 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent) 
   : QGraphicsView(parent),
   scene_(new QGraphicsScene(parent)),
+  lastModulePosition_(0,0),
+  defaultModulePosition_(0,0),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
@@ -172,6 +174,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setVisible(true);
   proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
+  lastModulePosition_ += QPointF(10,10);
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
@@ -197,7 +200,6 @@ void NetworkEditor::bringToFront()
 
 void ZLevelManager::bringToFront()
 {
-  //std::cout << "----bringToFront" << std::endl;
   ++maxZ_;
   setZValue(maxZ_);
 }
@@ -218,7 +220,6 @@ void ZLevelManager::setZValue(int z)
   ModuleProxyWidget* node = selectedModuleProxy();
   if (node)
   {
-    //std::cout << "\t~~~setting zlevel: module " << node->getModuleWidget()->getModuleId() << " to z = " << z << std::endl;
     node->setZValue(z);
   }
 }
