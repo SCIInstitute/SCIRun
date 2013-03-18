@@ -37,45 +37,13 @@
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #ifdef BUILD_WITH_PYTHON
-#include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#include <Dataflow/Engine/Controller/PythonImpl.h>
 #endif
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
-
-#ifdef BUILD_WITH_PYTHON
-//TODO: move into separate file
-class PythonImpl : public NetworkEditorPythonInterface
-{
-public:
-  PythonImpl(NetworkEditorController& nec) : nec_(nec) {}
-  virtual std::string addModule(const std::string& name) const
-  {
-    auto m = nec_.addModule(name);
-    if (m)
-      return "Module added: " + m->get_id().id_;
-    else
-      return "Module add failed, no such module type";
-  }
-
-  virtual std::string removeModule(const std::string& id)
-  {
-    try
-    {
-      nec_.removeModule(ModuleId(id));
-      return "Module removed";
-    }
-    catch (...)
-    {
-      return "No module by that id";
-    }
-  }
-private:
-  NetworkEditorController& nec_;
-};
-#endif
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg) : 
   moduleFactory_(mf), 

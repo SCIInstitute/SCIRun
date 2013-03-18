@@ -33,6 +33,7 @@ SET(Engine_Network_SRCS
   ProvenanceItemFactory.cc
   ProvenanceItemImpl.cc
   ProvenanceManager.cc
+  PythonImpl.cc
 )
 
 SET(Engine_Network_HEADERS
@@ -43,6 +44,7 @@ SET(Engine_Network_HEADERS
   ProvenanceItemFactory.h
   ProvenanceItemImpl.h
   ProvenanceManager.h
+  PythonImpl.h
   Share.h
 )
 
