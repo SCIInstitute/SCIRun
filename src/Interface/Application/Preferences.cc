@@ -26,29 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_HISTORYITEM_H
-#define ENGINE_NETWORK_HISTORYITEM_H
+#include <QtGui>
+#include <iostream>
+#include <Interface/Application/Preferences.h>
+#include <Interface/Application/NetworkEditor.h>
 
-#include <boost/noncopyable.hpp>
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Controller/Share.h>
+using namespace SCIRun::Gui;
 
-namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
-  
-  template <class Memento>
-  class SCISHARE HistoryItem : boost::noncopyable
+PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor),
+  regressionMode_(false)
+{
+  setupUi(this);
+  connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
+}
+
+void PreferencesWindow::updateRegressionTestDataDir()
+{
+  auto newDir = QFileDialog::getExistingDirectory(this, "Select regression data directory", ".");
+  if (!newDir.isEmpty())
   {
-  public:
-    typedef boost::shared_ptr<HistoryItem<Memento>> Handle;
-    ~HistoryItem() {}
-    virtual Memento memento() const = 0;
-    virtual std::string name() const = 0;
-  };
-
-}
-}
+    regressionTestDataDir_ = newDir;
+    setRegressionTestDataDir();
+  }
 }
 
-#endif
+void PreferencesWindow::setRegressionTestDataDir()
+{
+  regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
+  networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
+}

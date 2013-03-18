@@ -61,7 +61,7 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
   std::transform(
     graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
     std::inserter(map, map.begin()), 
-    [&](int vertex){ return std::make_pair(time[vertex], graphAnalyzer.moduleName(vertex)); }
+    [&](int vertex){ return std::make_pair(time[vertex], graphAnalyzer.moduleAt(vertex)); }
   );
 
   return ParallelModuleExecutionOrder(map);

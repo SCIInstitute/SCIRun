@@ -82,8 +82,6 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWith
  
   VectorXd x(n);
   x.setZero();
-  //SparseRowMatrix A(n,n);
-  //copyDenseToSparse(m1, A);
 
   std::cout << "matrix to solve: \n" << m1 << std::endl;
   
@@ -337,7 +335,6 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
 
   std::cout << A->nrows() << " x " << A->ncols() << std::endl;
 
-  //const int n = A->ncols();
   auto b = converter.make(rhsFile); 
   ASSERT_TRUE(b);
   std::cout << b->nrows() << " x " << b->ncols() << std::endl;

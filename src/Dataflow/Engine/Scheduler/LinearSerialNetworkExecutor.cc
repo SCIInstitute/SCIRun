@@ -46,7 +46,7 @@ namespace
     void operator()() const
     {
       bounds_.executeStarts_();
-      BOOST_FOREACH(const std::string& id, order_)
+      BOOST_FOREACH(const ModuleId& id, order_)
       {
         ExecutableObject* obj = lookup_.lookupExecutable(id);
         if (obj)

@@ -28,21 +28,21 @@
 
 SET(Engine_Network_SRCS
   NetworkEditorController.cc
-  HistoryItem.cc
-  HistoryItemFactory.cc
-  HistoryItemImpl.cc
-  HistoryManager.cc
   NetworkCommands.cc
+  ProvenanceItem.cc
+  ProvenanceItemFactory.cc
+  ProvenanceItemImpl.cc
+  ProvenanceManager.cc
 )
 
 SET(Engine_Network_HEADERS
   ControllerInterfaces.h
   NetworkEditorController.h
-  HistoryItem.h
-  HistoryItemFactory.h
-  HistoryItemImpl.h
-  HistoryManager.h
   NetworkCommands.h
+  ProvenanceItem.h
+  ProvenanceItemFactory.h
+  ProvenanceItemImpl.h
+  ProvenanceManager.h
   Share.h
 )
 

@@ -37,15 +37,16 @@ SET(Interface_Application_SOURCES
   DeveloperConsole.cc
   GuiApplication.cc
   GuiLogger.cc
-  HistoryWindow.cc
   ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
   NetworkExecutionProgressBar.cc
+  ProvenanceWindow.cc
   SCIRunMainWindow.cc
   Node.cc
   NoteEditor.cc
   Port.cc
+  Preferences.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
@@ -56,27 +57,29 @@ SET(Interface_Application_HEADERS
   DeveloperConsole.h
   GuiApplication.h
   GuiLogger.h
-  HistoryWindow.h
   ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
   NetworkExecutionProgressBar.h
+  ProvenanceWindow.h
   SCIRunMainWindow.h
   Node.h
   Note.h
   NoteEditor.h
   Connection.h
   Port.h
+  Preferences.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
 )
 
 SET(Interface_Application_FORMS
   DeveloperConsole.ui
-  HistoryWindow.ui
   Module.ui
   ModuleLogWindow.ui
   NoteEditor.ui
+  Preferences.ui
+  ProvenanceWindow.ui
   SCIRunMainWindow.ui
   RenderWindow.ui
 )

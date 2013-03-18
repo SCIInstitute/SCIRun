@@ -65,7 +65,7 @@ public:
   virtual void reset() {}
   virtual void finish() {}
 
-  virtual std::string getUnderlyingModuleId() const;
+  virtual ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
 
   //TODO:

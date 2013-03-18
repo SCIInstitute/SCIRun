@@ -73,10 +73,27 @@ Q_SIGNALS:
     void moduleExecuteStart(const std::string& id);
     void moduleExecuteEnd(const std::string& id);
   };
+
+  class ModuleProxyWidget;
   
+  class ZLevelManager
+  {
+  public:
+    explicit ZLevelManager(QGraphicsScene* scene);
+    int max() const { return maxZ_; }
+    void bringToFront();
+    void sendToBack();
+  private:
+    void setZValue(int z);
+    ModuleProxyWidget* selectedModuleProxy() const;
+    QGraphicsScene* scene_;
+    int minZ_;
+    int maxZ_;
+    enum { INITIAL_Z = 1000 };
+  };
+
   class ConnectionLine;
   class ModuleWidget;
-  class ModuleProxyWidget;
   class NetworkEditorControllerGuiProxy;
 
   class NetworkEditor : public QGraphicsView, 
@@ -92,7 +109,7 @@ Q_SIGNALS:
     QList<QAction*> getModuleSpecificActions() const;
     void setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller);
     boost::shared_ptr<NetworkEditorControllerGuiProxy> getNetworkEditorController() const;
-    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const std::string& id) const;
+    virtual SCIRun::Dataflow::Networks::ExecutableObject* lookupExecutable(const SCIRun::Dataflow::Networks::ModuleId& id) const;
 
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& file);
@@ -122,6 +139,7 @@ Q_SIGNALS:
   public Q_SLOTS:
     void addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
+    void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
     void executeAll();
     virtual void clear();
     void setConnectionPipelineType(int type);
@@ -134,7 +152,7 @@ Q_SIGNALS:
     void networkExecuted();
     void networkExecutionFinished(); 
     void networkEditorMouseButtonPressed();
-    void moduleMoved(const std::string& id, double newX, double newY);
+    void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
   private Q_SLOTS:
     void del();
@@ -154,7 +172,6 @@ Q_SIGNALS:
     void setZValue(int z);
     void setupModuleWidget(ModuleWidget* node);
     ModuleWidget* selectedModule() const;
-    ModuleProxyWidget* selectedModuleProxy() const;
     ConnectionLine* selectedLink() const;
     ModulePair selectedModulePair() const;
     void addNewModuleAtPosition(const QPoint& position);
@@ -164,15 +181,11 @@ Q_SIGNALS:
     //QAction* copyAction_;
     //QAction* pasteAction_;
     QAction* deleteAction_;
-    //QAction* bringToFrontAction_;
     QAction* sendToBackAction_;
     QAction* propertiesAction_;
     //QAction* executeAction_;
 
     QGraphicsScene* scene_;
-  
-    int minZ_;
-    int maxZ_;
 
     QPointF lastModulePosition_;
     QPoint defaultModulePosition_;
@@ -180,10 +193,9 @@ Q_SIGNALS:
     boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter_;
     boost::shared_ptr<NetworkEditorControllerGuiProxy> controller_;
     boost::shared_ptr<DefaultNotePositionGetter> defaultNotePositionGetter_;
-
     boost::shared_ptr<ModuleEventProxy> moduleEventProxy_;
+    boost::shared_ptr<ZLevelManager> zLevelManager_;
   };
-
 }
 }
 

@@ -26,40 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/NullModuleState.h>
+#ifndef ENGINE_NETWORK_PROVENANCEITEMFACTORY_H
+#define ENGINE_NETWORK_PROVENANCEITEMFACTORY_H
 
-using namespace SCIRun::Engine::State;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
+#include <Dataflow/Engine/Controller/Share.h>
+
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
   
-void NullModuleState::setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&)
-{
+}
+}
 }
 
-const NullModuleState::Value NullModuleState::getValue(const Name&) const
-{
-  return Value();
-}
-
-NullModuleState::Keys NullModuleState::getKeys() const
-{
-  return Keys();
-}
-
-ModuleStateHandle NullModuleState::clone() const
-{
-  return ModuleStateHandle(new NullModuleState);
-}
-
-boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
-{
-  return boost::signals::connection();
-}
-
-const NullModuleState::TransientValue NullModuleState::getTransientValue(const std::string& name) const
-{
-  return TransientValue();
-}
-
-void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
-{
-}
+#endif

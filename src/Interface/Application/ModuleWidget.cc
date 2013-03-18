@@ -110,7 +110,7 @@ namespace Gui {
         << disabled(new QAction("Execute", parent))
         << new QAction("Help", parent)
         << new QAction("Notes", parent)
-        << disabled(new QAction("Duplicate", parent))
+        << new QAction("Duplicate", parent)
         << disabled(new QAction("Replace With->(TODO)", parent))
         << new QAction("Show Log", parent)
         << disabled(new QAction("Make Sub-Network", parent))
@@ -152,7 +152,9 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
+
   //TODO: ultra ugly. no other place for this code right now.
+  //TODO: to be handled in issue #212
   if (name == "ViewScene")
   {
     optionsButton_->setText("VIEW");
@@ -197,6 +199,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   connect(actionsMenu_->getAction("Notes"), SIGNAL(triggered()), noteEditor_, SLOT(raise()));
   connect(noteEditor_, SIGNAL(noteChanged(const Note&)), this, SLOT(updateNote(const Note&)));
 
+  connect(actionsMenu_->getAction("Duplicate"), SIGNAL(triggered()), this, SLOT(duplicate()));
 
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
@@ -240,11 +243,11 @@ void ModuleWidget::addPortLayouts()
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
-  const std::string moduleId = moduleInfoProvider.get_id();
+  const ModuleId moduleId = moduleInfoProvider.get_id();
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), moduleId, i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
@@ -252,7 +255,7 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), QString::fromStdString(moduleId), i, connectionFactory_, closestPortFinder_, this);
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), moduleId, i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     addPort(w);
   }
@@ -305,7 +308,7 @@ ModuleWidget::~ModuleWidget()
   delete logWindow_;
   delete noteEditor_;
 
-  Q_EMIT removeModule(moduleId_);
+  Q_EMIT removeModule(ModuleId(moduleId_));
 }
 
 void ModuleWidget::trackConnections()
@@ -392,4 +395,9 @@ void ModuleWidget::updateNote(const Note& note)
 {
   currentNote_ = note;
   noteUpdated(note);
+}
+
+void ModuleWidget::duplicate()
+{
+  Q_EMIT duplicateModule(theModule_);
 }

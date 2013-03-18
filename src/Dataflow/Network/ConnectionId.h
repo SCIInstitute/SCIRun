@@ -30,7 +30,7 @@
 #ifndef DATAFLOW_NETWORK_CONNECTIONID_H
 #define DATAFLOW_NETWORK_CONNECTIONID_H 
 
-#include <string>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Share.h>
 
 namespace SCIRun {
@@ -40,18 +40,18 @@ namespace Networks {
   struct SCISHARE OutgoingConnectionDescription
   {
     OutgoingConnectionDescription() : port_(-1) {}
-    OutgoingConnectionDescription(const std::string& id, size_t p)
+    OutgoingConnectionDescription(const ModuleId& id, size_t p)
       : moduleId_(id), port_(p) {}
-    std::string moduleId_;
+    ModuleId moduleId_;
     size_t port_;
   };
 
   struct SCISHARE IncomingConnectionDescription
   {
     IncomingConnectionDescription() : port_(-1) {}
-    IncomingConnectionDescription(const std::string& id, size_t p)
+    IncomingConnectionDescription(const ModuleId& id, size_t p)
       : moduleId_(id), port_(p) {}
-    std::string moduleId_;
+    ModuleId moduleId_;
     size_t port_;
   };
 

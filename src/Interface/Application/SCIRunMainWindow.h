@@ -45,8 +45,9 @@ namespace SCIRun {
 namespace Gui {
 
 class NetworkEditor;
-class HistoryWindow;
+class ProvenanceWindow;
 class DeveloperConsole;
+class PreferencesWindow;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -61,8 +62,9 @@ private:
   static SCIRunMainWindow* instance_;
   SCIRunMainWindow();
   NetworkEditor* networkEditor_;
-  HistoryWindow* historyWindow_;
+  ProvenanceWindow* provenanceWindow_;
   DeveloperConsole* devConsole_;
+  PreferencesWindow* prefs_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   
@@ -77,18 +79,18 @@ private:
   void makeFilterButtonMenu();
   void writeSettings();
   void readSettings();
-  void setupHistoryWindow();
+  void setupNetworkEditor();
+  void setupProvenanceWindow();
   void setupDevConsole();
+  void setupPreferencesWindow();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
   QString currentFile_;
   QDir latestNetworkDirectory_;
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
-  boost::shared_ptr<class GuiActionCommandHistoryConverter> commandConverter_;
+  boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
-  bool regressionMode_;
-  QString regressionTestDataDir_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);
@@ -105,8 +107,6 @@ private Q_SLOTS:
   void makePipesManhattan();
   void disableInputWidgets(); 
   void enableInputWidgets();
-  void setRegressionTestDataDir();
-  void updateRegressionTestDataDir();
   void chooseBackgroundColor();
   void resetBackgroundColor();
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);

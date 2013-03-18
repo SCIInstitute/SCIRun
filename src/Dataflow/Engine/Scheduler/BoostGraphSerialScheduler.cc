@@ -41,7 +41,7 @@ ModuleExecutionOrder BoostGraphSerialScheduler::schedule(const NetworkInterface&
   std::transform(
     graphAnalyzer.topologicalBegin(), graphAnalyzer.topologicalEnd(), 
     std::back_inserter(list), 
-    [&](int vertex){ return graphAnalyzer.moduleName(vertex); }
+    [&](int vertex){ return graphAnalyzer.moduleAt(vertex); }
   );
   
   return ModuleExecutionOrder(list);

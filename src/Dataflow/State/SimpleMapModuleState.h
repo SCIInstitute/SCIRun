@@ -46,6 +46,7 @@ namespace State {
     virtual const Value getValue(const Name& name) const;
     virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value);
     virtual Keys getKeys() const;
+    virtual SCIRun::Dataflow::Networks::ModuleStateHandle clone() const;
     virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber);
 
     virtual const TransientValue getTransientValue(const std::string& name) const;

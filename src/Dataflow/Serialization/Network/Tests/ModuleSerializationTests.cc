@@ -66,14 +66,14 @@ TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
 TEST(SerializeNetworkTest, WhatDoWeNeed)
 {
   ConnectionDescriptionXML conn;
-  conn.out_.moduleId_ = "module1";
-  conn.in_.moduleId_ = "module2";
+  conn.out_.moduleId_ = ModuleId("moduleA:1");
+  conn.in_.moduleId_ = ModuleId("moduleB:2");
   conn.out_.port_ = 0;
   conn.in_.port_ = 1;
 
   ConnectionDescriptionXML conn2;
-  conn2.out_.moduleId_ = "module1a";
-  conn2.in_.moduleId_ = "module2a";
+  conn2.out_.moduleId_ = ModuleId("moduleC:3");
+  conn2.in_.moduleId_ = ModuleId("moduleD:4");
   conn2.out_.port_ = 1;
   conn2.in_.port_ = 2;
 

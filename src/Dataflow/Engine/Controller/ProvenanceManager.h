@@ -26,12 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_HISTORYMANAGER_H
-#define ENGINE_NETWORK_HISTORYMANAGER_H
+#ifndef ENGINE_NETWORK_PROVENANCEMANAGER_H
+#define ENGINE_NETWORK_PROVENANCEMANAGER_H
 
 #include <stack>
 #include <boost/noncopyable.hpp>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
@@ -40,15 +40,15 @@ namespace Dataflow {
 namespace Engine {
   
   template <class Memento>
-  class HistoryManager : boost::noncopyable
+  class ProvenanceManager : boost::noncopyable
   {
   public:
-    typedef HistoryItem<Memento> Item;
+    typedef ProvenanceItem<Memento> Item;
     typedef typename Item::Handle ItemHandle;
     typedef std::stack<ItemHandle> Stack;
     typedef typename Stack::container_type List;
 
-    explicit HistoryManager(Engine::NetworkIOInterface<Memento>* networkIO);
+    explicit ProvenanceManager(Engine::NetworkIOInterface<Memento>* networkIO);
     void setInitialState(const Memento& initialState);
     void addItem(ItemHandle item);
     ItemHandle undo();
@@ -73,48 +73,48 @@ namespace Engine {
 
 
   template <class Memento>
-  HistoryManager<Memento>::HistoryManager(NetworkIOInterface<Memento>* networkIO) : networkIO_(networkIO) {}
+  ProvenanceManager<Memento>::ProvenanceManager(NetworkIOInterface<Memento>* networkIO) : networkIO_(networkIO) {}
 
   template <class Memento>
-  void HistoryManager<Memento>::setInitialState(const Memento& initialState)
+  void ProvenanceManager<Memento>::setInitialState(const Memento& initialState)
   {
     initialState_ = initialState;
   }
 
   template <class Memento>
-  size_t HistoryManager<Memento>::undoSize() const
+  size_t ProvenanceManager<Memento>::undoSize() const
   {
     return undo_.size();
   }
 
   template <class Memento>
-  size_t HistoryManager<Memento>::redoSize() const
+  size_t ProvenanceManager<Memento>::redoSize() const
   {
     return redo_.size();
   }
 
   template <class Memento>
-  void HistoryManager<Memento>::addItem(typename HistoryManager<Memento>::ItemHandle item)
+  void ProvenanceManager<Memento>::addItem(typename ProvenanceManager<Memento>::ItemHandle item)
   {
     undo_.push(item);
     Stack().swap(redo_);
   }
 
   template <class Memento>
-  void HistoryManager<Memento>::clearAll()
+  void ProvenanceManager<Memento>::clearAll()
   {
     Stack().swap(undo_);
     Stack().swap(redo_);
   }
 
   template <class Memento>
-  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::undo()
+  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::undo()
   {
     return undo(true);
   }
 
   template <class Memento>
-  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::undo(bool restore)
+  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::undo(bool restore)
   {
     if (!undo_.empty())
     {
@@ -138,13 +138,13 @@ namespace Engine {
   }
   
   template <class Memento>
-  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::redo()
+  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo()
   {
     return redo(true);
   }
 
   template <class Memento>
-  typename HistoryManager<Memento>::ItemHandle HistoryManager<Memento>::redo(bool restore)
+  typename ProvenanceManager<Memento>::ItemHandle ProvenanceManager<Memento>::redo(bool restore)
   {
     if (!redo_.empty())
     {
@@ -165,7 +165,7 @@ namespace Engine {
   }
 
   template <class Memento>
-  typename HistoryManager<Memento>::List HistoryManager<Memento>::undoAll()
+  typename ProvenanceManager<Memento>::List ProvenanceManager<Memento>::undoAll()
   {
     List undone;
     while (0 != undoSize())
@@ -177,7 +177,7 @@ namespace Engine {
   }
 
   template <class Memento>
-  typename HistoryManager<Memento>::List HistoryManager<Memento>::redoAll()
+  typename ProvenanceManager<Memento>::List ProvenanceManager<Memento>::redoAll()
   {
     List redone;
     while (0 != redoSize())

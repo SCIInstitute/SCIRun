@@ -26,10 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_HISTORYITEMIMPL_H
-#define ENGINE_NETWORK_HISTORYITEMIMPL_H
+#ifndef ENGINE_NETWORK_PROVENANCEITEMIMPL_H
+#define ENGINE_NETWORK_PROVENANCEITEMIMPL_H
 
-#include <Dataflow/Engine/Controller/HistoryItem.h>
+#include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Engine/Controller/Share.h>
 
@@ -37,58 +38,58 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
   
-  class SCISHARE HistoryItemBase : public HistoryItem<Networks::NetworkFileHandle>
+  class SCISHARE ProvenanceItemBase : public ProvenanceItem<Networks::NetworkFileHandle>
   {
   public:
-    explicit HistoryItemBase(Networks::NetworkFileHandle state);
+    explicit ProvenanceItemBase(Networks::NetworkFileHandle state);
     virtual Networks::NetworkFileHandle memento() const;
   protected:
     Networks::NetworkFileHandle state_;
   };
 
-  class SCISHARE ModuleAddedHistoryItem : public HistoryItemBase
+  class SCISHARE ModuleAddedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleAddedHistoryItem(const std::string& moduleName, Networks::NetworkFileHandle state);
+    ModuleAddedProvenanceItem(const std::string& moduleName, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
     std::string moduleName_;
   };
 
-  class SCISHARE ModuleRemovedHistoryItem : public HistoryItemBase
+  class SCISHARE ModuleRemovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleRemovedHistoryItem(const std::string& moduleId, Networks::NetworkFileHandle state);
+    ModuleRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
-    std::string moduleId_;
+    SCIRun::Dataflow::Networks::ModuleId moduleId_;
   };
 
-  class SCISHARE ConnectionAddedHistoryItem : public HistoryItemBase
+  class SCISHARE ConnectionAddedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ConnectionAddedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, Networks::NetworkFileHandle state);
+    ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
     SCIRun::Dataflow::Networks::ConnectionDescription desc_;
   };
 
-  class SCISHARE ConnectionRemovedHistoryItem : public HistoryItemBase
+  class SCISHARE ConnectionRemovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ConnectionRemovedHistoryItem(const SCIRun::Dataflow::Networks::ConnectionId& id, Networks::NetworkFileHandle state);
+    ConnectionRemovedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionId& id, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
     SCIRun::Dataflow::Networks::ConnectionId id_;
   };
 
-  class SCISHARE ModuleMovedHistoryItem : public HistoryItemBase
+  class SCISHARE ModuleMovedProvenanceItem : public ProvenanceItemBase
   {
   public:
-    ModuleMovedHistoryItem(const std::string& moduleId, double newX, double newY, Networks::NetworkFileHandle state);
+    ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, Networks::NetworkFileHandle state);
     virtual std::string name() const;
   private:
-    std::string moduleId_;
+    SCIRun::Dataflow::Networks::ModuleId moduleId_;
     double newX_, newY_;
   };
 }

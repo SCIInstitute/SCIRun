@@ -46,6 +46,7 @@ class Connection;
 class InputPortInterface;
 class OutputPortInterface;
 struct ConnectionId;
+struct ModuleId;
 struct ModuleDescription;
 struct ModuleLookupInfo;
 class ModuleFactory;

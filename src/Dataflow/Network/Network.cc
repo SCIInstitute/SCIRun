@@ -60,7 +60,7 @@ ModuleHandle Network::add_module(const ModuleLookupInfo& info)
   return module;
 }
 
-bool Network::remove_module(const std::string& id)
+bool Network::remove_module(const ModuleId& id)
 {
   Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   if (loc != modules_.end())
@@ -160,13 +160,13 @@ ModuleHandle Network::module(size_t i) const
   return modules_[i];
 }
 
-ModuleHandle Network::lookupModule(const std::string& id) const
+ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
   Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   return i == modules_.end() ? ModuleHandle() : *i;
 }
 
-ExecutableObject* Network::lookupExecutable(const std::string& id) const
+ExecutableObject* Network::lookupExecutable(const ModuleId& id) const
 {
   return lookupModule(id).get();
 }
@@ -217,7 +217,7 @@ int Network::errorCode() const
   return errorCode_;
 }
 
-void Network::incrementErrorCode(const std::string& moduleId)
+void Network::incrementErrorCode(const ModuleId& moduleId)
 {
   errorCode_++;
   //TODO: store errored modules in a list or something

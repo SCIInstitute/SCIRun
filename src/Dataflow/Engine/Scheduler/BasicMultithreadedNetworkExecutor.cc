@@ -29,6 +29,7 @@
 #include <iostream>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Parallel.h>
 #include <boost/thread.hpp>
@@ -59,7 +60,7 @@ namespace
           return [&]() { lookup_.lookupExecutable(mod.second)->execute(); };
         });
 
-        std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
+        //std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
         Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
       }
       bounds_.executeFinishes_(lookup_.errorCode());

@@ -30,6 +30,7 @@
 #define ENGINE_SCHEDULER_SERIAL_MODULE_EXECUTION_ORDER_H
 
 #include <list>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/Share.h>
 
@@ -41,7 +42,7 @@ namespace Engine {
   class SCISHARE ModuleExecutionOrder
   {
   public:
-    typedef std::list<std::string> ModuleIdList;
+    typedef std::list<Networks::ModuleId> ModuleIdList;
     typedef ModuleIdList::iterator iterator;
     typedef ModuleIdList::const_iterator const_iterator;
 

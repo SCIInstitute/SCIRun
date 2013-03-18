@@ -77,7 +77,8 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
     portIndex++;
   }
   
-  ON_CALL(*module, get_id()).WillByDefault(Return("module" + boost::lexical_cast<std::string>(++moduleCounter_)));
+  ModuleId id("module", ++moduleCounter_);
+  ON_CALL(*module, get_id()).WillByDefault(Return(id));
 
   //not used now, commenting out.
   //if (stateFactory_)

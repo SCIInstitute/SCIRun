@@ -28,11 +28,12 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Dataflow/Engine/Controller/HistoryItem.h>
-#include <Dataflow/Engine/Controller/HistoryItemFactory.h>
-#include <Dataflow/Engine/Controller/HistoryItemImpl.h>
+#include <Dataflow/Engine/Controller/ProvenanceItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceItemFactory.h>
+#include <Dataflow/Engine/Controller/ProvenanceItemImpl.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -45,7 +46,7 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 
 
-class HistoryItemTests : public ::testing::Test
+class ProvenanceItemTests : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -58,22 +59,18 @@ protected:
   MockNetworkPtr mockNetwork_;
 };
 
-TEST_F(HistoryItemTests, CanCreateAddModule)
+TEST_F(ProvenanceItemTests, CanCreateAddModule)
 {
   const std::string name = "ComputeSVD";
-  ModuleAddedHistoryItem item(name, NetworkFileHandle());
+  ModuleAddedProvenanceItem item(name, NetworkFileHandle());
 
   EXPECT_EQ("Module Added: " + name, item.name());
-
-  //FAIL();
 }
 
-TEST_F(HistoryItemTests, CanCreateRemoveModule)
+TEST_F(ProvenanceItemTests, CanCreateRemoveModule)
 {
-  const std::string name = "ComputeSVD";
-  ModuleRemovedHistoryItem item(name, NetworkFileHandle());
+  const std::string id = "ComputeSVD1";
+  ModuleRemovedProvenanceItem item((ModuleId(id)), NetworkFileHandle());
 
-  EXPECT_EQ("Module Removed: " + name, item.name());
-
-  //FAIL();
+  EXPECT_EQ("Module Removed: " + id, item.name());
 }

@@ -40,11 +40,14 @@ namespace Dataflow {
 namespace Engine {
   
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle)> ModuleAddedSignalType;
-  typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
+  // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
+  //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
+  //   This will be done in issue #231
 
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
   {
@@ -53,7 +56,8 @@ namespace Engine {
     explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
 
     Networks::ModuleHandle addModule(const std::string& moduleName);
-    void removeModule(const std::string& id);
+    void removeModule(const Networks::ModuleId& id);
+    Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
@@ -82,6 +86,7 @@ namespace Engine {
 
   private:
     void printNetwork() const;
+    Networks::ModuleHandle addModuleImpl(const std::string& moduleName);
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;

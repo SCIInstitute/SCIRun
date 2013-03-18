@@ -26,10 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Engine/Controller/HistoryManager.h>
-#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#ifndef ENGINE_NETWORK_PROVENANCEITEM_H
+#define ENGINE_NETWORK_PROVENANCEITEM_H
 
-using namespace SCIRun;
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <boost/noncopyable.hpp>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Engine/Controller/Share.h>
 
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
+  
+  template <class Memento>
+  class SCISHARE ProvenanceItem : boost::noncopyable
+  {
+  public:
+    typedef boost::shared_ptr<ProvenanceItem<Memento>> Handle;
+    ~ProvenanceItem() {}
+    virtual Memento memento() const = 0;
+    virtual std::string name() const = 0;
+  };
+
+}
+}
+}
+
+#endif

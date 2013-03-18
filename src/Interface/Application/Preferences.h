@@ -26,40 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/NullModuleState.h>
+#ifndef INTERFACE_APPLICATION_PREFERENCES_H
+#define INTERFACE_APPLICATION_PREFERENCES_H
 
-using namespace SCIRun::Engine::State;
-using namespace SCIRun::Dataflow::Networks;
+#include "ui_Preferences.h"
+
+namespace SCIRun {
+namespace Gui {
+
+  class NetworkEditor;
+
+class PreferencesWindow : public QDialog, public Ui::PreferencesDialog
+{
+	Q_OBJECT
+	
+public:
+  explicit PreferencesWindow(NetworkEditor* editor, QWidget* parent = 0);
   
-void NullModuleState::setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&)
-{
+  bool isRegression() const { return regressionMode_; }
+  void setRegressionMode(bool mode) { regressionMode_ = mode; }
+
+  QString regressionTestDataDir() const { return regressionTestDataDir_; }
+  void setRegressionTestDataDir(const QString& dir) { regressionTestDataDir_ = dir; }
+
+public Q_SLOTS:
+  void updateRegressionTestDataDir();
+  void setRegressionTestDataDir();
+private:
+  NetworkEditor* networkEditor_;
+  bool regressionMode_;
+  QString regressionTestDataDir_;
+};
+
+}
 }
 
-const NullModuleState::Value NullModuleState::getValue(const Name&) const
-{
-  return Value();
-}
-
-NullModuleState::Keys NullModuleState::getKeys() const
-{
-  return Keys();
-}
-
-ModuleStateHandle NullModuleState::clone() const
-{
-  return ModuleStateHandle(new NullModuleState);
-}
-
-boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
-{
-  return boost::signals::connection();
-}
-
-const NullModuleState::TransientValue NullModuleState::getTransientValue(const std::string& name) const
-{
-  return TransientValue();
-}
-
-void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
-{
-}
+#endif
