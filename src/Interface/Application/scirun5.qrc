@@ -1,5 +1,6 @@
 <RCC>
-  <qresource prefix="gear">
-    <file>Gear.png</file>
-  </qresource>
+    <qresource prefix="/gear">
+        <file>Gear.png</file>
+        <file>splash-scirun.png</file>
+    </qresource>
 </RCC>
