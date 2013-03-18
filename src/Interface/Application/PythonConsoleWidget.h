@@ -29,6 +29,7 @@
 #ifndef INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 #define INTERFACE_APPLICATION_PYTHONCONSOLEWIDGET_H
 
+#ifdef BUILD_WITH_PYTHON
 #include <boost/shared_ptr.hpp>
 #include <QDockWidget>
 
@@ -56,5 +57,9 @@ private:
 };
 
 }}
+
+#else
+class PythonConsoleWidget {};
+#endif
 
 #endif

@@ -375,6 +375,7 @@ IF(BUILD_WITH_PYTHON)
   MESSAGE(STATUS "Configuring Python")
   FIND_PACKAGE(PythonLibs REQUIRED)
   ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
 ENDIF(BUILD_WITH_PYTHON)  
 
 ########################################################################

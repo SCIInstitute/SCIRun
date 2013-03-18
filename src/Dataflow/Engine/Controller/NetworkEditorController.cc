@@ -36,13 +36,16 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
+#ifdef BUILD_WITH_PYTHON
 //TODO: move into separate file
 class PythonImpl : public NetworkEditorPythonInterface
 {
@@ -72,6 +75,7 @@ public:
 private:
   NetworkEditorController& nec_;
 };
+#endif
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg) : 
   moduleFactory_(mf), 
@@ -82,7 +86,9 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
 
+#ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface>(new PythonImpl(*this)));
+#endif
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg)

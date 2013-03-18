@@ -26,6 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+#ifdef BUILD_WITH_PYTHON
 #include <iostream>
 #include <QApplication>
 #include <QClipboard>
@@ -410,3 +411,5 @@ void PythonConsoleWidget::showBanner()
 {
   PythonInterpreter::Instance().print_banner();
 }
+
+#endif

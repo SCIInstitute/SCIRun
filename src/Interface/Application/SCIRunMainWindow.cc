@@ -317,6 +317,7 @@ void SCIRunMainWindow::initialize()
   
   prefs_->setRegressionTestDataDir();
 
+  //TODO: obviously need to move this lower for headless mode.
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
   {
@@ -790,10 +791,14 @@ void SCIRunMainWindow::setupPreferencesWindow()
 
 void SCIRunMainWindow::setupPythonConsole()
 {
+#ifdef BUILD_WITH_PYTHON
   pythonConsole_ = new PythonConsoleWidget(this);
   connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);
   addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
+#else
+  actionPythonConsole_->setEnabled(false);
+#endif
 }

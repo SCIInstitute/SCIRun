@@ -101,11 +101,10 @@ ADD_LIBRARY(Interface_Application
   ${Interface_Application_FORMS_HEADERS}
   ${Interface_Application_RESOURCES_RCC})
 
-TARGET_LINK_LIBRARIES(Interface_Application 
+SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
   Core_Application
   Core_Logging
-  Core_Python
   Interface_Modules_Base
   Interface_Modules_Factory
   ${SCI_SPIRE_LIBRARY}
@@ -113,6 +112,22 @@ TARGET_LINK_LIBRARIES(Interface_Application
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )
+
+IF(BUILD_WITH_PYTHON)
+
+TARGET_LINK_LIBRARIES(Interface_Application 
+  ${NonPythonInterface_ApplicationLinkLibraries}
+  Core_Python
+)
+
+ELSE()
+
+TARGET_LINK_LIBRARIES(Interface_Application 
+  ${NonPythonInterface_ApplicationLinkLibraries}
+)
+
+ENDIF()
+
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Application)

@@ -51,13 +51,27 @@ ADD_LIBRARY(Engine_Network
   ${Engine_Network_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Engine_Network
+SET(Engine_Network_NonPythonDependentLibs
   Dataflow_Network
   Core_Serialization_Network
   Core_Command
   Engine_Scheduler
+)
+
+IF(BUILD_WITH_PYTHON)
+
+TARGET_LINK_LIBRARIES(Engine_Network
+  ${Engine_Network_NonPythonDependentLibs}
   SCIRunPythonAPI
 )
+
+ELSE()
+
+TARGET_LINK_LIBRARIES(Engine_Network
+  ${Engine_Network_NonPythonDependentLibs}
+)
+
+ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Network)
