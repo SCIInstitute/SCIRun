@@ -697,6 +697,9 @@ void SCIRunMainWindow::disableInputWidgets()
   moduleSelectorTreeWidget_->setDisabled(true);
   networkEditor_->disableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+#ifdef BUILD_WITH_PYTHON
+  pythonConsole_->setDisabled(true);
+#endif
 }
 
 void SCIRunMainWindow::enableInputWidgets()
@@ -708,6 +711,9 @@ void SCIRunMainWindow::enableInputWidgets()
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+#ifdef BUILD_WITH_PYTHON
+  pythonConsole_->setDisabled(false);
+#endif
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()

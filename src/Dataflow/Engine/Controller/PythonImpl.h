@@ -48,6 +48,7 @@ namespace Engine {
     explicit PythonImpl(NetworkEditorController& nec);
     virtual std::string addModule(const std::string& name) const;
     virtual std::string removeModule(const std::string& id);
+    virtual std::string executeAll(const Networks::ExecutableLookup& lookup);
   private:
     NetworkEditorController& nec_;
   };

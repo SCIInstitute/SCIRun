@@ -33,12 +33,19 @@
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
 
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Dataflow::Networks;
 
 boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
+ExecutableLookup* NetworkEditorPythonAPI::lookup_ = 0;
 
 void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
 {
   impl_ = impl;
+}
+
+void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
+{
+  lookup_ = lookup;
 }
 
 std::string NetworkEditorPythonAPI::addModule(const std::string& name)
@@ -47,8 +54,7 @@ std::string NetworkEditorPythonAPI::addModule(const std::string& name)
     return impl_->addModule(name);
   else
   {
-    std::cout << "Null implementation: NetworkEditorPythonAPI::addModule()" << std::endl;
-    return "";
+    return "Null implementation: NetworkEditorPythonAPI::addModule()";
   }
 }
 
@@ -58,7 +64,16 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
     return impl_->removeModule(id);
   else
   {
-    std::cout << "Null implementation: NetworkEditorPythonAPI::removeModule()" << std::endl;
-    return "";
+    return "Null implementation: NetworkEditorPythonAPI::removeModule()";
+  }
+}
+
+std::string NetworkEditorPythonAPI::executeAll()
+{
+  if (impl_ && lookup_)
+    return impl_->executeAll(*lookup_);
+  else
+  {
+    return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()"; 
   }
 }

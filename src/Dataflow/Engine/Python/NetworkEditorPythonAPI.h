@@ -30,6 +30,7 @@
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONAPI_H
 
 #include <boost/shared_ptr.hpp>
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/Share.h>
 
 namespace SCIRun {
@@ -43,11 +44,15 @@ namespace Engine {
   public:
     static std::string addModule(const std::string& name);
     static std::string removeModule(const std::string& id);
+    static std::string executeAll();
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
+    //TODO: smelly!
+    static void setExecutionContext(Networks::ExecutableLookup* lookup);
   private:
     NetworkEditorPythonAPI();
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
+    static Networks::ExecutableLookup* lookup_;
   };
 
 }

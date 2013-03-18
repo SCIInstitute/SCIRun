@@ -29,6 +29,7 @@
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 
+#include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/Share.h>
 
 namespace SCIRun {
@@ -41,6 +42,7 @@ namespace SCIRun {
         virtual ~NetworkEditorPythonInterface() {}
         virtual std::string addModule(const std::string& name) const = 0;
         virtual std::string removeModule(const std::string& id) = 0;
+        virtual std::string executeAll(const Networks::ExecutableLookup& lookup) = 0;
       };
 
     }

@@ -38,6 +38,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
   using namespace SCIRun::Dataflow::Engine;
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
+  boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);
 }
 
 #endif

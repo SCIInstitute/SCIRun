@@ -118,6 +118,7 @@ IF(BUILD_WITH_PYTHON)
 TARGET_LINK_LIBRARIES(Interface_Application 
   ${NonPythonInterface_ApplicationLinkLibraries}
   Core_Python
+  SCIRunPythonAPI
 )
 
 ELSE()

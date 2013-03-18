@@ -42,12 +42,16 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
+#ifdef BUILD_WITH_PYTHON
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#endif
 
 #include <boost/bind.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
   boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent) 
@@ -75,6 +79,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 
   updateActions();
   ensureVisible(0,0,0,0);
+#ifdef BUILD_WITH_PYTHON
+  NetworkEditorPythonAPI::setExecutionContext(this);
+#endif
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
