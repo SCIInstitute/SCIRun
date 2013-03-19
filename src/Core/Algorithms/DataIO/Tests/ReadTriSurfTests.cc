@@ -31,12 +31,56 @@
 
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 
+#include <Core/Datatypes/Mesh/FieldFwd.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
+
 using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Datatypes;
 
 TEST(ReadTriSurfTests, ReadFromFilePoints)
 {
   TextToTriSurfFieldAlgorithm algo;
-  // temporarily hardcoded
+  // TODO: temporarily hardcoded, replace with unit test directory variable
   const std::string filename("/Volumes/scratch/cibc/SCIRunUnitTestData/Fields/convert-examples/simple_triangle_trisurf.pts");
-  algo.run(filename);
+  MeshHandle mesh = algo.run(filename);
+  ASSERT_TRUE(mesh);
+  
+  VirtualMeshHandle vmesh = mesh->vmesh();
+  ASSERT_TRUE(vmesh);
+  ASSERT_TRUE(vmesh->is_trisurfmesh());
+  // TODO: code needs to be enabled
+  //ASSERT_TRUE(vmesh->is_unstructuredmesh());
+}
+
+TEST(ReadTriSurfTests, ReadFromFileFaces)
+{
+  TextToTriSurfFieldAlgorithm algo;
+  // TODO: temporarily hardcoded, replace with unit test directory variable
+  const std::string filename("/Volumes/scratch/cibc/SCIRunUnitTestData/Fields/convert-examples/simple_triangle_trisurf.fac");
+  MeshHandle mesh = algo.run(filename);
+  ASSERT_TRUE(mesh);
+  
+  VirtualMeshHandle vmesh = mesh->vmesh();
+  ASSERT_TRUE(vmesh);
+  ASSERT_TRUE(vmesh->is_trisurfmesh());
+  // TODO: code needs to be enabled
+  //ASSERT_TRUE(vmesh->is_unstructuredmesh());
+}
+
+
+TEST(ReadTriSurfTests, ReadInvalidPointsFile)
+{
+  TextToTriSurfFieldAlgorithm algo;
+  const std::string filename("not_a_valid_file.pts");
+  MeshHandle mesh = algo.run(filename);
+  ASSERT_FALSE(mesh);
+}
+
+
+TEST(ReadTriSurfTests, ReadInvalidFacesFile)
+{
+  TextToTriSurfFieldAlgorithm algo;
+  const std::string filename("not_a_valid_file.fac");
+  MeshHandle mesh = algo.run(filename);
+  ASSERT_FALSE(mesh);
 }

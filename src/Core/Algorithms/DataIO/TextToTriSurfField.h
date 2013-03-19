@@ -31,6 +31,8 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
+#include <Core/Datatypes/Mesh/FieldFwd.h>
+
 #include <Core/Algorithms/DataIO/Share.h>
 
 namespace SCIRun {
@@ -43,7 +45,7 @@ class TextToTriSurfFieldPrivate;
 class SCISHARE TextToTriSurfFieldAlgorithm : public AlgorithmBase
 {
 public:
-  void run(const std::string& filename);
+  SCIRun::Core::Datatypes::MeshHandle run(const std::string& filename);
 
 };
   

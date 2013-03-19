@@ -47,6 +47,7 @@ ADD_LIBRARY(Algorithms_DataIO
 
 TARGET_LINK_LIBRARIES(Algorithms_DataIO
   Core_Datatypes
+  Core_Datatypes_Mesh
   Algorithms_Base
   ${SCI_BOOST_LIBRARY}
 )
