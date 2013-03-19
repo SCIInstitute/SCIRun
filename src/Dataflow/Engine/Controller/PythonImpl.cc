@@ -30,6 +30,7 @@
 
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 
@@ -38,7 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 PythonImpl::PythonImpl(NetworkEditorController& nec) : nec_(nec) {}
 
-std::string PythonImpl::addModule(const std::string& name) const
+std::string PythonImpl::addModule(const std::string& name)
 {
   auto m = nec_.addModule(name);
   if (m)
@@ -64,6 +65,34 @@ std::string PythonImpl::executeAll(const ExecutableLookup& lookup)
 {
   nec_.executeAll(lookup);
   return "Execution finished.";
+}
+
+std::string PythonImpl::connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
+{
+  auto network = nec_.getNetwork();
+  auto mod1 = network->lookupModule(ModuleId(moduleId1));
+  auto mod2 = network->lookupModule(ModuleId(moduleId2));
+  return "PythonImpl::connect does nothing";
+}
+
+std::string PythonImpl::disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
+{
+  return "PythonImpl::disconnect does nothing";
+}
+
+std::string PythonImpl::saveNetwork(const std::string& filename)
+{
+  return "PythonImpl::saveNetwork does nothing";
+}
+
+std::string PythonImpl::loadNetwork(const std::string& filename)
+{
+  return "PythonImpl::loadNetwork does nothing";
+}
+
+std::string PythonImpl::quit(bool force)
+{
+  return "PythonImpl::quit does nothing";
 }
 
 #endif

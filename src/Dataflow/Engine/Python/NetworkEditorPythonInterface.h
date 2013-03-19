@@ -40,9 +40,14 @@ namespace SCIRun {
       {
       public:
         virtual ~NetworkEditorPythonInterface() {}
-        virtual std::string addModule(const std::string& name) const = 0;
+        virtual std::string addModule(const std::string& name) = 0;
         virtual std::string removeModule(const std::string& id) = 0;
         virtual std::string executeAll(const Networks::ExecutableLookup& lookup) = 0;
+        virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
+        virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
+        virtual std::string saveNetwork(const std::string& filename) = 0;
+        virtual std::string loadNetwork(const std::string& filename) = 0;
+        virtual std::string quit(bool force) = 0;
       };
 
     }
