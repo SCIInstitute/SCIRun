@@ -27,7 +27,9 @@
 */
 
 #include <QApplication>
+#include <QSplashScreen>
 #include <QMessageBox>
+#include <QTimer>
 #include <Interface/Application/GuiApplication.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Application/Application.h>
@@ -37,12 +39,37 @@ using namespace SCIRun::Gui;
 int GuiApplication::run(int argc, const char* argv[])
 {
   QApplication app(argc, const_cast<char**>(argv));
-  SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-  mainWin->setController(Core::Application::Instance().controller());
-  mainWin->show();
-  mainWin->initialize();
+
   try
-  {
+  { 
+    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+
+    //Splash screen attempt: can't quite get it to work yet.
+#if 0
+    {
+      //std::cout << "showing splash screen" << std::endl;
+      QPixmap pixmap(":/gear/splash-scirun.png");
+      //std::cout << pixmap.isNull() << std::endl;
+      QSplashScreen splash(mainWin, pixmap,  Qt::WindowStaysOnTopHint);
+      splash.show();
+      //splash.showMessage("pootzor");
+      app.processEvents();
+
+      QTimer splashTimer;
+      splashTimer.setSingleShot( true );
+      splashTimer.setInterval( 3000 ); //4 seconds
+      QObject::connect( &splashTimer, SIGNAL( timeout() ), &splash, SLOT( close() ));
+      splashTimer.start(); 
+      //std::cout << "done showing splash screen" << std::endl;
+      //splash.showMessage("here is teh app");
+      splash.finish(mainWin);
+    }
+#endif
+    mainWin->setController(Core::Application::Instance().controller());
+    mainWin->raise();
+    mainWin->show();
+    mainWin->initialize();
+    
     return app.exec();
   }
   catch (std::exception& e)

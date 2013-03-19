@@ -37,6 +37,7 @@
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Preferences.h>
+#include <Interface/Application/PythonConsoleWidget.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -193,6 +194,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionLoad_->setWhatsThis(tr("Click this option to load a new network file from disk."));
   actionEnterWhatsThisMode_ = QWhatsThis::createAction(this);
   actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
+  actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
 
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
   connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
@@ -290,6 +292,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   
   setupProvenanceWindow();
   setupDevConsole();
+  setupPythonConsole();
 
   makeFilterButtonMenu();
   activateWindow();
@@ -299,6 +302,9 @@ void SCIRunMainWindow::initialize()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
+
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId&)), 
+    networkEditor_, SLOT(removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId&)));
 
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)), 
     commandConverter_.get(), SLOT(moduleAdded(const std::string&, SCIRun::Dataflow::Networks::ModuleHandle)));
@@ -314,6 +320,7 @@ void SCIRunMainWindow::initialize()
   
   prefs_->setRegressionTestDataDir();
 
+  //TODO: obviously need to move this lower for headless mode.
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
   {
@@ -690,6 +697,9 @@ void SCIRunMainWindow::disableInputWidgets()
   moduleSelectorTreeWidget_->setDisabled(true);
   networkEditor_->disableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+#ifdef BUILD_WITH_PYTHON
+  pythonConsole_->setDisabled(true);
+#endif
 }
 
 void SCIRunMainWindow::enableInputWidgets()
@@ -701,6 +711,9 @@ void SCIRunMainWindow::enableInputWidgets()
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+#ifdef BUILD_WITH_PYTHON
+  pythonConsole_->setDisabled(false);
+#endif
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()
@@ -783,4 +796,18 @@ void SCIRunMainWindow::setupPreferencesWindow()
   connect(actionPreferences_, SIGNAL(triggered()), prefs_, SLOT(show()));
   //connect(prefs_, SIGNAL(visibilityChanged(bool)), actionPreferences_, SLOT(setChecked(bool)));
   prefs_->setVisible(false);
+}
+
+void SCIRunMainWindow::setupPythonConsole()
+{
+#ifdef BUILD_WITH_PYTHON
+  pythonConsole_ = new PythonConsoleWidget(this);
+  connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
+  connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
+  pythonConsole_->setVisible(false);
+  pythonConsole_->setFloating(true);
+  addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
+#else
+  actionPythonConsole_->setEnabled(false);
+#endif
 }

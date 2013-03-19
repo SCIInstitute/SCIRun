@@ -55,26 +55,31 @@ namespace Engine {
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
     explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////Start: To be Pythonized/////////////////////////////
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const Networks::ModuleId& id);
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
+    void executeAll(const Networks::ExecutableLookup& lookup);
+
+    virtual Networks::NetworkFileHandle saveNetwork() const;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+//////////////////////End: To be Pythonized///////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+    virtual void clear();
+
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber);
-    
+
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-
-    void executeAll(const Networks::ExecutableLookup& lookup);
-
-    virtual Networks::NetworkFileHandle saveNetwork() const;
-    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
-    virtual void clear();
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();

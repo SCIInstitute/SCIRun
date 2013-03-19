@@ -115,6 +115,7 @@ IF(BUILD_TESTING)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 ENDIF()
 
+OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
 
 ########################################################################
 # Custom compiler flags and definitions
@@ -222,6 +223,12 @@ SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRA
 SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
+# Fixes Mac build for now, without extra boost/python cmake magic.
+IF(BUILD_WITH_PYTHON)
+  SET(boost_GIT_TAG "origin/pythonAttempt")
+ELSE()
+  SET(boost_GIT_TAG "origin/master")
+ENDIF()
 
 # TODO: fix install step
 #
@@ -230,7 +237,7 @@ SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI
 ExternalProject_Add(Boost_external
   PREFIX ${boost_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
-  GIT_TAG "origin/master"
+  GIT_TAG ${boost_GIT_TAG}
   SOURCE_DIR ${boost_SOURCE_DIR}
   BINARY_DIR ${boost_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
@@ -360,6 +367,15 @@ ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
+########################################################################
+# Python
+
+IF(BUILD_WITH_PYTHON)
+  MESSAGE(STATUS "Configuring Python")
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
+ENDIF(BUILD_WITH_PYTHON)  
 
 ########################################################################
 # Includes
@@ -489,6 +505,18 @@ SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
+
+SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET Spire_external   PROPERTY FOLDER "Externals")
+
+IF(BUILD_WITH_PYTHON)
+  SET_PROPERTY(TARGET diagram PROPERTY FOLDER "Testing Support")
+  SET_PROPERTY(TARGET Core_Python         PROPERTY FOLDER "Core")
+  SET_PROPERTY(TARGET Core_Python_Tests         PROPERTY FOLDER "Core/Tests")
+  SET_PROPERTY(TARGET SCIRunPythonAPI PROPERTY FOLDER "Dataflow/Engine")
+  SET_PROPERTY(TARGET Engine_Python_Tests   PROPERTY FOLDER "Dataflow/Engine/Tests")
+  SET_PROPERTY(TARGET PythonAPI PROPERTY FOLDER "Testing Support")
+ENDIF()
 
 ########################################################################
 # Custom CMake settings for CPack

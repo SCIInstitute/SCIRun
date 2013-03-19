@@ -47,6 +47,7 @@ SET(Interface_Application_SOURCES
   NoteEditor.cc
   Port.cc
   Preferences.cc
+  PythonConsoleWidget.cc
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
@@ -69,6 +70,7 @@ SET(Interface_Application_HEADERS
   Connection.h
   Port.h
   Preferences.h
+  PythonConsoleWidget.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
 )
@@ -99,7 +101,7 @@ ADD_LIBRARY(Interface_Application
   ${Interface_Application_FORMS_HEADERS}
   ${Interface_Application_RESOURCES_RCC})
 
-TARGET_LINK_LIBRARIES(Interface_Application 
+SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
   Core_Application
   Core_Logging
@@ -110,6 +112,23 @@ TARGET_LINK_LIBRARIES(Interface_Application
   ${QT_LIBRARIES}
   ${CMAKE_THREAD_LIBS}
 )
+
+IF(BUILD_WITH_PYTHON)
+
+TARGET_LINK_LIBRARIES(Interface_Application 
+  ${NonPythonInterface_ApplicationLinkLibraries}
+  Core_Python
+  SCIRunPythonAPI
+)
+
+ELSE()
+
+TARGET_LINK_LIBRARIES(Interface_Application 
+  ${NonPythonInterface_ApplicationLinkLibraries}
+)
+
+ENDIF()
+
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Interface_Application)

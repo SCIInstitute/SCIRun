@@ -337,7 +337,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
     if ( privateImpl.validPointsFileExtention(filename) )
     {
       {
-        TextToTriSurfFieldPrivate::LockType lock( privateImpl.getMutex() );
+        TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         ENSURE_FILE_EXISTS(filename);
       }
       std::string stem(bfs::path(filename).stem().c_str());
@@ -355,7 +355,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       bool foundFacesFile = false;
       bfs::path facesFilePath = bfs::path(filename).replace_extension(".fac");
       {
-        TextToTriSurfFieldPrivate::LockType lock( privateImpl.getMutex() );
+        TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         if ( boost::filesystem::exists(facesFilePath) )
         {
           foundFacesFile = true;
@@ -365,7 +365,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       if (! foundFacesFile )
       {
         facesFilePath = bfs::path(filename).replace_extension(".tri");
-        TextToTriSurfFieldPrivate::LockType lock( privateImpl.getMutex() );
+        TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         if ( boost::filesystem::exists(facesFilePath) )
         {
           foundFacesFile = true;
@@ -387,7 +387,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
     else if ( privateImpl.validFacesFileExtention(filename) ) // if .fac file was supplied
     {
       {
-        TextToTriSurfFieldPrivate::LockType lock( privateImpl.getMutex() );
+        TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         ENSURE_FILE_EXISTS(filename);
       }
       std::string stem(bfs::path(filename).stem().c_str());
@@ -405,7 +405,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       bool foundPointsFile = false;
       bfs::path pointsFilePath = bfs::path(filename).replace_extension(".pts");
       {
-        TextToTriSurfFieldPrivate::LockType lock( privateImpl.getMutex() );
+        TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         if ( boost::filesystem::exists(pointsFilePath) )
         {
           foundPointsFile = true;
@@ -415,7 +415,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       if (! foundPointsFile )
       {
         pointsFilePath = bfs::path(filename).replace_extension(".pos");
-        TextToTriSurfFieldPrivate::LockType lock( privateImpl.getMutex() );
+        TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         if ( boost::filesystem::exists(pointsFilePath) )
         {
           foundPointsFile = true;

@@ -48,6 +48,7 @@ class NetworkEditor;
 class ProvenanceWindow;
 class DeveloperConsole;
 class PreferencesWindow;
+class PythonConsoleWidget;
 
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
@@ -65,6 +66,7 @@ private:
   ProvenanceWindow* provenanceWindow_;
   DeveloperConsole* devConsole_;
   PreferencesWindow* prefs_;
+  PythonConsoleWidget* pythonConsole_;
   QActionGroup* filterActionGroup_;
   QAction* actionEnterWhatsThisMode_;
   
@@ -83,6 +85,7 @@ private:
   void setupProvenanceWindow();
   void setupDevConsole();
   void setupPreferencesWindow();
+  void setupPythonConsole();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;

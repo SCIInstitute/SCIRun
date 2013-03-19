@@ -34,9 +34,11 @@ SET(Core_Utils_SRCS
 
 SET(Core_Utils_HEADERS
   Exception.h
+  Lockable.h
   Macros.h
   Singleton.h
   Share.h
+  StringContainer.h
   StringUtil.h
   ProgressReporter.h
   TypeIDTable.h

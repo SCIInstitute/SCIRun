@@ -42,17 +42,23 @@
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Network/NetworkSettings.h> //TODO: push
+#ifdef BUILD_WITH_PYTHON
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#endif
 
 #include <boost/bind.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Engine;
 
 NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSelectionGetter, 
   boost::shared_ptr<DefaultNotePositionGetter> dnpg, QWidget* parent) 
   : QGraphicsView(parent),
   scene_(new QGraphicsScene(parent)),
+  lastModulePosition_(0,0),
+  defaultModulePosition_(0,0),
   moduleSelectionGetter_(moduleSelectionGetter),
   defaultNotePositionGetter_(dnpg),
   moduleEventProxy_(new ModuleEventProxy),
@@ -73,6 +79,9 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
 
   updateActions();
   ensureVisible(0,0,0,0);
+#ifdef BUILD_WITH_PYTHON
+  NetworkEditorPythonAPI::setExecutionContext(this);
+#endif
 }
 
 void NetworkEditor::setNetworkEditorController(boost::shared_ptr<NetworkEditorControllerGuiProxy> controller)
@@ -172,6 +181,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setVisible(true);
   proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
+  lastModulePosition_ += QPointF(10,10);
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
@@ -197,7 +207,6 @@ void NetworkEditor::bringToFront()
 
 void ZLevelManager::bringToFront()
 {
-  //std::cout << "----bringToFront" << std::endl;
   ++maxZ_;
   setZValue(maxZ_);
 }
@@ -218,7 +227,6 @@ void ZLevelManager::setZValue(int z)
   ModuleProxyWidget* node = selectedModuleProxy();
   if (node)
   {
-    //std::cout << "\t~~~setting zlevel: module " << node->getModuleWidget()->getModuleId() << " to z = " << z << std::endl;
     node->setZValue(z);
   }
 }
@@ -493,6 +501,17 @@ ExecutableObject* NetworkEditor::lookupExecutable(const ModuleId& id) const
 {
   auto widget = findById(scene_->items(), id.id_);
   return widget ? widget->getModuleWidget() : 0;
+}
+
+void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleId& id)
+{
+  auto widget = findById(scene_->items(), id.id_);
+  if (widget)
+  {
+    widget->getModuleWidget()->setDeletedFromGui(false);
+    delete widget;
+    Q_EMIT modified();
+  }
 }
 
 void NetworkEditor::clear()
