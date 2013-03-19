@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -40,8 +41,7 @@ using ::testing::Return;
 
 TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
 {
-  int basisOrder = 1;
-  FieldInformation lfi("LatVolMesh", basisOrder, "double");
+  FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
   int sizex,sizey,sizez;
   sizex = sizey = sizez = 4;
   Point minb(0,0,0);
@@ -50,10 +50,23 @@ TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
   ASSERT_TRUE(mesh);
 }
 
-TEST(MeshFactoryTests, CanCreateTriSurfMesh)
+TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
 {
-  int basisOrder = 1; // Not sure if this is being used correctly below.
-  FieldInformation lfi("TriSurfMesh", basisOrder, "double");
+  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
   MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
   ASSERT_TRUE(mesh);
+
+  auto vmeshHandle = mesh->vmesh();
+  ASSERT_TRUE(vmeshHandle);
+}
+
+
+TEST(MeshFactoryTests, CreateTriSurfMeshStringWithFieldInforomation)
+{
+  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
+  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi);
+  ASSERT_TRUE(mesh);
+
+  VirtualMeshHandle vmeshHandle = mesh->vmesh();
+  ASSERT_TRUE(vmeshHandle);
 }
