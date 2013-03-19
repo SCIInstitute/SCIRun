@@ -32,6 +32,8 @@
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
+#include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 
 using namespace SCIRun::Dataflow::Engine;
@@ -82,7 +84,17 @@ std::string PythonImpl::disconnect(const std::string& moduleId1, int port1, cons
 
 std::string PythonImpl::saveNetwork(const std::string& filename)
 {
-  return "PythonImpl::saveNetwork does nothing";
+  try
+  {
+    //TODO: duplicated code from SCIRunMainWindow. Obviously belongs in a separate class.
+    NetworkFileHandle file = nec_.saveNetwork();
+    XMLSerializer::save_xml(*file, filename, "networkFile");
+    return filename + " saved.";
+  }
+  catch (...)
+  {
+    return "Save failed.";
+  }
 }
 
 std::string PythonImpl::loadNetwork(const std::string& filename)
