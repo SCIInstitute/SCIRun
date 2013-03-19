@@ -670,6 +670,8 @@ VirtualMesh::get_elems_pointer() const
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: get_elems_pointer() has not been implemented");  
 }
 
+#endif
+
 void 
 VirtualMesh::node_reserve(size_t)
 {
@@ -681,6 +683,9 @@ VirtualMesh::elem_reserve(size_t)
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: elem_reserve(size_t size) has not been implemented");
 }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 
 void 
 VirtualMesh::resize_nodes(size_t)
@@ -694,15 +699,16 @@ VirtualMesh::resize_elems(size_t)
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: resize_elems(size_t size) has not been implemented");
 }
 
+#endif
 
 void 
-VirtualMesh::add_node(const Point&, Node::index_type&)
+VirtualMesh::add_node(const Geometry::Point&, Node::index_type&)
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: this mesh cannot be edited (add_node)");  
 }
 
 void 
-VirtualMesh::add_enode(const Point&, ENode::index_type&)
+VirtualMesh::add_enode(const Geometry::Point&, ENode::index_type&)
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: this mesh cannot be edited (add_enode)");  
 }
@@ -712,6 +718,8 @@ VirtualMesh::add_elem(const Node::array_type&, Elem::index_type&)
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: this mesh cannot be edited (add_elem)");  
 }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 void 
 VirtualMesh::insert_node_into_elem(Elem::array_type&, Node::index_type&,

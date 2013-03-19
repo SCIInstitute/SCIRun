@@ -180,6 +180,7 @@ template <class MESH>
 VirtualMesh*
 VirtualMeshShared<MESH>::vmesh()
 {
+  std::cerr << "VirtualMeshShared<MESH>" << std::endl;
   return (this);
 }
 

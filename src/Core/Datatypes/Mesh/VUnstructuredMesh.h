@@ -101,12 +101,15 @@ public:
   virtual void set_point(const Geometry::Point &point, VirtualMesh::ENode::index_type i);
   
   virtual Geometry::Point* get_points_pointer() const;
-  
+#endif
+
   virtual void add_node(const Geometry::Point &point,VirtualMesh::Node::index_type &i);
   virtual void add_enode(const Geometry::Point &point,VirtualMesh::ENode::index_type &i);
 
   virtual void add_elem(const VirtualMesh::Node::array_type &nodes,
                         VirtualMesh::Elem::index_type &i);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   
   virtual bool get_neighbor(VirtualMesh::Elem::index_type &neighbor, 
                             VirtualMesh::Elem::index_type elem, 
@@ -147,11 +150,16 @@ public:
   virtual double scaled_jacobian_metric(const VirtualMesh::Elem::index_type elem) const;
   virtual double jacobian_metric(const VirtualMesh::Elem::index_type elem) const;
   
+#endif
+  
   
   //! Functions for forwarding call to the basis class of the
   //! mesh
   virtual void node_reserve(size_t size);
   virtual void elem_reserve(size_t size);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void resize_nodes(size_t size);
   virtual void resize_elems(size_t size);  
 
@@ -536,6 +544,9 @@ jacobian_metric(VirtualMesh::Elem::index_type idx) const
   return(this->mesh_->jacobian_metric(typename MESH::Elem::index_type(idx)));
 }
                                        
+      
+#endif
+
 
 template <class MESH>
 void
@@ -552,7 +563,10 @@ elem_reserve(size_t size)
 {
   this->mesh_->elem_reserve(size);
 }
+      
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
+      
 template <class MESH>
 void
 VUnstructuredMesh<MESH>::
@@ -735,6 +749,8 @@ get_points_pointer() const
    return (&(this->mesh_->points_[0]));
 }
 
+#endif
+      
 template <class MESH>
 void 
 VUnstructuredMesh<MESH>::
@@ -742,7 +758,7 @@ add_node(const Geometry::Point &point, VirtualMesh::Node::index_type &vi)
 {
   vi = static_cast<VirtualMesh::Node::index_type>(this->mesh_->add_point(point));
 }  
-  
+      
 template <class MESH>
 void 
 VUnstructuredMesh<MESH>::
@@ -751,7 +767,7 @@ add_enode(const Geometry::Point &point, VirtualMesh::ENode::index_type &vi)
   vi = static_cast<VirtualMesh::ENode::index_type>(this->basis_->size_node_values());
   this->basis_->add_node_value(point);
 }    
-  
+
 template <class MESH>
 void 
 VUnstructuredMesh<MESH>::
@@ -761,6 +777,7 @@ add_elem(const VirtualMesh::Node::array_type &nodes,
   vi = static_cast<VirtualMesh::Elem::index_type>(this->mesh_->add_elem(nodes));
 }  
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class MESH>
 void 
