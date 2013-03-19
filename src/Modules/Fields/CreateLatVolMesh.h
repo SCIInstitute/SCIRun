@@ -31,7 +31,7 @@
 ///////////////////////////
 
 /*
- *  CreateLatVol.cc:  Make an ImageField that fits the source field.
+ *  CreateLatVol.cc:  Make an LatVol that fits the source field.
  *
  *  Written by:
  *   Michael Callahan
