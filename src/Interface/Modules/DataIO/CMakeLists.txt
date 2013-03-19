@@ -29,17 +29,19 @@
 
 SET(Interface_Modules_DataIO_FORMS
   ReadMatrix.ui
+  ReadMesh.ui
   WriteMatrix.ui
 )
 
 SET(Interface_Modules_DataIO_HEADERS
   ReadMatrixDialog.h
-  Share.h
+  ReadMeshDialog.h
   WriteMatrixDialog.h
 )
 
 SET(Interface_Modules_DataIO_SOURCES 
   ReadMatrixDialog.cc
+  ReadMeshDialog.cc
   WriteMatrixDialog.cc
 )
 

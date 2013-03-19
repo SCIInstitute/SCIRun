@@ -47,6 +47,7 @@
 #include <Modules/Fields/CreateLatVolMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
+#include <Modules/DataIO/ReadMesh.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
@@ -137,6 +138,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     description.input_ports_ = WriteMatrixModule::inputPortDescription(WriteMatrixModule::inputPort0Name(), WriteMatrixModule::inputPort1Name());
     description.maker_ = boost::factory<WriteMatrixModule*>();
+  }
+  else if (name.find("ReadMesh") != std::string::npos)
+  {
+    description.input_ports_ += ReadMeshModule::inputPortDescription(ReadMeshModule::inputPort0Name());
+    description.output_ports_ = ReadMeshModule::outputPortDescription(ReadMeshModule::outputPort0Name(), ReadMeshModule::outputPort1Name());
+    description.maker_ = boost::factory<ReadMeshModule*>();
   }
   else if (name.find("SendScalar") != std::string::npos)
   {
