@@ -702,13 +702,13 @@ VirtualMesh::resize_elems(size_t)
 #endif
 
 void 
-VirtualMesh::add_node(const Geometry::Point&, Node::index_type&)
+VirtualMesh::add_node(const Point&, Node::index_type&)
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: this mesh cannot be edited (add_node)");  
 }
 
 void 
-VirtualMesh::add_enode(const Geometry::Point&, ENode::index_type&)
+VirtualMesh::add_enode(const Point&, ENode::index_type&)
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: this mesh cannot be edited (add_enode)");  
 }
