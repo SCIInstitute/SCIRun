@@ -169,7 +169,7 @@ void ShowMeshModule::execute()
                                   facesIBOName, "UniformColor",
                                   Spire::StuInterface::TRIANGLES);
     if (faceTransparency)
-      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
     else
       pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
 
