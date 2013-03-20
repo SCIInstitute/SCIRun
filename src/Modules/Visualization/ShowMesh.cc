@@ -159,7 +159,7 @@ void ShowMeshModule::execute()
                                   Spire::StuInterface::LINES);
 
     // Add appropriate uniforms to the pass (in this case, uColor).
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
