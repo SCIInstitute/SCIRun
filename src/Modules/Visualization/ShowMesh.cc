@@ -126,7 +126,10 @@ void ShowMeshModule::execute()
                                   Spire::StuInterface::LINES);
 
     // Add appropriate uniforms to the pass (in this case, uColor).
-    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+    if (edgeTransparency)
+      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+    else
+      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
@@ -165,7 +168,10 @@ void ShowMeshModule::execute()
         GeometryObject::SpirePass("facesPass", primVBOName,
                                   facesIBOName, "UniformColor",
                                   Spire::StuInterface::TRIANGLES);
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+    if (faceTransparency)
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.5f));
+    else
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
