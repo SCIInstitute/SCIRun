@@ -60,13 +60,13 @@
      <item>
       <widget class="QTabWidget" name="displayOptionsTabs_">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="nodesTab_">
         <attribute name="title">
          <string>Nodes</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>11</x>
@@ -87,7 +87,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="enableTransparencyCheckBox_">
+           <widget class="QCheckBox" name="enableTransparencyNodesCheckBox_">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -219,7 +219,7 @@
         <attribute name="title">
          <string>Edges</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -240,7 +240,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="enableTransparencyCheckBox_1">
+           <widget class="QCheckBox" name="enableTransparencyEdgesCheckBox_1">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -377,22 +377,18 @@
           </item>
          </layout>
         </widget>
-        <zorder>layoutWidget</zorder>
-        <zorder>groupBox_6</zorder>
-        <zorder>groupBox_7</zorder>
-        <zorder>label_8</zorder>
        </widget>
        <widget class="QWidget" name="facesTab_">
         <attribute name="title">
          <string>Faces</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>12</x>
            <y>12</y>
-           <width>241</width>
-           <height>190</height>
+           <width>304</width>
+           <height>192</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -407,7 +403,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="enableTransparencyCheckBox_2">
+           <widget class="QCheckBox" name="enableTransparencyFacesCheckBox_2">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -498,7 +494,7 @@
    <property name="title">
     <string>General Options</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -525,13 +521,13 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>20</y>
      <width>271</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">

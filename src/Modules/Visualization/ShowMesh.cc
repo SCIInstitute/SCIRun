@@ -51,6 +51,7 @@ void ShowMeshModule::execute()
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool zTestOn = get_state()->getValue(ZTestOn).getBool();
+  //bool transparency = get_state()->getValue();
 
   GeometryHandle geom(new GeometryObject(mesh));
   geom->objectName = get_id();
