@@ -26,28 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
+#include <Interface/Modules/DataIO/TextToTriSurfFieldDialog.h>
+#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <iostream>
+#include <QFileDialog>
 
-using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
-
-void ReadMatrixModule::execute()
+TextToTriSurfFieldDialog::TextToTriSurfFieldDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+  
+  connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
+  connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
+  connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+}
 
-  ReadMatrixAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
+void TextToTriSurfFieldDialog::pull()
+{
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(TextToTriSurfFieldAlgorithm::Filename).getString()));
+}
 
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
+void TextToTriSurfFieldDialog::pushFileNameToState() 
+{
+  state_->setValue(TextToTriSurfFieldAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+}
+
+void TextToTriSurfFieldDialog::openFile()
+{
+  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open TriSurfField Text File", ".", "Text files (*.txt)"));
+  pushFileNameToState();
 }

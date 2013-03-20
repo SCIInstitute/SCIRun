@@ -29,6 +29,7 @@
 SET(Modules_DataIO_SRCS
   ReadMatrix.cc
   ReadMatrixState.cc
+  TextToTriSurfFieldModule.cc
   WriteMatrix.cc
   WriteMatrixState.cc
 )
@@ -36,6 +37,7 @@ SET(Modules_DataIO_SRCS
 SET(Modules_DataIO_HEADERS
   ReadMatrix.h
   ReadMatrixState.h
+  TextToTriSurfFieldModule.h
   Share.h
   WriteMatrix.h
   WriteMatrixState.h

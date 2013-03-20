@@ -26,28 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
+#ifndef MODULES_DATAIO_TEXT_TO_TRISURFFIELD_H
+#define MODULES_DATAIO_TEXT_TO_TRISURFFIELD_H
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/DataIO/Share.h>
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
+namespace SCIRun {
+namespace Modules {
+namespace DataIO {
+  
+  class SCISHARE TextToTriSurfFieldModule : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<StringPortTag>,
+    public Has2OutputPorts<MeshPortTag, StringPortTag>
+  {
+  public:
+    TextToTriSurfFieldModule();
+    virtual void execute();
+    INPUT_PORT(0, Filename, String);
+    OUTPUT_PORT(0, Mesh, Mesh);
+    OUTPUT_PORT(1, FileLoaded, String);
+  private:
+    std::string filename_;
+  };
 
-void ReadMatrixModule::execute()
-{
-  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+}}}
 
-  ReadMatrixAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
-}
+#endif

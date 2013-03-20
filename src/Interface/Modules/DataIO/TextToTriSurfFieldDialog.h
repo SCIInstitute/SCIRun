@@ -26,28 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
+#ifndef INTERFACE_MODULES_TEXT_TO_TRISURFFIELD_H
+#define INTERFACE_MODULES_TEXT_TO_TRISURFFIELD_H
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include "Interface/Modules/DataIO/ui_TextToTriSurfField.h"
+#include <boost/shared_ptr.hpp>
+#include <Modules/Basic/SendScalarModuleState.h>
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/DataIO/Share.h>
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
-
-void ReadMatrixModule::execute()
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE TextToTriSurfFieldDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::TextToTriSurfField
 {
-  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+	Q_OBJECT
+	
+public:
+  TextToTriSurfFieldDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 
-  ReadMatrixAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
+private Q_SLOTS:
+  void pushFileNameToState();
+  void openFile();
+};
 
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
 }
+}
+
+#endif

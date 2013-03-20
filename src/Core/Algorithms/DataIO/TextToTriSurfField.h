@@ -40,13 +40,16 @@ namespace Core {
 namespace Algorithms {
 namespace DataIO {
 
-class TextToTriSurfFieldPrivate;
-
 class SCISHARE TextToTriSurfFieldAlgorithm : public AlgorithmBase
 {
 public:
-  SCIRun::Core::Datatypes::MeshHandle run(const std::string& filename);
+  typedef void Inputs;
+  typedef std::string Parameters; 
+  typedef SCIRun::Core::Datatypes::MeshHandle Outputs;
 
+  static AlgorithmParameterName Filename;
+
+  Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
 };
   
   

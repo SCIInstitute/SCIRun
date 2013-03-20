@@ -53,6 +53,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
+AlgorithmParameterName DataIO::TextToTriSurfFieldAlgorithm::Filename("Filename");
+
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
@@ -324,7 +326,7 @@ MeshHandle TextToTriSurfFieldPrivate::readField()
 // Text file format for tetrahedral meshes (files supported with or without headers)
 // points: x y z
 // elems: n1 n2 n3
-MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
+TextToTriSurfFieldAlgorithm::Outputs TextToTriSurfFieldAlgorithm::run(const TextToTriSurfFieldAlgorithm::Parameters& filename) const
 {
   TextToTriSurfFieldPrivate privateImpl(*this);
 

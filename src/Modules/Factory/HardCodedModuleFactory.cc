@@ -47,6 +47,7 @@
 #include <Modules/Fields/CreateLatVolMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
+#include <Modules/DataIO/TextToTriSurfFieldModule.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
@@ -225,6 +226,12 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
     description.input_ports_ += MatrixAsVectorFieldModule::inputPortDescription(MatrixAsVectorFieldModule::inputPort0Name());
     description.output_ports_ += MatrixAsVectorFieldModule::outputPortDescription(MatrixAsVectorFieldModule::outputPort0Name());
     description.maker_ = boost::factory<MatrixAsVectorFieldModule*>();
+  }
+  else if (name.find("TextToTriSurfField") != std::string::npos)
+  {
+    description.input_ports_ += TextToTriSurfFieldModule::inputPortDescription(TextToTriSurfFieldModule::inputPort0Name());
+    description.output_ports_ = TextToTriSurfFieldModule::outputPortDescription(TextToTriSurfFieldModule::outputPort0Name(), TextToTriSurfFieldModule::outputPort1Name());
+    description.maker_ = boost::factory<TextToTriSurfFieldModule*>();
   }
   else if (name.find("ViewScene") != std::string::npos)
   {

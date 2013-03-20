@@ -32,6 +32,7 @@
 #include <Interface/Modules/Testing/ReceiveScalarDialog.h>
 #include <Interface/Modules/DataIO/ReadMatrixDialog.h>
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
+#include <Interface/Modules/DataIO/TextToTriSurfFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
@@ -87,6 +88,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new SolveLinearSystemDialog(moduleId, state, parentToUse_);
   if (moduleId.find("CreateLatVolMesh") != std::string::npos)
     return new CreateLatVolMeshDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("TextToTriSurfField") != std::string::npos)
+    return new TextToTriSurfFieldDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

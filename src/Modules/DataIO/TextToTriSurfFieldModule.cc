@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/DataIO/TextToTriSurfFieldModule.h>
+#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
 #include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::DataIO;
@@ -36,18 +36,18 @@ using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
+TextToTriSurfFieldModule::TextToTriSurfFieldModule() : Module(ModuleLookupInfo("TextToTriSurfField", "DataIO", "SCIRun")) {}
 
-void ReadMatrixModule::execute()
+void TextToTriSurfFieldModule::execute()
 {
-  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+  filename_ = get_state()->getValue(TextToTriSurfFieldAlgorithm::Filename).getString();
 
-  ReadMatrixAlgorithm algo;
+  TextToTriSurfFieldAlgorithm algo;
   algo.setLogger(getLogger());
   algo.setUpdaterFunc(getUpdaterFunc());
 
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
+  auto mesh = algo.run(filename_);
+  sendOutput(Mesh, mesh);
   StringHandle file(new String(filename_));
   sendOutput(FileLoaded, file);
 }

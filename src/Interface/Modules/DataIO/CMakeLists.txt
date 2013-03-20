@@ -29,17 +29,20 @@
 
 SET(Interface_Modules_DataIO_FORMS
   ReadMatrix.ui
+  TextToTriSurfField.ui
   WriteMatrix.ui
 )
 
 SET(Interface_Modules_DataIO_HEADERS
   ReadMatrixDialog.h
   Share.h
+  TextToTriSurfFieldDialog.h
   WriteMatrixDialog.h
 )
 
 SET(Interface_Modules_DataIO_SOURCES 
   ReadMatrixDialog.cc
+  TextToTriSurfFieldDialog.cc
   WriteMatrixDialog.cc
 )
 
