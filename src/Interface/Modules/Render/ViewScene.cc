@@ -77,10 +77,10 @@ void ViewSceneDialog::moduleExecuted()
   boost::any geomDataTransient = state_->getTransientValue("geomData");
   if (!geomDataTransient.empty())
   {
-    boost::shared_ptr<Core::Datatypes::GeometryObject> geomData;
+    boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>> geomData; // Whoa...
     try
     {
-      geomData = boost::any_cast<boost::shared_ptr<Core::Datatypes::GeometryObject>>(geomDataTransient);
+      geomData = boost::any_cast<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
     }
     catch (const boost::bad_any_cast&)
     {
@@ -95,90 +95,98 @@ void ViewSceneDialog::moduleExecuted()
     // Grab objects (to be regenerated with supplied data)
     std::shared_ptr<Spire::StuInterface> stuPipe = spire->getStuPipe();
 
-    // Try/catch is for single-threaded cases. Exceptions are handled on the
-    // spire thread when spire is threaded.
-    try
-    {
-      // Will remove all traces of old VBO's / IBO's not in use.
-      // (remember, we remove the VBOs/IBOs we added at the end of this loop,
-      //  this is to ensure there is only 1 shared_ptr reference to the IBOs
-      //  and VBOs in Spire).
-      stuPipe->removeObject(geomData->objectName);
-    }
-    catch (std::out_of_range& e)
-    {
-      // Ignore
-    }
+    // Remove ALL prior objects.
+    stuPipe->removeAllObjects();
 
-    stuPipe->addObject(geomData->objectName);
-
-    // Add vertex buffer objects.
-    for (auto it = geomData->mVBOs.cbegin(); it != geomData->mVBOs.cend(); ++it)
+    for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
-      const GeometryObject::SpireVBO& vbo = *it;
-      stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
-    }
+      boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
 
-    // Add index buffer objects.
-    for (auto it = geomData->mIBOs.cbegin(); it != geomData->mIBOs.cend(); ++it)
-    {
-      const GeometryObject::SpireIBO& ibo = *it;
-      Spire::StuInterface::IBO_TYPE type;
-      switch (ibo.indexSize)
+      // Try/catch is for single-threaded cases. Exceptions are handled on the
+      // spire thread when spire is threaded.
+      try
       {
-        case 1: // 8-bit
-          type = Spire::StuInterface::IBO_8BIT;
-          break;
-
-        case 2: // 16-bit
-          type = Spire::StuInterface::IBO_16BIT;
-          break;
-
-        case 4: // 32-bit
-          type = Spire::StuInterface::IBO_32BIT;
-          break;
-
-        default:
-          type = Spire::StuInterface::IBO_32BIT;
-          throw std::invalid_argument("Unable to determine index buffer depth.");
-          break;
+        // Will remove all traces of old VBO's / IBO's not in use.
+        // (remember, we remove the VBOs/IBOs we added at the end of this loop,
+        //  this is to ensure there is only 1 shared_ptr reference to the IBOs
+        //  and VBOs in Spire).
+        stuPipe->removeObject(obj->objectName);
       }
-      stuPipe->addIBO(ibo.name, ibo.data, type);
-    }
-
-    // Add passes
-    for (auto it = geomData->mPasses.cbegin(); it != geomData->mPasses.cend(); ++it)
-    {
-      const GeometryObject::SpirePass& pass = *it;
-      stuPipe->addPassToObject(geomData->objectName, pass.passName, pass.programName,
-                               pass.vboName, pass.iboName, pass.type);
-
-      // Add uniforms associated with the pass
-      for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
+      catch (std::out_of_range& e)
       {
-        std::string uniformName = std::get<0>(*it);
-        std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
-        stuPipe->addPassUniformConcrete(geomData->objectName, pass.passName,
-                                        uniformName, uniform);
+        // Ignore
       }
 
-      // Add gpu state if it has been set.
-      if (pass.hasGPUState == true)
-        stuPipe->addPassGPUState(geomData->objectName, pass.passName, pass.gpuState);
-    }
+      stuPipe->addObject(obj->objectName);
 
-    // Now that we have created all of the appropriate passes, get rid of the
-    // VBOs and IBOs.
-    for (auto it = geomData->mVBOs.cbegin(); it != geomData->mVBOs.cend(); ++it)
-    {
-      const GeometryObject::SpireVBO& vbo = *it;
-      stuPipe->removeVBO(vbo.name);
-    }
+      // Add vertex buffer objects.
+      for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireVBO& vbo = *it;
+        stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
+      }
 
-    for (auto it = geomData->mIBOs.cbegin(); it != geomData->mIBOs.cend(); ++it)
-    {
-      const GeometryObject::SpireIBO& ibo = *it;
-      stuPipe->removeIBO(ibo.name);
+      // Add index buffer objects.
+      for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireIBO& ibo = *it;
+        Spire::StuInterface::IBO_TYPE type;
+        switch (ibo.indexSize)
+        {
+          case 1: // 8-bit
+            type = Spire::StuInterface::IBO_8BIT;
+            break;
+
+          case 2: // 16-bit
+            type = Spire::StuInterface::IBO_16BIT;
+            break;
+
+          case 4: // 32-bit
+            type = Spire::StuInterface::IBO_32BIT;
+            break;
+
+          default:
+            type = Spire::StuInterface::IBO_32BIT;
+            throw std::invalid_argument("Unable to determine index buffer depth.");
+            break;
+        }
+        stuPipe->addIBO(ibo.name, ibo.data, type);
+      }
+
+      // Add passes
+      for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
+      {
+        const GeometryObject::SpirePass& pass = *it;
+        stuPipe->addPassToObject(obj->objectName, pass.passName, pass.programName,
+                                 pass.vboName, pass.iboName, pass.type);
+
+        // Add uniforms associated with the pass
+        for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
+        {
+          std::string uniformName = std::get<0>(*it);
+          std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+          stuPipe->addPassUniformConcrete(obj->objectName, pass.passName,
+                                          uniformName, uniform);
+        }
+
+        // Add gpu state if it has been set.
+        if (pass.hasGPUState == true)
+          stuPipe->addPassGPUState(obj->objectName, pass.passName, pass.gpuState);
+      }
+
+      // Now that we have created all of the appropriate passes, get rid of the
+      // VBOs and IBOs.
+      for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireVBO& vbo = *it;
+        stuPipe->removeVBO(vbo.name);
+      }
+
+      for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireIBO& ibo = *it;
+        stuPipe->removeIBO(ibo.name);
+      }
     }
   }
 }

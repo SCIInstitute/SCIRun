@@ -80,8 +80,13 @@ void ViewScene::execute()
   // thread where they will be transported to Spire.
   // NOTE: I'm not implementing mutex locks for this now. But for production
   // purposes, they NEED to be in there!
-  //std::shared_ptr<GeometryObject> geom = getRequiredInput(GeneralGeom);
-  boost::shared_ptr<GeometryObject> geom = getRequiredInput(GeneralGeom);
+  boost::shared_ptr<GeometryObject> geom1 = getRequiredInput(GeneralGeom1);
+  //boost::shared_ptr<GeometryObject> geom2 = getRequiredInput(GeneralGeom2);
+
+  boost::shared_ptr<std::list<boost::shared_ptr<GeometryObject>>> list(
+      new std::list<boost::shared_ptr<GeometryObject>>());
+  list->push_back(geom1);
+  //list->push_back(geom2);
 
   // Pass geometry object up through transient... really need to be concerned
   // about the lifetimes of the buffers we have in GeometryObject. Need to
@@ -91,5 +96,6 @@ void ViewScene::execute()
   // I thought about dynamic casting geometry object to a weak_ptr, but I don't
   // know where it will be destroyed. For now, it will have have stale pointer
   // data lying around in it... yuck.
-  get_state()->setTransientValue("geomData", geom);
+  get_state()->setTransientValue("geomData", list);
 }
+
