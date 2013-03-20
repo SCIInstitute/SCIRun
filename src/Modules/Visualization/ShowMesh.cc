@@ -51,7 +51,6 @@ void ShowMeshModule::execute()
   /// \todo Determine a better way of handling all of the various object state.
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
-  bool zTestOn = get_state()->getValue(ZTestOn).getBool();
   bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
   bool edgeTransparency = get_state()->getValue(EdgeTransparency).getBool();
   bool faceTransparency = get_state()->getValue(FaceTransparency).getBool();
@@ -169,9 +168,17 @@ void ShowMeshModule::execute()
                                   facesIBOName, "UniformColor",
                                   Spire::StuInterface::TRIANGLES);
     if (faceTransparency)
-      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
+    {
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
+      // Modify the GPU state to disable ztesting.
+      //Spire::GPUState state;
+      //state.mDepthTestEnable = false;
+      //pass.addGPUState(state);
+    }
     else
-      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+    {
+      pass.addUniform("uColor", Spire::V4(0.3f, 0.3f, 0.3f, 1.0f));
+    }
 
     geom->mPasses.emplace_back(pass);
   }
@@ -181,7 +188,6 @@ void ShowMeshModule::execute()
 
 AlgorithmParameterName ShowMeshModule::ShowEdges("Show edges");
 AlgorithmParameterName ShowMeshModule::ShowFaces("Show faces");
-AlgorithmParameterName ShowMeshModule::ZTestOn("Z Test");
 AlgorithmParameterName ShowMeshModule::NodeTransparency("Node Transparency");
 AlgorithmParameterName ShowMeshModule::EdgeTransparency("Edge Transparency");
 AlgorithmParameterName ShowMeshModule::FaceTransparency("Face Transparency");

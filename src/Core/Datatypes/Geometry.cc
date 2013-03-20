@@ -32,8 +32,6 @@
 using namespace SCIRun::Core::Datatypes;
 
 GeometryObject::GeometryObject(DatatypeConstHandle dh) : 
-    useZTest(false),
-    useZWrite(false),
     data_(dh)
 {
 }

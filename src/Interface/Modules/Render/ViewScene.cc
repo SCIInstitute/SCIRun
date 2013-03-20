@@ -161,6 +161,10 @@ void ViewSceneDialog::moduleExecuted()
         stuPipe->addPassUniformConcrete(geomData->objectName, pass.passName,
                                         uniformName, uniform);
       }
+
+      // Add gpu state if it has been set.
+      if (pass.hasGPUState == true)
+        stuPipe->addPassGPUState(geomData->objectName, pass.passName, pass.gpuState);
     }
 
     // Now that we have created all of the appropriate passes, get rid of the

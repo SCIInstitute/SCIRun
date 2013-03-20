@@ -36,6 +36,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Share.h>
 #include "Spire/Interface.h"
+#include "Spire/Core/GPUStateManager.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
 // The following include contains AbstractUniformStateItem which allows
@@ -101,6 +102,7 @@ namespace Datatypes {
           vboName(vbo),
           iboName(ibo),
           programName(program),
+          hasGPUState(false),
           type(primType)
       {}
 
@@ -109,6 +111,9 @@ namespace Datatypes {
       std::string   iboName;
       std::string   programName;
       Spire::StuInterface::PRIMITIVE_TYPES type;
+      // Want Boost::optional here...
+      bool            hasGPUState;
+      Spire::GPUState gpuState;
 
       template <typename T>
       void addUniform(const std::string& uniformName, T uniformData)
@@ -116,6 +121,12 @@ namespace Datatypes {
         uniforms.push_back(
             make_pair(uniformName, std::shared_ptr<Spire::AbstractUniformStateItem>(
                 new Spire::UniformStateItem<T>(uniformData))));
+      }
+
+      void addGPUState(const Spire::GPUState& state)
+      {
+        hasGPUState = true;
+        gpuState = state;
       }
 
       // Tuple containing the name of the uniform and its contents.
@@ -128,9 +139,6 @@ namespace Datatypes {
 
     /// \xxx  Possibly implement a list of global uniforms. Only do this if
     ///       there is a clear need for global uniforms.
-
-    bool      useZTest;
-    bool      useZWrite;
 
   private:
     DatatypeConstHandle data_;
