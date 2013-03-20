@@ -29,6 +29,7 @@
 
 SET(Testing_Utils_HEADERS
   MatrixTestUtilities.h
+  SCIRunUnitTests.h
   Share.h
 )
 
