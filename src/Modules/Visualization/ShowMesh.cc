@@ -48,10 +48,13 @@ void ShowMeshModule::execute()
   auto mesh = getRequiredInput(Mesh);
   MeshFacadeHandle facade(mesh->getFacade());
 
+  /// \todo Determine a better way of handling all of the various object state.
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool zTestOn = get_state()->getValue(ZTestOn).getBool();
-  //bool transparency = get_state()->getValue();
+  bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
+  bool edgeTransparency = get_state()->getValue(EdgeTransparency).getBool();
+  bool faceTransparency = get_state()->getValue(FaceTransparency).getBool();
 
   GeometryHandle geom(new GeometryObject(mesh));
   geom->objectName = get_id();
@@ -173,3 +176,6 @@ void ShowMeshModule::execute()
 AlgorithmParameterName ShowMeshModule::ShowEdges("Show edges");
 AlgorithmParameterName ShowMeshModule::ShowFaces("Show faces");
 AlgorithmParameterName ShowMeshModule::ZTestOn("Z Test");
+AlgorithmParameterName ShowMeshModule::NodeTransparency("Node Transparency");
+AlgorithmParameterName ShowMeshModule::EdgeTransparency("Edge Transparency");
+AlgorithmParameterName ShowMeshModule::FaceTransparency("Face Transparency");
