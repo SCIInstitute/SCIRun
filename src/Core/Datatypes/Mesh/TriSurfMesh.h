@@ -54,6 +54,8 @@
 #include <Core/Datatypes/Mesh/FieldRNG.h>
 //#include <Core/Datatypes/Mesh/Types.h>
 
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+
 //#include <Core/Thread/Mutex.h>
 //#include <Core/Thread/ConditionVariable.h>
 //#include <Core/Thread/Runnable.h>
@@ -63,6 +65,7 @@
 #include <set>
 
 #include <Core/Datatypes/Mesh/Share.h>
+
 
 //TODO: ASSERTMSG...
 #define ASSERTMSG(x,y)
@@ -292,6 +295,24 @@ public:
       TriSurfMesh<Basis>& mesh_;
       mask_type  sync_;
   };
+#else
+  friend class Synchronize;
+  
+  class Synchronize
+  {
+  public:
+    Synchronize(TriSurfMesh<Basis>& mesh, mask_type sync) :
+    mesh_(mesh), sync_(sync) {}
+    
+    void run()
+    {
+      if (sync_ == Mesh::EDGES_E) mesh_.compute_edges();
+    }
+    
+  private:
+    TriSurfMesh<Basis>& mesh_;
+    mask_type  sync_;
+  };
 #endif
 
   //////////////////////////////////////////////////////////////////
@@ -309,7 +330,7 @@ public:
   virtual MeshFacadeHandle getFacade() const 
   {
     //TODO!!!
-    return MeshFacadeHandle();
+    return MeshFacadeHandle(new VirtualMeshFacade(vmesh()));
   }
 
   //! Destructor 
@@ -558,7 +579,7 @@ public:
 
   //! Access the nodes of the mesh
   void get_point(Geometry::Point &result, typename Node::index_type index) const
-    { result = points_[index]; }
+  { std::cerr << "TriSurf get_point begin" << std::endl; result = points_[index]; std::cerr << "TriSurf get_point end" << std::endl; }
   void set_point(const Geometry::Point &point, typename Node::index_type index)
     { points_[index] = point; }
 
@@ -1393,13 +1414,13 @@ protected:
   // as well as the STL vector. When an algorithm supports non linear
   // functions an STL vector is a better choice, in the other cases
   // often a StackVector is enough (The latter improves performance).
-   
+  
   template<class ARRAY, class INDEX>
   inline void get_nodes_from_edge(ARRAY& array, INDEX idx) const
   {
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "TriSurfMesh: Must call synchronize EDGES_E on TriSurfMesh first");
-    
+
     index_type a = edges_[idx][0];
     index_type faceidx = a >> 2;
     index_type offset = a & 0x3;
@@ -2024,6 +2045,18 @@ protected:
   typedef std::map<std::pair<index_type, index_type>, std::vector<index_type>, edgecompare> EdgeMapType2;
 
 #endif
+
+#else
+
+  // TODO: temporary solution to map implmentation - replace hash_map with unordered_map
+  struct edgecompare
+  {
+    bool operator()(const std::pair<index_type, index_type> &a, const std::pair<index_type, index_type> &b) const
+    {
+      return a.first < b.first || a.first == b.first && a.second < b.second;
+    }
+  };
+  typedef std::map<std::pair<index_type, index_type>, std::vector<index_type>, edgecompare> EdgeMapType2;
 #endif
 };
 
@@ -2374,11 +2407,12 @@ TriSurfMesh<Basis>::inside3_p(index_type i, const Geometry::Point &p) const
 }
 
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class Basis>
 bool
 TriSurfMesh<Basis>::synchronize(mask_type sync)
 {
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Conversion table
   if (sync & (Mesh::DELEMS_E)) 
   { sync |= Mesh::EDGES_E; sync &= ~(Mesh::DELEMS_E); }
@@ -2515,9 +2549,28 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   }
 
   synchronize_lock_.unlock();
-#endif
-  return (true);
+
+  return true;
 }
+#else
+
+template <class Basis>
+bool
+TriSurfMesh<Basis>::synchronize(mask_type sync)
+{
+  if (sync == Mesh::EDGES_E)
+  {
+    Synchronize Synchronize(*this, sync);
+    Synchronize.run();
+  }
+  else
+  {
+    // only support one flag at a time
+    return false;
+  }
+  return true;
+}
+#endif
 
 template <class Basis>
 bool
@@ -3156,6 +3209,7 @@ TriSurfMesh<Basis>::compute_node_neighbors()
   synchronize_lock_.unlock();
 }
 
+#endif
 
 template <class Basis>
 void
@@ -3164,6 +3218,7 @@ TriSurfMesh<Basis>::compute_edges()
   EdgeMapType2 edge_map;
 
   size_type num_faces = static_cast<index_type>(faces_.size())/3;
+  
   for (index_type i=0; i < num_faces; i++)
   {
     index_type n0 = faces_[3*i];
@@ -3199,12 +3254,17 @@ TriSurfMesh<Basis>::compute_edges()
     k++;
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   synchronize_lock_.lock();
   synchronized_ |= (Mesh::EDGES_E);
   synchronize_lock_.unlock();
+#else
+  synchronized_ |= (Mesh::EDGES_E);
+#endif
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+      
 template <class Basis>
 typename TriSurfMesh<Basis>::Node::index_type
 TriSurfMesh<Basis>::add_find_point(const Geometry::Point &p, double err)
@@ -3714,7 +3774,7 @@ TriSurfMesh<Basis>::io(Piostream &stream)
     vmesh_ = CreateVTriSurfMesh(this);
 }
 #endif
-
+      
 template <class Basis>
 void
 TriSurfMesh<Basis>::size(typename TriSurfMesh::Node::size_type &s) const
@@ -3728,9 +3788,10 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::size(typename TriSurfMesh::Edge::size_type &s) const
 {
+//#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   ASSERTMSG(synchronized_ & Mesh::EDGES_E,
             "Must call synchronize EDGES_E on TriSurfMesh first");
-
+//#endif
   typename Edge::iterator itr; end(itr);
   s = *itr;
 }

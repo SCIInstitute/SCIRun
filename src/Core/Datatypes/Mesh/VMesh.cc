@@ -466,6 +466,7 @@ VirtualMesh::set_nodes(Node::array_type& array, Elem::index_type idx)
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: set_nodes(Node::array_type,Elem::index_type) has not been implemented");
 }
 
+#endif
 
 
 
@@ -516,6 +517,8 @@ VirtualMesh::get_size(VirtualMesh::Node::array_type& array) const
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: size(Node::array_type) has not been implemented");
 }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
   
 bool 
@@ -823,6 +826,8 @@ VirtualMesh::get_bounding_box() const
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: get_bounding_box has not yet been implemented");  
 }
 
+#endif
+
 bool
 VirtualMesh::synchronize(unsigned int)
 {
@@ -840,6 +845,9 @@ VirtualMesh::clear_synchronization()
 {
   REPORT_NOT_IMPLEMENTED("VirtualMesh interface: clear_synchronization has not yet been implemented");  
 }
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 void 
 VirtualMesh::transform(const Transform &)

@@ -137,11 +137,11 @@ public:
   
   virtual MeshHandle mesh();
   virtual VirtualMesh*     vmesh();  
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   virtual bool synchronize(unsigned int sync);
   virtual bool unsynchronize(unsigned int sync);
   virtual bool clear_synchronization();
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual BBox get_bounding_box() const;
   virtual void transform(const Geometry::Transform &t);  
 
@@ -187,14 +187,14 @@ VirtualMeshShared<MESH>::vmesh()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template<class MESH>
 void 
-VMeshShared<MESH>::get_canonical_transform(Transform &t)
+VirtualMeshShared<MESH>::get_canonical_transform(Transform &t)
 {
   mesh_->get_canonical_transform(t);
 }
 
 template<class MESH>
 void 
-VMeshShared<MESH>::get_weights(const VirtualMesh::coords_type& coords, 
+VirtualMeshShared<MESH>::get_weights(const VirtualMesh::coords_type& coords, 
                                std::vector<double>& weights, 
                                int basis_order) const
 {
@@ -221,7 +221,7 @@ VMeshShared<MESH>::get_weights(const VirtualMesh::coords_type& coords,
 
 template<class MESH>
 void 
-VMeshShared<MESH>::get_derivate_weights(const VirtualMesh::coords_type& coords, 
+VirtualMeshShared<MESH>::get_derivate_weights(const VirtualMesh::coords_type& coords, 
                                         std::vector<double>& weights, 
                                         int basis_order) const
 {
@@ -250,49 +250,54 @@ VMeshShared<MESH>::get_derivate_weights(const VirtualMesh::coords_type& coords,
 
 template <class MESH>
 BBox
-VMeshShared<MESH>::get_bounding_box() const
+VirtualMeshShared<MESH>::get_bounding_box() const
 {
   return(mesh_->get_bounding_box());
 }
 
 template <class MESH>
 double
-VMeshShared<MESH>::get_epsilon() const
+VirtualMeshShared<MESH>::get_epsilon() const
 {
   return(mesh_->get_epsilon());
 }
 
 template<class MESH>
 void 
-VMeshShared<MESH>::transform(const Transform &t)
+VirtualMeshShared<MESH>::transform(const Transform &t)
 {
   mesh_->transform(t);
 }
 
+#endif
+
 template<class MESH>
 bool
-VMeshShared<MESH>::synchronize(unsigned int sync)
+VirtualMeshShared<MESH>::synchronize(unsigned int sync)
 {
   return(mesh_->synchronize(sync));
 }
 
 template<class MESH>
 bool
-VMeshShared<MESH>::unsynchronize(unsigned int sync)
+VirtualMeshShared<MESH>::unsynchronize(unsigned int sync)
 {
   return(mesh_->unsynchronize(sync));
 }
 
 template<class MESH>
 bool
-VMeshShared<MESH>::clear_synchronization()
+VirtualMeshShared<MESH>::clear_synchronization()
 {
   return(mesh_->clear_synchronization());
 }
 
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template<class MESH>
 void 
-VMeshShared<MESH>::get_gaussian_scheme(std::vector<coords_type>& coords, 
+VirtualMeshShared<MESH>::get_gaussian_scheme(std::vector<coords_type>& coords, 
                                        std::vector<double>& weights, int order) const
 {
   basis_->get_gaussian_scheme(coords,weights,order);
@@ -300,7 +305,7 @@ VMeshShared<MESH>::get_gaussian_scheme(std::vector<coords_type>& coords,
   
 template<class MESH>
 void 
-VMeshShared<MESH>::get_regular_scheme(std::vector<coords_type>& coords, 
+VirtualMeshShared<MESH>::get_regular_scheme(std::vector<coords_type>& coords, 
                                       std::vector<double>& weights, int order) const
 {
   basis_->get_regular_scheme(coords,weights,order);

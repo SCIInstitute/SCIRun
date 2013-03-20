@@ -385,8 +385,8 @@ public:
   //! get_center, these are short cuts to the one implementation that is done
   //! under the name get_center.                             
   inline void get_point(Geometry::Point &point, Node::index_type i) const
-  { 
-    get_center(point,i); 
+  {
+    get_center(point,i);
   }
   
   inline void get_point(Geometry::Point &point, ENode::index_type i) const
@@ -472,11 +472,11 @@ public:
   virtual bool get_face(Face::index_type& face, Node::array_type& nodes) const;
   virtual bool get_edge(Edge::index_type& edge, Node::array_type& nodes) const;
 
-
+#endif
 
   //! Get the centers of a series of nodes
-  virtual void get_centers(Point* points, Node::array_type& array) const;
-  virtual void get_centers(Point* points, Elem::array_type& array) const;
+  virtual void get_centers(Geometry::Point* points, Node::array_type& array) const;
+  virtual void get_centers(Geometry::Point* points, Elem::array_type& array) const;
 
   //! Get the centers of a series of nodes, with points in an STL vector
   //! These just overload the function calls defined above.
@@ -538,7 +538,10 @@ public:
   { return (get_size(i)); }
   inline double get_volume(Elem::index_type i) const
   { return (get_size(i)); }
-    
+
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   //! Specialized functions to get weights for the interpolation
   //! One should use these instead of get_weights
   
@@ -904,13 +907,11 @@ public:
   inline Node::index_type add_node(const Geometry::Point& point) 
     { Node::index_type idx; add_node(point,idx); return (idx); }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
-  inline void get_node(Point &point, Node::index_type i)
+  inline void get_node(Geometry::Point &point, Node::index_type i)
     { get_point(point,i); }
-  inline void get_enode(Point &point, ENode::index_type i)
+  inline void get_enode(Geometry::Point &point, ENode::index_type i)
     { get_point(point,i); }
 
-#endif
   
   //! Do not use this one as it is not clear whether it is a 
   //! element node or edge node  
@@ -1024,6 +1025,8 @@ public:
   //! Rerouting of some of the virtual mesh function calls
   
   virtual BBox get_bounding_box() const;
+
+#endif
   
   //! This call is for synchronizing tables of precomputed elements
   virtual bool synchronize(unsigned int sync); 
@@ -1031,7 +1034,10 @@ public:
   
   // Only use this function when this is the only code that uses this mesh
   virtual bool clear_synchronization();
-  
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   // Transform a full field, this one works on the full field
   virtual void transform(const Transform &t);
   

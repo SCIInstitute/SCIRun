@@ -46,7 +46,6 @@ public:
   VUnstructuredMesh(MESH* mesh) :
     VirtualMeshShared<MESH>(mesh)
   {}
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void size(VirtualMesh::Node::size_type& size) const;
   virtual void size(VirtualMesh::ENode::size_type& size) const;
   virtual void size(VirtualMesh::Edge::size_type& size) const;
@@ -54,15 +53,16 @@ public:
   virtual void size(VirtualMesh::Cell::size_type& size) const;
   virtual void size(VirtualMesh::Elem::size_type& size) const;
   virtual void size(VirtualMesh::DElem::size_type& size) const;
-
+  
   virtual void get_center(Geometry::Point &point, VirtualMesh::Node::index_type i) const;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void get_center(Geometry::Point &point, VirtualMesh::ENode::index_type i) const;
   virtual void get_center(Geometry::Point &point, VirtualMesh::Edge::index_type i) const;
   virtual void get_center(Geometry::Point &point, VirtualMesh::Face::index_type i) const;
   virtual void get_center(Geometry::Point &point, VirtualMesh::Cell::index_type i) const;
   virtual void get_center(Geometry::Point &point, VirtualMesh::Elem::index_type i) const;
   virtual void get_center(Geometry::Point &point, VirtualMesh::DElem::index_type i) const;
-
   virtual void get_centers(Geometry::Point* points, VirtualMesh::Node::array_type& array) const;
   virtual void get_centers(Geometry::Point* points, VirtualMesh::Elem::array_type& array) const;
 
@@ -244,12 +244,10 @@ public:
   virtual bool find_closest_elems(double& pdist, Geometry::Point& result, 
                                   VirtualMesh::Elem::array_type &i, 
                                   const Geometry::Point &point) const;
-  #endif
+#endif
 };
 
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 void 
 VUnstructuredMesh<MESH>::
@@ -320,6 +318,9 @@ size(VirtualMesh::Elem::size_type& sz) const
   sz = VirtualMesh::Elem::index_type(s);
 
 }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+      
 
 template <class MESH>
 bool 
@@ -544,7 +545,6 @@ jacobian_metric(VirtualMesh::Elem::index_type idx) const
   return(this->mesh_->jacobian_metric(typename MESH::Elem::index_type(idx)));
 }
                                        
-      
 #endif
 
 
@@ -563,10 +563,10 @@ elem_reserve(size_t size)
 {
   this->mesh_->elem_reserve(size);
 }
-      
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-      
+
 template <class MESH>
 void
 VUnstructuredMesh<MESH>::
@@ -623,6 +623,7 @@ get_size(VirtualMesh::DElem::index_type /*i*/) const
   return (0.0);
 }
 
+#endif
 
 template <class MESH>
 void
@@ -631,6 +632,8 @@ get_center(Geometry::Point &p, VirtualMesh::Node::index_type idx) const
 {
   p = this->mesh_->points_[idx]; 
 }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class MESH>
 void
@@ -710,7 +713,6 @@ get_centers(Geometry::Point* points,
     this->mesh_->get_center(points[j],typename MESH::Node::index_type(array[j]));
   }
 } 
-
 
 
 template <class MESH>
