@@ -81,12 +81,13 @@ void ViewScene::execute()
   // NOTE: I'm not implementing mutex locks for this now. But for production
   // purposes, they NEED to be in there!
   boost::shared_ptr<GeometryObject> geom1 = getRequiredInput(GeneralGeom1);
-  //boost::shared_ptr<GeometryObject> geom2 = getRequiredInput(GeneralGeom2);
+  boost::optional<boost::shared_ptr<GeometryObject>> geom2 = getOptionalInput(GeneralGeom2);
 
   boost::shared_ptr<std::list<boost::shared_ptr<GeometryObject>>> list(
       new std::list<boost::shared_ptr<GeometryObject>>());
   list->push_back(geom1);
-  //list->push_back(geom2);
+  if (geom2)
+    list->push_back(*geom2);
 
   // Pass geometry object up through transient... really need to be concerned
   // about the lifetimes of the buffers we have in GeometryObject. Need to
