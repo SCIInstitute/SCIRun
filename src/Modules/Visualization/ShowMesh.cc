@@ -87,43 +87,6 @@ void ShowMeshModule::execute()
     i+=3;
   }
 
-  // Build the faces.
-  size_t iboFacesSize = sizeof(uint32_t) * facade->numFaces() * 6;
-  uint32_t* iboFaces = nullptr;
-  if (showFaces)
-  {
-    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-    //rawIBO->reserve(iboFacesSize);
-    rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
-                                    // use malloc to generate buffer and then vector::assign.
-    iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
-    i = 0;
-    BOOST_FOREACH(const FaceInfo& face, facade->faces())
-    {
-      // There should *only* be four indicies.
-      VirtualMesh::Node::array_type nodes = face.nodeIndices();
-      assert(nodes.size() == 4);
-      // Winding order looks good from tests.
-      // Render two triangles.
-      iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
-      iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
-      i += 6;
-    }
-
-    // Add IBO for the faces.
-    std::string facesIBOName = "facesIBO";
-    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
-
-    // Build pass for the faces.
-    /// \todo Find an appropriate place to put program names like UniformColor.
-    GeometryObject::SpirePass pass = 
-        GeometryObject::SpirePass("facesPass", primVBOName,
-                                  facesIBOName, "UniformColor",
-                                  Spire::StuInterface::TRIANGLES);
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    geom->mPasses.emplace_back(pass);
-  }
 
   // Build the edges
   size_t iboEdgesSize = sizeof(uint32_t) * facade->numEdges() * 2;
@@ -164,6 +127,44 @@ void ShowMeshModule::execute()
     geom->mPasses.emplace_back(pass);
   }
   //mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
+
+  // Build the faces.
+  size_t iboFacesSize = sizeof(uint32_t) * facade->numFaces() * 6;
+  uint32_t* iboFaces = nullptr;
+  if (showFaces)
+  {
+    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+    //rawIBO->reserve(iboFacesSize);
+    rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
+                                    // use malloc to generate buffer and then vector::assign.
+    iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
+    i = 0;
+    BOOST_FOREACH(const FaceInfo& face, facade->faces())
+    {
+      // There should *only* be four indicies.
+      VirtualMesh::Node::array_type nodes = face.nodeIndices();
+      assert(nodes.size() == 4);
+      // Winding order looks good from tests.
+      // Render two triangles.
+      iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
+      iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
+      i += 6;
+    }
+
+    // Add IBO for the faces.
+    std::string facesIBOName = "facesIBO";
+    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
+
+    // Build pass for the faces.
+    /// \todo Find an appropriate place to put program names like UniformColor.
+    GeometryObject::SpirePass pass = 
+        GeometryObject::SpirePass("facesPass", primVBOName,
+                                  facesIBOName, "UniformColor",
+                                  Spire::StuInterface::TRIANGLES);
+    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    geom->mPasses.emplace_back(pass);
+  }
 
   sendOutput(SceneGraph, geom);
 }
