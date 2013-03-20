@@ -124,6 +124,10 @@ void ShowMeshModule::execute()
                                   edgesIBOName, "UniformColor",
                                   Spire::StuInterface::LINES);
 
+    Spire::GPUState state;
+    state.mLineWidth = 2.5f;
+    pass.addGPUState(state);
+
     // Add appropriate uniforms to the pass (in this case, uColor).
     if (edgeTransparency)
       pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
