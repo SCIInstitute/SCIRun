@@ -108,6 +108,9 @@ namespace Networks {
     template <class T, size_t N>
     boost::shared_ptr<T> getRequiredInput(const PortName<T,N>& port);
 
+    template <class T, size_t N>
+    boost::optional<boost::shared_ptr<T>> getOptionalInput(const PortName<T,N>& port);
+
     template <class T, class D, size_t N>
     void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data);
 
@@ -142,6 +145,8 @@ namespace Networks {
   private:
     template <class T>
     boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
+    template <class T>
+    boost::optional<boost::shared_ptr<T>> getOptionalInputAtIndex(size_t idx);
 
     friend class Builder;
     size_t add_input_port(InputPortHandle);
@@ -192,6 +197,32 @@ namespace Networks {
   boost::shared_ptr<T> Module::getRequiredInput(const PortName<T,N>& port)
   {
     return getRequiredInputAtIndex<T>(static_cast<size_t>(port));
+  }
+
+  template <class T>
+  boost::optional<boost::shared_ptr<T>> Module::getOptionalInputAtIndex(size_t idx)
+  {
+    auto inputOpt = get_input_handle(idx);
+    if (!inputOpt)
+      return boost::optional<boost::shared_ptr<T>>();
+
+    if (!*inputOpt)
+      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
+
+    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
+    if (!data)
+    {
+      std::ostringstream ostr;
+      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
+      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
+    }
+    return data;
+  }
+
+  template <class T, size_t N>
+  boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const PortName<T,N>& port)
+  {
+    return getOptionalInputAtIndex<T>(static_cast<size_t>(port));
   }
 
   template <class T, class D, size_t N>

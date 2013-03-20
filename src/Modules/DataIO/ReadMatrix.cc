@@ -42,7 +42,11 @@ ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "Da
 
 void ReadMatrixModule::execute()
 {
-  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+  auto fileOption = getOptionalInput(Filename);
+  if (!fileOption)
+    filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+  else
+    filename_ = (*fileOption)->value();
 
   ReadMatrixAlgorithm algo;
   algo.setLogger(getLogger());

@@ -46,9 +46,14 @@ namespace Engine {
   {
   public:
     explicit PythonImpl(NetworkEditorController& nec);
-    virtual std::string addModule(const std::string& name) const;
+    virtual std::string addModule(const std::string& name);
     virtual std::string removeModule(const std::string& id);
     virtual std::string executeAll(const Networks::ExecutableLookup& lookup);
+    virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2);
+    virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2);
+    virtual std::string saveNetwork(const std::string& filename);
+    virtual std::string loadNetwork(const std::string& filename);
+    virtual std::string quit(bool force);
   private:
     NetworkEditorController& nec_;
   };
