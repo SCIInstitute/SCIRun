@@ -51,7 +51,8 @@
 //
 //#include <Core/Datatypes/Mesh/Share.h>
 
-#include <Core/Datatypes/Mesh/LatticeVolumeMeshFacade.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+
 #include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
 
 namespace SCIRun {
@@ -115,7 +116,7 @@ VirtualMeshHandle LatVolMesh<Basis>::vmesh() const {
 template <class Basis>
 MeshFacadeHandle LatVolMesh<Basis>::getFacade() const 
 {
-  return MeshFacadeHandle(new LatticeVolumeMeshFacade(vmesh()));
+  return MeshFacadeHandle(new VirtualMeshFacade(vmesh()));
 }
 
 template <class Basis>
