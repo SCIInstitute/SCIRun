@@ -117,7 +117,7 @@ protected:
   MeshHandle cubeMesh_;
 };
 
-// TODO: move to utils file
+// TODO: move to utils file (duplicated in LatticeVolumeMeshFacadeTests.cc)
 namespace
 {
   template <typename T>
@@ -175,8 +175,46 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
   EXPECT_EQ(
             "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
             "Edge 1 nodes=[2 point=[0.5, 1, 0], 0 point=[0, 0, 0]]\n"
-            "Edge 2 nodes=[1 point=[1, 0, 0], 2 point=[0.5, 0, 1]]\n"
+            "Edge 2 nodes=[1 point=[1, 0, 0], 2 point=[0.5, 1, 0]]\n"
             , ostr.str());
 }
 
+TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
+{
+  MeshFacadeHandle facade(basicTriangleMesh_->getFacade());
+  
+  std::ostringstream ostr;
+  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  {
+    auto faceID = face.index();
+    auto edges = face.edgeIndices();
+    auto nodes = face.nodeIndices();
+    ostr << "Face " << faceID << " edges=[" << join(edges) << "]" << std::endl;
+    ostr << "Face " << faceID << " nodes=[" << join(nodes) << "]" << std::endl;
+  }
+  
+  EXPECT_EQ("Face 0 edges=[0, 2, 1]\n"
+            "Face 0 nodes=[0, 1, 2]\n"
+            ,ostr.str());
+}
+
+TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
+{
+  MeshFacadeHandle facade(basicTriangleMesh_->getFacade());
+  
+  std::ostringstream ostr;
+  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  {
+    // special case, since this is essentially a 2D mesh with a single element,
+    // the last edge value is not filled
+    auto edges = node.edgeIndices();
+    edges[3] = 666666;
+    ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(edges) << "]" << std::endl;
+  }
+  
+  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 2, 1, 666666]\n"
+            "Node 1 point=[1, 0, 0] edges=[0, 2, 1, 666666]\n"
+            "Node 2 point=[0.5, 1, 0] edges=[0, 2, 1, 666666]\n"
+            ,ostr.str());
+}
 

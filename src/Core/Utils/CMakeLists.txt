@@ -34,10 +34,10 @@ SET(Core_Utils_SRCS
 
 SET(Core_Utils_HEADERS
   Exception.h
+  FileUtil.h
   Lockable.h
   Macros.h
   Singleton.h
-  Share.h
   StringContainer.h
   StringUtil.h
   ProgressReporter.h
