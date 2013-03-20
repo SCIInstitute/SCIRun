@@ -29,6 +29,7 @@
 SET(Modules_DataIO_Tests_SRCS
   ReadMatrixTests.cc
   ReadWriteMatrixFunctionalTest.cc
+  TextToTriSurfFieldModuleTests.cc
   WriteMatrixTests.cc
 )
 

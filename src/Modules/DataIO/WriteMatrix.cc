@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>

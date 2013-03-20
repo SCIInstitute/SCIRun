@@ -26,28 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Modules/Basic/SendScalar.h>
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
-
-void ReadMatrixModule::execute()
-{
-  filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
-
-  ReadMatrixAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
-}
+//TODO 

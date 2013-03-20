@@ -390,30 +390,6 @@
            <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
           </property>
          </item>
-         <item>
-          <property name="text">
-           <string>MatrixAsVectorField</string>
-          </property>
-          <property name="font">
-           <font>
-            <strikeout>true</strikeout>
-           </font>
-          </property>
-          <property name="text">
-           <string>Not working yet.</string>
-          </property>
-          <property name="font">
-           <font>
-            <italic>true</italic>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-          </property>
-         </item>
         </item>
         <item>
          <property name="text">
@@ -577,6 +553,14 @@
           </property>
           <property name="text">
            <string/>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>TextToTriSurfField</string>
+          </property>
+          <property name="text">
+           <string>TBD</string>
           </property>
          </item>
          <item>

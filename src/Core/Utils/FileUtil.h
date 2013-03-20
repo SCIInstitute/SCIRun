@@ -27,7 +27,7 @@
  */
 
 #ifndef CORE_UTILS_FILEUTIL_H
-#define CORE_UTILS_FILEUTIL_H 1
+#define CORE_UTILS_FILEUTIL_H
 
 #include <sstream>
 #include <Core/Utils/Share.h>
@@ -54,12 +54,20 @@ inline bool fileContainsString(const std::string& filename, const std::string& s
 
 inline void replaceDelimitersWithWhitespace(std::string& line)
 {
+  // TODO: this code doesn't work under VS2010 - check with VS2012
+
   // replace comma's, tabs etc. with white spaces
-  for (auto &c : line)
-  {
-    if ( (c == '\t') || (c == ',') || (c == '"') )
-      c = ' ';
-  }
+//  for (auto &c : line)
+//  {
+//    if ( (c == '\t') || (c == ',') || (c == '"') )
+//      c = ' ';
+//  }
+	for (auto it = line.begin(); it != line.end(); it++)
+	{
+		char c = *it;
+        if ( (c == '\t') || (c == ',') || (c == '"') )
+          c = ' ';
+	}
 }
 
 inline bool lineStartsWithComment(const std::string& line)

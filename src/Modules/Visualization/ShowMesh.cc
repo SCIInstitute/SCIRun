@@ -52,6 +52,8 @@ void ShowMeshModule::execute()
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool zTestOn = get_state()->getValue(ZTestOn).getBool();
 
+  ENSURE_NOT_NULL(facade, "Mesh facade");
+
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
   ///       a 32 bit index buffer.

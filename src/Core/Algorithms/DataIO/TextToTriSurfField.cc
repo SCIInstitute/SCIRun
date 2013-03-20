@@ -343,7 +343,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         ENSURE_FILE_EXISTS(filename);
       }
-      std::string stem(bfs::path(filename).stem().c_str());
+      std::string stem(bfs::path(filename).stem().string());
       this->remark("Reading triangle surface from " + stem);
       validPointsFile = privateImpl.validatePointsFile(filename);
       
@@ -393,7 +393,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         TextToTriSurfFieldPrivate::lock_type lock( privateImpl.get_mutex() );
         ENSURE_FILE_EXISTS(filename);
       }
-      std::string stem(bfs::path(filename).stem().c_str());
+      std::string stem(bfs::path(filename).stem().string());
       this->remark("Reading triangle surface from " + stem);
       validFacesFile = privateImpl.validateFacesFile(filename);
       
