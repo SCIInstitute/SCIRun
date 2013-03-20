@@ -27,7 +27,7 @@
 */
 
 #include <iostream>
-
+#include <boost/thread.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -36,6 +36,10 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#ifdef BUILD_WITH_PYTHON
+#include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
+#include <Dataflow/Engine/Controller/PythonImpl.h>
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
@@ -49,6 +53,10 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 {
   //TODO should this class own or just keep a reference?
   theNetwork_.reset(new Network(mf, sf));
+
+#ifdef BUILD_WITH_PYTHON
+  NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface>(new PythonImpl(*this)));
+#endif
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg)
@@ -58,16 +66,22 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 
 ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
 {
-  //TODO: should pass in entire info struct
-  ModuleLookupInfo info;
-  info.module_name_ = moduleName;
-  ModuleHandle realModule = theNetwork_->add_module(info);
+  auto realModule = addModuleImpl(moduleName);
   /*emit*/ moduleAdded_(moduleName, realModule);
   printNetwork();
   return realModule;
 }
 
-void NetworkEditorController::removeModule(const std::string& id)
+ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleName)
+{
+  //TODO: should pass in entire info struct
+  ModuleLookupInfo info;
+  info.module_name_ = moduleName;
+  ModuleHandle realModule = theNetwork_->add_module(info);
+  return realModule;
+}
+
+void NetworkEditorController::removeModule(const ModuleId& id)
 {
   theNetwork_->remove_module(id);
   //before or after?
@@ -75,6 +89,31 @@ void NetworkEditorController::removeModule(const std::string& id)
   /*emit*/ moduleRemoved_(id);
   
   printNetwork();
+}
+
+ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
+{
+  ENSURE_NOT_NULL(module, "Cannot duplicate null module");
+  ModuleId id(module->get_id());
+  auto newModule = addModuleImpl(id.name_);
+  newModule->set_state(module->get_state()->clone());
+  moduleAdded_(id.name_, newModule);
+
+  //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
+  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+  
+  for (size_t i = 0; i < module->num_input_ports(); ++i)
+  {
+    auto input = module->get_input_port(i);
+    if (input->nconnections() == 1)
+    {
+      auto conn = input->connection(0);
+      auto source = conn->oport_;
+      requestConnection(source.get(), newModule->get_input_port(i).get());
+    }
+  }
+  
+  return newModule;
 }
 
 void NetworkEditorController::printNetwork() const
@@ -96,9 +135,9 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   auto out = from->isInput() ? to : from;     
   auto in = from->isInput() ? from : to;     
 
-  SCIRun::Dataflow::Networks::ConnectionDescription desc(
-    SCIRun::Dataflow::Networks::OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
-    SCIRun::Dataflow::Networks::IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
+  ConnectionDescription desc(
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
+    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
@@ -216,3 +255,4 @@ void NetworkEditorController::setExecutorType(int type)
 {
   currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
 }
+

@@ -29,6 +29,7 @@
 #include <Dataflow/Network/NullModuleState.h>
 
 using namespace SCIRun::Engine::State;
+using namespace SCIRun::Dataflow::Networks;
   
 void NullModuleState::setValue(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&)
 {
@@ -42,6 +43,11 @@ const NullModuleState::Value NullModuleState::getValue(const Name&) const
 NullModuleState::Keys NullModuleState::getKeys() const
 {
   return Keys();
+}
+
+ModuleStateHandle NullModuleState::clone() const
+{
+  return ModuleStateHandle(new NullModuleState);
 }
 
 boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)

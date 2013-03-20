@@ -267,7 +267,7 @@ void GuiActionProvenanceConverter::moduleAdded(const std::string& name, SCIRun::
   }
 }
 
-void GuiActionProvenanceConverter::moduleRemoved(const std::string& id)
+void GuiActionProvenanceConverter::moduleRemoved(const ModuleId& id)
 {
   if (!provenanceManagerModifyingNetwork_)
   {
@@ -294,7 +294,7 @@ void GuiActionProvenanceConverter::connectionRemoved(const SCIRun::Dataflow::Net
   }
 }
 
-void GuiActionProvenanceConverter::moduleMoved(const std::string& id, double newX, double newY)
+void GuiActionProvenanceConverter::moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY)
 {
   if (!provenanceManagerModifyingNetwork_)
   {

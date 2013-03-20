@@ -126,7 +126,6 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
       ostr << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " point=" << p0.get_string()
         << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
     }
-    //std::cout << ostr.str() << std::endl;
 
     EXPECT_EQ(
       "Edge 0 nodes=[0 point=[0, 0, 0], 1 point=[1, 0, 0]]\n"
@@ -179,8 +178,6 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
       "Face 5 edges=[1, 3, 10, 11]\n"
       "Face 5 nodes=[2, 3, 7, 6]\n"
       ,ostr.str());
-
-    //std::cout << ostr.str() << std::endl;
   }
 
   {
@@ -204,7 +201,6 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
       latVolVMesh->get_nodes(nodesFromCell, elemID);
       ostr << "Cell " << elemID << " nodes=["<< join(nodesFromCell) << "]" << std::endl;
     }
-    //std::cout << ostr.str() << std::endl;
 
     EXPECT_EQ(
       "Cell 0 edges=[0, 1, 2, 3, 4, 6, 5, 7, 8, 9, 10, 11]\n"
@@ -232,7 +228,6 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
       latVolVMesh->get_edges(edgesFromNode, nodeID);
       ostr << " edges=[" << join(edgesFromNode) << "]" << std::endl;
     }
-    //std::cout << ostr.str() << std::endl;
 
     EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 4, 8]\n"
       "Node 1 point=[1, 0, 0] edges=[0, 6, 9]\n"

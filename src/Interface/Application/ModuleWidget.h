@@ -73,6 +73,8 @@ public:
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
 
+  void setDeletedFromGui(bool b) { deletedFromGui_ = b; }
+
   //TODO: initialize in a new class
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
@@ -87,8 +89,9 @@ public Q_SLOTS:
   void updateModuleTime();
   void launchDocumentation();
   void updateNote(const Note& note);
+  void duplicate();
 Q_SIGNALS:
-  void removeModule(const std::string& moduleId);
+  void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& desc);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -96,10 +99,12 @@ Q_SIGNALS:
   void updateProgressBarSignal(double percent);
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
+  void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
 private:
   Ports inputPorts_;
   Ports outputPorts_;
   boost::timer timer_;
+  bool deletedFromGui_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 

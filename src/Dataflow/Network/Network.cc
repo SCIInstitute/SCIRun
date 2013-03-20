@@ -60,7 +60,7 @@ ModuleHandle Network::add_module(const ModuleLookupInfo& info)
   return module;
 }
 
-bool Network::remove_module(const std::string& id)
+bool Network::remove_module(const ModuleId& id)
 {
   Modules::iterator loc = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   if (loc != modules_.end())
@@ -160,13 +160,13 @@ ModuleHandle Network::module(size_t i) const
   return modules_[i];
 }
 
-ModuleHandle Network::lookupModule(const std::string& id) const
+ModuleHandle Network::lookupModule(const ModuleId& id) const
 {
   Modules::const_iterator i = std::find_if(modules_.begin(), modules_.end(), boost::lambda::bind(&ModuleInterface::get_id, *boost::lambda::_1) == id);
   return i == modules_.end() ? ModuleHandle() : *i;
 }
 
-ExecutableObject* Network::lookupExecutable(const std::string& id) const
+ExecutableObject* Network::lookupExecutable(const ModuleId& id) const
 {
   return lookupModule(id).get();
 }
@@ -190,8 +190,7 @@ std::string Network::toString() const
   std::ostringstream ostr;
   ostr << "~~~NETWORK DESCRIPTION~~~\n";
   ostr << "Modules:\n";
-    //TODO: fix for mac (nonessential code, just commented out for now)
-  //std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), bind(to_string, *boost::lambda::_1));
+  std::transform(modules_.begin(), modules_.end(), std::ostream_iterator<std::string>(ostr, ", "), [](ModuleHandle m) { return to_string(*m);});
   ostr << "\nConnections:\n";
   std::transform(connections_.begin(), connections_.end(), std::ostream_iterator<std::string>(ostr, ", "), GetConnectionIds());
   return ostr.str();
@@ -217,7 +216,7 @@ int Network::errorCode() const
   return errorCode_;
 }
 
-void Network::incrementErrorCode(const std::string& moduleId)
+void Network::incrementErrorCode(const ModuleId& moduleId)
 {
   errorCode_++;
   //TODO: store errored modules in a list or something

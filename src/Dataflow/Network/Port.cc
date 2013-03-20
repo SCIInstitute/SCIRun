@@ -33,6 +33,7 @@
 #include <Core/Utils/Exception.h>
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -77,7 +78,7 @@ size_t Port::nconnections() const
   return connections_.size();
 }
 
-std::string Port::getUnderlyingModuleId() const 
+ModuleId Port::getUnderlyingModuleId() const 
 {
   return module_->get_id();
 }

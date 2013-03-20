@@ -63,6 +63,7 @@ CORE_SINGLETON_IMPLEMENTATION( Application )
 Application::Application() :
 	private_( new ApplicationPrivate )
 {
+  private_->app_filepath_ = boost::filesystem::current_path();
 }
 
 Application::~Application()
@@ -76,6 +77,8 @@ ApplicationParametersHandle Application::parameters()
 
 void Application::readCommandLine(int argc, const char* argv[])
 {
+  private_->app_filename_ = boost::filesystem::path( argv[0] );
+  private_->app_filepath_ = private_->app_filename_.parent_path();
   private_->parameters_ = private_->parser.parse(argc, argv);
 }
 
@@ -90,6 +93,11 @@ NetworkEditorControllerHandle Application::controller()
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe));
   }
   return private_->controller_;
+}
+
+boost::filesystem::path Application::executablePath() const
+{
+  return private_->app_filepath_;
 }
 
 /*

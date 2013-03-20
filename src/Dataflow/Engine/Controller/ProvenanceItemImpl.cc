@@ -53,14 +53,14 @@ std::string ModuleAddedProvenanceItem::name() const
   return "Module Added: " + moduleName_;
 }
 
-ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const std::string& moduleId, NetworkFileHandle state)
+ModuleRemovedProvenanceItem::ModuleRemovedProvenanceItem(const ModuleId& moduleId, NetworkFileHandle state)
   : ProvenanceItemBase(state), moduleId_(moduleId)
 {
 }
 
 std::string ModuleRemovedProvenanceItem::name() const
 {
-  return "Module Removed: " + moduleId_;
+  return "Module Removed: " + moduleId_.id_;
 }
 
 ConnectionAddedProvenanceItem::ConnectionAddedProvenanceItem(const SCIRun::Dataflow::Networks::ConnectionDescription& cd, NetworkFileHandle state)
@@ -83,7 +83,7 @@ std::string ConnectionRemovedProvenanceItem::name() const
   return "Connection Removed: " + id_.id_;
 }
 
-ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const std::string& moduleId, double newX, double newY, NetworkFileHandle state)
+ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const SCIRun::Dataflow::Networks::ModuleId& moduleId, double newX, double newY, NetworkFileHandle state)
   : ProvenanceItemBase(state), moduleId_(moduleId), newX_(newX), newY_(newY)
 {
 }
@@ -91,6 +91,6 @@ ModuleMovedProvenanceItem::ModuleMovedProvenanceItem(const std::string& moduleId
 std::string ModuleMovedProvenanceItem::name() const
 {
   std::ostringstream ostr;
-  ostr << "Module " << moduleId_ << " moved to (" << newX_ << "," << newY_ << ")";
+  ostr << "Module " << moduleId_.id_ << " moved to (" << newX_ << "," << newY_ << ")";
   return ostr.str();
 }

@@ -44,11 +44,11 @@ namespace SCIRun {
         {
         public:
           MOCK_METHOD1(add_module, ModuleHandle(const ModuleLookupInfo&));
-          MOCK_METHOD1(remove_module, bool(const std::string&));
+          MOCK_METHOD1(remove_module, bool(const ModuleId&));
           MOCK_CONST_METHOD0(nmodules, size_t());
           MOCK_CONST_METHOD1(module, ModuleHandle(size_t));
-          MOCK_CONST_METHOD1(lookupModule, ModuleHandle(const std::string&));
-          MOCK_CONST_METHOD1(lookupExecutable, ExecutableObject*(const std::string&));
+          MOCK_CONST_METHOD1(lookupModule, ModuleHandle(const ModuleId&));
+          MOCK_CONST_METHOD1(lookupExecutable, ExecutableObject*(const ModuleId&));
           MOCK_METHOD2(connect, ConnectionId(const ConnectionOutputPort&, const ConnectionInputPort&));
           MOCK_METHOD1(disconnect, bool(const ConnectionId&));
           MOCK_CONST_METHOD0(nconnections, size_t());
@@ -56,7 +56,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(toString, std::string());
           MOCK_CONST_METHOD0(connections, ConnectionDescriptionList());
           MOCK_CONST_METHOD0(errorCode, int());
-          MOCK_METHOD1(incrementErrorCode, void(const std::string&));
+          MOCK_METHOD1(incrementErrorCode, void(const ModuleId&));
           MOCK_METHOD0(settings, NetworkGlobalSettings&());
         };
 

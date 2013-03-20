@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <Dataflow/Network/RendererInterface.h>
 

@@ -52,17 +52,17 @@ void NetworkEditorControllerGuiProxy::addModule(const std::string& moduleName)
   controller_->addModule(moduleName);
 }
 
-void NetworkEditorControllerGuiProxy::removeModule(const std::string& id)
+void NetworkEditorControllerGuiProxy::removeModule(const ModuleId& id)
 {
   controller_->removeModule(id);
 }
 
-void NetworkEditorControllerGuiProxy::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
+void NetworkEditorControllerGuiProxy::requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to)
 {
   controller_->requestConnection(from, to);
 }
 
-void NetworkEditorControllerGuiProxy::removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id)
+void NetworkEditorControllerGuiProxy::removeConnection(const ConnectionId& id)
 {
   controller_->removeConnection(id);
 }
@@ -72,12 +72,12 @@ NetworkFileHandle NetworkEditorControllerGuiProxy::saveNetwork() const
   return controller_->saveNetwork();
 }
 
-void NetworkEditorControllerGuiProxy::loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml)
+void NetworkEditorControllerGuiProxy::loadNetwork(const NetworkFileHandle& xml)
 {
   return controller_->loadNetwork(xml);
 }
 
-void NetworkEditorControllerGuiProxy::executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup)
+void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
 {
   controller_->executeAll(lookup);
 }
@@ -92,7 +92,7 @@ int NetworkEditorControllerGuiProxy::errorCode() const
   return controller_->getNetwork()->errorCode();
 }
 
-SCIRun::Dataflow::Networks::NetworkGlobalSettings& NetworkEditorControllerGuiProxy::getSettings()
+NetworkGlobalSettings& NetworkEditorControllerGuiProxy::getSettings()
 {
   return controller_->getSettings();
 }
@@ -100,4 +100,9 @@ SCIRun::Dataflow::Networks::NetworkGlobalSettings& NetworkEditorControllerGuiPro
 void NetworkEditorControllerGuiProxy::setExecutorType(int type)
 {
   controller_->setExecutorType(type);
+}
+
+void NetworkEditorControllerGuiProxy::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module)
+{
+  controller_->duplicateModule(module);
 }

@@ -65,6 +65,7 @@ ADD_LIBRARY(Interface_Modules_Render
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Render 
   Interface_Modules_Base
+  Core_Application
   ${OPENGL_LIBRARIES}
   ${QT_OPENGL_LIBRARY}
   ${SCI_SPIRE_LIBRARY}

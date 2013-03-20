@@ -40,11 +40,14 @@ namespace Dataflow {
 namespace Engine {
   
   typedef boost::signals2::signal<void (const std::string&, Networks::ModuleHandle)> ModuleAddedSignalType;
-  typedef boost::signals2::signal<void (const std::string&)> ModuleRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&)> ModuleRemovedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
 
+  // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
+  //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
+  //   This will be done in issue #231
 
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
   {
@@ -52,25 +55,31 @@ namespace Engine {
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
     explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////Start: To be Pythonized/////////////////////////////
     Networks::ModuleHandle addModule(const std::string& moduleName);
-    void removeModule(const std::string& id);
+    void removeModule(const Networks::ModuleId& id);
+    Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
+
+    void executeAll(const Networks::ExecutableLookup& lookup);
+
+    virtual Networks::NetworkFileHandle saveNetwork() const;
+    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
+//////////////////////End: To be Pythonized///////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+    virtual void clear();
 
     boost::signals2::connection connectModuleAdded(const ModuleAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectModuleRemoved(const ModuleRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber);
-    
+
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-
-    void executeAll(const Networks::ExecutableLookup& lookup);
-
-    virtual Networks::NetworkFileHandle saveNetwork() const;
-    virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
-    virtual void clear();
 
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();
@@ -82,6 +91,7 @@ namespace Engine {
 
   private:
     void printNetwork() const;
+    Networks::ModuleHandle addModuleImpl(const std::string& moduleName);
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;

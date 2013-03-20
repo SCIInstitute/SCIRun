@@ -43,6 +43,7 @@ namespace SCIRun {
           MOCK_METHOD2(setValue, void(const Name&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
           MOCK_CONST_METHOD1(getValue, const Value(const Name&));
           MOCK_CONST_METHOD0(getKeys, Keys());
+          MOCK_CONST_METHOD0(clone, ModuleStateHandle());
           MOCK_CONST_METHOD1(getTransientValue, const TransientValue(const std::string&));
           MOCK_METHOD2(setTransientValue, void(const std::string&, const TransientValue&));
           MOCK_METHOD1(connect_state_changed, boost::signals::connection(state_changed_sig_t::slot_function_type));

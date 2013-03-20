@@ -54,7 +54,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(get_input_port, InputPortHandle(size_t));
           MOCK_CONST_METHOD0(num_input_ports, size_t());
           MOCK_CONST_METHOD0(num_output_ports, size_t());
-          MOCK_CONST_METHOD0(get_id, std::string());
+          MOCK_CONST_METHOD0(get_id, ModuleId());
           MOCK_CONST_METHOD0(has_ui, bool());
           MOCK_METHOD1(set_id, void(const std::string&));
           MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());

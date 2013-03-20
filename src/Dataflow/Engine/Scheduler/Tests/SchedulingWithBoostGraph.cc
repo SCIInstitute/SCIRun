@@ -293,16 +293,16 @@ TEST_F(SchedulingWithBoostGraph, SerialNetworkOrder)
   BoostGraphSerialScheduler scheduler;
   ModuleExecutionOrder order = scheduler.schedule(matrixMathNetwork);
 
-  std::list<std::string> expected = list_of
-    ("SendTestMatrix1")
-    ("EvaluateLinearAlgebraUnary4")
-    ("SendTestMatrix0")
-    ("EvaluateLinearAlgebraUnary3")
-    ("EvaluateLinearAlgebraBinary5")
-    ("EvaluateLinearAlgebraUnary2")
-    ("EvaluateLinearAlgebraBinary6")
-    ("ReportMatrixInfo7")
-    ("ReceiveTestMatrix8");
+  std::list<ModuleId> expected = list_of
+    (ModuleId("SendTestMatrix:1"))
+    (ModuleId("EvaluateLinearAlgebraUnary:4"))
+    (ModuleId("SendTestMatrix:0"))
+    (ModuleId("EvaluateLinearAlgebraUnary:3"))
+    (ModuleId("EvaluateLinearAlgebraBinary:5"))
+    (ModuleId("EvaluateLinearAlgebraUnary:2"))
+    (ModuleId("EvaluateLinearAlgebraBinary:6"))
+    (ModuleId("ReportMatrixInfo:7"))
+    (ModuleId("ReceiveTestMatrix:8"));
   EXPECT_EQ(ModuleExecutionOrder(expected), order);
 }
 
@@ -324,15 +324,15 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   std::cout << ostr.str() << std::endl;
 
   std::string expected = 
-    "0 SendTestMatrix1\n"
-    "0 SendTestMatrix0\n"
-    "1 EvaluateLinearAlgebraUnary3\n"
-    "1 EvaluateLinearAlgebraUnary4\n"
-    "1 EvaluateLinearAlgebraUnary2\n"
-    "2 EvaluateLinearAlgebraBinary5\n"
-    "3 EvaluateLinearAlgebraBinary6\n"
-    "4 ReportMatrixInfo7\n"
-    "4 ReceiveTestMatrix8\n";
+    "0 SendTestMatrix:1\n"
+    "0 SendTestMatrix:0\n"
+    "1 EvaluateLinearAlgebraUnary:3\n"
+    "1 EvaluateLinearAlgebraUnary:4\n"
+    "1 EvaluateLinearAlgebraUnary:2\n"
+    "2 EvaluateLinearAlgebraBinary:5\n"
+    "3 EvaluateLinearAlgebraBinary:6\n"
+    "4 ReportMatrixInfo:7\n"
+    "4 ReceiveTestMatrix:8\n";
 
   EXPECT_EQ(expected, ostr.str());
 }
