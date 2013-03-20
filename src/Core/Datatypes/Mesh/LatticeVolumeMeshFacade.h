@@ -45,7 +45,7 @@ namespace Datatypes {
   public:
     explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) 
     {
-      if (!vmesh->is_latvolmesh())
+      if (!(vmesh->is_latvolmesh() || vmesh->is_trisurfmesh()))
         THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 

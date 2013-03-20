@@ -52,6 +52,7 @@
 #include <Core/Datatypes/Mesh/VMesh.h>
 #include <Core/Datatypes/Mesh/FieldIterator.h>
 #include <Core/Datatypes/Mesh/FieldRNG.h>
+#include <Core/Datatypes/Mesh/LatticeVolumeMeshFacade.h>
 //#include <Core/Datatypes/Mesh/Types.h>
 
 //#include <Core/Thread/Mutex.h>
@@ -308,8 +309,7 @@ public:
 
   virtual MeshFacadeHandle getFacade() const 
   {
-    //TODO!!!
-    return MeshFacadeHandle();
+    return MeshFacadeHandle(new LatticeVolumeMeshFacade(vmesh()));
   }
 
   //! Destructor 
