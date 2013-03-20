@@ -177,7 +177,7 @@ void ShowMeshModule::execute()
     }
     else
     {
-      pass.addUniform("uColor", Spire::V4(0.3f, 0.3f, 0.3f, 1.0f));
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
     }
 
     geom->mPasses.emplace_back(pass);
