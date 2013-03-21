@@ -24,7 +24,7 @@
  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
- */
+*/
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -62,28 +62,10 @@ protected:
       triangleVMesh->add_point(Point(0.0, 0.0, 0.0));
       triangleVMesh->add_point(Point(1.0, 0.0, 0.0));
       triangleVMesh->add_point(Point(0.5, 1.0, 0.0));
-      triangleVMesh->add_elem({0, 1, 2});
-      
-//      VirtualMesh::Edge::iterator iter;
-//      VirtualMesh::Edge::iterator iend;
-//      
-//      triangleVMesh->synchronize(Mesh::EDGES_E);
-//
-//      triangleVMesh->end(iend);
-//      
-//      VirtualMesh::Node::array_type nodesFromEdge(2);
-//      for(triangleVMesh->begin(iter); iter != iend; ++iter)
-//      {
-//        VirtualMesh::Edge::index_type edgeID = *iter;
-//        triangleVMesh->get_nodes(nodesFromEdge, edgeID);
-//        Point p0, p1;
-//        triangleVMesh->get_point(p0, nodesFromEdge[0]);
-//        triangleVMesh->get_point(p1, nodesFromEdge[1]);
-//        std::cout << "Edge " << edgeID << " nodes=[" << nodesFromEdge[0] << " points=" << p0.get_string()
-//        << ", " << nodesFromEdge[1] << " point=" << p1.get_string() << "]" << std::endl;
-//      }
-//      
-//      triangleVMesh->clear_synchronization();
+
+      VirtualMesh::Node::array_type vdata;
+      vdata += 0, 1, 2;
+      triangleVMesh->add_elem(vdata);
     }
     
     {
@@ -98,18 +80,43 @@ protected:
       cubeVMesh->add_point(Point(1.0, 1.0, -1.0));
       cubeVMesh->add_point(Point(0.0, 1.0, -1.0));
       cubeVMesh->add_point(Point(0.0, 0.0, -1.0));
-      cubeVMesh->add_elem({0, 1, 7});
-      cubeVMesh->add_elem({0, 7, 6});
-      cubeVMesh->add_elem({1, 0, 2});
-      cubeVMesh->add_elem({1, 3, 2});
-      cubeVMesh->add_elem({2, 3, 4});
-      cubeVMesh->add_elem({2, 4, 5});
-      cubeVMesh->add_elem({4, 7, 1});
-      cubeVMesh->add_elem({4, 3, 1});
-      cubeVMesh->add_elem({5, 6, 0});
-      cubeVMesh->add_elem({5, 2, 0});
-      cubeVMesh->add_elem({7, 6, 5});
-      cubeVMesh->add_elem({7, 4, 5});
+
+      VirtualMesh::Node::array_type vdata1;
+      vdata1 += 0, 1, 7;
+      cubeVMesh->add_elem(vdata1);
+      VirtualMesh::Node::array_type vdata2;
+      vdata2 += 0, 7, 6;
+      cubeVMesh->add_elem(vdata2);
+      VirtualMesh::Node::array_type vdata3;
+      vdata3 += 1, 0, 2;
+      cubeVMesh->add_elem(vdata2);
+      VirtualMesh::Node::array_type vdata4;
+      vdata4 += 1, 3, 2;
+      cubeVMesh->add_elem(vdata4);
+      VirtualMesh::Node::array_type vdata5;
+      vdata5 += 2, 3, 4;
+      cubeVMesh->add_elem(vdata5);
+      VirtualMesh::Node::array_type vdata6;
+      vdata6 += 2, 4, 5;
+      cubeVMesh->add_elem(vdata6);
+      VirtualMesh::Node::array_type vdata7;
+      vdata7 += 4, 7, 1;
+      cubeVMesh->add_elem(vdata7);
+      VirtualMesh::Node::array_type vdata8;
+      vdata8 += 4, 3, 1;
+      cubeVMesh->add_elem(vdata8);
+      VirtualMesh::Node::array_type vdata9;
+      vdata9 += 5, 6, 0;
+      cubeVMesh->add_elem(vdata9);
+      VirtualMesh::Node::array_type vdata10;
+      vdata10 += 5, 2, 0;
+      cubeVMesh->add_elem(vdata10);
+      VirtualMesh::Node::array_type vdata11;
+      vdata11 += 7, 6, 5;
+      cubeVMesh->add_elem(vdata11);
+      VirtualMesh::Node::array_type vdata12;
+      vdata12 += 7, 4, 5;
+      cubeVMesh->add_elem(vdata12);
     }
   }
   
