@@ -52,22 +52,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   // Hook up the GLWidget
   glLayout->addWidget(mGLWidget);
   glLayout->update();
-
-  // Grab the context and pass that to the module (via the state).
-  // (should no longer be used).
-  std::weak_ptr<Spire::Context> ctx = std::weak_ptr<Spire::Context>(
-      std::dynamic_pointer_cast<Spire::Context>(mGLWidget->getContext()));
-  state->setTransientValue("glContext", ctx);
-
-  // Set spire transient value (should no longer be used).
-  mSpire = std::weak_ptr<Spire::SCIRun::SRInterface>(mGLWidget->getSpire());
-  state->setTransientValue("spire", mSpire);
 }
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::~ViewSceneDialog()
 {
-  delete mGLWidget;
 }
 
 //------------------------------------------------------------------------------

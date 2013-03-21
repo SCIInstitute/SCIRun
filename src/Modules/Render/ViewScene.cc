@@ -53,25 +53,10 @@ void ViewScene::preExecutionInitialization()
   // TODO: Detect if we are running headless; if so, cerate a system-specifc
   //       OpenGL context *and* spire. Otherwise, just lookup via transient
   //       values.
-
-  boost::any spireTransient = get_state()->getTransientValue("spire");
-  if (!spireTransient.empty())
-  {
-    try
-    {
-      mSpire = boost::any_cast<std::weak_ptr<Spire::SCIRun::SRInterface>>(spireTransient);
-    }
-    catch (const boost::bad_any_cast& e)
-    {
-      error("Unable to cast boost::any transient value to spire pointer.");
-    }
-  }
 }
 
 void ViewScene::preDestruction()
 {
-  // Destroy spire.
-  mSpire.reset();
 }
 
 void ViewScene::execute()
