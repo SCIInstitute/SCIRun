@@ -32,5 +32,10 @@ using namespace SCIRun::TestUtils;
 
 boost::filesystem::path TestResources::rootDir()
 {
+#ifdef BUILD_TESTING
   return TEST_RESOURCE_ROOT_DIR;
+#else
+  return "";
+#endif
 }
+

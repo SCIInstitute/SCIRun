@@ -126,7 +126,7 @@ IF(BUILD_TESTING)
 	MESSAGE( FATAL_ERROR "Unit test resource path does not exist. Please set it correctly to run all the unit tests." ) 
   ENDIF()
 
-  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}")
+  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
 OPTION(BUILD_WITH_PYTHON "Build with python support." ON)

@@ -39,7 +39,6 @@ namespace SCIRun
 
 namespace TestUtils
 {
-//TODO: set up global test resources here.
 
   struct SCISHARE TestResources
   {
