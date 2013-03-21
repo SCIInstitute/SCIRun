@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
-#define ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
+#include <Testing/Utils/SCIRunUnitTests.h>
 
-#include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Python/Share.h>
+using namespace SCIRun::TestUtils;
 
-namespace SCIRun {
-  namespace Dataflow {
-    namespace Engine {
-
-      class SCISHARE NetworkEditorPythonInterface
-      {
-      public:
-        virtual ~NetworkEditorPythonInterface() {}
-        virtual std::string addModule(const std::string& name) = 0;
-        virtual std::string removeModule(const std::string& id) = 0;
-        virtual std::string executeAll(const Networks::ExecutableLookup& lookup) = 0;
-        virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
-        virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
-        virtual std::string saveNetwork(const std::string& filename) = 0;
-        virtual std::string loadNetwork(const std::string& filename) = 0;
-        virtual std::string quit(bool force) = 0;
-      };
-
-    }
-  }
+boost::filesystem::path TestResources::rootDir()
+{
+#ifdef BUILD_TESTING
+  return TEST_RESOURCE_ROOT_DIR;
+#else
+  return "";
+#endif
 }
 
-#endif

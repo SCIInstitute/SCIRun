@@ -39,6 +39,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_DataIO_Tests
 TARGET_LINK_LIBRARIES(Algorithms_DataIO_Tests
   Algorithms_DataIO
   Core_Datatypes
+  Testing_Utils
   gtest_main
   gtest
   gmock

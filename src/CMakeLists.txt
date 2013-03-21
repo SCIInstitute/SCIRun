@@ -113,6 +113,14 @@ IF(BUILD_TESTING)
 
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
+
+  SET(USER_UNIT_TEST_RESOURCE_DIR "E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
+
+  IF(NOT EXISTS "${USER_UNIT_TEST_RESOURCE_DIR}")
+	MESSAGE( FATAL_ERROR "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" ) 
+  ENDIF()
+
+  ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
 OPTION(BUILD_WITH_PYTHON "Build with python support." ON)

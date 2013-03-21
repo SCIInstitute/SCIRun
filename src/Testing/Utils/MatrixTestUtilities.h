@@ -108,6 +108,15 @@ inline ::testing::AssertionResult compare_with_two_norm(const Core::Datatypes::D
     "Vectors are " << delta << " apart, expect less than " << error << " distance apart.\n" <<
     "ColumnMatrix 1: \n"<< Core::to_string(x).substr(0, printSize) << "ColumnMatrix 2: \n" << Core::to_string(xhat).substr(0, printSize);
 }
+
+inline void copyDenseToSparse(const Core::Datatypes::DenseMatrix& from, Core::Datatypes::SparseRowMatrix& to)
+{
+  to.setZero();
+  for (int i = 0; i < from.rows(); ++i)
+    for (int j = 0; j < from.cols(); ++j)
+      if (fabs(from(i,j)) > 1e-10)
+        to.insert(i,j) = from(i,j);
+}
  
 //TODO improve failure reporting
 //#define EXPECT_MATRIX_EQ_TOLERANCE(actual, expected, tolerance) EXPECT_TRUE(compare_with_tolerance_readable((actual), (expected), (tolerance)))

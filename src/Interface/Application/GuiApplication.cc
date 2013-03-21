@@ -44,27 +44,18 @@ int GuiApplication::run(int argc, const char* argv[])
   { 
     SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
 
-    //Splash screen attempt: can't quite get it to work yet.
-#if 0
-    {
-      //std::cout << "showing splash screen" << std::endl;
-      QPixmap pixmap(":/gear/splash-scirun.png");
-      //std::cout << pixmap.isNull() << std::endl;
-      QSplashScreen splash(mainWin, pixmap,  Qt::WindowStaysOnTopHint);
-      splash.show();
-      //splash.showMessage("pootzor");
-      app.processEvents();
+    QPixmap pixmap(":/gear/splash-scirun.png");
+    QSplashScreen splash(0, pixmap,  Qt::WindowStaysOnTopHint);
+    splash.show();
 
-      QTimer splashTimer;
-      splashTimer.setSingleShot( true );
-      splashTimer.setInterval( 3000 ); //4 seconds
-      QObject::connect( &splashTimer, SIGNAL( timeout() ), &splash, SLOT( close() ));
-      splashTimer.start(); 
-      //std::cout << "done showing splash screen" << std::endl;
-      //splash.showMessage("here is teh app");
-      splash.finish(mainWin);
-    }
-#endif
+    QTimer splashTimer;
+    splashTimer.setSingleShot( true );
+    splashTimer.setInterval( 5000 );
+    QObject::connect( &splashTimer, SIGNAL( timeout() ), &splash, SLOT( close() ));
+    splashTimer.start(); 
+    splash.showMessage("Welcome! Tip of the day: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
+    app.processEvents();
+    
     mainWin->setController(Core::Application::Instance().controller());
     mainWin->raise();
     mainWin->show();
@@ -75,11 +66,11 @@ int GuiApplication::run(int argc, const char* argv[])
   catch (std::exception& e)
   {
     QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return 1;
+    return -1;
   }
   catch (...)
   {
     QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return 1;
+    return -1;
   }
 }

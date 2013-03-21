@@ -45,6 +45,11 @@ namespace Engine {
     static std::string addModule(const std::string& name);
     static std::string removeModule(const std::string& id);
     static std::string executeAll();
+    static std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2);
+    static std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2);
+    static std::string saveNetwork(const std::string& filename);
+    static std::string loadNetwork(const std::string& filename);
+    static std::string quit(bool force);
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
     //TODO: smelly!

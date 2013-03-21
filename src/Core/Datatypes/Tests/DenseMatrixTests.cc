@@ -34,7 +34,7 @@
 #include <Core/Datatypes/MatrixComparison.h>
 
 using namespace SCIRun::Core::Datatypes;
-using namespace TestUtils;
+using namespace SCIRun::TestUtils;
 
 #define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
 
