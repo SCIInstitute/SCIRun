@@ -30,6 +30,7 @@
 #ifndef CORE_DATATYPES_VMESHSHARED_H
 #define CORE_DATATYPES_VMESHSHARED_H
 
+#include <iostream>
 #include <Core/Datatypes/Mesh/VMesh.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
