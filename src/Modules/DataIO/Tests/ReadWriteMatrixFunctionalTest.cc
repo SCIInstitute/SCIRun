@@ -26,8 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -60,6 +59,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::TestUtils;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -114,13 +114,13 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   DenseMatrixHandle input = matrix1();
   send->get_state()->setTransientValue("MatrixToSend", input);
 
-  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\moduleTestMatrix.txt";
+  auto filename = TestResources::rootDir() / "moduleTestMatrix.txt";
   boost::filesystem::remove(filename);
 
-  write->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename);
+  write->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename.string());
   WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
   ASSERT_TRUE(writeModule != 0);
-  read->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename);
+  read->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename.string());
   ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
   ASSERT_TRUE(readModule != 0);
 

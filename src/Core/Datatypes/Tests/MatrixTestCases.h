@@ -31,6 +31,7 @@
 
 #include <Core/Datatypes/DenseMatrix.h>
 
+namespace SCIRun {
 namespace TestUtils
 {
   using SCIRun::Core::Datatypes::DenseMatrix;
@@ -52,6 +53,7 @@ namespace TestUtils
     return m;
   }
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
+}
 }
 
 #endif

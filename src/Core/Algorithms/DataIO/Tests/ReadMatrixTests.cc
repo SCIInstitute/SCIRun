@@ -26,8 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 #include <Core/Datatypes/Tests/MatrixTestCases.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -43,7 +42,7 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace TestUtils;
+using namespace SCIRun::TestUtils;
 
 TEST(ReadMatrixTests, CanReadFromStream)
 {
@@ -75,15 +74,15 @@ TEST(ReadMatrixTests, RoundTripViaString)
 TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
 {
   ReadMatrixAlgorithm algo;
-  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1.txt";
+  auto filename = TestResources::rootDir() / "matrix1.txt";
   if (boost::filesystem::exists(filename))
   {
-    DenseMatrixConstHandle matrix = matrix_cast::as_dense(algo.run(filename));
+    DenseMatrixConstHandle matrix = matrix_cast::as_dense(algo.run(filename.string()));
     ASSERT_TRUE(matrix);
     EXPECT_EQ(matrix1(), *matrix);
   }
   else
-    std::cout << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
 TEST(ReadMatrixAlgorithmTest, ThrowsForFileNotFound)
@@ -96,10 +95,10 @@ TEST(ReadMatrixAlgorithmTest, ThrowsForFileNotFound)
 TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
-  const std::string filename = "E:\\stuff\\sp2.mat";
+  auto filename = TestResources::rootDir() / "sp2.mat";
   if (boost::filesystem::exists(filename))
   {
-    auto matrix = algo.run(filename);
+    auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 
@@ -114,16 +113,16 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
     EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
   }
   else
-    std::cout << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
 TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
-  const std::string filename = "E:\\stuff\\CGDarrell\\xScirun.mat";
+  auto filename = TestResources::rootDir() / "CGDarrell" / "xScirun.mat";
   if (boost::filesystem::exists(filename))
   {
-    auto matrix = algo.run(filename);
+    auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::dense(matrix));
 
@@ -135,16 +134,16 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
     EXPECT_DOUBLE_EQ(-0.346299309398506, (*dense)(0,0));
   }
   else
-    std::cout << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
 TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
-  const std::string filename = "E:\\stuff\\CGDarrell\\xScirunColumn.mat";
+  auto filename = TestResources::rootDir() / "CGDarrell" / "xScirunColumn.mat";
   if (boost::filesystem::exists(filename))
   {
-    auto matrix = algo.run(filename);
+    auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::column(matrix));
 
@@ -156,16 +155,16 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
     EXPECT_DOUBLE_EQ(-0.346299309398506, (*col)(0,0));
   }
   else
-    std::cout << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
 TEST(ReadMatrixAlgorithmTest, DISABLED_TestLargeSparseFromRealASCIIMatFile)
 {
   ReadMatrixAlgorithm algo;
-  const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
+  auto AFile = TestResources::rootDir() / "CGDarrell" / "A_txt.mat";
   if (boost::filesystem::exists(AFile))
   {
-    auto matrix = algo.run(AFile);
+    auto matrix = algo.run(AFile.string());
     ASSERT_TRUE(matrix);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 
@@ -182,23 +181,23 @@ TEST(ReadMatrixAlgorithmTest, DISABLED_TestLargeSparseFromRealASCIIMatFile)
 TEST(ReadMatrixAlgorithmTest, UnknownFileFormatThrows)
 {
   ReadMatrixAlgorithm algo;
-  const std::string notAMatrixFile = "E:\\git\\SCIRunGUIPrototype\\src\\Core\\Algorithms\\DataIO\\Share.h";
+  auto notAMatrixFile = TestResources::rootDir() /  "scirun5demo.srn";
   if (boost::filesystem::exists(notAMatrixFile))
   {
-    EXPECT_THROW(algo.run(notAMatrixFile), Core::Algorithms::AlgorithmInputException);
+    EXPECT_THROW(algo.run(notAMatrixFile.string()), Core::Algorithms::AlgorithmInputException);
   }
   else
-    std::cout << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
 TEST(ReadMatrixAlgorithmTest, ThrowsForMatlabFilesICantThemReadYet)
 {
   ReadMatrixAlgorithm algo;
-  const std::string matlabFile = "E:\\stuff\\CGDarrell\\RHS.mat";
+  auto matlabFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
   if (boost::filesystem::exists(matlabFile))
   {
-    EXPECT_THROW(algo.run(matlabFile), Core::Algorithms::AlgorithmInputException);
+    EXPECT_THROW(algo.run(matlabFile.string()), Core::Algorithms::AlgorithmInputException);
   }
   else
-    std::cout << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file does not exist, skipping test." << std::endl;
 }

@@ -47,6 +47,7 @@ TARGET_LINK_LIBRARIES(Core_Serialization_Network_Tests
   Modules_Factory
   Dataflow_State
   Engine_Network
+  Testing_Utils
   gtest_main
   gtest
   gmock

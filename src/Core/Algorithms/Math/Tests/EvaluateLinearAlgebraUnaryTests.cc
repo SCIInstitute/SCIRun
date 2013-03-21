@@ -37,7 +37,7 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
-using namespace TestUtils;
+using namespace SCIRun::TestUtils;
 
 TEST(EvaluateLinearAlgebraUnaryAlgorithmTests, CanNegate)
 {

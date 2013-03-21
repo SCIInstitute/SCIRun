@@ -29,8 +29,7 @@
 #include <Dataflow/Serialization/Network/ModuleDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 #include <stdexcept>
 #include <fstream>
@@ -40,6 +39,7 @@
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::TestUtils;
 using namespace boost::assign;
 
 TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
@@ -49,14 +49,13 @@ TEST(ModuleDescriptionXMLTest, CanSerializeModuleInfo)
   info.category_name_ = "Math";
   info.package_name_ = "SCIRun";
 
-  std::string filename("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\");
-  filename += "info.xml";
+  auto filename = TestResources::rootDir() / "info.xml";
 
-  XMLSerializer::save_xml(info, filename, "moduleInfo");
+  XMLSerializer::save_xml(info, filename.string(), "moduleInfo");
 
   ModuleLookupInfoXML newInfo;
 
-  newInfo = *XMLSerializer::load_xml<ModuleLookupInfoXML>(filename);
+  newInfo = *XMLSerializer::load_xml<ModuleLookupInfoXML>(filename.string());
 
   EXPECT_EQ(info.module_name_, newInfo.module_name_);
   EXPECT_EQ(info.category_name_, newInfo.category_name_);
@@ -100,5 +99,5 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   NetworkXML network;
   network.connections = connections;
   network.modules = mods;
-  XMLSerializer::save_xml(network, "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\network.srn", "network");
+  XMLSerializer::save_xml(network, (TestResources::rootDir() / "network.srn").string(), "network");
 }

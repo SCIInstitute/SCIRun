@@ -26,9 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
+#include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
@@ -39,6 +37,7 @@
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
+using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms;
@@ -79,22 +78,22 @@ TEST(WriteMatrixTests, CanWriteToStream)
 TEST(WriteMatrixAlgorithmTest, TestToRealTextFile)
 {
   WriteMatrixAlgorithm algo;
-  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1Out.txt";
+  auto filename = TestResources::rootDir() / "matrix1Out.txt";
 
   DenseMatrixHandle m1(matrix1().clone());
-  algo.run(m1, filename);
+  algo.run(m1, filename.string());
 }
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
 {
   WriteMatrixAlgorithm write;
-  const std::string filename = "E:\\git\\SCIRunGUIPrototype\\src\\Samples\\matrix1Out.txt";
+  auto filename = TestResources::rootDir() / "matrix1Out.txt";
 
   DenseMatrixHandle m1(matrix1().clone());
-  write.run(m1, filename);
+  write.run(m1, filename.string());
 
   ReadMatrixAlgorithm read;
-  DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename));
+  DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
   ASSERT_TRUE(roundTrip);
 
   EXPECT_EQ(*m1, *roundTrip);

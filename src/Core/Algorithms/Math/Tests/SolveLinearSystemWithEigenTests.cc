@@ -26,9 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
  
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
+#include <Testing/Utils/SCIRunUnitTests.h>
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -50,18 +48,6 @@ using namespace SCIRun::Core::Algorithms::DataIO::internal;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
-
-namespace
-{
-  void copyDenseToSparse(const DenseMatrix& from, SparseRowMatrix& to)
-  {
-    to.setZero();
-    for (int i = 0; i < from.rows(); ++i)
-      for (int j = 0; j < from.cols(); ++j)
-        if (fabs(from(i,j)) > 1e-10)
-          to.insert(i,j) = from(i,j);
-  }
-}
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWithEigenClasses)
 { 
@@ -227,16 +213,16 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 {
   EigenMatrixFromScirunAsciiFormatConverter converter;
 
-  const std::string file = "E:\\stuff\\sp2.mat";
+  auto file = TestResources::rootDir() / "sp2.mat";
 
   if (!boost::filesystem::exists(file))
   {
-    std::cout << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl;
-    std::cout << "Once that issue is done however, this will be a user setup error." << std::endl;
+    FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
+        << "Once that issue is done however, this will be a user setup error." << std::endl;
     return;
   }
 
-  std::string matStr = converter.readFile(file);
+  std::string matStr = converter.readFile(file.string());
 
   //2 3 4 {8 0 2 4 }{8 0 2 0 1 }{1 3.5 -1 2 }}
 
@@ -263,7 +249,7 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
   EXPECT_THAT(data.get<4>(), ElementsAre(0, 2, 0, 1));
   EXPECT_THAT(data.get<5>(), ElementsAre(1.0, 3.5, -1.0, 2.0));
 
-  auto mat = converter.makeSparse(file);
+  auto mat = converter.makeSparse(file.string());
   ASSERT_TRUE(mat);
   EXPECT_EQ(2, mat->rows());
   EXPECT_EQ(3, mat->cols());
@@ -305,9 +291,9 @@ TEST(EigenSparseSolverTest, CanSolveTinySystem)
 
 TEST(SparseMatrixReadTest, DISABLED_CanReadInBigMatrix)
 {
-  const std::string file = "C:\\Dev\\Dropbox\\CGDarrell\\A_txt.mat ";
+  auto file = TestResources::rootDir() / "CGDarrell" / "A_txt.mat ";
   EigenMatrixFromScirunAsciiFormatConverter converter;
-  auto mat = converter.makeSparse(file);
+  auto mat = converter.makeSparse(file.string());
   ASSERT_TRUE(mat);
   EXPECT_EQ(428931, mat->rows());
   EXPECT_EQ(428931, mat->cols());
@@ -316,9 +302,9 @@ TEST(SparseMatrixReadTest, DISABLED_CanReadInBigMatrix)
 TEST(SparseMatrixReadTest, DISABLED_CanReadInBigVector)
 {
   //428931 1 {0 0.005436646179877679 -0.002975964005526226
-  const std::string file = "C:\\Dev\\Dropbox\\CGDarrell\\RHS_text.txt";
+  auto file = TestResources::rootDir() / "CGDarrell" / "RHS_text.txt";
   EigenMatrixFromScirunAsciiFormatConverter converter;
-  auto mat = converter.makeDense(file);
+  auto mat = converter.makeDense(file.string());
   ASSERT_TRUE(mat);
   EXPECT_EQ(428931, mat->rows());
   EXPECT_EQ(1, mat->cols());
@@ -326,15 +312,15 @@ TEST(SparseMatrixReadTest, DISABLED_CanReadInBigVector)
 
 TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
 {
-  const std::string AFile = "e:\\stuff\\CGDarrell\\A_txt.mat";
-  const std::string rhsFile = "e:\\stuff\\CGDarrell\\RHS_text.txt";
+  auto AFile = TestResources::rootDir() / "CGDarrell" / "A_txt.mat";
+  auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS_text.txt";
   EigenMatrixFromScirunAsciiFormatConverter converter;
-  auto A = converter.make(AFile);
+  auto A = converter.make(AFile.string());
   ASSERT_TRUE(A);
 
   std::cout << A->nrows() << " x " << A->ncols() << std::endl;
 
-  auto b = converter.make(rhsFile); 
+  auto b = converter.make(rhsFile.string()); 
   ASSERT_TRUE(b);
   std::cout << b->nrows() << " x " << b->ncols() << std::endl;
   auto bCol = matrix_convert::to_column(b);
@@ -353,13 +339,13 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
 
   {
     ScopedTimer t("comparing solutions.");
-    const std::string xFileEigen = "e:\\stuff\\CGDarrell\\xEigenNEW.txt";
-    std::ofstream output(xFileEigen);
+    auto xFileEigen = TestResources::rootDir() / "CGDarrell" / "xEigenNEW.txt";
+    std::ofstream output(xFileEigen.string());
     auto solution = *x.get<0>();
     output << std::setprecision(15) << solution << std::endl;
 
-    const std::string xFileScirun = "e:\\stuff\\CGDarrell\\xScirunColumn.mat";
-    auto xExpected = converter.makeColumn(xFileScirun);
+    auto xFileScirun = TestResources::rootDir() / "CGDarrell" / "xScirunColumn.mat";
+    auto xExpected = converter.makeColumn(xFileScirun.string());
     ASSERT_TRUE(xExpected);
     EXPECT_EQ(428931, xExpected->nrows());
     EXPECT_EQ(1, xExpected->ncols());
