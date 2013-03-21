@@ -26,8 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
  
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 #include <fstream>
 #include <boost/filesystem.hpp>
@@ -52,12 +51,12 @@ using namespace ::testing;
 
 TEST(SolveLinearSystemTests, CanSolveDarrell)
 {
-  const std::string Afile = "E:\\stuff\\CGDarrell\\A_txt.mat";
-  const std::string rhsFile = "E:\\stuff\\CGDarrell\\RHS_text.mat";
+  auto Afile = TestResources::rootDir() / "CGDarrell" / "A_txt.mat";
+  auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS_text.mat";
   if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
   {
-    std::cout << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl;
-    std::cout << "Once that issue is done however, this will be a user setup error." << std::endl;
+    FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
+          << "Once that issue is done however, this will be a user setup error." << std::endl;
     return;
   }
 
@@ -65,7 +64,7 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   SparseRowMatrixHandle A;
   {
     ScopedTimer t("reading sparse matrix");
-    A = matrix_cast::as_sparse(reader.run(Afile));
+    A = matrix_cast::as_sparse(reader.run(Afile.string()));
   }
   ASSERT_TRUE(A);
   EXPECT_EQ(428931, A->nrows());
@@ -74,7 +73,7 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   DenseMatrixHandle rhs;
   {
     ScopedTimer t("reading rhs");
-    rhs = matrix_cast::as_dense(reader.run(rhsFile));
+    rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
   }
   ASSERT_TRUE(rhs);
   EXPECT_EQ(428931, rhs->nrows());
@@ -96,13 +95,15 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   EXPECT_EQ(428931, solution->nrows());
   EXPECT_EQ(1, solution->ncols());
 
-  auto scirun4solution = matrix_cast::as_dense(reader.run("E:\\stuff\\CGDarrell\\scirun4solution.txt"));
+  auto solutionFile = TestResources::rootDir() / "CGDarrell" / "scirun4solution.txt";
+  auto scirun4solution = matrix_cast::as_dense(reader.run(solutionFile.string()));
   ASSERT_TRUE(scirun4solution);
   DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
   EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, 0.15);
 
   WriteMatrixAlgorithm writer;
-  writer.run(solution, "E:\\stuff\\CGDarrell\\portedSolution.txt");
+  auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / "portedSolution.txt";
+  writer.run(solution, portedSolutionFile.string());
 
   auto diff = *expected - *solution;
   auto maxDiff = diff.maxCoeff();

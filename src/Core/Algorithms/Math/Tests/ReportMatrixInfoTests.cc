@@ -34,10 +34,12 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixIO.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::TestUtils;
 
 namespace
 {
@@ -165,13 +167,13 @@ TEST(BigVectorFieldFile, DISABLED_MakeIt)
       }
     }
   }
-  std::ofstream file("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\danBigMatrix.txt");
+  std::ofstream file((TestResources::rootDir() / "danBigMatrix.txt").string());
   file << m;
 }
 
 TEST(BigVectorFieldFile, DISABLED_ReadIt)
 {
-  std::ifstream file("E:\\git\\SCIRunGUIPrototype\\src\\Samples\\danBigMatrix.txt");
+  std::ifstream file((TestResources::rootDir() / "danBigMatrix.txt").string());
   DenseMatrix m;
   file >> m;
   EXPECT_EQ(6, m.rows());

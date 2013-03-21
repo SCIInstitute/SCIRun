@@ -120,6 +120,10 @@ IF(BUILD_TESTING)
     SET(UNIT_TEST_RESOURCE_DIR_DEFAULT "/Users/dan/something")
   ENDIF()
 
+  IF(NOT EXISTS "${UNIT_TEST_RESOURCE_DIR_DEFAULT}")
+	MESSAGE( FATAL_ERROR "Unit test resource path does not exist. Please set it correctly to run all the unit tests." ) 
+  ENDIF()
+
   SET(USER_UNIT_TEST_RESOURCE_DIR ${UNIT_TEST_RESOURCE_DIR_DEFAULT} CACHE STRING "Root for unit testing files" )
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}")
 ENDIF()
