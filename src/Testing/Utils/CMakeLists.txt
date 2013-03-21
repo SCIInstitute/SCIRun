@@ -35,6 +35,7 @@ SET(Testing_Utils_HEADERS
 
 SET(Testing_Utils_SRCS
   MatrixTestUtilities.cc
+  SCIRunUnitTests.cc
 )
 
 ADD_LIBRARY(Testing_Utils 

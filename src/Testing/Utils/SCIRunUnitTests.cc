@@ -26,28 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef TESTING_UTIL_SCIRUNUNITTESTS
-#define TESTING_UTIL_SCIRUNUNITTESTS
+#include <Testing/Utils/SCIRunUnitTests.h>
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
-#include <Testing/Utils/Share.h>
+using namespace SCIRun::TestUtils;
 
-namespace SCIRun 
-{ 
-
-namespace TestUtils
+boost::filesystem::path TestResources::rootDir()
 {
-//TODO: set up global test resources here.
-
-  struct SCISHARE TestResources
-  {
-    static boost::filesystem::path rootDir();
-  };
-  
+  return TEST_RESOURCE_ROOT_DIR;
 }
-
-}
-
-#endif
