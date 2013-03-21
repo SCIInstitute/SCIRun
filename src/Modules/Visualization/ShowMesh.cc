@@ -106,7 +106,7 @@ void ShowMeshModule::execute()
     {
       // There should *only* be two indicies (linestrip would be better...)
       VirtualMesh::Node::array_type nodes = edge.nodeIndices();
-      assert(nodes.size() == 2);
+      ENSURE_NOT_NULL(nodes.size() == 2, "Edges require exactly 2 indices.");
       // Winding order looks good from tests.
       // Render two triangles.
       iboEdges[i] = nodes[0]; iboEdges[i+1] = nodes[1];
@@ -153,7 +153,7 @@ void ShowMeshModule::execute()
     {
       // There should *only* be four indicies.
       VirtualMesh::Node::array_type nodes = face.nodeIndices();
-      assert(nodes.size() == 4);
+      ENSURE_NOT_NULL(nodes.size() == 4, "Expecting faces to be quads. This will need to support triangles (3) in the future");
       // Winding order looks good from tests.
       // Render two triangles.
       iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
