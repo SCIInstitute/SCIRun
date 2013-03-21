@@ -117,7 +117,7 @@ IF(BUILD_TESTING)
   IF(WIN32)
 	SET(UNIT_TEST_RESOURCE_DIR_DEFAULT "E:/git/SCIRunGUIPrototype/src/Samples")
   ELSE()
-    SET(UNIT_TEST_RESOURCE_DIR_DEFAULT "/Users/dan/something")
+    SET(UNIT_TEST_RESOURCE_DIR_DEFAULT "/Users/dan/Desktop/Dev/SCIRunGUIPrototype/src/Samples")
   ENDIF()
 
   SET(USER_UNIT_TEST_RESOURCE_DIR ${UNIT_TEST_RESOURCE_DIR_DEFAULT} CACHE STRING "Root for unit testing files" )
