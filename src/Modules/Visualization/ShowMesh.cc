@@ -114,7 +114,7 @@ void ShowMeshModule::execute()
       ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
       // Winding order looks good from tests.
       // Render two triangles.
-      iboEdges[i] = nodes[0]; iboEdges[i+1] = nodes[1];
+      iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
       i += 2;
     }
 
@@ -177,13 +177,13 @@ void ShowMeshModule::execute()
       if (nodes.size() == 4)
       {
         // Winding order looks good from tests.
-        iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
-        iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
+        iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
+        iboFaces[i+3] = static_cast<uint32_t>(nodes[0]); iboFaces[i+4] = static_cast<uint32_t>(nodes[2]); iboFaces[i+5] = static_cast<uint32_t>(nodes[3]);
         i += 6;
       }
       else if (nodes.size() == 3)
       {
-        iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
+        iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
         i += 3;
       }
       // All other cases have been checked in the loop above which determines
