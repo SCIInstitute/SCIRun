@@ -307,6 +307,7 @@ public:
     void run()
     {
       if (sync_ == Mesh::EDGES_E) mesh_.compute_edges();
+      if (sync_ == Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
     }
     
   private:
@@ -2558,7 +2559,8 @@ template <class Basis>
 bool
 TriSurfMesh<Basis>::synchronize(mask_type sync)
 {
-  if (sync == Mesh::EDGES_E)
+  // TODO: there is a lot of duplication in original implementation - it shouldn't be difficult to streamline...
+  if (sync == Mesh::EDGES_E || sync == Mesh::NODE_NEIGHBORS_E)
   {
     Synchronize Synchronize(*this, sync);
     Synchronize.run();
@@ -3191,6 +3193,8 @@ TriSurfMesh<Basis>::bisect_element(const typename Face::index_type face)
 
   synchronize_lock_.unlock();
 }
+      
+#endif
 
 
 template <class Basis>
@@ -3204,12 +3208,14 @@ TriSurfMesh<Basis>::compute_node_neighbors()
   {
     node_neighbors_[faces_[f]].push_back(f/3);
   }
-  synchronize_lock_.lock();  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  synchronize_lock_.lock();
   synchronized_ |= Mesh::NODE_NEIGHBORS_E;
   synchronize_lock_.unlock();
-}
-
+#else
+  synchronized_ |= (Mesh::NODE_NEIGHBORS_E);
 #endif
+}
 
 template <class Basis>
 void
