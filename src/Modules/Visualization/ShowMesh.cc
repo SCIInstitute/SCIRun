@@ -76,6 +76,11 @@ void ShowMeshModule::execute()
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 
   // Add shared VBO to the geometry object.
+  /// \note This 'primaryVBO' is dependent on the types present in the data.
+  ///       If normals are specified, then this will NOT be the primary VBO.
+  ///       Another VBO will be constructed containing normal information.
+  ///       All of this is NOT necessary if we are on OpenGL 3.2+ where we
+  ///       can compute all normals in the geometry shader (smooth and face).
   std::string primVBOName = "primaryVBO";
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
@@ -136,29 +141,53 @@ void ShowMeshModule::execute()
 
     geom->mPasses.emplace_back(pass);
   }
-  //mStuInterface->addPassUniform(obj1, pass1, "uColor", V4(1.0f, 0.0f, 0.0f, 1.0f));
 
-  // Build the faces.
-  size_t iboFacesSize = sizeof(uint32_t) * facade->numFaces() * 6;
+  // Build the faces
   uint32_t* iboFaces = nullptr;
   if (showFaces)
   {
+    // Determine the size of the face structure (taking into account the varying
+    // types of faces -- only quads and triangles are currently supported).
+    size_t iboFacesSize = 0;
+    BOOST_FOREACH(const FaceInfo& face, facade->faces())
+    {
+      VirtualMesh::Node::array_type nodes = face.nodeIndices();
+      if (nodes.size() == 4)
+      {
+        iboFacesSize += sizeof(uint32_t) * 6;
+      }
+      else if (nodes.size() == 3)
+      {
+        iboFacesSize += sizeof(uint32_t) * 3;
+      }
+      else
+      {
+        BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() 
+                                << SCIRun::Core::ErrorMessage("Only Quads and Triangles are supported."));
+      }
+    }
     std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-    //rawIBO->reserve(iboFacesSize);
     rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
                                     // use malloc to generate buffer and then vector::assign.
     iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
     i = 0;
     BOOST_FOREACH(const FaceInfo& face, facade->faces())
     {
-      // There should *only* be four indicies.
       VirtualMesh::Node::array_type nodes = face.nodeIndices();
-      ENSURE_DIMENSIONS_MATCH(nodes.size(), 4, "Expecting faces to be quads. This will need to support triangles (3) in the future");
-      // Winding order looks good from tests.
-      // Render two triangles.
-      iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
-      iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
-      i += 6;
+      if (nodes.size() == 4)
+      {
+        // Winding order looks good from tests.
+        iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
+        iboFaces[i+3] = nodes[0]; iboFaces[i+4] = nodes[2]; iboFaces[i+5] = nodes[3];
+        i += 6;
+      }
+      else if (nodes.size() == 3)
+      {
+        iboFaces[i  ] = nodes[0]; iboFaces[i+1] = nodes[1]; iboFaces[i+2] = nodes[2];
+        i += 3;
+      }
+      // All other cases have been checked in the loop above which determines
+      // the size of the face IBO.
     }
 
     // Add IBO for the faces.
@@ -172,17 +201,9 @@ void ShowMeshModule::execute()
                                   facesIBOName, "UniformColor",
                                   Spire::StuInterface::TRIANGLES);
     if (faceTransparency)
-    {
       pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
-      // Modify the GPU state to disable ztesting.
-      //Spire::GPUState state;
-      //state.mDepthTestEnable = false;
-      //pass.addGPUState(state);
-    }
     else
-    {
       pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
-    }
 
     geom->mPasses.emplace_back(pass);
   }
