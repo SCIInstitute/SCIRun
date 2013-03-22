@@ -119,7 +119,7 @@ namespace Datatypes {
       void addUniform(const std::string& uniformName, T uniformData)
       {
         uniforms.push_back(
-            make_pair(uniformName, std::shared_ptr<Spire::AbstractUniformStateItem>(
+            std::make_pair(uniformName, std::shared_ptr<Spire::AbstractUniformStateItem>(
                 new Spire::UniformStateItem<T>(uniformData))));
       }
 
