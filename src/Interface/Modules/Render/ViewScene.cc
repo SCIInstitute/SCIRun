@@ -30,6 +30,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Geometry.h>
 #include <QFileDialog>
+#include "QtGLContext.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -47,7 +48,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   QGLFormat fmt;
   fmt.setAlpha(true);
   fmt.setRgba(true);
-  mGLWidget = new GLWidget(fmt);
+  mGLWidget = new GLWidget(new QtGLContext(fmt));
 
   if (mGLWidget->isValid())
   {
@@ -67,6 +68,11 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::~ViewSceneDialog()
+{
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
 }
 

@@ -35,12 +35,14 @@ SET(Interface_Modules_Render_HEADERS
   Share.h
   ViewScene.h
   GLWidget.h
+  QtGLContext.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
   ViewScene.cc
   GLWidget.cc
   GLContext.cc
+  QtGLContext.cc
 )
 
 FIND_PACKAGE(OpenGL REQUIRED)

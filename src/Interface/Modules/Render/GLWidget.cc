@@ -42,8 +42,8 @@ using namespace SCIRun::Gui;
 using Spire::Vector2;
 
 //------------------------------------------------------------------------------
-GLWidget::GLWidget(const QGLFormat& format) :
-    QGLWidget(format),
+GLWidget::GLWidget(QtGLContext* context) :
+    QGLWidget(context),
     mContext(new GLContext(this))
 {
   /// \todo Implement this intelligently. This function is called everytime
@@ -83,9 +83,9 @@ GLWidget::GLWidget(const QGLFormat& format) :
 GLWidget::~GLWidget()
 {
   // Need to inform module that the context is being destroyed.
-  std::cout << "Shutting down graphics." << std::endl;
   if (mGraphics != nullptr)
   {
+    std::cout << "Terminating spire." << std::endl;
     mGraphics->terminate();
     mGraphics.reset();
   }
@@ -128,14 +128,6 @@ void GLWidget::resizeGL(int width, int height)
 {
   mGraphics->eventResize(static_cast<int32_t>(width),
                          static_cast<int32_t>(height));
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::closeEvent(QCloseEvent *evt)
-{
-  // Kill off the graphics thread.
-  mGraphics->terminate();
-  mGraphics.reset();
 }
 
 //------------------------------------------------------------------------------

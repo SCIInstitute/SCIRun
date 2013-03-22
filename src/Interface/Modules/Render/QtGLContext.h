@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,50 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_VIEW_SCENE_H
-#define INTERFACE_MODULES_VIEW_SCENE_H
+/// \author James Hughes
+/// \date   March 2013
 
-/// \todo Make this definition specific to windows.
-#define NOMINMAX
+#ifndef INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
+#define INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
 
-#include "Interface/Modules/Render/ui_ViewScene.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Render/Share.h>
-
-#include "Spire/Interface.h"
-#include "Spire/AppSpecific/SCIRun/SRInterface.h"
+#include <QtOpenGL/QGLWidget>
 #include "GLWidget.h"
-
-//TODO: needs to inherit from ModuleWidget somehow
 
 namespace SCIRun {
 namespace Gui {
 
-class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
-  public Ui::ViewScene
+class GLWidget;
+
+/// 
+class QtGLContext : public QGLContext
 {
-	Q_OBJECT
-	
 public:
-  ViewSceneDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  ~ViewSceneDialog();
-  virtual void pull() {}
+  QtGLContext(const QGLFormat& format);
+  virtual ~QtGLContext();
 
-  virtual void moduleExecuted();
-protected:
-  virtual void closeEvent(QCloseEvent *evt) override;
 private:
-
-  GLWidget*                                   mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;     ///< Instance of Spire.
-
 };
 
-}
-}
+} // namespace Gui
+} // SCIRun
 
-#endif
+#endif 
