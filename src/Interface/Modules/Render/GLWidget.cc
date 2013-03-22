@@ -46,22 +46,6 @@ GLWidget::GLWidget(const QGLFormat& format) :
     QGLWidget(format),
     mContext(new GLContext(this))
 {
-  // We must disable auto buffer swap on the 'paintEvent'.
-  setAutoBufferSwap(false);
-}
-
-//------------------------------------------------------------------------------
-GLWidget::~GLWidget()
-{
-  // Need to inform module that the context is being destroyed.
-  mGraphics.reset();
-}
-
-//------------------------------------------------------------------------------
-void GLWidget::initializeGL()
-{
-  std::cout << "Initializing OpenGL" << std::endl;
-
   /// \todo Implement this intelligently. This function is called everytime
   ///       there is a new graphics context.
   std::vector<std::string> shaderSearchDirs;
@@ -90,6 +74,26 @@ void GLWidget::initializeGL()
       { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
         {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
       });
+
+  // We must disable auto buffer swap on the 'paintEvent'.
+  setAutoBufferSwap(false);
+}
+
+//------------------------------------------------------------------------------
+GLWidget::~GLWidget()
+{
+  // Need to inform module that the context is being destroyed.
+  std::cout << "Shutting down graphics." << std::endl;
+  if (mGraphics != nullptr)
+  {
+    mGraphics->terminate();
+    mGraphics.reset();
+  }
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::initializeGL()
+{
 }
 
 //------------------------------------------------------------------------------
@@ -132,7 +136,6 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   // Kill off the graphics thread.
   mGraphics->terminate();
   mGraphics.reset();
-  //QGLWidget::closeEvent(evt);
 }
 
 //------------------------------------------------------------------------------

@@ -56,8 +56,7 @@ public:
   GLWidget(const QGLFormat& format);
   ~GLWidget();
 
-  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const      {return mGraphics;}
-  std::shared_ptr<GLContext>                  getContext() const    {return mContext;}
+  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const {return mGraphics;}
 
 protected:
   virtual void closeEvent(QCloseEvent *evt);

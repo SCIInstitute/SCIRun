@@ -49,9 +49,20 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   fmt.setRgba(true);
   mGLWidget = new GLWidget(fmt);
 
-  // Hook up the GLWidget
-  glLayout->addWidget(mGLWidget);
-  glLayout->update();
+  if (mGLWidget->isValid())
+  {
+    // Hook up the GLWidget
+    glLayout->addWidget(mGLWidget);
+    glLayout->update();
+
+    // Set spire transient value (should no longer be used).
+    mSpire = std::weak_ptr<Spire::SCIRun::SRInterface>(mGLWidget->getSpire());
+  }
+  else
+  {
+    /// \todo Display dialog.
+    delete mGLWidget;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -76,7 +87,6 @@ void ViewSceneDialog::moduleExecuted()
       //error("Unable to cast boost::any transient value to spire pointer.");
       return;
     }
-
     std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
