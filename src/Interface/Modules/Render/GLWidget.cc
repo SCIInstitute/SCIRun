@@ -69,11 +69,16 @@ GLWidget::GLWidget(QtGLContext* context) :
 #endif
 
   /// \todo Where should we store common shader names?
+  std::vector<std::tuple<std::string, Spire::StuInterface::SHADER_TYPES>> shaderFiles;
+  shaderFiles.push_back(std::make_pair("UniformColor.vs", Spire::StuInterface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER));
+
   mGraphics->getStuPipe()->addPersistentShader(
       "UniformColor", 
-      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
-        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
-      });
+      shaderFiles);
+//      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
+//        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+//      });
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
