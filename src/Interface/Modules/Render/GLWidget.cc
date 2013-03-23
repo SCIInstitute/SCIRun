@@ -31,6 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTimer>
@@ -40,6 +41,11 @@
 
 using namespace SCIRun::Gui;
 using Spire::Vector2;
+
+void logFunction(const std::string& str, Spire::Interface::LOG_LEVEL level)
+{
+  std::cout << str;
+}
 
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context) :
@@ -62,7 +68,7 @@ GLWidget::GLWidget(QtGLContext* context) :
   mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
       new Spire::SCIRun::SRInterface(
           std::dynamic_pointer_cast<Spire::Context>(mContext),
-          shaderSearchDirs, false));
+          shaderSearchDirs, false, logFunction));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
