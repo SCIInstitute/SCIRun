@@ -107,20 +107,22 @@ void ViewSceneDialog::moduleExecuted()
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
 
-      // Try/catch is for single-threaded cases. Exceptions are handled on the
-      // spire thread when spire is threaded.
-      try
-      {
-        // Will remove all traces of old VBO's / IBO's not in use.
-        // (remember, we remove the VBOs/IBOs we added at the end of this loop,
-        //  this is to ensure there is only 1 shared_ptr reference to the IBOs
-        //  and VBOs in Spire).
-        stuPipe->removeObject(obj->objectName);
-      }
-      catch (std::out_of_range& e)
-      {
-        // Ignore
-      }
+      // Since we simply remove all objects from the scene everyframe (that
+      // needs to change) we don't need to remove the objects one-by-one.
+      //// Try/catch is for single-threaded cases. Exceptions are handled on the
+      //// spire thread when spire is threaded.
+      //try
+      //{
+      //  // Will remove all traces of old VBO's / IBO's not in use.
+      //  // (remember, we remove the VBOs/IBOs we added at the end of this loop,
+      //  //  this is to ensure there is only 1 shared_ptr reference to the IBOs
+      //  //  and VBOs in Spire).
+      //  stuPipe->removeObject(obj->objectName);
+      //}
+      //catch (std::out_of_range&)
+      //{
+      //  // Ignore
+      //}
 
       stuPipe->addObject(obj->objectName);
 
