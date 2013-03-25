@@ -47,6 +47,10 @@ namespace Datatypes {
     class SmartFaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[4],SmartIndex<Edge>[4]> >
   */
 
+  // TODO: Being conservative with mesh synchronization flags until more
+  // synchronize infrastructure is implemented and tested,
+  // so clear_synchronization() is always called after synchronize and operation
+  // that requires synchronize to be called.
   template <typename MeshComponent>
   class SmartMeshIterator : public boost::iterator_facade<SmartMeshIterator<MeshComponent>, MeshComponent, boost::bidirectional_traversal_tag>
   {
@@ -61,7 +65,11 @@ namespace Datatypes {
       }
       else
       {
+        vmesh_->synchronize(Mesh::EDGES_E);        
+
         vmesh_->end(iter_);
+
+        vmesh_->clear_synchronization();
       }
       current_.setIndex(*iter_);
     }
@@ -103,15 +111,24 @@ namespace Datatypes {
     VirtualMesh::Node::array_type nodeIndices() const
     {
       VirtualMesh::Node::array_type nodesFromEdge(2);
+      vmesh_->synchronize(Mesh::EDGES_E);
+
       vmesh_->get_nodes(nodesFromEdge, index_);
+
+      vmesh_->clear_synchronization();
       return nodesFromEdge;
     }
+
     std::vector<Geometry::Point> nodePoints() const 
     {
       auto indices = nodeIndices();
       std::vector<Geometry::Point> ps(2);
+      vmesh_->synchronize(Mesh::EDGES_E);
+
       for (size_t i = 0; i < ps.size(); ++i)
         vmesh_->get_point(ps[i], indices[i]);
+
+      vmesh_->clear_synchronization();
       return ps;
     }
   private:
@@ -175,7 +192,11 @@ namespace Datatypes {
     VirtualMesh::Edge::array_type edgeIndices() const
     {
       VirtualMesh::Edge::array_type edgesFromNode(6);
+      vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
+
       vmesh_->get_edges(edgesFromNode, index_);
+
+      vmesh_->clear_synchronization();
       return edgesFromNode;
     }
   private:

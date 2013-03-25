@@ -64,6 +64,12 @@ MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, const MeshConst
   return CreateMesh(type, params);
 }
 
+MeshHandle MeshFactory::CreateMesh(const FieldInformation& info)
+{
+  std::string type = info.get_mesh_type_id();
+  return CreateMesh(type);
+}
+
 MeshHandle MeshFactory::CreateMesh(const std::string& type)
 {
   auto ctorInfo = registry_.meshTypeIdLookup_.findConstructorInfo(type);

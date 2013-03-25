@@ -58,10 +58,10 @@ SET(Core_Datatypes_Mesh_HEADERS
   TriSurfMesh.h
   TriSurfMeshRegister.h
   VirtualMeshFactory.h
+  VirtualMeshFacade.h
   VMesh.h
   VMeshShared.h
   VUnstructuredMesh.h
-  Share.h
 )
 
 ADD_LIBRARY(Core_Datatypes_Mesh

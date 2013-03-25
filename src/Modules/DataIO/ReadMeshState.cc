@@ -26,32 +26,5 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
-
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
-
-void ReadMatrixModule::execute()
-{
-  auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
-
-  ReadMatrixAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
-}
+#include <iostream>
+//TODO 

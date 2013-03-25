@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -30,8 +30,8 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_MESH_LATVOLMESHFACADE_H
-#define CORE_DATATYPES_MESH_LATVOLMESHFACADE_H 
+#ifndef CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
+#define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Mesh/Share.h>
@@ -40,12 +40,13 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class LatticeVolumeMeshFacade : public MeshFacade
+  class VirtualMeshFacade : public MeshFacade
   {
   public:
-    explicit LatticeVolumeMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh) 
+    explicit VirtualMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh)
     {
-      if (!vmesh->is_latvolmesh())
+      // TODO: necessary? interface to vmesh
+      if (! vmesh->is_latvolmesh() && ! vmesh->is_trisurfmesh())
         THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 
@@ -71,7 +72,10 @@ namespace Datatypes {
 
     virtual size_t numEdges() const
     {
-      return vmesh_->num_edges();
+      vmesh_->synchronize(Mesh::EDGES_E);
+      size_t num = vmesh_->num_edges();
+      vmesh_->clear_synchronization();
+      return num;
     }
 
     virtual size_t numFaces() const 

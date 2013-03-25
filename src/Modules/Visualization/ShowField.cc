@@ -30,7 +30,7 @@
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Mesh/Field.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Mesh/LatticeVolumeMeshFacade.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;

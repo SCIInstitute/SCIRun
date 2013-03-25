@@ -29,6 +29,7 @@
 SET(Algorithms_DataIO_Tests_SRCS
   ReadMatrixTests.cc
   WriteMatrixTests.cc
+  ReadTriSurfTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_DataIO_Tests

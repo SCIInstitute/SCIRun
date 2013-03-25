@@ -58,6 +58,8 @@ void ShowMeshModule::execute()
   GeometryHandle geom(new GeometryObject(mesh));
   geom->objectName = get_id();
 
+  ENSURE_NOT_NULL(facade, "Mesh facade");
+
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
   ///       a 32 bit index buffer.

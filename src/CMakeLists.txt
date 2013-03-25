@@ -114,22 +114,32 @@ IF(BUILD_TESTING)
   OPTION(RUN_UNIT_TESTS "Run gtest unit tests" ON)
   OPTION(RUN_BASIC_REGRESSION_TESTS "Run basic regression tests" ON)
 
-  IF(WIN32)
-	SET(UNIT_TEST_RESOURCE_DIR_DEFAULT "E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests")
-  ELSE()
-    SET(UNIT_TEST_RESOURCE_DIR_DEFAULT "/Users/dan/Desktop/Dev/SCIRunGUIPrototype/src/Samples")
-  ENDIF()
-
-  SET(USER_UNIT_TEST_RESOURCE_DIR ${UNIT_TEST_RESOURCE_DIR_DEFAULT} CACHE STRING "Root for unit testing files" )
+  SET(USER_UNIT_TEST_RESOURCE_DIR "../../../scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
 
   IF(NOT EXISTS "${USER_UNIT_TEST_RESOURCE_DIR}")
-	MESSAGE( FATAL_ERROR "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" ) 
+    MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" )
   ENDIF()
 
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
-OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
+########################################################################
+# Python
+
+OPTION(BUILD_WITH_PYTHON "Build with python support." OFF)
+
+IF(BUILD_WITH_PYTHON)
+  MESSAGE(STATUS "Configuring Python")
+  SET(PythonLibs_FIND_VERSION "3.2")
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  IF(NOT PYTHONLIBS_FOUND)
+    MESSAGE(FATAL_ERROR "Python 3.3 or 3.2 not found. Set PYTHON_INCLUDE_DIR and PYTHON_LIBRARY to the correct Python installation.")
+  ENDIF()
+
+  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
+ENDIF(BUILD_WITH_PYTHON)  
+
 
 ########################################################################
 # Custom compiler flags and definitions
@@ -147,7 +157,7 @@ IF(UNIX)
     ENDIF()
   ENDIF()
 
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG}")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CXX_LANGUAGE_STANDARD_FLAG} -Wall")
 ENDIF()
 
 IF(APPLE)
@@ -156,7 +166,6 @@ IF(APPLE)
 
   ADD_DEFINITIONS(-DGTEST_USE_OWN_TR1_TUPLE=1)
 ENDIF()
-
 
 ########################################################################
 # Find and configure Git
@@ -263,6 +272,9 @@ ExternalProject_Add(Boost_external
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+    -DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}
+    -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
+    -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
 )
 
 ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED GLOBAL)
@@ -395,15 +407,6 @@ ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-########################################################################
-# Python
-
-IF(BUILD_WITH_PYTHON)
-  MESSAGE(STATUS "Configuring Python")
-  FIND_PACKAGE(PythonLibs REQUIRED)
-  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
-  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
-ENDIF(BUILD_WITH_PYTHON)  
 
 ########################################################################
 # Includes

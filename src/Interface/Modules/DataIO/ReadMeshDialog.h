@@ -26,47 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
+#ifndef INTERFACE_MODULES_READ_MESH_H
+#define INTERFACE_MODULES_READ_MESH_H
 
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include "Interface/Modules/DataIO/ui_ReadMesh.h"
 
-TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
+#include <boost/shared_ptr.hpp>
+
+#include <Modules/Basic/SendScalarModuleState.h>
+
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/DataIO/Share.h>
+
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE ReadMeshDialog : public ModuleDialogGeneric, 
+  //public SCIRun::State::SendScalarState, 
+  public Ui::ReadMesh
 {
-  FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
-  int sizex,sizey,sizez;
-  sizex = sizey = sizez = 4;
-  Point minb(0,0,0);
-  Point maxb(4,4,4);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-  ASSERT_TRUE(mesh);
+	Q_OBJECT
+	
+public:
+  ReadMeshDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+
+private Q_SLOTS:
+  void pushFileNameToState();
+  void openFile();
+};
+
+}
 }
 
-TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
-{
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
-  ASSERT_TRUE(mesh);
-
-  auto vmeshHandle = mesh->vmesh();
-  ASSERT_TRUE(vmeshHandle);
-}
-
-
-TEST(MeshFactoryTests, CreateTriSurfMeshStringWithFieldInforomation)
-{
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi);
-  ASSERT_TRUE(mesh);
-
-  VirtualMeshHandle vmeshHandle = mesh->vmesh();
-  ASSERT_TRUE(vmeshHandle);
-}
+#endif

@@ -26,47 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
+#ifndef MODULES_READ_MESH_STATE_H
+#define MODULES_READ_MESH_STATE_H
 
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Dataflow/Network/Module.h>
 
-TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
-{
-  FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
-  int sizex,sizey,sizez;
-  sizex = sizey = sizez = 4;
-  Point minb(0,0,0);
-  Point maxb(4,4,4);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-  ASSERT_TRUE(mesh);
-}
-
-TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
-{
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
-  ASSERT_TRUE(mesh);
-
-  auto vmeshHandle = mesh->vmesh();
-  ASSERT_TRUE(vmeshHandle);
-}
+namespace SCIRun {
+namespace Modules {
+namespace DataIO {
+  //TODO 
 
 
-TEST(MeshFactoryTests, CreateTriSurfMeshStringWithFieldInforomation)
-{
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi);
-  ASSERT_TRUE(mesh);
+}}}
 
-  VirtualMeshHandle vmeshHandle = mesh->vmesh();
-  ASSERT_TRUE(vmeshHandle);
-}
+#endif

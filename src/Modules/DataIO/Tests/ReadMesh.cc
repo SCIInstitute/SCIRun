@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2013 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -28,45 +28,20 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
+#include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Modules/Basic/SendScalar.h>
 
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Geometry;
+using namespace SCIRun;
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
-{
-  FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
-  int sizex,sizey,sizez;
-  sizex = sizey = sizez = 4;
-  Point minb(0,0,0);
-  Point maxb(4,4,4);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
-  ASSERT_TRUE(mesh);
-}
-
-TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
-{
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
-  ASSERT_TRUE(mesh);
-
-  auto vmeshHandle = mesh->vmesh();
-  ASSERT_TRUE(vmeshHandle);
-}
-
-
-TEST(MeshFactoryTests, CreateTriSurfMeshStringWithFieldInforomation)
-{
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi);
-  ASSERT_TRUE(mesh);
-
-  VirtualMeshHandle vmeshHandle = mesh->vmesh();
-  ASSERT_TRUE(vmeshHandle);
-}
+//TODO 

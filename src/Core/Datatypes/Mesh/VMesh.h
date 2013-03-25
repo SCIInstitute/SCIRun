@@ -385,8 +385,8 @@ public:
   //! get_center, these are short cuts to the one implementation that is done
   //! under the name get_center.                             
   inline void get_point(Geometry::Point &point, Node::index_type i) const
-  { 
-    get_center(point,i); 
+  {
+    get_center(point,i);
   }
   
   inline void get_point(Geometry::Point &point, ENode::index_type i) const
@@ -472,11 +472,11 @@ public:
   virtual bool get_face(Face::index_type& face, Node::array_type& nodes) const;
   virtual bool get_edge(Edge::index_type& edge, Node::array_type& nodes) const;
 
-
+#endif
 
   //! Get the centers of a series of nodes
-  virtual void get_centers(Point* points, Node::array_type& array) const;
-  virtual void get_centers(Point* points, Elem::array_type& array) const;
+  virtual void get_centers(Geometry::Point* points, Node::array_type& array) const;
+  virtual void get_centers(Geometry::Point* points, Elem::array_type& array) const;
 
   //! Get the centers of a series of nodes, with points in an STL vector
   //! These just overload the function calls defined above.
@@ -538,7 +538,10 @@ public:
   { return (get_size(i)); }
   inline double get_volume(Elem::index_type i) const
   { return (get_size(i)); }
-    
+
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   //! Specialized functions to get weights for the interpolation
   //! One should use these instead of get_weights
   
@@ -857,7 +860,9 @@ public:
     size_type  ss = num_elems()*num_nodes_per_elem_;
     for (index_type j=0; j <ss; j++) oelem[j] = ielem[j];
   }
-  
+
+#endif
+
   //! Preallocate memory for better performance
   //! We have two versions for historic reasons
   virtual void node_reserve(size_t size);
@@ -868,6 +873,8 @@ public:
   virtual void elem_reserve(size_t size);
   inline  void reserve_elems(size_t size) 
     { elem_reserve(size); }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   
   //! Actually resize the arrays.
   //! Note: this is limited to certain meshes
@@ -875,10 +882,14 @@ public:
   virtual void resize_elems(size_t size);
   inline  void resize_points(size_t size) { resize_nodes(size); }
 
-  //! Add a node to a mesh
-  virtual void add_node(const Point &point,Node::index_type &i);
-  virtual void add_enode(const Point &point,ENode::index_type &i);
+#endif
   
+  //! Add a node to a mesh
+  virtual void add_node(const Geometry::Point &point,Node::index_type &i);
+  virtual void add_enode(const Geometry::Point &point,ENode::index_type &i);
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   //! alternative calls
   inline void set_node(const Point &point, Node::index_type i)
     { set_point(point,i); }
@@ -890,18 +901,21 @@ public:
   virtual void set_nodes(Node::array_type& array, Face::index_type idx);
   virtual void set_nodes(Node::array_type& array, Cell::index_type idx);
   virtual void set_nodes(Node::array_type& array, Elem::index_type idx);  
-        
-  inline Node::index_type add_node(const Point& point) 
-    { Node::index_type idx; add_node(point,idx); return (idx); }
+
+#endif
   
-  inline void get_node(Point &point, Node::index_type i)
+  inline Node::index_type add_node(const Geometry::Point& point) 
+    { Node::index_type idx; add_node(point,idx); return (idx); }
+
+  inline void get_node(Geometry::Point &point, Node::index_type i)
     { get_point(point,i); }
-  inline void get_enode(Point &point, ENode::index_type i)
+  inline void get_enode(Geometry::Point &point, ENode::index_type i)
     { get_point(point,i); }
+
   
   //! Do not use this one as it is not clear whether it is a 
   //! element node or edge node  
-  inline VirtualMesh::Node::index_type add_point(const Point& point) 
+  inline VirtualMesh::Node::index_type add_point(const Geometry::Point& point) 
     { Node::index_type idx; add_node(point,idx); return (idx); }
     
   //! Add an element to a mesh
@@ -911,7 +925,8 @@ public:
   inline VirtualMesh::Elem::index_type add_elem(const Node::array_type nodes)
     { Elem::index_type idx; add_elem(nodes,idx); return (idx); }
   
-  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    
   //! Currently only available for tetrahedra, triangles and curves
   virtual void insert_node_into_elem(Elem::array_type& newelems, 
                                      Node::index_type& newnode,
@@ -1010,6 +1025,8 @@ public:
   //! Rerouting of some of the virtual mesh function calls
   
   virtual BBox get_bounding_box() const;
+
+#endif
   
   //! This call is for synchronizing tables of precomputed elements
   virtual bool synchronize(unsigned int sync); 
@@ -1017,7 +1034,10 @@ public:
   
   // Only use this function when this is the only code that uses this mesh
   virtual bool clear_synchronization();
-  
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   // Transform a full field, this one works on the full field
   virtual void transform(const Transform &t);
   

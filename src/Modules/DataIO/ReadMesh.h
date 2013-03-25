@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,59 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
-
-/*
- *  CreateLatVol.cc:  Make an LatVol that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
-
-#ifndef MODULES_FIELDS_CREATELATVOLMESH_H
-#define MODULES_FIELDS_CREATELATVOLMESH_H
+#ifndef MODULES_DATAIO_READ_MESH_H
+#define MODULES_DATAIO_READ_MESH_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+#include <Modules/DataIO/Share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
-
-class SCISHARE CreateLatVolMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<MeshPortTag>
-{
+namespace Modules {
+namespace DataIO {
+  
+  // TODO: convert to ReadField once field support is in place
+  class SCISHARE ReadMeshModule : public SCIRun::Dataflow::Networks::Module,
+    public Has1InputPort<StringPortTag>,
+    public Has2OutputPorts<MeshPortTag, StringPortTag>
+  {
   public:
-    CreateLatVolMesh();
+    ReadMeshModule();
 
     virtual void execute();
 
+    INPUT_PORT(0, Filename, String);
     OUTPUT_PORT(0, OutputSampleField, Mesh);
-
-    static Core::Algorithms::AlgorithmParameterName XSize;
-    static Core::Algorithms::AlgorithmParameterName YSize;
-    static Core::Algorithms::AlgorithmParameterName ZSize;
-    static Core::Algorithms::AlgorithmParameterName PadPercent;
-    static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+    OUTPUT_PORT(1, FileLoaded, String);
 
   private:
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    GuiInt size_x_;
-    GuiInt size_y_;
-    GuiInt size_z_;
-    GuiDouble padpercent_;
-    GuiString data_at_;
-    GuiString element_size_;
-
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-#endif 
-};
+    std::string filename_;
+  };
 
 }}}
 

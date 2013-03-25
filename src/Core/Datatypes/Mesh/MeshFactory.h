@@ -64,6 +64,7 @@ namespace Datatypes {
 
   public:
     MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
+    MeshHandle CreateMesh(const FieldInformation& info);
     MeshHandle CreateMesh(const std::string& type);
 
   private:

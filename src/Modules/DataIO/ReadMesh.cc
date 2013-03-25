@@ -26,32 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/DataIO/ReadMesh.h>
+
+#include <iostream>
+
+#include <boost/filesystem.hpp>
+
+#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
 
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
+ReadMeshModule::ReadMeshModule() : Module(ModuleLookupInfo("ReadMesh", "DataIO", "SCIRun")) {}
 
-void ReadMatrixModule::execute()
+// Only support TriSurf (initial test)
+void ReadMeshModule::execute()
 {
-  auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
+  filename_ = get_state()->getValue(TextToTriSurfFieldAlgorithm::Filename).getString();
 
-  ReadMatrixAlgorithm algo;
+  TextToTriSurfFieldAlgorithm algo;
   algo.setLogger(getLogger());
   algo.setUpdaterFunc(getUpdaterFunc());
 
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
+  MeshHandle mesh = algo.run(filename_);
+  sendOutput(OutputSampleField, mesh);
   StringHandle file(new String(filename_));
   sendOutput(FileLoaded, file);
 }

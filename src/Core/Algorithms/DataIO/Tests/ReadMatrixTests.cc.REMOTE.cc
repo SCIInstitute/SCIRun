@@ -40,7 +40,6 @@
 #include <boost/foreach.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::TestUtils;

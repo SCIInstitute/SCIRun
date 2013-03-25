@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Mesh/FieldInformation.h>
 #include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
-#include <Core/Datatypes/Mesh/LatticeVolumeMeshFacade.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -60,6 +60,7 @@ protected:
   MeshHandle mesh_;
 };
 
+// TODO: move to utils file (duplicated in TriSurfMeshFacadeTests.cc)
 namespace
 {
   template <typename T>

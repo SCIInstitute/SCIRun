@@ -40,10 +40,12 @@ void SCIRun::Core::Datatypes::registerTriSurfMeshes()
   //! Register class maker, so we can instantiate it
   static MeshRegistry::MeshTypeID TriSurfMesh_MeshID1("TriSurfMesh<TriLinearLgn<Point>>", 
     TriSurfMesh<TriLinearLgn<Point> >::mesh_maker);
-  static MeshRegistry::MeshTypeID TriSurfMesh_MeshID2("TriSurfMesh<TriQuadraticLgn<Point>>", 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ static MeshRegistry::MeshTypeID TriSurfMesh_MeshID2("TriSurfMesh<TriQuadraticLgn<Point>>",
     TriSurfMesh<TriQuadraticLgn<Point> >::mesh_maker);
   static MeshRegistry::MeshTypeID TriSurfMesh_MeshID3("TriSurfMesh<TriCubicHmt<Point>>", 
     TriSurfMesh<TriCubicHmt<Point> >::mesh_maker);
+#endif
 }
 
 namespace SCIRun {
@@ -149,22 +151,32 @@ public:
 
 //! Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+//! Create virtual interface
 
-VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
+VirtualMeshHandle SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
 {
-  return new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh);
+  return VirtualMeshHandle(new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh));
 }
 
-VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+// TODO: SCIRUN_QUADRATIC_SUPPORT and SCIRUN_CUBIC_SUPPORT actually supported in SCIRun 4?
+// Couldn't definitions (check SCIRun 3)
+#if (SCIRUN_QUADRATIC_SUPPORT > 0)
+VirtualMeshHandle SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriQuadraticLgn<Point> > >(mesh);
 }
+#endif
 
-VirtualMesh* SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
+#if (SCIRUN_CUBIC_SUPPORT > 0)
+VirtualMeshHandle SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriCubicHmt<Point> > >(mesh);
 }
+#endif
+
+#endif
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
 //! Register class maker, so we can instantiate it
