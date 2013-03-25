@@ -27,7 +27,6 @@
  */
 
 #include <Testing/Utils/SCIRunUnitTests.h>
-
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 
 #include <Core/Datatypes/Mesh/FieldFwd.h>
