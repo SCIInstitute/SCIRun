@@ -26,9 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/filesystem.hpp>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 
@@ -40,17 +38,12 @@ using namespace SCIRun::Core::Datatypes;
 
 namespace
 {
-    #ifdef WIN32
-        boost::filesystem::path testPath("E:\\scirun\\trunk_ref\\SCIRunUnitTestData\\Fields\\convert-examples");
-    #else
-        boost::filesystem::path testPath("/Volumes/scratch/cibc/SCIRunUnitTestData/Fields/convert-examples");
-    #endif
+  boost::filesystem::path testPath = SCIRun::TestUtils::TestResources::rootDir() / "convert-examples";
 }
 
 TEST(ReadTriSurfTests, ReadFromFilePoints)
 {
   TextToTriSurfFieldAlgorithm algo;
-  // TODO: temporarily hardcoded, replace with unit test directory variable
   auto filename = testPath / "simple_triangle_trisurf.pts";
   MeshHandle mesh = algo.run(filename.string());
   ASSERT_TRUE(mesh);
@@ -65,7 +58,6 @@ TEST(ReadTriSurfTests, ReadFromFilePoints)
 TEST(ReadTriSurfTests, ReadFromFileFaces)
 {
   TextToTriSurfFieldAlgorithm algo;
-  // TODO: temporarily hardcoded, replace with unit test directory variable
   auto filename = testPath / "simple_triangle_trisurf.fac";
   MeshHandle mesh = algo.run(filename.string());
   ASSERT_TRUE(mesh);
