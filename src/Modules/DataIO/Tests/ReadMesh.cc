@@ -26,28 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/TextToTriSurfFieldModule.h>
-#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
-#include <Core/Datatypes/String.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Modules/Basic/SendScalar.h>
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-TextToTriSurfFieldModule::TextToTriSurfFieldModule() : Module(ModuleLookupInfo("TextToTriSurfField", "DataIO", "SCIRun")) {}
-
-void TextToTriSurfFieldModule::execute()
-{
-  filename_ = get_state()->getValue(TextToTriSurfFieldAlgorithm::Filename).getString();
-
-  TextToTriSurfFieldAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  auto mesh = algo.run(filename_);
-  sendOutput(Mesh, mesh);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
-}
+//TODO 

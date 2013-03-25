@@ -117,13 +117,29 @@ IF(BUILD_TESTING)
   SET(USER_UNIT_TEST_RESOURCE_DIR "../../../scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests" CACHE PATH "Root for unit testing files")
 
   IF(NOT EXISTS "${USER_UNIT_TEST_RESOURCE_DIR}")
-	MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" ) 
+    MESSAGE( WARNING "Unit test resource path does not exist. Please set it correctly to run all the unit tests. Try mapping this svn path: https://gforge.sci.utah.edu/gf/project/sciruntests/scmsvn/?action=browse&path=%2FSCIRunUnitTestData%2FSCIRun5%2FUnitTests%2F" )
   ENDIF()
 
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
+########################################################################
+# Python
+
 OPTION(BUILD_WITH_PYTHON "Build with python support." OFF)
+
+IF(BUILD_WITH_PYTHON)
+  MESSAGE(STATUS "Configuring Python")
+  SET(PythonLibs_FIND_VERSION "3.2")
+  FIND_PACKAGE(PythonLibs REQUIRED)
+  IF(NOT PYTHONLIBS_FOUND)
+    MESSAGE(FATAL_ERROR "Python 3.3 or 3.2 not found. Set PYTHON_INCLUDE_DIR and PYTHON_LIBRARY to the correct Python installation.")
+  ENDIF()
+
+  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
+  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
+ENDIF(BUILD_WITH_PYTHON)  
+
 
 ########################################################################
 # Custom compiler flags and definitions
@@ -256,6 +272,9 @@ ExternalProject_Add(Boost_external
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+    -DBUILD_WITH_PYTHON:BOOL=${BUILD_WITH_PYTHON}
+    -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
+    -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
 )
 
 ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED GLOBAL)
@@ -375,15 +394,6 @@ ENDIF()
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-########################################################################
-# Python
-
-IF(BUILD_WITH_PYTHON)
-  MESSAGE(STATUS "Configuring Python")
-  FIND_PACKAGE(PythonLibs REQUIRED)
-  ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB)
-  ADD_DEFINITIONS(-DBUILD_WITH_PYTHON)
-ENDIF(BUILD_WITH_PYTHON)  
 
 ########################################################################
 # Includes
