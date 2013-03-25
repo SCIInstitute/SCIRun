@@ -123,7 +123,7 @@ IF(BUILD_TESTING)
   ADD_DEFINITIONS(-DTEST_RESOURCE_ROOT_DIR="${USER_UNIT_TEST_RESOURCE_DIR}" -DBUILD_TESTING)
 ENDIF()
 
-OPTION(BUILD_WITH_PYTHON "Build with python support." ON)
+OPTION(BUILD_WITH_PYTHON "Build with python support." OFF)
 
 ########################################################################
 # Custom compiler flags and definitions
