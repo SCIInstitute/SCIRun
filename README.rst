@@ -83,9 +83,6 @@ Limitations
 * Cannot load SCIRun 4 network files
 * Limited set of modules at the moment
 
-Other Information
-=================
-
 Platform Notes
 ==============
 
