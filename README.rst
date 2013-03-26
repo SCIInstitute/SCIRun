@@ -112,15 +112,15 @@ Build requirements
   
     + Build from source (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz), or use system libraries if available.
 
-*	All platforms
+* All platforms
 
   - CMake 2.8
-  
+
     + Root cmake file is SCIRunGUIPrototype/src/CMakeLists.txt.
     + Building in the source directory is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
     + BUILD_WITH_PYTHON works on Windows, not yet (easily) on MacOS.
-	  
+  
 
 CMake Build Generators
 ----------------------
