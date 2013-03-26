@@ -49,11 +49,12 @@ Network Editor
 * New working module: SolveLinearSystem--uses the parallel linear algebra library of SCIRun v4 for a fast CG solver method.
 * Help mode: click the "What's This" button (or F1 or Ctrl-H) and then click anywhere in the interface for helpful information.
 * Networks can be loaded from the command line, and automatically executed with the -e and -E options as in SCIRun v4 (useful for scripting).
-* LatVols can be rendered with a brand new rendering engine.
+* Mesh geometry can be visualized with a brand new rendering engine.
 * **New in milestone D**
 * Multithreaded network execution. Access this by opening the developer console (hotkey '`'), and choosing "Parallel".
-* Python integration, phase 1. Currently only works with Python 3.3. Turn on "BUILD_WITH_PYTHON" in CMake. You get a Python interpreter in the GUI with a few working commands for network building.
-* TriSurfMeshes can now be rendered, using a special two-file text import format.
+* Python integration, phase 1. Currently only works with Python 3.3 (will be included with SCIRun in a future release)
+  - Turn on "BUILD_WITH_PYTHON" in CMake. You get a Python interpreter in the GUI with a few working commands for network building.
+* TriSurf meshes can be imported from text files (*.pts, *.fac) as mesh geometry and visualized.
 * Network editor provenance: another new window, accessible under the Window menu, allows undo and redo of basic network editor actions.
 * The network editor background color can be customized, and is saved as a preference.
 * Modules in the network editor now have a notes editor. The notes have a few formatting and position options as in SCIRun v4. They are not saved with the network yet; to be delivered in milestone E.
@@ -61,7 +62,7 @@ Network Editor
 
 Renderer
 --------------
-* Can render faces and edges of LatVolMeshes and TriSurfMeshes.
+* Can render faces and edges of LatVol and TriSurf meshes.
 * Camera control is still in ImageVis3D mode.
 
 In Progress
