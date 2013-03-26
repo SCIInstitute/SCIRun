@@ -47,6 +47,10 @@ for library_file in ${SCIRUN_LIBS}; do
   echo "${COMMAND}"
   sh -c "${COMMAND}"
 
+  COMMAND=`otool -L $library_file | @SED@ -n 's:@SPIRE_LIBRARY_DIR@/:& :p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1$2" "$2" " lib }'`
+  echo "${COMMAND}"
+  sh -c "${COMMAND}"
+
   COMMAND=`otool -L $library_file | @SED@ -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1" @executable_path/lib/"$1" " lib }'`
   echo "${COMMAND}"
   sh -c "${COMMAND}"
