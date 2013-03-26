@@ -95,18 +95,21 @@ Build requirements
 
   - Apple clang 4.1
   - Qt 4.8
+  
     + Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
 
 * Windows (tested on Windows 7)
 
   - Visual Studio C++ 2010
   - Qt 4.8 
+  
     + Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions), but be sure to download http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz.
 
 * Linux (tested on Ubuntu 12.10)
 
   - gcc 4.6, 4.7
   - Qt 4.8 
+  
     + Build from source (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz), or use system libraries if available.
 
 *	All platforms
