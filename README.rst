@@ -8,14 +8,12 @@ SCIRun 5 Prototype
 ==================
 
 | https://github.com/SCIInstitute/SCIRunGUIPrototype
-| <b>`Downloads: Click Here! <http://sci.utah.edu/devbuilds/scirun5/>`_ </b>
+| **`Downloads: Click Here! <http://sci.utah.edu/devbuilds/scirun5/>`_ **
 
 .. contents::
 
 Summary
 =======
-
-TODO
 
 +---------------+----------------------------------------------------------------------+
 |  **Warning**  |  SCIRun 5 is pre-alpha software, do not use for real science yet.    |
@@ -33,12 +31,36 @@ Features
 Network Editor
 --------------
 * Module selector: filterable list of modules that you can drag-and-drop into the editor or double-click to add a module.
-* No middle mouse clicks are needed to connect modules.
-* Choice of connection drawing method.
+* No middle mouse clicks are needed to connect modules: use left click instead.
+* To execute a network, click the "Execute All" button or use the Ctrl-E hotkey.
+* Execution of individual modules (rather than the entire network) is disabled for now.
+* Saving and loading of network files is enabled. The file format is xml, but it is not compatible with SCIRun 4, so a *.srn5 extension is used.
+* SCIRun v4 networks are not compatible yet, either. This feature will be implemented in a later milestone release.
+* There are many menu options and GUI elements that do nothing yet. They are either grayed out or have an asterisk next to their name.
+* You can filter the module selector's list, either with a simple starting string or a wildcard pattern.
+* In addition to the basic "Euclidean" connection pipes, a "Cubic Bezier"-style connection is available as an option in the Network Editor tab of the Configuration pane.
+* Execution progress is shown in a progress bar as in SCIRun v4.
+* Each module widget has an actions button, that contains common actions that used to appear in the right-click menu.
+* Double-click a connection to bring up its action menu, including delete.
+* Deleting objects from the network editor uses Delete on Windows and Fn-Del on MacOS.
+* New working module: SolveLinearSystem--uses the parallel linear algebra library of SCIRun v4 for a fast CG solver method.
+* Help mode: click the "What's This" button (or F1 or Ctrl-H) and then click anywhere in the interface for helpful information.
+* Networks can be loaded from the command line, and automatically executed with the -e and -E options as in SCIRun v4 (useful for scripting).
+* LatVols can be rendered with a brand new rendering engine.
+
+New in milestone D:
+* Multithreaded network execution. Access this by opening the developer console (hotkey '`'), and choosing "Parallel".
+* Python integration, phase 1. Currently only works with Python 3.3. Turn on "BUILD_WITH_PYTHON" in CMake. You get a Python interpreter in the GUI with a few working commands for network building.
+* TriSurfMeshes can now be rendered, using a special two-file text import format.
+* Network editor provenance: another new window, accessible under the Window menu, allows undo and redo of basic network editor actions.
+* The network editor background color can be customized, and is saved as a preference.
+* Modules in the network editor now have a notes editor. The notes have a few formatting and position options as in SCIRun v4. They are not saved with the network yet; to be delivered in milestone E.
+* Duplicate module is available as a general module action.
 
 Renderer
 --------------
 * Can render faces and edges of LatVolMeshes and TriSurfMeshes.
+* Camera control is still in ImageVis3D mode.
 
 In Progress
 ===========
@@ -67,7 +89,7 @@ Platform Notes
 
 Build requirements
 ------------------
-  - OS X (tested on 10.7 and 10.8):
+  - OS X (tested on 10.7 and 10.8)
     - Apple clang 4.1
     - Qt 4.8. Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
 
