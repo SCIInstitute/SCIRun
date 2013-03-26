@@ -27,6 +27,7 @@
  */
 
 #include <cmath>
+#include <fstream>
 #include <boost/math/constants/constants.hpp>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
