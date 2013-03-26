@@ -92,22 +92,27 @@ Platform Notes
 Build requirements
 ------------------
 * OS X (tested on 10.7 and 10.8)
+
   - Apple clang 4.1
   - Qt 4.8
     + Download from http://releases.qt-project.org/qt4/source/qt-mac-opensource-4.8.4.dmg.
 
 * Windows (tested on Windows 7)
+
   - Visual Studio C++ 2010
   - Qt 4.8 
     + Build from source (see http://scirundocwiki.sci.utah.edu/SCIRunDocs/index.php/CIBC:Seg3D2:Building_Releases#Installing_Qt_on_your_system_and_building_from_scratch for instructions), but be sure to download http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz.
 
 * Linux (tested on Ubuntu 12.10)
+
   - gcc 4.6, 4.7
   - Qt 4.8 
     + Build from source (http://releases.qt-project.org/qt4/source/qt-everywhere-opensource-src-4.8.4.tar.gz), or use system libraries if available.
 
 *	All platforms
+
   - CMake 2.8
+  
     + Root cmake file is SCIRunGUIPrototype/src/CMakeLists.txt.
     + Building in the source directory is not permitted.
     + Make sure BUILD_SHARED_LIBS is on (default setting).
@@ -116,19 +121,25 @@ Build requirements
 
 CMake Build Generators
 ----------------------
+
 * Windows
+
   - Visual Studio 2010 C++
 
-* OS X (tested on 10.7 and 10.8):
+* OS X (tested on 10.7 and 10.8)
+
   - Unix Makefiles (Xcode not currently supported)
 
-* Linux (tested on Ubuntu 12.10):
+* Linux (tested on Ubuntu 12.10)
+
   - Unix Makefiles
 
 Unix Makefiles notes
 --------------------
+
 * Boost must be built before the SCIRun libraries.
 * Parallel make builds can be used as long the Boost target is built first, for example:
+
   - make -j4 Boost_external && make -j4
 
 
