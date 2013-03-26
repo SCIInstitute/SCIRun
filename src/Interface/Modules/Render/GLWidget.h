@@ -41,25 +41,27 @@
 #include <QtOpenGL/QGLWidget>
 
 #include "GLContext.h"
+#include "QtGLContext.h"
 #include "Spire/Interface.h"
+#include "Spire/StuPipe/StuInterface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
 namespace SCIRun {
 namespace Gui {
-  
+
+class QtGLContext;
+
 class GLWidget : public QGLWidget
 {
   Q_OBJECT
 
 public:
-  GLWidget(const QGLFormat& format);
+  GLWidget(QtGLContext* context);
   ~GLWidget();
 
-  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const      {return mGraphics;}
-  std::shared_ptr<GLContext>                  getContext() const    {return mContext;}
+  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const {return mGraphics;}
 
 protected:
-  virtual void closeEvent(QCloseEvent *evt);
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);
   virtual void mouseReleaseEvent(QMouseEvent* event);

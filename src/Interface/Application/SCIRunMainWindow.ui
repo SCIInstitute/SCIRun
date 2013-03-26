@@ -557,14 +557,6 @@
          </item>
          <item>
           <property name="text">
-           <string>TextToTriSurfField</string>
-          </property>
-          <property name="text">
-           <string>TBD</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>SendScalar</string>
           </property>
           <property name="text">

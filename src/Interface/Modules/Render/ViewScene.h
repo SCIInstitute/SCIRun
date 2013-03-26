@@ -46,7 +46,7 @@
 
 namespace SCIRun {
 namespace Gui {
-  
+
 class SCISHARE ViewSceneDialog : public ModuleDialogGeneric, 
   public Ui::ViewScene
 {
@@ -60,6 +60,8 @@ public:
   virtual void pull() {}
 
   virtual void moduleExecuted();
+protected:
+  virtual void closeEvent(QCloseEvent *evt) override;
 private:
 
   GLWidget*                                   mGLWidget;  ///< GL widget containing context.

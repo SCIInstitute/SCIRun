@@ -204,17 +204,17 @@ struct Copy
 
   void operator()()
   {
-    std::cout << proc_ << " starting" << std::endl;
+    //std::cout << proc_ << " starting" << std::endl;
     ParallelLinearAlgebra pla(data_, proc_);
     
     pla.new_vector(v1_);
-    std::cout << "pla" << proc_ << " new vector" << std::endl;
+    //std::cout << "pla" << proc_ << " new vector" << std::endl;
     
     pla.add_vector(vec2copy_, v2_);
-    std::cout << "pla" << proc_ << " add vector" << std::endl;
+    //std::cout << "pla" << proc_ << " add vector" << std::endl;
 
     pla.copy(v2_, v1_);
-    std::cout << "pla" << proc_ << "  copy" << std::endl;
+    //std::cout << "pla" << proc_ << "  copy" << std::endl;
   }
 };
 

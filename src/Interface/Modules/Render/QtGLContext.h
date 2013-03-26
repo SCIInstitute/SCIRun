@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,28 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/TextToTriSurfFieldModule.h>
-#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
-#include <Core/Datatypes/String.h>
+/// \author James Hughes
+/// \date   March 2013
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#ifndef INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
+#define INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
 
-TextToTriSurfFieldModule::TextToTriSurfFieldModule() : Module(ModuleLookupInfo("TextToTriSurfField", "DataIO", "SCIRun")) {}
+#include <QtOpenGL/QGLWidget>
+#include "GLWidget.h"
 
-void TextToTriSurfFieldModule::execute()
+namespace SCIRun {
+namespace Gui {
+
+class GLWidget;
+
+/// 
+class QtGLContext : public QGLContext
 {
-  filename_ = get_state()->getValue(TextToTriSurfFieldAlgorithm::Filename).getString();
+public:
+  QtGLContext(const QGLFormat& format);
+  virtual ~QtGLContext();
 
-  TextToTriSurfFieldAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
+private:
+};
 
-  auto mesh = algo.run(filename_);
-  sendOutput(Mesh, mesh);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
-}
+} // namespace Gui
+} // SCIRun
+
+#endif 

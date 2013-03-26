@@ -26,30 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_TEXT_TO_TRISURFFIELD_H
-#define MODULES_DATAIO_TEXT_TO_TRISURFFIELD_H
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Modules/Basic/ReceiveScalar.h>
+#include <Modules/Basic/SendScalar.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+using namespace SCIRun;
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-  
-  class SCISHARE TextToTriSurfFieldModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<StringPortTag>,
-    public Has2OutputPorts<MeshPortTag, StringPortTag>
-  {
-  public:
-    TextToTriSurfFieldModule();
-    virtual void execute();
-    INPUT_PORT(0, Filename, String);
-    OUTPUT_PORT(0, Mesh, Mesh);
-    OUTPUT_PORT(1, FileLoaded, String);
-  private:
-    std::string filename_;
-  };
-
-}}}
-
-#endif
+//TODO 

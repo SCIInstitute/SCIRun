@@ -53,10 +53,25 @@ SET(Core_Datatypes_HEADERS
   Types.h
 )
 
+# Spire related includes (required for linking on windows)
+FIND_PACKAGE(OpenGL REQUIRED)
+if(UNIX)
+  if(APPLE)
+    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+    set(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
+  endif()
+endif()
+
 ADD_LIBRARY(Core_Datatypes 
   ${Core_Datatypes_HEADERS}
   ${Core_Datatypes_SRCS}
 )
+
+TARGET_LINK_LIBRARIES(Core_Datatypes
+  ${OPENGL_LIBRARIES}
+  ${SCI_SPIRE_LIBRARY}
+  ${SCI_SPIRE_EXTRA_LIBRARIES}
+  )
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes)

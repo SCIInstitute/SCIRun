@@ -60,13 +60,13 @@
      <item>
       <widget class="QTabWidget" name="displayOptionsTabs_">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="nodesTab_">
         <attribute name="title">
          <string>Nodes</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>11</x>
@@ -78,16 +78,25 @@
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
            <widget class="QCheckBox" name="showNodesCheckBox_">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="mouseTracking">
+             <bool>true</bool>
+            </property>
             <property name="text">
              <string>Show Nodes</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="enableTransparencyCheckBox_">
+           <widget class="QCheckBox" name="enableTransparencyNodesCheckBox_">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -95,6 +104,9 @@
           </item>
           <item row="2" column="0">
            <widget class="QGroupBox" name="groupBox_3">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="title">
              <string>Node Coloring</string>
             </property>
@@ -144,6 +156,9 @@
           </item>
           <item row="3" column="0">
            <widget class="QGroupBox" name="groupBox_4">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="title">
              <string>Node Display Type</string>
             </property>
@@ -181,7 +196,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -196,6 +215,9 @@
             </item>
             <item>
              <widget class="QSpinBox" name="spinBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="prefix">
                <string/>
               </property>
@@ -219,7 +241,7 @@
         <attribute name="title">
          <string>Edges</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>10</x>
@@ -240,7 +262,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QCheckBox" name="enableTransparencyCheckBox_1">
+           <widget class="QCheckBox" name="enableTransparencyEdgesCheckBox_1">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -248,6 +270,9 @@
           </item>
           <item row="2" column="0">
            <widget class="QGroupBox" name="groupBox_6">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="title">
              <string>Edge Coloring</string>
             </property>
@@ -297,6 +322,9 @@
           </item>
           <item row="3" column="0">
            <widget class="QGroupBox" name="groupBox_7">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="title">
              <string>Edge Display Type</string>
             </property>
@@ -344,7 +372,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -359,6 +391,9 @@
             </item>
             <item>
              <widget class="QSpinBox" name="spinBox_2">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="prefix">
                <string/>
               </property>
@@ -377,22 +412,18 @@
           </item>
          </layout>
         </widget>
-        <zorder>layoutWidget</zorder>
-        <zorder>groupBox_6</zorder>
-        <zorder>groupBox_7</zorder>
-        <zorder>label_8</zorder>
        </widget>
        <widget class="QWidget" name="facesTab_">
         <attribute name="title">
          <string>Faces</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>12</x>
            <y>12</y>
-           <width>241</width>
-           <height>190</height>
+           <width>304</width>
+           <height>192</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -407,7 +438,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="enableTransparencyCheckBox_2">
+           <widget class="QCheckBox" name="enableTransparencyFacesCheckBox_2">
             <property name="text">
              <string>Enable Transparency</string>
             </property>
@@ -415,6 +446,9 @@
           </item>
           <item>
            <widget class="QGroupBox" name="groupBox_5">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="title">
              <string>Face Coloring</string>
             </property>
@@ -448,6 +482,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Use Face Normals</string>
             </property>
@@ -455,6 +492,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="checkBox_2">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Render Images as a texture (Colormap Only)</string>
             </property>
@@ -498,7 +538,7 @@
    <property name="title">
     <string>General Options</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -510,28 +550,24 @@
     <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
       <widget class="QPushButton" name="pushButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Default Color</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="zTestCheckBox_">
-       <property name="text">
-        <string>Z-Test</string>
        </property>
       </widget>
      </item>
     </layout>
    </widget>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>20</y>
      <width>271</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">

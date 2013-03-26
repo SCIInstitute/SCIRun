@@ -32,13 +32,6 @@
 using namespace SCIRun::Core::Datatypes;
 
 GeometryObject::GeometryObject(DatatypeConstHandle dh) : 
-    vboCommon(nullptr),
-    vboCommonSize(0),
-    iboFaces(nullptr),
-    iboFacesSize(0),
-    iboEdges(nullptr),
-    iboEdgesSize(0),
-    useZTest(false),
     data_(dh)
 {
 }

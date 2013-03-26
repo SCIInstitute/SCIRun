@@ -55,8 +55,8 @@ namespace Render {
     /// is destroyed.
     virtual void preDestruction();
 
-    INPUT_PORT(0, GeneralGeom, GeometryObject);
-    INPUT_PORT(1, RenderedMatrixAsVectorField, GeometryObject);
+    INPUT_PORT(0, GeneralGeom1, GeometryObject);
+    INPUT_PORT(1, GeneralGeom2, GeometryObject);
 
   private:
     SCIRun::Dataflow::Networks::RendererInterface* renderer_;

@@ -45,7 +45,9 @@ ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
   
   connect(showEdgesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(showFacesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
-  connect(zTestCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(enableTransparencyNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(enableTransparencyEdgesCheckBox_1, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(enableTransparencyFacesCheckBox_2, SIGNAL(stateChanged(int)), this, SLOT(push()));
 }
 
 void ShowMeshDialog::push()
@@ -54,7 +56,9 @@ void ShowMeshDialog::push()
   {
     state_->setValue(ShowMeshModule::ShowEdges, showEdgesCheckBox_->isChecked());
     state_->setValue(ShowMeshModule::ShowFaces, showFacesCheckBox_->isChecked());
-    state_->setValue(ShowMeshModule::ZTestOn, zTestCheckBox_->isChecked());
+    state_->setValue(ShowMeshModule::NodeTransparency, enableTransparencyNodesCheckBox_->isChecked());
+    state_->setValue(ShowMeshModule::EdgeTransparency, enableTransparencyEdgesCheckBox_1->isChecked());
+    state_->setValue(ShowMeshModule::FaceTransparency, enableTransparencyFacesCheckBox_2->isChecked());
   }
 }
 
@@ -63,5 +67,7 @@ void ShowMeshDialog::pull()
   Pulling p(this);
   showEdgesCheckBox_->setChecked(state_->getValue(ShowMeshModule::ShowEdges).getBool());
   showFacesCheckBox_->setChecked(state_->getValue(ShowMeshModule::ShowFaces).getBool());
-  zTestCheckBox_->setChecked(state_->getValue(ShowMeshModule::ZTestOn).getBool());
+  enableTransparencyNodesCheckBox_->setChecked(state_->getValue(ShowMeshModule::NodeTransparency).getBool());
+  enableTransparencyEdgesCheckBox_1->setChecked(state_->getValue(ShowMeshModule::EdgeTransparency).getBool());
+  enableTransparencyFacesCheckBox_2->setChecked(state_->getValue(ShowMeshModule::FaceTransparency).getBool());
 }

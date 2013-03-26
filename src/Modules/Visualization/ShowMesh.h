@@ -46,7 +46,9 @@ namespace Visualization {
 
     static Core::Algorithms::AlgorithmParameterName ShowEdges;
     static Core::Algorithms::AlgorithmParameterName ShowFaces;
-    static Core::Algorithms::AlgorithmParameterName ZTestOn;
+    static Core::Algorithms::AlgorithmParameterName NodeTransparency;
+    static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
+    static Core::Algorithms::AlgorithmParameterName FaceTransparency;
 
     INPUT_PORT(0, Mesh, Mesh);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);

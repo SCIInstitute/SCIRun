@@ -30,9 +30,11 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Geometry.h>
 #include <QFileDialog>
+#include "QtGLContext.h"
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -46,27 +48,32 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   QGLFormat fmt;
   fmt.setAlpha(true);
   fmt.setRgba(true);
-  mGLWidget = new GLWidget(fmt);
+  mGLWidget = new GLWidget(new QtGLContext(fmt));
 
-  // Hook up the GLWidget
-  glLayout->addWidget(mGLWidget);
-  glLayout->update();
+  if (mGLWidget->isValid())
+  {
+    // Hook up the GLWidget
+    glLayout->addWidget(mGLWidget);
+    glLayout->update();
 
-  // Grab the context and pass that to the module (via the state).
-  // (should no longer be used).
-  std::weak_ptr<Spire::Context> ctx = std::weak_ptr<Spire::Context>(
-      std::dynamic_pointer_cast<Spire::Context>(mGLWidget->getContext()));
-  state->setTransientValue("glContext", ctx);
-
-  // Set spire transient value (should no longer be used).
-  mSpire = std::weak_ptr<Spire::SCIRun::SRInterface>(mGLWidget->getSpire());
-  state->setTransientValue("spire", mSpire);
+    // Set spire transient value (should no longer be used).
+    mSpire = std::weak_ptr<Spire::SCIRun::SRInterface>(mGLWidget->getSpire());
+  }
+  else
+  {
+    /// \todo Display dialog.
+    delete mGLWidget;
+  }
 }
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::~ViewSceneDialog()
 {
-  delete mGLWidget;
+}
+
+//------------------------------------------------------------------------------
+void ViewSceneDialog::closeEvent(QCloseEvent *evt)
+{
 }
 
 //------------------------------------------------------------------------------
@@ -76,36 +83,117 @@ void ViewSceneDialog::moduleExecuted()
   boost::any geomDataTransient = state_->getTransientValue("geomData");
   if (!geomDataTransient.empty())
   {
-    boost::shared_ptr<Core::Datatypes::GeometryObject> geomData;
+    boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>> geomData; // Whoa...
     try
     {
-      geomData = boost::any_cast<boost::shared_ptr<Core::Datatypes::GeometryObject>>(geomDataTransient);
+      geomData = boost::any_cast<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
     }
     catch (const boost::bad_any_cast&)
     {
       //error("Unable to cast boost::any transient value to spire pointer.");
       return;
     }
-
-    // Send buffers to spire...
     std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
-    
-    if (geomData->vboCommon != nullptr)
+    if (spire == nullptr)
+      return;
+
+    // Grab objects (to be regenerated with supplied data)
+    std::shared_ptr<Spire::StuInterface> stuPipe = spire->getStuPipe();
+
+    // Remove ALL prior objects.
+    stuPipe->removeAllObjects();
+
+    for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
-      spire->renderHACKSetCommonVBO(geomData->vboCommon, geomData->vboCommonSize);
+      boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
 
-      // We want iboFaces and iboEdges to enter as nullptr's if they are.
-      spire->renderHACKSetUCFace(geomData->iboFaces, geomData->iboFacesSize);
-      if (geomData->useZTest == true)
-        spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.4f));
-      else
-        spire->renderHACKSetUCFaceColor(Spire::V4(1.0f, 1.0f, 1.0f, 0.02f));
+      // Since we simply remove all objects from the scene everyframe (that
+      // needs to change) we don't need to remove the objects one-by-one.
+      //// Try/catch is for single-threaded cases. Exceptions are handled on the
+      //// spire thread when spire is threaded.
+      //try
+      //{
+      //  // Will remove all traces of old VBO's / IBO's not in use.
+      //  // (remember, we remove the VBOs/IBOs we added at the end of this loop,
+      //  //  this is to ensure there is only 1 shared_ptr reference to the IBOs
+      //  //  and VBOs in Spire).
+      //  stuPipe->removeObject(obj->objectName);
+      //}
+      //catch (std::out_of_range&)
+      //{
+      //  // Ignore
+      //}
 
-      spire->renderHACKSetUCEdge(geomData->iboEdges, geomData->iboEdgesSize);
-      if (geomData->useZTest == true)
-        spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
-      else
-        spire->renderHACKSetUCEdgeColor(Spire::V4(0.1f, 0.9f, 0.1f, 0.3f));
+      stuPipe->addObject(obj->objectName);
+
+      // Add vertex buffer objects.
+      for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireVBO& vbo = *it;
+        stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
+      }
+
+      // Add index buffer objects.
+      for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireIBO& ibo = *it;
+        Spire::StuInterface::IBO_TYPE type;
+        switch (ibo.indexSize)
+        {
+          case 1: // 8-bit
+            type = Spire::StuInterface::IBO_8BIT;
+            break;
+
+          case 2: // 16-bit
+            type = Spire::StuInterface::IBO_16BIT;
+            break;
+
+          case 4: // 32-bit
+            type = Spire::StuInterface::IBO_32BIT;
+            break;
+
+          default:
+            type = Spire::StuInterface::IBO_32BIT;
+            throw std::invalid_argument("Unable to determine index buffer depth.");
+            break;
+        }
+        stuPipe->addIBO(ibo.name, ibo.data, type);
+      }
+
+      // Add passes
+      for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
+      {
+        const GeometryObject::SpirePass& pass = *it;
+        stuPipe->addPassToObject(obj->objectName, pass.passName, pass.programName,
+                                 pass.vboName, pass.iboName, pass.type);
+
+        // Add uniforms associated with the pass
+        for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
+        {
+          std::string uniformName = std::get<0>(*it);
+          std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+          stuPipe->addPassUniformConcrete(obj->objectName, pass.passName,
+                                          uniformName, uniform);
+        }
+
+        // Add gpu state if it has been set.
+        if (pass.hasGPUState == true)
+          stuPipe->addPassGPUState(obj->objectName, pass.passName, pass.gpuState);
+      }
+
+      // Now that we have created all of the appropriate passes, get rid of the
+      // VBOs and IBOs.
+      for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireVBO& vbo = *it;
+        stuPipe->removeVBO(vbo.name);
+      }
+
+      for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+      {
+        const GeometryObject::SpireIBO& ibo = *it;
+        stuPipe->removeIBO(ibo.name);
+      }
     }
   }
 }

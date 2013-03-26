@@ -31,6 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
+#include <iostream>
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTimer>
@@ -41,11 +42,18 @@
 using namespace SCIRun::Gui;
 using Spire::Vector2;
 
+void logFunction(const std::string& str, Spire::Interface::LOG_LEVEL level)
+{
+  std::cout << str;
+}
+
 //------------------------------------------------------------------------------
-GLWidget::GLWidget(const QGLFormat& format) :
-    QGLWidget(format),
+GLWidget::GLWidget(QtGLContext* context) :
+    QGLWidget(context),
     mContext(new GLContext(this))
 {
+  /// \todo Implement this intelligently. This function is called everytime
+  ///       there is a new graphics context.
   std::vector<std::string> shaderSearchDirs;
   
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
@@ -60,11 +68,23 @@ GLWidget::GLWidget(const QGLFormat& format) :
   mGraphics = std::shared_ptr<Spire::SCIRun::SRInterface>(
       new Spire::SCIRun::SRInterface(
           std::dynamic_pointer_cast<Spire::Context>(mContext),
-          shaderSearchDirs, false));
+          shaderSearchDirs, false, logFunction));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
 #endif
+
+  /// \todo Where should we store common shader names?
+  std::vector<std::tuple<std::string, Spire::StuInterface::SHADER_TYPES>> shaderFiles;
+  shaderFiles.push_back(std::make_pair("UniformColor.vs", Spire::StuInterface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER));
+
+  mGraphics->getStuPipe()->addPersistentShader(
+      "UniformColor", 
+      shaderFiles);
+//      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
+//        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
+//      });
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -74,14 +94,17 @@ GLWidget::GLWidget(const QGLFormat& format) :
 GLWidget::~GLWidget()
 {
   // Need to inform module that the context is being destroyed.
-  mGraphics.reset();
+  if (mGraphics != nullptr)
+  {
+    std::cout << "Terminating spire." << std::endl;
+    mGraphics->terminate();
+    mGraphics.reset();
+  }
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::initializeGL()
 {
-  /// \todo Implement this intelligently. This function is called everytime
-  ///       there is a new graphics context.
 }
 
 //------------------------------------------------------------------------------
@@ -119,20 +142,11 @@ void GLWidget::resizeGL(int width, int height)
 }
 
 //------------------------------------------------------------------------------
-void GLWidget::closeEvent(QCloseEvent *evt)
-{
-  // Kill off the graphics thread.
-  mGraphics->terminate();
-  mGraphics.reset();
-  //QGLWidget::closeEvent(evt);
-}
-
-//------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();
-  // Update the renderer.
   mGraphics->doFrame();
+  mContext->swapBuffers();
 }
 
 
