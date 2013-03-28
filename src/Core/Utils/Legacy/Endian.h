@@ -89,8 +89,10 @@ SCISHARE void swapbytes(int64_t& i);
 SCISHARE void swapbytes(uint64_t& i);
 SCISHARE void swapbytes(float& i);
 SCISHARE void swapbytes(double& i);
-//SCISHARE void swapbytes(Point &i);
-//SCISHARE void swapbytes(Vector &i);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+SCISHARE void swapbytes(Point &i);
+SCISHARE void swapbytes(Vector &i);
+#endif
 
 SCISHARE bool isBigEndian();
 
