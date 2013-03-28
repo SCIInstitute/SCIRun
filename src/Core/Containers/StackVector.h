@@ -43,48 +43,15 @@
 #ifndef SCI_Containers_StackVector_h
 #define SCI_Containers_StackVector_h 1
 
-#include <Core/Util/Assert.h>
-#include <vector>
-
+#include <boost/array.hpp>
 
 namespace SCIRun {
 
 template <class T, int CAPACITY>
-class StackVector {
+class StackVector : public boost::array<T, CAPACITY>
+{
 public:
-  size_t size_;
-  T data_[CAPACITY];
-
-  typedef T        value_type;
-  typedef T*       pointer;
-  typedef T&       reference;
-  typedef const T& const_reference;
-  //typedef difference_type;
-  typedef T*       iterator;
-  typedef const T* const_iterator;
-  typedef size_t   size_type;
-  //typedef reverse_iterator;
-  //typedef const_reverse_iterator;
-
-  iterator begin() { return data_; }
-  iterator end() { return data_+size_; }
-  const_iterator begin() const { return data_; }
-  const_iterator end() const { return data_+size_; }
-  size_t size() const { ASSERT(size_ <= CAPACITY); return size_; }
-  size_t max_size() const { return CAPACITY; }
-  size_t capacity() const { return CAPACITY; }
-  bool empty() const { return size_; }
-  reference operator[](size_t n) { return data_[n]; }
-  const_reference operator[](size_t n) const { return data_[n]; }
-  void resize(size_t s) { ASSERT(s <= CAPACITY); size_ = s; }
   void reserve(size_t) {}  // Do nothing: We already have a certain capacity
-  void push_back(T t) { ASSERT(size_ < CAPACITY); data_[size_] = t; size_++; }
-  void clear() { size_ = 0; }
-  StackVector() { size_ = 0; }
-  StackVector(size_t s) { ASSERT(s <= CAPACITY); size_ = s; }
-  StackVector(size_t s, T val)
-  { ASSERT(s <= CAPACITY); size_ = s; for (size_t i=0;i<s;i++) data_[i] = val;}
-  ~StackVector() {}
 };
 
 } // End namespace SCIRun

@@ -56,268 +56,20 @@
 
 namespace SCIRun {
 
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   template<class T> class Array3;
 
   template<class T> void Pio(Piostream& stream, Array3<T>& array);
   template<class T> void Pio(Piostream& stream, Array3<T>& array, const std::string&);
   template<class T> void Pio(Piostream& stream, Array3<T>*& array);
+#endif
 
-/**************************************
-
- CLASS
- Array3
-
- KEYWORDS
- Array3
-
- DESCRIPTION
- Array3.h: Interface to dynamic 3D array class
-
- Written by:
- Steven G. Parker
- Department of Computer Science
- University of Utah
- March 1994
-
- PATTERNS
-
- WARNING
-  
-****************************************/
-
-template<class T> class Array3 {
-
-public:
-  // import scirun size and index types
-  typedef SCIRun::index_type index_type;
-  typedef SCIRun::size_type  size_type;
-  typedef T value_type;
-
-  //Default Constructor
-  Array3();
-  
-  //Constructor
-  Array3(size_type, size_type, size_type);
-
-  // Copy Constructor
-  Array3(const Array3& array);
-    
-  //////////
-  //Class Destructor
-  virtual ~Array3();
-    
-  //////////
-  //Access the nXnXn element of the array
-  inline T& operator()(index_type d1, index_type d2, index_type d3) const
-  {
-    ASSERTL3(d1>=0 && d1<dm1);
-    ASSERTL3(d2>=0 && d2<dm2);
-    ASSERTL3(d3>=0 && d3<dm3);
-    return objs[d1][d2][d3];
-  }
-
-  //////////
-  // Access the underlying data array as a 1D memory block 
-  // Note: for performance reasons we do not do an assert here  
-  inline const T& operator()(index_type d) const
-  {
-    return obj[d];
-  }
-
-  inline T& operator()(index_type d)
-  {
-    return obj[d];
-  }
-
-  inline const T& operator[](index_type d) const
-  {
-    return obj[d];
-  }
-
-  inline T& operator[](index_type d)
-  {
-    return obj[d];
-  }
-
-    
-  //////////
-  //Array3 Copy Method
-  void copy(const Array3&);
-
-  //////////
-  //Returns the number of spaces in dim1	    
-  inline size_type dim1() const {return dm1;}
-  //////////
-  //Returns the number of spaces in dim2
-  inline size_type dim2() const {return dm2;}
-  //////////
-  //Returns the number of spaces in dim3
-  inline size_type dim3() const {return dm3;}
-  
-  //Datasize larger than 2Gb only make sense when using 64bits only
-  //In that case dm1, dm2 and dm3 are already 64bits 
-  inline size_type get_datasize() const { return (dm1*dm2*dm3*sizeof(T)); }
-
-  inline size_type size() const { return (dm1*dm2*dm3); }
-    
-  //////////
-  //Re-size the Array
-  void resize(size_type, size_type, size_type);
-
-  void zero()
-    { size_type sz = size(); for(size_type j=0; j<sz; j++) obj[j] = T(0); } 
-
-  //////////
-  //Initialize all elements to T
-  void initialize(const T&);
-
-  inline T*** get_dataptr() {return objs;}
-  inline T*   get_datablock_ptr() {return obj;}
-
-  //////////
-  //read/write from a separate raw file
-  int input( const std::string& );
-  int output( const std::string&);
-
-  friend void Pio <> (Piostream&, Array3<T>&);
-  friend void Pio <> (Piostream&, Array3<T>&, const std::string &);
-  friend void Pio <> (Piostream&, Array3<T>*&);
-
-private:
-  T*** objs;
-  T* obj;
-  size_type dm1;
-  size_type dm2;
-  size_type dm3;
-  void allocate();
-
-  //////////
-  //Assignment Operator
-  Array3<T>& operator=(const Array3&);
-}; // end class Array3
-
-template<class T>
-Array3<T>::Array3() :
-  objs(0), obj(0), dm1(0), dm2(0), dm3(0)
+template<class T> 
+class Array3 : public boost::multi_array<T, 3>
 {
-}
+};
 
-template<class T>
-Array3<T>::Array3(const Array3<T>& array) :
-  objs(0), obj(0), dm1(0), dm2(0), dm3(0)
-{
-  copy(array);
-}
-
-
-template<class T>
-void
-Array3<T>::allocate()
-{
-  if( (dm1>0) && (dm2>0) && (dm3>0) )
-  {
-    T** p;
-    T* pp;  
-    
-    try
-    {
-      objs  = new T**[dm1];
-      p     = new T*[dm1*dm2];
-      pp    = new T[dm1*dm2*dm3];
-    } 
-    catch( std::bad_alloc ba ) 
-    {
-      size_t memsize = static_cast<size_t>(dm1*dm2*dm3);
-      std::cerr << "Array3::allocate(): Could not allocate enough memory\n";
-      std::cerr << "Array3 was trying to allocate ("<<dm1<<" x "<<dm2<<" x ";
-      std::cerr << dm3 <<") "<< memsize << " values of size "<< sizeof(T) << "\n";
-      
-      objs = 0; // Keeps destructor from croaking allowing exception to propagate.
-      throw ba;
-    }
-    
-    obj = pp; // quick pointer into datablock
-    for(index_type i=0;i<dm1;i++)
-    {
-      objs[i]=p;
-      p+=dm2;
-      for(index_type j=0;j<dm2;j++)
-      {
-        objs[i][j]=pp;
-        pp+=dm3;
-      }
-    }
-  } 
-  else 
-  {
-    objs = 0;
-    obj = 0;
-  }
-}
-
-template<class T>
-void
-Array3<T>::resize(size_type d1, size_type d2, size_type d3)
-{
-  if(objs && dm1==d1 && dm2==d2 && dm3==d3) return;
-  dm1=d1;
-  dm2=d2;
-  dm3=d3;
-  if(objs)
-  {
-    delete[] objs[0][0];
-    delete[] objs[0];
-    delete[] objs;
-  }
-  allocate();
-}
-
-template<class T>
-Array3<T>::Array3(size_type dm1, size_type dm2, size_type dm3) :
-  objs(0), obj(0), dm1(dm1), dm2(dm2),dm3(dm3)
-{
-  allocate();
-}
-
-template<class T>
-Array3<T>::~Array3()
-{
-  if(objs)
-  {
-    delete[] objs[0][0];
-    delete[] objs[0];
-    delete[] objs;
-  }
-}
-
-template<class T>
-void
-Array3<T>::initialize(const T& t)
-{
-  ASSERT(objs != 0);
-  for(index_type i=0;i<dm1;i++)
-  {
-    for(index_type j=0;j<dm2;j++)
-    {
-      for(index_type k=0;k<dm3;k++)
-      {
-        objs[i][j][k]=t;
-      }
-    }
-  }
-}
-
-template<class T>
-void
-Array3<T>::copy(const Array3<T> &copy)
-{
-  resize( copy.dim1(), copy.dim2(), copy.dim3() );
-  for(index_type i=0;i<dm1;i++)
-    for(index_type j=0;j<dm2;j++)
-      for(index_type k=0;k<dm3;k++)
-        objs[i][j][k] = copy.objs[i][j][k];
-}
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define ARRAY3_VERSION 2
 
 template<class T>
@@ -512,6 +264,7 @@ Array3<T>::output( const std::string &filename )
 
   return 1;
 } 
+#endif
 
 } // End namespace SCIRun
 
