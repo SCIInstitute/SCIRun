@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -24,38 +24,64 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
+#
 
+# Sources of Core/Util classes
 
-SET(Core_Utils_SRCS
-  Exception.cc
-  Singleton.cc
-  ProgressReporter.cc
+SET(Core_Util_Legacy_SRCS
+  Dir.cc
+  Debug.cc
+  Endian.cc             
+  Environment.cc
+  Environment_Defaults.cc  
+  FileUtils.cc 
+  FullFileName.cc
+  LogFile.cc
+  ProgressReporter.cc   
+  soloader.cc
+  Timer.cc             
+  ThrottledRunnable.cc 
+  TypeDescription.cc
+  StringUtil.cc
 )
 
-SET(Core_Utils_HEADERS
-  Exception.h
-  FileUtil.h
-  Lockable.h
-  Macros.h
-  Singleton.h
-  StringContainer.h
-  StringUtil.h
+SET(Core_Util_Legacy_HEADERS
+  Assert.h
+  CheckSum.h
+  Debug.h
+  Dir.h
+  Endian.h
+  Environment.h
+  FancyAssert.h
+  FileUtils.h
+  FullFileName.h
+  LogFile.h
+  MemoryUtil.h
+  NotFinished.h 
   ProgressReporter.h
-  TypeIDTable.h
+  Rand.h
+  sci_system.h
+  soloader.h
+  StringUtil.h
+  ThrottledRunnable.h
+  Timer.h         
+  TypeDescription.h
 )
 
-ADD_LIBRARY(Core_Utils 
-  ${Core_Utils_SRCS}
-  ${Core_Utils_HEADERS}
-)
+ADD_LIBRARY(Core_Util_Legacy 
+  ${Core_Util_Legacy_SRCS}
+  ${Core_Util_Legacy_HEADERS}
+  )
 
-TARGET_LINK_LIBRARIES(Core_Utils
+TARGET_LINK_LIBRARIES(Core_Util_Legacy 
+  Core_Exceptions 
+  Core_Thread_Legacy
+  #${DL_LIBRARY}
+  #${THREAD_LIBRARY}
   ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Utils)
+  ADD_DEFINITIONS(-DBUILD_Core_Util_Legacy)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_SUBDIRECTORY(Tests)
-ADD_SUBDIRECTORY(Legacy)
