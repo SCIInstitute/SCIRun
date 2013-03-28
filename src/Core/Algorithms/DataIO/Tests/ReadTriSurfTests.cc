@@ -26,14 +26,19 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+#include <cmath>
+#include <fstream>
+#include <boost/math/constants/constants.hpp>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/Datatypes/Mesh/VMesh.h>
 
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 namespace
 {
@@ -84,4 +89,38 @@ TEST(ReadTriSurfTests, ReadInvalidFacesFile)
   const std::string filename("not_a_valid_file.fac");
   MeshHandle mesh = algo.run(filename);
   ASSERT_FALSE(mesh);
+}
+
+struct MakePointsOnSphere
+{
+  MakePointsOnSphere(unsigned int seed = 1)
+  {
+    srand(seed);
+  }
+
+  Point operator()() const
+  {
+    const double pi = boost::math::constants::pi<double>();
+    double random1 = (double)rand() / RAND_MAX;
+    double phi = pi * random1;
+    double random2 = (double)rand() / RAND_MAX;
+    double theta = 2 * pi * random2;
+    return Point(sin(phi) * cos(theta), sin(phi) * sin(theta), cos(phi));
+  }
+};
+
+TEST(GenerateSphereOfPoints, DISABLED_Run)
+{
+  int n = 10000;
+
+  std::vector<Point> points;
+  std::generate_n(std::back_inserter(points), n, MakePointsOnSphere());
+
+  std::ofstream filePts("C:\\Dev\\scirun_unit_test_data\\SCIRunUnitTestData\\SCIRun5\\UnitTests\\convert-examples\\sphereOfPoints.pts");
+  std::for_each(points.begin(), points.end(), [&](const Point& p) { filePts << p.x() << " " << p.y() << " " << p.z() << std::endl; });
+  std::ofstream fileFac("C:\\Dev\\scirun_unit_test_data\\SCIRunUnitTestData\\SCIRun5\\UnitTests\\convert-examples\\sphereOfPoints.fac");
+  for (int i = 0; i < n; ++i)
+  {
+    fileFac << i << " " << (i + 1) << " " << (i + 2) << std::endl;
+  }
 }

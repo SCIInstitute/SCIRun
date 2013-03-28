@@ -56,6 +56,7 @@ ADD_EXECUTABLE(${APPLICATION_NAME}
 
 ENDIF()
 
+# TODO: Spire library linked against executable (shouldn't be necessary)?
 TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
 )
@@ -112,6 +113,10 @@ IF(APPLE AND BUILD_BUNDLE)
         # configure SCIRun shared libraries
         COMMAND cp -Rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} "${APPLICATION_NAME}.app/Contents/MacOS"
         COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/processSCIRunLibs.sh
+
+        # configure Spire shared library
+        COMMAND cp -Rf ${SPIRE_LIBRARY_PATH} "${APPLICATION_NAME}.app/Contents/MacOS/lib"
+        COMMAND install_name_tool -id @executable_path/lib/${SPIRE_LIBRARY_PREFIX}${SCI_SPIRE_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX} ${APPLICATION_NAME}.app/Contents/MacOS/lib/${SPIRE_LIBRARY_PREFIX}${SCI_SPIRE_LIBRARY}${CMAKE_SHARED_LIBRARY_SUFFIX}
 
         WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     )
