@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,47 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///////////////////////////
+// PORTED SCIRUN v4 CODE //
+///////////////////////////
 
+#ifndef CORE_MATH_MISCMATH_H
+#define CORE_MATH_MISCMATH_H 
 
-/*
- *  MiscMath.cc
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   June 2004
- *
- */
+#include <Core/Math/Share.h>
 
-#include <Core/Math/MiscMath.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
-
-namespace SCIRun {
-
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
+namespace SCIRun 
 {
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
+  namespace Core
+  {
+    namespace Math
+    {
+
+      #ifndef M_PI
+      #define M_PI 3.14159265358979323846
+      #endif
+
+      inline double DtoR(double d)
+      {
+        return d*(M_PI/180.);
       }
     }
   }
-  factor1 = f1;
-  factor2 = f2;
 }
 
-} // namespace SCIRun
+
+#endif

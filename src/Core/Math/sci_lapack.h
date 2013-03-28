@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2011 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,46 +27,34 @@
 */
 
 
-
 /*
- *  MiscMath.cc
- *
+ *  sci_lapack.h
+ * 
  *  Written by:
- *   Michael Callahan
+ *   Author: Andrew Shafer
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *   Date: Oct 21, 2003
  *
  */
 
-#include <Core/Math/MiscMath.h>
+#ifndef SCI_Math_sci_lapack_h
+#define SCI_Math_sci_lapack_h 1
 
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
+#include <Core/Math/share.h>
 
 namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
-{
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
-}
+SCISHARE void lapacksolvelinearsystem(double **a, int m, int n, double *rhs, int o, int p);
 
-} // namespace SCIRun
+SCISHARE void lapackinvert(double *A, int n);  
+
+SCISHARE void lapacksvd(double **A, int m, int n,
+                        double *S, double **U, double **VT);
+
+SCISHARE void lapackeigen(double **A, int n,
+                          double *EigReal, double *EigImag, double **EigVect=0);
+
+} // End namespace SCIRun
+
+#endif /* SCI_Math_sci_lapack_h */

@@ -29,44 +29,42 @@
 
 
 /*
- *  MiscMath.cc
+ *  MusilRNG.h: Musil random number generator
  *
  *  Written by:
- *   Michael Callahan
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *   November 1994
  *
  */
 
-#include <Core/Math/MiscMath.h>
 
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
+#ifndef sci_Math_MusilRNG_h
+#define sci_Math_MusilRNG_h 1
+
+#include <Core/Math/share.h>
+
+class SCISHARE MusilRNG {
+  int d[16], n[16];
+  int stab[2][32];
+  int point;
+  int d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12;
+  int a1,b1;
+  int a2,b2;
+  int a3,b3;
+  int a4,b4;
+  int a5,b5;
+  int a6,b6;
+  int a7,b7;
+  int a8,b8;
+  int a9,b9;
+  int a10,b10;
+  int a11,b11;
+  int a12,b12;
+public:
+  MusilRNG( int seed = 0 );
+  double operator()();
+};
+
 #endif
-
-namespace SCIRun {
-
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
-{
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
-}
-
-} // namespace SCIRun

@@ -27,46 +27,47 @@
 */
 
 
-
 /*
- *  MiscMath.cc
+ *  LinearPWI.cc: linear piecewise interpolation
  *
  *  Written by:
- *   Michael Callahan
+ *   Alexei Samsonov
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *   July 2000
  *
  */
 
-#include <Core/Math/MiscMath.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
+#include <Core/Math/LinearPWI.h>
+#include <Core/Containers/Array1.h>
 
 namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
+LinearPWI::LinearPWI()
 {
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
 }
 
-} // namespace SCIRun
+LinearPWI::LinearPWI(const Array1<double>& pts, const Array1<double>& vals)
+{
+  set_data(pts, vals);
+}
+
+// takes sorted array of points
+bool LinearPWI::set_data(const Array1<double>& pts, const Array1<double>& vals)
+{
+  reset();
+  if (fill_data(pts) && points.size() > 1) {
+    p.resize(points.size());
+    for (int i = 0; i < points.size() - 1; i++) {
+      p[i].a = (vals[i] * points[i+1] - vals[i+1] * points[i]) / (points[i+1] - points[i]);
+      p[i].b = (vals[i+1] - vals[i]) / (points[i+1] - points[i]);
+    }
+    return data_valid = true;
+  }
+  else
+  {
+    return data_valid = false;
+  }
+}
+  
+} // End namespace SCIRun

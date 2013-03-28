@@ -26,47 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  MiscMath.cc
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   June 2004
- *
- */
-
+#include <Core/Math/TrigTable.h>
 #include <Core/Math/MiscMath.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
+#include <Core/Exceptions/AssertionFailed.h>
 
 namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
+SinCosTable::SinCosTable() : n_(0)
 {
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
 }
 
-} // namespace SCIRun
+SinCosTable::SinCosTable(int n, double min, double max, double scale)
+: n_(n), sindata_(n), cosdata_(n)
+{
+  if (n == 1)
+    throw AssertionFailed("Invalid table size of 1", __FILE__, __LINE__);
+  fill_table(max, min, scale);
+}
+
+void
+SinCosTable::build_table(int n, double min, double max, double scale)
+{
+  sindata_.clear();
+  cosdata_.clear();
+  
+  n_ = n;
+  sindata_.resize(n_);
+  cosdata_.resize(n_);
+  fill_table(max, min, scale);
+}
+
+void SinCosTable::fill_table( double max, double min, double scale )
+{
+  //TODO: white space, casting
+  double d=max-min;
+  for(int i=0;i<n_;i++)
+  {
+    double th=d*double(i)/double(n_-1)+min;
+    sindata_[i] = std::sin(th)*scale;
+    cosdata_[i] = std::cos(th)*scale;
+  }
+}
+
+} // end namespace

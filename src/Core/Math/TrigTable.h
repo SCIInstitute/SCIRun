@@ -26,47 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef SCI_Math_TrigTable_h
+#define SCI_Math_TrigTable_h 1
 
-
-/*
- *  MiscMath.cc
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   June 2004
- *
- */
-
-#include <Core/Math/MiscMath.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
+#include <vector>
+#include <Core/Math/share.h>
 
 namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
-{
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
-}
+class SCISHARE SinCosTable {
+  public:
+    // Default constructor
+    SinCosTable();
+    // Constructor with table
+    SinCosTable(int n, double min, double max, double scale=1.0);
 
-} // namespace SCIRun
+    void build_table(int n, double min, double max, double scale=1.0);
+
+    inline double sin(int i) const { return sindata_[i]; } 
+    inline double cos(int i) const { return cosdata_[i]; } 
+
+  private:
+    int n_;
+    std::vector<double> sindata_;
+    std::vector<double> cosdata_;
+
+    void fill_table( double max, double min, double scale );
+};
+
+} // end namespace
+
+#endif

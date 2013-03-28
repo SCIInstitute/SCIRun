@@ -27,46 +27,34 @@
 */
 
 
-
 /*
- *  MiscMath.cc
+ *  Gaussian.cc: support choosing a random value from a 1D Gaussian
+ *               distribution (rand), as well as evaluate the probability
+ *               of a particular value occuring.
  *
  *  Written by:
- *   Michael Callahan
+ *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *   July 2000
  *
  */
 
-#include <Core/Math/MiscMath.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
+#include <Core/Math/Gaussian.h>
+#include <Core/Math/MusilRNG.h>
 
 namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
+Gaussian::Gaussian(double mean, double sigma, int seed) 
+  : mean_(mean), sigma_(sigma), mr_(new MusilRNG(seed))
 {
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
 }
 
-} // namespace SCIRun
+Gaussian::~Gaussian() {
+  delete mr_;
+}
+
+} // End namespace SCIRun
+
+
+

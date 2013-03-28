@@ -28,45 +28,21 @@
 
 
 
-/*
- *  MiscMath.cc
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   June 2004
- *
- */
+#ifndef Math_fft_h
+#define Math_fft_h 1
 
-#include <Core/Math/MiscMath.h>
-
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
+#ifdef __cplusplus
+extern "C" {
+#endif
+void fft2d_float(float* data, int res, float sign,
+		 unsigned long* flops, unsigned long* memrefs);
+void fft1d_float(float* data, int n, float sign,
+			    unsigned long* flops, unsigned long* memrefs);
+void fft1d_stride_float(float* data, int n, int stride, float sign,
+			unsigned long* flops, unsigned long* memrefs);
+#ifdef __cplusplus
+}
 #endif
 
-namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
-{
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
-}
-
-} // namespace SCIRun
+#endif

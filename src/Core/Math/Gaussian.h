@@ -27,46 +27,48 @@
 */
 
 
-
 /*
- *  MiscMath.cc
+ *  Gaussian.h: support for Gaussian distributions
  *
  *  Written by:
- *   Michael Callahan
+ *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *   April 2002
  *
  */
 
-#include <Core/Math/MiscMath.h>
 
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
-#endif
+#ifndef SCI_GAUSSIAN_H__
+#define SCI_GAUSSIAN_H__
+
+#include <Core/Math/MusilRNG.h>
+#include <Core/Math/MiscMath.h> // for M_PI
+#include <math.h>
+
+#include <Core/Math/share.h>
+
+// Currently only used in Packages/BioPSE/Dataflow/Modules/Inverse/OptimizeConductivities.cc
 
 namespace SCIRun {
 
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
-{
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
-}
+//   http://mathworld.wolfram.com/GaussianDistribution.html
+class SCISHARE Gaussian {
+public:
+  double mean_;
+  double sigma_;
+  MusilRNG *mr_;
+  Gaussian(double mean=0, double sigma=1, int seed=0);
+  ~Gaussian();
 
-} // namespace SCIRun
+  //   pick a random value from this Gaussian distribution
+  //      - implemented using the Box-Muller transformation
+  inline double rand() {return sqrt(-2*log((*mr_)()))*cos(2*M_PI*(*mr_)())*sigma_+mean_;}
+
+  //   probablility that x was picked from this Gaussian distribution
+  double prob(double x) {return exp(-(x-mean_)*(x-mean_)/(2*sigma_*sigma_))/(sigma_*sqrt(2*M_PI));}
+};
+
+} // End namespace SCIRun
+
+#endif //SCI_GAUSSIAN_H__

@@ -29,44 +29,30 @@
 
 
 /*
- *  MiscMath.cc
+ *  Mat.h:  Simple matrix calculations
  *
  *  Written by:
- *   Michael Callahan
+ *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *   October 1994
  *
  */
 
-#include <Core/Math/MiscMath.h>
+#ifndef sci_Math_Mat_h
+#define sci_Math_Mat_h 1
 
-#ifdef _WIN32
-#include <float.h>
-#define finite _finite
+#include <Core/Math/share.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+    SCISHARE void matsolve3by3(double mat[3][3], double rhs[3]);
+    SCISHARE void matsolve3by3_cond(double mat[3][3], double rhs[3], double* rcond);
+    SCISHARE void min_norm_least_sq_3(double *A[3], double *b, double *x, double *bprime, int size);
+
+#ifdef __cplusplus
+}
 #endif
 
-namespace SCIRun {
-
-void findFactorsNearRoot(const int value, int &factor1, int &factor2) 
-{
-  int f1,f2;
-  f1 = f2 = (int) Sqrt((double)value);
-  // now we are basically looking for a pair of multiples that are closest to
-  // the square root.
-  while ((f1 * f2) != value) {
-    // look for another multiple
-    for(int i = f1+1; i <= value; i++) {
-      if (value%i == 0) {
-        // we've found a root
-        f1 = i;
-        f2 = value/f1;
-        break;
-      }
-    }
-  }
-  factor1 = f1;
-  factor2 = f2;
-}
-
-} // namespace SCIRun
+#endif
