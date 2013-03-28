@@ -44,9 +44,9 @@
 
 #include <sci_defs/config_defs.h>
 
-#if HAVE_INTTYPES_H
-#  include <inttypes.h>
-#endif
+//#if HAVE_INTTYPES_H
+//#  include <inttypes.h>
+//#endif
 #ifdef _WIN32
 typedef signed char int8_t;
 typedef unsigned char uint8_t;
@@ -58,12 +58,9 @@ typedef signed long long int64_t;
 typedef unsigned long long uint64_t;
 #endif
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
-
 #include <string>
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 
@@ -92,8 +89,8 @@ SCISHARE void swapbytes(int64_t& i);
 SCISHARE void swapbytes(uint64_t& i);
 SCISHARE void swapbytes(float& i);
 SCISHARE void swapbytes(double& i);
-SCISHARE void swapbytes(Point &i);
-SCISHARE void swapbytes(Vector &i);
+//SCISHARE void swapbytes(Point &i);
+//SCISHARE void swapbytes(Vector &i);
 
 SCISHARE bool isBigEndian();
 

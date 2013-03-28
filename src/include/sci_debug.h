@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -27,43 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/*
+ *  File   : sci_debug.h
+ *  Author : Ayla Khan
+ *  Date   : Aug. 13, 2008
+ *
+ *  Define debugging macro as true if debug build.
+ */
 
-// LogFile.cc
+#ifndef INCLUDE_SCI_DEBUG_H
+#define INCLUDE_SCI_DEBUG_H
 
-
-#include <Core/Utils/Legacy/LogFile.h>
-#include <Core/Thread/Legacy/Guard.h>
-
-namespace SCIRun {
-
-LogFile::LogFile(const std::string& filename) :
-  UsedWithLockingHandle<Mutex>("servicelog lock"), 
-  haslog_(false) 
-{	
-  if (!filename.empty())
-  {
-    try 
-    {
-      logfile_.open(filename.c_str(),std::ios_base::out|std::ios_base::app);
-      haslog_ = true;
-    }
-    catch(...) 
-    {
-      haslog_ = false;
-    }
-  }
-}	
-
-void LogFile::putmsg(const std::string& msg)
-{
-  if (haslog_) 
-  {
-    Guard g(&lock);
-    logfile_ << msg << std::endl;
-    logfile_.flush();
-  }
-}	
-
-}
-
+// _DEBUG defined in Visual Studio debug builds
+// NDEBUG defined by cmake in release builds
+#undef DEBUG
+#if defined (_DEBUG) || !defined (NDEBUG)
+# define DEBUG 1
 #endif
+
+
+#endif // INCLUDE_SCI_DEBUG_H

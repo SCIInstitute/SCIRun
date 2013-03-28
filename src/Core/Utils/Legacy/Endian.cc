@@ -41,6 +41,8 @@ void swapbytes(int64_t& i) { SWAP_8(i); }
 void swapbytes(uint64_t& i) { SWAP_8(i); }
 void swapbytes(float& i) { SWAP_4(i); }
 void swapbytes(double& i) { SWAP_8(i); }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void swapbytes(Point &i) { // probably dangerous, but effective
   double* p = reinterpret_cast<double *>(&i);
   SWAP_8(*p);
@@ -54,6 +56,7 @@ void swapbytes(Vector &i) { // probably dangerous, but effective
   SWAP_8(*++p);
   SWAP_8(*++p);
 }
+#endif
 
 bool isBigEndian()
 {

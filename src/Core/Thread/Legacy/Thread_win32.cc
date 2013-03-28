@@ -50,7 +50,6 @@
 #include <Core/Thread/Legacy/ThreadGroup.h>
 
 #include <Core/Thread/Legacy/ThreadError.h>
-#include <Core/Thread/Legacy/RecursiveMutex_default.cc>
 
 // version of windows
 #ifndef _WIN32_WINNT
