@@ -28,10 +28,10 @@
 
 // Core SCIRun Includes
 
-#include <Core/Thread/Mutex.h>
-#include <Core/Util/Assert.h>
-#include <Core/Util/FileUtils.h>
-#include <Core/Util/sci_system.h>
+#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Utils/Legacy/FileUtils.h>
+#include <Core/Utils/Legacy/sci_system.h>
 #include <sci_defs/version_defs.h>
 
 #include <boost/algorithm/string/case_conv.hpp>
@@ -41,8 +41,8 @@
 
 // STL Includes
 
-#include <Core/Util/Environment.h> // includes <string>
-#include <Core/Util/StringUtil.h>
+#include <Core/Utils/Legacy/Environment.h> // includes <string>
+#include <Core/Utils/Legacy/StringUtil.h>
 #include <iostream>
 #include <fstream>
 #include <map>
@@ -59,7 +59,7 @@
 #  define MAXPATHLEN 256
 #  include <direct.h>
 #  include <windows.h>
-#  include <Core/Util/Dir.h>
+#  include <Core/Utils/Legacy/Dir.h>
 #endif
 #include <string.h>
 #include <cctype>

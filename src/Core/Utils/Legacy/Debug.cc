@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/Debug.h>
-#include <Core/Thread/Mutex.h>
+#include <Core/Utils/Legacy/Debug.h>
+#include <Core/Thread/Legacy/Mutex.h>
 #include <map>
 #include <iostream>
 

@@ -47,12 +47,12 @@
 #  define MAXPATHLEN 256
 #endif
 #include <sys/stat.h>
-#include <Core/Util/FileUtils.h>
-#include <Core/Util/Dir.h>
-#include <Core/Util/Assert.h>
-#include <Core/Util/Environment.h>
-#include <Core/Util/sci_system.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Utils/Legacy/FileUtils.h>
+#include <Core/Utils/Legacy/Dir.h>
+#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Utils/Legacy/Environment.h>
+#include <Core/Utils/Legacy/sci_system.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
 #include <boost/system/error_code.hpp>
 

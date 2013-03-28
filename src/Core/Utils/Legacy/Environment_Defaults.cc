@@ -26,7 +26,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/Environment.h>
+#include <Core/Utils/Legacy/Environment.h>
 
 #include <map>
 

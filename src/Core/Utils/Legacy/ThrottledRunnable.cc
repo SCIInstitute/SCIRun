@@ -36,8 +36,8 @@
  *
  */
 
-#include <Core/Util/Timer.h>
-#include <Core/Util/ThrottledRunnable.h>
+#include <Core/Utils/Legacy/Timer.h>
+#include <Core/Utils/Legacy/ThrottledRunnable.h>
 
 namespace SCIRun {
 

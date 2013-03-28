@@ -34,7 +34,7 @@
 #define CORE_UTIL_LOGFILE_H 1
 
 #include <Core/Containers/LockingHandle.h>
-#include <Core/Thread/UsedWithLockingHandle.h>
+#include <Core/Thread/Legacy/UsedWithLockingHandle.h>
 
 #include <fstream>
 #include <string>

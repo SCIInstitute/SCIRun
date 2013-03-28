@@ -32,7 +32,7 @@
 
 #include <string>
 #include <sci_debug.h>
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 

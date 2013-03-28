@@ -45,7 +45,7 @@
 #define	S_ISREG(m)	(((m) & S_IFMT) == S_IFREG)
 #endif
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 namespace SCIRun {
    
    /**************************************

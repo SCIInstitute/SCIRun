@@ -42,7 +42,7 @@
 #if !defined(Timer_h)
 #define Timer_h
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 

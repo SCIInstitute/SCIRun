@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/Endian.h>
+#include <Core/Utils/Legacy/Endian.h>
 
 namespace SCIRun {
 

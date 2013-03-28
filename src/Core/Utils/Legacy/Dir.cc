@@ -28,8 +28,8 @@
 
 
 
-#include <Core/Util/Dir.h>
-#include <Core/Util/FileUtils.h>
+#include <Core/Utils/Legacy/Dir.h>
+#include <Core/Utils/Legacy/FileUtils.h>
 #include <Core/Exceptions/ErrnoException.h>
 #include <Core/Exceptions/InternalError.h>
 #include <sys/types.h>

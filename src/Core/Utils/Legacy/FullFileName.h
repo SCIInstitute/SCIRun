@@ -34,8 +34,8 @@
 #include <string>
 #include <vector>
 
-#include <Core/Util/Dir.h>
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/Dir.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 

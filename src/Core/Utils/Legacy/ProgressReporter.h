@@ -46,9 +46,9 @@
 
 #include <string>
 #include <iostream>
-#include <Core/Thread/AtomicCounter.h>
+#include <Core/Thread/Legacy/AtomicCounter.h>
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 

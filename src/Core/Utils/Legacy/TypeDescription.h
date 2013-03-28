@@ -36,7 +36,7 @@
 #include <vector>
 #include <string>
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 

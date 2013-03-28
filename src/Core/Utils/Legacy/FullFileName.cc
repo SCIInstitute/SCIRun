@@ -27,7 +27,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/FullFileName.h>
+#include <Core/Utils/Legacy/FullFileName.h>
 #include <iostream>
 
 #include <stdio.h>

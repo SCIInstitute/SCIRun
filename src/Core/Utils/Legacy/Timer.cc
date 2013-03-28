@@ -40,9 +40,9 @@
  */
 
 
-#include <Core/Util/Timer.h>
-#include <Core/Thread/Time.h>
-#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Timer.h>
+#include <Core/Thread/Legacy/Time.h>
+#include <Core/Utils/Legacy/Assert.h>
 
 #include <iostream>
 

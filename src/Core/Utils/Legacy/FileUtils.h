@@ -44,7 +44,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 

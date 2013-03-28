@@ -32,7 +32,7 @@
 #include <vector>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
   

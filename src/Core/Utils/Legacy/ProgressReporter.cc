@@ -39,7 +39,7 @@
  *
  */
 
-#include <Core/Util/ProgressReporter.h>
+#include <Core/Utils/Legacy/ProgressReporter.h>
 
 namespace SCIRun {
 

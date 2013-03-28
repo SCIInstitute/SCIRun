@@ -28,10 +28,10 @@
 
 
 // soloader.cpp written by Chris Moulding 11/98
-#include <Core/Util/Assert.h>
-#include <Core/Util/soloader.h>
-#include <Core/Util/Environment.h>
-#include <Core/Thread/Mutex.h>
+#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Utils/Legacy/soloader.h>
+#include <Core/Utils/Legacy/Environment.h>
+#include <Core/Thread/Legacy/Mutex.h>
 
 #include <iostream>
 #include <string>

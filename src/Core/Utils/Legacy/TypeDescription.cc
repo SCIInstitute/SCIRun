@@ -30,13 +30,13 @@
 //    Author : Martin Cole
 //    Date   : Mon May 14 10:20:21 2001
 
-#include <Core/Util/TypeDescription.h>
-#include <Core/Util/FileUtils.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Utils/Legacy/FileUtils.h>
 
 #include <Core/Exceptions/InternalError.h>
-#include <Core/Util/Assert.h>
-#include <Core/Thread/Mutex.h>
-#include <Core/Util/MemoryUtil.h>
+#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Utils/Legacy/MemoryUtil.h>
 #include <map>
 #include <iostream>
 

@@ -30,8 +30,8 @@
 // LogFile.cc
 
 
-#include <Core/Util/LogFile.h>
-#include <Core/Thread/Guard.h>
+#include <Core/Utils/Legacy/LogFile.h>
+#include <Core/Thread/Legacy/Guard.h>
 
 namespace SCIRun {
 

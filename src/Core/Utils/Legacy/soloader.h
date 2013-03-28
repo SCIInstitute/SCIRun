@@ -47,7 +47,7 @@
    typedef void* LIBRARY_HANDLE;
 #endif
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 /////////////////////////////////////////////////////////////////
 // GetLibrarySymbolAddress()
 // returns a pointer to the data or function called "symbolname"

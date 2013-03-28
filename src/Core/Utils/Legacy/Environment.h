@@ -44,7 +44,7 @@
 #include <string>
 #include <map>
 
-#include <Core/Util/share.h>
+#include <Core/Utils/Legacy/share.h>
 
 namespace SCIRun {
 
