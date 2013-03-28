@@ -421,6 +421,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
   ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
+  ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen_3_1_1
 )
 
@@ -455,10 +456,22 @@ ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
 ADD_SUBDIRECTORY(Externals)
+ADD_SUBDIRECTORY(include)
 
 ADD_SUBDIRECTORY(Main)
 
 ADD_SUBDIRECTORY(Testing)
+
+
+########################################################################
+# sci_defs variables
+
+# sci_defs/error_defs.h
+SET(THROW_LEVEL 0 CACHE STRING "Set throw level N(0-3)")
+SET(ASSERTION_LEVEL 1 CACHE STRING "Set assertion level N(0-3)")
+IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  SET(ASSERTION_LEVEL 3)
+ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
 
 
 ########################################################################
@@ -497,6 +510,7 @@ SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math_Tests         PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Exceptions         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
