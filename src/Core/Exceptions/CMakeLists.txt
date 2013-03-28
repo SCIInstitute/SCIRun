@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2013 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,19 +26,50 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Basis)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Exceptions)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Thread)
+# Sources of Core/Exceptions classes
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Core_Exceptions_SRCS
+  ArrayIndexOutOfBounds.cc 
+  AssertionFailed.cc 
+  DimensionMismatch.cc 
+  ErrnoException.cc 
+  Exception.cc 
+  FileNotFound.cc 
+  InvalidState.cc 
+  InternalError.cc
+  LapackError.cc
+)
+
+SET(Core_Exceptions_HEADERS
+  ArrayIndexOutOfBounds.h 
+  AssertionFailed.h 
+  DimensionMismatch.h 
+  ErrnoException.h 
+  Exception.h 
+  FileNotFound.h
+  GuiException.h
+  IllegalValue.h  
+  InternalError.h
+  InvalidState.h 
+  LapackError.h
+  share.h
+)
+
+IF(WIN32 AND NOT CYGWIN)
+  SET(Core_Exceptions_SRCS ${Core_Exceptions_SRCS} StackWalker.cc)
+  SET(Core_Exceptions_HEADERS ${Core_Exceptions_HEADERS} StackWalker.h)
+ENDIF(WIN32 AND NOT CYGWIN)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Exceptions)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_LIBRARY(Core_Exceptions 
+  ${Core_Exceptions_SRCS} 
+  ${Core_Exceptions_HEADERS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Exceptions 
+  #${TRACEBACK_LIB} 
+  #${DL_LIBRARY}
+)
