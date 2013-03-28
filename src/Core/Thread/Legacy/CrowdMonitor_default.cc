@@ -39,7 +39,11 @@
  *
  */
 
+#include <iostream>
 #include <Core/Thread/Legacy/CrowdMonitor.h>
+#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Legacy/Thread.h>
+#include <Core/Thread/Legacy/ConditionVariable.h>
 
 namespace SCIRun {
 

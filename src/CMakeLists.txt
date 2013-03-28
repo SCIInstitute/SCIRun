@@ -473,6 +473,12 @@ IF(CMAKE_BUILD_TYPE MATCHES "Debug")
   SET(ASSERTION_LEVEL 3)
 ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
 
+# sci_defs/environment_defs.h
+SET(scirun_src_dir "${SCIRun5Prototype_SOURCE_DIR}" CACHE INTERNAL "Path to SCIRun's src directory")
+# DV Technically, I don't have access to this variable once we fix building
+# these projets separately!!!
+SET(scirun_obj_dir ${SCIRun5Prototype_BINARY_DIR} CACHE INTERNAL "Path to SCIRun's binary directory")
+
 
 ########################################################################
 # Organize projects into folders for Visual Studio projects

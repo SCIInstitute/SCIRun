@@ -80,10 +80,10 @@
 #ifndef SCI_project_CleanupManager_h
 #define SCI_project_CleanupManager_h 1
 
-#include <Core/Thread/Legacy/Legacy/Mutex.h>
+#include <Core/Thread/Legacy/Mutex.h>
 #include <vector>
 
-#include <Core/Thread/Legacy/Legacy/share.h>
+#include <Core/Thread/Legacy/share.h>
 
 namespace SCIRun {
 

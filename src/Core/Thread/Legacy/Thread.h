@@ -298,7 +298,7 @@ public:
   friend class ConditionVariable;
   friend class RecursiveMutex;
   friend class Mutex;
-  friend class Thread_private;
+  friend struct Thread_private;
   friend class SystemCallManager;
 
   friend void Thread_run(Thread* t);

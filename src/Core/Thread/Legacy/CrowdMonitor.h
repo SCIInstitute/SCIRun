@@ -42,10 +42,10 @@
 #ifndef Core_Thread_CrowdMonitor_h
 #define Core_Thread_CrowdMonitor_h
 
-#include <Core/Thread/Legacy/Legacy/share.h>
+#include <Core/Thread/Legacy/share.h>
 
 namespace SCIRun {
-  class CrowdMonitor_private;
+  struct CrowdMonitor_private;
 /**************************************
  
 CLASS

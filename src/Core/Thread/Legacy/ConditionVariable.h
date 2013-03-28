@@ -42,18 +42,18 @@
 #ifndef Core_Thread_ConditionVariable_h
 #define Core_Thread_ConditionVariable_h
 
-#include <Core/Thread/Legacy/Legacy/Semaphore.h>
-#include <Core/Thread/Legacy/Legacy/Mutex.h>
-#include <Core/Thread/Legacy/Legacy/RecursiveMutex.h>
+#include <Core/Thread/Legacy/Semaphore.h>
+#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Legacy/RecursiveMutex.h>
 
-#include <Core/Thread/Legacy/Legacy/share.h>
+#include <Core/Thread/Legacy/share.h>
 
 struct timespec;
 
 namespace SCIRun {
 
 class ConditionVariable_private;
-class CrowdMonitor_private;
+struct CrowdMonitor_private;
 
 /**************************************
  

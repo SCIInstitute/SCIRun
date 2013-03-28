@@ -42,7 +42,7 @@
 #ifndef Core_Thread_Barrier_h
 #define Core_Thread_Barrier_h
 
-#include <Core/Thread/Legacy/Legacy/share.h>
+#include <Core/Thread/Legacy/share.h>
 
 namespace SCIRun {
 

@@ -39,10 +39,10 @@
  *
  */
 
-#include <Core/Thread/Legacy/Legacy/Legacy/Thread.h>
-#include <Core/Thread/Legacy/Legacy/Legacy/ConditionVariable.h>
-#include <Core/Thread/Legacy/Legacy/Legacy/Mutex.h>
-#include <Core/Thread/Legacy/Legacy/Legacy/AtomicCounter.h>
+#include <Core/Thread/Legacy/Thread.h>
+#include <Core/Thread/Legacy/ConditionVariable.h>
+#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Legacy/AtomicCounter.h>
 
 namespace SCIRun {
 struct AtomicCounter_private {
