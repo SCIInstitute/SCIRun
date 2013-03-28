@@ -103,8 +103,16 @@ ADD_LIBRARY(Core_Thread_Legacy
   ${Core_Thread_Legacy_HEADERS}
   )
 
-TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
+SET(Core_Thread_Legacy_Link
   Core_Exceptions 
   #${THREAD_LIBRARY}  
   #${TRACEBACK_LIB} 
+)
+
+IF(WIN32)
+  SET(Core_Thread_Legacy_Link ${Core_Thread_Legacy_Link} winmm.lib)
+ENDIF(WIN32)
+
+TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
+  ${Core_Thread_Legacy_Link}
 )

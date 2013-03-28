@@ -969,5 +969,3 @@ void ThreadGroup::gangSchedule()
 }
 
 } // end namespace SCIRun
-
-

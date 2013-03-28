@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Util/StringUtil.h>
-#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Utils/Legacy/Assert.h>
 
 #include <stdlib.h>
 #include <string.h>

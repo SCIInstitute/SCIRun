@@ -40,7 +40,7 @@
  */
 
 #include <Core/Thread/Legacy/ThreadLock.h>
-#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Assert.h>
 
 namespace SCIRun {
   
