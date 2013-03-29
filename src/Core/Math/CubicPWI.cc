@@ -38,6 +38,7 @@
  *
  */
 
+#include <Core/Utils/Legacy/Assert.h>
 #include <Core/Math/CubicPWI.h>
 #include <Core/Containers/Array1.h>
 //
@@ -71,9 +72,6 @@ bool set_tangents(const Array1<double>& pts, const Array1<double>& vals, Array1<
   r.resize(psz);
   
   Array1<double> lrow(psz), diag(psz), hrow(psz);
-  lrow.initialize(0);
-  diag.initialize(0);
-  hrow.initialize(0);
   
   // building A  and r; A is diagonally dominant and trilinear - could be solved 
   // by simple forward and back substitution sequence

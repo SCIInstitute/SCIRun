@@ -43,11 +43,14 @@
 #define CORE_CONAINTERS_ARRAY2_H 1
 
 #include <boost/multi_array.hpp>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/Persistent.h>
+#endif
 
 namespace SCIRun {
 
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template<class T> class Array2;
 
 template<class T> void Pio(Piostream& stream, Array2<T>& data);

@@ -45,8 +45,8 @@
 #include <Core/Math/PiecewiseInterp.h>
 
 #include <Core/Containers/Array1.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <sci_debug.h>
 
 #include <iostream>
@@ -105,7 +105,7 @@ public:
   
   bool set_data(const Array1<double>&, const Array1<T>&);
   bool set_data(const Array1<double>&, const Array1<T>&, 
-		const Array1<Vector>&);
+    const Array1<Core::Geometry::Vector>&);
   inline bool get_value(double, T&);
   
 private:
@@ -176,7 +176,7 @@ Cubic3DPWI<T>::set_data(const Array1<double>& pts, const Array1<T>& vals)
 // takes sorted array of points
 template <class T> bool 
 Cubic3DPWI<T>::set_data(const Array1<double>& pts, const Array1<T>& vals, 
-                        const Array1<Vector>& drvs){
+                        const Array1<Core::Geometry::Vector>& drvs){
   int sz = 0;
   this->reset();
   

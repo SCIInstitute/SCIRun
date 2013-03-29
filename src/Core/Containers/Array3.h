@@ -42,6 +42,9 @@
 #ifndef CORE_CONAINTERS_ARRAY3_H
 #define CORE_CONAINTERS_ARRAY3_H 1
 
+#include <boost/multi_array.hpp>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <sci_defs/bits_defs.h>
 #include <iostream>
 #include <stdio.h>
@@ -49,14 +52,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <Core/Util/Assert.h>
-
 #include <Core/Persistent/Persistent.h>
+#endif
 
+#include <Core/Utils/Legacy/Assert.h>
 
 namespace SCIRun {
 
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   template<class T> class Array3;
 
   template<class T> void Pio(Piostream& stream, Array3<T>& array);

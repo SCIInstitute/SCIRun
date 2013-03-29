@@ -42,8 +42,11 @@
 #ifndef CORE_CONAINTERS_ARRAY1_H
 #define CORE_CONAINTERS_ARRAY1_H 1
 
-// import index_type and  size_type
+#include <vector>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/Persistent.h>
+#endif
 
 namespace SCIRun {
 
@@ -52,32 +55,11 @@ template<class T> class Array1;
 template<class T> void Pio(Piostream& stream, Array1<T>& array);
 #endif
 
-/**************************************
-
-  CLASS
-  Array1
-
-  KEYWORDS
-  Array1
-
-  DESCRIPTION
-  Array1.h: Interface to dynamic 1D array class
-
-  Written by:
-  Steven G. Parker
-  Department of Computer Science
-  University of Utah
-  March 1994
-
-  PATTERNS
-
-  WARNING
-  
-****************************************/
-template<class T> 
-class Array1 : public std::vector<T>
-{
-};
+#define Array1 std::vector
+//template<class T> 
+//class Array1 : public std::vector<T>
+//{
+//};
 
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

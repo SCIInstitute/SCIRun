@@ -27,3 +27,9 @@
 */
 
 #include <Core/Containers/SearchGridT.h>
+#include <Core/Containers/Array2.h>
+#include <Core/Containers/Array3.h>
+#include <Core/Containers/Array1.h>
+#include <Core/Containers/FData.h>
+#include <Core/Containers/StackBasedVector.h>
+#include <Core/Containers/StackVector.h>

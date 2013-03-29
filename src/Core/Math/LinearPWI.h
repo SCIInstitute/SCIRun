@@ -45,7 +45,7 @@
 #include <Core/Math/PiecewiseInterp.h>
 
 #include <Core/Containers/Array1.h>
-#include <Core/Geometry/Point.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 namespace SCIRun {
 

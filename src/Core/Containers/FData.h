@@ -37,7 +37,7 @@
 #ifndef CORE_CONTAINERS_FDATA_H
 #define CORE_CONTAINERS_FDATA_H 1
 
-#include <Core/Util/TypeDescription.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Datatypes/Types.h>
 #include <Core/Datatypes/TypeName.h>
 #include <Core/Datatypes/Mesh.h>
@@ -46,7 +46,7 @@
 #include <Core/Containers/Array2.h>
 #include <Core/Math/MiscMath.h>
 
-#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Assert.h>
 #include <string>
 
 namespace SCIRun {

@@ -29,16 +29,17 @@
 #ifndef CORE_DATATYPES_SEARCHGRIDT_H
 #define CORE_DATATYPES_SEARCHGRIDT_H 1
 
-#include <Core/Thread/UsedWithLockingHandle.h>
-#include <Core/Geometry/BBox.h>
-#include <Core/Geometry/Transform.h>
+#include <Core/Thread/Legacy/UsedWithLockingHandle.h>
+#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <Core/Datatypes/Types.h>
-#include <Core/Containers/LockingHandle.h>
 
 #include <algorithm>
 #include <vector>
 
-#include <Core/Datatypes/share.h>
+#include <Core/Containers/share.h>
 
 namespace SCIRun {
 
@@ -52,7 +53,7 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
     typedef typename std::vector<INDEX>::iterator iterator;
 
     SearchGridT(size_type x, size_type y, size_type z,
-               const Point &min, const Point &max) :
+               const Core::Geometry::Point &min, const Core::Geometry::Point &max) :
         UsedWithLockingHandle<Mutex>("Search Grid Lock"),
         ni_(x), nj_(y), nk_(z)
       {
@@ -72,13 +73,13 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
     {
     }
 
-    inline void transform(const Transform &t) 
+    inline void transform(const Core::Geometry::Transform &t) 
       { transform_.pre_trans(t);}
 
-    inline const Transform &get_transform() const 
+    inline const Core::Geometry::Transform &get_transform() const 
       { return transform_; }
       
-    inline Transform &set_transform(const Transform &trans) 
+    inline Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans) 
       { transform_ = trans; return transform_; }
   
 
@@ -88,9 +89,9 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
     inline size_type get_nk() const { return nk_; }
 
     inline bool locate(index_type &i, index_type &j, 
-                       index_type &k, const Point &p) const
+                       index_type &k, const Core::Geometry::Point &p) const
     {
-      const Point r = transform_.unproject(p);
+      const Core::Geometry::Point r = transform_.unproject(p);
       
       const double rx = floor(r.x());
       const double ry = floor(r.y());
@@ -111,9 +112,9 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
 
 
     inline bool locate_clamp(index_type &i, index_type &j, 
-                       index_type &k, const Point &p) const
+                       index_type &k, const Core::Geometry::Point &p) const
     {
-      const Point r = transform_.unproject(p);
+      const Core::Geometry::Point r = transform_.unproject(p);
       
       double rx = floor(r.x());
       double ry = floor(r.y());
@@ -135,9 +136,9 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
     }
                                                   
     inline void unsafe_locate(index_type &i, index_type &j, 
-                              index_type &k, const Point &p) const
+                              index_type &k, const Core::Geometry::Point &p) const
     {
-      Point r;
+      Core::Geometry::Point r;
       transform_.unproject(p, r);
       
       i = static_cast<index_type>(r.x());
@@ -145,7 +146,7 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
       k = static_cast<index_type>(r.z());
     }
   
-    void insert(INDEX val, const BBox &bbox)
+    void insert(INDEX val, const Core::Geometry::BBox &bbox)
     {
       index_type mini=0, minj=0, mink=0, maxi=0, maxj=0, maxk=0;
 
@@ -166,7 +167,7 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
       }
     }   
 
-    void remove(INDEX val, const BBox &bbox)
+    void remove(INDEX val, const Core::Geometry::BBox &bbox)
     {
       index_type mini, minj, mink, maxi, maxj, maxk;
 
@@ -186,14 +187,14 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
       }
     }
 
-    void insert(INDEX val, const Point &point)
+    void insert(INDEX val, const Core::Geometry::Point &point)
     {
       index_type i, j, k;
       unsafe_locate(i, j, k, point);
       bin_[linearize(i, j, k)].push_back(val);
     }  
 
-    void remove(INDEX val, const Point &point)
+    void remove(INDEX val, const Core::Geometry::Point &point)
     {
       index_type i, j, k;
       unsafe_locate(i, j, k, point);
@@ -201,7 +202,7 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
       std::remove(bin_[q].begin(),bin_[q].end(),val);
     }
     
-    inline bool lookup(iterator &begin, iterator &end, const Point &p)
+    inline bool lookup(iterator &begin, iterator &end, const Core::Geometry::Point &p)
     {
       index_type i, j, k;
       if (locate(i, j, k, p))
@@ -223,10 +224,10 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
     }                
                       
     
-    double min_distance_squared(const Point &p, size_type i, 
+    double min_distance_squared(const Core::Geometry::Point &p, size_type i, 
                               size_type j, size_type k) const
     {
-      Point r;
+      Core::Geometry::Point r;
       transform_.unproject(p, r);
 
       // Splat the point onto the cell.
@@ -240,7 +241,7 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
       else if (r.z() > k+1) { r.z(k+1); }
       
       // Project the cell intersection back to world space.
-      Point q;
+      Core::Geometry::Point q;
       transform_.project(r, q);
       
       // Return distance from point to projected cell point.
@@ -256,7 +257,7 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
     //! Size of the search grid
     index_type ni_, nj_, nk_;
     //! Transformation to unitary coordinate system
-    Transform transform_;
+    Core::Geometry::Transform transform_;
     
     //! Where to store the lookup table
     std::vector<std::vector<INDEX> > bin_;   
