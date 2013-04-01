@@ -78,6 +78,7 @@
       <string>Recent Networks</string>
      </property>
     </widget>
+    <addaction name="actionNew_"/>
     <addaction name="actionLoad_"/>
     <addaction name="recentNetworksMenu_"/>
     <addaction name="actionInsert_"/>
@@ -85,7 +86,6 @@
     <addaction name="actionSave_"/>
     <addaction name="actionSave_As_"/>
     <addaction name="separator"/>
-    <addaction name="actionClear_Network_"/>
     <addaction name="actionSelect_All_"/>
     <addaction name="actionExecute_All_"/>
     <addaction name="separator"/>
@@ -579,7 +579,7 @@
          </item>
          <item>
           <property name="text">
-           <string>ReadMatrix</string>
+           <string>ReadMesh</string>
           </property>
           <property name="text">
            <string>Functional, needs GUI and algorithm work.</string>
@@ -590,7 +590,7 @@
          </item>
          <item>
           <property name="text">
-           <string>ReadMesh</string>
+           <string>ReadMatrix</string>
           </property>
           <property name="text">
            <string>Functional, needs GUI and algorithm work.</string>
@@ -1079,14 +1079,6 @@
     <string>Save As...</string>
    </property>
   </action>
-  <action name="actionClear_Network_">
-   <property name="text">
-    <string>Clear Network</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+N</string>
-   </property>
-  </action>
   <action name="actionSelect_All_">
    <property name="enabled">
     <bool>false</bool>
@@ -1303,6 +1295,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Y</string>
+   </property>
+  </action>
+  <action name="actionNew_">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

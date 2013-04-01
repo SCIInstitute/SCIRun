@@ -53,7 +53,7 @@ int GuiApplication::run(int argc, const char* argv[])
     splashTimer.setInterval( 5000 );
     QObject::connect( &splashTimer, SIGNAL( timeout() ), &splash, SLOT( close() ));
     splashTimer.start(); 
-    splash.showMessage("Welcome! Tip of the day: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
+    splash.showMessage("Welcome! Tip: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
     app.processEvents();
     
     mainWin->setController(Core::Application::Instance().controller());

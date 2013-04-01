@@ -102,7 +102,7 @@ private Q_SLOTS:
   void saveNetwork();
   void loadNetwork();
   void loadRecentNetwork();
-  bool clearNetwork();
+  bool newNetwork();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();

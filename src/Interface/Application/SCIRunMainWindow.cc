@@ -197,7 +197,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
 
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
-  connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
+  connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
 
   connect(defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
@@ -433,7 +433,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
   }
 }
 
-bool SCIRunMainWindow::clearNetwork()
+bool SCIRunMainWindow::newNetwork()
 {
   if (okToContinue())
   {
@@ -694,9 +694,14 @@ void SCIRunMainWindow::disableInputWidgets()
   actionSave_->setDisabled(true);
   actionLoad_->setDisabled(true);
   actionSave_As_->setDisabled(true);
+  actionNew_->setDisabled(true);
   moduleSelectorTreeWidget_->setDisabled(true);
   networkEditor_->disableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+  
+  Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
+    action->setDisabled(true);
+
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_->setDisabled(true);
 #endif
@@ -708,9 +713,14 @@ void SCIRunMainWindow::enableInputWidgets()
   actionSave_->setEnabled(true);
   actionLoad_->setEnabled(true);
   actionSave_As_->setEnabled(true);
+  actionNew_->setEnabled(true);
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+  Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
+    action->setEnabled(true);
+
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_->setDisabled(false);
 #endif
