@@ -48,8 +48,8 @@ ADD_LIBRARY(Core_Containers
   ${Core_Containers_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_Containers 
-                  #Core_Thread 
-                  #Core_Exceptions 
+                  Core_Thread_Legacy
+                  Core_Exceptions 
 				  )
 
 IF(BUILD_SHARED_LIBS)

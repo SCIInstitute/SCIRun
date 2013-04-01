@@ -32,7 +32,7 @@
 //#include <Core/Util/TypeDescription.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/Math/MiscMath.h>
+#include <Core/Math/MiscMath2.h>
 //#include <Core/Geometry/Tensor.h>
 
 using namespace SCIRun::Core::Geometry;

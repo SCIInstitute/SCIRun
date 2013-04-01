@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -397,3 +398,5 @@ get_type_description(FData1d<Data>*)
 } // end namespace SCIRun
 
 #endif // Containers_FData_h
+
+#endif

@@ -55,11 +55,15 @@ template<class T> class Array1;
 template<class T> void Pio(Piostream& stream, Array1<T>& array);
 #endif
 
-#define Array1 std::vector
-//template<class T> 
-//class Array1 : public std::vector<T>
-//{
-//};
+template<class T> 
+class Array1 : public std::vector<T>
+{
+public:
+  typedef std::vector<T> my_base;
+
+  Array1() {}
+  explicit Array1(size_t size) : my_base(size) {}
+};
 
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

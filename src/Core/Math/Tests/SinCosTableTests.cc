@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 #include <Core/Math/TrigTable.h>
+#include <Core/Math/MiscMath.h>
 #include <Core/Exceptions/AssertionFailed.h>
 #include <cmath>
 

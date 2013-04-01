@@ -47,5 +47,6 @@ class StackBasedVector : public std::vector<T>
 {
 
 };
+}
 
 #endif
