@@ -28,6 +28,7 @@
 
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::DataIO;
@@ -38,10 +39,16 @@ using namespace SCIRun::Modules::DataIO;
 
 WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun")) {}
 
+//TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void WriteMatrixModule::execute()
 {
   auto matrix = getRequiredInput(MatrixToWrite);
-  filename_ = get_state()->getValue(WriteMatrixAlgorithm::Filename).getString();
+
+  auto fileOption = getOptionalInput(Filename);
+  if (!fileOption)
+    filename_ = get_state()->getValue(WriteMatrixAlgorithm::Filename).getString();
+  else
+    filename_ = (*fileOption)->value();
 
   WriteMatrixAlgorithm algo;
   algo.run(matrix, filename_);

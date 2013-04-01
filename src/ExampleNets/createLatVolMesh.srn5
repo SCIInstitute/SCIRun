@@ -162,22 +162,22 @@
 		<item class_id="15" tracking_level="0" version="0">
 			<first>CreateLatVolMesh2</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>114</first>
-				<second>61</second>
+				<first>-1127</first>
+				<second>-667</second>
 			</second>
 		</item>
 		<item>
 			<first>ShowMesh0</first>
 			<second>
-				<first>178</first>
-				<second>200</second>
+				<first>-1063</first>
+				<second>-528</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene1</first>
 			<second>
-				<first>198</first>
-				<second>357</second>
+				<first>-1043</first>
+				<second>-371</second>
 			</second>
 		</item>
 	</modulePositions>
