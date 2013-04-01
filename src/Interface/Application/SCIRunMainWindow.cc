@@ -188,6 +188,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
   actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
+  actionNew_->setStatusTip(tr("New network"));
+  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
   actionSave_->setStatusTip(tr("Save network"));
   actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
   actionLoad_->setStatusTip(tr("Load network"));
@@ -227,6 +229,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
+  standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionEnterWhatsThisMode_);
@@ -539,6 +542,7 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::setActionIcons() 
 {
+  //actionNew_->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
   actionLoad_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
   actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
