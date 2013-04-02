@@ -208,73 +208,37 @@ void ConnectionLine::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
   }
 }
 
-ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port)
-  : ConnectionInProgressGraphicsItem<QGraphicsLineItem>(port)
+ConnectionInProgressStraight::ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer)
+  : ConnectionInProgressGraphicsItem<QGraphicsLineItem>(port, drawer)
 {
 }
 
 void ConnectionInProgressStraight::update(const QPointF& end)
 {
-  //TODO: use strategy object. probably need to improve first parameter.
+  //TODO: use strategy object. probably need to improve first parameter: templatized? or just change this case to use QGraphicsPathItem directly
+  //drawStrategy_->draw(this, fromPort_->position(), end);
+  
   setLine(QLineF(fromPort_->position(), end));
 }
 
-ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port)
-  : ConnectionInProgressGraphicsItem<QGraphicsPathItem>(port)
+ConnectionInProgressCurved::ConnectionInProgressCurved(PortWidget* port, ConnectionDrawStrategyPtr drawer)
+  : ConnectionInProgressGraphicsItem<QGraphicsPathItem>(port, drawer)
 {
 }
 
 void ConnectionInProgressCurved::update(const QPointF& end)
 {
-  //TODO: use strategy object. probably need to improve first parameter.
-  QPainterPath path;
-  QPointF start = fromPort_->position();
-
-  path.moveTo(start);
-  auto mid = (end - start) / 2 + start;
-  
-  QPointF qDir(-(end-start).y() / ((double)(end-start).x()) , 1);
-  double qFactor = std::min(std::abs(100.0 / qDir.x()), 80.0);
-  //TODO: scale down when start close to end. need a unit test at this point.
-  //qFactor /= (end-start).manhattanDistance()
-  
-  auto q1 = mapToScene(mid + qFactor * qDir);
-  auto q2 = mapToScene(mid - qFactor * qDir);
-  path.cubicTo(q1, q2, end);  
-  setPath(path);
+  drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
-ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port)
-  : ConnectionInProgressGraphicsItem<QGraphicsPathItem>(port)
+ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port, ConnectionDrawStrategyPtr drawer)
+  : ConnectionInProgressGraphicsItem<QGraphicsPathItem>(port, drawer)
 {
 }
 
 void ConnectionInProgressManhattan::update(const QPointF& end)
 {
-  //TODO: use strategy object. probably need to improve first parameter.
-  QPainterPath path;
-  QPointF from(fromPort_->position());
-  QPointF to(end);
-  path.moveTo(from);
-  const int case1Threshold = 15;
-  if (from.y() > to.y() - case1Threshold) // input above output
-  {
-    path.lineTo(from.x(), from.y() + case1Threshold);
-    const int leftSideBuffer = 30;
-    auto nextX = std::min(from.x() - leftSideBuffer, to.x() - leftSideBuffer); // TODO will be a function of port position
-    path.lineTo(nextX, from.y() + case1Threshold); // TODO will be a function of port position
-    path.lineTo(nextX, to.y() - case1Threshold);
-    path.lineTo(to.x(), to.y() - case1Threshold);
-    path.lineTo(to);
-  }
-  else  // output above input
-  {
-    auto midY = (from.y() + to.y()) / 2;
-    path.lineTo(from.x(), midY);
-    path.lineTo(to.x(), midY);
-    path.lineTo(to);
-  }
-  setPath(path);
+  drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
 
@@ -290,19 +254,19 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
   {
     case EUCLIDEAN:
     {
-      auto c = new ConnectionInProgressStraight(port);
+      auto c = new ConnectionInProgressStraight(port, getCurrentDrawer());
       activate(c);
       return c;
     }
     case CUBIC:
     {
-      auto c = new ConnectionInProgressCurved(port);
+      auto c = new ConnectionInProgressCurved(port, getCurrentDrawer());
       activate(c);
       return c;
     }
     case MANHATTAN:
     {
-      auto c = new ConnectionInProgressManhattan(port);
+      auto c = new ConnectionInProgressManhattan(port, getCurrentDrawer());
       activate(c);
       return c;
     }

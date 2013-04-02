@@ -94,7 +94,7 @@ template <class Base>
 class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgress
 {
 public:
-  explicit ConnectionInProgressGraphicsItem(PortWidget* port) : fromPort_(port)
+  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) : fromPort_(port), drawStrategy_(drawer)
   {
     Base::setZValue(1000); //TODO
     setColor(port->color());
@@ -112,26 +112,27 @@ public:
 
 protected:
   PortWidget* fromPort_;
+  ConnectionDrawStrategyPtr drawStrategy_;
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>
 {
 public:
-  explicit ConnectionInProgressStraight(PortWidget* port);
+  ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer);
   virtual void update(const QPointF& end);
 };
 
 class ConnectionInProgressCurved : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
 {
 public:
-  explicit ConnectionInProgressCurved(PortWidget* port);
+  ConnectionInProgressCurved(PortWidget* port, ConnectionDrawStrategyPtr drawer);
   virtual void update(const QPointF& end);
 };
 
 class ConnectionInProgressManhattan : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
 {
 public:
-  explicit ConnectionInProgressManhattan(PortWidget* port);
+  ConnectionInProgressManhattan(PortWidget* port, ConnectionDrawStrategyPtr drawer);
   virtual void update(const QPointF& end);
 };
 
