@@ -242,19 +242,15 @@ void ConnectionInProgressManhattan::update(const QPointF& end)
 {
   //TODO: use strategy object. probably need to improve first parameter.
   QPainterPath path;
-  QPointF start = fromPort_->position();
+  auto from = fromPort_->position();
+  auto midY = (from.y() + end.y()) / 2;
+  QPointF turn1(from.x(), midY);
+  QPointF turn2(end.x(), midY);
 
-  path.moveTo(start);
-  auto mid = (end - start) / 2 + start;
-
-  QPointF qDir(-(end-start).y() / ((double)(end-start).x()) , 1);
-  double qFactor = std::min(std::abs(100.0 / qDir.x()), 80.0);
-  //TODO: scale down when start close to end. need a unit test at this point.
-  //qFactor /= (end-start).manhattanDistance()
-
-  auto q1 = mapToScene(mid + qFactor * qDir);
-  auto q2 = mapToScene(mid - qFactor * qDir);
-  path.cubicTo(q1, q2, end);  
+  path.moveTo(from);
+  path.lineTo(turn1);
+  path.lineTo(turn2);
+  path.lineTo(end);
   setPath(path);
 }
 
