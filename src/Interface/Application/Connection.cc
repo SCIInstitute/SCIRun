@@ -78,14 +78,25 @@ public:
   void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
     QPainterPath path;
-    auto midY = (from.y() + to.y()) / 2;
-    QPointF turn1(from.x(), midY);
-    QPointF turn2(to.x(), midY);
-
     path.moveTo(from);
-    path.lineTo(turn1);
-    path.lineTo(turn2);
-    path.lineTo(to);
+    const int case1Threshold = 15;
+    if (from.y() > to.y() - case1Threshold) // input above output
+    {
+      path.lineTo(from.x(), from.y() + case1Threshold);
+      const int leftSideBuffer = 30;
+      auto nextX = std::min(from.x() - leftSideBuffer, to.x() - leftSideBuffer); // TODO will be a function of port position
+      path.lineTo(nextX, from.y() + case1Threshold); // TODO will be a function of port position
+      path.lineTo(nextX, to.y() - case1Threshold);
+      path.lineTo(to.x(), to.y() - case1Threshold);
+      path.lineTo(to);
+    }
+    else  // output above input
+    {
+      auto midY = (from.y() + to.y()) / 2;
+      path.lineTo(from.x(), midY);
+      path.lineTo(to.x(), midY);
+      path.lineTo(to);
+    }
     item->setPath(path);
   }
 };
@@ -242,15 +253,27 @@ void ConnectionInProgressManhattan::update(const QPointF& end)
 {
   //TODO: use strategy object. probably need to improve first parameter.
   QPainterPath path;
-  auto from = fromPort_->position();
-  auto midY = (from.y() + end.y()) / 2;
-  QPointF turn1(from.x(), midY);
-  QPointF turn2(end.x(), midY);
-
+  QPointF from(fromPort_->position());
+  QPointF to(end);
   path.moveTo(from);
-  path.lineTo(turn1);
-  path.lineTo(turn2);
-  path.lineTo(end);
+  const int case1Threshold = 15;
+  if (from.y() > to.y() - case1Threshold) // input above output
+  {
+    path.lineTo(from.x(), from.y() + case1Threshold);
+    const int leftSideBuffer = 30;
+    auto nextX = std::min(from.x() - leftSideBuffer, to.x() - leftSideBuffer); // TODO will be a function of port position
+    path.lineTo(nextX, from.y() + case1Threshold); // TODO will be a function of port position
+    path.lineTo(nextX, to.y() - case1Threshold);
+    path.lineTo(to.x(), to.y() - case1Threshold);
+    path.lineTo(to);
+  }
+  else  // output above input
+  {
+    auto midY = (from.y() + to.y()) / 2;
+    path.lineTo(from.x(), midY);
+    path.lineTo(to.x(), midY);
+    path.lineTo(to);
+  }
   setPath(path);
 }
 
@@ -306,6 +329,11 @@ void ConnectionFactory::setType(ConnectionDrawType type)
     currentType_ = type;
     Q_EMIT typeChanged(getCurrentDrawer());
   }
+}
+
+ConnectionDrawType ConnectionFactory::getType() const
+{
+  return currentType_;
 }
 
 ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const

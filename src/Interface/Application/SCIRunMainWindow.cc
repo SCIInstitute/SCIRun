@@ -679,6 +679,25 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
   }
 
+  const QString pipeTypeKey = "connectionPipeType";
+  if (settings.contains(pipeTypeKey))
+  {
+    int pipeType = settings.value(pipeTypeKey).toInt();
+    networkEditor_->setConnectionPipelineType(pipeType);
+    GuiLogger::Instance().log("Setting read: connection pipe style = " + QString::number(pipeType));
+    switch (pipeType)
+    {
+    case MANHATTAN: 
+      manhattanPipesRadioButton_->setChecked(true);
+      break;
+    case CUBIC: 
+      cubicPipesRadioButton_->setChecked(true);
+      break;
+    case EUCLIDEAN: 
+      euclideanPipesRadioButton_->setChecked(true);
+      break;
+    }
+  }
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -690,6 +709,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue("backgroundColor", networkEditor_->background().color().name());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
+  settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
 }
 
 void SCIRunMainWindow::disableInputWidgets()

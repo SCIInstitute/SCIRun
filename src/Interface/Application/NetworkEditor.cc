@@ -556,6 +556,11 @@ void NetworkEditor::setConnectionPipelineType(int type)
   ModuleWidget::connectionFactory_->setType(ConnectionDrawType(type));
 }
 
+int NetworkEditor::connectionPipelineType() const
+{
+  return (int) ModuleWidget::connectionFactory_->getType();
+}
+
 int NetworkEditor::errorCode() const
 {
   return controller_->errorCode();
