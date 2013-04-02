@@ -30,12 +30,19 @@
 #define ENGINE_PYTHON_SCIRUNPYTHONMODULE_H
 
 #include <boost/python.hpp>
+#include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Python/Share.h>
 
 BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 {
-  using namespace SCIRun::Dataflow::Engine;
+  using namespace SCIRun;
+
+  boost::python::class_<PyModule, boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
+    .add_property("id", &PyModule::id)
+    .def("showUI", &PyModule::showUI)
+    .def("hideUI", &PyModule::hideUI);
+
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
   boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);

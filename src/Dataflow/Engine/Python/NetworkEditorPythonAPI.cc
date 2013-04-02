@@ -32,7 +32,7 @@
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
 
-using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
 
 boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
@@ -48,13 +48,14 @@ void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
   lookup_ = lookup;
 }
 
-std::string NetworkEditorPythonAPI::addModule(const std::string& name)
+boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
 {
   if (impl_)
     return impl_->addModule(name);
   else
   {
-    return "Null implementation: NetworkEditorPythonAPI::addModule()";
+    std::cout << "Null implementation: NetworkEditorPythonAPI::addModule()" << std::endl;
+    return boost::shared_ptr<PyModule>();
   }
 }
 

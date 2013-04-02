@@ -46,7 +46,7 @@ namespace Engine {
   {
   public:
     explicit PythonImpl(NetworkEditorController& nec);
-    virtual std::string addModule(const std::string& name);
+    virtual boost::shared_ptr<PyModule> addModule(const std::string& name);
     virtual std::string removeModule(const std::string& id);
     virtual std::string executeAll(const Networks::ExecutableLookup& lookup);
     virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2);

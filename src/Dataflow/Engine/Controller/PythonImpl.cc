@@ -36,18 +36,45 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
+namespace
+{
+  class PyModuleImpl : public PyModule
+  {
+  public:
+    explicit PyModuleImpl(ModuleHandle mod) : module_(mod) {}
+    virtual std::string id() const
+    {
+      if (module_)
+        return module_->get_id();
+      return "<Null module>";
+    }
+    virtual void showUI()
+    {
+      std::cout << "showUI called" << std::endl;
+    }
+    virtual void hideUI()
+    {
+      std::cout << "hideUI called" << std::endl;
+    }
+  private:
+    ModuleHandle module_;
+  };
+}
+
 PythonImpl::PythonImpl(NetworkEditorController& nec) : nec_(nec) {}
 
-std::string PythonImpl::addModule(const std::string& name)
+boost::shared_ptr<PyModule> PythonImpl::addModule(const std::string& name)
 {
   auto m = nec_.addModule(name);
   if (m)
-    return "Module added: " + m->get_id().id_;
+    std::cout << "Module added: " + m->get_id().id_ << std::endl;
   else
-    return "Module add failed, no such module type";
+    std::cout << "Module add failed, no such module type" << std::endl;
+  return boost::make_shared<PyModuleImpl>(m);
 }
 
 std::string PythonImpl::removeModule(const std::string& id)

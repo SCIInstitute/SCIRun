@@ -32,26 +32,32 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/Share.h>
 
-namespace SCIRun {
-  namespace Dataflow {
-    namespace Engine {
+namespace SCIRun 
+{
 
-      class SCISHARE NetworkEditorPythonInterface
-      {
-      public:
-        virtual ~NetworkEditorPythonInterface() {}
-        virtual std::string addModule(const std::string& name) = 0;
-        virtual std::string removeModule(const std::string& id) = 0;
-        virtual std::string executeAll(const Networks::ExecutableLookup& lookup) = 0;
-        virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
-        virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
-        virtual std::string saveNetwork(const std::string& filename) = 0;
-        virtual std::string loadNetwork(const std::string& filename) = 0;
-        virtual std::string quit(bool force) = 0;
-      };
+  class SCISHARE PyModule
+  {
+  public:
+    virtual ~PyModule() {}
+    virtual std::string id() const = 0;
+    virtual void showUI() = 0;
+    virtual void hideUI() = 0;
+  };
 
-    }
-  }
+  class SCISHARE NetworkEditorPythonInterface
+  {
+  public:
+    virtual ~NetworkEditorPythonInterface() {}
+    virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
+    virtual std::string removeModule(const std::string& id) = 0;
+    virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup& lookup) = 0;
+    virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
+    virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
+    virtual std::string saveNetwork(const std::string& filename) = 0;
+    virtual std::string loadNetwork(const std::string& filename) = 0;
+    virtual std::string quit(bool force) = 0;
+  };
+
 }
 
 #endif
