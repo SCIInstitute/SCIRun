@@ -68,6 +68,7 @@ namespace Networks {
   typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
   typedef boost::signals2::signal<void (const ModuleId&)> ExecuteEndsSignalType;
   typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
+  typedef boost::function<void(bool)> UiToggleFunc;
 
   //TODO: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject
@@ -88,7 +89,10 @@ namespace Networks {
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
+    
+    //TODO functions
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
+    virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
     // TODO: name too clunky.
     virtual void preExecutionInitialization() {}

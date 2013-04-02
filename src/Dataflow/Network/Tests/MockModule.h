@@ -62,6 +62,7 @@ namespace SCIRun {
           MOCK_METHOD1(setLogger, void(SCIRun::Core::Logging::LoggerHandle));
           MOCK_CONST_METHOD0(getLogger, SCIRun::Core::Logging::LoggerHandle());
           MOCK_METHOD1(setUpdaterFunc, void(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc));
+          MOCK_METHOD1(setUiToggleFunc, void(UiToggleFunc));
           MOCK_METHOD1(connectExecuteBegins, boost::signals2::connection(const ExecuteBeginsSignalType::slot_type&));
           MOCK_METHOD1(connectExecuteEnds, boost::signals2::connection(const ExecuteEndsSignalType::slot_type&));
           MOCK_METHOD1(connectErrorListener, boost::signals2::connection(const ErrorSignalType::slot_type&));

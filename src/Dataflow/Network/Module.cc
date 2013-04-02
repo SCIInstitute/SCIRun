@@ -281,5 +281,6 @@ boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::
 
 void Module::setUiVisible(bool visible)
 {
-  std::cout << "ui visible: " << visible << std::endl;
+  if (uiToggleFunc_)
+    uiToggleFunc_(visible);
 }

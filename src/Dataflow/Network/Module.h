@@ -94,6 +94,7 @@ namespace Networks {
 
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) { updaterFunc_ = func; }
+    virtual void setUiToggleFunc(UiToggleFunc func) { uiToggleFunc_ = func; }
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
@@ -164,6 +165,7 @@ namespace Networks {
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
+    UiToggleFunc uiToggleFunc_;
     static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
   };

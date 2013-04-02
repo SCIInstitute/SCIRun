@@ -208,6 +208,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   LoggerHandle logger(new ModuleLogger(logWindow_));
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
+  if (theModule_->has_ui())
+    theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)
