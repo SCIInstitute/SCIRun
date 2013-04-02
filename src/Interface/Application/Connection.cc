@@ -72,6 +72,24 @@ public:
   }
 };
 
+class ManhattanDrawStrategy : public ConnectionDrawStrategy
+{
+public:
+  void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
+  {
+    QPainterPath path;
+    auto midY = (from.y() + to.y()) / 2;
+    QPointF turn1(from.x(), midY);
+    QPointF turn2(to.x(), midY);
+
+    path.moveTo(from);
+    path.lineTo(turn1);
+    path.lineTo(turn2);
+    path.lineTo(to);
+    item->setPath(path);
+  }
+};
+
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer)
 {
@@ -215,7 +233,37 @@ void ConnectionInProgressCurved::update(const QPointF& end)
   setPath(path);
 }
 
-ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene), euclidean_(new EuclideanDrawStrategy), cubic_(new CubicBezierDrawStrategy) {}
+ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port)
+  : ConnectionInProgressGraphicsItem<QGraphicsPathItem>(port)
+{
+}
+
+void ConnectionInProgressManhattan::update(const QPointF& end)
+{
+  //TODO: use strategy object. probably need to improve first parameter.
+  QPainterPath path;
+  QPointF start = fromPort_->position();
+
+  path.moveTo(start);
+  auto mid = (end - start) / 2 + start;
+
+  QPointF qDir(-(end-start).y() / ((double)(end-start).x()) , 1);
+  double qFactor = std::min(std::abs(100.0 / qDir.x()), 80.0);
+  //TODO: scale down when start close to end. need a unit test at this point.
+  //qFactor /= (end-start).manhattanDistance()
+
+  auto q1 = mapToScene(mid + qFactor * qDir);
+  auto q2 = mapToScene(mid - qFactor * qDir);
+  path.cubicTo(q1, q2, end);  
+  setPath(path);
+}
+
+
+ConnectionFactory::ConnectionFactory(QGraphicsScene* scene) : currentType_(EUCLIDEAN), scene_(scene), 
+  euclidean_(new EuclideanDrawStrategy), 
+  cubic_(new CubicBezierDrawStrategy),
+  manhattan_(new ManhattanDrawStrategy)
+{}
 
 ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* port) const
 {
@@ -234,8 +282,11 @@ ConnectionInProgress* ConnectionFactory::makeConnectionInProgress(PortWidget* po
       return c;
     }
     case MANHATTAN:
-      std::cout << "Manhattan connections not implemented yet." << std::endl;
-      return 0; //TODO
+    {
+      auto c = new ConnectionInProgressManhattan(port);
+      activate(c);
+      return c;
+    }
     default:
       std::cerr << "Unknown connection type." << std::endl;
       return 0;
@@ -270,8 +321,7 @@ ConnectionDrawStrategyPtr ConnectionFactory::getCurrentDrawer() const
   case CUBIC:
     return cubic_;
   case MANHATTAN:
-    std::cout << "Manhattan connections not implemented yet." << std::endl;
-    return ConnectionDrawStrategyPtr();
+    return manhattan_;
   default:
     std::cerr << "Unknown connection type." << std::endl;
     return ConnectionDrawStrategyPtr();

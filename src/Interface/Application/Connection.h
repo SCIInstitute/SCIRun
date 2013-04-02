@@ -128,6 +128,13 @@ public:
   virtual void update(const QPointF& end);
 };
 
+class ConnectionInProgressManhattan : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
+{
+public:
+  explicit ConnectionInProgressManhattan(PortWidget* port);
+  virtual void update(const QPointF& end);
+};
+
 class ConnectionFactory : public QObject
 {
   Q_OBJECT
@@ -144,6 +151,7 @@ private:
   QGraphicsScene* scene_;
   ConnectionDrawStrategyPtr euclidean_;
   ConnectionDrawStrategyPtr cubic_;
+  ConnectionDrawStrategyPtr manhattan_;
   ConnectionDrawStrategyPtr getCurrentDrawer() const;
 };
 

@@ -748,7 +748,7 @@
              <item>
               <widget class="QRadioButton" name="manhattanPipesRadioButton_">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="whatsThis">
                 <string>Switch to classic dataflow pipelines.</string>

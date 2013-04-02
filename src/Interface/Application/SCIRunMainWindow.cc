@@ -645,7 +645,7 @@ void SCIRunMainWindow::makePipesEuclidean()
 
 void SCIRunMainWindow::makePipesManhattan()
 {
-  //TODO
+  networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
 void SCIRunMainWindow::readSettings()
