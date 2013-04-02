@@ -38,6 +38,7 @@ namespace Networks {
 
 class NetworkInterface;
 class ModuleInterface;
+class ModuleDisplayInterface;
 class ModuleStateInterface;
 class ModuleStateInterfaceFactory;
 class PortInterface;

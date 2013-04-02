@@ -66,6 +66,7 @@ namespace Networks {
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
 
     bool has_ui() const { return has_ui_; }
+    void setUiVisible(bool visible); 
     size_t num_input_ports() const;
     size_t num_output_ports() const;
 

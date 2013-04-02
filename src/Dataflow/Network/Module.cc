@@ -278,3 +278,8 @@ boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::
 {
   return errorSignal_.connect(subscriber);
 }
+
+void Module::setUiVisible(bool visible)
+{
+  std::cout << "ui visible: " << visible << std::endl;
+}

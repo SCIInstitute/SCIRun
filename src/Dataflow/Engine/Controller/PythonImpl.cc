@@ -54,11 +54,13 @@ namespace
     }
     virtual void showUI()
     {
-      std::cout << "showUI called" << std::endl;
+      if (module_)
+        module_->setUiVisible(true);
     }
     virtual void hideUI()
     {
-      std::cout << "hideUI called" << std::endl;
+      if (module_)
+        module_->setUiVisible(false);
     }
     virtual void clear() 
     {

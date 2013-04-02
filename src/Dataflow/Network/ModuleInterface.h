@@ -50,10 +50,17 @@ namespace Networks {
     virtual InputPortHandle get_input_port(size_t idx) const = 0;
     virtual size_t num_input_ports() const = 0;
     virtual size_t num_output_ports() const = 0;
-    virtual bool has_ui() const = 0;
     virtual std::string get_module_name() const = 0;
     virtual ModuleId get_id() const = 0;
+    virtual bool has_ui() const = 0;
     virtual const ModuleLookupInfo& get_info() const = 0;
+  };
+
+  class SCISHARE ModuleDisplayInterface 
+  {
+  public:
+    virtual ~ModuleDisplayInterface() {}
+    virtual void setUiVisible(bool visible) = 0;
   };
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
@@ -63,7 +70,7 @@ namespace Networks {
   typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
 
   //TODO: interface is getting bloated, segregate it.
-  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ExecutableObject
+  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject
   {
   public:
     virtual ~ModuleInterface();
