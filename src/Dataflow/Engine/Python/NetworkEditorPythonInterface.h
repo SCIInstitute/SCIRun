@@ -42,6 +42,7 @@ namespace SCIRun
     virtual std::string id() const = 0;
     virtual void showUI() = 0;
     virtual void hideUI() = 0;
+    virtual void clear() = 0;
   };
 
   class SCISHARE NetworkEditorPythonInterface

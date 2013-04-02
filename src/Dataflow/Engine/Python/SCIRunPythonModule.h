@@ -45,6 +45,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
+  boost::python::def("modules", &NetworkEditorPythonAPI::modules);
   boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);
   boost::python::def("connect", &NetworkEditorPythonAPI::connect);
   boost::python::def("disconnect", &NetworkEditorPythonAPI::disconnect);

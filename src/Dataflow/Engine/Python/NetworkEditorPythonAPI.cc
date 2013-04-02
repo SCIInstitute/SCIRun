@@ -37,10 +37,31 @@ using namespace SCIRun::Dataflow::Networks;
 
 boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
 ExecutableLookup* NetworkEditorPythonAPI::lookup_ = 0;
+std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules_;
+
+
+template< class T >
+class StdVectorToListConverter : public boost::python::converter::wrap_pytype< &PyList_Type >
+{
+public:
+  static PyObject* convert( const std::vector< T >& v )
+  {
+    boost::python::list result;
+    for ( size_t i = 0; i < v.size(); ++i )
+    {
+      result.append( v[ i ] );
+    }
+
+    return boost::python::incref( result.ptr() );
+  }
+};
 
 void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
 {
   impl_ = impl;
+
+  boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
+    StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
 }
 
 void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
@@ -51,7 +72,11 @@ void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
 boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
 {
   if (impl_)
-    return impl_->addModule(name);
+  {
+    auto m = impl_->addModule(name);
+    modules_.push_back(m);
+    return m;
+  }
   else
   {
     std::cout << "Null implementation: NetworkEditorPythonAPI::addModule()" << std::endl;
@@ -62,11 +87,19 @@ boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string&
 std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 {
   if (impl_)
+  {
+    modules_.erase(std::remove_if(modules_.begin(), modules_.end(), [&](boost::shared_ptr<PyModule> m) -> bool { bool same = m->id() == id; if (same) m->clear(); return same; }), modules_.end());
     return impl_->removeModule(id);
+  }
   else
   {
     return "Null implementation: NetworkEditorPythonAPI::removeModule()";
   }
+}
+
+std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
+{
+  return modules_;
 }
 
 std::string NetworkEditorPythonAPI::executeAll()

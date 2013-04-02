@@ -60,6 +60,10 @@ namespace
     {
       std::cout << "hideUI called" << std::endl;
     }
+    virtual void clear() 
+    {
+      module_.reset();
+    }
   private:
     ModuleHandle module_;
   };

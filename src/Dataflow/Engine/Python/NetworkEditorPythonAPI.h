@@ -29,6 +29,7 @@
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONAPI_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONAPI_H
 
+#include <vector>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/Share.h>
 
@@ -41,6 +42,7 @@ namespace SCIRun {
   {
   public:
     static boost::shared_ptr<PyModule> addModule(const std::string& name);
+    static std::vector<boost::shared_ptr<PyModule>> modules();
     static std::string removeModule(const std::string& id);
     static std::string executeAll();
     static std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2);
@@ -56,6 +58,7 @@ namespace SCIRun {
     NetworkEditorPythonAPI();
     static boost::shared_ptr<NetworkEditorPythonInterface> impl_;
     static Dataflow::Networks::ExecutableLookup* lookup_;
+    static std::vector<boost::shared_ptr<PyModule>> modules_;
   };
 
 }
