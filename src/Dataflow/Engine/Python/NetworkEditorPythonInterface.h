@@ -63,6 +63,7 @@ namespace SCIRun
     virtual std::string name() const = 0;
     virtual std::string type() const = 0;
     virtual bool isInput() const = 0;
+    virtual /*TODO: boost::shared_ptr<class PyConnection>*/ void connect(const PyPort& other) const = 0;
   };
 
   class SCISHARE PyConnection
@@ -72,7 +73,7 @@ namespace SCIRun
     virtual std::string id() const = 0;
   };
 
-  SCISHARE boost::shared_ptr<PyConnection> operator>>(const PyPort& from, const PyPort& to);
+  SCISHARE const PyPort& operator>>(const PyPort& from, const PyPort& to);
 
   class SCISHARE PyPorts
   {
@@ -86,6 +87,14 @@ namespace SCIRun
     virtual size_t size() const = 0;
   };
 
+  //TODO idea: write addmodule.ShowMesh in python
+  class SCISHARE AddModule
+  {
+  public:
+    virtual ~AddModule() {}
+    virtual boost::shared_ptr<PyModule> getattr(const std::string& name) = 0;
+  };
+
   class SCISHARE NetworkEditorPythonInterface
   {
   public:
@@ -93,8 +102,6 @@ namespace SCIRun
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup& lookup) = 0;
-    //virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
-    //virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;

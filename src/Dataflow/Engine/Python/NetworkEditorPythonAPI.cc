@@ -144,8 +144,8 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   }
 }
 
-boost::shared_ptr<PyConnection> SCIRun::operator>>(const PyPort& from, const PyPort& to)
+const PyPort& SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
-  std::cout << "connection!!!" << std::endl;
-  return boost::shared_ptr<PyConnection>();
+  from.connect(to);
+  return to;
 }
