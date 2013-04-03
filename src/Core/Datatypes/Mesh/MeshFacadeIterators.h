@@ -104,18 +104,19 @@ namespace Datatypes {
   {
   public:
     typedef VirtualMesh::Edge::iterator iterator;
-    explicit EdgeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) {}
+    explicit EdgeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) 
+    {
+      vmesh_->synchronize(Mesh::EDGES_E);
+    }
     void setIndex(VirtualMesh::Edge::index_type i) { index_ = i; }
 
     VirtualMesh::Edge::index_type index() const { return index_; }
     VirtualMesh::Node::array_type nodeIndices() const
     {
       VirtualMesh::Node::array_type nodesFromEdge(2);
-      vmesh_->synchronize(Mesh::EDGES_E);
-
+      
       vmesh_->get_nodes(nodesFromEdge, index_);
 
-      vmesh_->clear_synchronization();
       return nodesFromEdge;
     }
 
@@ -123,12 +124,10 @@ namespace Datatypes {
     {
       auto indices = nodeIndices();
       std::vector<Geometry::Point> ps(2);
-      vmesh_->synchronize(Mesh::EDGES_E);
 
       for (size_t i = 0; i < ps.size(); ++i)
         vmesh_->get_point(ps[i], indices[i]);
 
-      vmesh_->clear_synchronization();
       return ps;
     }
   private:
