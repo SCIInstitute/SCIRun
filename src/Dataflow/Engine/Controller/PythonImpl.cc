@@ -138,14 +138,6 @@ namespace
 
       //TODO: barf
       {
-        boost::python::extract<double> e(object);
-        if (e.check())
-        {
-          value = e();
-          return value;
-        }
-      }
-      {
         boost::python::extract<int> e(object);
         if (e.check())
         {
@@ -153,7 +145,14 @@ namespace
           return value;
         }
       }
-      
+      {
+        boost::python::extract<double> e(object);
+        if (e.check())
+        {
+          value = e();
+          return value;
+        }
+      }
       {
         boost::python::extract<std::string> e(object);
         if (e.check())
