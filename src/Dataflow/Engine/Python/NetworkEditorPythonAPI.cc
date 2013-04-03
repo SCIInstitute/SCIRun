@@ -144,8 +144,9 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   }
 }
 
-const PyPort& SCIRun::operator>>(const PyPort& from, const PyPort& to)
+//TODO: bizarre reason for this return type and casting. but it works.
+boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
   from.connect(to);
-  return to;
+  return boost::ref(const_cast<PyPort&>(to).shared_from_this());
 }

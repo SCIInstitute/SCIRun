@@ -31,6 +31,7 @@
 
 #include <vector>
 #include <boost/python.hpp>
+#include <boost/enable_shared_from_this.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/Share.h>
 
@@ -56,14 +57,14 @@ namespace SCIRun
     virtual boost::shared_ptr<class PyPorts> input() = 0;
   };
 
-  class SCISHARE PyPort
+  class SCISHARE PyPort : public boost::enable_shared_from_this<PyPort>
   {
   public:
     virtual ~PyPort() {}
     virtual std::string name() const = 0;
     virtual std::string type() const = 0;
     virtual bool isInput() const = 0;
-    virtual /*TODO: boost::shared_ptr<class PyConnection>*/ void connect(const PyPort& other) const = 0;
+    virtual void connect(const PyPort& other) const = 0;
   };
 
   class SCISHARE PyConnection
@@ -73,7 +74,7 @@ namespace SCIRun
     virtual std::string id() const = 0;
   };
 
-  SCISHARE const PyPort& operator>>(const PyPort& from, const PyPort& to);
+  SCISHARE boost::shared_ptr<PyPort> operator>>(const PyPort& from, const PyPort& to);
 
   class SCISHARE PyPorts
   {
