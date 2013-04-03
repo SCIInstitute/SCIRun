@@ -44,6 +44,47 @@ using namespace SCIRun::Dataflow::Networks;
 
 namespace
 {
+  class PyPortImpl : public PyPort
+  {
+  public:
+    virtual std::string name() const
+    {
+      return "port";
+    }
+
+    virtual std::string type() const
+    {
+      return "matrix";
+    }
+
+    virtual bool isInput() const
+    {
+      return false;
+    }
+  };
+
+  class PyPortsImpl : public PyPorts
+  {
+  public:
+    virtual boost::shared_ptr<PyPort> getattr(const std::string& name)
+    {
+      return boost::make_shared<PyPortImpl>();
+    }
+
+    virtual boost::shared_ptr<PyPort> getitem(int index)
+    {
+      return boost::make_shared<PyPortImpl>();
+    }
+
+    virtual size_t size() const
+    {
+      return 7;
+    }
+  };
+
+
+
+
   class PyModuleImpl : public PyModule
   {
   public:
@@ -75,7 +116,6 @@ namespace
 
     virtual boost::python::object getattr(const std::string& name)
     {
-      //std::cout << "i'm in the correct method, calling getattr with " << name << std::endl;
       if (module_)
       {
         auto state = module_->get_state();
@@ -106,16 +146,8 @@ namespace
       {
         auto state = module_->get_state();
         AlgorithmParameterName apn(name);
-
-        //if (!state->containsKey(apn))
-        //{
-        //  std::cout << "No state variable by name: " << name << std::endl;
-        //  return;
-        //}
-
         state->setValue(apn, convert(object));
       }
-
     }
     
     virtual std::vector<std::string> stateVars() const
@@ -129,6 +161,17 @@ namespace
       }
       return std::vector<std::string>();
     }
+
+    virtual boost::shared_ptr<PyPorts> output()
+    {
+      return boost::make_shared<PyPortsImpl>();
+    }
+
+    virtual boost::shared_ptr<PyPorts> input()
+    {
+      return boost::make_shared<PyPortsImpl>();
+    }
+
   private:
     ModuleHandle module_;
 
@@ -136,7 +179,7 @@ namespace
     {
       AlgorithmParameter::Value value;
 
-      //TODO: barf
+      //TODO: yucky
       {
         boost::python::extract<int> e(object);
         if (e.check())

@@ -45,9 +45,45 @@ namespace SCIRun
     virtual void showUI() = 0;
     virtual void hideUI() = 0;
     virtual void reset() = 0;
+
+    //state
     virtual boost::python::object getattr(const std::string& name) = 0;
     virtual void setattr(const std::string& name, boost::python::object object) = 0;
     virtual std::vector<std::string> stateVars() const = 0;
+
+    //ports
+    virtual boost::shared_ptr<class PyPorts> output() = 0;
+    virtual boost::shared_ptr<class PyPorts> input() = 0;
+  };
+
+  class SCISHARE PyPort
+  {
+  public:
+    virtual ~PyPort() {}
+    virtual std::string name() const = 0;
+    virtual std::string type() const = 0;
+    virtual bool isInput() const = 0;
+  };
+
+  class SCISHARE PyConnection
+  {
+  public:
+    virtual ~PyConnection() {}
+    virtual std::string id() const = 0;
+  };
+
+  SCISHARE boost::shared_ptr<PyConnection> operator>>(const PyPort& from, const PyPort& to);
+
+  class SCISHARE PyPorts
+  {
+  public:
+    virtual ~PyPorts() {}
+    //by name
+    virtual boost::shared_ptr<PyPort> getattr(const std::string& name) = 0;
+    //by index
+    virtual boost::shared_ptr<PyPort> getitem(int index) = 0;
+
+    virtual size_t size() const = 0;
   };
 
   class SCISHARE NetworkEditorPythonInterface
@@ -57,8 +93,8 @@ namespace SCIRun
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
     virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup& lookup) = 0;
-    virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
-    virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
+    //virtual std::string connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
+    //virtual std::string disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2) = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;

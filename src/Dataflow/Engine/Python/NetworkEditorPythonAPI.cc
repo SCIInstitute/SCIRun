@@ -114,26 +114,6 @@ std::string NetworkEditorPythonAPI::executeAll()
   }
 }
 
-std::string NetworkEditorPythonAPI::connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
-{
-  if (impl_)
-    return impl_->connect(moduleId1, port1, moduleId2, port2);
-  else
-  {
-    return "Null implementation: NetworkEditorPythonAPI::connect()";
-  }
-}
-
-std::string NetworkEditorPythonAPI::disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
-{
-  if (impl_)
-    return impl_->disconnect(moduleId1, port1, moduleId2, port2);
-  else
-  {
-    return "Null implementation: NetworkEditorPythonAPI::disconnect()";
-  }
-}
-
 std::string NetworkEditorPythonAPI::saveNetwork(const std::string& filename)
 {
   if (impl_)
@@ -162,4 +142,10 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   {
     return "Null implementation: NetworkEditorPythonAPI::quit()";
   }
+}
+
+boost::shared_ptr<PyConnection> SCIRun::operator>>(const PyPort& from, const PyPort& to)
+{
+  std::cout << "connection!!!" << std::endl;
+  return boost::shared_ptr<PyConnection>();
 }

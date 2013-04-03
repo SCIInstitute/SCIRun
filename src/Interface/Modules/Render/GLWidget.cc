@@ -96,7 +96,7 @@ GLWidget::~GLWidget()
   // Need to inform module that the context is being destroyed.
   if (mGraphics != nullptr)
   {
-    std::cout << "Terminating spire." << std::endl;
+    //std::cout << "Terminating spire." << std::endl;
     mGraphics->terminate();
     mGraphics.reset();
   }
