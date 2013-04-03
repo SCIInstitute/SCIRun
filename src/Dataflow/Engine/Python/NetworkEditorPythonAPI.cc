@@ -62,6 +62,8 @@ void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterf
 
   boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
     StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
+  boost::python::to_python_converter< std::vector< std::string >, 
+    StdVectorToListConverter< std::string >, true >();
 }
 
 void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
@@ -88,7 +90,7 @@ std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 {
   if (impl_)
   {
-    modules_.erase(std::remove_if(modules_.begin(), modules_.end(), [&](boost::shared_ptr<PyModule> m) -> bool { bool same = m->id() == id; if (same) m->clear(); return same; }), modules_.end());
+    modules_.erase(std::remove_if(modules_.begin(), modules_.end(), [&](boost::shared_ptr<PyModule> m) -> bool { bool same = m->id() == id; if (same) m->reset(); return same; }), modules_.end());
     return impl_->removeModule(id);
   }
   else

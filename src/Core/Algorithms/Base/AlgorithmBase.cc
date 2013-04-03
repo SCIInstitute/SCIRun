@@ -45,7 +45,7 @@ int AlgorithmParameter::getInt() const
 double AlgorithmParameter::getDouble() const
 {
   const double* v = boost::get<double>(&value_);
-  return v ? *v : 0;
+  return v ? *v : getInt();
 }
 
 std::string AlgorithmParameter::getString() const

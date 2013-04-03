@@ -40,8 +40,12 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 
   boost::python::class_<PyModule, boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
     .add_property("id", &PyModule::id)
+    .add_property("stateVars", &PyModule::stateVars)
     .def("showUI", &PyModule::showUI)
-    .def("hideUI", &PyModule::hideUI);
+    .def("hideUI", &PyModule::hideUI)
+    .def("__getattr__", &PyModule::getattr)
+    .def("__setattr__", &PyModule::setattr)
+    ;
 
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);

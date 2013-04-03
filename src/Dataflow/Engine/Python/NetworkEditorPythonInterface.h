@@ -29,6 +29,8 @@
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 
+#include <vector>
+#include <boost/python.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Python/Share.h>
 
@@ -42,7 +44,10 @@ namespace SCIRun
     virtual std::string id() const = 0;
     virtual void showUI() = 0;
     virtual void hideUI() = 0;
-    virtual void clear() = 0;
+    virtual void reset() = 0;
+    virtual boost::python::object getattr(const std::string& name) = 0;
+    virtual void setattr(const std::string& name, boost::python::object object) = 0;
+    virtual std::vector<std::string> stateVars() const = 0;
   };
 
   class SCISHARE NetworkEditorPythonInterface

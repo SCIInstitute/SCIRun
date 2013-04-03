@@ -45,6 +45,11 @@ NullModuleState::Keys NullModuleState::getKeys() const
   return Keys();
 }
 
+bool NullModuleState::containsKey(const Name&) const
+{
+  return false;
+}
+
 ModuleStateHandle NullModuleState::clone() const
 {
   return ModuleStateHandle(new NullModuleState);

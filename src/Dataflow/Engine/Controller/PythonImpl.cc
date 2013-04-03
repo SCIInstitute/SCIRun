@@ -34,9 +34,11 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -46,28 +48,130 @@ namespace
   {
   public:
     explicit PyModuleImpl(ModuleHandle mod) : module_(mod) {}
+
     virtual std::string id() const
     {
       if (module_)
         return module_->get_id();
       return "<Null module>";
     }
+
     virtual void showUI()
     {
       if (module_)
         module_->setUiVisible(true);
     }
+
     virtual void hideUI()
     {
       if (module_)
         module_->setUiVisible(false);
     }
-    virtual void clear() 
+
+    virtual void reset() 
     {
       module_.reset();
     }
+
+    virtual boost::python::object getattr(const std::string& name)
+    {
+      //std::cout << "i'm in the correct method, calling getattr with " << name << std::endl;
+      if (module_)
+      {
+        auto state = module_->get_state();
+        AlgorithmParameterName apn(name);
+        if (!state->containsKey(apn))
+          return boost::python::object();
+
+        auto v = state->getValue(apn);
+
+        //TODO: extract
+        if ( const int* p = boost::get<int>( &v.value_ ) )
+          return boost::python::object(*p);
+        else if ( const std::string* p = boost::get<std::string>( &v.value_ ) )
+          return boost::python::object(*p);
+        else if ( const double* p = boost::get<double>( &v.value_ ) )
+          return boost::python::object(*p);
+        else if ( const bool* p = boost::get<bool>( &v.value_ ) )
+          return boost::python::object(*p);
+
+        return boost::python::object();
+      }
+      return boost::python::object();
+    }
+
+    virtual void setattr(const std::string& name, boost::python::object object)
+    {
+      if (module_)
+      {
+        auto state = module_->get_state();
+        AlgorithmParameterName apn(name);
+
+        //if (!state->containsKey(apn))
+        //{
+        //  std::cout << "No state variable by name: " << name << std::endl;
+        //  return;
+        //}
+
+        state->setValue(apn, convert(object));
+      }
+
+    }
+    
+    virtual std::vector<std::string> stateVars() const
+    {
+      if (module_)
+      {
+        std::vector<std::string> keyStrings;
+        auto keys = module_->get_state()->getKeys();
+        std::transform(keys.begin(), keys.end(), std::back_inserter(keyStrings), [](const AlgorithmParameterName& n) { return n.name_; });
+        return keyStrings;
+      }
+      return std::vector<std::string>();
+    }
   private:
     ModuleHandle module_;
+
+    AlgorithmParameter::Value convert(boost::python::object object) const
+    {
+      AlgorithmParameter::Value value;
+
+      //TODO: barf
+      {
+        boost::python::extract<double> e(object);
+        if (e.check())
+        {
+          value = e();
+          return value;
+        }
+      }
+      {
+        boost::python::extract<int> e(object);
+        if (e.check())
+        {
+          value = e();
+          return value;
+        }
+      }
+      
+      {
+        boost::python::extract<std::string> e(object);
+        if (e.check())
+        {
+          value = e();
+          return value;
+        }
+      }
+      {
+        boost::python::extract<bool> e(object);
+        if (e.check())
+        {
+          value = e();
+          return value;
+        }
+      }
+      return value;
+    }
   };
 }
 
