@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
   For more information, please see: http://software.sci.utah.edu
 
@@ -224,3 +225,5 @@ TimeThrottle::wait_for_time(double endtime)
 }
 
 } // end namespace SCIRun
+
+#endif

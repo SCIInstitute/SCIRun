@@ -48,7 +48,7 @@ ADD_LIBRARY(Core_Containers
   ${Core_Containers_HEADERS})
 
 TARGET_LINK_LIBRARIES(Core_Containers 
-                  Core_Thread_Legacy
+                  #Core_Thread_Legacy
                   Core_Exceptions 
 				  )
 
