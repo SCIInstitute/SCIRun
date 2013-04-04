@@ -1,3 +1,5 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -274,3 +276,4 @@ bool Dir::isfile()
   if (S_ISDIR(buf.st_mode)) return (false);
   return (true);
 }
+#endif

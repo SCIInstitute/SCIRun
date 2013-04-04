@@ -1,3 +1,5 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -71,3 +73,4 @@ ThrottledRunnable::quit() {
 }  
 
 } // End namespace SCIRun
+#endif

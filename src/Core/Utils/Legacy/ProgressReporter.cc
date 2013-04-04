@@ -1,3 +1,5 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -123,3 +125,5 @@ ProgressReporter::update_progress(int, int)
 }
 
 } // End namespace SCIRun
+
+#endif
