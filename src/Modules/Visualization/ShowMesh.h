@@ -31,6 +31,9 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/Share.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 
 namespace SCIRun {
 namespace Modules {
@@ -55,6 +58,23 @@ namespace Visualization {
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
   private:
+    /// Constructs faces without normal information. We can share the primary
+    /// VBO with the nodes and the edges in this case.
+    void buildFacesNoNormals(SCIRun::Core::Datatypes::MeshFacadeHandle facade,
+                             SCIRun::Core::Datatypes::GeometryHandle geom,
+                             const std::string& primaryVBOName);
+
+    /// Constructs edges without normal information. We can share the primary
+    /// VBO with faces and nodes.
+    void buildEdgesNoNormals(SCIRun::Core::Datatypes::MeshFacadeHandle facade,
+                             SCIRun::Core::Datatypes::GeometryHandle geom,
+                             const std::string& primaryVBOName);
+
+    /// Constructs nodes without normal information. We can share the primary
+    /// VBO with edges and faces.
+    void buildNodesNoNormals(SCIRun::Core::Datatypes::MeshFacadeHandle facade,
+                             SCIRun::Core::Datatypes::GeometryHandle geom,
+                             const std::string& primaryVBOName);
   };
 }}}
 
