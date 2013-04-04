@@ -347,34 +347,6 @@ public:
   HANDLE m_hProcess;
   LPSTR m_szSymPath;
 
-/*typedef struct IMAGEHLP_MODULE64_V3 {
-    DWORD    SizeOfStruct;           // set to sizeof(IMAGEHLP_MODULE64)
-    DWORD64  BaseOfImage;            // base load address of module
-    DWORD    ImageSize;              // virtual size of the loaded module
-    DWORD    TimeDateStamp;          // date/time stamp from pe header
-    DWORD    CheckSum;               // checksum from the pe header
-    DWORD    NumSyms;                // number of symbols in the symbol table
-    SYM_TYPE SymType;                // type of symbols loaded
-    CHAR     ModuleName[32];         // module name
-    CHAR     ImageName[256];         // image name
-    // new elements: 07-Jun-2002
-    CHAR     LoadedImageName[256];   // symbol file name
-    CHAR     LoadedPdbName[256];     // pdb file name
-    DWORD    CVSig;                  // Signature of the CV record in the debug directories
-    CHAR         CVData[MAX_PATH * 3];   // Contents of the CV record
-    DWORD    PdbSig;                 // Signature of PDB
-    GUID     PdbSig70;               // Signature of PDB (VC 7 and up)
-    DWORD    PdbAge;                 // DBI age of pdb
-    BOOL     PdbUnmatched;           // loaded an unmatched pdb
-    BOOL     DbgUnmatched;           // loaded an unmatched dbg
-    BOOL     LineNumbers;            // we have line number information
-    BOOL     GlobalSymbols;          // we have internal symbol information
-    BOOL     TypeInfo;               // we have type information
-    // new elements: 17-Dec-2003
-    BOOL     SourceIndexed;          // pdb supports source server
-    BOOL     Publics;                // contains public symbols
-};
-*/
 typedef struct IMAGEHLP_MODULE64_V2 {
     DWORD    SizeOfStruct;           // set to sizeof(IMAGEHLP_MODULE64)
     DWORD64  BaseOfImage;            // base load address of module
@@ -409,10 +381,6 @@ typedef struct IMAGEHLP_MODULE64_V2 {
   // SymGetModuleInfo64()
   typedef BOOL (__stdcall *tSGMI)( IN HANDLE hProcess, IN DWORD64 dwAddr, OUT IMAGEHLP_MODULE64_V2 *ModuleInfo );
   tSGMI pSGMI;
-
-//  // SymGetModuleInfo64()
-//  typedef BOOL (__stdcall *tSGMI_V3)( IN HANDLE hProcess, IN DWORD64 dwAddr, OUT IMAGEHLP_MODULE64_V3 *ModuleInfo );
-//  tSGMI_V3 pSGMI_V3;
 
   // SymGetOptions()
   typedef DWORD (__stdcall *tSGO)( VOID );

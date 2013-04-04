@@ -42,7 +42,7 @@ namespace
 {
   DenseMatrixHandle matrix1()
   {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
+    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3, 3));
     for (int i = 0; i < m->rows(); ++ i)
       for (int j = 0; j < m->cols(); ++ j)
         (*m)(i, j) = 3.0 * i + j;

@@ -32,6 +32,7 @@
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/make_shared.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -75,7 +76,7 @@ SparseRowMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeSparse(cons
   SparseData data = convertRaw(parseSparseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
   if (reporter_)
     reporter_->update_progress(0.7);
-  SparseRowMatrixHandle mat(new SparseRowMatrix(data.get<0>(), data.get<1>()));
+  SparseRowMatrixHandle mat(boost::make_shared<SparseRowMatrix>(data.get<0>(), data.get<1>()));
 
   typedef Eigen::Triplet<double> T;
   std::vector<T> tripletList;
@@ -134,7 +135,7 @@ std::string EigenMatrixFromScirunAsciiFormatConverter::readFile(const std::strin
 DenseMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeDense(const std::string& matFile)
 {
   DenseData data = convertRaw(parseDenseMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
-  DenseMatrixHandle mat(new DenseMatrix(data.get<0>(), data.get<1>()));
+  DenseMatrixHandle mat(boost::make_shared<DenseMatrix>(data.get<0>(), data.get<1>()));
 
   auto values = data.get<2>().begin();
   for (int i = 0; i < mat->rows(); ++i)
@@ -147,7 +148,7 @@ DenseMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeDense(const std
 DenseColumnMatrixHandle EigenMatrixFromScirunAsciiFormatConverter::makeColumn(const std::string& matFile)
 {
   DenseData data = convertRaw(parseColumnMatrixString(getMatrixContentsLine(readFile(matFile)).get()).get());
-  DenseColumnMatrixHandle mat(new DenseColumnMatrix(data.get<0>()));
+  DenseColumnMatrixHandle mat(boost::make_shared<DenseColumnMatrix>(data.get<0>()));
 
   auto values = data.get<2>().begin();
   for (int i = 0; i < mat->rows(); ++i)

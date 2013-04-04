@@ -57,7 +57,7 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
 
 ModuleStateHandle SimpleMapModuleState::clone() const
 {
-  return ModuleStateHandle(new SimpleMapModuleState(*this));
+  return boost::make_shared<SimpleMapModuleState>(*this);
 }
 
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const

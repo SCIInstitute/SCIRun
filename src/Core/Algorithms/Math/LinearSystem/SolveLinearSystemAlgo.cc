@@ -100,14 +100,14 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
   
   // Create output matrix
   auto size = x0->nrows();
-  x.reset(new DenseColumnMatrix(size));
+  x = boost::make_shared<DenseColumnMatrix>(size);
   
   // Copy output matrix pointer
   matrices.x = x;
 
   // Create convergence matrix
   int num_iter = algo->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
-  convergence.reset(new DenseColumnMatrix(num_iter));
+  convergence = boost::make_shared<DenseColumnMatrix>(num_iter);
   convergence_ = convergence;
   
   // Set intermediate solution handle
@@ -1088,7 +1088,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   if (!x0)
   {
     // create an x0 matrix
-    DenseColumnMatrixHandle temp(new DenseColumnMatrix(b->nrows()));
+    DenseColumnMatrixHandle temp(boost::make_shared<DenseColumnMatrix>(b->nrows()));
     temp->setZero();
     x0 = temp;
   }
