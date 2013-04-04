@@ -84,7 +84,7 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 
   auto dense = matrix_cast::as_dense(mh);
   if (dense)
-    return DenseColumnMatrixHandle(new DenseColumnMatrix(dense->col(0)));
+    return boost::make_shared<DenseColumnMatrix>(dense->col(0));
 
   return DenseColumnMatrixHandle();
 }

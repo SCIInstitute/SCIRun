@@ -52,7 +52,7 @@ bool NullModuleState::containsKey(const Name&) const
 
 ModuleStateHandle NullModuleState::clone() const
 {
-  return ModuleStateHandle(new NullModuleState);
+  return boost::make_shared<NullModuleState>();
 }
 
 boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)

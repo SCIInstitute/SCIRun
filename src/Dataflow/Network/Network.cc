@@ -105,7 +105,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   {
     try
     {
-      ConnectionHandle conn(new Connection(outputModule, outputPortIndex, inputModule, inputPortIndex, id));
+      ConnectionHandle conn(boost::make_shared<Connection>(outputModule, outputPortIndex, inputModule, inputPortIndex, id));
 
       //lock.lock();
 

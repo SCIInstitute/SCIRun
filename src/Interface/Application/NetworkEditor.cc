@@ -482,7 +482,7 @@ void NetworkEditor::mousePressEvent(QMouseEvent *event)
 
 SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
-  ModulePositionsHandle positions(new ModulePositions);
+  ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))

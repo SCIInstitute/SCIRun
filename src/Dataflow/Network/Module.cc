@@ -236,7 +236,7 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
   if (module_)
   {
     DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
-    InputPortHandle port(new InputPort(module_.get(), params, sink));
+    InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
     port->setIndex(module_->add_input_port(port));
   }
   return *this;
@@ -247,7 +247,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   if (module_)
   {
     DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : 0);
-    OutputPortHandle port(new OutputPort(module_.get(), params, source));
+    OutputPortHandle port(boost::make_shared<OutputPort>(module_.get(), params, source));
     port->setIndex(module_->add_output_port(port));
   }
   return *this;
