@@ -44,6 +44,7 @@ namespace Visualization {
     ShowMeshModule();
     virtual void execute();
 
+    static Core::Algorithms::AlgorithmParameterName ShowNodes;
     static Core::Algorithms::AlgorithmParameterName ShowEdges;
     static Core::Algorithms::AlgorithmParameterName ShowFaces;
     static Core::Algorithms::AlgorithmParameterName NodeTransparency;
@@ -52,6 +53,8 @@ namespace Visualization {
 
     INPUT_PORT(0, Mesh, Mesh);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
+
+  private:
   };
 }}}
 

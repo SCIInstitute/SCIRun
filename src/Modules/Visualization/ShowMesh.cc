@@ -39,6 +39,7 @@ using namespace SCIRun::Core::Algorithms;
 
 ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")) 
 {
+  get_state()->setValue(ShowNodes, false);
   get_state()->setValue(ShowEdges, true);
   get_state()->setValue(ShowFaces, true);
 }
@@ -49,6 +50,7 @@ void ShowMeshModule::execute()
   MeshFacadeHandle facade(mesh->getFacade());
 
   /// \todo Determine a better way of handling all of the various object state.
+  bool showNodes = get_state()->getValue(ShowNodes).getBool();
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
@@ -213,6 +215,7 @@ void ShowMeshModule::execute()
   sendOutput(SceneGraph, geom);
 }
 
+AlgorithmParameterName ShowMeshModule::ShowNodes("Show nodes");
 AlgorithmParameterName ShowMeshModule::ShowEdges("Show edges");
 AlgorithmParameterName ShowMeshModule::ShowFaces("Show faces");
 AlgorithmParameterName ShowMeshModule::NodeTransparency("Node Transparency");

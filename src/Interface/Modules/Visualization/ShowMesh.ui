@@ -60,7 +60,7 @@
      <item>
       <widget class="QTabWidget" name="displayOptionsTabs_">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="nodesTab_">
         <attribute name="title">
@@ -79,7 +79,7 @@
           <item row="0" column="0">
            <widget class="QCheckBox" name="showNodesCheckBox_">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="mouseTracking">
              <bool>true</bool>
@@ -95,7 +95,7 @@
           <item row="1" column="0">
            <widget class="QCheckBox" name="enableTransparencyNodesCheckBox_">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Enable Transparency</string>
