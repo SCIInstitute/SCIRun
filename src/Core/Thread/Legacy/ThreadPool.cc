@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -129,3 +130,4 @@ ThreadPool::parallel(const ParallelBase& helper, int nthreads)
 }
 
 } // End namespace SCIRun
+#endif

@@ -29,8 +29,6 @@
 #ifndef CORE_DATATYPES_SEARCHGRIDT_H
 #define CORE_DATATYPES_SEARCHGRIDT_H 1
 
-#include <Core/Thread/Legacy/UsedWithLockingHandle.h>
-#include <Core/Thread/Legacy/Mutex.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Transform.h>
@@ -44,7 +42,7 @@
 namespace SCIRun {
 
 template<class INDEX>
-class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
+class SCISHARE SearchGridT 
 {
   public:
     //! Include the types defined in Types into this class
@@ -54,7 +52,6 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
 
     SearchGridT(size_type x, size_type y, size_type z,
                const Core::Geometry::Point &min, const Core::Geometry::Point &max) :
-        UsedWithLockingHandle<Mutex>("Search Grid Lock"),
         ni_(x), nj_(y), nk_(z)
       {
         transform_.pre_scale(Vector(1.0 / x, 1.0 / y, 1.0 / z));
@@ -66,7 +63,6 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
       }         
 
     SearchGridT(const SearchGridT& copy) :
-      UsedWithLockingHandle<Mutex>("Search Grid Lock"),
       ni_(copy.ni_), nj_(copy.nj_), nk_(copy.nk_),
       transform_(copy.transform_),
       bin_(copy.bin_)
@@ -152,8 +148,6 @@ class SCISHARE SearchGridT : public UsedWithLockingHandle<Mutex>
 
       locate(mini, minj, mink, bbox.min());
       locate(maxi, maxj, maxk, bbox.max());
-//      unsafe_locate(mini, minj, mink, bbox.min());
-//      unsafe_locate(maxi, maxj, maxk, bbox.max());
       
       for (index_type i = mini; i <= maxi; i++)
       {

@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -110,3 +111,4 @@ Barrier::wait(int n)
   priv_->mutex.unlock();
   Thread::couldBlockDone(oldstate);
 }
+#endif

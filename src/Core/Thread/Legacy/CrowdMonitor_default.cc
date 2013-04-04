@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #ifndef WIN32
 /*
    For more information, please see: http://software.sci.utah.edu
@@ -150,4 +151,5 @@ CrowdMonitor::writeUnlock()
 }
 
 } // End namespace SCIRun
+#endif
 #endif

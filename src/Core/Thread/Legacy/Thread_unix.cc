@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -177,3 +178,4 @@ Core_Thread_signal_name(int sig, void* addr)
   }
   return str.str();
 }
+#endif
