@@ -51,6 +51,7 @@
 
 #include <Core/Command/CommandFactory.h>
 #include <Core/Command/CommandQueue.h>
+#include <Core/CommandLine/CommandLine.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -371,7 +372,7 @@ public:
       return boost::make_shared<LoadFileCommandGui>();
     case ExecuteCurrentNetwork:
       return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
-    case QuitCommand:
+    case SetupQuitAfterExecute:
       return boost::make_shared<QuitCommandGui>();
     default:
       THROW_INVALID_ARGUMENT("Unknown global command type.");
@@ -385,12 +386,12 @@ class GlobalCommandBuilderFromCommandLine
 public:
   explicit GlobalCommandBuilderFromCommandLine(GlobalCommandFactoryHandle cmdFactory) : cmdFactory_(cmdFactory)
   {
-    ENSURE_NOT_NULL(cmdFactory);
+    ENSURE_NOT_NULL(cmdFactory, "CommandFactory");
   }
 
-  CommandQueueHandle build(ApplicationParametersHandle params)
+  CommandQueueHandle build(SCIRun::Core::CommandLine::ApplicationParametersHandle params)
   {
-    ENSURE_NOT_NULL(params);
+    ENSURE_NOT_NULL(params, "Application parameters");
     CommandQueueHandle q(boost::make_shared<CommandQueue>());
 
     if (params->inputFile())
