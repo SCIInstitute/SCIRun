@@ -29,15 +29,26 @@
 #ifndef CORE_COMMAND_COMMANDQUEUE_H
 #define CORE_COMMAND_COMMANDQUEUE_H
 
+#include <Core/Command/Command.h>
 #include <Core/Command/Share.h>
 
 namespace SCIRun
 {
   namespace Core
   {
-    namespace GlobalCommands
+    namespace Commands
     {
-    
+      class SCISHARE CommandQueue : boost::noncopyable
+      {
+      public:
+        void enqueue(CommandHandle cmd);
+        void runAll();
+        size_t size() const;
+      private:
+        std::vector<CommandHandle> commands_;
+      };
+
+      typedef boost::shared_ptr<CommandQueue> CommandQueueHandle;
     }
   }
 }

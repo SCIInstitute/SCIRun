@@ -40,6 +40,7 @@ int main(int argc, const char* argv[])
   {
     //TODO
     std::cout << "SCIRun headless mode not implemented yet, starting GUI." << std::endl;
+    return 0;
   }
 
 	return GuiApplication::run(argc, argv);

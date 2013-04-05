@@ -57,6 +57,13 @@ public:
 	static SCIRunMainWindow* Instance();
   void setController(boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller);
   void initialize();
+
+  //command access: extract an interface
+  void saveNetworkFile(const QString& fileName);
+  void loadNetworkFile(const QString& filename);
+  void setupQuitAfterExecute();
+  void executeAll();
+
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
@@ -71,9 +78,8 @@ private:
   QAction* actionEnterWhatsThisMode_;
   
 private:
+  void executeCommandLineRequests();
   bool okToContinue();
-  void saveNetworkFile(const QString& fileName);
-  void loadNetworkFile(const QString& filename);
   void setCurrentFile(const QString& fileName);
   void updateRecentFileActions();
   QString strippedName(const QString& fullFileName);

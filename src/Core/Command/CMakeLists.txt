@@ -34,6 +34,7 @@ SET(Core_Command_SRCS
 SET(Core_Command_HEADERS
   Command.h
   CommandFactory.h
+  CommandQueue.h
   Share.h
 )
 

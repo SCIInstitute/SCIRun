@@ -38,12 +38,14 @@ namespace SCIRun
   {
     namespace Commands
     {
-      class SCISHARE CommandFactory 
+      class SCISHARE GlobalCommandFactory : boost::noncopyable
       {
       public:
-        virtual ~CommandFactory();
-        virtual CommandHandle create(GlobalCommands command) = 0;
+        virtual ~GlobalCommandFactory();
+        virtual CommandHandle create(GlobalCommands type) = 0;
       };
+
+      typedef boost::shared_ptr<GlobalCommandFactory> GlobalCommandFactoryHandle;
     }
   }
 }

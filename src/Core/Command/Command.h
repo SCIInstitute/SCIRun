@@ -61,36 +61,28 @@ namespace SCIRun
         virtual void redo() = 0;
       };
 
-      //class SCISHARE GlobalCommand
-      //{
-      //public:
-      //  virtual ~GlobalCommand();
-      //  virtual void execute() = 0;
-      //};
+      class SCISHARE GuiCommand : public Command
+      {
+      };
 
-      //class SCISHARE CommandWithGui : public GlobalCommand
-      //{
-      //};
-
-      //class SCISHARE HeadlessCommand : public GlobalCommand
-      //{
-      //};
+      class SCISHARE ConsoleCommand : public Command
+      {
+      };
 
       enum GlobalCommands
       {
         LoadNetworkFile,
         ExecuteCurrentNetwork,
-        Quit
+        SetupQuitAfterExecute
       };
-
-      /*
-      class SCISHARE LoadFileCommand : public *Command
+     
+      class SCISHARE LoadFileCommandConsole : public ConsoleCommand
       {};
-      class SCISHARE ExecuteCurrentNetworkCommand : public *Command
+      class SCISHARE ExecuteCurrentNetworkCommandConsole : public ConsoleCommand
       {};
-      class SCISHARE QuitCommand : public *Command
+      class SCISHARE QuitCommandConsole : public ConsoleCommand
       {};
-      */
+      
     }
   }
 }

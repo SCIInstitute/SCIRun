@@ -28,7 +28,7 @@
 
 # Sources of Core/Exceptions classes
 
-SET(Core_Exceptions_SRCS
+SET(Core_Exceptions_Legacy_SRCS
   ArrayIndexOutOfBounds.cc 
   AssertionFailed.cc 
   DimensionMismatch.cc 
@@ -40,7 +40,7 @@ SET(Core_Exceptions_SRCS
   LapackError.cc
 )
 
-SET(Core_Exceptions_HEADERS
+SET(Core_Exceptions_Legacy_HEADERS
   ArrayIndexOutOfBounds.h 
   AssertionFailed.h 
   DimensionMismatch.h 
@@ -56,20 +56,20 @@ SET(Core_Exceptions_HEADERS
 )
 
 IF(WIN32 AND NOT CYGWIN)
-  SET(Core_Exceptions_SRCS ${Core_Exceptions_SRCS} StackWalker.cc)
-  SET(Core_Exceptions_HEADERS ${Core_Exceptions_HEADERS} StackWalker.h)
+  SET(Core_Exceptions_Legacy_SRCS ${Core_Exceptions_Legacy_SRCS} StackWalker.cc)
+  SET(Core_Exceptions_Legacy_HEADERS ${Core_Exceptions_Legacy_HEADERS} StackWalker.h)
 ENDIF(WIN32 AND NOT CYGWIN)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Exceptions)
+  ADD_DEFINITIONS(-DBUILD_Core_Exceptions_Legacy)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_LIBRARY(Core_Exceptions 
-  ${Core_Exceptions_SRCS} 
-  ${Core_Exceptions_HEADERS}
+ADD_LIBRARY(Core_Exceptions_Legacy 
+  ${Core_Exceptions_Legacy_SRCS} 
+  ${Core_Exceptions_Legacy_HEADERS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Exceptions 
+TARGET_LINK_LIBRARIES(Core_Exceptions_Legacy
   #${TRACEBACK_LIB} 
   #${DL_LIBRARY}
 )

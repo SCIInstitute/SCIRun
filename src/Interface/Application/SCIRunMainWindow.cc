@@ -49,6 +49,9 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
+#include <Core/Command/CommandFactory.h>
+#include <Core/Command/CommandQueue.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Engine;
@@ -323,7 +326,94 @@ void SCIRunMainWindow::initialize()
   
   prefs_->setRegressionTestDataDir();
 
-  //TODO: obviously need to move this lower for headless mode.
+  executeCommandLineRequests();
+}
+
+using namespace SCIRun::Core::Commands;
+
+
+class SCISHARE LoadFileCommandGui : public GuiCommand
+{
+public:
+  virtual void execute()
+  {
+    auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
+    SCIRun::Gui::SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
+  }
+};
+
+class SCISHARE ExecuteCurrentNetworkCommandGui : public GuiCommand
+{
+public:
+  virtual void execute()
+  {
+    SCIRun::Gui::SCIRunMainWindow::Instance()->executeAll();
+  }
+};
+
+class SCISHARE QuitCommandGui : public GuiCommand
+{
+public:
+  virtual void execute()
+  {
+    SCIRun::Gui::SCIRunMainWindow::Instance()->setupQuitAfterExecute();
+  }
+};
+
+class SCISHARE GuiGlobalCommandFactory : public GlobalCommandFactory
+{
+public:
+  virtual CommandHandle make(GlobalCommands type) const
+  {
+    switch (type)
+    {
+    case LoadNetworkFile:
+      return boost::make_shared<LoadFileCommandGui>();
+    case ExecuteCurrentNetwork:
+      return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
+    case QuitCommand:
+      return boost::make_shared<QuitCommandGui>();
+    default:
+      THROW_INVALID_ARGUMENT("Unknown global command type.");
+    }
+  }
+};
+
+
+class GlobalCommandBuilderFromCommandLine
+{
+public:
+  explicit GlobalCommandBuilderFromCommandLine(GlobalCommandFactoryHandle cmdFactory) : cmdFactory_(cmdFactory)
+  {
+    ENSURE_NOT_NULL(cmdFactory);
+  }
+
+  CommandQueueHandle build(ApplicationParametersHandle params)
+  {
+    ENSURE_NOT_NULL(params);
+    CommandQueueHandle q(boost::make_shared<CommandQueue>());
+
+    if (params->inputFile())
+      q->enqueue(cmdFactory_->create(LoadNetworkFile));
+    
+    if (params->executeNetwork())
+      q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
+    else if (params->executeNetworkAndQuit())
+    {
+      q->enqueue(cmdFactory_->create(SetupQuitAfterExecute));
+      q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
+    }
+
+    return q;
+  }
+
+private:
+  GlobalCommandFactoryHandle cmdFactory_;
+};
+
+void SCIRunMainWindow::executeCommandLineRequests()
+{
+ //TODO: obviously need to move this lower for headless mode.
   auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
   if (inputFile)
   {
@@ -341,6 +431,17 @@ void SCIRunMainWindow::initialize()
       networkEditor_->executeAll();
     }
   }
+}
+
+void SCIRunMainWindow::executeAll()
+{
+  networkEditor_->executeAll();
+}
+
+void SCIRunMainWindow::setupQuitAfterExecute()
+{
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
+  prefs_->setRegressionMode(true);
 }
 
 void SCIRunMainWindow::exitApplication(int code)
