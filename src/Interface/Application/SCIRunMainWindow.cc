@@ -50,14 +50,14 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <Core/Command/CommandFactory.h>
-#include <Core/Command/CommandQueue.h>
-#include <Core/CommandLine/CommandLine.h>
+#include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Core::Commands;
 
 namespace
 {
@@ -335,9 +335,6 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   prefs_->setRegressionTestDataDir();
 }
 
-using namespace SCIRun::Core::Commands;
-
-
 class /*SCISHARE*/ LoadFileCommandGui : public GuiCommand
 {
 public:
@@ -454,57 +451,6 @@ public:
       THROW_INVALID_ARGUMENT("Unknown global command type.");
     }
   }
-};
-
-
-class GlobalCommandBuilderFromCommandLine
-{
-public:
-  explicit GlobalCommandBuilderFromCommandLine(GlobalCommandFactoryHandle cmdFactory) : cmdFactory_(cmdFactory)
-  {
-    ENSURE_NOT_NULL(cmdFactory, "CommandFactory");
-  }
-
-  CommandQueueHandle build(SCIRun::Core::CommandLine::ApplicationParametersHandle params)
-  {
-    ENSURE_NOT_NULL(params, "Application parameters");
-    CommandQueueHandle q(boost::make_shared<CommandQueue>());
-
-    if (params->help())
-    {
-      q->enqueue(cmdFactory_->create(PrintHelp));
-      q->enqueue(cmdFactory_->create(QuitCommand));
-      return q;
-    }
-
-    if (params->version())
-    {
-      q->enqueue(cmdFactory_->create(PrintVersion));
-      q->enqueue(cmdFactory_->create(QuitCommand));
-      return q;
-    }
-
-    if (!params->disableGui())
-      q->enqueue(cmdFactory_->create(ShowMainWindow));
-    else
-      std::cout << "HEADLESS MODE" << std::endl;
-
-    if (params->inputFile())
-      q->enqueue(cmdFactory_->create(LoadNetworkFile));
-    
-    if (params->executeNetwork())
-      q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
-    else if (params->executeNetworkAndQuit())
-    {
-      q->enqueue(cmdFactory_->create(SetupQuitAfterExecute));
-      q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
-    }
-
-    return q;
-  }
-
-private:
-  GlobalCommandFactoryHandle cmdFactory_;
 };
 
 void SCIRunMainWindow::executeCommandLineRequests()

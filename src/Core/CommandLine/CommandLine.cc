@@ -46,14 +46,14 @@ public:
   {
       desc_.add_options()
       ("help,h", "prints usage information")
-      ("version,v", "prints out version information--TODO")
+      ("version,v", "prints out version information")
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory--TODO")
       ("regression,r", "regression test a network--TODO")
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("interactive,i", "interactive mode--TODO")
-      ("headless,x", "disable GUI--TODO")
+      ("headless,x", "disable GUI (Qt still needed, for now)")
       ("input-file", po::value<std::string>(), "SCIRun Network Input File")
       ;
       
