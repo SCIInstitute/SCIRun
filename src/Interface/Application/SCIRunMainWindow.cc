@@ -333,7 +333,7 @@ void SCIRunMainWindow::initialize()
 using namespace SCIRun::Core::Commands;
 
 
-class SCISHARE LoadFileCommandGui : public GuiCommand
+class /*SCISHARE*/ LoadFileCommandGui : public GuiCommand
 {
 public:
   virtual void execute()
@@ -343,7 +343,7 @@ public:
   }
 };
 
-class SCISHARE ExecuteCurrentNetworkCommandGui : public GuiCommand
+class /*SCISHARE*/ ExecuteCurrentNetworkCommandGui : public GuiCommand
 {
 public:
   virtual void execute()
@@ -352,7 +352,7 @@ public:
   }
 };
 
-class SCISHARE QuitCommandGui : public GuiCommand
+class /*SCISHARE*/ QuitAfterExecuteCommandGui : public GuiCommand
 {
 public:
   virtual void execute()
@@ -361,10 +361,19 @@ public:
   }
 };
 
-class SCISHARE GuiGlobalCommandFactory : public GlobalCommandFactory
+class /*SCISHARE*/ QuitCommandGui : public GuiCommand
 {
 public:
-  virtual CommandHandle make(GlobalCommands type) const
+  virtual void execute()
+  {
+    SCIRun::Gui::SCIRunMainWindow::Instance()->quit();
+  }
+};
+
+class /*SCISHARE*/ GuiGlobalCommandFactory : public GlobalCommandFactory
+{
+public:
+  virtual CommandHandle create(GlobalCommands type) const
   {
     switch (type)
     {
@@ -373,6 +382,8 @@ public:
     case ExecuteCurrentNetwork:
       return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
     case SetupQuitAfterExecute:
+      return boost::make_shared<QuitAfterExecuteCommandGui>();
+    case QuitCommand:
       return boost::make_shared<QuitCommandGui>();
     default:
       THROW_INVALID_ARGUMENT("Unknown global command type.");
@@ -405,6 +416,18 @@ public:
       q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
     }
 
+    if (params->help())
+    {
+      std::cout << "HELLO HELP YADDA YADDA" << std::endl;
+      q->enqueue(cmdFactory_->create(QuitCommand));
+    }
+
+    if (params->version())
+    {
+      std::cout << "The version is 5." << std::endl;
+      q->enqueue(cmdFactory_->create(QuitCommand));
+    }
+
     return q;
   }
 
@@ -414,24 +437,10 @@ private:
 
 void SCIRunMainWindow::executeCommandLineRequests()
 {
- //TODO: obviously need to move this lower for headless mode.
-  auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
-  if (inputFile)
-  {
-    loadNetworkFile(QString::fromStdString(inputFile.get()));
-    if (SCIRun::Core::Application::Instance().parameters()->executeNetwork())
-    {
-      // -e
-      networkEditor_->executeAll();
-    }
-    else if (SCIRun::Core::Application::Instance().parameters()->executeNetworkAndQuit())
-    {
-      // -E
-      connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
-      prefs_->setRegressionMode(true);
-      networkEditor_->executeAll();
-    }
-  }
+  GlobalCommandFactoryHandle gcf(boost::make_shared<GuiGlobalCommandFactory>());
+  GlobalCommandBuilderFromCommandLine builder(gcf);
+  auto queue = builder.build(SCIRun::Core::Application::Instance().parameters());
+  queue->runAll();
 }
 
 void SCIRunMainWindow::executeAll()
@@ -449,6 +458,11 @@ void SCIRunMainWindow::exitApplication(int code)
 {
   close(); 
   /*qApp->*/exit(code);
+}
+
+void SCIRunMainWindow::quit()
+{
+  exitApplication(0);
 }
 
 void SCIRunMainWindow::saveNetwork()

@@ -43,7 +43,7 @@ namespace SCIRun
       {
       public:
         virtual ~GlobalCommandFactory() {}
-        virtual CommandHandle create(GlobalCommands type) = 0;
+        virtual CommandHandle create(GlobalCommands type) const = 0;
       };
 
       typedef boost::shared_ptr<GlobalCommandFactory> GlobalCommandFactoryHandle;

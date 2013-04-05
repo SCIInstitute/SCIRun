@@ -29,6 +29,7 @@
 SET(Core_Command_SRCS
   Command.cc
   CommandFactory.cc
+  CommandQueue.cc
 )
 
 SET(Core_Command_HEADERS

@@ -73,15 +73,16 @@ namespace SCIRun
       {
         LoadNetworkFile,
         ExecuteCurrentNetwork,
-        SetupQuitAfterExecute
+        SetupQuitAfterExecute,
+        QuitCommand
       };
      
-      class SCISHARE LoadFileCommandConsole : public ConsoleCommand
-      {};
-      class SCISHARE ExecuteCurrentNetworkCommandConsole : public ConsoleCommand
-      {};
-      class SCISHARE QuitCommandConsole : public ConsoleCommand
-      {};
+      //class SCISHARE LoadFileCommandConsole : public ConsoleCommand
+      //{};
+      //class SCISHARE ExecuteCurrentNetworkCommandConsole : public ConsoleCommand
+      //{};
+      //class SCISHARE QuitCommandConsole : public ConsoleCommand
+      //{};
       
     }
   }

@@ -105,6 +105,7 @@ SET(NonPythonInterface_ApplicationLinkLibraries
   Dataflow_Network
   Core_Application
   Core_Logging
+  Core_Command
   Interface_Modules_Base
   Interface_Modules_Factory
   ${SCI_BOOST_LIBRARY}

@@ -26,33 +26,21 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef CORE_COMMAND_COMMANDQUEUE_H
-#define CORE_COMMAND_COMMANDQUEUE_H
+#include <Core/Command/CommandQueue.h>
 
-#include <boost/noncopyable.hpp>
-#include <vector>
-#include <Core/Command/Command.h>
-#include <Core/Command/Share.h>
+using namespace SCIRun::Core::Commands;
 
-namespace SCIRun
+void CommandQueue::enqueue(CommandHandle cmd)
 {
-  namespace Core
-  {
-    namespace Commands
-    {
-      class SCISHARE CommandQueue : boost::noncopyable
-      {
-      public:
-        void enqueue(CommandHandle cmd);
-        void runAll();
-        size_t size() const;
-      private:
-        std::vector<CommandHandle> commands_;
-      };
-
-      typedef boost::shared_ptr<CommandQueue> CommandQueueHandle;
-    }
-  }
+  commands_.push_back(cmd);
 }
 
-#endif
+void CommandQueue::runAll()
+{
+  std::for_each(commands_.begin(), commands_.end(), [](CommandHandle c) { if (c) c->execute(); });
+}
+
+size_t CommandQueue::size() const
+{
+  return commands_.size();
+}

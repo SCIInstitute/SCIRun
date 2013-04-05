@@ -63,6 +63,7 @@ public:
   void loadNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
   void executeAll();
+  void quit();
 
 protected:
   virtual void closeEvent(QCloseEvent* event);
