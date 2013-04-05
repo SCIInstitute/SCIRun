@@ -44,21 +44,23 @@ int GuiApplication::run(int argc, const char* argv[])
   { 
     SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
 
-    QPixmap pixmap(":/gear/splash-scirun.png");
-    QSplashScreen splash(0, pixmap,  Qt::WindowStaysOnTopHint);
-    splash.show();
-
-    QTimer splashTimer;
-    splashTimer.setSingleShot( true );
-    splashTimer.setInterval( 5000 );
-    QObject::connect( &splashTimer, SIGNAL( timeout() ), &splash, SLOT( close() ));
-    splashTimer.start(); 
-    splash.showMessage("Welcome! Tip: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
-    app.processEvents();
-    
     mainWin->setController(Core::Application::Instance().controller());
-    mainWin->raise();
-    mainWin->show();
+
+//     QPixmap pixmap(":/gear/splash-scirun.png");
+//     QSplashScreen splash(0, pixmap,  Qt::WindowStaysOnTopHint);
+//     splash.show();
+// 
+//     QTimer splashTimer;
+//     splashTimer.setSingleShot( true );
+//     splashTimer.setInterval( 5000 );
+//     QObject::connect( &splashTimer, SIGNAL( timeout() ), &splash, SLOT( close() ));
+//     splashTimer.start(); 
+//     splash.showMessage("Welcome! Tip: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
+//     app.processEvents();
+//     
+//     mainWin->setController(Core::Application::Instance().controller());
+//     mainWin->raise();
+//     mainWin->show();
     mainWin->initialize();
     
     return app.exec();

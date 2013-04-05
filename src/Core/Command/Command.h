@@ -71,6 +71,7 @@ namespace SCIRun
 
       enum GlobalCommands
       {
+        ShowMainWindow,
         LoadNetworkFile,
         ExecuteCurrentNetwork,
         SetupQuitAfterExecute,

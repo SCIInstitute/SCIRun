@@ -79,6 +79,7 @@ private:
   QAction* actionEnterWhatsThisMode_;
   
 private:
+  void postConstructionSignalHookup();
   void executeCommandLineRequests();
   bool okToContinue();
   void setCurrentFile(const QString& fileName);

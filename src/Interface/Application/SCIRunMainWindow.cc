@@ -302,10 +302,17 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupPythonConsole();
 
   makeFilterButtonMenu();
-  activateWindow();
+  
 }
 
 void SCIRunMainWindow::initialize()
+{
+  postConstructionSignalHookup();
+
+  executeCommandLineRequests();
+}
+
+void SCIRunMainWindow::postConstructionSignalHookup()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
@@ -324,10 +331,8 @@ void SCIRunMainWindow::initialize()
   connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), 
     commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
-  
-  prefs_->setRegressionTestDataDir();
 
-  executeCommandLineRequests();
+  prefs_->setRegressionTestDataDir();
 }
 
 using namespace SCIRun::Core::Commands;
@@ -370,6 +375,42 @@ public:
   }
 };
 
+class /*SCISHARE*/ ShowMainWindowGui : public GuiCommand
+{
+public:
+  ShowMainWindowGui() 
+  {
+    initSplashScreen();
+  }
+  virtual void execute()
+  {
+    splash_->show();
+
+    QTimer splashTimer;
+    splashTimer.setSingleShot( true );
+    splashTimer.setInterval( 5000 );
+    QObject::connect( &splashTimer, SIGNAL( timeout() ), splash_, SLOT( close() ));
+    splashTimer.start(); 
+    splash_->showMessage("Welcome! Tip: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
+    qApp->processEvents();
+
+    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+    mainWin->activateWindow();
+    
+    mainWin->raise();
+    mainWin->show();
+  }
+  static void initSplashScreen()
+  {
+    splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png"),  Qt::WindowStaysOnTopHint);
+  }
+private:
+  static QSplashScreen* splash_;
+};
+
+QSplashScreen* ShowMainWindowGui::splash_ = 0;
+
+
 class /*SCISHARE*/ GuiGlobalCommandFactory : public GlobalCommandFactory
 {
 public:
@@ -377,6 +418,8 @@ public:
   {
     switch (type)
     {
+    case ShowMainWindow:
+      return boost::make_shared<ShowMainWindowGui>();
     case LoadNetworkFile:
       return boost::make_shared<LoadFileCommandGui>();
     case ExecuteCurrentNetwork:
@@ -405,6 +448,25 @@ public:
     ENSURE_NOT_NULL(params, "Application parameters");
     CommandQueueHandle q(boost::make_shared<CommandQueue>());
 
+    if (params->help())
+    {
+      std::cout << "HELLO HELP YADDA YADDA" << std::endl;
+      q->enqueue(cmdFactory_->create(QuitCommand));
+      return q;
+    }
+
+    if (params->version())
+    {
+      std::cout << "The version is 5." << std::endl;
+      q->enqueue(cmdFactory_->create(QuitCommand));
+      return q;
+    }
+
+    if (!params->disableGui())
+      q->enqueue(cmdFactory_->create(ShowMainWindow));
+    else
+      std::cout << "HEADLESS MODE" << std::endl;
+
     if (params->inputFile())
       q->enqueue(cmdFactory_->create(LoadNetworkFile));
     
@@ -414,18 +476,6 @@ public:
     {
       q->enqueue(cmdFactory_->create(SetupQuitAfterExecute));
       q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
-    }
-
-    if (params->help())
-    {
-      std::cout << "HELLO HELP YADDA YADDA" << std::endl;
-      q->enqueue(cmdFactory_->create(QuitCommand));
-    }
-
-    if (params->version())
-    {
-      std::cout << "The version is 5." << std::endl;
-      q->enqueue(cmdFactory_->create(QuitCommand));
     }
 
     return q;
