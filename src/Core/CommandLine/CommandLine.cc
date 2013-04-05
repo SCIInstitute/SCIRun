@@ -28,6 +28,7 @@
 
 #include <Core/CommandLine/CommandLine.h>
 #include <boost/program_options.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace SCIRun::Core::CommandLine;
 namespace po = boost::program_options;
@@ -162,7 +163,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
 {
   auto parsed = impl_->parse(argc, argv);
   boost::optional<std::string> inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
-  ApplicationParametersHandle aph(new ApplicationParametersImpl
+  return boost::make_shared<ApplicationParametersImpl>
     (
       inputFile,
       parsed.count("help") != 0,
@@ -170,9 +171,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       parsed.count("execute") != 0,
       parsed.count("Execute") != 0,
       parsed.count("headless") != 0
-    ));
-
-  return aph;
+    );
 }
 
 ApplicationParameters::~ApplicationParameters()

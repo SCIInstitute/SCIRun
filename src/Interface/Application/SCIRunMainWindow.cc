@@ -375,6 +375,24 @@ public:
   }
 };
 
+class /*SCISHARE*/ PrintHelpGui : public GuiCommand
+{
+public:
+  virtual void execute()
+  {
+    std::cout << SCIRun::Core::Application::Instance().commandHelpString() << std::endl;
+  }
+};
+
+class /*SCISHARE*/ PrintVersionGui : public GuiCommand
+{
+public:
+  virtual void execute()
+  {
+    std::cout << SCIRun::Core::Application::Instance().version() << std::endl;
+  }
+};
+
 class /*SCISHARE*/ ShowMainWindowGui : public GuiCommand
 {
 public:
@@ -420,6 +438,10 @@ public:
     {
     case ShowMainWindow:
       return boost::make_shared<ShowMainWindowGui>();
+    case PrintHelp:
+      return boost::make_shared<PrintHelpGui>();
+    case PrintVersion:
+      return boost::make_shared<PrintVersionGui>();
     case LoadNetworkFile:
       return boost::make_shared<LoadFileCommandGui>();
     case ExecuteCurrentNetwork:
@@ -450,14 +472,14 @@ public:
 
     if (params->help())
     {
-      std::cout << "HELLO HELP YADDA YADDA" << std::endl;
+      q->enqueue(cmdFactory_->create(PrintHelp));
       q->enqueue(cmdFactory_->create(QuitCommand));
       return q;
     }
 
     if (params->version())
     {
-      std::cout << "The version is 5." << std::endl;
+      q->enqueue(cmdFactory_->create(PrintVersion));
       q->enqueue(cmdFactory_->create(QuitCommand));
       return q;
     }

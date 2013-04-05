@@ -100,12 +100,19 @@ boost::filesystem::path Application::executablePath() const
   return private_->app_filepath_;
 }
 
-/*
-std::string Application::GetVersion()
+std::string Application::commandHelpString() const
 {
-	return CORE_APPLICATION_VERSION;
+  return private_->parser.describe();
 }
 
+std::string Application::version() const
+{
+	//TODO:
+  //return CORE_APPLICATION_VERSION;
+  return "5.0.0 developer version";
+}
+
+/*
 int Application::GetMajorVersion()
 {
 	return CORE_APPLICATION_MAJOR_VERSION;
