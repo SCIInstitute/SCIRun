@@ -58,12 +58,15 @@ public:
 
 void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
 {
-  impl_ = impl;
+  if (!impl_)
+  {
+    impl_ = impl;
 
-  boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
-    StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
-  boost::python::to_python_converter< std::vector< std::string >, 
-    StdVectorToListConverter< std::string >, true >();
+    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
+      StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
+    boost::python::to_python_converter< std::vector< std::string >, 
+      StdVectorToListConverter< std::string >, true >();
+  }
 }
 
 void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
