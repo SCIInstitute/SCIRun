@@ -161,10 +161,10 @@ Cubic3DPWI<T>::set_data(const Array1<double>& pts, const Array1<T>& vals)
 #if DEBUG
     std::cout << "Derivatives are done!!!" << std::endl;
 #endif
-    Array1<Vector> drvs;
+    Array1<Core::Geometry::Vector> drvs;
     drvs.resize(sz);
     for (int i = 0; i < sz; i++) {
-      drvs[i] = Vector(drvX[i], drvY[i], drvZ[i]);
+      drvs[i] = Core::Geometry::Vector(drvX[i], drvY[i], drvZ[i]);
     }
     return set_data(pts, vals, drvs); 		   
   }
