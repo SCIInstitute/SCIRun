@@ -203,17 +203,15 @@ void ShowMeshModule::buildEdgesNoNormals(MeshFacadeHandle facade,
     // There should *only* be two indicies (linestrip would be better...)
     VirtualMesh::Node::array_type nodes = edge.nodeIndices();
     ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
-    // Winding order looks good from tests.
-    // Render two triangles.
     iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
     i += 2;
   }
 
-  // Add IBO for the faces.
+  // Add IBO for the edges.
   std::string edgesIBOName = "edgesIBO";
   geom->mIBOs.emplace_back(GeometryObject::SpireIBO(edgesIBOName, sizeof(uint32_t), rawIBO));
 
-  // Build pass for the faces.
+  // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpirePass pass = 
       GeometryObject::SpirePass("edgesPass", primaryVBOName,
@@ -237,8 +235,46 @@ void ShowMeshModule::buildNodesNoNormals(MeshFacadeHandle facade,
                                          GeometryHandle geom,
                                          const std::string& primaryVBOName)
 {
-  
+  bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
+
+  size_t iboNodesSize = sizeof(uint32_t) * facade->numNodes();
+  uint32_t* iboNodes = nullptr;
+
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawIBO->resize(iboNodesSize);   // Linear in complexity... If we need more performance,
+  // use malloc to generate buffer and then vector::assign.
+  iboNodes = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
+  size_t i = 0;
+  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  {
+    // There should *only* be two indicies (linestrip would be better...)
+    //node.index()
+    //VirtualMesh::Node::array_type nodes = node.nodeIndices();
+    //ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
+    iboNodes[i] = static_cast<uint32_t>(node.index());
+    i++;
+  }
+
+  // Add IBO for the nodes.
+  std::string nodesIBOName = "nodesIBO";
+  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(nodesIBOName, sizeof(uint32_t), rawIBO));
+
+  // Build pass for the nodes.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::SpirePass pass = 
+      GeometryObject::SpirePass("nodesPass", primaryVBOName,
+                                nodesIBOName, "UniformColor",
+                                Spire::StuInterface::POINTS);
+
+  // Add appropriate uniforms to the pass (in this case, uColor).
+  if (nodeTransparency)
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+  else
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+
+  geom->mPasses.emplace_back(pass);
 }
+
 AlgorithmParameterName ShowMeshModule::ShowNodes("Show nodes");
 AlgorithmParameterName ShowMeshModule::ShowEdges("Show edges");
 AlgorithmParameterName ShowMeshModule::ShowFaces("Show faces");
