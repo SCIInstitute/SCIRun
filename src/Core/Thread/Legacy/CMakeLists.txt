@@ -104,7 +104,7 @@ ADD_LIBRARY(Core_Thread_Legacy
   )
 
 SET(Core_Thread_Legacy_Link
-  Core_Exceptions 
+  Core_Exceptions_Legacy 
   #${THREAD_LIBRARY}  
   #${TRACEBACK_LIB} 
 )

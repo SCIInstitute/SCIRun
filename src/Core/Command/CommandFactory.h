@@ -29,6 +29,7 @@
 #ifndef CORE_COMMAND_COMMANDFACTORY_H
 #define CORE_COMMAND_COMMANDFACTORY_H
 
+#include <boost/noncopyable.hpp>
 #include <Core/Command/Command.h>
 #include <Core/Command/Share.h>
 
@@ -41,7 +42,7 @@ namespace SCIRun
       class SCISHARE GlobalCommandFactory : boost::noncopyable
       {
       public:
-        virtual ~GlobalCommandFactory();
+        virtual ~GlobalCommandFactory() {}
         virtual CommandHandle create(GlobalCommands type) = 0;
       };
 

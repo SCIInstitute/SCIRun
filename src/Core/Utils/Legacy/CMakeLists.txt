@@ -74,7 +74,7 @@ ADD_LIBRARY(Core_Util_Legacy
   )
 
 TARGET_LINK_LIBRARIES(Core_Util_Legacy 
-  Core_Exceptions 
+  Core_Exceptions_Legacy 
   #Core_Thread_Legacy
   #${DL_LIBRARY}
   #${THREAD_LIBRARY}

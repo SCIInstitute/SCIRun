@@ -65,7 +65,7 @@ ADD_LIBRARY(Core_Math
 )
 
 TARGET_LINK_LIBRARIES(Core_Math
-  Core_Exceptions
+  Core_Exceptions_Legacy
 )
 
 IF(BUILD_SHARED_LIBS)
