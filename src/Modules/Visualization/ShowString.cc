@@ -41,6 +41,5 @@ void ShowStringModule::execute()
 {
   auto str = getRequiredInput(String);
 
-  GeometryHandle geom(new GeometryObject(str));
-  sendOutput(RenderedString, geom);
+  sendOutput(RenderedString, boost::make_shared<GeometryObject>(str));
 }

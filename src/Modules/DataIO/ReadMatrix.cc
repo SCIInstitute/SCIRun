@@ -54,6 +54,5 @@ void ReadMatrixModule::execute()
 
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
   sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
+  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
 }

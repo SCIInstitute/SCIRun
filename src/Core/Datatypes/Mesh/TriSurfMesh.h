@@ -31,8 +31,6 @@
 
 //#include <Core/Datatypes/MeshSupport.h>
 
-//#include <Core/Containers/LockingHandle.h>
-//#include <Core/Containers/Handle.h>
 //#include <Core/Containers/StackVector.h>
 
 #include <Core/Utils/Exception.h>
@@ -330,8 +328,7 @@ public:
 
   virtual MeshFacadeHandle getFacade() const 
   {
-    //TODO!!!
-    return MeshFacadeHandle(new VirtualMeshFacade(vmesh()));
+    return boost::make_shared<VirtualMeshFacade>(vmesh());
   }
 
   //! Destructor 
@@ -1337,8 +1334,7 @@ public:
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() 
   { 
-    MeshHandle handle(new TriSurfMesh<Basis>()); 
-    return handle;
+    return boost::make_shared<TriSurfMesh<Basis>>(); 
   }
   
 

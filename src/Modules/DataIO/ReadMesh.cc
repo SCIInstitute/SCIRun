@@ -58,6 +58,5 @@ void ReadMeshModule::execute()
 
   MeshHandle mesh = algo.run(filename_);
   sendOutput(OutputSampleField, mesh);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
+  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
 }

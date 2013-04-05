@@ -571,14 +571,12 @@ public:
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() 
   { 
-    MeshHandle ret(new LatVolMesh()); 
-    return ret;
+    return boost::make_shared<LatVolMesh>();
   }
   //! This function returns a handle for the virtual interface.
   static MeshHandle latvol_maker(const SCIRun::Core::Datatypes::MeshConstructionParameters& params) 
   { 
-    MeshHandle ret(new LatVolMesh(params.x_, params.y_, params.z_, params.min_, params.max_)); 
-    return ret;
+    return boost::make_shared<LatVolMesh>(params.x_, params.y_, params.z_, params.min_, params.max_); 
   }
 
 protected:

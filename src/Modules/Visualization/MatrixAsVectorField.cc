@@ -47,6 +47,5 @@ void MatrixAsVectorFieldModule::execute()
     return;
   }
 
-  GeometryHandle geom(new GeometryObject(mat));
-  sendOutput(RenderedMatrix, geom);
+  sendOutput(RenderedMatrix, boost::make_shared<GeometryObject>(mat));
 }

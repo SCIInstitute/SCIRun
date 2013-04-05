@@ -155,7 +155,7 @@ public:
 
 VirtualMeshHandle SCIRun::Core::Datatypes::CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
 {
-  return VirtualMeshHandle(new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh));
+  return boost::make_shared<VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point>>>>(mesh);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

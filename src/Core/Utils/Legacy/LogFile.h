@@ -35,9 +35,6 @@
 #ifndef CORE_UTIL_LOGFILE_H
 #define CORE_UTIL_LOGFILE_H 1
 
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Thread/Legacy/UsedWithLockingHandle.h>
-
 #include <fstream>
 #include <string>
 
@@ -45,7 +42,7 @@
 
 namespace SCIRun {
 	
-class SCISHARE LogFile : public UsedWithLockingHandle<Mutex>
+class SCISHARE LogFile 
 {
 public:
   // Create a log file, that can used by multiple threads without
@@ -62,7 +59,7 @@ private:
   bool haslog_;
 };
 
-typedef LockingHandle<LogFile> LogFileHandle;
+typedef boost::shared_ptr<LogFile> LogFileHandle;
 
 }
 

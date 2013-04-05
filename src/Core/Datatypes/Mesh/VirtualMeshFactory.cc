@@ -1127,7 +1127,7 @@ protected:
 
 VirtualMeshHandle VirtualMeshFactory::CreateVLatVolMesh(LatVolMesh<HexTrilinearLgn<Point> >* mesh)
 {
-  return VirtualMeshHandle(new VirtualLatticeVolumeMesh<LatVolMesh<HexTrilinearLgn<Point> > >(mesh));
+  return boost::make_shared<VirtualLatticeVolumeMesh<LatVolMesh<HexTrilinearLgn<Point>>>>(mesh);
 }
 
 

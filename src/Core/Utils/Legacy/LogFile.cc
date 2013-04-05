@@ -37,7 +37,6 @@
 namespace SCIRun {
 
 LogFile::LogFile(const std::string& filename) :
-  UsedWithLockingHandle<Mutex>("servicelog lock"), 
   haslog_(false) 
 {	
   if (!filename.empty())

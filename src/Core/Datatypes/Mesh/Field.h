@@ -39,7 +39,6 @@
 //#include <Core/Datatypes/Mesh.h>
 //#include <Core/Datatypes/VMesh.h>
 //#include <Core/Datatypes/VField.h>
-//#include <Core/Containers/LockingHandle.h>
 //
 //#include <Core/Util/Debug.h>
 //#include <Core/Util/ProgressReporter.h>
