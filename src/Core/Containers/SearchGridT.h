@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -54,7 +55,7 @@ class SCISHARE SearchGridT
                const Core::Geometry::Point &min, const Core::Geometry::Point &max) :
         ni_(x), nj_(y), nk_(z)
       {
-        transform_.pre_scale(Vector(1.0 / x, 1.0 / y, 1.0 / z));
+        transform_.pre_scale(Core::Geometry::Vector(1.0 / x, 1.0 / y, 1.0 / z));
         transform_.pre_scale(max - min);
 
         transform_.pre_translate(min.asVector());
@@ -260,4 +261,5 @@ class SCISHARE SearchGridT
 
 } // namespace SCIRun
 
+#endif
 #endif
