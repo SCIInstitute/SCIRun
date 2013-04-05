@@ -401,11 +401,7 @@ public:
   {
     splash_->show();
 
-    QTimer splashTimer;
-    splashTimer.setSingleShot( true );
-    splashTimer.setInterval( 5000 );
-    QObject::connect( &splashTimer, SIGNAL( timeout() ), splash_, SLOT( close() ));
-    splashTimer.start(); 
+    splashTimer_->start();
     splash_->showMessage("Welcome! Tip: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
     qApp->processEvents();
 
@@ -418,12 +414,18 @@ public:
   static void initSplashScreen()
   {
     splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png"),  Qt::WindowStaysOnTopHint);
+    splashTimer_ = new QTimer;
+    splashTimer_->setSingleShot( true );
+    splashTimer_->setInterval( 5000 );
+    QObject::connect( splashTimer_, SIGNAL( timeout() ), splash_, SLOT( close() ));
   }
 private:
   static QSplashScreen* splash_;
+  static QTimer* splashTimer_;
 };
 
 QSplashScreen* ShowMainWindowGui::splash_ = 0;
+QTimer* ShowMainWindowGui::splashTimer_ = 0;
 
 
 class /*SCISHARE*/ GuiGlobalCommandFactory : public GlobalCommandFactory
