@@ -32,6 +32,7 @@
 #ifndef CORE_CONTAINERS_STACKBASEDVECTOR_H
 #define CORE_CONTAINERS_STACKBASEDVECTOR_H 1
 
+#include <algorithm>
 #include <vector>
 
 //! This vector type is similar in performance to the StackVector, but checks
@@ -42,11 +43,11 @@
 
 namespace SCIRun {
 
-template<class T, int CAPACITY>
+template<class T, size_t CAPACITY>
 class StackBasedVector : public std::vector<T>
 {
 public:
-  StackBasedVector(size_t size = CAPACITY) : std::vector<T>(size) 
+  StackBasedVector(size_t size = 0) : std::vector<T>(std::min(size, CAPACITY)) 
   {
     this->reserve(CAPACITY);
   }

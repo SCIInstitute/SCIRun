@@ -66,7 +66,6 @@ namespace Datatypes {
       else
       {
         vmesh_->synchronize(Mesh::EDGES_E);
-        vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
         vmesh_->end(iter_);
       }
       current_.setIndex(*iter_);
@@ -174,10 +173,7 @@ namespace Datatypes {
   {
   public:
     typedef VirtualMesh::Node::iterator iterator;
-    explicit NodeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh)
-    {
-      vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
-    }
+    explicit NodeInfo(VirtualMesh* mesh) : synched_(false), index_(0), vmesh_(mesh) {}
     void setIndex(VirtualMesh::Node::index_type i) { index_ = i; }
 
     VirtualMesh::Node::index_type index() const { return index_; }
@@ -189,11 +185,17 @@ namespace Datatypes {
     }
     VirtualMesh::Edge::array_type edgeIndices() const
     {
+      if (!synched_)
+      {
+        vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
+        synched_ = true;
+      }
       VirtualMesh::Edge::array_type edgesFromNode(6);
       vmesh_->get_edges(edgesFromNode, index_);
       return edgesFromNode;
     }
   private:
+    mutable bool synched_;
     VirtualMesh::Node::index_type index_;
     VirtualMesh* vmesh_;
   };
