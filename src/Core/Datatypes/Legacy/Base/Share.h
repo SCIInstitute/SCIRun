@@ -26,16 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_GEOMETRY_GEOMFWD_H
-#define CORE_GEOMETRY_GEOMFWD_H 
+#undef SCISHARE
 
-namespace SCIRun {
-namespace Core {
-namespace Geometry {
-
-class Point;
-class Vector;
-class Transform;
-
-}}}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Datatypes_Legacy_Base
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif

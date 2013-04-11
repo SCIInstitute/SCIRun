@@ -26,58 +26,32 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Datatypes_SRCS
-  Datatype.cc
-  Geometry.cc
-  Matrix.cc
-  MatrixTypeConversions.cc
-  Scalar.cc
-  String.cc
+SET(Core_Datatypes_Legacy_Base_SRCS
+  #Datatype.cc
+  #PropertyManager.cc
+  TypeName.cc
 )
 
-SET(Core_Datatypes_HEADERS
-  Datatype.h
-  DatatypeFwd.h
-  DenseMatrix.h
-  DenseColumnMatrix.h
-  Geometry.h
-  Matrix.h
-  MatrixComparison.h
-  MatrixFwd.h
-  MatrixIO.h
-  MatrixTypeConversions.h
-  Scalar.h
-  Share.h
-  SparseRowMatrix.h
-  String.h
+SET(Core_Datatypes_Legacy_Base_HEADERS
+  #Datatype.h
+  #PropertyManager.h
+  TypeName.h
   Types.h
+  Share.h
 )
 
-# Spire related includes (required for linking on windows)
-FIND_PACKAGE(OpenGL REQUIRED)
-if(UNIX)
-  if(APPLE)
-    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    set(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
-  endif()
-endif()
-
-ADD_LIBRARY(Core_Datatypes 
-  ${Core_Datatypes_HEADERS}
-  ${Core_Datatypes_SRCS}
+ADD_LIBRARY(Core_Datatypes_Legacy_Base
+  ${Core_Datatypes_Legacy_Base_HEADERS}
+  ${Core_Datatypes_Legacy_Base_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Core_Datatypes
-  ${OPENGL_LIBRARIES}
-  ${SCI_SPIRE_LIBRARY}
-  ${SCI_SPIRE_EXTRA_LIBRARIES}
-  )
+#TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Base
+  
+#)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Legacy_Base)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
-ADD_SUBDIRECTORY(Mesh)
-ADD_SUBDIRECTORY(Legacy)
 

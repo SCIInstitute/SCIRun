@@ -47,10 +47,8 @@
 #include <map>
 #include <sstream>
 
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Datatypes/share.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
+#include <Core/Datatypes/Legacy/Base/share.h>
 
 namespace SCIRun {
 
@@ -109,7 +107,6 @@ template <class T> const std::string find_type_name(T*)
 template<class T, class S> const std::string find_type_name( std::pair<T,S> *);
 
 class IntVector;
-class Transform;
 template <typename T>
 class Matrix;
 class NrrdData;
@@ -131,16 +128,18 @@ template<> SCISHARE const std::string find_type_name(unsigned long long*);
 template<> SCISHARE const std::string find_type_name(char*);
 template<> SCISHARE const std::string find_type_name(unsigned char*);
 template<> SCISHARE const std::string find_type_name(bool*);
-template<> SCISHARE const std::string find_type_name(Vector*);
+template<> SCISHARE const std::string find_type_name(SCIRun::Core::Geometry::Vector*);
 template<> SCISHARE const std::string find_type_name(IntVector*);
-template<> SCISHARE const std::string find_type_name(Point*);
-template<> SCISHARE const std::string find_type_name(Transform*);
+template<> SCISHARE const std::string find_type_name(SCIRun::Core::Geometry::Point*);
+template<> SCISHARE const std::string find_type_name(SCIRun::Core::Geometry::Transform*);
 template<> SCISHARE const std::string find_type_name(std::string*);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template<> SCISHARE const std::string find_type_name(LockingHandle< Matrix<double> > *);
 template<> SCISHARE const std::string find_type_name(LockingHandle<NrrdData> *);
 template<> SCISHARE const std::string find_type_name(LockingHandle<Field> *);
 template<> SCISHARE const std::string find_type_name(LockingHandle<String> *);
+#endif
 
 //////////
 // Function overloading for templates 

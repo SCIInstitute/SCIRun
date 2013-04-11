@@ -42,13 +42,14 @@
 
 #include <string>
 
-#include <Core/Datatypes/TypeName.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Point.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
 
 namespace SCIRun{
 
 using std::string;
+using namespace SCIRun::Core::Geometry;
 
 class NrrdData;
 
@@ -175,7 +176,7 @@ template<> const string find_type_name(string*)
 }
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template<> const string find_type_name(LockingHandle< Matrix<double> > *)
 {
   static const string name = TypeNameGenerator::make_template_id("LockingHandle", "Matrix");
@@ -199,5 +200,6 @@ template<> const string find_type_name(LockingHandle<String> *)
   static const string name = TypeNameGenerator::make_template_id("LockingHandle", "String");
   return name;
 }
+#endif
 
 } // namespace SCIRun

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,16 +26,65 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_GEOMETRY_GEOMFWD_H
-#define CORE_GEOMETRY_GEOMFWD_H 
+#include <gtest/gtest.h>
 
-namespace SCIRun {
-namespace Core {
-namespace Geometry {
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 
-class Point;
-class Vector;
-class Transform;
+using namespace SCIRun;
 
-}}}
-#endif
+TEST(TypeNameTests, BuiltIn)
+{
+  char c;
+  EXPECT_EQ("char", find_type_name(&c));
+
+  int i;
+  EXPECT_EQ("int", find_type_name(&i));
+
+  bool b;
+  EXPECT_EQ("bool", find_type_name(&b));
+
+  long l;
+  EXPECT_EQ("long", find_type_name(&l));
+
+  unsigned int ui;
+  EXPECT_EQ("unsigned_int", find_type_name(&ui));
+
+  double d;
+  EXPECT_EQ("double", find_type_name(&d));
+
+  float f;
+  EXPECT_EQ("float", find_type_name(&f));
+
+  long long ll;
+  EXPECT_EQ("long_long", find_type_name(&ll));
+}
+
+TEST(TypeNameTests, Vectors)
+{
+  std::vector<int> vi;
+  EXPECT_EQ("vector<int>", find_type_name(&vi));
+
+  std::vector<double> vd;
+  EXPECT_EQ("vector<double>", find_type_name(&vd));
+
+  std::vector<std::vector<double>> vvd;
+  EXPECT_EQ("vector<vector<double>>", find_type_name(&vvd));
+}
+
+TEST(TypeNameTests, Strings)
+{
+  std::string s;
+  EXPECT_EQ("string", find_type_name(&s));
+}
+
+class S
+{
+public:
+  static std::string type_name(int/*unused*/) { return "S"; }
+};
+
+TEST(TypeNameTests, CustomClass)
+{
+  S s;
+  EXPECT_EQ("S", find_type_name(&s));
+}
