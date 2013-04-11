@@ -56,7 +56,9 @@ public:
   VField() :
     field_(0),
     mesh_(0),
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     pm_(0),
+#endif
     vmesh_(0),
     vfdata_(0),
     basis_order_(0),
@@ -148,7 +150,7 @@ public:
   }
   
 
-  inline bool get_center(Point& p, index_type idx)
+  inline bool get_center(Core::Geometry::Point& p, index_type idx)
   {
     if (basis_order_ == -1) return (false);
     if (basis_order_ == 0)
@@ -447,7 +449,7 @@ public:
 
   template<class ARRAY, class DATA>  
   inline void minterpolate(ARRAY& val, 
-                           const std::vector<Point>& points,
+                           const std::vector<Core::Geometry::Point>& points,
                            DATA def_value = (static_cast<DATA>(0))) const
   { 
     VMesh::MultiElemInterpolate ei;
@@ -457,7 +459,7 @@ public:
 
   template<class ARRAY, class DATA>  
   inline void minterpolate(ARRAY& val, 
-                           const std::vector<Point>& points,
+                           const std::vector<Core::Geometry::Point>& points,
                            DATA def_value,
                            VMesh::MultiElemInterpolate& ei) const
   { 
@@ -466,7 +468,7 @@ public:
   }
 
   template<class T>  
-  inline bool interpolate(T& val,const  Point& point, T def_value = (static_cast<T>(0))) const
+  inline bool interpolate(T& val,const  Core::Geometry::Point& point, T def_value = (static_cast<T>(0))) const
   { 
     VMesh::ElemInterpolate ei;
     vmesh_->get_interpolate_weights(point,ei,basis_order_);
@@ -482,7 +484,7 @@ public:
 
 
   template<class T>  
-  inline bool interpolate(T& val,const  Point& point, 
+  inline bool interpolate(T& val,const  Core::Geometry::Point& point, 
                           T def_value, VMesh::ElemInterpolate& ei) const
   { 
     vmesh_->get_interpolate_weights(point,ei,basis_order_);
@@ -495,7 +497,7 @@ public:
     return (false);
   }
 
-  inline void interpolate(Point& val,const  VMesh::coords_type &coords, VMesh::index_type idx) const
+  inline void interpolate(Core::Geometry::Point& val,const  VMesh::coords_type &coords, VMesh::index_type idx) const
   {
     vmesh_->interpolate(val,coords,idx);
   }
@@ -540,7 +542,7 @@ public:
     vfdata_->mgradient(val,eg,def_value);
   }
 
-  template<class T>  inline bool gradient(StackVector<T,3>& val, const Point& point,T def_value = (static_cast<T>(0))) const
+  template<class T>  inline bool gradient(StackVector<T,3>& val, const Core::Geometry::Point& point,T def_value = (static_cast<T>(0))) const
   { 
     VMesh::ElemGradient eg;
     vmesh_->get_gradient_weights(point,eg,basis_order_);
@@ -555,7 +557,7 @@ public:
     return (false);
   }
 
-  template<class T>  inline bool gradient(StackVector<T,3>& val, const Point& point,T def_value,VMesh::ElemGradient& eg) const
+  template<class T>  inline bool gradient(StackVector<T,3>& val, const Core::Geometry::Point& point,T def_value,VMesh::ElemGradient& eg) const
   { 
     vmesh_->get_gradient_weights(point,eg,basis_order_);
     if (eg.elem_index >= 0)
@@ -569,14 +571,14 @@ public:
     return (false);
   }
 
-  template<class T>  inline void mgradient(std::vector<StackVector<T,3> >& val, const std::vector<Point>& points,T def_value = (static_cast<T>(0))) const
+  template<class T>  inline void mgradient(std::vector<StackVector<T,3> >& val, const std::vector<Core::Geometry::Point>& points,T def_value = (static_cast<T>(0))) const
   { 
     VMesh::MultiElemGradient eg;
     vmesh_->get_mgradient_weights(points,eg,basis_order_);
     vfdata_->mgradient(val,eg,def_value);
   }
 
-  template<class T>  inline void mgradient(std::vector<StackVector<T,3> >& val, const std::vector<Point>& points,T def_value, VMesh::MultiElemGradient& eg) const
+  template<class T>  inline void mgradient(std::vector<StackVector<T,3> >& val, const std::vector<Core::Geometry::Point>& points,T def_value, VMesh::MultiElemGradient& eg) const
   { 
     vmesh_->get_mgradient_weights(points,eg,basis_order_);
     vfdata_->mgradient(val,eg,def_value);
@@ -654,8 +656,8 @@ public:
   inline bool is_type(unsigned long long* ) { return (is_unsigned_longlong()); }
   inline bool is_type(double* )             { return (is_double()); }
   inline bool is_type(float* )              { return (is_float()); }
-  inline bool is_type(Vector* )             { return (is_vector()); }
-  inline bool is_type(Tensor* )             { return (is_tensor()); }
+  inline bool is_type(Core::Geometry::Vector* )             { return (is_vector()); }
+  inline bool is_type(Core::Geometry::Tensor* )             { return (is_tensor()); }
   template<class T> bool is_type(T*)        { return (false); }
 
   inline std::string get_data_type()          { return (data_type_); }
@@ -664,6 +666,7 @@ public:
   inline bool is_unsigned_integer()   { return (is_unsigned_char()||is_unsigned_short()||is_unsigned_int()); }
   inline bool is_integer()            { return (is_signed_integer()||is_unsigned_integer()); }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Shortcuts to property manager
   inline void copy_properties(VField* ifield)
     { pm_->copy_properties(ifield->pm_); }
@@ -678,7 +681,7 @@ public:
     
   inline bool is_property( const std::string &name)
     { return(pm_->is_property(name)); }
-
+#endif
 protected:
   
   // Pointers to structures to access the data virtually
@@ -687,8 +690,10 @@ protected:
   Field*        field_;
   Mesh*         mesh_;
 
-  // Add this one separately to avoid circular dependancies
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  // Add this one separately to avoid circular dependencies
   PropertyManager* pm_;
+#endif
   
   // Interface to the data in the field
   VMesh*        vmesh_;
