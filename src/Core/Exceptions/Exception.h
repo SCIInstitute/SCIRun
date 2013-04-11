@@ -53,7 +53,8 @@
 #include <Core/Exceptions/share.h>
 
 namespace SCIRun {
-  class SCISHARE Exception {
+  class SCISHARE Exception : std::exception 
+  {
   public:
     Exception();
     virtual ~Exception();
@@ -61,6 +62,11 @@ namespace SCIRun {
     virtual const char* type() const=0;
     const char* stackTrace() const {
       return stacktrace_;
+    }
+
+    const char* what() const 
+    {
+      return message();
     }
 
     static void sci_throw(const Exception& exc);

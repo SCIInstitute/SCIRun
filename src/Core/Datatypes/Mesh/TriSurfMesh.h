@@ -611,7 +611,7 @@ public:
 
     //! Add a new element to the mesh
   template <class ARRAY>
-  typename Elem::index_type add_elem(ARRAY a)
+  typename Elem::index_type add_elem(const ARRAY& a)
   {
     ASSERTMSG(a.size() == 3, "TriSurfMesh: Tried to add non-tri element.");
 

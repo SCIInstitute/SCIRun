@@ -921,7 +921,7 @@ public:
   virtual void add_elem(const Node::array_type &nodes,Elem::index_type &i);
   
   //! Alternative calls for add_elem
-  inline VirtualMesh::Elem::index_type add_elem(const Node::array_type nodes)
+  inline VirtualMesh::Elem::index_type add_elem(const Node::array_type& nodes)
     { Elem::index_type idx; add_elem(nodes,idx); return (idx); }
   
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
