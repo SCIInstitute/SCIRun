@@ -48,7 +48,7 @@ class StackBasedVector : public std::vector<T>
 public:
   StackBasedVector(size_t size = CAPACITY) : std::vector<T>(size) 
   {
-    reserve(CAPACITY);
+    this->reserve(CAPACITY);
   }
 };
 }
