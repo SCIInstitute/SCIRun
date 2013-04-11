@@ -39,15 +39,17 @@
 #include <Core/Utils/Legacy/Debug.h>
 #include <Core/Utils/Legacy/ProgressReporter.h>
 
+#include <Core/Datatypes/Datatype.h>
+
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
  
-class SCISHARE Field: public PropertyManager
+class SCISHARE Field: public Core::Datatypes::Datatype
 {
   public:
     Field();
-    Field(const Field& copy) : PropertyManager(copy) 
+    Field(const Field& copy) : Core::Datatypes::Datatype(copy) 
       { DEBUG_CONSTRUCTOR("Field");  }
     virtual ~Field();
     
@@ -60,7 +62,9 @@ class SCISHARE Field: public PropertyManager
     //! field -> handle to this object
     //! vfield -> handle to virtual field interface
     virtual MeshHandle mesh() const = 0;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     inline  FieldHandle field() { return (this); }
+#endif
 
     virtual VMesh* vmesh()   const = 0;
     virtual VField* vfield() const = 0;
@@ -82,10 +86,12 @@ class SCISHARE Field: public PropertyManager
 
     virtual const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const = 0; 
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     //! Persistent I/O.
     static  PersistentTypeID type_id;
     virtual void io(Piostream &stream);
     virtual std::string type_name() const { return type_id.type; }    
+#endif
 };
 
 
