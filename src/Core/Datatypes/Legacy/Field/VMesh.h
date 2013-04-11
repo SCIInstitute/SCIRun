@@ -237,7 +237,6 @@ public:
   //! as these are protected the various derived constructors can fill
   //! these out.
   VMesh() :
-    ref_cnt(0),
     basis_order_(0),
     dimension_(0),
     has_normals_(false),
@@ -268,11 +267,11 @@ public:
   //! Get the mesh associated with the virtual interface
   //! These functions will return the respective mesh or vmesh
   //! class.
-  virtual LockingHandle<Mesh> mesh();
+  virtual MeshHandle mesh();
   //! A call to it self
   inline  VMesh* vmesh() { return (this); }
 
-  //! iterators for the virtual topology indices. These are not strickly needed
+  //! iterators for the virtual topology indices. These are not strictly needed
   //! but make the concepts in line with previous version. All iterators now
   //! go from 0 to number of elements, using consecutive unique numbers   
   inline void begin(Node::iterator &it) const
@@ -335,12 +334,14 @@ public:
   inline size_type num_delems() const
     { DElem::index_type s; size(s); return(static_cast<size_t>(s)); }  
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! NOTE NOT VALID FOR EACH MESH:
-  virtual LockingHandle<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
-  virtual LockingHandle<SearchGridT<SCIRun::index_type> > get_node_search_grid();
+  virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
+  virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_node_search_grid();
+#endif
 
   //! test for special case where the mesh is empty
-  //! empoty meshes may need a special treatment
+  //! empty meshes may need a special treatment
   inline bool is_empty() const
     { Node::index_type s; size(s); return (s == 0); }
   
@@ -1222,6 +1223,7 @@ public:
   inline double get_element_size()
     { return (element_size_); }
  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Shortcuts to property manager
   inline void copy_properties(VMesh* imesh)
     { pm_->copy_properties(imesh->pm_); }
@@ -1236,11 +1238,8 @@ public:
     
   inline bool is_property( const std::string &name)
     { return(pm_->is_property(name)); }
- 
-public:
-  // for handles
-  int ref_cnt;
-    
+#endif
+  
 protected:
   //! Properties of meshes that do not change during the lifetime of the mesh
   //! and hence they can be stored for fast use.
@@ -1279,9 +1278,11 @@ protected:
   //! generation number of mesh
   unsigned int generation_;
   
-  //! Add this one separately to avoid circular dependancies
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  //! Add this one separately to avoid circular dependencies
   //! Pointer to base class of the mesh
   PropertyManager* pm_;
+#endif
 };
 
 } // end namespace SCIRun
