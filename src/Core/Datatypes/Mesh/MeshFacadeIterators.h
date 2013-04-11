@@ -65,11 +65,9 @@ namespace Datatypes {
       }
       else
       {
-        vmesh_->synchronize(Mesh::EDGES_E);        
-
+        vmesh_->synchronize(Mesh::EDGES_E);
+        vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
         vmesh_->end(iter_);
-
-        vmesh_->clear_synchronization();
       }
       current_.setIndex(*iter_);
     }
@@ -114,9 +112,7 @@ namespace Datatypes {
     VirtualMesh::Node::array_type nodeIndices() const
     {
       VirtualMesh::Node::array_type nodesFromEdge(2);
-      //vmesh_->synchronize(Mesh::EDGES_E);
       vmesh_->get_nodes(nodesFromEdge, index_);
-      //vmesh_->clear_synchronization();
 
       return nodesFromEdge;
     }
@@ -125,12 +121,9 @@ namespace Datatypes {
     {
       auto indices = nodeIndices();
       std::vector<Geometry::Point> ps(2);
-      //vmesh_->synchronize(Mesh::EDGES_E);
-
       for (size_t i = 0; i < ps.size(); ++i)
         vmesh_->get_point(ps[i], indices[i]);
-      //vmesh_->clear_synchronization();
-
+      
       return ps;
     }
   private:
@@ -181,7 +174,10 @@ namespace Datatypes {
   {
   public:
     typedef VirtualMesh::Node::iterator iterator;
-    explicit NodeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) {}
+    explicit NodeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh)
+    {
+      vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
+    }
     void setIndex(VirtualMesh::Node::index_type i) { index_ = i; }
 
     VirtualMesh::Node::index_type index() const { return index_; }
@@ -194,11 +190,7 @@ namespace Datatypes {
     VirtualMesh::Edge::array_type edgeIndices() const
     {
       VirtualMesh::Edge::array_type edgesFromNode(6);
-      vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
-
       vmesh_->get_edges(edgesFromNode, index_);
-
-      vmesh_->clear_synchronization();
       return edgesFromNode;
     }
   private:
