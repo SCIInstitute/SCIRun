@@ -36,7 +36,7 @@
 
 #include <map>
 
-namespace SCIRun{
+using namespace SCIRun;
 
 Field::Field()
 {
@@ -48,6 +48,7 @@ Field::~Field()
   DEBUG_DESTRUCTOR("Field")  
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int FIELD_VERSION = 3;
 
 void 
@@ -109,6 +110,7 @@ Field::io(Piostream& stream)
 
 // initialize the static member type_id
 PersistentTypeID Field::type_id("Field", "PropertyManager", 0);
+#endif
 
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface
@@ -159,7 +161,7 @@ FieldTypeID::FieldTypeID(const std::string&type,
 FieldHandle
 CreateField(const std::string& type, MeshHandle mesh)
 {
-  FieldHandle handle(0);
+  FieldHandle handle;
   if (FieldTypeIDMutex == 0)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
@@ -182,7 +184,7 @@ CreateField(const std::string& type, MeshHandle mesh)
 FieldHandle
 CreateField(const std::string& type)
 {
-  FieldHandle handle(0);
+  FieldHandle handle;
   if (FieldTypeIDMutex == 0)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
@@ -196,6 +198,4 @@ CreateField(const std::string& type)
   }
   FieldTypeIDMutex->unlock();
   return (handle);
-}
-
 }
