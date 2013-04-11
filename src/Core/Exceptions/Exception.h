@@ -64,7 +64,7 @@ namespace SCIRun {
       return stacktrace_;
     }
 
-    const char* what() const 
+    const char* what() const throw()
     {
       return message();
     }
