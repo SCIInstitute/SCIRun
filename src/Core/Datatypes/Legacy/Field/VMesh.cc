@@ -26,11 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-#include <Core/Geometry/Transform.h>
-#include <Core/Geometry/BBox.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/BBox.h>
 
 namespace SCIRun {
 

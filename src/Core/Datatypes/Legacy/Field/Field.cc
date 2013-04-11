@@ -28,10 +28,10 @@
 
 
 
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Core/Util/ProgressReporter.h>
-#include <Core/Thread/Mutex.h>
+#include <Core/Utils/Legacy/ProgressReporter.h>
+#include <Core/Thread/Legacy/Mutex.h>
 #include <sci_debug.h>
 
 #include <map>

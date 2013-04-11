@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
 namespace SCIRun {
 

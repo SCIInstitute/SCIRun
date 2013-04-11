@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 
 namespace SCIRun {
 

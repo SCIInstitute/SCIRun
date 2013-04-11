@@ -28,9 +28,9 @@
 
 
 
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Geometry/Transform.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/GeometryPrimitives/Transform.h>
 #include <sci_debug.h>
 
 namespace SCIRun {
