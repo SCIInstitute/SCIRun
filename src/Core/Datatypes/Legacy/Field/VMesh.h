@@ -52,7 +52,7 @@ class VMesh;
 class Transform;
 class TypeDescription;
 
-typedef LockingHandle<VMesh> VMeshHandle;
+typedef boost::shared_ptr<VMesh> VMeshHandle;
 
 
 class SCISHARE VMesh {
@@ -74,7 +74,7 @@ public:
   //! Array of indices
   typedef std::vector<index_type>                 array_type;
   //! Array of points
-  typedef std::vector<Point>                      points_type;
+  typedef std::vector<Core::Geometry::Point>                      points_type;
   //! Dimensions of a mesh, these are used for the regular grids
   //! Irregular grids only have one dimension, namely the number
   //! of nodes or elements
@@ -90,7 +90,7 @@ public:
   typedef std::vector<std::vector<StackVector<double,3> > > coords_array2_type;
   //! Derivative of points each component contains the x,y, and z
   //! derivative of the point. This is used in higher order elements
-  typedef StackVector<Point,3>                    dpoints_type;
+  typedef StackVector<Core::Geometry::Point,3>                    dpoints_type;
   //! Mask type for setting bits. This one is set to special type
   //! to remind the user that only bit operations asre valid on masks
   typedef unsigned int                            mask_type;
@@ -427,17 +427,17 @@ public:
   virtual bool get_edge(Edge::index_type& edge, Node::array_type& nodes) const;
 
   //! Get the center of a certain mesh element
-  virtual void get_center(Point &point, Node::index_type i) const;
-  virtual void get_center(Point &point, ENode::index_type i) const;
-  virtual void get_center(Point &point, Edge::index_type i) const;
-  virtual void get_center(Point &point, Face::index_type i) const;
-  virtual void get_center(Point &point, Cell::index_type i) const;
-  virtual void get_center(Point &point, Elem::index_type i) const;
-  virtual void get_center(Point &point, DElem::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, Node::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, ENode::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, Edge::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, Face::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, Cell::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, Elem::index_type i) const;
+  virtual void get_center(Core::Geometry::Point &point, DElem::index_type i) const;
 
   //! Get the centers of a series of nodes
-  virtual void get_centers(Point* points, Node::array_type& array) const;
-  virtual void get_centers(Point* points, Elem::array_type& array) const;
+  virtual void get_centers(Core::Geometry::Point* points, Node::array_type& array) const;
+  virtual void get_centers(Core::Geometry::Point* points, Elem::array_type& array) const;
 
   //! Get the centers of a series of nodes, with points in an STL vector
   //! These just overload the function calls defined above.
@@ -507,7 +507,7 @@ public:
   //! used in the code. The interpolation structures know about basis order
   //! and hence will do the right interpolation when given to a function of
   //! VField for interpolation
-  virtual void get_interpolate_weights(const Point& p, 
+  virtual void get_interpolate_weights(const Core::Geometry::Point& p, 
                                        ElemInterpolate& ei, 
                                        int basis_order) const;
   
@@ -516,7 +516,7 @@ public:
                                        ElemInterpolate& ei,
                                        int basis_order) const;
 
-  virtual void get_minterpolate_weights(const std::vector<Point>& p, 
+  virtual void get_minterpolate_weights(const std::vector<Core::Geometry::Point>& p, 
                                         MultiElemInterpolate& ei, 
                                         int basis_order) const;
 
@@ -526,7 +526,7 @@ public:
                                         int basis_order) const;
                                         
   //! Same functions but now for determining gradients                                        
-  virtual void get_gradient_weights(const Point& p, 
+  virtual void get_gradient_weights(const Core::Geometry::Point& p, 
                                     ElemGradient& ei, 
                                     int basis_order) const;
   
@@ -535,7 +535,7 @@ public:
                                     ElemGradient& ei,
                                     int basis_order) const;
 
-  virtual void get_mgradient_weights(const std::vector<Point>& p, 
+  virtual void get_mgradient_weights(const std::vector<Core::Geometry::Point>& p, 
                                      MultiElemGradient& ei, 
                                      int basis_order) const;
 
@@ -579,10 +579,10 @@ public:
   //! Locate where a position is in  the mesh
   //! The node version finds the closest node
   //! The element version find the element that contains the point
-  virtual bool locate(VMesh::Node::index_type &i, const Point &point) const;
-  virtual bool locate(VMesh::Elem::index_type &i, const Point &point) const;
+  virtual bool locate(VMesh::Node::index_type &i, const Core::Geometry::Point &point) const;
+  virtual bool locate(VMesh::Elem::index_type &i, const Core::Geometry::Point &point) const;
   virtual bool locate(VMesh::Elem::index_type &i, 
-                      VMesh::coords_type &coords, const Point& point) const;
+                      VMesh::coords_type &coords, const Core::Geometry::Point& point) const;
 
   //! multi locate functions. An 'm' in front of a function tends to denote
   //! that this function is vectorized for convenience. Depending on the
@@ -594,9 +594,9 @@ public:
   //! of points
 
   virtual void mlocate(std::vector<Node::index_type> &i, 
-                       const std::vector<Point> &point) const;
+                       const std::vector<Core::Geometry::Point> &point) const;
   virtual void mlocate(std::vector<Elem::index_type> &i, 
-                       const std::vector<Point> &point) const;
+                       const std::vector<Core::Geometry::Point> &point) const;
 
   //! Find elements that are inside or close to the bounding box. This function
   //! uses the underlying search structure to find candidates that are close.
@@ -610,39 +610,39 @@ public:
   //! It returns the distance and the node index and the location of the
   //! node. 
   virtual bool find_closest_node(double& dist,
-                                 Point& result,
+                                 Core::Geometry::Point& result,
                                  VMesh::Node::index_type &i, 
-                                 const Point &point) const; 
+                                 const Core::Geometry::Point &point) const; 
 
   //! This version uses a maximum radius for seaching the node
   //! If no nodes are within radius the function returns false.
   virtual bool find_closest_node(double& dist,
-                                 Point& result,
+                                 Core::Geometry::Point& result,
                                  VMesh::Node::index_type &i, 
-                                 const Point &point,
+                                 const Core::Geometry::Point &point,
                                  double maxdist) const; 
 
   //! Simplified version that does not return the distance
-  inline bool find_closest_node(Point& result,
+  inline bool find_closest_node(Core::Geometry::Point& result,
                                 VMesh::Node::index_type& i,
-                                const Point &point,
+                                const Core::Geometry::Point &point,
                                 double maxdist)
     { double dist; return(find_closest_node(dist,result,i,point,maxdist));}
 
   //! Simplified version that does not return the distance
-  inline bool find_closest_node(Point& result,
+  inline bool find_closest_node(Core::Geometry::Point& result,
                                 VMesh::Node::index_type& i,
-                                const Point &point)
+                                const Core::Geometry::Point &point)
     { double dist; return(find_closest_node(dist,result,i,point));}
 
   //! Find the nodes within a spherical region arounf point.
   //! It returns the indices to the nodes
   virtual bool find_closest_nodes(std::vector<VMesh::Node::index_type>& nodes,
-                                  const Point& p, double maxdist) const;
+                                  const Core::Geometry::Point& p, double maxdist) const;
 
   virtual bool find_closest_nodes(std::vector<double>& distances,
                                   std::vector<VMesh::Node::index_type>& nodes,
-                                  const Point& p, 
+                                  const Core::Geometry::Point& p, 
                                   double maxdist) const;
 
   //! Find the closest location that is part of an element
@@ -653,34 +653,34 @@ public:
   //! projection point is located and the element index.
   //! if no elements are found the function returns false.
   virtual bool find_closest_elem(double &dist,
-                                 Point &result,
+                                 Core::Geometry::Point &result,
                                  VMesh::coords_type &coords,
                                  VMesh::Elem::index_type &i, 
-                                 const Point &point) const; 
+                                 const Core::Geometry::Point &point) const; 
 
   //! Same function, but now limited to a certain search ratius.
   //! if no elements are found the function returns false.
   virtual bool find_closest_elem(double &dist,
-                                 Point &result,
+                                 Core::Geometry::Point &result,
                                  VMesh::coords_type &coords,
                                  VMesh::Elem::index_type &i, 
-                                 const Point &point,
+                                 const Core::Geometry::Point &point,
                                  double maxdist) const; 
                                  
   //! Simplified version that does not return the local coordinates.
   inline  bool find_closest_elem(double &dist,
-                                 Point &result,
+                                 Core::Geometry::Point &result,
                                  VMesh::Elem::index_type &i, 
-                                 const Point &point) const
+                                 const Core::Geometry::Point &point) const
   { 
     VMesh::coords_type coords; 
     return(find_closest_elem(dist,result,coords,i,point));
   }
 
   inline  bool find_closest_elem(double &dist,
-                                 Point &result,
+                                 Core::Geometry::Point &result,
                                  VMesh::Elem::index_type &i, 
-                                 const Point &point,
+                                 const Core::Geometry::Point &point,
                                  double maxdist) const
   { 
     VMesh::coords_type coords; 
@@ -689,9 +689,9 @@ public:
 
 
   //! Even more simplified version
-  inline  bool find_closest_elem(Point &result,
+  inline  bool find_closest_elem(Core::Geometry::Point &result,
                                  VMesh::Elem::index_type &i, 
-                                 const Point &point) const
+                                 const Core::Geometry::Point &point) const
   { 
     double dist;
     VMesh::coords_type coords; 
@@ -701,10 +701,10 @@ public:
   //! Another simplified version
   inline  bool find_closest_elem(VMesh::coords_type &coords,
                                  VMesh::Elem::index_type &i, 
-                                 const Point &point) const
+                                 const Core::Geometry::Point &point) const
   { 
     double dist;
-    Point result;
+    Core::Geometry::Point result;
     return(find_closest_elem(dist,result,coords,i,point));
   }
 
@@ -712,20 +712,20 @@ public:
   // TODO: Need to reformulate this one, closest element can have multiple 
   // intersection points
   virtual bool find_closest_elems(double& dist,
-                                  Point& result,
+                                  Core::Geometry::Point& result,
                                   VMesh::Elem::array_type &i, 
-                                  const Point &point) const; 
+                                  const Core::Geometry::Point &point) const; 
 
   //! Find the coordinates of a point in a certain element
   virtual bool get_coords(coords_type& coords, 
-                                const Point &point, Elem::index_type i) const;
+                                const Core::Geometry::Point &point, Elem::index_type i) const;
   
   //! Interpolate from local coordinates to global coordinates
-  virtual void interpolate(Point &p, 
+  virtual void interpolate(Core::Geometry::Point &p, 
                          const coords_type& coords, Elem::index_type i) const;
 
   //! Multiple interpolations from local coordinates to global coordinates
-  virtual void minterpolate(std::vector<Point> &p, 
+  virtual void minterpolate(std::vector<Core::Geometry::Point> &p, 
                             const std::vector<coords_type>& coords, 
                             Elem::index_type i) const;
 
@@ -740,16 +740,16 @@ public:
   
   //! This is the volumetric version where one has to specify as well which
   //! face is involved.
-  virtual void get_normal(Vector &result, coords_type& coords, 
+  virtual void get_normal(Core::Geometry::Vector &result, coords_type& coords, 
                                  Elem::index_type eidx, DElem::index_type fidx) const;
   
   //! This is the surface version.
-  inline void get_normal(Vector &result, coords_type& coords, 
+  inline void get_normal(Core::Geometry::Vector &result, coords_type& coords, 
                                  Elem::index_type eidx) const
     { get_normal(result,coords,eidx,0); }
 
   //! Multiple normals short cut
-  inline void get_normals(std::vector<Vector> &result, std::vector<coords_type>& coords, 
+  inline void get_normals(std::vector<Core::Geometry::Vector> &result, std::vector<coords_type>& coords, 
                                  Elem::index_type eidx) const
     { result.resize(coords.size()); for (size_t j=0; j<coords.size(); j++)get_normal(result[j],coords[j],eidx,0); }
     
@@ -757,25 +757,25 @@ public:
   //! Node set is only available for editable meshes
   
   //! Get the location of a random point inside the mesh
-  virtual void get_random_point(Point &p, 
+  virtual void get_random_point(Core::Geometry::Point &p, 
                                 Elem::index_type i,FieldRNG &rng) const;
                                 
   //! Get the location of a point. As the old interface used both get_point and
   //! get_center, these are short cuts to the one implementation that is done
   //! under the name get_center.                             
-  inline  void get_point(Point &point, Node::index_type i) const
+  inline  void get_point(Core::Geometry::Point &point, Node::index_type i) const
     { get_center(point,i); }
-  inline  void get_point(Point &point, ENode::index_type i) const
+  inline  void get_point(Core::Geometry::Point &point, ENode::index_type i) const
     { get_center(point,i); }
-  inline Point get_point(Node::index_type i) const
-    { Point p; get_point(p,i); return (p); } 
-  inline Point get_point(ENode::index_type i) const
-    { Point p; get_point(p,i); return (p); } 
+  inline Core::Geometry::Point get_point(Node::index_type i) const
+    { Core::Geometry::Point p; get_point(p,i); return (p); } 
+  inline Core::Geometry::Point get_point(ENode::index_type i) const
+    { Core::Geometry::Point p; get_point(p,i); return (p); } 
       
   //! Set the location of a point.
   //! Note: one must be the single user of the mesh to do this
-  virtual void set_point(const Point &point, Node::index_type i);
-  virtual void set_point(const Point &point, ENode::index_type i);
+  virtual void set_point(const Core::Geometry::Point &point, Node::index_type i);
+  virtual void set_point(const Core::Geometry::Point &point, ENode::index_type i);
   
   
   //! These should only be used to speed up code within proper wrappers and
@@ -783,7 +783,7 @@ public:
   //! access to the mesh memory
   
   // Only for irregular data
-  virtual Point* get_points_pointer() const;
+  virtual Core::Geometry::Point* get_points_pointer() const;
   // Only for unstructured data
   virtual VMesh::index_type* get_elems_pointer() const;
   
@@ -793,8 +793,8 @@ public:
   inline void copy_nodes(VMesh* imesh, Node::index_type i, 
                           Node::index_type o,Node::size_type size)
   {
-    Point* ipoint = imesh->get_points_pointer();
-    Point* opoint = get_points_pointer();
+    Core::Geometry::Point* ipoint = imesh->get_points_pointer();
+    Core::Geometry::Point* opoint = get_points_pointer();
     for (index_type j=0; j<size; j++,i++,o++ ) opoint[o] = ipoint[i];
   }
 
@@ -802,8 +802,8 @@ public:
   {
     size_type size = imesh->num_nodes();
     resize_nodes(size);
-    Point* ipoint = imesh->get_points_pointer();
-    Point* opoint = get_points_pointer();
+    Core::Geometry::Point* ipoint = imesh->get_points_pointer();
+    Core::Geometry::Point* opoint = get_points_pointer();
     for (index_type j=0; j<size; j++) opoint[j] = ipoint[j];
   }
   
@@ -847,13 +847,13 @@ public:
   inline  void resize_points(size_t size) { resize_nodes(size); }
 
   //! Add a node to a mesh
-  virtual void add_node(const Point &point,Node::index_type &i);
-  virtual void add_enode(const Point &point,ENode::index_type &i);
+  virtual void add_node(const Core::Geometry::Point &point,Node::index_type &i);
+  virtual void add_enode(const Core::Geometry::Point &point,ENode::index_type &i);
   
   //! alternative calls
-  inline void set_node(const Point &point, Node::index_type i)
+  inline void set_node(const Core::Geometry::Point &point, Node::index_type i)
     { set_point(point,i); }
-  inline void set_enode(const Point &point, ENode::index_type i)
+  inline void set_enode(const Core::Geometry::Point &point, ENode::index_type i)
     { set_point(point,i); }
   
   // Set the nodes that make up an element
@@ -862,17 +862,17 @@ public:
   virtual void set_nodes(Node::array_type& array, Cell::index_type idx);
   virtual void set_nodes(Node::array_type& array, Elem::index_type idx);  
         
-  inline Node::index_type add_node(const Point& point) 
+  inline Node::index_type add_node(const Core::Geometry::Point& point) 
     { Node::index_type idx; add_node(point,idx); return (idx); }
   
-  inline void get_node(Point &point, Node::index_type i)
+  inline void get_node(Core::Geometry::Point &point, Node::index_type i)
     { get_point(point,i); }
-  inline void get_enode(Point &point, ENode::index_type i)
+  inline void get_enode(Core::Geometry::Point &point, ENode::index_type i)
     { get_point(point,i); }
   
   //! Do not use this one as it is not clear whether it is a 
   //! element node or edge node  
-  inline VMesh::Node::index_type add_point(const Point& point) 
+  inline VMesh::Node::index_type add_point(const Core::Geometry::Point& point) 
     { Node::index_type idx; add_node(point,idx); return (idx); }
     
   //! Add an element to a mesh
@@ -887,7 +887,7 @@ public:
   virtual void insert_node_into_elem(Elem::array_type& newelems, 
                                      Node::index_type& newnode,
                                      Elem::index_type  elem,
-                                     Point& point);
+                                     Core::Geometry::Point& point);
   
   //! Get the neighbors of a node or an element
   virtual bool get_neighbor(Elem::index_type &neighbor, 
@@ -908,7 +908,7 @@ public:
                                unsigned int div_per_unit) const;
 
   //! Get node normals, needed for visualization
-  virtual void get_normal(Vector& norm,Node::index_type i) const;
+  virtual void get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
 
   //! Get the dimensions of the mesh.
   //! This function will replace get_dim()
