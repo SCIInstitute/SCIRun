@@ -31,7 +31,7 @@
 
 //! Include what kind of support we want to have
 //! Need to fix this and couple it sci-defs
-#include <Core/Datatypes/MeshSupport.h>
+#include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/SearchGridT.h>
 #include <Core/Containers/StackVector.h>
@@ -45,10 +45,10 @@
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/Constant.h>
 
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/FieldIterator.h>
-#include <Core/Datatypes/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldIterator.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 
 #include <float.h>
 

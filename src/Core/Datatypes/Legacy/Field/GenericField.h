@@ -34,18 +34,18 @@
 #include <Core/Util/Debug.h>
 #include <Core/Basis/Locate.h>
 #include <Core/Containers/StackVector.h>
-#include <Core/Datatypes/builtin.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/VField.h>
-#include <Core/Datatypes/VFData.h>
-#include <Core/Datatypes/TypeName.h>
-#include <Core/Datatypes/MeshTypes.h>
+#include <Core/Datatypes/Legacy/Field/builtin.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VFData.h>
+#include <Core/Datatypes/Legacy/Field/TypeName.h>
+#include <Core/Datatypes/Legacy/Field/MeshTypes.h>
 #include <Core/Containers/LockingHandle.h>
 
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/Containers/FData.h>
-#include <Core/Datatypes/CastFData.h>
+#include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <Core/Containers/StackVector.h>
 
 #include <Core/Datatypes/Legacy/Field/share.h>

@@ -48,7 +48,7 @@
 
 //! Include what kind of support we want to have
 //! Need to fix this and couple it to sci-defs
-#include <Core/Datatypes/MeshSupport.h>
+#include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/Array3.h>
 #include <Core/Containers/SearchGridT.h>
@@ -56,7 +56,7 @@
 #include <Core/Geometry/Point.h>
 #include <Core/Geometry/CompGeom.h>
 
-#include <Core/Datatypes/LatVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 
 //! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>

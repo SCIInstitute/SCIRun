@@ -34,9 +34,9 @@
 #include <Core/Geometry/Tensor.h>
 #include <Core/Containers/Array2.h>
 #include <Core/Containers/Array3.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/CastFData.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <string>
 #include <vector>
 #include <complex>

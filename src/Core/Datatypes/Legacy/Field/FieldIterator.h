@@ -42,7 +42,7 @@
 #ifndef Datatypes_FieldIterator_h
 #define Datatypes_FieldIterator_h
 
-#include <Core/Datatypes/FieldIndex.h>
+#include <Core/Datatypes/Legacy/Field/FieldIndex.h>
 
 #include <iterator>
 

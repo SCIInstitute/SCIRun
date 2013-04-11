@@ -30,9 +30,8 @@
 #define CORE_DATATYPES_FIELDVINDEX_H 1
 
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/Util/TypeDescription.h>
-#include <Core/Datatypes/TypeName.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 
 #include <vector>
 

@@ -32,8 +32,8 @@
 
 #include <Core/Geometry/Transform.h>
 
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/PropertyManager.h>
 
 #include <Core/Containers/SearchGridT.h>
 

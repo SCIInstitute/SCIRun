@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/VFData.h>
+#include <Core/Datatypes/Legacy/Field/VFData.h>
 
 #include <Core/Exceptions/AssertionFailed.h>
 #include <sci_debug.h>

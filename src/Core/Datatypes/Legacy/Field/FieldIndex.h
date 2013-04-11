@@ -42,7 +42,7 @@
 
 #include <Core/Persistent/Persistent.h>
 #include <Core/Util/TypeDescription.h>
-#include <Core/Datatypes/TypeName.h>
+#include <Core/Datatypes/Legacy/Field/TypeName.h>
 
 #include <vector>
 

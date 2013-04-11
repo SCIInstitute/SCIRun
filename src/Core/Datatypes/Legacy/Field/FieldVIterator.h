@@ -31,7 +31,7 @@
 #ifndef CORE_DATATYPES_FIELDVITERATOR_H
 #define CORE_DATATYPES_FIELDVITERATOR_H 1
 
-#include <Core/Datatypes/FieldVIndex.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
 
 namespace SCIRun {
 

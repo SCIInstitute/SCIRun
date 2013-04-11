@@ -31,11 +31,11 @@
 #ifndef CORE_DATATYPES_VFIELD_H
 #define CORE_DATATYPES_VFIELD_H 1
 
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/VFData.h>
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VFData.h>
+#include <Core/Datatypes/Legacy/Field/Datatype.h>
+#include <Core/Datatypes/Legacy/Field/PropertyManager.h>
 
 
 #include <Core/Datatypes/Legacy/Field/share.h>

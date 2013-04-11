@@ -31,7 +31,7 @@
 
 //! Include what kind of support we want to have
 //! Need to fix this and couple it sci-defs
-#include <Core/Datatypes/MeshSupport.h>
+#include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/LockingHandle.h>
 #include <Core/Containers/Handle.h>
@@ -50,10 +50,10 @@
 #include <Core/Basis/TriQuadraticLgn.h>
 #include <Core/Basis/TriCubicHmt.h>
 
-#include <Core/Datatypes/VMesh.h>
-#include <Core/Datatypes/FieldIterator.h>
-#include <Core/Datatypes/FieldRNG.h>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldIterator.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/Types.h>
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>

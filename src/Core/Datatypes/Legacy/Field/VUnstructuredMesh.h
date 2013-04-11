@@ -30,7 +30,7 @@
 #ifndef CORE_DATATYPES_VUNSTRUCTUREDMESH_H
 #define CORE_DATATYPES_VUNSTRUCTUREDMESH_H
 
-#include <Core/Datatypes/VMeshShared.h>
+#include <Core/Datatypes/Legacy/Field/VMeshShared.h>
 
 //! Include needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
