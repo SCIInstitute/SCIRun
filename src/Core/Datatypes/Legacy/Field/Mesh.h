@@ -56,7 +56,7 @@ class VMesh;
 class Transform;
 class TypeDescription;
 
-typedef LockingHandle<Mesh> MeshHandle;
+typedef boost::shared_ptr<Mesh> MeshHandle;
 
 // Maximum number of weights get_weights will return.
 #define MESH_WEIGHT_MAXSIZE 64
