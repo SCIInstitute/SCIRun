@@ -129,7 +129,7 @@ namespace SCIRun {
     double volume=0.0;
   
     //! impelementation that is pure on stack
-    StackVector<double,3> coords(3);
+    StackVector<double,3> coords;
     for(int i=0; i<ElemBasis::GaussianNum; i++) 
     {
       coords[0]=ElemBasis::GaussianPoints[i][0];
@@ -189,8 +189,8 @@ namespace SCIRun {
     const double *v1 = pEB->unit_vertices[pEB->unit_faces[face][1]];
     const double *v2 = pEB->unit_vertices[pEB->unit_faces[face][2]];
 
-    StackVector<double,2> d0(2);
-    StackVector<double,2> d1(2);
+    StackVector<double,2> d0;
+    StackVector<double,2> d1;
 
     d0[0]=v1[0]-v0[0];
     d0[1]=v1[1]-v0[1];
@@ -198,7 +198,7 @@ namespace SCIRun {
     d1[1]=v2[1]-v0[1];
     double area=0.;
 
-    StackVector<double,2> coords(2);
+    StackVector<double,2> coords;
     for(int i=0; i<NumApprox::GaussianNum; i++) {
       coords[0]=v0[0]+NumApprox::GaussianPoints[i][0]*d0[0]+NumApprox::GaussianPoints[i][1]*d1[0];
       coords[1]=v0[1]+NumApprox::GaussianPoints[i][0]*d0[1]+NumApprox::GaussianPoints[i][1]*d1[1];
@@ -220,8 +220,8 @@ namespace SCIRun {
     const double *v1 = pEB->unit_vertices[pEB->unit_faces[face][1]];
     const double *v2 = pEB->unit_vertices[pEB->unit_faces[face][2]];
 
-    StackVector<double,3> d0(3);
-    StackVector<double,3> d1(3);
+    StackVector<double,3> d0;
+    StackVector<double,3> d1;
     d0[0]=v1[0]-v0[0];
     d0[1]=v1[1]-v0[1];
     d0[2]=v1[2]-v0[2];
@@ -230,7 +230,7 @@ namespace SCIRun {
     d1[2]=v2[2]-v0[2];
     double area=0.;
   
-    StackVector<double,3> coords(3);
+    StackVector<double,3> coords;
     for(int i=0; i<NumApprox::GaussianNum; i++) {
       coords[0]=v0[0]+NumApprox::GaussianPoints[i][0]*d0[0]+NumApprox::GaussianPoints[i][1]*d1[0];
       coords[1]=v0[1]+NumApprox::GaussianPoints[i][0]*d0[1]+NumApprox::GaussianPoints[i][1]*d1[1];
@@ -277,11 +277,11 @@ namespace SCIRun {
   {
     const double *v0 = pEB->unit_vertices[pEB->unit_edges[edge][0]];
     const double *v1 = pEB->unit_vertices[pEB->unit_edges[edge][1]];
-    StackVector<double,1> dv(1);
+    StackVector<double,1> dv;
     dv[0]=v1[0]-v0[0];
     double arc_length=0.;
   
-    StackVector<double,1> coords(1);
+    StackVector<double,1> coords;
     for(int i=0; i<NumApprox::GaussianNum; i++) {
       coords[0]=v0[0]+NumApprox::GaussianPoints[i][0]*dv[0];
       StackVector<typename ElemBasis::value_type,1> derivs;
@@ -299,12 +299,12 @@ namespace SCIRun {
   {
     const double *v0 = pEB->unit_vertices[pEB->unit_edges[edge][0]];
     const double *v1 = pEB->unit_vertices[pEB->unit_edges[edge][1]];
-    StackVector<double,2> dv(2);
+    StackVector<double,2> dv;
     dv[0]=v1[0]-v0[0];
     dv[1]=v1[1]-v0[1];
     double arc_length=0.;
   
-    StackVector<double,2> coords(2); 
+    StackVector<double,2> coords; 
     for(int i=0; i<NumApprox::GaussianNum; i++) {
       coords[0]=v0[0]+NumApprox::GaussianPoints[i][0]*dv[0];
       coords[1]=v0[1]+NumApprox::GaussianPoints[i][0]*dv[1];
@@ -322,13 +322,13 @@ namespace SCIRun {
   {
     const double *v0 = pEB->unit_vertices[pEB->unit_edges[edge][0]];
     const double *v1 = pEB->unit_vertices[pEB->unit_edges[edge][1]];
-    StackVector<double,3> dv(3); 
+    StackVector<double,3> dv; 
     dv[0]=v1[0]-v0[0];
     dv[1]=v1[1]-v0[1];
     dv[2]=v1[2]-v0[2];
     double arc_length=0.;
   
-    StackVector<double,3> coords(3);
+    StackVector<double,3> coords;
     for(int i=0; i<NumApprox::GaussianNum; i++) {
       coords[0]=v0[0]+NumApprox::GaussianPoints[i][0]*dv[0];
       coords[1]=v0[1]+NumApprox::GaussianPoints[i][0]*dv[1];
@@ -518,7 +518,7 @@ namespace SCIRun {
       bool get_iterative(const ElemBasis *pEB, VECTOR &x, 
 			 const T& value, const ElemData &cd) const  
       {       
-        StackVector<T,3> yd(3);
+        StackVector<T,3> yd;
         for (int steps=0; steps<maxsteps; steps++) 
         {
           T y = difference(pEB->interpolate(x, cd), value);
@@ -556,7 +556,7 @@ namespace SCIRun {
         bool get_iterative(const ElemBasis *pEB, VECTOR &x, 
          const T& value, const ElemData &cd) const  
       {       
-        StackVector<T,2> yd(2);
+        StackVector<T,2> yd;
         for (int steps=0; steps<maxsteps; steps++) 
         {
           T y = difference(pEB->interpolate(x, cd), value);
@@ -597,7 +597,7 @@ namespace SCIRun {
         bool get_iterative(const ElemBasis *pElem, VECTOR &x, 
          const T& value, const ElemData &cd) const  
       {          
-        StackVector<T,1> yd(1);
+        StackVector<T,1> yd;
     
         for (int steps=0; steps<maxsteps; steps++) 
         {

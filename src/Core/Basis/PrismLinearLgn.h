@@ -253,7 +253,7 @@ protected:
     double dist = DBL_MAX;
 	
     VECTOR coord(3);
-    StackVector<T,3> derivs(3);
+    StackVector<T,3> derivs;
     guess.resize(3);
 
     const int end = 3;

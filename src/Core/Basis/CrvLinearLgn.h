@@ -174,7 +174,7 @@ protected:
     double dist = DBL_MAX;
 	
     VECTOR coord(1);
-    StackVector<T,1> derivs(1);
+    StackVector<T,1> derivs;
     guess.resize(1);
     
     const int end = 3;
