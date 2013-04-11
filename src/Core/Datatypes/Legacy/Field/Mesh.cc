@@ -31,18 +31,25 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Transform.h>
+#include <Core/Thread/Legacy/Mutex.h>
 #include <sci_debug.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // initialize the static member type_id
 PersistentTypeID Mesh::type_id("Mesh", "PropertyManager", NULL);
+#endif
 
 
+namespace 
+{
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface
 Mutex *MeshTypeIDMutex = 0;
 static std::map<std::string,MeshTypeID*>* MeshTypeIDTable = 0;
+}
 
 MeshTypeID::MeshTypeID(const std::string&type, MeshHandle (*mesh_maker)()) :
     type(type),
@@ -381,7 +388,7 @@ Mesh::basis_order()
   return (-1);
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int MESHBASE_VERSION = 2;
 
 void 
@@ -406,6 +413,7 @@ Mesh::type_name(int n)
   static const std::string name = "Mesh";
   return name;
 }
+#endif
 
 //! Return the transformation that takes a 0-1 space bounding box to
 //! the current bounding box of this mesh.
@@ -600,8 +608,3 @@ CreateMesh(const std::string& type, Mesh::size_type x)
   MeshTypeIDMutex->unlock();
   return (handle);
 }
-
-
-
-
-} // end namespace
