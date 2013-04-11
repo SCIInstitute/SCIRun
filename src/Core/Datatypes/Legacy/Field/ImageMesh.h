@@ -49,7 +49,7 @@
 #include <Core/Datatypes/FieldRNG.h>
 
 //! Incude needed for Windows: declares SCISHARE
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
 

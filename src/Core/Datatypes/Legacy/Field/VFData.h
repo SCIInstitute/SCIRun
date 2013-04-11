@@ -47,7 +47,7 @@
 #undef max
 #endif
 
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Legacy/Field/share.h>
 
 #define VFDATA_ACCESS_DECLARATION(type) \
   virtual void get_value(type &val, VMesh::index_type idx) const; \
