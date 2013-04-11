@@ -31,20 +31,13 @@
 #ifndef CORE_DATATYPES_TYPES_H
 #define CORE_DATATYPES_TYPES_H 1
 
-#include <sci_defs/bits_defs.h>
-
 namespace SCIRun {
 
 // Depending on whether SCIRun is 64bits, the indices into the fields are
 // altered to make sure we can address really large memory chunks.
 
-#ifdef SCI_64BITS
 typedef long long       index_type;
 typedef long long       size_type;
-#else
-typedef int             index_type;
-typedef int             size_type;
-#endif
 
 // Mask type ensures the user that the bits mean something
 // The numeric value should not be used
