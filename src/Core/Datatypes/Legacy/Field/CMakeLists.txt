@@ -61,32 +61,32 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
 )
 
 SET(Core_Datatypes_Legacy_Field_SRCS
-  cd_templates.cc	    	
-  cd_templates_fields_0.cc    	
-  cd_templates_fields_1.cc    	
-  cd_templates_fields_2.cc    	
-  cd_templates_fields_3.cc    	
-  cd_templates_fields_4.cc    	
-  cd_templates_fields_5.cc	
-  cd_templates_fields_6.cc	
-  CurveMesh.cc
+  #cd_templates.cc	    	
+  #cd_templates_fields_0.cc    	
+  #cd_templates_fields_1.cc    	
+  #cd_templates_fields_2.cc    	
+  #cd_templates_fields_3.cc    	
+  #cd_templates_fields_4.cc    	
+  #cd_templates_fields_5.cc	
+  #cd_templates_fields_6.cc	
+  #CurveMesh.cc
   Field.cc
   FieldInformation.cc
   FieldRNG.cc
-  HexVolMesh.cc
-  ImageMesh.cc
-  LatVolMesh.cc
+  #HexVolMesh.cc
+  #ImageMesh.cc
+  #LatVolMesh.cc
   Mesh.cc		
-  PointCloudMesh.cc  
-  PrismVolMesh.cc
-  QuadSurfMesh.cc
-  ScanlineMesh.cc
-  TetVolMesh.cc
-  TriSurfMesh.cc
-  VFData.cc	
-  VFDataT_0.cc	
-  VFDataT_1.cc	
-  VFDataT_2.cc	
+  #PointCloudMesh.cc  
+  #PrismVolMesh.cc
+  #QuadSurfMesh.cc
+  #ScanlineMesh.cc
+  #TetVolMesh.cc
+  #TriSurfMesh.cc
+  #VFData.cc	
+  #VFDataT_0.cc	
+  #VFDataT_1.cc	
+  #VFDataT_2.cc	
   VMesh.cc		    	
 )
 
