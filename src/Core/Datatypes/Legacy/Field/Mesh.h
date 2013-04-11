@@ -85,7 +85,7 @@ public:
 
   //! Constructor
   Mesh();
-  Mesh(const Mesh& copy) : PropertyManager(copy) 
+  Mesh(const Mesh& copy) : Core::Datatypes::Datatype(copy) 
     { DEBUG_CONSTRUCTOR("Mesh");  }
   
   //! Destructor
@@ -163,10 +163,6 @@ public:
   virtual VMesh* vmesh();
 };
 
-
-
-typedef LockingHandle<Mesh> MeshHandle;
-
 class SCISHARE MeshTypeID {
   public:
     // Constructor
@@ -174,15 +170,15 @@ class SCISHARE MeshTypeID {
                 MeshHandle (*mesh_maker)());
     MeshTypeID(const std::string& type, 
                 MeshHandle (*mesh_maker)(),
-                MeshHandle (*latvol_maker)(Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Point& min, const Point& max)
+                MeshHandle (*latvol_maker)(Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
                 );
     MeshTypeID(const std::string& type, 
                 MeshHandle (*mesh_maker)(),
-                MeshHandle (*image_maker)(Mesh::size_type x, Mesh::size_type y, const Point& min, const Point& max)
+                MeshHandle (*image_maker)(Mesh::size_type x, Mesh::size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max)
                 );
     MeshTypeID(const std::string& type, 
                 MeshHandle (*mesh_maker)(),
-                MeshHandle (*scanline_maker)(Mesh::size_type x,const Point& min, const Point& max)
+                MeshHandle (*scanline_maker)(Mesh::size_type x,const Core::Geometry::Point& min, const Core::Geometry::Point& max)
                 );
     MeshTypeID(const std::string& type, 
                 MeshHandle (*mesh_maker)(),
@@ -202,9 +198,9 @@ class SCISHARE MeshTypeID {
     MeshHandle (*mesh_maker)();
     
     // Custom Constructors
-    MeshHandle (*latvol_maker)(Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Point& min, const Point& max);
-    MeshHandle (*image_maker)(Mesh::size_type x, Mesh::size_type y, const Point& min, const Point& max);
-    MeshHandle (*scanline_maker)(Mesh::size_type x, const Point& min, const Point& max);
+    MeshHandle (*latvol_maker)(Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max);
+    MeshHandle (*image_maker)(Mesh::size_type x, Mesh::size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max);
+    MeshHandle (*scanline_maker)(Mesh::size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max);
     MeshHandle (*structhexvol_maker)(Mesh::size_type x, Mesh::size_type y, Mesh::size_type z);
     MeshHandle (*structquadsurf_maker)(Mesh::size_type x, Mesh::size_type y);
     MeshHandle (*structcurve_maker)(Mesh::size_type x);
@@ -214,9 +210,9 @@ class SCISHARE MeshTypeID {
 
 
 MeshHandle CreateMesh(const std::string& type);
-MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Point& min, const Point& max);
-MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y, const Point& min, const Point& max);
-MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, const Point& min, const Point& max);
+MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max);
+MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max);
+MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max);
 MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y, Mesh::size_type z);
 MeshHandle CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y);
 MeshHandle CreateMesh(const std::string& type, Mesh::size_type x);
@@ -225,7 +221,7 @@ MeshHandle CreateMesh(const std::string& type, Mesh::size_type x);
 //! General case locate, search each elem.
 template <class INDEX, class MESH>
 bool elem_locate(INDEX &elem,
-     MESH &msh, const Point &p) 
+     MESH &msh, const Core::Geometry::Point &p) 
 {
   typename MESH::Elem::iterator iter, end;
   msh.begin(iter);
