@@ -36,6 +36,7 @@
 
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/Containers/StackVector.h>
 #include <Core/Utils/Exception.h>
 
 #include <Core/Basis/Share.h>
