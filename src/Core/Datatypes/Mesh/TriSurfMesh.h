@@ -34,6 +34,7 @@
 //#include <Core/Containers/StackVector.h>
 
 #include <Core/Utils/Exception.h>
+#include <Core/Utils/Legacy/Assert.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
@@ -64,9 +65,6 @@
 
 #include <Core/Datatypes/Mesh/Share.h>
 
-
-//TODO: ASSERTMSG...
-#define ASSERTMSG(x,y)
 
 namespace SCIRun {
   namespace Core {
