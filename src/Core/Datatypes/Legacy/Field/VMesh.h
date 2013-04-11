@@ -30,17 +30,17 @@
 #ifndef CORE_DATATYPES_VMESH_H
 #define CORE_DATATYPES_VMESH_H
 
-#include <Core/Geometry/Transform.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Field/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 #include <Core/Containers/SearchGridT.h>
 
 #include <Core/Containers/StackBasedVector.h>
 
 // For debugging information
-#include <Core/Util/Debug.h>
+#include <Core/Utils/Legacy/Debug.h>
 
 //! Include needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
