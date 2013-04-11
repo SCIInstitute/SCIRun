@@ -46,6 +46,8 @@
 #include <Core/Utils/Legacy/Environment.h>
 #include <Core/Utils/Legacy/Debug.h>
 
+#include <Core/Datatypes/Datatype.h>
+
 //! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
@@ -69,7 +71,8 @@ typedef boost::shared_ptr<Mesh> MeshHandle;
 
 
 
-class SCISHARE Mesh : public PropertyManager {
+class SCISHARE Mesh : public Core::Datatypes::Datatype
+{
 public: 
 
   typedef SCIRun::mask_type                  mask_type;  
@@ -142,11 +145,13 @@ public:
 //                          size_type& /*k*/, Transform& /*trans*/) { return false; }
   virtual int basis_order();
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Persistent I/O.
   void    io(Piostream &stream);
   static  PersistentTypeID type_id;
   static  const std::string type_name(int n = -1);
   virtual const TypeDescription *get_type_description() const = 0;
+#endif
 
   // The minimum value for elemental checking
 //  double MIN_ELEMENT_VAL;
