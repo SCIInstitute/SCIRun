@@ -34,8 +34,8 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VFData.h>
-#include <Core/Datatypes/Legacy/Field/Datatype.h>
-#include <Core/Datatypes/Legacy/Field/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Base/Datatype.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 
 #include <Core/Datatypes/Legacy/Field/share.h>
@@ -44,7 +44,7 @@ namespace SCIRun {
 
 // Define a handle to the virtual interface
 class Field;
-typedef LockingHandle<Field> FieldHandle;
+typedef boost::shared_ptr<Field> FieldHandle;
 
 class SCISHARE VField {
 //! The FieldTypeInformation call introduces functions to check type of the field
