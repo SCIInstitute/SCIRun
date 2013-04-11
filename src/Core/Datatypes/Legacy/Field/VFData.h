@@ -30,8 +30,8 @@
 #ifndef CORE_DATATYPES_VFDATA_H
 #define CORE_DATATYPES_VFDATA_H 1
 
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Containers/Array2.h>
 #include <Core/Containers/Array3.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -41,11 +41,6 @@
 #include <vector>
 #include <complex>
 #include <float.h>
-
-#ifdef _WIN32
-#undef min
-#undef max
-#endif
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 

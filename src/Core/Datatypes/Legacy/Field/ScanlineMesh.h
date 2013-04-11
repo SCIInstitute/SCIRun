@@ -53,9 +53,9 @@
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvLinearLgn.h>
 
-#include <Core/Geometry/Transform.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/BBox.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/BBox.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>

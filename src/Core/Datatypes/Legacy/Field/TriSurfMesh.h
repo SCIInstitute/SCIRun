@@ -37,11 +37,11 @@
 #include <Core/Containers/Handle.h>
 #include <Core/Containers/StackVector.h>
 
-#include <Core/Geometry/Transform.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/BBox.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/CompGeom.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/Containers/StackVector.h>
 #include <Core/Containers/SearchGridT.h>
 

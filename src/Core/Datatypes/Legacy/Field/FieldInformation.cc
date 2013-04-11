@@ -29,7 +29,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 
-namespace SCIRun {
+using namespace SCIRun;
 
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
@@ -1655,10 +1655,3 @@ CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim,const Poi
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2],min,max));
   else return (MeshHandle(0));
 }
-
-
-
-
-
-} // end namespace
-

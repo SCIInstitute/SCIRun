@@ -39,12 +39,12 @@
 #include <Core/Containers/LockingHandle.h>
 #include <Core/Containers/SearchGridT.h>
 
-#include <Core/Geometry/BBox.h>
-#include <Core/Geometry/CompGeom.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Plane.h>
-#include <Core/Geometry/Transform.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Plane.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/HexTrilinearLgn.h>

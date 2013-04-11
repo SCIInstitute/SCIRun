@@ -53,8 +53,8 @@
 #include <Core/Containers/Array3.h>
 #include <Core/Containers/SearchGridT.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/CompGeom.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 
 #include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 

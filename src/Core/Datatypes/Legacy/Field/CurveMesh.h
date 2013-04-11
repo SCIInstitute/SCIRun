@@ -37,10 +37,10 @@
 #include <Core/Containers/LockingHandle.h>
 #include <Core/Containers/Handle.h>
 
-#include <Core/Geometry/BBox.h>
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Transform.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitivesBBox.h>
+#include <Core/GeometryPrimitivesPoint.h>
+#include <Core/GeometryPrimitivesTransform.h>
+#include <Core/GeometryPrimitivesVector.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvLinearLgn.h>

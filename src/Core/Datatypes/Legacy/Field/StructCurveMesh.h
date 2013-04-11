@@ -47,9 +47,9 @@
 //! Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Plane.h>
-#include <Core/Geometry/CompGeom.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Plane.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 
 #include <Core/Containers/Array2.h>
 #include <Core/Datatypes/Legacy/Field/ScanlineMesh.h>
