@@ -29,6 +29,7 @@
 SET(Core_GeometryPrimitives_SRCS
   BBox.cc
   Point.cc
+  Tensor.cc
   Transform.cc
   Vector.cc
 )
@@ -38,6 +39,7 @@ SET(Core_GeometryPrimitives_HEADERS
   GeomFwd.h
   Point.h
   PointVectorOperators.h
+  Tensor.h
   Transform.h
   Vector.h
   Share.h
