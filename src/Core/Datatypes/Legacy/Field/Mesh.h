@@ -30,42 +30,21 @@
 #ifndef CORE_DATATYPES_MESH_H
 #define CORE_DATATYPES_MESH_H 1
 
-//! Include test to check whether a hashmap is defined
-//! Soon we should demand it is implemented and remove these
-#include <sci_defs/hashmap_defs.h>
-
-//! Handles and StackVector
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Geometry/BBox.h>
 
-//! Mesh is derived from PropertyManager
-#include <Core/Datatypes/Types.h>
-#include <Core/Datatypes/PropertyManager.h>
-#include <Core/Datatypes/FieldRNG.h>
-#include <Core/Datatypes/FieldVIndex.h>
-#include <Core/Datatypes/FieldVIterator.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Vector.h>
-#include <Core/Geometry/Tensor.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/BBox.h>
 
-//! Need the environment
-#include <Core/Util/Environment.h>
-#include <Core/Util/Debug.h>
-
-//! Need STL objects
-#include <vector>
-#include <string>
-
-//! STL objects with check of their availability
-#include <sci_hash_set.h>
-#include <sci_hash_map.h>
-#include <algorithm>
-
-//! Need to get DBL_MAX and DBL_MIN
-#include <float.h>
-#include <math.h>
+#include <Core/Utils/Legacy/Environment.h>
+#include <Core/Utils/Legacy/Debug.h>
 
 //! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
