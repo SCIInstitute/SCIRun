@@ -26,31 +26,18 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Math/Tests classes
-
-SET(Core_Datatypes_Tests_SRCS
-  MatrixInitializerTest.cc
-  MatrixOperationsTest.cc
-  MatrixTypeConversionsTest.cc
-  BlockMatrixTests.cc
-  MatrixElementAccessorPerformanceTest.cc
-  ColumnMatrixMisfitCalculatorTest.cc
-  SparseRowMatrixFromMapTest.cc
-  CollectMatricesAlgorithmTest.cc
+SET(Core_Datatypes_Legacy_Field_Tests_SRCS
+  FieldTests.cc
+  LatticeVolumeMeshTests.cc
+  MeshFactoryTests.cc
+  TriSurfMeshTests.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Tests ${Core_Datatypes_Tests_SRCS})
+SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Legacy_Field_Tests ${Core_Datatypes_Legacy_Field_Tests_SRCS})
 
-# DV Fix defining below libraries
-TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
-  Core_Math
-  Core_Algorithms_Math
-  Core_Exceptions 
-  Core_Util
-  Core_Datatypes
-  ${SCI_GTESTMAIN_LIBRARY}
-  ${M_LIBRARY}
-  ${DL_LIBRARY}
-  ${LAPACK_LIBRARY}
-  ${CBLAS_LIBRARY}
-  ${FBLAS_LIBRARY})
+TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field_Tests
+  Core_Datatypes_Legacy_Field
+  gtest_main
+  gtest
+  gmock
+)
