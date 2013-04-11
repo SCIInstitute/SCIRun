@@ -36,7 +36,10 @@ SET(Interface_Application_SOURCES
   ClosestPortFinder.cc
   DeveloperConsole.cc
   GuiApplication.cc
+  GuiCommandFactory.cc
+  GuiCommands.cc
   GuiLogger.cc
+  MainWindowCollaborators.cc
   ModuleLogWindow.cc
   ModuleWidget.cc
   ModuleProxyWidget.cc
@@ -51,13 +54,17 @@ SET(Interface_Application_SOURCES
   Connection.cc
   NetworkEditor.cc
   NetworkEditorControllerGuiProxy.cc
+  TreeViewCollaborators.cc
 )
 
 SET(Interface_Application_HEADERS
   ClosestPortFinder.h
   DeveloperConsole.h
   GuiApplication.h
+  GuiCommandFactory.h
+  GuiCommands.h
   GuiLogger.h
+  MainWindowCollaborators.h
   ModuleLogWindow.h
   ModuleWidget.h
   ModuleProxyWidget.h
@@ -73,6 +80,7 @@ SET(Interface_Application_HEADERS
   PythonConsoleWidget.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
+  TreeViewCollaborators.h
 )
 
 SET(Interface_Application_FORMS

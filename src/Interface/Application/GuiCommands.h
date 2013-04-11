@@ -26,28 +26,80 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_NETWORK_NETWORKCOMMANDS_H
-#define ENGINE_NETWORK_NETWORKCOMMANDS_H
+#ifndef INTERFACE_APPLICATION_GUICOMMANDS_H
+#define INTERFACE_APPLICATION_GUICOMMANDS_H
 
-#include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Command/Command.h>
-#include <Dataflow/Engine/Controller/Share.h>
+
+class QSplashScreen;
+class QTimer;
 
 namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
-  
-  class SCISHARE ModuleAddCommand : public Core::Commands::RedoableCommand
+namespace Gui {
+
+  class NetworkEditor;
+
+  class LoadFileCommandGui : public Core::Commands::GuiCommand
   {
   public:
     virtual bool execute();
-    virtual void undo();
-    virtual void redo();
+  };
+
+  class ExecuteCurrentNetworkCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
+  class QuitAfterExecuteCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
+  class QuitCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
+  class PrintHelpGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
+  class PrintVersionGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
+  class ShowMainWindowGui : public Core::Commands::GuiCommand
+  {
+  public:
+    ShowMainWindowGui();
+    virtual bool execute();
+  private:
+    static void initSplashScreen();
+    static QSplashScreen* splash_;
+    static QTimer* splashTimer_;
   };
   
-}
-}
-}
+  class FileOpenCommand : public Core::Commands::GuiCommand
+  {
+  public:
+    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
+    virtual bool execute();
 
+    Dataflow::Networks::NetworkFileHandle openedFile_;
+  private:
+    std::string filename_;
+    NetworkEditor* networkEditor_;
+  };
+
+
+}
+}
 #endif

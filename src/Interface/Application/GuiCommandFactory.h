@@ -26,37 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QSplashScreen>
-#include <QMessageBox>
-#include <QTimer>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#ifndef INTERFACE_APPLICATION_GUICOMMANDFACTORY_H
+#define INTERFACE_APPLICATION_GUICOMMANDFACTORY_H
 
-using namespace SCIRun::Gui;
+#include <Core/Command/CommandFactory.h>
 
-int GuiApplication::run(int argc, const char* argv[])
-{
-  QApplication app(argc, const_cast<char**>(argv));
+namespace SCIRun {
+namespace Gui {
 
-  try
-  { 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-    
-    return app.exec();
-  }
-  catch (std::exception& e)
+  class GuiGlobalCommandFactory : public Core::Commands::GlobalCommandFactory
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return -1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return -1;
-  }
+  public:
+    virtual Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const;
+  };
+
 }
+}
+#endif

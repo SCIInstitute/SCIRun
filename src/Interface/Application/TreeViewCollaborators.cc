@@ -26,37 +26,53 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QSplashScreen>
-#include <QMessageBox>
-#include <QTimer>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#include <Interface/Application/TreeViewCollaborators.h>
 
 using namespace SCIRun::Gui;
 
-int GuiApplication::run(int argc, const char* argv[])
+void GrabNameAndSetFlags::operator()(QTreeWidgetItem* item)
 {
-  QApplication app(argc, const_cast<char**>(argv));
+  nameList_ << item->text(0) + "," + QString::number(item->childCount());
+  if (item->childCount() != 0)
+    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+}
 
-  try
-  { 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+HideItemsNotMatchingString::HideItemsNotMatchingString(bool useRegex, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), useRegex_(useRegex) {}
 
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-    
-    return app.exec();
-  }
-  catch (std::exception& e)
+void HideItemsNotMatchingString::operator()(QTreeWidgetItem* item)
+{
+  if (item)
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return -1;
+    if (0 == item->childCount())
+    {
+      item->setHidden(shouldHide(item));
+    }
+    else
+    {
+      bool shouldHideCategory = true;
+      for (int i = 0; i < item->childCount(); ++i)
+      {
+        auto child = item->child(i);
+        if (!child->isHidden())
+        {
+          shouldHideCategory = false;
+          break;
+        }
+      }
+      item->setHidden(shouldHideCategory);
+    }
   }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return -1;
-  }
+}
+
+bool HideItemsNotMatchingString::shouldHide(QTreeWidgetItem* item) 
+{
+  auto text = item->text(0);
+  if (useRegex_)
+    return !match_.exactMatch(text);
+  return !text.startsWith(start_, Qt::CaseInsensitive);
+}
+
+void ShowAll::operator()(QTreeWidgetItem* item)
+{
+  item->setHidden(false);
 }

@@ -30,7 +30,7 @@
 
 using namespace SCIRun::Dataflow::Engine;
 
-void ModuleAddCommand::execute()
+bool ModuleAddCommand::execute()
 {
   throw "not implemented";
 }

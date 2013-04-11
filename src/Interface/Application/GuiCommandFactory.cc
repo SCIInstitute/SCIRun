@@ -26,37 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QSplashScreen>
-#include <QMessageBox>
-#include <QTimer>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#include <boost/make_shared.hpp>
+#include <Core/Utils/Exception.h>
+#include <Interface/Application/GuiCommandFactory.h>
+#include <Interface/Application/GuiCommands.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Commands;
 
-int GuiApplication::run(int argc, const char* argv[])
+CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
 {
-  QApplication app(argc, const_cast<char**>(argv));
-
-  try
-  { 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-    
-    return app.exec();
-  }
-  catch (std::exception& e)
+  switch (type)
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return -1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return -1;
+  case ShowMainWindow:
+    return boost::make_shared<ShowMainWindowGui>();
+  case PrintHelp:
+    return boost::make_shared<PrintHelpGui>();
+  case PrintVersion:
+    return boost::make_shared<PrintVersionGui>();
+  case LoadNetworkFile:
+    return boost::make_shared<LoadFileCommandGui>();
+  case ExecuteCurrentNetwork:
+    return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
+  case SetupQuitAfterExecute:
+    return boost::make_shared<QuitAfterExecuteCommandGui>();
+  case QuitCommand:
+    return boost::make_shared<QuitCommandGui>();
+  default:
+    THROW_INVALID_ARGUMENT("Unknown global command type.");
   }
 }

@@ -26,37 +26,46 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QSplashScreen>
-#include <QMessageBox>
-#include <QTimer>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#include <QtGui>
+#include <Interface/Application/MainWindowCollaborators.h>
 
 using namespace SCIRun::Gui;
 
-int GuiApplication::run(int argc, const char* argv[])
+void TextEditAppender::log(const QString& message) const 
 {
-  QApplication app(argc, const_cast<char**>(argv));
+  text_->append(message);
+}
 
-  try
-  { 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+void TextEditAppender::error(const std::string& msg) const
+{
+  log("Error: " + QString::fromStdString(msg));
+}
 
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-    
-    return app.exec();
-  }
-  catch (std::exception& e)
-  {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return -1;
-  }
-  catch (...)
-  {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return -1;
-  }
+void TextEditAppender::warning(const std::string& msg) const
+{
+  log("Warning: " + QString::fromStdString(msg));
+}
+
+void TextEditAppender::remark(const std::string& msg) const
+{
+  log("Remark: " + QString::fromStdString(msg));
+}
+
+void TextEditAppender::status(const std::string& msg) const
+{
+  log(QString::fromStdString(msg));
+}
+
+QString TreeViewModuleGetter::text() const
+{
+  return tree_.currentItem()->text(0);
+}
+bool TreeViewModuleGetter::isModule() const
+{
+  return tree_.currentItem()->childCount() == 0;
+}
+
+NotePosition ComboBoxDefaultNotePositionGetter::position() const
+{
+  return NotePosition(combo_.currentIndex() + 1);
 }

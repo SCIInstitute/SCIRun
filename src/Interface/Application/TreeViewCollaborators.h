@@ -26,37 +26,51 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QSplashScreen>
-#include <QMessageBox>
-#include <QTimer>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#ifndef INTERFACE_APPLICATION_TREEVIEWCOLLABORATORS_H
+#define INTERFACE_APPLICATION_TREEVIEWCOLLABORATORS_H
 
-using namespace SCIRun::Gui;
+#include <QtGui>
 
-int GuiApplication::run(int argc, const char* argv[])
-{
-  QApplication app(argc, const_cast<char**>(argv));
+namespace SCIRun {
+namespace Gui {
 
-  try
-  { 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-    
-    return app.exec();
-  }
-  catch (std::exception& e)
+  struct GrabNameAndSetFlags
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return -1;
-  }
-  catch (...)
+    QStringList nameList_;
+    void operator()(QTreeWidgetItem* item);
+  };
+
+  template <class Func>
+  void visitItem(QTreeWidgetItem* item, Func& itemFunc)
   {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return -1;
+    itemFunc(item);
+    for (int i = 0; i < item->childCount(); ++i)
+      visitItem(item->child(i), itemFunc);
   }
+
+  template <class Func>
+  void visitTree(QTreeWidget* tree, Func& itemFunc) 
+  {
+    for (int i = 0; i < tree->topLevelItemCount(); ++i)
+      visitItem(tree->topLevelItem(i), itemFunc);
+  }
+
+  struct HideItemsNotMatchingString
+  {
+    explicit HideItemsNotMatchingString(bool useRegex, const QString& pattern);
+    QRegExp match_;
+    QString start_;
+    bool useRegex_;
+
+    void operator()(QTreeWidgetItem* item);
+    bool shouldHide(QTreeWidgetItem* item);
+  };
+
+  struct ShowAll
+  {
+    void operator()(QTreeWidgetItem* item);
+  };
+
 }
+}
+#endif

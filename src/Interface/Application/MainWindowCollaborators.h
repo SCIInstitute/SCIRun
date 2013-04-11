@@ -26,37 +26,53 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QApplication>
-#include <QSplashScreen>
-#include <QMessageBox>
-#include <QTimer>
-#include <Interface/Application/GuiApplication.h>
-#include <Interface/Application/SCIRunMainWindow.h>
-#include <Core/Application/Application.h>
+#ifndef INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
+#define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
-using namespace SCIRun::Gui;
+#include <Core/Logging/Logger.h>
+#include <Interface/Application/NetworkEditor.h>  //TODO
 
-int GuiApplication::run(int argc, const char* argv[])
-{
-  QApplication app(argc, const_cast<char**>(argv));
+class QTextEdit;
+class QTreeWidget;
+class QComboBox;
 
-  try
-  { 
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
+namespace SCIRun {
+namespace Gui {
 
-    mainWin->setController(Core::Application::Instance().controller());
-    mainWin->initialize();
-    
-    return app.exec();
-  }
-  catch (std::exception& e)
+  class TextEditAppender : public Core::Logging::LoggerInterface
   {
-    QMessageBox::critical(0, "Critical error", "Unhandled exception: " + QString(e.what()) + "\nExiting now.");
-    return -1;
-  }
-  catch (...)
+  public:
+    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
+
+    void log(const QString& message) const;
+
+    virtual void error(const std::string& msg) const;
+    virtual void warning(const std::string& msg) const;
+    virtual void remark(const std::string& msg) const;
+    virtual void status(const std::string& msg) const;
+  private:
+    QTextEdit* text_;
+  };
+
+  class TreeViewModuleGetter : public CurrentModuleSelection
   {
-    QMessageBox::critical(0, "Critical error", "Unknown unhandled exception: exiting now.");
-    return -1;
-  }
+  public:
+    explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
+    virtual QString text() const;
+    virtual bool isModule() const;
+  private:
+    QTreeWidget& tree_;
+  };
+
+  class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
+  {
+  public:
+    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
+    virtual NotePosition position() const;
+  private:
+    QComboBox& combo_;
+  };
+
 }
+}
+#endif

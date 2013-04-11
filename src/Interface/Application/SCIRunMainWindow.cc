@@ -38,6 +38,10 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Preferences.h>
 #include <Interface/Application/PythonConsoleWidget.h>
+#include <Interface/Application/TreeViewCollaborators.h>
+#include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/GuiCommandFactory.h>
+#include <Interface/Application/GuiCommands.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -58,96 +62,6 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Commands;
-
-namespace
-{
-  struct GrabNameAndSetFlags
-  {
-    QStringList nameList_;
-    void operator()(QTreeWidgetItem* item)
-    {
-      nameList_ << item->text(0) + "," + QString::number(item->childCount());
-      if (item->childCount() != 0)
-        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    }
-  };
-
-  template <class Func>
-  void visitItem(QTreeWidgetItem* item, Func& itemFunc)
-  {
-    itemFunc(item);
-    for (int i = 0; i < item->childCount(); ++i)
-      visitItem(item->child(i), itemFunc);
-  }
-
-  template <class Func>
-  void visitTree(QTreeWidget* tree, Func& itemFunc) 
-  {
-    for (int i = 0; i < tree->topLevelItemCount(); ++i)
-      visitItem(tree->topLevelItem(i), itemFunc);
-  }
-
-  class TextEditAppender : public Core::Logging::LoggerInterface
-  {
-  public:
-    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
-
-    void log(const QString& message) const 
-    {
-      text_->append(message);
-    }
-
-    virtual void error(const std::string& msg) const
-    {
-      log("Error: " + QString::fromStdString(msg));
-    }
-
-    virtual void warning(const std::string& msg) const
-    {
-      log("Warning: " + QString::fromStdString(msg));
-    }
-
-    virtual void remark(const std::string& msg) const
-    {
-      log("Remark: " + QString::fromStdString(msg));
-    }
-
-    virtual void status(const std::string& msg) const
-    {
-      log(QString::fromStdString(msg));
-    }
-  private:
-    QTextEdit* text_;
-  };
-
-  class TreeViewModuleGetter : public CurrentModuleSelection
-  {
-  public:
-    explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-    virtual QString text() const
-    {
-      return tree_.currentItem()->text(0);
-    }
-    virtual bool isModule() const
-    {
-      return tree_.currentItem()->childCount() == 0;
-    }
-  private:
-    QTreeWidget& tree_;
-  };
-
-  class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
-  {
-  public:
-    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
-    virtual NotePosition position() const
-    {
-      return NotePosition(combo_.currentIndex() + 1);
-    }
-  private:
-    QComboBox& combo_;
-  };
-}
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
 
@@ -335,126 +249,6 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   prefs_->setRegressionTestDataDir();
 }
 
-class /*SCISHARE*/ LoadFileCommandGui : public GuiCommand
-{
-public:
-  virtual void execute()
-  {
-    auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
-    SCIRun::Gui::SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
-  }
-};
-
-class /*SCISHARE*/ ExecuteCurrentNetworkCommandGui : public GuiCommand
-{
-public:
-  virtual void execute()
-  {
-    SCIRun::Gui::SCIRunMainWindow::Instance()->executeAll();
-  }
-};
-
-class /*SCISHARE*/ QuitAfterExecuteCommandGui : public GuiCommand
-{
-public:
-  virtual void execute()
-  {
-    SCIRun::Gui::SCIRunMainWindow::Instance()->setupQuitAfterExecute();
-  }
-};
-
-class /*SCISHARE*/ QuitCommandGui : public GuiCommand
-{
-public:
-  virtual void execute()
-  {
-    SCIRun::Gui::SCIRunMainWindow::Instance()->quit();
-  }
-};
-
-class /*SCISHARE*/ PrintHelpGui : public GuiCommand
-{
-public:
-  virtual void execute()
-  {
-    std::cout << SCIRun::Core::Application::Instance().commandHelpString() << std::endl;
-  }
-};
-
-class /*SCISHARE*/ PrintVersionGui : public GuiCommand
-{
-public:
-  virtual void execute()
-  {
-    std::cout << SCIRun::Core::Application::Instance().version() << std::endl;
-  }
-};
-
-class /*SCISHARE*/ ShowMainWindowGui : public GuiCommand
-{
-public:
-  ShowMainWindowGui() 
-  {
-    initSplashScreen();
-  }
-  virtual void execute()
-  {
-    splash_->show();
-
-    splashTimer_->start();
-    splash_->showMessage("Welcome! Tip: Press F1 and click anywhere in the interface for helpful hints.", Qt::AlignBottom, Qt::white);
-    qApp->processEvents();
-
-    SCIRun::Gui::SCIRunMainWindow* mainWin = SCIRun::Gui::SCIRunMainWindow::Instance();
-    mainWin->activateWindow();
-    
-    mainWin->raise();
-    mainWin->show();
-  }
-  static void initSplashScreen()
-  {
-    splash_ = new QSplashScreen(0, QPixmap(":/gear/splash-scirun.png"),  Qt::WindowStaysOnTopHint);
-    splashTimer_ = new QTimer;
-    splashTimer_->setSingleShot( true );
-    splashTimer_->setInterval( 5000 );
-    QObject::connect( splashTimer_, SIGNAL( timeout() ), splash_, SLOT( close() ));
-  }
-private:
-  static QSplashScreen* splash_;
-  static QTimer* splashTimer_;
-};
-
-QSplashScreen* ShowMainWindowGui::splash_ = 0;
-QTimer* ShowMainWindowGui::splashTimer_ = 0;
-
-
-class /*SCISHARE*/ GuiGlobalCommandFactory : public GlobalCommandFactory
-{
-public:
-  virtual CommandHandle create(GlobalCommands type) const
-  {
-    switch (type)
-    {
-    case ShowMainWindow:
-      return boost::make_shared<ShowMainWindowGui>();
-    case PrintHelp:
-      return boost::make_shared<PrintHelpGui>();
-    case PrintVersion:
-      return boost::make_shared<PrintVersionGui>();
-    case LoadNetworkFile:
-      return boost::make_shared<LoadFileCommandGui>();
-    case ExecuteCurrentNetwork:
-      return boost::make_shared<ExecuteCurrentNetworkCommandGui>();
-    case SetupQuitAfterExecute:
-      return boost::make_shared<QuitAfterExecuteCommandGui>();
-    case QuitCommand:
-      return boost::make_shared<QuitCommandGui>();
-    default:
-      THROW_INVALID_ARGUMENT("Unknown global command type.");
-    }
-  }
-};
-
 void SCIRunMainWindow::executeCommandLineRequests()
 {
   GlobalCommandFactoryHandle gcf(boost::make_shared<GuiGlobalCommandFactory>());
@@ -511,41 +305,6 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
   GuiLogger::Instance().log("File save done.");
   setWindowModified(false);
 }
-
-class FileOpenCommand
-{
-public:
-  FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-  bool execute()
-  {
-    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
-
-    try
-    {
-      openedFile_ = XMLSerializer::load_xml<NetworkFile>(filename_);
-
-      if (openedFile_)
-      {
-        networkEditor_->clear();
-        networkEditor_->loadNetwork(openedFile_);
-        GuiLogger::Instance().log("File load done.");
-        return true;
-      }
-      else
-        GuiLogger::Instance().log("File load failed.");
-    }
-    catch (...)
-    {
-      GuiLogger::Instance().log("File load failed.");
-    }
-    return false;
-  }
-
-  NetworkFileHandle openedFile_;
-private:
-  std::string filename_;
-  NetworkEditor* networkEditor_;
-};
 
 void SCIRunMainWindow::loadNetwork()
 {
@@ -687,55 +446,6 @@ void SCIRunMainWindow::setActionIcons()
   actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
-
-struct HideItemsNotMatchingString
-{
-  explicit HideItemsNotMatchingString(bool useRegex, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), useRegex_(useRegex) {}
-  QRegExp match_;
-  QString start_;
-  bool useRegex_;
-
-  void operator()(QTreeWidgetItem* item)
-  {
-    if (item)
-    {
-      if (0 == item->childCount())
-      {
-        item->setHidden(shouldHide(item));
-      }
-      else
-      {
-        bool shouldHideCategory = true;
-        for (int i = 0; i < item->childCount(); ++i)
-        {
-          auto child = item->child(i);
-          if (!child->isHidden())
-          {
-            shouldHideCategory = false;
-            break;
-          }
-        }
-        item->setHidden(shouldHideCategory);
-      }
-    }
-  }
-
-  bool shouldHide(QTreeWidgetItem* item) 
-  {
-    auto text = item->text(0);
-    if (useRegex_)
-      return !match_.exactMatch(text);
-    return !text.startsWith(start_, Qt::CaseInsensitive);
-  }
-};
-
-struct ShowAll
-{
-  void operator()(QTreeWidgetItem* item)
-  {
-    item->setHidden(false);
-  }
-};
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
 {
