@@ -26,53 +26,41 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Datatypes classes
+SET(Core_Datatypes_Legacy_Field_HEADERS
+  CastFData.h
+  CurveMesh.h
+  Field.h
+  FieldIndex.h
+  FieldInformation.h
+  FieldIterator.h
+  FieldRNG.h
+  FieldVIndex.h
+  FieldVIterator.h
+  GenericField.h
+  HexVolMesh.h
+  ImageMesh.h
+  LatVolMesh.h
+  Mesh.h
+  MeshSupport.h
+  MeshTypes.h
+  PointCloudMesh.h
+  PrismVolMesh.h
+  QuadSurfMesh.h
+  ScanlineMesh.h
+  share.h
+  StructCurveMesh.h
+  StructHexVolMesh.h
+  StructQuadSurfMesh.h
+  TetVolMesh.h
+  TriSurfMesh.h
+  VFData.h
+  VFDataT.h
+  VField.h
+  VMesh.h
+  VUnstructuredMesh.h
+)
 
-SET(Core_Datatypes_SRCS
-  Bundle.cc
-  BlockMatrix.cc
-  Clipper.cc
-  Color.cc
-  ColorMap.cc		    	
-  ColumnMatrix.cc	    	
-  Datatype.cc
-  DenseColMajMatrix.cc	    	
-  DenseMatrix.cc	    	
-  DenseMatrixFunctions.cc	    	
-  Field.cc
-  FieldArray.cc
-  FieldRNG.cc
-  FieldInformation.cc
-  VFData.cc	
-  VFDataT_0.cc	
-  VFDataT_1.cc	
-  VFDataT_2.cc	
-  Image.cc	
-  Material.cc	    	
-  Matrix.cc		    	
-  MatrixAlgorithms.cc
-  MatrixOperations.cc	    	
-  MatrixTypeConverter.cc	    	
-  Mesh.cc		    	
-  VMesh.cc		    	
-  NrrdData.cc
-  NrrdToITK.cc
-  PropertyManager.cc      	
-  SparseRowMatrix.cc	
-  SparseRowMatrixFromMap.cc
-  SparseMatrixFunctions.cc    	
-  String.cc                     
-  TypeName.cc		    	
-  PointCloudMesh.cc
-  CurveMesh.cc
-  TriSurfMesh.cc
-  QuadSurfMesh.cc
-  TetVolMesh.cc
-  PrismVolMesh.cc
-  HexVolMesh.cc
-  LatVolMesh.cc
-  ImageMesh.cc
-  ScanlineMesh.cc
+SET(Core_Datatypes_Legacy_Field_SRCS
   cd_templates.cc	    	
   cd_templates_fields_0.cc    	
   cd_templates_fields_1.cc    	
@@ -81,49 +69,57 @@ SET(Core_Datatypes_SRCS
   cd_templates_fields_4.cc    	
   cd_templates_fields_5.cc	
   cd_templates_fields_6.cc	
+  CurveMesh.cc
+  Field.cc
+  FieldInformation.cc
+  FieldRNG.cc
+  HexVolMesh.cc
+  ImageMesh.cc
+  LatVolMesh.cc
+  Mesh.cc		
+  PointCloudMesh.cc  
+  PrismVolMesh.cc
+  QuadSurfMesh.cc
+  ScanlineMesh.cc
+  TetVolMesh.cc
+  TriSurfMesh.cc
+  VFData.cc	
+  VFDataT_0.cc	
+  VFDataT_1.cc	
+  VFDataT_2.cc	
+  VMesh.cc		    	
 )
 
-IF(ITK_FOUND)
-  SET(Core_Datatypes_SRCS ${Core_Datatypes_SRCS} 
-    ITKDatatype.cc)
-ENDIF(ITK_FOUND)
+ADD_LIBRARY(Core_Datatypes_Legacy_Field
+  ${Core_Datatypes_Legacy_Field_SRCS}
+  ${Core_Datatypes_Legacy_Field_HEADERS}
+)
 
-SCIRUN_ADD_LIBRARY(Core_Datatypes ${Core_Datatypes_SRCS})
-
-TARGET_LINK_LIBRARIES(Core_Datatypes 
+TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field 
   Core_Basis
   Core_Exceptions
   Core_Geometry     
   Core_Math         
-  Core_Persistent   
-  Core_Thread       
-  Core_Util
+  #Core_Persistent   
+  Core_Thread
+  Core_Thread_Legacy
+  Core_Utils
+  Core_Util_Legacy
+  Core_Datatypes
+  Core_Datatypes_Legacy_Base
   ${SCI_BOOST_LIBRARY}
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
-  ${CBLAS_LIBRARY}
-  ${F_LIBRARY} 
-  ${SCI_TEEM_LIBRARY}
-  ${SCI_PNG_LIBRARY}
-  ${SCI_ZLIB_LIBRARY}
-  ${SCI_SLIVR_LIBRARY}
+  #${GL_LIBRARY}
+  #${M_LIBRARY}
+  #${CBLAS_LIBRARY}
+  #${F_LIBRARY} 
+  #${SCI_TEEM_LIBRARY}
+  #${SCI_PNG_LIBRARY}
+  #${SCI_ZLIB_LIBRARY}
+  #${SCI_SLIVR_LIBRARY}
 )
 
-IF(APPLE_LEOPARD)
-  SET_TARGET_PROPERTIES(Core_Datatypes PROPERTIES LINK_FLAGS  "${GL_LINK}")
-ENDIF(APPLE_LEOPARD)
-
-IF(WIN32 AND CMAKE_SIZEOF_VOID_P MATCHES 8)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-ENDIF(WIN32 AND CMAKE_SIZEOF_VOID_P MATCHES 8)
-
-IF(ITK_FOUND)
-  TARGET_LINK_LIBRARIES(Core_Datatypes
-    ITKCommon)
-ENDIF(ITK_FOUND)
-
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Datatypes)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Legacy_Field)
 ENDIF(BUILD_SHARED_LIBS)
 
 IF(BUILD_TESTING)
