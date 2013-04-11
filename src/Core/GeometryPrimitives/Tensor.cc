@@ -28,7 +28,7 @@
 
 
 /*
- *  Tensor.cc: Symetric, positive definite tensors (diffusion, conductivity)
+ *  Tensor.cc: Symmetric, positive definite tensors (diffusion, conductivity)
  *
  *  Written by:
  *   Author: David Weinstein
@@ -39,21 +39,23 @@
  */
 
 
-#include <Core/Geometry/Tensor.h>
-#include <Core/Containers/Array1.h>
-#include <Core/Util/TypeDescription.h>
-#include <Core/Util/Assert.h>
-#include <Core/Persistent/Persistent.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Utils/Legacy/Assert.h>
 #include <Core/Math/MiscMath.h>
 
 #include <iostream>
-#include <stdio.h>
 
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Persistent/Persistent.h>
 #include <teem/ten.h>
+#endif
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
-Tensor::Tensor() : have_eigens_(0)
+Tensor::Tensor() : l1_(0), l2_(0), l3_(0), have_eigens_(false)
 {
   mat_[0][0] = 0.0;
   mat_[0][1] = 0.0;
@@ -148,6 +150,7 @@ Tensor::Tensor(int v) {
       else mat_[i][j]=0;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
   e1_(e1), e2_(e2), e3_(e3), 
   l1_(e1.length()), l2_(e2.length()), l3_(e3.length())
@@ -155,6 +158,7 @@ Tensor::Tensor(const Vector &e1, const Vector &e2, const Vector &e3) :
   build_mat_from_eigens();
   have_eigens_=1;
 }
+#endif
 
 Tensor::Tensor(const double **cmat) {
   for (int i=0; i<3; i++)
@@ -163,6 +167,7 @@ Tensor::Tensor(const double **cmat) {
   have_eigens_=0;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void Tensor::build_mat_from_eigens() {
   if (!have_eigens_) return;
   double E[3][3];
@@ -174,7 +179,7 @@ void Tensor::build_mat_from_eigens() {
   if (l1_ != 0) e1n.normalize();
   if (l2_ != 0) e2n.normalize();
   if (l3_ != 0) e3n.normalize();
-  
+
   E[0][0] = e1n.x(); E[0][1] = e1n.y(); E[0][2] = e1n.z();
   E[1][0] = e2n.x(); E[1][1] = e2n.y(); E[1][2] = e2n.z();
   E[2][0] = e3n.x(); E[2][1] = e3n.y(); E[2][2] = e3n.z();
@@ -186,32 +191,33 @@ void Tensor::build_mat_from_eigens() {
     for (j=0; j<3; j++) {
       SE[i][j]=0;
       for (k=0; k<3; k++)
-	SE[i][j] += S[i][k] * E[j][k];  // S x E-transpose
+        SE[i][j] += S[i][k] * E[j][k];  // S x E-transpose
     }
-  for (i=0; i<3; i++)
-    for (j=0; j<3; j++) {
-      mat_[i][j]=0;
-      for (k=0; k<3; k++)
-	mat_[i][j] += E[i][k] * SE[k][j];
-    }
+    for (i=0; i<3; i++)
+      for (j=0; j<3; j++) {
+        mat_[i][j]=0;
+        for (k=0; k<3; k++)
+          mat_[i][j] += E[i][k] * SE[k][j];
+      }
 }
+#endif
 
-int Tensor::operator==(const Tensor& t) const
+bool Tensor::operator==(const Tensor& t) const
 {
   for(int i=0;i<3;i++)
     for(int j=0;j<3;j++)
       if( mat_[i][j]!=t.mat_[i][j])
-	return false;
+        return false;
 
   return true;
 }
 
-int Tensor::operator!=(const Tensor& t) const
+bool Tensor::operator!=(const Tensor& t) const
 {
   for(int i=0;i<3;i++)
     for(int j=0;j<3;j++)
       if( mat_[i][j]!=t.mat_[i][j])
-	return true;
+        return true;
 
   return false;
 }
@@ -246,16 +252,11 @@ double Tensor::norm()
   for (int i=0;i<3;i++)
   {
     sum = 0.0;
-    for (int j=0;j<3;j++) sum += Abs(mat_[i][j]);
+    for (int j=0;j<3;j++) sum += SCIRun::Abs(mat_[i][j]);
     if (sum > a) a = sum;
   }
   return (a);
 }
-
-
-//Tensor::~Tensor()
-//{
-//}
 
 std::string Tensor::type_name(int) {
   static const std::string str("Tensor");
@@ -320,7 +321,7 @@ Vector Tensor::operator*(const Vector v) const
 		v.x()*mat_[2][0]+v.y()*mat_[2][1]+v.z()*mat_[2][2]);
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void Tensor::build_eigens_from_mat()
 {
   if (have_eigens_) return;
@@ -364,6 +365,7 @@ void Tensor::set_eigens(const Vector &e1, const Vector &e2, const Vector &e3) {
   build_mat_from_eigens();
   have_eigens_ = 1;
 }
+#endif
 
 void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
 				const Vector &e3,
@@ -374,6 +376,7 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   have_eigens_ = 1;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void Pio(Piostream& stream, Tensor& t){
   
   stream.begin_cheap_delim();
@@ -402,6 +405,7 @@ void Pio(Piostream& stream, Tensor& t){
   stream.end_cheap_delim();
 }
 
+
 const std::string& 
 Tensor::get_h_file_path() {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
@@ -418,7 +422,7 @@ const TypeDescription* get_type_description(Tensor*)
   }
   return td;
 }
-
+#endif
 
 std::ostream& operator<<( std::ostream& os, const Tensor& t )
 {
@@ -439,6 +443,3 @@ std::istream& operator>>( std::istream& is, Tensor& t)
      
   return is;
 }
-
-
-} // End namespace SCIRun

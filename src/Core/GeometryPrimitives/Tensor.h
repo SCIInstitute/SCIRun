@@ -28,7 +28,7 @@
 
 
 /*
- *  Tensor.h:  Symetric, positive definite tensors (diffusion, conductivity)
+ *  Tensor.h:  Symmetric, positive definite tensors (diffusion, conductivity)
  *
  *  Written by:
  *   Author: David Weinstein
@@ -42,6 +42,7 @@
 #define Geometry_Tensor_h 1
 
 #include <Core/Utils/Legacy/Assert.h>
+#include <Core/Containers/Array1.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Share.h>
 
@@ -52,11 +53,13 @@
 
 namespace SCIRun {
 
-template<class T> class Array1;
+  class Piostream;
+  class RigorousTest;
+  class TypeDescription;
 
-class Piostream;
-class RigorousTest;
-class TypeDescription;
+  namespace Core {
+
+    namespace Geometry {
 
 class SCISHARE Tensor {
 
@@ -73,11 +76,9 @@ public:
   Tensor(const Vector&, const Vector&, const Vector&);
   Tensor& operator=(const Tensor&);
   Tensor& operator=(const double&);
-  //virtual ~Tensor();
   
-  // checks if one tensor is exactly the same as another
-  int operator==(const Tensor&) const;
-  int operator!=(const Tensor&) const;
+  bool operator==(const Tensor&) const;
+  bool operator!=(const Tensor&) const;
 
   Tensor operator+(const Tensor&) const;
   Tensor& operator+=(const Tensor&);
@@ -89,17 +90,21 @@ public:
   static std::string type_name(int i = -1);
   
   double mat_[3][3];
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   void build_mat_from_eigens();
-  void build_eigens_from_mat();
-
-  double norm();
-
-  bool have_eigens() { return have_eigens_; }
+  void build_eigens_from_mat(); 
   void get_eigenvectors(Vector &e1, Vector &e2, Vector &e3);
   const Vector &get_eigenvector1() { ASSERT(have_eigens_); return e1_; }
   const Vector &get_eigenvector2() { ASSERT(have_eigens_); return e2_; }
   const Vector &get_eigenvector3() { ASSERT(have_eigens_); return e3_; }
   void get_eigenvalues(double &l1, double &l2, double &l3);
+#endif
+
+  double norm();
+
+  bool have_eigens() { return have_eigens_; }
+ 
   void set_eigens(const Vector &e1, const Vector &e2, const Vector &e3);
 
   // This directly sets the eigenvectors and values in the tensor.  It
@@ -124,8 +129,9 @@ public:
 private:
   Vector e1_, e2_, e3_;  // these are already scaled by the eigenvalues
   double l1_, l2_, l3_;
-  int have_eigens_;
+  bool have_eigens_;
 };
+
 
 inline bool operator<(Tensor t1, Tensor t2)
 {
@@ -155,7 +161,7 @@ SCISHARE const TypeDescription* get_type_description(Tensor*);
 
 SCISHARE std::ostream& operator<<(std::ostream& os, const Tensor& t);
 SCISHARE std::istream& operator>>(std::istream& os, Tensor& t);
-
+    }}
 } // End namespace SCIRun
 
 #endif // Geometry_Tensor_h
