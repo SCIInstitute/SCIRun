@@ -45,7 +45,11 @@ namespace SCIRun {
 template<class T, int CAPACITY>
 class StackBasedVector : public std::vector<T>
 {
-
+public:
+  StackBasedVector(size_t size = CAPACITY) : std::vector<T>(size) 
+  {
+    reserve(CAPACITY);
+  }
 };
 }
 

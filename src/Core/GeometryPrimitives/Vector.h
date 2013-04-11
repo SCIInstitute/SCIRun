@@ -500,13 +500,6 @@ inline void Vector::Set(double x, double y, double z)
 #endif
 }
 
-template <class T, size_t N>
-class StackVector : public boost::array<T,N>
-{
-public:
-  StackVector() {}
-  StackVector(size_t s) {}
-};
 
 }}
 #endif

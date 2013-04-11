@@ -40,13 +40,12 @@
 
 //#include <Core/Containers/SearchGridT.h>
 
-//#include <Core/Containers/StackBasedVector.h>
+#include <Core/Containers/StackVector.h>
+#include <Core/Containers/StackBasedVector.h>
 
 //#include <Core/Util/Debug.h>
 
 #include <Core/Datatypes/Mesh/Share.h>
-
-#define StackBasedVector std::vector
 
 namespace SCIRun {
 namespace Core {
@@ -104,8 +103,8 @@ public:
   //! the stack, only in less common situations memory is allocated
   //! and is used to store data. Here we allow 12 spaces to be on the
   //! stack which should be enough.
-  typedef StackBasedVector<index_type>         index_array_type;
-  typedef StackBasedVector<double>             weight_array_type;
+  typedef StackBasedVector<index_type,12>         index_array_type;
+  typedef StackBasedVector<double,12>             weight_array_type;
   
   //! Virtual indices, iterators, and arrays
   //! Class for indexing nodes
@@ -114,7 +113,7 @@ public:
       typedef VNodeIterator<VirtualMesh::index_type>   iterator;
       typedef VNodeIndex<VirtualMesh::index_type>      index_type;
       typedef VNodeIndex<VirtualMesh::size_type>       size_type;
-      typedef StackBasedVector<index_type>     array_type;
+      typedef StackBasedVector<index_type,8>     array_type;
   };
 
   typedef std::vector<Node::array_type>                nodes_array_type;
@@ -126,7 +125,7 @@ public:
       typedef VENodeIterator<VirtualMesh::index_type>   iterator;
       typedef VENodeIndex<VirtualMesh::index_type>      index_type;
       typedef VENodeIndex<VirtualMesh::size_type>       size_type;
-      typedef StackBasedVector<index_type>     array_type;
+      typedef StackBasedVector<index_type,12>     array_type;
   };
 
   //! Class for indexing edges
@@ -135,7 +134,7 @@ public:
       typedef VEdgeIterator<VirtualMesh::index_type>   iterator;
       typedef VEdgeIndex<VirtualMesh::index_type>      index_type;
       typedef VEdgeIndex<VirtualMesh::size_type>       size_type;
-      typedef StackBasedVector<index_type>    array_type;
+      typedef StackBasedVector<index_type,12>    array_type;
   };
   
   //! Class for indexing faces
@@ -144,7 +143,7 @@ public:
       typedef VFaceIterator<VirtualMesh::index_type>   iterator;    
       typedef VFaceIndex<VirtualMesh::index_type>      index_type;
       typedef VFaceIndex<VirtualMesh::size_type>       size_type;
-      typedef StackBasedVector<index_type>    array_type;
+      typedef StackBasedVector<index_type,12>    array_type;
   }; 
   
   //! Class for indexing cells
@@ -156,7 +155,7 @@ public:
       typedef VCellIterator<VirtualMesh::index_type>   iterator;
       typedef VCellIndex<VirtualMesh::index_type>      index_type;
       typedef VCellIndex<VirtualMesh::size_type>       size_type;
-      typedef StackBasedVector<index_type>    array_type;
+      typedef StackBasedVector<index_type,12>    array_type;
   };
   
   //! Class for indexing elements
@@ -175,7 +174,7 @@ public:
       typedef VElemIterator<VirtualMesh::index_type>   iterator;
       typedef VElemIndex<VirtualMesh::index_type>      index_type;
       typedef VElemIndex<VirtualMesh::size_type>       size_type;
-      typedef StackBasedVector<index_type>    array_type;
+      typedef StackBasedVector<index_type,12>    array_type;
   };
   
   
@@ -190,7 +189,7 @@ public:
       typedef VDElemIterator<VirtualMesh::index_type>  iterator;    
       typedef VDElemIndex<VirtualMesh::index_type>     index_type;
       typedef VDElemIndex<VirtualMesh::size_type>      size_type;
-      typedef StackBasedVector<index_type>    array_type;
+      typedef StackBasedVector<index_type,12>    array_type;
  };
 
 
@@ -207,7 +206,7 @@ public:
       StackVector<index_type,8>   node_index; // nodes that span the element
       StackVector<index_type,12>  edge_index; // edges that span the element
       size_type                   num_hderivs; // number of derivatives per node
-      StackBasedVector<double> weights;     // weights for given points and derivatives
+      StackBasedVector<double,64> weights;     // weights for given points and derivatives
   };
   
   //! We have special code for doing multiple interpolations at the same time
@@ -226,7 +225,7 @@ public:
       StackVector<index_type,8>    node_index; // nodes that span the element
       StackVector<index_type,12>   edge_index; // edges that span the element
       size_type                    num_hderivs; // Number of derivatives per point
-      StackBasedVector<double>  weights;    // weights for given points
+      StackBasedVector<double,64>  weights;    // weights for given points
 
       size_type                    num_derivs; // Number of derivatives in topology   
       StackVector<double,9>        inverse_jacobian; // Inverse jacobian, for local to global transformation

@@ -50,8 +50,6 @@ namespace SCIRun {
 template <class T, int CAPACITY>
 class StackVector : public boost::array<T, CAPACITY>
 {
-public:
-  void reserve(size_t) {}  // Do nothing: We already have a certain capacity
 };
 
 } // End namespace SCIRun
