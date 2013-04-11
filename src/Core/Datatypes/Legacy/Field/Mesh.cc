@@ -439,7 +439,7 @@ Mesh::vmesh()
 MeshHandle
 CreateMesh(const std::string& type)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   
   if (MeshTypeIDMutex == NULL)
   {
@@ -464,7 +464,7 @@ CreateMesh(const std::string& type,
 	   Mesh::size_type x, Mesh::size_type y, Mesh::size_type z,
 	   const Point& min, const Point& max)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
@@ -488,7 +488,7 @@ CreateMesh(const std::string& type,
 	   Mesh::size_type x, Mesh::size_type y,
 	   const Point& min, const Point& max)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
@@ -511,7 +511,7 @@ MeshHandle
 CreateMesh(const std::string& type, Mesh::size_type x,
 	   const Point& min, const Point& max)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
@@ -534,7 +534,7 @@ MeshHandle
 CreateMesh(const std::string& type,
 	   Mesh::size_type x, Mesh::size_type y, Mesh::size_type z)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
@@ -560,7 +560,7 @@ CreateMesh(const std::string& type,
 MeshHandle
 CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
@@ -586,7 +586,7 @@ CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y)
 MeshHandle
 CreateMesh(const std::string& type, Mesh::size_type x)
 {
-  MeshHandle handle(0);
+  MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
