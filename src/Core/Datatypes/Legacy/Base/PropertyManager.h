@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -294,3 +295,5 @@ PropertyManager::get_property(const std::string &name, T &ref)
 } // namespace SCIRun
 
 #endif // SCI_project_PropertyManager_h
+
+#endif
