@@ -226,7 +226,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    LatVolMesh<Basis>::vmesh_ = CreateVStructHexVolMesh(this); 
+    LatVolMesh<Basis>::vmesh_.reset(CreateVStructHexVolMesh(this)); 
   }
 
   virtual int topology_geometry() const
@@ -788,13 +788,13 @@ public:
   static Persistent *maker() { return new StructHexVolMesh<Basis>(); }
 #endif
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker()  { return new StructHexVolMesh<Basis>(); }
+  static MeshHandle mesh_maker()  { return boost::make_shared<StructHexVolMesh<Basis>>(); }
   //! This function returns a handle for the virtual interface.
   static MeshHandle structhexvol_maker(size_type x,
 				       size_type y,
 				       size_type z)
   {
-    return new StructHexVolMesh<Basis>(x,y,z);
+    return boost::make_shared<StructHexVolMesh<Basis>>(x,y,z);
   }
 
   Array3<Core::Geometry::Point>& get_points() { return (points_); }

@@ -632,7 +632,7 @@ public:
 
   //! Access point to virtual interface
   virtual VMesh* vmesh() { 
-       return (vmesh_.get_rep()); 
+       return (vmesh_.get()); 
   }
 
   virtual int basis_order() { return (basis_.polynomial_order()); }
@@ -1070,7 +1070,9 @@ private:
 
 public:
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
+#endif
 
   // Unsafe due to non-constness of unproject.
   Core::Geometry::Transform &get_transform() { return transform_; }
@@ -1100,9 +1102,12 @@ public:
   static Persistent *maker() { return new LatVolMesh(); }
 #endif
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new LatVolMesh(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<LatVolMesh>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max) { return new LatVolMesh(x,y,z,min,max); }
+  static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
+  { 
+    return boost::make_shared<LatVolMesh>(x,y,z,min,max); 
+  }
 
 protected:
 
