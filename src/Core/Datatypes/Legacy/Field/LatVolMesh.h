@@ -452,15 +452,15 @@ public:
   typedef Cell Elem;
   typedef Face DElem;
 
-  friend class NodeIter;
-  friend class CellIter;
-  friend class EdgeIter;
-  friend class FaceIter;
+  friend struct NodeIter;
+  friend struct CellIter;
+  friend struct EdgeIter;
+  friend struct FaceIter;
 
-  friend class RangeCellIter;
-  friend class RangeNodeIter;
+  friend struct RangeCellIter;
+  friend struct RangeNodeIter;
 
-  friend class ElemData;
+  friend struct ElemData;
 
   class ElemData
   {
@@ -1085,7 +1085,7 @@ public:
   virtual int topology_geometry() const { return (STRUCTURED | REGULAR); }
     
   //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Soem of this should be obsolete    
+  //! dynamic compilation purposes. Some of this should be obsolete    
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* cell_type_description();
   static const TypeDescription* face_type_description();
@@ -1094,8 +1094,10 @@ public:
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new LatVolMesh(); }
+#endif
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return new LatVolMesh(); }
   //! This function returns a handle for the virtual interface.
@@ -1123,7 +1125,7 @@ protected:
   double scaled_jacobian_;
   double det_inverse_jacobian_;
 
-  Handle<VMesh> vmesh_;
+  boost::shared_ptr<VMesh> vmesh_;
 };
 
 
@@ -1224,10 +1226,11 @@ LatVolMesh<Basis>::cell_type_description()
   return td;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 PersistentTypeID
 LatVolMesh<Basis>::latvol_typeid(type_name(-1), "Mesh", LatVolMesh<Basis>::maker);
-
+#endif
 
 template <class Basis>
 LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
