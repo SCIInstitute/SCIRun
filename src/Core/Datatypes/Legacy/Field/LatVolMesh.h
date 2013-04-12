@@ -48,7 +48,6 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -63,8 +62,8 @@ template <class Basis>
 class LatVolMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVLatVolMesh(MESH*) { return (0); }
 
@@ -75,7 +74,7 @@ VMesh* CreateVLatVolMesh(MESH*) { return (0); }
 
 #if (SCIRUN_LATVOL_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVLatVolMesh(LatVolMesh<HexTrilinearLgn<Point> >* mesh);
+SCISHARE VMesh* CreateVLatVolMesh(LatVolMesh<Core::Basis::HexTrilinearLgn<Core::Geometry::Point> >* mesh);
 
 #endif
 /////////////////////////////////////////////////////
@@ -95,7 +94,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
   
-  typedef LockingHandle<LatVolMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<LatVolMesh<Basis> > handle_type;
   typedef Basis                             basis_type;
 
   struct LatIndex;
@@ -519,43 +518,43 @@ public:
     }
 
     inline
-    const Point node0() const {
-      Point p(index_.i_, index_.j_, index_.k_);
+    const Core::Geometry::Point node0() const {
+      Core::Geometry::Point p(index_.i_, index_.j_, index_.k_);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node1() const {
-      Point p(index_.i_ + 1, index_.j_, index_.k_);
+    const Core::Geometry::Point node1() const {
+      Core::Geometry::Point p(index_.i_ + 1, index_.j_, index_.k_);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node2() const {
-      Point p(index_.i_ + 1, index_.j_ + 1, index_.k_);
+    const Core::Geometry::Point node2() const {
+      Core::Geometry::Point p(index_.i_ + 1, index_.j_ + 1, index_.k_);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node3() const {
-      Point p(index_.i_, index_.j_ + 1, index_.k_);
+    const Core::Geometry::Point node3() const {
+      Core::Geometry::Point p(index_.i_, index_.j_ + 1, index_.k_);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node4() const {
-      Point p(index_.i_, index_.j_, index_.k_+ 1);
+    const Core::Geometry::Point node4() const {
+      Core::Geometry::Point p(index_.i_, index_.j_, index_.k_+ 1);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node5() const {
-      Point p(index_.i_ + 1, index_.j_, index_.k_+ 1);
+    const Core::Geometry::Point node5() const {
+      Core::Geometry::Point p(index_.i_ + 1, index_.j_, index_.k_+ 1);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node6() const {
-      Point p(index_.i_ + 1, index_.j_ + 1, index_.k_+ 1);
+    const Core::Geometry::Point node6() const {
+      Core::Geometry::Point p(index_.i_ + 1, index_.j_ + 1, index_.k_+ 1);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node7() const {
-      Point p(index_.i_, index_.j_ + 1, index_.k_+ 1);
+    const Core::Geometry::Point node7() const {
+      Core::Geometry::Point p(index_.i_, index_.j_ + 1, index_.k_+ 1);
       return mesh_.transform_.project(p);
     }
 
@@ -583,7 +582,7 @@ public:
   }
   
   LatVolMesh(size_type x, size_type y, size_type z,
-             const Point &min, const Point &max);
+             const Core::Geometry::Point &min, const Core::Geometry::Point &max);
   
   LatVolMesh(LatVolMesh* /* mh */,  
              size_type mx, size_type my, size_type mz,
@@ -681,7 +680,7 @@ public:
   //! This function uses a couple of newton iterations to find the local
   //! coordinate of a point
   template<class VECTOR>
-  bool get_coords(VECTOR &coords, const Point &p, typename Elem::index_type idx) const
+  bool get_coords(VECTOR &coords, const Core::Geometry::Point &p, typename Elem::index_type idx) const
   {
     // If polynomial order is larger, use the complicated HO basis implementation
     // Since this is a latvol and most probably linear, this function is to expensive
@@ -694,7 +693,7 @@ public:
     // Cheap implementation that assumes it is a regular grid
     // This implementation should be faster then the interpolate of the linear
     // basis which needs to work as well for the unstructured hexvol :(
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
     coords.resize(3);
     coords[0] = static_cast<typename VECTOR::value_type>(r.x()-static_cast<double>(idx.i_));
     coords[1] = static_cast<typename VECTOR::value_type>(r.y()-static_cast<double>(idx.j_));
@@ -721,7 +720,7 @@ public:
   //! Find the location in the global coordinate system for a local coordinate
   //! This function is the opposite of get_coords.
   template<class VECTOR>
-  void interpolate(Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
+  void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
   {
     // only makes sense for higher order
     if (basis_.polynomial_order() > 1) 
@@ -732,7 +731,7 @@ public:
     }
     // Cheaper implementation
     
-    Point p(static_cast<double>(idx.i_)+static_cast<double>(coords[0]),
+    Core::Geometry::Point p(static_cast<double>(idx.i_)+static_cast<double>(coords[0]),
             static_cast<double>(idx.j_)+static_cast<double>(coords[1]),
             static_cast<double>(idx.k_)+static_cast<double>(coords[2]));
     pt = transform_.project(p);
@@ -822,9 +821,9 @@ public:
   virtual bool get_dim(std::vector<size_type>&) const;
   Vector diagonal() const;
 
-  virtual BBox get_bounding_box() const;
-  virtual void transform(const Transform &t);
-  virtual void get_canonical_transform(Transform &t);
+  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual void transform(const Core::Geometry::Transform &t);
+  virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
   //! set the mesh statistics
   void set_min_i(index_type i) {min_i_ = i; }
@@ -911,24 +910,24 @@ public:
   }
 
   //! return all cell_indecies that overlap the BBox in arr.
-  void get_cells(typename Cell::array_type &arr, const BBox &box);
+  void get_cells(typename Cell::array_type &arr, const Core::Geometry::BBox &box);
   //! returns the min and max indices that fall within or on the BBox
   void get_cells(typename Cell::index_type &begin,
                  typename Cell::index_type &end,
-                 const BBox &bbox);
+                 const Core::Geometry::BBox &bbox);
   void get_nodes(typename Node::index_type &begin,
                  typename Node::index_type &end,
-                 const BBox &bbox);
+                 const Core::Geometry::BBox &bbox);
 
   bool get_neighbor(typename Cell::index_type &neighbor,
                     const typename Cell::index_type &from,
                     typename Face::index_type face) const;
 
   //! get the center point (in object space) of an element
-  void get_center(Point &, const typename Node::index_type &) const;
-  void get_center(Point &, typename Edge::index_type) const;
-  void get_center(Point &, typename Face::index_type) const;
-  void get_center(Point &, const typename Cell::index_type &) const;
+  void get_center(Core::Geometry::Point &, const typename Node::index_type &) const;
+  void get_center(Core::Geometry::Point &, typename Edge::index_type) const;
+  void get_center(Core::Geometry::Point &, typename Face::index_type) const;
+  void get_center(Core::Geometry::Point &, const typename Cell::index_type &) const;
 
   //! Get the size of an elemnt (length, area, volume)
   double get_size(const typename Node::index_type &idx) const;
@@ -942,21 +941,21 @@ public:
   double get_volume(const typename Cell::index_type &i) const
   { return get_size(i); };
 
-  bool locate(typename Node::index_type &, const Point &) const;
-  bool locate(typename Edge::index_type &, const Point &) const
+  bool locate(typename Node::index_type &, const Core::Geometry::Point &) const;
+  bool locate(typename Edge::index_type &, const Core::Geometry::Point &) const
   { return false; }
-  bool locate(typename Face::index_type &, const Point &) const
+  bool locate(typename Face::index_type &, const Core::Geometry::Point &) const
   { return false; }
-  bool locate(typename Elem::index_type &, const Point &) const;
+  bool locate(typename Elem::index_type &, const Core::Geometry::Point &) const;
 
-  int get_weights(const Point &p, typename Node::array_type &l, double *w);
-  int get_weights(const Point & , typename Edge::array_type & , double * )
+  int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
+  int get_weights(const Core::Geometry::Point & , typename Edge::array_type & , double * )
     { ASSERTFAIL("LatVolMesh::get_weights for edges isn't supported"); }
-  int get_weights(const Point & , typename Face::array_type & , double * )
+  int get_weights(const Core::Geometry::Point & , typename Face::array_type & , double * )
     { ASSERTFAIL("LatVolMesh::get_weights for faces isn't supported"); }
-  int get_weights(const Point &p, typename Cell::array_type &l, double *w);
+  int get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l, double *w);
 
-  void get_point(Point &p, const typename Node::index_type &i) const
+  void get_point(Core::Geometry::Point &p, const typename Node::index_type &i) const
   { get_center(p, i); }
 
   void get_normal(Vector &, const typename Node::index_type &) const
@@ -964,28 +963,28 @@ public:
   void get_normal(Vector &, std::vector<double> &, typename Elem::index_type,
                   unsigned int)
   { ASSERTFAIL("This mesh type does not have element normals."); }
-  void get_random_point(Point &,
+  void get_random_point(Core::Geometry::Point &,
                         const typename Elem::index_type &,
                         FieldRNG &rng) const;
 
   //! This function will find the closest element and the location on that
   //! element that is the closest
-  bool find_closest_node(double& pdist, Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          typename Node::index_type &elem,
-                         const Point &p) const;
+                         const Core::Geometry::Point &p) const;
 
-  bool find_closest_node(double& pdist, Point &result, 
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          typename Node::index_type &elem,
-                         const Point &p, double maxdist) const;
+                         const Core::Geometry::Point &p, double maxdist) const;
 
   //! This function will find the closest element and the location on that
   //! element that is the closest
   template <class ARRAY>
   bool find_closest_elem(double& pdist, 
-                         Point &result,
+                         Core::Geometry::Point &result,
                          ARRAY& coords, 
                          typename Elem::index_type &elem,
-                         const Point &p,
+                         const Core::Geometry::Point &p,
                          double maxdist) const
   {
     bool ret = find_closest_elem(pdist,result,coords,elem,p);
@@ -999,14 +998,14 @@ public:
   //! element that is the closest
   template <class ARRAY>
   bool find_closest_elem(double& pdist, 
-                         Point &result,
+                         Core::Geometry::Point &result,
                          ARRAY& coords, 
                          typename Elem::index_type &elem,
-                         const Point &p) const
+                         const Core::Geometry::Point &p) const
   {
     if (ni_ == 0 || nj_ == 0 || nk_ == 0) return (false);
     
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     double jj = r.y();
@@ -1028,7 +1027,7 @@ public:
     elem.k_ = static_cast<index_type>(fk);
     elem.mesh_ = this;
     
-    result = transform_.project(Point(ii,jj,kk));
+    result = transform_.project(Core::Geometry::Point(ii,jj,kk));
     pdist = (p-result).length();
 
     coords.resize(3);
@@ -1041,9 +1040,9 @@ public:
 
 
   bool find_closest_elem(double& pdist,
-                         Point& result,
+                         Core::Geometry::Point& result,
                          typename Elem::index_type &elem,
-                         const Point &p) const
+                         const Core::Geometry::Point &p) const
   {
     StackVector<double,3> coords;
     return(find_closest_elem(pdist,result,coords,elem,p));
@@ -1052,12 +1051,13 @@ public:
   //! This function will return multiple elements if the closest point is
   //! located on a node or edge. All bordering elements are returned in that 
   //! case. 
-  bool find_closest_elems(double& pdist, Point &result, 
+  bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
                           std::vector<typename Elem::index_type> &elem,
-                          const Point &p) const;
+                          const Core::Geometry::Point &p) const;
 
   double get_epsilon() const;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Export this class using the old Pio system
   virtual void io(Piostream&);
   //! These IDs are created as soon as this class will be instantiated
@@ -1069,10 +1069,11 @@ private:
 public:
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
-
+#endif
+  public:
   // Unsafe due to non-constness of unproject.
-  Transform &get_transform() { return transform_; }
-  Transform &set_transform(const Transform &trans)
+  Core::Geometry::Transform &get_transform() { return transform_; }
+  Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans)
   { 
     transform_ = trans; 
     transform_.compute_imat();
@@ -1098,7 +1099,7 @@ public:
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return new LatVolMesh(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Point& min, const Point& max) { return new LatVolMesh(x,y,z,min,max); }
+  static MeshHandle latvol_maker(size_type x, size_type y, size_type z, const Core::Geometry::Point& min, const Core::Geometry::Point& max) { return new LatVolMesh(x,y,z,min,max); }
 
 protected:
 
@@ -1110,7 +1111,7 @@ protected:
   //! (min=min_Node::index_type, max=min+extents-1)
   size_type ni_, nj_, nk_;
 
-  Transform transform_;
+  Core::Geometry::Transform transform_;
   Basis     basis_;  
 
   // The jacobian is the same for every element
@@ -1230,7 +1231,7 @@ LatVolMesh<Basis>::latvol_typeid(type_name(-1), "Mesh", LatVolMesh<Basis>::maker
 
 template <class Basis>
 LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
-                              const Point &min, const Point &max)
+                              const Core::Geometry::Point &min, const Core::Geometry::Point &max)
   : min_i_(0), min_j_(0), min_k_(0),
     ni_(i), nj_(j), nk_(k)
 {
@@ -1249,14 +1250,14 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_random_point(Point &p,
+LatVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
                                     const typename Elem::index_type &ei,
                                     FieldRNG &rng) const
 {
   // build the three principal edge vectors
   typename Node::array_type ra;
   get_nodes(ra,ei);
-  Point p0,p1,p2,p3;
+  Core::Geometry::Point p0,p1,p2,p3;
   get_point(p0,ra[0]);
   get_point(p1,ra[1]);
   get_point(p2,ra[3]);
@@ -1275,19 +1276,19 @@ LatVolMesh<Basis>::get_random_point(Point &p,
 
 
 template <class Basis>
-BBox
+Core::Geometry::BBox
 LatVolMesh<Basis>::get_bounding_box() const
 {
-  Point p0(min_i_,         min_j_,         min_k_);
-  Point p1(min_i_ + ni_-1, min_j_,         min_k_);
-  Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
-  Point p3(min_i_,         min_j_ + nj_-1, min_k_);
-  Point p4(min_i_,         min_j_,         min_k_ + nk_-1);
-  Point p5(min_i_ + ni_-1, min_j_,         min_k_ + nk_-1);
-  Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
-  Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
+  Core::Geometry::Point p0(min_i_,         min_j_,         min_k_);
+  Core::Geometry::Point p1(min_i_ + ni_-1, min_j_,         min_k_);
+  Core::Geometry::Point p2(min_i_ + ni_-1, min_j_ + nj_-1, min_k_);
+  Core::Geometry::Point p3(min_i_,         min_j_ + nj_-1, min_k_);
+  Core::Geometry::Point p4(min_i_,         min_j_,         min_k_ + nk_-1);
+  Core::Geometry::Point p5(min_i_ + ni_-1, min_j_,         min_k_ + nk_-1);
+  Core::Geometry::Point p6(min_i_ + ni_-1, min_j_ + nj_-1, min_k_ + nk_-1);
+  Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
 
-  BBox result;
+  Core::Geometry::BBox result;
   result.extend(transform_.project(p0));
   result.extend(transform_.project(p1));
   result.extend(transform_.project(p2));
@@ -1310,7 +1311,7 @@ LatVolMesh<Basis>::diagonal() const
 
 template <class Basis>
 void
-LatVolMesh<Basis>::transform(const Transform &t)
+LatVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   transform_.pre_trans(t);
   transform_.compute_imat();
@@ -1320,7 +1321,7 @@ LatVolMesh<Basis>::transform(const Transform &t)
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_canonical_transform(Transform &t)
+LatVolMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t)
 {
   t = transform_;
   t.post_scale(Vector(ni_ - 1.0, nj_ - 1.0, nk_ - 1.0));
@@ -1761,7 +1762,7 @@ LatVolMesh<Basis>::get_elems(typename Cell::array_type &result,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const BBox &bbox)
+LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const Core::Geometry::BBox &bbox)
 {
   // Get our min and max
   typename Cell::index_type min, max;
@@ -1792,9 +1793,9 @@ LatVolMesh<Basis>::get_cells(typename Cell::array_type &arr, const BBox &bbox)
 template <class Basis>
 void
 LatVolMesh<Basis>::get_cells(typename Cell::index_type &begin, typename Cell::index_type &end,
-                             const BBox &bbox) {
+                             const Core::Geometry::BBox &bbox) {
 
-  const Point minp = transform_.unproject(bbox.min());
+  const Core::Geometry::Point minp = transform_.unproject(bbox.min());
   index_type mini = (index_type)floor(minp.x());
   index_type minj = (index_type)floor(minp.y());
   index_type mink = (index_type)floor(minp.z());
@@ -1802,7 +1803,7 @@ LatVolMesh<Basis>::get_cells(typename Cell::index_type &begin, typename Cell::in
   if (minj < 0) { minj = 0; }
   if (mink < 0) { mink = 0; }
 
-  const Point maxp = transform_.unproject(bbox.max());
+  const Core::Geometry::Point maxp = transform_.unproject(bbox.max());
   index_type maxi = (index_type)floor(maxp.x());
   index_type maxj = (index_type)floor(maxp.y());
   index_type maxk = (index_type)floor(maxp.z());
@@ -1913,14 +1914,14 @@ template <class Basis>
 void
 LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
                              typename Node::index_type &end,
-                             const BBox &bbox)
+                             const Core::Geometry::BBox &bbox)
 {
   // get the min and max points of the bbox and make sure that they lie
   // inside the mesh boundaries.
-  BBox mesh_boundary = get_bounding_box();
+  Core::Geometry::BBox mesh_boundary = get_bounding_box();
   // crop by min boundary
-  Point min = Max(bbox.min(), mesh_boundary.min());
-  Point max = Max(bbox.max(), mesh_boundary.min());
+  Core::Geometry::Point min = Max(bbox.min(), mesh_boundary.min());
+  Core::Geometry::Point max = Max(bbox.max(), mesh_boundary.min());
   // crop by max boundary
   min = Min(min, mesh_boundary.max());
   max = Min(max, mesh_boundary.max());
@@ -1932,12 +1933,12 @@ LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
   if (!min_located && !max_located)
   {
     // first check to see if there is a bbox overlap
-    BBox box;
+    Core::Geometry::BBox box;
     box.extend(min);
     box.extend(max);
     if ( box.overlaps(mesh_boundary) )
     {
-      Point r = transform_.unproject(min);
+      Core::Geometry::Point r = transform_.unproject(min);
       double rx = floor(r.x());
       double ry = floor(r.y());
       double rz = floor(r.z());
@@ -1965,7 +1966,7 @@ LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
   }
   else if ( !min_located )
   {
-    const Point r = transform_.unproject(min);
+    const Core::Geometry::Point r = transform_.unproject(min);
     const double rx = floor(r.x());
     const double ry = floor(r.y());
     const double rz = floor(r.z());
@@ -1975,7 +1976,7 @@ LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
   }
   else
   { //  !max_located
-    const Point r = transform_.unproject(max);
+    const Core::Geometry::Point r = transform_.unproject(max);
     const double rx = floor(r.x());
     const double ry = floor(r.y());
     const double rz = floor(r.z());
@@ -1991,12 +1992,12 @@ LatVolMesh<Basis>::get_nodes(typename Node::index_type &begin,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_center(Point &result,
+LatVolMesh<Basis>::get_center(Core::Geometry::Point &result,
                               typename Edge::index_type idx) const
 {
   typename Node::array_type arr;
   get_nodes(arr, idx);
-  Point p1;
+  Core::Geometry::Point p1;
   get_center(result, arr[0]);
   get_center(p1, arr[1]);
 
@@ -2007,7 +2008,7 @@ LatVolMesh<Basis>::get_center(Point &result,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_center(Point &result,
+LatVolMesh<Basis>::get_center(Core::Geometry::Point &result,
                               typename Face::index_type idx) const
 {
   typename Node::array_type nodes;
@@ -2016,7 +2017,7 @@ LatVolMesh<Basis>::get_center(Point &result,
   typename Node::array_type::iterator nai = nodes.begin();
   get_point(result, *nai);
   ++nai;
-  Point pp;
+  Core::Geometry::Point pp;
   while (nai != nodes.end())
   {
     get_point(pp, *nai);
@@ -2029,20 +2030,20 @@ LatVolMesh<Basis>::get_center(Point &result,
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_center(Point &result,
+LatVolMesh<Basis>::get_center(Core::Geometry::Point &result,
                               const typename Cell::index_type &idx) const
 {
-  Point p(idx.i_ + 0.5, idx.j_ + 0.5, idx.k_ + 0.5);
+  Core::Geometry::Point p(idx.i_ + 0.5, idx.j_ + 0.5, idx.k_ + 0.5);
   result = transform_.project(p);
 }
 
 
 template <class Basis>
 void
-LatVolMesh<Basis>::get_center(Point &result,
+LatVolMesh<Basis>::get_center(Core::Geometry::Point &result,
                               const typename Node::index_type &idx) const
 {
-  Point p(idx.i_, idx.j_, idx.k_);
+  Core::Geometry::Point p(idx.i_, idx.j_, idx.k_);
   result = transform_.project(p);
 }
 
@@ -2061,7 +2062,7 @@ LatVolMesh<Basis>::get_size(typename Edge::index_type idx) const
 {
   typename Node::array_type arr;
   get_nodes(arr, idx);
-  Point p0, p1;
+  Core::Geometry::Point p0, p1;
   get_center(p0, arr[0]);
   get_center(p1, arr[1]);
 
@@ -2076,7 +2077,7 @@ LatVolMesh<Basis>::get_size(typename Face::index_type idx) const
   typename Node::array_type nodes;
   get_nodes(nodes, idx);
 
-  Point p0, p1, p2;
+  Core::Geometry::Point p0, p1, p2;
   get_point(p0, nodes[0]);
   get_point(p1, nodes[1]);
   get_point(p2, nodes[2]);
@@ -2102,13 +2103,13 @@ LatVolMesh<Basis>::get_size(const typename Cell::index_type& /*idx*/) const
 
 template <class Basis>
 bool
-LatVolMesh<Basis>::locate(typename Cell::index_type &elem, const Point &p) const
+LatVolMesh<Basis>::locate(typename Cell::index_type &elem, const Core::Geometry::Point &p) const
 {
   const double epsilon = 1e-7;
 
   if (ni_ == 0 || nj_ == 0 || nk_ == 0) return (false);
 
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double ii = r.x();
   double jj = r.y();
@@ -2148,11 +2149,11 @@ LatVolMesh<Basis>::locate(typename Cell::index_type &elem, const Point &p) const
 
 template <class Basis>
 bool
-LatVolMesh<Basis>::locate(typename Node::index_type &node, const Point &p) const
+LatVolMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
 {
   if (ni_ == 0 || nj_ == 0 || nk_ == 0) return (false);
   
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double rx = floor(r.x() + 0.5);
   double ry = floor(r.y() + 0.5);
@@ -2179,13 +2180,13 @@ LatVolMesh<Basis>::locate(typename Node::index_type &node, const Point &p) const
 template <class Basis>
 bool
 LatVolMesh<Basis>::find_closest_node(double& pdist,
-                           Point &result, 
+                           Core::Geometry::Point &result, 
                            typename Node::index_type &node,
-                           const Point &p) const
+                           const Core::Geometry::Point &p) const
 {
   if (ni_ == 0 || nj_ == 0 || nk_ == 0) return (false);
   
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double rx = floor(r.x() + 0.5);
   double ry = floor(r.y() + 0.5);
@@ -2199,7 +2200,7 @@ LatVolMesh<Basis>::find_closest_node(double& pdist,
   if (ry < 0.0) ry = 0.0; if (ry > njj) ry = njj;
   if (rz < 0.0) rz = 0.0; if (rz > nkk) rz = nkk;
 
-  result = transform_.project(Point(rx,ry,rz)); 
+  result = transform_.project(Core::Geometry::Point(rx,ry,rz)); 
   node.i_ = static_cast<index_type>(rx);
   node.j_ = static_cast<index_type>(ry);
   node.k_ = static_cast<index_type>(rz);
@@ -2214,9 +2215,9 @@ LatVolMesh<Basis>::find_closest_node(double& pdist,
 template <class Basis>
 bool
 LatVolMesh<Basis>::find_closest_node(double& pdist,
-                                    Point &result, 
+                                    Core::Geometry::Point &result, 
                                     typename Node::index_type &node,
-                                    const Point &p, double maxdist) const
+                                    const Core::Geometry::Point &p, double maxdist) const
 {
   bool ret = find_closest_node(pdist,result,node,p);
   if (!ret)  return (false);
@@ -2227,9 +2228,9 @@ LatVolMesh<Basis>::find_closest_node(double& pdist,
 template <class Basis>
 bool
 LatVolMesh<Basis>::find_closest_elems(double& pdist,
-                            Point &result,
+                            Core::Geometry::Point &result,
                             std::vector<typename Elem::index_type> &elems,
-                            const Point &p) const
+                            const Core::Geometry::Point &p) const
 {
   // For calculations inside the local element
   const double epsilon = 1e-8;
@@ -2237,7 +2238,7 @@ LatVolMesh<Basis>::find_closest_elems(double& pdist,
   
   if (ni_ == 0 || nj_ == 0 || nk_ == 0) return (false);
   
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double ii = r.x();
   double jj = r.y();
@@ -2312,7 +2313,7 @@ LatVolMesh<Basis>::find_closest_elems(double& pdist,
     elem.k_ = k+1;
     elems.push_back(elem);  
   }
-  result = transform_.project(Point(ii,jj,kk));
+  result = transform_.project(Core::Geometry::Point(ii,jj,kk));
 
   pdist = (p-result).length();
   return (true);
@@ -2322,7 +2323,7 @@ LatVolMesh<Basis>::find_closest_elems(double& pdist,
 
 template <class Basis>
 int
-LatVolMesh<Basis>::get_weights(const Point &p,
+LatVolMesh<Basis>::get_weights(const Core::Geometry::Point &p,
                                typename Node::array_type &locs,
                                double *w)
 {
@@ -2341,7 +2342,7 @@ LatVolMesh<Basis>::get_weights(const Point &p,
 
 template <class Basis>
 int
-LatVolMesh<Basis>::get_weights(const Point &p, typename Cell::array_type &l,
+LatVolMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l,
                               double *w)
 {
   typename Cell::index_type idx;
@@ -2406,7 +2407,7 @@ LatVolMesh<Basis>::io(Piostream& stream)
   
   if (version < 2 && stream.reading())
   {
-    Point min, max;
+    Core::Geometry::Point min, max;
     Pio(stream, min);
     Pio(stream, max);
     transform_.pre_scale(Vector(1.0 / (ni_ - 1.0),1.0 / (nj_ - 1.0),1.0 / (nk_ - 1.0)));
@@ -2614,12 +2615,12 @@ template <class Basis>
 double
 LatVolMesh<Basis>::get_epsilon() const
 {
-  Point p0(static_cast<double>(ni_-1),
+  Core::Geometry::Point p0(static_cast<double>(ni_-1),
            static_cast<double>(nj_-1),
            static_cast<double>(nk_-1));
-  Point p1(0.0,0.0,0.0);
-  Point q0 = transform_.project(p0);
-  Point q1 = transform_.project(p1);
+  Core::Geometry::Point p1(0.0,0.0,0.0);
+  Core::Geometry::Point q0 = transform_.project(p0);
+  Core::Geometry::Point q1 = transform_.project(p1);
   return ((q0-q1).length()*1e-8);
 }
 
