@@ -54,12 +54,8 @@
 #include <Core/Datatypes/Legacy/Base/Types.h>
 
 #include <Core/Thread/Mutex.h>
-
 #include <Core/Thread/ConditionVariable.h>
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Thread/Runnable.h>
-#include <Core/Thread/Thread.h>
-#endif
+#include <Core/Thread/Legacy/Runnable.h>
 
 #include <set>
 
@@ -302,15 +298,15 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.    
-  virtual TriSurfMesh *clone() { return new TriSurfMesh(*this); }
+  virtual TriSurfMesh *clone() const { return new TriSurfMesh(*this); }
 
   //! Destructor 
   virtual ~TriSurfMesh();
   
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return (vmesh_.get()); }
     
-  //! This one should go at some point, should be reroute throught the
+  //! This one should go at some point, should be reroute through the
   //! virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
@@ -2078,8 +2074,6 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
     edge_neighbors_(0),
     normals_(0),
     node_neighbors_(0),
-    node_grid_(0),
-    elem_grid_(0),
     synchronize_lock_("TriSurfMesh lock"),
     synchronize_cond_("TriSurfMesh condition variable"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
@@ -2116,7 +2110,7 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVTriSurfMesh(this);
+  vmesh_.reset(CreateVTriSurfMesh(this));
 }
 
 
@@ -2208,8 +2202,8 @@ TriSurfMesh<Basis>::transform(const Core::Geometry::Transform &t)
     synchronized_ |= Mesh::BOUNDING_BOX_E;
   }
     
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
 
   synchronize_lock_.unlock();
 }

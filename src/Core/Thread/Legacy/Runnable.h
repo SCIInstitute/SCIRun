@@ -46,8 +46,6 @@
 
 namespace SCIRun {
 
-  class Thread;
-
 /**************************************
  
 CLASS
@@ -72,11 +70,9 @@ DESCRIPTION
    of this same thread.
    
 ****************************************/
-  class SCISHARE Runnable {
+  class SCISHARE Runnable : boost::noncopyable
+  {
   protected:
-    friend class Thread;
-    Thread* my_thread_;
-    
     //////////
     // Create a new runnable, and initialize its state.
     Runnable(bool delete_on_exit = true);
@@ -94,10 +90,6 @@ DESCRIPTION
     virtual void run()=0;
   private:
     bool delete_on_exit;
-
-    // Cannot copy them
-    Runnable(const Runnable&);
-    Runnable& operator=(const Runnable&);
   };
 } // End namespace SCIRun
 

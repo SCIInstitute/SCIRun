@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -49,16 +48,10 @@ namespace SCIRun {
 Runnable::Runnable(bool delete_on_exit)
   : delete_on_exit(delete_on_exit)
 {
-  my_thread_=0;
 }
 
 Runnable::~Runnable()
 {
-  if(my_thread_){
-    throw ThreadError("Runnable is being destroyed while thread is still running\n");
-  }
 }
 
-
 } // End namespace SCIRun
-#endif
