@@ -1134,7 +1134,7 @@ protected:
   boost::shared_ptr<VMesh> vmesh_;
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 const TypeDescription* get_type_description(LatVolMesh<Basis> *)
 {
@@ -1231,7 +1231,7 @@ LatVolMesh<Basis>::cell_type_description()
   }
   return td;
 }
-
+#endif
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 PersistentTypeID
@@ -2447,7 +2447,7 @@ LatVolMesh<Basis>::io(Piostream& stream)
   }
 
 }
-#endif
+
 
 
 template <class Basis>
@@ -2470,7 +2470,7 @@ LatVolMesh<Basis>::type_name(int n)
     return find_type_name((Basis *)0);
   }
 }
-
+#endif
 
 template <class Basis>
 void

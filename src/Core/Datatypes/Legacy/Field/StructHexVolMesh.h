@@ -1736,6 +1736,7 @@ StructHexVolMesh<Basis>::clear_synchronization()
   return (true);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class Basis>
 void
@@ -1775,7 +1776,6 @@ StructHexVolMesh<Basis>::remove_elem_from_grid(typename LatVolMesh<Basis>::Elem:
   elem_grid_->remove(idx, box);
 }
 
-
 template <class Basis>
 void
 StructHexVolMesh<Basis>::insert_node_into_grid(typename LatVolMesh<Basis>::Node::index_type ni)
@@ -1792,7 +1792,7 @@ StructHexVolMesh<Basis>::remove_node_from_grid(typename LatVolMesh<Basis>::Node:
 {
   node_grid_->remove(ni,points_[ni]);
 }
-
+#endif
 template <class Basis>
 void
 StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
@@ -1912,7 +1912,6 @@ StructHexVolMesh<Basis>::io(Piostream& stream)
   if (stream.reading())
     this->vmesh_ = CreateVStructHexVolMesh(this);
 }
-#endif
 
 template <class Basis>
 const std::string
@@ -1935,7 +1934,6 @@ StructHexVolMesh<Basis>::type_name(int n)
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 const TypeDescription*
 get_type_description(StructHexVolMesh<Basis> *)
