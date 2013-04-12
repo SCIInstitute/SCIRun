@@ -3912,7 +3912,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->get_nodes_from_elem(eg.node_index,elem);
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3922,7 +3922,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->get_nodes_from_elem(eg.node_index,elem);
       this->get_edges_from_elem(eg.edge_index,elem);
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3932,7 +3932,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      eg.inverse_jacobian.resize(9);
+      //eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
