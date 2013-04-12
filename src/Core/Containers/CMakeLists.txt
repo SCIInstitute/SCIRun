@@ -37,7 +37,6 @@ SET(Core_Containers_HEADERS
   Array2.h
   Array3.h
   FData.h
-  SearchGridT.h
   share.h
   StackBasedVector.h
   StackVector.h
