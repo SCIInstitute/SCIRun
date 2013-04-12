@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -30,6 +29,7 @@
 #ifndef CORE_DATATYPES_SEARCHGRIDT_H
 #define CORE_DATATYPES_SEARCHGRIDT_H 1
 
+#include <boost/noncopyable.hpp>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Transform.h>
@@ -38,12 +38,12 @@
 #include <algorithm>
 #include <vector>
 
-#include <Core/Containers/share.h>
+#include <Core/GeometryPrimitives/share.h>
 
 namespace SCIRun {
 
 template<class INDEX>
-class SCISHARE SearchGridT 
+class SearchGridT : boost::noncopyable
 {
   public:
     //! Include the types defined in Types into this class
@@ -58,17 +58,10 @@ class SCISHARE SearchGridT
         transform_.pre_scale(Core::Geometry::Vector(1.0 / x, 1.0 / y, 1.0 / z));
         transform_.pre_scale(max - min);
 
-        transform_.pre_translate(min.asVector());
+        transform_.pre_translate(Vector(min));
         transform_.compute_imat();
         bin_.resize(x*y*z);
       }         
-
-    SearchGridT(const SearchGridT& copy) :
-      ni_(copy.ni_), nj_(copy.nj_), nk_(copy.nk_),
-      transform_(copy.transform_),
-      bin_(copy.bin_)
-    {
-    }
 
     inline void transform(const Core::Geometry::Transform &t) 
       { transform_.pre_trans(t);}
@@ -261,5 +254,4 @@ class SCISHARE SearchGridT
 
 } // namespace SCIRun
 
-#endif
 #endif
