@@ -99,7 +99,9 @@ public:
     
     element_size_ = basis_->domain_size();
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     generation_ = mesh_->generation;
+#endif
 
     unit_vertices_.resize(num_nodes_per_elem_);
     for (size_t k=0; k < num_nodes_per_elem_; k++)
@@ -125,8 +127,9 @@ public:
     {
       unit_center_[k] = basis_->unit_center[k];
     }
-    
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     pm_ = static_cast<PropertyManager*>(mesh_);
+#endif
   }
   
   virtual ~VMeshShared() {}
