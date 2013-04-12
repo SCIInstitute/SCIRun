@@ -1248,7 +1248,7 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
     
   transform_.pre_scale(Core::Geometry::Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0 / (k-1.0)));
   transform_.pre_scale(max - min);
-  transform_.pre_translate(min);
+  transform_.pre_translate(Vector(min));
   transform_.compute_imat();
   compute_jacobian();  
   
