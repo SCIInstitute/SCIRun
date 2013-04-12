@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
+#  in all copies or substantial portions of the Software. 
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,33 +26,16 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Containers classes
-
-SET(Core_Containers_SRCS
-  SearchGridT.cc
+SET(Core_Containers_Tests_SRCS
+  Array2Tests.cc
 )
 
-SET(Core_Containers_HEADERS
-  Array1.h
-  Array2.h
-  Array3.h
-  FData.h
-  share.h
-  StackBasedVector.h
-  StackVector.h
+SCIRUN_ADD_UNIT_TEST(Core_Containers_Tests
+  ${Core_Containers_Tests_SRCS}
 )
 
-ADD_LIBRARY(Core_Containers 
-  ${Core_Containers_SRCS} 
-  ${Core_Containers_HEADERS})
-
-TARGET_LINK_LIBRARIES(Core_Containers 
-                  #Core_Thread_Legacy
-                  Core_Exceptions_Legacy
-				  )
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Containers)
-ENDIF(BUILD_SHARED_LIBS)
-
-ADD_SUBDIRECTORY(Tests)
+TARGET_LINK_LIBRARIES(Core_Containers_Tests
+  gtest_main
+  gtest
+  gmock
+)

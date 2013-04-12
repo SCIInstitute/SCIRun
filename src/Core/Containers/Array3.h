@@ -59,28 +59,26 @@
 
 namespace SCIRun {
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  template<class T> class Array3;
-
-  template<class T> void Pio(Piostream& stream, Array3<T>& array);
-  template<class T> void Pio(Piostream& stream, Array3<T>& array, const std::string&);
-  template<class T> void Pio(Piostream& stream, Array3<T>*& array);
-#endif
-
 template<class T> 
 class Array3 : public boost::multi_array<T, 3>
 {
 public:
-  typedef boost::multi_array<T, 3> array_type;
+  typedef boost::multi_array<T, 3> base_type;
+  typedef typename base_type::value_type value_type;
 
   void resize(size_t size1, size_t size2, size_t size3)
   {
-    array_type::extent_gen extents;
-    array_type::resize(extents[size1][size2][size3]);
+    base_type::extent_gen extents;
+    base_type::resize(extents[size1][size2][size3]);
   }
 };
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+template<class T> void Pio(Piostream& stream, Array3<T>& array);
+template<class T> void Pio(Piostream& stream, Array3<T>& array, const std::string&);
+template<class T> void Pio(Piostream& stream, Array3<T>*& array);
+
 #define ARRAY3_VERSION 2
 
 template<class T>

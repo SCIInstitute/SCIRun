@@ -50,23 +50,40 @@
 
 namespace SCIRun {
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-template<class T> class Array2;
-
-template<class T> void Pio(Piostream& stream, Array2<T>& data);
-template<class T> void Pio(Piostream& stream, Array2<T>*& data);
-#endif
-
 template<class T>
 class Array2 : public boost::multi_array<T, 2>
 {
 public:
   typedef typename boost::multi_array<T, 2> base_type;
   typedef typename base_type::value_type value_type;
+
+  void resize(size_t size1, size_t size2)
+  {
+    base_type::extent_gen extents;
+    base_type::resize(extents[size1][size2]);
+  }
+
+  size_t totalSize() const
+  {
+    return std::accumulate(this->shape(), this->shape() + base_type::dimensionality, (size_t)1, std::multiplies<size_t>());
+  }
+
+  T& operator[](size_t idx)
+  {
+    return this->origin()[idx];
+  }
+
+  const T& operator[](size_t idx) const
+  {
+    return this->origin()[idx];
+  }
 };
 
-
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+template<class T> void Pio(Piostream& stream, Array2<T>& data);
+template<class T> void Pio(Piostream& stream, Array2<T>*& data);
+
 #define ARRAY2_VERSION 2
 
 template<class T>
