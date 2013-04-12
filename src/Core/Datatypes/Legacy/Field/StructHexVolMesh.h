@@ -764,9 +764,11 @@ public:
   virtual bool unsynchronize(mask_type);
   bool clear_synchronization();
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Export this class using the old Pio system
   virtual void io(Piostream&);
   static PersistentTypeID structhexvol_typeid;
+#endif
   //! Core functionality for getting the name of a templated mesh class  
   static  const std::string type_name(int n = -1);
 
@@ -780,8 +782,10 @@ public:
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new StructHexVolMesh<Basis>(); }
+#endif
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker()  { return new StructHexVolMesh<Basis>(); }
   //! This function returns a handle for the virtual interface.
@@ -1061,21 +1065,22 @@ private:
 
   Array3<Core::Geometry::Point> points_;
 
-  LockingHandle<SearchGridT<typename LatVolMesh<Basis>::Node::index_type> >  node_grid_;
-  LockingHandle<SearchGridT<typename LatVolMesh<Basis>::Elem::index_type> >  elem_grid_;
+  boost::shared_ptr<SearchGridT<typename LatVolMesh<Basis>::Node::index_type> >  node_grid_;
+  boost::shared_ptr<SearchGridT<typename LatVolMesh<Basis>::Elem::index_type> >  elem_grid_;
   
   mutable Mutex                       synchronize_lock_;
   mask_type                           synchronized_;
   double                              epsilon_;
   double                              epsilon2_; 
-  double                              epsilon3_; //! for volumertic comparison
+  double                              epsilon3_; //! for volumetric comparison
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 PersistentTypeID
 StructHexVolMesh<Basis>::structhexvol_typeid(StructHexVolMesh<Basis>::type_name(-1),
                                  "Mesh", maker);
+#endif
 
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh():
