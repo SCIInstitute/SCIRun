@@ -33,8 +33,6 @@
 //! Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/Handle.h>
 #include <Core/Containers/StackVector.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
@@ -53,17 +51,17 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
-#include <Core/Datatypes/Legacy/Field/Types.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 
 #include <Core/Thread/Mutex.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Thread/ConditionVariable.h>
 #include <Core/Thread/Runnable.h>
 #include <Core/Thread/Thread.h>
+#endif
 
-//! Needed for some specialized functions
 #include <set>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -76,8 +74,8 @@ namespace SCIRun {
 template<class MESH> class TriSurfMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVTriSurfMesh(MESH*) { return (0); }
 

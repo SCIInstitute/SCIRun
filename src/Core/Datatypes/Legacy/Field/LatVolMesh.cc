@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/LatVolMesh.h>
-#include <Core/Datatypes/VMeshShared.h>
-#include <Core/Datatypes/StructHexVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/VMeshShared.h>
+#include <Core/Datatypes/Legacy/Field/StructHexVolMesh.h>
 #include <Core/Basis/HexElementWeights.h>
 
 

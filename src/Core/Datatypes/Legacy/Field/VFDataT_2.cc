@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/VFDataT.h>
+#include <Core/Datatypes/Legacy/Field/VFDataT.h>
 
 namespace SCIRun {
 

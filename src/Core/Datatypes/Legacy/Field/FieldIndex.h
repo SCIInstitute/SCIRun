@@ -40,9 +40,8 @@
 #ifndef Datatypes_FieldIndex_h
 #define Datatypes_FieldIndex_h
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/Util/TypeDescription.h>
-#include <Core/Datatypes/Legacy/Field/TypeName.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 
 #include <vector>
 

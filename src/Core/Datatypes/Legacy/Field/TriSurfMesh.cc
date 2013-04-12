@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/TriSurfMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
 //! Only include this class if we included TriSurf Support
 #if (SCIRUN_TRISURF_SUPPORT > 0)
@@ -42,7 +42,7 @@ public:
 
   virtual bool is_trisurfmesh()        { return (true); }
 
-  //! constructor and descructor
+  //! constructor and destructor
   VTriSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VTriSurfMesh")      
