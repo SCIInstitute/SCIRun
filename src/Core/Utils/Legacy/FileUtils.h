@@ -96,7 +96,10 @@ SCISHARE std::string substituteTilde(const std::string &dirstr);
 
 // Replaces '/' with '\' or vice-versa between unix and windows paths
 SCISHARE void convertToWindowsPath( std::string & unixPath );
-SCISHARE void convertToUnixPath( std::string & winPath );
+inline void convertToUnixPath( std::string & winPath )
+{
+  std::replace(winPath.begin(), winPath.end(), '\\', '/');
+}
 
 SCISHARE int copyFile(const boost::filesystem::path& src,
                       const boost::filesystem::path& dest);

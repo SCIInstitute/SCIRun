@@ -1,5 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -37,11 +35,12 @@
 
 #include <Core/Exceptions/InternalError.h>
 #include <Core/Utils/Legacy/Assert.h>
-#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <map>
 #include <iostream>
 
+using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
 
@@ -388,5 +387,3 @@ const TypeDescription* get_type_description(unsigned long*)
 }
 
 } // end namespace SCIRun
-
-#endif
