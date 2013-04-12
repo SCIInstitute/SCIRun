@@ -1248,7 +1248,7 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
     
   transform_.pre_scale(Core::Geometry::Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0 / (k-1.0)));
   transform_.pre_scale(max - min);
-  transform_.pre_translate(min.asVector());
+  transform_.pre_translate(min);
   transform_.compute_imat();
   compute_jacobian();  
   
@@ -2010,8 +2010,8 @@ LatVolMesh<Basis>::get_center(Core::Geometry::Point &result,
   get_center(result, arr[0]);
   get_center(p1, arr[1]);
 
-  result.asVector() += p1.asVector();
-  result.asVector() *= 0.5;
+  result += p1;
+  result *= 0.5;
 }
 
 
@@ -2030,10 +2030,10 @@ LatVolMesh<Basis>::get_center(Core::Geometry::Point &result,
   while (nai != nodes.end())
   {
     get_point(pp, *nai);
-    result.asVector() += pp.asVector();
+    result += pp;
     ++nai;
   }
-  result.asVector() *= (1.0 / 4.0);
+  result *= (1.0 / 4.0);
 }
 
 
@@ -2075,7 +2075,7 @@ LatVolMesh<Basis>::get_size(typename Edge::index_type idx) const
   get_center(p0, arr[0]);
   get_center(p1, arr[1]);
 
-  return (p1.asVector() - p0.asVector()).length();
+  return (p1 - p0).length();
 }
 
 

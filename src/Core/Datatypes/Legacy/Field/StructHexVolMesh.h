@@ -1234,8 +1234,8 @@ StructHexVolMesh<Basis>::get_center(Core::Geometry::Point &result,
   get_center(result, arr[0]);
   get_center(p1, arr[1]);
 
-  result.asVector() += p1.asVector();
-  result.asVector() *= 0.5;
+  result += p1;
+  result *= 0.5;
 }
 
 
@@ -1254,10 +1254,10 @@ StructHexVolMesh<Basis>::get_center(Core::Geometry::Point &result,
   while (nai != nodes.end())
   {
     get_point(pp, *nai);
-    result.asVector() += pp.asVector();
+    result += pp;
     ++nai;
   }
-  result.asVector() *= (1.0 / 4.0);
+  result *= (1.0 / 4.0);
 }
 
 
@@ -1276,10 +1276,10 @@ StructHexVolMesh<Basis>::get_center(Core::Geometry::Point &result,
   while (nai != nodes.end())
   {
     get_point(pp, *nai);
-    result.asVector() += pp.asVector();
+    result += pp;
     ++nai;
   }
-  result.asVector() *= (1.0 / 8.0);
+  result *= (1.0 / 8.0);
 }
 
 template <class Basis>
@@ -1542,7 +1542,7 @@ StructHexVolMesh<Basis>::get_size(typename LatVolMesh<Basis>::Edge::index_type i
   get_center(p0, arr[0]);
   get_center(p1, arr[1]);
 
-  return (p1.asVector() - p0.asVector()).length();
+  return (p1 - p0).length();
 }
 
 
