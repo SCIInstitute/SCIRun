@@ -104,7 +104,7 @@ public:
     unit_vertices_.resize(num_nodes_per_elem_);
     for (size_t k=0; k < num_nodes_per_elem_; k++)
     {
-      VMesh::coords_type c(dimension_);
+      VMesh::coords_type c/*(dimension_)*/;
       for (int p=0; p<dimension_; p++) c[p] = basis_->unit_vertices[k][p];
       unit_vertices_[k] = c;
     }
@@ -120,7 +120,7 @@ public:
       }
     }
     
-    unit_center_.resize(dimension_);
+    //unit_center_.resize(dimension_);
     for (int k=0; k < dimension_; k++) 
     {
       unit_center_[k] = basis_->unit_center[k];
