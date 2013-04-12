@@ -60,32 +60,39 @@
 namespace SCIRun {
 
 template<class T> 
-class Array3 : public boost::multi_array<T, 3>
+class Array3 
 {
 public:
-  typedef boost::multi_array<T, 3> base_type;
-  typedef typename base_type::value_type value_type;
+  typedef boost::multi_array<T, 3> impl_type;
+  typedef T value_type;
 
   void resize(size_t size1, size_t size2, size_t size3)
   {
-    base_type::extent_gen extents;
-    base_type::resize(extents[size1][size2][size3]);
+    impl_type::extent_gen extents;
+    impl_.resize(extents[size1][size2][size3]);
   }
 
-  size_t totalSize() const
+  size_t size() const
   {
-    return std::accumulate(this->shape(), this->shape() + base_type::dimensionality, (size_t)1, std::multiplies<size_t>());
+    return dim1() * dim2() * dim3();
   }
 
   T& operator[](size_t idx)
   {
-    return this->origin()[idx];
+    return impl_.origin()[idx];
   }
 
   const T& operator[](size_t idx) const
   {
-    return this->origin()[idx];
+    return impl_.origin()[idx];
   }
+
+  inline size_t dim1() const {return impl_.shape()[0];}
+  inline size_t dim2() const {return impl_.shape()[1];}
+  inline size_t dim3() const {return impl_.shape()[2];}
+
+private:
+  impl_type impl_;
 };
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

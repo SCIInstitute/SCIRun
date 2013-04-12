@@ -57,29 +57,40 @@ namespace
 TEST(Array2Test, CanResize)
 {
   Array2<double> a;
-  EXPECT_EQ(0, a.shape()[0]);
-  EXPECT_EQ(0, a.shape()[1]);
+  EXPECT_EQ(0, a.dim1());
+  EXPECT_EQ(0, a.dim2());
+  EXPECT_EQ(0, a.size());
   a.resize(2, 3);
-  EXPECT_EQ(2, a.shape()[0]);
-  EXPECT_EQ(3, a.shape()[1]);
+  EXPECT_EQ(2, a.dim1());
+  EXPECT_EQ(3, a.dim2());
+  EXPECT_EQ(6, a.size());
 }
 
 TEST(Array2Test, CanAccessUnderlyingStorageWithSingleIndexer)
 {
   Array2<double> a;
+  Array2<double>::impl_type& aImpl(a.getImpl());
   a.resize(2, 3);
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 3; ++j)
-      (static_cast<Array2<double>::base_type&>(a))[i][j] = 1 + i + j;
+      aImpl[i][j] = 1 + i + j;
   
-
-  // [[1,2,3],[2,3,4]]
-  print(std::cout, a);
+  print(std::cout, aImpl);
   std::cout << std::endl;
 
-  std::for_each(a.origin(), a.origin() + a.totalSize(), [](double& d) {d *= 0.5;});
+  Array2<double> b(a);
+  Array2<double>::impl_type& bImpl(b.getImpl());
 
-  // [[1,2,3],[2,3,4]]
-  print(std::cout, a);
+  std::for_each(bImpl.origin(), bImpl.origin() + b.size(), [](double& d) {d *= 0.5;});
+
+  print(std::cout, bImpl);
   std::cout << std::endl;
+
+  for (int k = 0; k < a.size(); ++k)
+  {
+    double q1 = a[k];
+    double q2 = b[k];
+    double q = q1 / q2;
+    EXPECT_EQ(2.0, q);
+  }
 }
