@@ -477,7 +477,7 @@ public:
   {
     typename Node::array_type arr;
     get_nodes_from_edge(arr, idx);
-    return (points_[arr[0]].asVector() - points_[arr[1]].asVector()).length();
+    return (points_[arr[0]] - points_[arr[1]]).length();
   }
   
   double get_size(typename Face::index_type idx) const
@@ -571,7 +571,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
-    result = Cross(Jv[0].asVector(), Jv[1].asVector());
+    result = Cross(Jv[0], Jv[1]);
     result.normalize();
   }
 
@@ -646,7 +646,7 @@ public:
     StackVector<Core::Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -669,7 +669,7 @@ public:
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
 
     return (InverseMatrix3P(Jv,Ji));
@@ -700,7 +700,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     size_t num_vertices = basis_.number_of_vertices();
@@ -708,7 +708,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+      v = Cross(Jv[0],Jv[1]); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -728,7 +728,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     
@@ -737,7 +737,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+      v = Cross(Jv[0],Jv[1]); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -1860,8 +1860,8 @@ protected:
     typename Node::array_type arr;
     get_nodes_from_edge(arr, idx);
     result = points_[arr[0]];
-    result.asVector() += points_[arr[1]].asVector();
-    result.asVector() *= 0.5;
+    result += points_[arr[1]];
+    result *= 0.5;
   }
 
 
@@ -1872,9 +1872,9 @@ protected:
     typename Node::array_type arr;
     get_nodes_from_face(arr, idx);
     result = points_[arr[0]];
-    result.asVector() += points_[arr[1]].asVector();
-    result.asVector() += points_[arr[2]].asVector();
-    result.asVector() *= (1.0/3.0);
+    result += points_[arr[1]];
+    result += points_[arr[2]];
+    result *= (1.0/3.0);
   }
 
 
@@ -2628,7 +2628,7 @@ TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Core::Geom
 
   if (do_normals)
   {
-    Core::Geometry::Vector normal = Core::Geometry::Vector( (p.asVector() +
+    Core::Geometry::Vector normal = Core::Geometry::Vector( (p +
                              normals_[faces_[f0]] +
                              normals_[faces_[f1]] +
                              normals_[faces_[f2]]).safe_normalize() );
