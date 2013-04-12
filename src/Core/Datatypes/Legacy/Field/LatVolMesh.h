@@ -754,9 +754,9 @@ public:
 
     // Cheaper implementation
     J.resize(3);
-    J[0] = (transform_.project(Vector(1.0,0.0,0.0))).asPoint(); 
-    J[1] = (transform_.project(Vector(0.0,1.0,0.0))).asPoint(); 
-    J[2] = (transform_.project(Vector(0.0,0.0,1.0))).asPoint();
+    J[0] = (transform_.project(Core::Geometry::Vector(1.0,0.0,0.0))).asPoint(); 
+    J[1] = (transform_.project(Core::Geometry::Vector(0.0,1.0,0.0))).asPoint(); 
+    J[2] = (transform_.project(Core::Geometry::Vector(0.0,0.0,1.0))).asPoint();
 
    }
 
@@ -819,7 +819,7 @@ public:
   index_type get_nj() const { return nj_; }
   index_type get_nk() const { return nk_; }
   virtual bool get_dim(std::vector<size_type>&) const;
-  Vector diagonal() const;
+  Core::Geometry::Vector diagonal() const;
 
   virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
@@ -958,9 +958,9 @@ public:
   void get_point(Core::Geometry::Point &p, const typename Node::index_type &i) const
   { get_center(p, i); }
 
-  void get_normal(Vector &, const typename Node::index_type &) const
+  void get_normal(Core::Geometry::Vector &, const typename Node::index_type &) const
   { ASSERTFAIL("This mesh type does not have node normals."); }
-  void get_normal(Vector &, std::vector<double> &, typename Elem::index_type,
+  void get_normal(Core::Geometry::Vector &, std::vector<double> &, typename Elem::index_type,
                   unsigned int)
   { ASSERTFAIL("This mesh type does not have element normals."); }
   void get_random_point(Core::Geometry::Point &,
@@ -1237,7 +1237,7 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
 {
   DEBUG_CONSTRUCTOR("LatVolMesh")   
     
-  transform_.pre_scale(Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0 / (k-1.0)));
+  transform_.pre_scale(Core::Geometry::Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0 / (k-1.0)));
   transform_.pre_scale(max - min);
   transform_.pre_translate(min.asVector());
   transform_.compute_imat();
@@ -1262,9 +1262,9 @@ LatVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   get_point(p1,ra[1]);
   get_point(p2,ra[3]);
   get_point(p3,ra[4]);
-  Vector v0(p1-p0);
-  Vector v1(p2-p0);
-  Vector v2(p3-p0);
+  Core::Geometry::Vector v0(p1-p0);
+  Core::Geometry::Vector v1(p2-p0);
+  Core::Geometry::Vector v2(p3-p0);
 
   // Choose a random point in the cell.
   const double t = rng();
@@ -1302,7 +1302,7 @@ LatVolMesh<Basis>::get_bounding_box() const
 
 
 template <class Basis>
-Vector
+Core::Geometry::Vector
 LatVolMesh<Basis>::diagonal() const
 {
   return get_bounding_box().diagonal();
@@ -1324,7 +1324,7 @@ void
 LatVolMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t)
 {
   t = transform_;
-  t.post_scale(Vector(ni_ - 1.0, nj_ - 1.0, nk_ - 1.0));
+  t.post_scale(Core::Geometry::Vector(ni_ - 1.0, nj_ - 1.0, nk_ - 1.0));
 }
 
 
@@ -2081,10 +2081,10 @@ LatVolMesh<Basis>::get_size(typename Face::index_type idx) const
   get_point(p0, nodes[0]);
   get_point(p1, nodes[1]);
   get_point(p2, nodes[2]);
-  Vector v0 = p1 - p0;
-  Vector v1 = p2 - p0;
+  Core::Geometry::Vector v0 = p1 - p0;
+  Core::Geometry::Vector v1 = p2 - p0;
 
-  Vector v = Cross(v0,v1);
+  Core::Geometry::Vector v = Cross(v0,v1);
   return (v.length());
 }
 
@@ -2410,9 +2410,9 @@ LatVolMesh<Basis>::io(Piostream& stream)
     Core::Geometry::Point min, max;
     Pio(stream, min);
     Pio(stream, max);
-    transform_.pre_scale(Vector(1.0 / (ni_ - 1.0),1.0 / (nj_ - 1.0),1.0 / (nk_ - 1.0)));
+    transform_.pre_scale(Core::Geometry::Vector(1.0 / (ni_ - 1.0),1.0 / (nj_ - 1.0),1.0 / (nk_ - 1.0)));
     transform_.pre_scale(max - min);
-    transform_.pre_translate(Vector(min));
+    transform_.pre_translate(Core::Geometry::Vector(min));
     transform_.compute_imat();
   } 
   else if (version < 3 && stream.reading() ) 
@@ -2592,9 +2592,9 @@ template <class Basis>
 void 
 LatVolMesh<Basis>::compute_jacobian()
 {
-  Vector J1 = transform_.project(Vector(1.0,0.0,0.0)); 
-  Vector J2 = transform_.project(Vector(0.0,1.0,0.0)); 
-  Vector J3 = transform_.project(Vector(0.0,0.0,1.0)); 
+  Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0)); 
+  Core::Geometry::Vector J2 = transform_.project(Core::Geometry::Vector(0.0,1.0,0.0)); 
+  Core::Geometry::Vector J3 = transform_.project(Core::Geometry::Vector(0.0,0.0,1.0)); 
   
   jacobian_[0] = J1.x();
   jacobian_[1] = J1.y();
