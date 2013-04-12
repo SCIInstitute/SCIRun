@@ -1085,8 +1085,6 @@ StructHexVolMesh<Basis>::structhexvol_typeid(StructHexVolMesh<Basis>::type_name(
 
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh():
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("Synchronize lock"),
   synchronized_(Mesh::ALL_ELEMENTS_E),
   epsilon_(0.0),
@@ -1101,15 +1099,13 @@ StructHexVolMesh<Basis>::StructHexVolMesh():
   this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh(size_type i,
                                           size_type j,
                                           size_type k) :
   LatVolMesh<Basis>(i, j, k, Core::Geometry::Point(0.0, 0.0, 0.0), Core::Geometry::Point(1.0, 1.0, 1.0)),
   points_(k, j, i),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("Synchronize lock"),
   synchronized_(Mesh::ALL_ELEMENTS_E),
   epsilon_(0.0),
@@ -1121,9 +1117,9 @@ StructHexVolMesh<Basis>::StructHexVolMesh(size_type i,
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  this->vmesh.reset(CreateVStructHexVolMesh(this));
+  this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
-
+#endif
 
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh(const StructHexVolMesh<Basis> &copy):
@@ -1939,7 +1935,7 @@ StructHexVolMesh<Basis>::type_name(int n)
   }
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 const TypeDescription*
 get_type_description(StructHexVolMesh<Basis> *)
@@ -2037,7 +2033,7 @@ StructHexVolMesh<Basis>::cell_type_description()
   }
   return td;
 }
-
+#endif
 } //! namespace SCIRun
 
 #endif //! SCI_project_StructHexVolMesh_h
