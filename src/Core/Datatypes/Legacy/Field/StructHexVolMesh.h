@@ -1140,7 +1140,7 @@ StructHexVolMesh<Basis>::StructHexVolMesh(const StructHexVolMesh<Basis> &copy):
 
   copy.synchronize_lock_.lock();
 
-  points_.copy(copy.points_);
+  points_ = copy.points_;
 
   // Epsilon does not require much space, hence copy those
   synchronized_ |= copy.synchronized_ & Mesh::EPSILON_E;
