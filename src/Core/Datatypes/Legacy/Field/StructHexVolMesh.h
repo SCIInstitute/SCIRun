@@ -1098,7 +1098,7 @@ StructHexVolMesh<Basis>::StructHexVolMesh():
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  this->vmesh_ = CreateVStructHexVolMesh(this);     
+  this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
 
 
@@ -1596,7 +1596,7 @@ StructHexVolMesh<Basis>::set_point(const Core::Geometry::Point &p,
   points_(idx.k_, idx.j_, idx.i_) = p;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template<class Basis>
 void
 StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
@@ -1669,7 +1669,7 @@ StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
     p = (p0.vector()*a + p1.vector()*t + p2.vector()*u + p5.vector()*v).point();
   }
 }
-
+#endif
 
 template <class Basis>
 bool
@@ -1732,8 +1732,8 @@ StructHexVolMesh<Basis>::clear_synchronization()
 
   // Free memory where possible
   
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  node_grid_.reset();
+  elem_grid_.reset();
 
   synchronize_lock_.unlock();
   
@@ -1817,7 +1817,7 @@ StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    elem_grid_ = new SearchGridT<typename LatVolMesh<Basis>::Elem::index_type>(sx, sy, sz, b.min(), b.max());
+    elem_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Elem::index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename LatVolMesh<Basis>::Elem::iterator ci, cie;
     this->begin(ci);
@@ -1852,7 +1852,7 @@ StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    node_grid_ = new SearchGridT<typename LatVolMesh<Basis>::Node::index_type>(sx, sy, sz, b.min(), b.max());
+    node_grid_.reset(new SearchGridT<typename LatVolMesh<Basis>::Node::index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename LatVolMesh<Basis>::Node::iterator ni, nie;
     this->begin(ni);

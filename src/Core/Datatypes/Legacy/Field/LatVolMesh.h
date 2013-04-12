@@ -1253,7 +1253,7 @@ LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
   compute_jacobian();  
   
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVLatVolMesh(this);  
+  vmesh_.reset(CreateVLatVolMesh(this));
 }
 
 
