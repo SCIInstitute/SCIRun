@@ -83,7 +83,7 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   #ScanlineMesh.cc
   #TetVolMesh.cc
   #TriSurfMesh.cc
-  #VFData.cc	
+  VFData.cc	
   #VFDataT_0.cc	
   #VFDataT_1.cc	
   #VFDataT_2.cc	

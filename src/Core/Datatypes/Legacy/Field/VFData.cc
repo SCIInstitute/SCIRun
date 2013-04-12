@@ -26,7 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/VFData.h>
+#include <Core/Datatypes/Legacy/Field/VFData.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
 
 #define VFDATA_ACCESS_DEFINITION(type) \
