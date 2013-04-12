@@ -55,7 +55,7 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <Core/Thread/Legacy/Runnable.h>
+#include <boost/thread.hpp>
 
 #include <set>
 
@@ -229,61 +229,65 @@ public:
 
   friend class Synchronize;
   
-  class Synchronize : public Runnable
+  class Synchronize /*: public Runnable*/
   {
     public:
-      Synchronize(TriSurfMesh<Basis>& mesh, mask_type sync) :
+      Synchronize(TriSurfMesh<Basis>* mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
         
       void run()
       {
-        mesh_.synchronize_lock_.lock();
+        this->operator()();
+      }
+      void operator()()
+      {
+        mesh_->synchronize_lock_.lock();
         // block out all the tables that are already synchronized
-        sync_ &= ~(mesh_.synchronized_);
+        sync_ &= ~(mesh_->synchronized_);
         // block out all the tables that are already being computed
-        sync_ &= ~(mesh_.synchronizing_);
+        sync_ &= ~(mesh_->synchronizing_);
         // Now sync_ contains what this thread will synchronize
         // Denote what this thread will synchronize
-        mesh_.synchronizing_ |= sync_;
+        mesh_->synchronizing_ |= sync_;
         // Other threads now know what this tread will be doing
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_lock_.unlock();
         
         // Sync node neighbors
-        if (sync_ & Mesh::ELEM_NEIGHBORS_E) mesh_.compute_edge_neighbors();
-        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
-        if (sync_ & Mesh::EDGES_E) mesh_.compute_edges();
-        if (sync_ & Mesh::NORMALS_E) mesh_.compute_normals();
-        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_.compute_bounding_box();
+        if (sync_ & Mesh::ELEM_NEIGHBORS_E) mesh_->compute_edge_neighbors();
+        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
+        if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
+        if (sync_ & Mesh::NORMALS_E) mesh_->compute_normals();
+        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
         
         // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_.synchronize_lock_.lock();
-          while(!(mesh_.synchronized_ & Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
-          mesh_.synchronize_lock_.unlock();     
+          mesh_->synchronize_lock_.lock();
+          while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
+            mesh_->synchronize_cond_.wait(mesh_->synchronize_lock_);
+          mesh_->synchronize_lock_.unlock();     
           if (sync_ & Mesh::NODE_LOCATE_E) 
           {
-            mesh_.compute_node_grid();
+            mesh_->compute_node_grid();
           }
           if (sync_ & Mesh::ELEM_LOCATE_E) 
           {
-            mesh_.compute_elem_grid();
+            mesh_->compute_elem_grid();
           }
         }
         
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // Mark the ones that were just synchronized
-        mesh_.synchronized_ |= sync_;
+        mesh_->synchronized_ |= sync_;
         // Unmark the the ones that were done
-        mesh_.synchronizing_ &= ~(sync_);
+        mesh_->synchronizing_ &= ~(sync_);
         //! Tell other threads we are done
-        mesh_.synchronize_cond_.conditionBroadcast();
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_cond_.conditionBroadcast();
+        mesh_->synchronize_lock_.unlock();
       }
 
     private:
-      TriSurfMesh<Basis>& mesh_;
+      TriSurfMesh<Basis>* mesh_;
       mask_type  sync_;
   };
 
@@ -2381,7 +2385,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   
   if (sync == Mesh::EDGES_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2389,14 +2393,13 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::EDGES_E)
   {
     mask_type tosync = Mesh::EDGES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf edges",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NORMALS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2404,14 +2407,13 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NORMALS_E)
   {
     mask_type tosync = Mesh::NORMALS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf normals",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2419,14 +2421,13 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf node_neighbors",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_NEIGHBORS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2434,14 +2435,13 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::ELEM_NEIGHBORS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf elem_neighbors",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2449,14 +2449,13 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::BOUNDING_BOX_E)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf bounding box",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2464,14 +2463,13 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_LOCATE_E)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf node_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2479,9 +2477,8 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_LOCATE_E)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize trisurf elem_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   // Wait until threads are done
