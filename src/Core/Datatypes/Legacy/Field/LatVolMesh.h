@@ -578,7 +578,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVLatVolMesh(this);   
+    vmesh_.reset(CreateVLatVolMesh(this));
   }
   
   LatVolMesh(size_type x, size_type y, size_type z,

@@ -1189,7 +1189,7 @@ StructHexVolMesh<Basis>::get_bounding_box() const
   return result;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 void
 StructHexVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
@@ -1221,7 +1221,7 @@ StructHexVolMesh<Basis>::get_center(Core::Geometry::Point &result,
 {
   result = points_(idx.k_, idx.j_, idx.i_);
 }
-
+#endif
 
 template <class Basis>
 void
