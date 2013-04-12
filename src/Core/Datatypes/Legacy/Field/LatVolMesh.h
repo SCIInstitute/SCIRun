@@ -460,7 +460,7 @@ public:
   friend struct RangeCellIter;
   friend struct RangeNodeIter;
 
-  friend struct ElemData;
+  friend class ElemData;
 
   class ElemData
   {
@@ -1066,11 +1066,12 @@ public:
 private:
   static PersistentTypeID latvol_typeid;
   //! Core functionality for getting the name of a templated mesh class    
+#endif
+
 public:
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return latvol_typeid.type; }
-#endif
-  public:
+
   // Unsafe due to non-constness of unproject.
   Core::Geometry::Transform &get_transform() { return transform_; }
   Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans)
@@ -2377,7 +2378,7 @@ find_type_name(typename LatVolMesh<Basis>::CellIndex *)
   return name;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define LATVOLMESH_VERSION 5
 
 template <class Basis>
@@ -2441,6 +2442,7 @@ LatVolMesh<Basis>::io(Piostream& stream)
   }
 
 }
+#endif
 
 
 template <class Basis>
