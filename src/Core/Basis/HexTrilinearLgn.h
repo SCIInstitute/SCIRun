@@ -139,7 +139,7 @@ public:
 
     for(unsigned i = 0; i <= div_per_unit; i++) {
       typename VECTOR::value_type &tmp = coords[i];
-      //tmp.resize(3);
+      tmp.resize(3);
       const double d = (double)i / (double)div_per_unit;
       tmp[0] = static_cast<typename VECTOR2::value_type>(p1x + d * dx);
       tmp[1] = static_cast<typename VECTOR2::value_type>(p1y + d * dy);

@@ -1038,7 +1038,7 @@ protected:
     const index_type j = static_cast<index_type>(floor(jj));
     const index_type k = static_cast<index_type>(floor(kk));
 
-    //coords.resize(3);
+    coords.resize(3);
     coords[0] = ii - floor(ii);
     coords[1] = jj - floor(jj);
     coords[2] = kk - floor(kk);
@@ -1722,7 +1722,7 @@ VLatVolMesh<MESH>::get_coords(VMesh::coords_type &coords,
   
   const Point r = this->mesh_->transform_.unproject(point);
   
-  //coords.resize(3);
+  coords.resize(3);
   coords[0] = static_cast<VMesh::coords_type::value_type>(r.x()-static_cast<double>(i));
   coords[1] = static_cast<VMesh::coords_type::value_type>(r.y()-static_cast<double>(j));
   coords[2] = static_cast<VMesh::coords_type::value_type>(r.z()-static_cast<double>(k));
@@ -1794,7 +1794,7 @@ VLatVolMesh<MESH>::derivate(VMesh::dpoints_type &dp,
                             const VMesh::coords_type& /*coords*/, 
                             VMesh::Elem::index_type /*i*/) const
 {
-  //dp.resize(3);
+  dp.resize(3);
   dp[0] = (this->mesh_->transform_.project(Vector(1.0,0.0,0.0))).asPoint(); 
   dp[1] = (this->mesh_->transform_.project(Vector(0.0,1.0,0.0))).asPoint(); 
   dp[2] = (this->mesh_->transform_.project(Vector(0.0,0.0,1.0))).asPoint();
@@ -2151,7 +2151,7 @@ VLatVolMesh<MESH>::find_closest_elem(double& pdist,
   result = this->mesh_->transform_.project(Point(ii,jj,kk));
   pdist = (p-result).length();
 
-  //coords.resize(3);
+  coords.resize(3);
   coords[0] = ii-fi;
   coords[1] = jj-fj;
   coords[2] = kk-fk;
@@ -2545,7 +2545,7 @@ VLatVolMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       get_nodes_from_elem(eg.node_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       for(size_t i=0; i<9;i++) eg.inverse_jacobian[i] = inverse_jacobian[i];
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -2555,7 +2555,7 @@ VLatVolMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
       get_nodes_from_elem(eg.node_index,elem);
       get_edges_from_elem(eg.edge_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       for(size_t i=0; i<9;i++) eg.inverse_jacobian[i] = inverse_jacobian[i];
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -2565,7 +2565,7 @@ VLatVolMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
       get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       for(size_t i=0; i<9;i++) eg.inverse_jacobian[i] = inverse_jacobian[i];
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -2605,7 +2605,7 @@ VLatVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       get_nodes_from_elem(eg.node_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       for(size_t i=0; i<9;i++) eg.inverse_jacobian[i] = inverse_jacobian[i];
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -2615,7 +2615,7 @@ VLatVolMesh<MESH>::get_gradient_weights(const Point& point,
       get_nodes_from_elem(eg.node_index,elem);
       get_edges_from_elem(eg.edge_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       for(size_t i=0; i<9;i++) eg.inverse_jacobian[i] = inverse_jacobian[i];
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -2625,7 +2625,7 @@ VLatVolMesh<MESH>::get_gradient_weights(const Point& point,
       get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       for(size_t i=0; i<9;i++) eg.inverse_jacobian[i] = inverse_jacobian[i];
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -2678,7 +2678,7 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
             this->basis_->get_linear_derivate_weights(coords,&(eg[i].weights[0]));
             get_nodes_from_elem(eg[i].node_index,elem);
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             for(size_t j=0; j<9;j++) eg[i].inverse_jacobian[j] = inverse_jacobian[j];
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -2704,7 +2704,7 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
             get_nodes_from_elem(eg[i].node_index,elem);
             get_edges_from_elem(eg[i].edge_index,elem);
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             for(size_t j=0; j<9;j++) eg[i].inverse_jacobian[j] = inverse_jacobian[j];
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -2731,7 +2731,7 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
             get_nodes_from_elem(eg[i].node_index,elem);
             eg[i].num_hderivs = this->basis_->num_hderivs();
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             for(size_t j=0; j<9;j++) eg[i].inverse_jacobian[j] = inverse_jacobian[j];
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -2775,7 +2775,7 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& 
         this->basis_->get_linear_derivate_weights(coords[i],&(eg[i].weights[0]));
         get_nodes_from_elem(eg[i].node_index,elem);
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         for(size_t j=0; j<9;j++) eg[i].inverse_jacobian[j] = inverse_jacobian[j];
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -2788,7 +2788,7 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& 
         get_nodes_from_elem(eg[i].node_index,elem);
         get_edges_from_elem(eg[i].edge_index,elem);
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         for(size_t j=0; j<9;j++) eg[i].inverse_jacobian[j] = inverse_jacobian[j];
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -2801,7 +2801,7 @@ VLatVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_type>& 
         get_nodes_from_elem(eg[i].node_index,elem);
         eg[i].num_hderivs = this->basis_->num_hderivs();
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         for(size_t j=0; j<9;j++) eg[i].inverse_jacobian[j] = inverse_jacobian[j];
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -3854,7 +3854,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->get_nodes_from_elem(eg.node_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3864,7 +3864,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
       this->get_nodes_from_elem(eg.node_index,elem);
       this->get_edges_from_elem(eg.edge_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3874,7 +3874,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const VMesh::coords_type& coords,
       this->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3914,7 +3914,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->get_nodes_from_elem(eg.node_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3924,7 +3924,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->get_nodes_from_elem(eg.node_index,elem);
       this->get_edges_from_elem(eg.edge_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3934,7 +3934,7 @@ VStructHexVolMesh<MESH>::get_gradient_weights(const Point& point,
       this->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       inv_jacobian(coords,elem,&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -3986,7 +3986,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
             this->basis_->get_linear_derivate_weights(coords,&(eg[i].weights[0]));
             this->get_nodes_from_elem(eg[i].node_index,elem);
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             inv_jacobian(coords,elem,&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -4013,7 +4013,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
             this->get_nodes_from_elem(eg[i].node_index,elem);
             this->get_edges_from_elem(eg[i].edge_index,elem);
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             inv_jacobian(coords,elem,&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -4041,7 +4041,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<Point>& point,
             this->get_nodes_from_elem(eg[i].node_index,elem);
             eg[i].num_hderivs = this->basis_->num_hderivs();
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             inv_jacobian(coords,elem,&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -4083,7 +4083,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_t
         this->basis_->get_linear_derivate_weights(coords[i],&(eg[i].weights[0]));
         this->get_nodes_from_elem(eg[i].node_index,elem);
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         inv_jacobian(coords[i],elem,&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -4096,7 +4096,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_t
         this->get_nodes_from_elem(eg[i].node_index,elem);
         this->get_edges_from_elem(eg[i].edge_index,elem);
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         inv_jacobian(coords[i],elem,&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -4109,7 +4109,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_t
         this->get_nodes_from_elem(eg[i].node_index,elem);
         eg[i].num_hderivs = this->basis_->num_hderivs();
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         inv_jacobian(coords[i],elem,&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
