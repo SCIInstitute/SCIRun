@@ -3119,6 +3119,7 @@ static MeshTypeID StructHexVolMesh_MeshID1(StructHexVolMesh<HexTrilinearLgn<Poin
                   StructHexVolMesh<HexTrilinearLgn<Point> >::structhexvol_maker);
 
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 void
 VStructHexVolMesh<MESH>::get_center(Point &p, VMesh::Node::index_type idx) const
@@ -3489,6 +3490,7 @@ VStructHexVolMesh<MESH>::set_point(const Point &point, VMesh::Node::index_type i
   points_[idx] = point;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 Point*
 VStructHexVolMesh<MESH>::get_points_pointer() const
@@ -3496,7 +3498,7 @@ VStructHexVolMesh<MESH>::get_points_pointer() const
   if (points_.size() == 0) return (0);
   return (&(points_[0]));
 }
-
+#endif
 
 template <class MESH>
 double 
@@ -4115,7 +4117,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_t
   }
   ASSERTFAIL("Gradient of unknown order requested");
 }
-
+#endif
 
 #endif
 
