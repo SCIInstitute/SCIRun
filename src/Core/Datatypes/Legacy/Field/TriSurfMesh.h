@@ -263,8 +263,11 @@ public:
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           mesh_->synchronize_lock_.lock();
-          while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
-            mesh_->synchronize_cond_.wait(mesh_->synchronize_lock_);
+          {
+            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+            while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
+              mesh_->synchronize_cond_.wait(lock);
+          }
           mesh_->synchronize_lock_.unlock();     
           if (sync_ & Mesh::NODE_LOCATE_E) 
           {
@@ -2481,9 +2484,10 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
   }
 
   // Wait until threads are done
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
-    synchronize_cond_.wait(synchronize_lock_);
+    synchronize_cond_.wait(lock);
   }
 
   synchronize_lock_.unlock();
