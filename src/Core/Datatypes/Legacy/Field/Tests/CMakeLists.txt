@@ -28,7 +28,7 @@
 
 SET(Core_Datatypes_Legacy_Field_Tests_SRCS
   FieldTests.cc
-  #LatticeVolumeMeshTests.cc
+  LatticeVolumeMeshTests.cc
   #MeshFactoryTests.cc
   #TriSurfMeshTests.cc
 )
