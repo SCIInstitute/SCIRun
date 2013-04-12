@@ -44,6 +44,7 @@ namespace Core
     public:
       explicit ConditionVariable(const std::string& name);
       void wait(Mutex& mutex);
+      void conditionBroadcast();
     private:
       std::string name_;
       boost::condition_variable impl_;
