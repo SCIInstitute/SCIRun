@@ -28,6 +28,7 @@
 
 SET(Core_GeometryPrimitives_SRCS
   BBox.cc
+  CompGeom.cc
   Point.cc
   Tensor.cc
   Transform.cc
@@ -36,6 +37,7 @@ SET(Core_GeometryPrimitives_SRCS
 
 SET(Core_GeometryPrimitives_HEADERS
   BBox.h
+  CompGeom.h
   GeomFwd.h
   Point.h
   PointVectorOperators.h
