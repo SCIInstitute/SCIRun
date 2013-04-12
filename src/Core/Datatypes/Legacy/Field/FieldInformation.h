@@ -261,8 +261,8 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     inline bool is_data_typeT(unsigned long long* ) { return (is_unsigned_longlong()); }
     inline bool is_data_typeT(double* )             { return (is_double()); }
     inline bool is_data_typeT(float* )              { return (is_float()); }
-    inline bool is_data_typeT(Vector* )             { return (is_vector()); }
-    inline bool is_data_typeT(Tensor* )             { return (is_tensor()); }
+    inline bool is_data_typeT(Core::Geometry::Vector* )             { return (is_vector()); }
+    inline bool is_data_typeT(Core::Geometry::Tensor* )             { return (is_tensor()); }
     template<class T> bool is_data_typeT(T*)        { return (false); }
 
     inline void set_data_typeT(char*) { make_char(); }
@@ -277,8 +277,8 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     inline void set_data_typeT(unsigned long long*) { make_unsigned_long_long(); }
     inline void set_data_typeT(float*) { make_float(); }
     inline void set_data_typeT(double*) { make_double(); }
-    inline void set_data_typeT(Vector*) { make_vector(); }
-    inline void set_data_typeT(Tensor*) { make_tensor(); }
+    inline void set_data_typeT(Core::Geometry::Vector*) { make_vector(); }
+    inline void set_data_typeT(Core::Geometry::Tensor*) { make_tensor(); }
 };
 
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
@@ -298,23 +298,23 @@ SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
 
 SCISHARE MeshHandle CreateMesh(FieldInformation &info);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x,const Point& min,const Point& max);
+SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 
 
 inline bool UseIntegerInterface(FieldInformation &info) 

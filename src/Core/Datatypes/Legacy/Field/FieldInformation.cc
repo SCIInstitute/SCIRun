@@ -30,6 +30,8 @@
 #include <Core/Utils/Legacy/StringUtil.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+
 
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
@@ -148,7 +150,7 @@ FieldInformation::FieldInformation(mesh_info_type meshtype,
 
 FieldInformation::FieldInformation(FieldHandle handle)
 {
-  insert_field_type_information(handle.get_rep());
+  insert_field_type_information(handle.get());
 }
 
 
@@ -1495,7 +1497,7 @@ CreateField(FieldInformation &info)
 
   MeshHandle meshhandle = CreateMesh(meshtype);
   
-  if (meshhandle.get_rep() == 0) return (0);
+  if (!meshhandle) return FieldHandle();
 
   return (CreateField(type,meshhandle));              
 }
@@ -1564,7 +1566,7 @@ CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim)
   if (dim.size() == 1) return (CreateMesh(type,dim[0]));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1]));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2]));
-  else return (MeshHandle(0));
+  else return (MeshHandle());
 }
 
 MeshHandle 
@@ -1574,7 +1576,7 @@ CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim,const
   if (dim.size() == 1) return (CreateMesh(type,dim[0],min,max));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1],min,max));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2],min,max));
-  else return (MeshHandle(0));
+  else return (MeshHandle());
 }
 
 
@@ -1642,7 +1644,7 @@ CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim)
   if (dim.size() == 1) return (CreateMesh(type,dim[0]));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1]));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2]));
-  else return (MeshHandle(0));
+  else return (MeshHandle());
 }
 
 MeshHandle 
@@ -1653,5 +1655,5 @@ CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim,const Poi
   if (dim.size() == 1) return (CreateMesh(type,dim[0],min,max));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1],min,max));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2],min,max));
-  else return (MeshHandle(0));
+  else return (MeshHandle());
 }
