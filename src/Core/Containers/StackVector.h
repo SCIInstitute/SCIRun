@@ -51,7 +51,15 @@ template <class T, int CAPACITY>
 class StackVector : public boost::array<T, CAPACITY>
 {
 public:
-  void resize(size_t size)
+  typedef boost::array<T, CAPACITY> base_type;
+  typedef typename base_type::value_type value_type;
+
+  StackVector() {}
+  StackVector(size_t size, const value_type& v)
+  {
+    this->fill(v);
+  }
+  void resize(size_t size, const value_type& val = value_type())
   {
     //not sure what to do here. semantics is different, but SCIRun 4 probably overruns buffers all the time anyway...
   }

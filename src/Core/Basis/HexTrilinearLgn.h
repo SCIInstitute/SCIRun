@@ -171,19 +171,20 @@ public:
     for(unsigned j = 0; j < div_per_unit; j++) 
     {
       const double dj = (double)j / (double)div_per_unit;
-      typename VECTOR::value_type& jvec = *citer++;
-      jvec.resize((div_per_unit + 1) * 2, typename VECTOR2::value_type(3, 0.0));
+      VECTOR2& jvec = *citer++;
+      jvec.resize((div_per_unit + 1) * 2, VECTOR3(3, 0.0));
       typename VECTOR2::iterator e = jvec.begin(); 
       for(unsigned i=0; i <= div_per_unit; i++) {
         const double di = (double) i / (double)div_per_unit;
-        typename VECTOR2::value_type &c0 = *e++;
-        c0[0] = static_cast<typename VECTOR3::value_type>(v0[0] + dj * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
-        c0[1] = static_cast<typename VECTOR3::value_type>(v0[1] + dj * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
-        c0[2] = static_cast<typename VECTOR3::value_type>(v0[2] + dj * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
-        typename VECTOR2::value_type &c1 = *e++;
-        c1[0] = static_cast<typename VECTOR3::value_type>(v0[0] + (dj + d) * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
-        c1[1] = static_cast<typename VECTOR3::value_type>(v0[1] + (dj + d) * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
-        c1[2] = static_cast<typename VECTOR3::value_type>(v0[2] + (dj + d) * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
+        VECTOR3 &c0 = *e++;
+        typedef typename VECTOR3::value_type VECTOR4;
+        c0[0] = static_cast<VECTOR4>(v0[0] + dj * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
+        c0[1] = static_cast<VECTOR4>(v0[1] + dj * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
+        c0[2] = static_cast<VECTOR4>(v0[2] + dj * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
+        VECTOR3 &c1 = *e++;
+        c1[0] = static_cast<VECTOR4>(v0[0] + (dj + d) * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
+        c1[1] = static_cast<VECTOR4>(v0[1] + (dj + d) * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
+        c1[2] = static_cast<VECTOR4>(v0[2] + (dj + d) * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
       }
     }
   }
