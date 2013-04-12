@@ -571,7 +571,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
-    result = Cross(Jv[0], Jv[1]);
+    result = Cross(Vector(Jv[0]), Vector(Jv[1]));
     result.normalize();
   }
 
@@ -646,7 +646,7 @@ public:
     StackVector<Core::Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
+    Core::Geometry::Vector Jv2 = Cross(Vector(Jv[0]), Vector(Jv[1]));
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -669,7 +669,7 @@ public:
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();
 
     return (InverseMatrix3P(Jv,Ji));
@@ -700,7 +700,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     size_t num_vertices = basis_.number_of_vertices();
@@ -708,7 +708,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0],Jv[1]); v.normalize();
+      v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -728,7 +728,8 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1])); 
+    v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     
@@ -737,7 +738,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0],Jv[1]); v.normalize();
+      v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;

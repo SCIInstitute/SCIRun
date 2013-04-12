@@ -55,7 +55,7 @@ public:
   typedef typename base_type::value_type value_type;
 
   StackVector() {}
-  StackVector(size_t size, const value_type& v)
+  StackVector(size_t size, const value_type& v = value_type())
   {
     this->fill(v);
   }
