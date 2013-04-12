@@ -97,12 +97,12 @@ ADD_LIBRARY(Core_Datatypes_Legacy_Field
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Field 
   Core_Basis
-  Core_Exceptions
-  Core_Geometry     
+  Core_Exceptions_Legacy
+  Core_Geometry_Primitives     
   Core_Math         
   #Core_Persistent   
   Core_Thread
-  Core_Thread_Legacy
+  #Core_Thread_Legacy
   Core_Utils
   Core_Util_Legacy
   Core_Datatypes
