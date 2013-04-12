@@ -45,6 +45,7 @@ namespace Core
       explicit Mutex(const std::string& name);
       void lock();
       void unlock();
+      boost::mutex& get() { return impl_; }
     private:
       std::string name_;
       boost::mutex impl_;

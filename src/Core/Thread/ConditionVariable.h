@@ -30,6 +30,7 @@
 #define CORE_THREAD_CONDITIONVARIABLE_H
 
 #include <boost/noncopyable.hpp>
+#include <Core/Thread/Mutex.h>
 #include <boost/thread/condition_variable.hpp>  //TODO: pimpl?
 #include <Core/Thread/Share.h>
 
@@ -39,11 +40,13 @@ namespace Core
 {
   namespace Thread
   {
+    typedef boost::unique_lock<boost::mutex> UniqueLock;
+
     class SCISHARE ConditionVariable : boost::noncopyable
     {
     public:
       explicit ConditionVariable(const std::string& name);
-      void wait(Mutex& mutex);
+      void wait(UniqueLock& lock);
       void conditionBroadcast();
     private:
       std::string name_;

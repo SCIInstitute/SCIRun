@@ -33,3 +33,13 @@ using namespace SCIRun::Core::Thread;
 ConditionVariable::ConditionVariable(const std::string& name) : name_(name)
 {
 }
+
+void ConditionVariable::wait(UniqueLock& lock)
+{
+  impl_.wait(lock);
+}
+
+void ConditionVariable::conditionBroadcast()
+{
+  impl_.notify_all();
+}
