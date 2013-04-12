@@ -31,12 +31,13 @@
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 #include <Core/Utils/Legacy/ProgressReporter.h>
-#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Mutex.h>
 #include <sci_debug.h>
 
 #include <map>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Thread;
 
 Field::Field()
 {

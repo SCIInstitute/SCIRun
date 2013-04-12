@@ -28,11 +28,13 @@
 
 SET(Core_Thread_SRCS
   Barrier.cc
+  Mutex.cc
   Parallel.cc
 )
 
 SET(Core_Thread_HEADERS
   Barrier.h
+  Mutex.h
   Parallel.h
   Share.h
 )

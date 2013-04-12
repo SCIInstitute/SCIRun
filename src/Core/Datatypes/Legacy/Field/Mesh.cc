@@ -31,11 +31,12 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/Thread/Legacy/Mutex.h>
+#include <Core/Thread/Mutex.h>
 #include <sci_debug.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // initialize the static member type_id
