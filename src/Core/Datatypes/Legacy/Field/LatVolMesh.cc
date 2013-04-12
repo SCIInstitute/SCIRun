@@ -1038,7 +1038,7 @@ protected:
     const index_type j = static_cast<index_type>(floor(jj));
     const index_type k = static_cast<index_type>(floor(kk));
 
-    coords.resize(3);
+    //coords.resize(3);
     coords[0] = ii - floor(ii);
     coords[1] = jj - floor(jj);
     coords[2] = kk - floor(kk);
