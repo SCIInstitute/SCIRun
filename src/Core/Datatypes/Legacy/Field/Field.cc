@@ -160,7 +160,7 @@ FieldTypeID::FieldTypeID(const std::string&type,
 
 
 FieldHandle
-CreateField(const std::string& type, MeshHandle mesh)
+SCIRun::CreateField(const std::string& type, MeshHandle mesh)
 {
   FieldHandle handle;
   if (FieldTypeIDMutex == 0)
@@ -183,7 +183,7 @@ CreateField(const std::string& type, MeshHandle mesh)
 }
 
 FieldHandle
-CreateField(const std::string& type)
+SCIRun::CreateField(const std::string& type)
 {
   FieldHandle handle;
   if (FieldTypeIDMutex == 0)
