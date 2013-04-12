@@ -91,6 +91,32 @@ namespace SCIRun {
     return (detp/s);
   }
 
+
+    //! Inline templated determinant of matrix
+    template <class VectorOfPoints>
+    double DetMatrix3P(const VectorOfPoints& p) 
+    {
+      const double a=p[0].x(), b=p[0].y(), c=p[0].z();
+      const double d=p[1].x(), e=p[1].y(), f=p[1].z();
+      const double g=p[2].x(), h=p[2].y(), i=p[2].z();
+
+      const double detp=a*e*i-c*e*g+b*f*g+c*d*h-a*f*h-b*d*i;
+      return detp;
+    }
+
+    //! Inline templated determinant of matrix
+    template <class VectorOfPoints>
+    double ScaledDetMatrix3P(const VectorOfPoints& p) 
+    {
+      const double a=p[0].x(), b=p[0].y(), c=p[0].z();
+      const double d=p[1].x(), e=p[1].y(), f=p[1].z();
+      const double g=p[2].x(), h=p[2].y(), i=p[2].z();
+
+      const double detp=a*e*i-c*e*g+b*f*g+c*d*h-a*f*h-b*d*i;
+      const double s = std::sqrt((a*a+b*b+c*c)*(d*d+e*e+f*f)*(g*g+h*h+i*i));
+      return (detp/s);
+    }
+
   //! default case for volume calculation - currently not needed  
   template <class VECTOR, class T>
   inline double d_volume_type(const VECTOR& /*derivs*/, T* /*type*/)
