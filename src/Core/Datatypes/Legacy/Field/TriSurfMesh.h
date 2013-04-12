@@ -2053,8 +2053,6 @@ TriSurfMesh<Basis>::TriSurfMesh()
     faces_(0),
     edge_neighbors_(0),
     node_neighbors_(0),
-    node_grid_(0),
-    elem_grid_(0),
     synchronize_lock_("TriSurfMesh lock"),
     synchronize_cond_("TriSurfMesh condition variable"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
@@ -2065,7 +2063,7 @@ TriSurfMesh<Basis>::TriSurfMesh()
   DEBUG_CONSTRUCTOR("TriSurfMesh")      
 
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVTriSurfMesh(this);
+  vmesh_.reset(CreateVTriSurfMesh(this));
 }
 
 
@@ -2514,8 +2512,8 @@ TriSurfMesh<Basis>::clear_synchronization()
   edge_neighbors_.clear();
   normals_.clear();             
   edges_.clear();
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  node_grid_.reset();
+  elem_grid_.reset();
 
   synchronize_lock_.unlock(); 
   return (true);
@@ -3549,7 +3547,7 @@ TriSurfMesh<Basis>::compute_elem_grid()
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    elem_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);
@@ -3586,7 +3584,7 @@ TriSurfMesh<Basis>::compute_node_grid()
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    node_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Node::iterator ni, nie;
     begin(ni); end(nie);

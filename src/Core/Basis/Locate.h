@@ -68,6 +68,31 @@ namespace SCIRun {
     return detp;
   }
 
+
+    //! Inline templated inverse matrix
+    template <class PointVector>
+    double InverseMatrix3P(const PointVector& p, double *q) 
+    {
+      const double a=p[0].x(), b=p[0].y(), c=p[0].z();
+      const double d=p[1].x(), e=p[1].y(), f=p[1].z();
+      const double g=p[2].x(), h=p[2].y(), i=p[2].z();
+
+      const double detp=a*e*i-c*e*g+b*f*g+c*d*h-a*f*h-b*d*i;
+      const double detinvp=(detp ? 1.0/detp : 0);
+
+      q[0]=(e*i-f*h)*detinvp;
+      q[1]=(c*h-b*i)*detinvp;
+      q[2]=(b*f-c*e)*detinvp;
+      q[3]=(f*g-d*i)*detinvp;
+      q[4]=(a*i-c*g)*detinvp;
+      q[5]=(c*d-a*f)*detinvp;
+      q[6]=(d*h-e*g)*detinvp;
+      q[7]=(b*g-a*h)*detinvp;
+      q[8]=(a*e-b*d)*detinvp;
+
+      return detp;
+    }
+
   template<class T>
     inline T DetMatrix3x3(const T *p) 
   {
