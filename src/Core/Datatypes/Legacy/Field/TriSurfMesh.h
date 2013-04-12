@@ -41,7 +41,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/SearchGridT.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/TriLinearLgn.h>

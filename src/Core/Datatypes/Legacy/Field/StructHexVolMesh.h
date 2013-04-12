@@ -51,7 +51,7 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/Array3.h>
-#include <Core/Containers/SearchGridT.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/CompGeom.h>

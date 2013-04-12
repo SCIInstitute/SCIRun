@@ -35,7 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
-#include <Core/Containers/SearchGridT.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
 
 #include <Core/Containers/StackBasedVector.h>
 
