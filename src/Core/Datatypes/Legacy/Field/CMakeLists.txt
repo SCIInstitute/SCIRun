@@ -75,18 +75,18 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   FieldRNG.cc
   #HexVolMesh.cc
   #ImageMesh.cc
-  #LatVolMesh.cc
+  LatVolMesh.cc
   Mesh.cc		
   #PointCloudMesh.cc  
   #PrismVolMesh.cc
   #QuadSurfMesh.cc
   #ScanlineMesh.cc
   #TetVolMesh.cc
-  #TriSurfMesh.cc
+  TriSurfMesh.cc
   VFData.cc	
-  #VFDataT_0.cc	
-  #VFDataT_1.cc	
-  #VFDataT_2.cc	
+  VFDataT_0.cc	
+  VFDataT_1.cc	
+  VFDataT_2.cc	
   VMesh.cc		    	
 )
 
