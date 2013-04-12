@@ -40,30 +40,28 @@
 find . -name "*.ii" -print | xargs cat | sort | uniq -c | sort -nr | more
  */
 
-#include <Core/Containers/LockingHandle.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/Datatypes/Legacy/Field/FieldIndex.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Datatypes/Legacy/Matrix/ColumnMatrixFunctions.h>
+#include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
+#include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
+#include <Core/Persistent/PersistentSTL.h>
+#include <Core/Datatypes/PropertyManager.h>
+#endif
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
 
-#include <Core/Geometry/Tensor.h>
-
-#include <Core/Datatypes/FieldIndex.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/ColumnMatrixFunctions.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/NrrdData.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-#include <Core/Persistent/PersistentSTL.h>
-#include <Core/Datatypes/PropertyManager.h>
-#include <Core/Datatypes/GenericField.h>
-#include <vector>
-
-template class Matrix<double>;
+template class MatrixBase<double>;
 template class SparseRowMatrixGeneric<double>;
-template class ColumnMatrixGeneric<double>;
-template class LockingHandle<ColumnMatrix>;
-template class LockingHandle< Matrix<double> >;
+template class DenseColumnMatrixGeneric<double>;
+template class boost::shared_ptr<DenseColumnMatrix>;
+template class boost::shared_ptr< MatrixBase<double> >;
 
 //Index types
 const TypeDescription* get_type_description(NodeIndex<int>*);
@@ -76,6 +74,7 @@ const TypeDescription* get_type_description(std::vector<EdgeIndex<int> >*);
 const TypeDescription* get_type_description(std::vector<FaceIndex<int> >*);
 const TypeDescription* get_type_description(std::vector<CellIndex<int> >*);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // Property types
 template class Property<bool>;
 template class Property<int>;
@@ -98,3 +97,4 @@ template class Property<std::vector<std::pair<int,double> > >;
 template class Property<LockingHandle< Matrix<double> > >;
 template class Property<LockingHandle<NrrdData> >;
 template class Property<NodeIndex<unsigned int> >;
+#endif
