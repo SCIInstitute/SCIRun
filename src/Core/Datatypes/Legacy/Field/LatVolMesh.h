@@ -1388,7 +1388,7 @@ LatVolMesh<Basis>::set_dim(std::vector<index_type> dim)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVLatVolMesh(this); 
+  vmesh_.reset(CreateVLatVolMesh(this)); 
 }
 
 
