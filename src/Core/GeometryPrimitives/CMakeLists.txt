@@ -52,6 +52,10 @@ ADD_LIBRARY(Core_Geometry_Primitives
   ${Core_GeometryPrimitives_SRCS}
 )
 
+TARGET_LINK_LIBRARIES(Core_Geometry_Primitives
+  Core_Math
+)
+
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Geometry_Primitives)
 ENDIF(BUILD_SHARED_LIBS)

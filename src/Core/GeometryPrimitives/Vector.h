@@ -90,7 +90,7 @@ class Vector
       return d_[idx];
     }
 
-    //inline Vector operator*(const double) const;
+    inline Vector operator*(const double) const;
     inline Vector operator*(const Vector&) const;
     inline Vector& operator*=(const double);
     inline Vector& operator*=(const Vector&);
@@ -207,11 +207,11 @@ inline Vector& Vector::operator*=(const double d)
   return *this;
 }
 
-inline Vector operator*(const Vector& v, double s)
-{
-  Vector vs(v);
-  return vs *= s;
-}
+//inline Vector operator*(const Vector& v, double s)
+//{
+//  Vector vs(v);
+//  return vs *= s;
+//}
 
 // Allows for double * Vector so that everything doesn't have to be
 // Vector * double
@@ -297,14 +297,6 @@ inline Vector Vector::operator-(const Vector& v2) const
 }
 
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-
-inline Vector Vector::operator-(const Point& v2) const
-{
-  return Vector(d_[0]-v2[0], d_[1]-v2[1], d_[2]-v2[2]);
-}
 inline Vector& Vector::operator=(const double& d)
 {
   d_[0] = d;
@@ -449,15 +441,7 @@ inline double Vector::w() const
   return d_[2];
 }
 
-inline double Dot(const Vector& v1, const Vector& v2)
-{
-  return v1.d_[0]*v2.d_[0]+v1.d_[1]*v2.d_[1]+v1.d_[2]*v2.d_[2];
-}
 
-inline double Dot(const Vector& v, const Point& p)
-{
-  return v.d_[0]*p.d_[0]+v.d_[1]*p.d_[1]+v.d_[2]*p.d_[2];
-}
 
 inline
 double Vector::normalize()
@@ -494,12 +478,6 @@ inline void Vector::Set(double x, double y, double z)
   d_[2] = z;
 }
 
+}}}
 
-
-} // End namespace SCIRun
-#endif
-}
-
-
-}}
 #endif

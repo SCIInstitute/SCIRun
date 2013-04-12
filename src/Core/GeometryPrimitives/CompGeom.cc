@@ -38,12 +38,17 @@
  *
  */
 
-#include <Core/Geometry/CompGeom.h>
+#include <Core/GeometryPrimitives/CompGeom.h>
 #include <iostream>
 
-#define TOLERANCE_MIN 1.0e-12
+namespace 
+{
+  const double TOLERANCE_MIN = 1.0e-12;
+}
 
 namespace SCIRun {
+namespace Core {
+namespace Geometry {
 
 double
 distance_to_line2(const Point &p, const Point &a, const Point &b, 
@@ -377,7 +382,7 @@ uniform_sample_tetrahedra(Point &p, const Point &p0, const Point &p1,
 
   // Convert to Barycentric and compute new point.
   const double a = 1.0 - t - u - v;
-  p = (p0.vector()*a + p1.vector()*t + p2.vector()*u + p3.vector()*v).point();
+  p = Point(p0*a + p1*t + p2*u + p3*v);
 }
 
 
@@ -427,8 +432,5 @@ TriTriIntersection(const Point &A0, const Point &A1, const Point &A2,
   }
 }
 
-
-
-
-}
+}}}
 

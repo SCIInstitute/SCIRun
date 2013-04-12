@@ -77,10 +77,6 @@ public:
   inline double y() const;
   inline void z(const double);
   inline double z() const;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  inline const Vector &vector() const;
-  inline Vector &asVector() const;
-#endif
 
   inline double& operator[](int idx) 
   {
@@ -161,6 +157,14 @@ inline Point& Point::operator*=(const double d)
   return *this;
 }
 
+inline Point& Point::operator+=(const Point& v)
+{
+  d_[0]+=v.d_[0];
+  d_[1]+=v.d_[1];
+  d_[2]+=v.d_[2];
+  return *this;
+}
+
 // Actual declarations of these functions (as 'friend' above doesn't
 // (depending on the compiler) actually declare them.
 SCISHARE Point AffineCombination(const Point&, double, const Point&, double,
@@ -181,102 +185,15 @@ inline
 Point operator*(double d, const Point &p) {
   return p*d;
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline 
 Point operator+(const Vector &v, const Point &p) {
   return p+v;
 }
-#endif
 
 SCISHARE std::ostream& operator<<(std::ostream& os, const Point& p);
 SCISHARE std::istream& operator>>(std::istream& os, Point& p);
 SCISHARE Point centroid(const std::vector<Point>& points);
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-// This cannot be above due to circular dependencies
-#include <Core/Geometry/Vector.h>
-
-namespace SCIRun {
-
-inline Point::Point(const Vector& v)
-{
-  d_[0] = v.d_[0];
-  d_[1] = v.d_[1]; 
-  d_[2] = v.d_[2];
-}
-
-inline Point& Point::operator+=(const Point& v)
-{
-  d_[0]+=v.d_[0];
-  d_[1]+=v.d_[1];
-  d_[2]+=v.d_[2];
-  return *this;
-}
-
-inline Point& Point::operator-=(const Point& v)
-{
-  d_[0]-=v.d_[0];
-  d_[1]-=v.d_[1];
-  d_[2]-=v.d_[2];
-  return *this;
-}
-
-
-
-
-inline Point& Point::operator/=(const double d)
-{
-  d_[0]/=d;
-  d_[1]/=d;
-  d_[2]/=d;
-  return *this;
-}
-
-inline Point Point::operator-() const
-{
-  return Point(-d_[0], -d_[1], -d_[2]);
-}
-
-inline Point Point::operator*(double d) const
-{
-  return Point(d_[0]*d, d_[1]*d, d_[2]*d);
-}
-
-inline Point Point::operator/(const double d) const
-{
-  return Point(d_[0]/d,d_[1]/d,d_[2]/d);
-}
-
-inline double& Point::operator()(int idx) 
-{
-  return d_[idx];
-}
-
-inline double Point::operator()(int idx) const 
-{
-  return d_[idx];
-}
-
-inline Point Interpolate(const Point& v1, const Point& v2,
-                         double weight)
-{
-  double weight1 = 1.0 - weight;
-  return Point(v2.d_[0]*weight+v1.d_[0]*weight1,
-               v2.d_[1]*weight+v1.d_[1]*weight1,
-               v2.d_[2]*weight+v1.d_[2]*weight1);
-}
-
-inline void Point::addscaled(const Point& p, const double scale) 
-{
-  // this += p * w;
-  d_[0] += p.d_[0] * scale;
-  d_[1] += p.d_[1] * scale;
-  d_[2] += p.d_[2] * scale;
-}
-
-#endif
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline const Vector &Point::vector() const
 {
@@ -304,17 +221,7 @@ inline Point Max(const Point& p1, const Point& p2)
   double z=std::max(p1[2], p2[2]);
   return Point(x,y,z);
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-inline double Dot(const Point& p, const Vector& v)
-{
-  return p.d_[0]*v.d_[0]+p.d_[1]*v.d_[1]+p.d_[2]*v.d_[2];
-}
 
-inline double Dot(const Point& p1, const Point& p2)
-{
-  return p1.d_[0]*p2.d_[0] + p1.d_[1]*p2.d_[1] + p1.d_[2]*p2.d_[2];
-}
-#endif
 
 }}}
 
