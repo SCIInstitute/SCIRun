@@ -57,6 +57,7 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   VFDataT.h
   VField.h
   VMesh.h
+  VMeshShared.h
   VUnstructuredMesh.h
 )
 

@@ -30,10 +30,10 @@
 #ifndef CORE_DATATYPES_VMESHSHARED_H
 #define CORE_DATATYPES_VMESHSHARED_H
 
-#include <Core/Datatypes/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 //! Include needed for Windows: declares SCISHARE
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
 
