@@ -1121,15 +1121,13 @@ StructHexVolMesh<Basis>::StructHexVolMesh(size_type i,
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  this->vmesh_ = CreateVStructHexVolMesh(this);   
+  this->vmesh.reset(CreateVStructHexVolMesh(this));
 }
 
 
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh(const StructHexVolMesh<Basis> &copy):
   LatVolMesh<Basis>(copy),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("Synchronize lock"),
   synchronized_(Mesh::ALL_ELEMENTS_E),
   epsilon_(0.0),
@@ -1153,7 +1151,7 @@ StructHexVolMesh<Basis>::StructHexVolMesh(const StructHexVolMesh<Basis> &copy):
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  this->vmesh_ = CreateVStructHexVolMesh(this); 
+  this->vmesh_.reset(CreateVStructHexVolMesh(this)); 
 }
 
 
@@ -1209,8 +1207,8 @@ StructHexVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
   }
 
   synchronize_lock_.lock();
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
   synchronize_lock_.unlock();
 
 }
