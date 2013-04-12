@@ -3141,8 +3141,8 @@ VStructHexVolMesh<MESH>::get_center(Point &p,VMesh::Edge::index_type idx) const
   this->get_nodes_from_edge(nodes,idx);
   
   p = points_[nodes[0]];
-  p.asVector() += points_[nodes[1]].asVector();
-  p.asVector() *= 0.5;
+  p += points_[nodes[1]];
+  p *= 0.5;
 }
 
 template <class MESH>
@@ -3153,10 +3153,10 @@ VStructHexVolMesh<MESH>::get_center(Point &p, VMesh::Face::index_type idx) const
   this->get_nodes_from_face(nodes,idx);
   
   p = points_[nodes[0]];
-  p.asVector() += points_[nodes[1]].asVector();
-  p.asVector() += points_[nodes[2]].asVector();
-  p.asVector() += points_[nodes[3]].asVector();
-  p.asVector() *= 0.25;
+  p += points_[nodes[1]];
+  p += points_[nodes[2]];
+  p += points_[nodes[3]];
+  p *= 0.25;
 }
 
 template <class MESH>
@@ -3167,14 +3167,14 @@ VStructHexVolMesh<MESH>::get_center(Point &p, VMesh::Cell::index_type idx) const
   this->get_nodes_from_cell(nodes,idx);
   
   p = points_[nodes[0]];
-  p.asVector() += points_[nodes[1]].asVector();
-  p.asVector() += points_[nodes[2]].asVector();
-  p.asVector() += points_[nodes[3]].asVector();
-  p.asVector() += points_[nodes[4]].asVector();
-  p.asVector() += points_[nodes[5]].asVector();
-  p.asVector() += points_[nodes[6]].asVector();
-  p.asVector() += points_[nodes[7]].asVector();
-  p.asVector() *= 0.125;
+  p += points_[nodes[1]];
+  p += points_[nodes[2]];
+  p += points_[nodes[3]];
+  p += points_[nodes[4]];
+  p += points_[nodes[5]];
+  p += points_[nodes[6]];
+  p += points_[nodes[7]];
+  p *= 0.125;
 }
 
 template <class MESH>
@@ -3216,14 +3216,14 @@ VStructHexVolMesh<MESH>::get_centers(Point* points,
     
     this->get_nodes_from_cell(nodes,idx);  
     p = points_[nodes[0]];
-    p.asVector() += points_[nodes[1]].asVector();
-    p.asVector() += points_[nodes[2]].asVector();
-    p.asVector() += points_[nodes[3]].asVector();
-    p.asVector() += points_[nodes[4]].asVector();
-    p.asVector() += points_[nodes[5]].asVector();
-    p.asVector() += points_[nodes[6]].asVector();
-    p.asVector() += points_[nodes[7]].asVector();
-    p.asVector() *= 0.125;  
+    p += points_[nodes[1]];
+    p += points_[nodes[2]];
+    p += points_[nodes[3]];
+    p += points_[nodes[4]];
+    p += points_[nodes[5]];
+    p += points_[nodes[6]];
+    p += points_[nodes[7]];
+    p *= 0.125;  
 
     points[j] = p;
   }
@@ -3249,7 +3249,7 @@ VStructHexVolMesh<MESH>::get_size(VMesh::Edge::index_type idx) const
   const Point &p0 = points_[nodes[0]];
   const Point &p1 = points_[nodes[1]];
   
-  return (p1.asVector() - p0.asVector()).length();
+  return (p1 - p0).length();
 }
 
 template <class MESH>
