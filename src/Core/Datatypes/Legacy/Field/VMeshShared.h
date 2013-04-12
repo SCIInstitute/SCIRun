@@ -138,8 +138,8 @@ public:
   virtual bool unsynchronize(unsigned int sync);
   virtual bool clear_synchronization();
   
-  virtual BBox get_bounding_box() const;
-  virtual void transform(const Transform &t);  
+  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual void transform(const Core::Geometry::Transform &t);  
 
   virtual double get_epsilon() const;
                           
@@ -156,7 +156,7 @@ public:
   virtual void get_regular_scheme(std::vector<VMesh::coords_type>& coords, 
                                   std::vector<double>& weights, int order) const;
 
-  virtual void get_canonical_transform(Transform &t);
+  virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
 protected:
   MESH*                           mesh_;
@@ -181,7 +181,7 @@ VMeshShared<MESH>::vmesh()
 
 template<class MESH>
 void 
-VMeshShared<MESH>::get_canonical_transform(Transform &t)
+VMeshShared<MESH>::get_canonical_transform(Core::Geometry::Transform &t)
 {
   mesh_->get_canonical_transform(t);
 }
@@ -243,7 +243,7 @@ VMeshShared<MESH>::get_derivate_weights(const VMesh::coords_type& coords,
 
 
 template <class MESH>
-BBox
+Core::Geometry::BBox
 VMeshShared<MESH>::get_bounding_box() const
 {
   return(mesh_->get_bounding_box());
@@ -258,7 +258,7 @@ VMeshShared<MESH>::get_epsilon() const
 
 template<class MESH>
 void 
-VMeshShared<MESH>::transform(const Transform &t)
+VMeshShared<MESH>::transform(const Core::Geometry::Transform &t)
 {
   mesh_->transform(t);
 }
