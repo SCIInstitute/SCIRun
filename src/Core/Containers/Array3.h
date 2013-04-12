@@ -71,6 +71,21 @@ public:
     base_type::extent_gen extents;
     base_type::resize(extents[size1][size2][size3]);
   }
+
+  size_t totalSize() const
+  {
+    return std::accumulate(this->shape(), this->shape() + base_type::dimensionality, (size_t)1, std::multiplies<size_t>());
+  }
+
+  T& operator[](size_t idx)
+  {
+    return this->origin()[idx];
+  }
+
+  const T& operator[](size_t idx) const
+  {
+    return this->origin()[idx];
+  }
 };
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
