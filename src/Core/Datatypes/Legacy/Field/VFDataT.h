@@ -761,19 +761,29 @@ public:
 
   virtual bool min(double& val, VMesh::index_type& idx) const
   { 
-    typename FDATA::value_type tval = 0;
+    typename FDATA::value_type tval(0);
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
-    if (sz > 0) tval = this->fdata_[0]; else return (false);
+    if (sz > 0) 
+      tval = this->fdata_[0]; 
+    else 
+      return (false);
+
     for (size_type p=1; p<sz; p++) 
-        if (this->fdata_[p] < tval) { tval = this->fdata_[p]; idx = VMesh::index_type(p); }
+    {
+      if (this->fdata_[p] < tval) 
+      { 
+        tval = this->fdata_[p]; 
+        idx = VMesh::index_type(p); 
+      }
+    }
     val = CastFData<double>(tval);
     return (true);
   }
 
   virtual bool max(double& val, VMesh::index_type& idx) const
   { 
-    typename FDATA::value_type tval = 0;
+    typename FDATA::value_type tval(0);
     idx = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());
     if (sz > 0) tval = this->fdata_[0]; else return (false);
@@ -786,8 +796,8 @@ public:
   virtual bool minmax(double& min, VMesh::index_type& idxmin,
                       double& max, VMesh::index_type& idxmax) const
   { 
-    typename FDATA::value_type tval = 0;
-    typename FDATA::value_type tval2 = 0;
+    typename FDATA::value_type tval(0);
+    typename FDATA::value_type tval2(0);
     idxmin = 0;
     idxmax = 0;
     size_type sz = static_cast<size_type>(this->fdata_.size());

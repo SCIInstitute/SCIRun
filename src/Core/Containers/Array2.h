@@ -60,6 +60,9 @@ template<class T> void Pio(Piostream& stream, Array2<T>*& data);
 template<class T>
 class Array2 : public boost::multi_array<T, 2>
 {
+public:
+  typedef typename boost::multi_array<T, 2> base_type;
+  typedef typename base_type::value_type value_type;
 };
 
 
