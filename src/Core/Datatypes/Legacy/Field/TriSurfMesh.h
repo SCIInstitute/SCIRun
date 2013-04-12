@@ -66,6 +66,9 @@
 
 namespace SCIRun {
 
+  using namespace SCIRun::Core::Basis;
+  using namespace SCIRun::Core::Geometry;
+
 /////////////////////////////////////////////////////
 // Declarations for virtual interface
 
