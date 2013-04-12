@@ -84,7 +84,7 @@ VMesh* CreateVStructHexVolMesh(MESH* mesh) { return (0); }
 
 #if (SCIRUN_STRUCTHEXVOL_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVStructHexVolMesh(StructHexVolMesh<HexTrilinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVStructHexVolMesh(StructHexVolMesh<Core::Basis::HexTrilinearLgn<Core::Geometry::Point> >* mesh);
 
 #endif
 
@@ -103,7 +103,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef LockingHandle<StructHexVolMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<StructHexVolMesh<Basis> > handle_type;
 
   StructHexVolMesh();
   StructHexVolMesh(size_type i, size_type j, size_type k);
@@ -211,7 +211,7 @@ public:
   friend class ElemData;
 
   //! get the mesh statistics
-  virtual BBox get_bounding_box() const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
 
   virtual bool get_dim(std::vector<size_type>&) const;
@@ -809,7 +809,7 @@ public:
     typename LatVolMesh<Basis>::Node::array_type nodes;
     this->get_nodes(nodes,idx);
     
-    BBox bbox;
+    Core::Geometry::BBox bbox;
     bbox.extend(points_(nodes[0].k_,nodes[0].j_,nodes[0].i_));
     bbox.extend(points_(nodes[1].k_,nodes[1].j_,nodes[1].i_));
     bbox.extend(points_(nodes[2].k_,nodes[2].j_,nodes[2].i_));  
@@ -871,7 +871,7 @@ public:
   }
 
   template <class ARRAY>
-  inline bool locate_elems(ARRAY &array, const BBox &b) const
+  inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
   
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -1048,9 +1048,9 @@ private:
   void insert_node_into_grid(typename LatVolMesh<Basis>::Node::index_type idx);
   void remove_node_from_grid(typename LatVolMesh<Basis>::Node::index_type idx);
 
-  void compute_node_grid(BBox& bb);
-  void compute_elem_grid(BBox& bb);
-  void compute_epsilon(BBox& bb);
+  void compute_node_grid(Core::Geometry::BBox& bb);
+  void compute_elem_grid(Core::Geometry::BBox& bb);
+  void compute_epsilon(Core::Geometry::BBox& bb);
 
   double polygon_area(const typename LatVolMesh<Basis>::Node::array_type &,
                       const Core::Geometry::Vector) const;
@@ -1167,10 +1167,10 @@ StructHexVolMesh<Basis>::get_dim(std::vector<size_type> &array) const
 
 
 template <class Basis>
-BBox
+Core::Geometry::BBox
 StructHexVolMesh<Basis>::get_bounding_box() const
 {
-  BBox result;
+  Core::Geometry::BBox result;
 
   typename LatVolMesh<Basis>::Node::iterator ni, nie;
   this->begin(ni);
@@ -1680,7 +1680,7 @@ StructHexVolMesh<Basis>::synchronize(mask_type sync)
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
     //! These computations share the evalution of the bounding box
-    BBox bb = get_bounding_box(); 
+    Core::Geometry::BBox bb = get_bounding_box(); 
 
     //! Compute the epsilon for geometrical closeness comparisons
     //! Mainly used by the grid lookup tables
@@ -1744,7 +1744,7 @@ StructHexVolMesh<Basis>::insert_elem_into_grid(typename LatVolMesh<Basis>::Elem:
   // TODO:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
-  BBox box;
+  Core::Geometry::BBox box;
   box.extend(points_(idx.k_,idx.j_,idx.i_));
   box.extend(points_(idx.k_+1,idx.j_,idx.i_));
   box.extend(points_(idx.k_,idx.j_+1,idx.i_));
@@ -1762,7 +1762,7 @@ template <class Basis>
 void
 StructHexVolMesh<Basis>::remove_elem_from_grid(typename LatVolMesh<Basis>::Elem::index_type idx)
 {
-  BBox box;
+  Core::Geometry::BBox box;
   box.extend(points_(idx.k_,idx.j_,idx.i_));
   box.extend(points_(idx.k_+1,idx.j_,idx.i_));
   box.extend(points_(idx.k_,idx.j_+1,idx.i_));
@@ -1795,7 +1795,7 @@ StructHexVolMesh<Basis>::remove_node_from_grid(typename LatVolMesh<Basis>::Node:
 
 template <class Basis>
 void
-StructHexVolMesh<Basis>::compute_elem_grid(BBox& bb)
+StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
 {
   if (bb.valid())
   {
@@ -1812,7 +1812,7 @@ StructHexVolMesh<Basis>::compute_elem_grid(BBox& bb)
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    BBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
     elem_grid_ = new SearchGridT<typename LatVolMesh<Basis>::Elem::index_type>(sx, sy, sz, b.min(), b.max());
 
     typename LatVolMesh<Basis>::Elem::iterator ci, cie;
@@ -1830,7 +1830,7 @@ StructHexVolMesh<Basis>::compute_elem_grid(BBox& bb)
 
 template <class Basis>
 void
-StructHexVolMesh<Basis>::compute_node_grid(BBox& bb)
+StructHexVolMesh<Basis>::compute_node_grid(Core::Geometry::BBox& bb)
 {
   if (bb.valid())
   {
@@ -1847,7 +1847,7 @@ StructHexVolMesh<Basis>::compute_node_grid(BBox& bb)
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    BBox b = bb; b.extend(10*epsilon_);
+    Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
     node_grid_ = new SearchGridT<typename LatVolMesh<Basis>::Node::index_type>(sx, sy, sz, b.min(), b.max());
 
     typename LatVolMesh<Basis>::Node::iterator ni, nie;
@@ -1867,7 +1867,7 @@ StructHexVolMesh<Basis>::compute_node_grid(BBox& bb)
 
 template <class Basis>
 void
-StructHexVolMesh<Basis>::compute_epsilon(BBox& bb)
+StructHexVolMesh<Basis>::compute_epsilon(Core::Geometry::BBox& bb)
 {
   epsilon_ = bb.diagonal().length()*1e-8;
   epsilon2_ = epsilon_*epsilon_;
