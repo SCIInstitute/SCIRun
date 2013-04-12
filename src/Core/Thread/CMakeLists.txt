@@ -28,12 +28,14 @@
 
 SET(Core_Thread_SRCS
   Barrier.cc
+  ConditionVariable.cc
   Mutex.cc
   Parallel.cc
 )
 
 SET(Core_Thread_HEADERS
   Barrier.h
+  ConditionVariable.h
   Mutex.h
   Parallel.h
   Share.h
