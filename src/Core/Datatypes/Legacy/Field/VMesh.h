@@ -47,13 +47,10 @@
 
 namespace SCIRun {
 
-class BBox;
 class VMesh;
-class Transform;
 class TypeDescription;
 
 typedef boost::shared_ptr<VMesh> VMeshHandle;
-
 
 class SCISHARE VMesh {
 public:
@@ -603,7 +600,7 @@ public:
   //! uses the underlying search structure to find candidates that are close.
   //! This functionality is general intended to speed up searching for elements
   //! in a certain region.
-  virtual bool locate(VMesh::Elem::array_type &a, const BBox& bbox) const;
+  virtual bool locate(VMesh::Elem::array_type &a, const Core::Geometry::BBox& bbox) const;
 
   //! Find the closest point on a surface or a curve
   
@@ -615,7 +612,7 @@ public:
                                  VMesh::Node::index_type &i, 
                                  const Core::Geometry::Point &point) const; 
 
-  //! This version uses a maximum radius for seaching the node
+  //! This version uses a maximum radius for searching the node
   //! If no nodes are within radius the function returns false.
   virtual bool find_closest_node(double& dist,
                                  Core::Geometry::Point& result,
@@ -983,7 +980,7 @@ public:
   
   //! Rerouting of some of the virtual mesh function calls
   
-  virtual BBox get_bounding_box() const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
   
   //! This call is for synchronizing tables of precomputed elements
   virtual bool synchronize(unsigned int sync); 
@@ -993,14 +990,14 @@ public:
   virtual bool clear_synchronization();
   
   // Transform a full field, this one works on the full field
-  virtual void transform(const Transform &t);
+  virtual void transform(const Core::Geometry::Transform &t);
   
   //! Get the transform from a regular field
-  virtual Transform get_transform() const;
+  virtual Core::Geometry::Transform get_transform() const;
   //! Set the transform of a regular field
-  virtual void set_transform(const Transform &t);
+  virtual void set_transform(const Core::Geometry::Transform &t);
   
-  virtual void get_canonical_transform(Transform &t);
+  virtual void get_canonical_transform(Core::Geometry::Transform &t);
   //! Get the epsilon for doing numerical computations
   //! This one is generally 1e-7*length diagonal of the bounding box
   virtual double get_epsilon() const;

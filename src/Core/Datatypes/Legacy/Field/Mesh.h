@@ -55,7 +55,6 @@ namespace SCIRun {
 
 class Mesh;
 class VMesh;
-class Transform;
 class TypeDescription;
 
 typedef boost::shared_ptr<Mesh> MeshHandle;

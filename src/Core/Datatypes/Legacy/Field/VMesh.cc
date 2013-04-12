@@ -32,12 +32,13 @@
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/BBox.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
-LockingHandle<Mesh>
+MeshHandle
 VMesh::mesh()
 {
-  return (MeshHandle(0));
+  return (MeshHandle());
 }
 
 void 
@@ -82,6 +83,7 @@ VMesh::size(DElem::size_type& size) const
   size = 0;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 LockingHandle<SearchGridT<SCIRun::index_type> >
 VMesh::get_elem_search_grid()
 {
@@ -93,6 +95,7 @@ VMesh::get_node_search_grid()
 {
   ASSERTFAIL("VMesh interface: get_node_search_grid() has not been implemented");
 }
+#endif
 
 void 
 VMesh::get_nodes(Node::array_type& nodes, Node::index_type i) const
@@ -998,6 +1001,3 @@ VMesh::get_regular_scheme(std::vector<VMesh::coords_type>&,
 {
   ASSERTFAIL("VMesh interface: get_regular_scheme has not yet been implemented");  
 }
-
-} // end namespace
-
