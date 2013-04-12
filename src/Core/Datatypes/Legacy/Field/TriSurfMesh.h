@@ -1275,7 +1275,7 @@ public:
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
-  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   //! Export this class using the old Pio system
   virtual void io(Piostream&);
   
@@ -1298,6 +1298,7 @@ public:
 
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
+#endif
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return new TriSurfMesh<Basis>(); }
   
@@ -1916,7 +1917,7 @@ protected:
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex         synchronize_lock_;
-  ConditionVariable     synchronize_cond_;
+  Core::Thread::ConditionVariable     synchronize_cond_;
   
   // Which tables have been computed
   mask_type             synchronized_;
@@ -1929,7 +1930,7 @@ protected:
   double                epsilon_;           // Epsilon to use for computation 1e-8 of bbox diagonal
   double                epsilon2_;          // Square of epsilon
 
-  Handle<VMesh>         vmesh_;             // Handle to virtual function table
+  boost::shared_ptr<VMesh>         vmesh_;             // Handle to virtual function table
 
 #ifdef HAVE_HASH_MAP
 
@@ -2015,6 +2016,7 @@ struct less_int
   }
 };
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class Basis>
 PersistentTypeID
@@ -2040,7 +2042,7 @@ TriSurfMesh<Basis>::type_name(int n)
     return find_type_name((Basis *)0);
   }
 }
-
+#endif
 
 template <class Basis>
 TriSurfMesh<Basis>::TriSurfMesh()
@@ -3729,7 +3731,7 @@ TriSurfMesh<Basis>::size(typename TriSurfMesh::Cell::size_type &s) const
   s = *itr;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 const TypeDescription*
 get_type_description(TriSurfMesh<Basis> *)
@@ -3827,7 +3829,7 @@ TriSurfMesh<Basis>::cell_type_description()
   }
   return td;
 }
-
+#endif
 template <class Basis>
 bool
 TriSurfMesh<Basis>::get_neighbor(index_type &nbr_half_edge,

@@ -29,6 +29,9 @@
 #include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
 #include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
+
 //! Only include this class if we included TriSurf Support
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 
@@ -117,8 +120,8 @@ public:
                                      Point& point);
 
   virtual VMesh::index_type* get_elems_pointer() const;
-  virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() { return this->mesh_->elem_grid_; }
-  virtual LockingHandle<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() { return this->mesh_->node_grid_; }
+  virtual boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_elem_search_grid() { return this->mesh_->elem_grid_; }
+  virtual boost::shared_ptr<SearchGridT<typename SCIRun::index_type> > get_node_search_grid() { return this->mesh_->node_grid_; }
 
 };
 
