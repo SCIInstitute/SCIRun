@@ -54,8 +54,9 @@
 #include <Core/Datatypes/Legacy/Base/Types.h>
 
 #include <Core/Thread/Mutex.h>
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Thread/ConditionVariable.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Thread/Runnable.h>
 #include <Core/Thread/Thread.h>
 #endif
@@ -1281,9 +1282,10 @@ public:
   
   //! This ID is created as soon as this class will be instantiated  
   static PersistentTypeID trisurf_typeid;
-
+#endif
   //! Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
 
   //! Type description, used for finding names of the mesh class for
@@ -1300,7 +1302,7 @@ public:
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
 #endif
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new TriSurfMesh<Basis>(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<TriSurfMesh<Basis>>(); }
   
 
   //////////////////////////////////////////////////////////////////
@@ -3655,6 +3657,7 @@ TriSurfMesh<Basis>::add_triangle(const Core::Geometry::Point &p0,
   return add_triangle(add_find_point(p0), add_find_point(p1), add_find_point(p2));
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #define TRISURFMESH_VERSION 4
 
@@ -3691,7 +3694,7 @@ TriSurfMesh<Basis>::io(Piostream &stream)
   if (stream.reading())
     vmesh_ = CreateVTriSurfMesh(this);
 }
-
+#endif
 
 template <class Basis>
 void
