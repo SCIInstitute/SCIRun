@@ -624,7 +624,7 @@ public:
     vmesh_ = CreateVLatVolMesh(this);   
   }
   
-  virtual LatVolMesh *clone() { return new LatVolMesh(*this); }
+  virtual LatVolMesh *clone() const { return new LatVolMesh(*this); }
   virtual ~LatVolMesh() 
   {
     DEBUG_DESTRUCTOR("LatVolMesh")   

@@ -50,6 +50,7 @@
 //! Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
+#include <Core/Thread/Mutex.h>
 #include <Core/Containers/Array3.h>
 #include <Core/GeometryPrimitives/SearchGridT.h>
 
@@ -1068,7 +1069,7 @@ private:
   boost::shared_ptr<SearchGridT<typename LatVolMesh<Basis>::Node::index_type> >  node_grid_;
   boost::shared_ptr<SearchGridT<typename LatVolMesh<Basis>::Elem::index_type> >  elem_grid_;
   
-  mutable Mutex                       synchronize_lock_;
+  mutable Core::Thread::Mutex                       synchronize_lock_;
   mask_type                           synchronized_;
   double                              epsilon_;
   double                              epsilon2_; 
@@ -1880,6 +1881,8 @@ StructHexVolMesh<Basis>::compute_epsilon(Core::Geometry::BBox& bb)
   synchronized_ |= Mesh::EPSILON_E;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #define STRUCT_HEX_VOL_MESH_VERSION 2
 
 template <class Basis>
@@ -1915,7 +1918,7 @@ StructHexVolMesh<Basis>::io(Piostream& stream)
   if (stream.reading())
     this->vmesh_ = CreateVStructHexVolMesh(this);
 }
-
+#endif
 
 template <class Basis>
 const std::string

@@ -31,6 +31,8 @@
 #include <Core/Datatypes/Legacy/Field/StructHexVolMesh.h>
 #include <Core/Basis/HexElementWeights.h>
 
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
 
 
 //! Only include this class if we included LatVol Support

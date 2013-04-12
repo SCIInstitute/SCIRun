@@ -91,7 +91,7 @@ public:
   virtual ~Mesh();
   
   //! Clone the field needed by locking handle system
-  virtual Mesh *clone() = 0;
+  virtual Mesh *clone() const = 0;
 
   //! These will become obsolete at some point
   enum
