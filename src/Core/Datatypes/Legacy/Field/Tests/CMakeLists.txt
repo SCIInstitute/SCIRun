@@ -28,9 +28,9 @@
 
 SET(Core_Datatypes_Legacy_Field_Tests_SRCS
   FieldTests.cc
-  LatticeVolumeMeshTests.cc
-  MeshFactoryTests.cc
-  TriSurfMeshTests.cc
+  #LatticeVolumeMeshTests.cc
+  #MeshFactoryTests.cc
+  #TriSurfMeshTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Legacy_Field_Tests ${Core_Datatypes_Legacy_Field_Tests_SRCS})
