@@ -56,6 +56,7 @@ find . -name "*.ii" -print | xargs cat | sort | uniq -c | sort -nr | more
 #include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
 template class MatrixBase<double>;
 template class SparseRowMatrixGeneric<double>;

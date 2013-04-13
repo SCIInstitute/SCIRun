@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -40,9 +39,9 @@
 
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Datatypes/Types.h>
-#include <Core/Datatypes/TypeName.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/VMesh.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Containers/Array3.h>
 #include <Core/Containers/Array2.h>
 #include <Core/Math/MiscMath.h>
@@ -399,4 +398,3 @@ get_type_description(FData1d<Data>*)
 
 #endif // Containers_FData_h
 
-#endif

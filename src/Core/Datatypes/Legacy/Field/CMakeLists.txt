@@ -62,7 +62,7 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
 )
 
 SET(Core_Datatypes_Legacy_Field_SRCS
-  #cd_templates.cc	    	
+  cd_templates.cc	    	
   #cd_templates_fields_0.cc    	
   #cd_templates_fields_1.cc    	
   #cd_templates_fields_2.cc    	
