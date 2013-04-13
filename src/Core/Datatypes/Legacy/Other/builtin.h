@@ -41,8 +41,10 @@
 #ifndef builtin_h
 #define builtin_h
 
-#include <Core/Datatypes/TypeName.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/Persistent.h>
+#endif
 
 namespace SCIRun {
 
@@ -82,6 +84,7 @@ typedef ScalarType<long long> LongLong;
 typedef ScalarType<float>  Float;
 typedef ScalarType<double> Double;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline void Pio(Piostream& stream, Char& d)  {Pio(stream,d.val_);}
 inline void Pio(Piostream& stream, UChar& d) {Pio(stream,d.val_);}
 inline void Pio(Piostream& stream, Short& d) {Pio(stream,d.val_);}
@@ -101,6 +104,7 @@ inline const std::string find_type_name(UInt*)  {return find_type_name(reinterpr
 inline const std::string find_type_name(Float*) {return find_type_name(reinterpret_cast<float *>(0));}
 inline const std::string find_type_name(Double*){return find_type_name(reinterpret_cast<double *>(0));}
 inline const std::string find_type_name(LongLong*){return find_type_name(reinterpret_cast<double *>(0));}
+#endif
 
 template<class T> bool is_scalar() { return false; }
 template<> inline bool is_scalar<char>() { return true; }

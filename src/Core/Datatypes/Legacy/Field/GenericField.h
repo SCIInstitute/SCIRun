@@ -31,19 +31,20 @@
 #ifndef CORE_DATATYPES_GENERICFIELD_H
 #define CORE_DATATYPES_GENERICFIELD_H 1
 
-#include <Core/Util/Debug.h>
+#include <Core/Utils/Legacy/Debug.h>
 #include <Core/Basis/Locate.h>
 #include <Core/Containers/StackVector.h>
-#include <Core/Datatypes/Legacy/Field/builtin.h>
+#include <Core/Datatypes/Legacy/Other/builtin.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VFData.h>
-#include <Core/Datatypes/Legacy/Field/TypeName.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Datatypes/Legacy/Field/MeshTypes.h>
-#include <Core/Containers/LockingHandle.h>
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
+#endif
 #include <Core/Containers/FData.h>
 #include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <Core/Containers/StackVector.h>
@@ -60,10 +61,10 @@ public:
   typedef GenericField<Mesh, Basis, FData>                 field_type;
   typedef typename FData::value_type                       value_type;
   typedef Mesh                                             mesh_type;
-  typedef LockingHandle<mesh_type>                         mesh_handle_type;
+  typedef boost::shared_ptr<mesh_type>                         mesh_handle_type;
   typedef Basis                                            basis_type;
   typedef FData                                            fdata_type;
-  typedef LockingHandle<GenericField<Mesh, Basis, FData> > handle_type;
+  typedef boost::shared_ptr<GenericField<Mesh, Basis, FData> > handle_type;
   typedef SCIRun::index_type                               index_type;
   typedef SCIRun::size_type                                size_type;
 
@@ -101,12 +102,14 @@ public:
   //! Get the mesh describing how the elements fit together
   // const mesh_handle_type &get_typed_mesh() const;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Persistent I/O.
   virtual void io(Piostream &stream);
   
   //! Tag the constructor of this class and put it in the Pio DataBase
   static  PersistentTypeID type_id;
-  
+#endif
+
   //! Tag the constructor of this class and put it in the Field DataBase
   static  FieldTypeID field_id;
   
@@ -119,8 +122,10 @@ public:
   virtual 
   const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Static functions to instantiate the field from Pio or using CreateField()
   static Persistent *maker();
+#endif
   static FieldHandle field_maker();  
   static FieldHandle field_maker_mesh(MeshHandle mesh);
    
@@ -180,7 +185,7 @@ class VGenericField : public VField {
     
 };
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // PIO
 const int GENERICFIELD_VERSION = 3;
 
@@ -191,6 +196,7 @@ GenericField<Mesh, Basis, FData>::maker()
 {
   return new GenericField<Mesh, Basis, FData>;
 }
+#endif
 
 template <class Mesh, class Basis, class FData>
 FieldHandle
@@ -210,16 +216,17 @@ GenericField<Mesh, Basis, FData>::field_maker_mesh(MeshHandle mesh)
 }
 
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Mesh, class Basis, class FData>
 PersistentTypeID 
 GenericField<Mesh, Basis, FData>::type_id(type_name(-1), "Field", maker);
+#endif
 
 template <class Mesh, class Basis, class FData>
 FieldTypeID
 GenericField<Mesh, Basis, FData>::field_id(type_name(-1),field_maker,field_maker_mesh);
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Mesh, class Basis, class FData>
 void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
 {
@@ -261,7 +268,7 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
     vfield_->update_mesh_pointer(mesh_.get_rep());
   }
 }
-
+#endif
 
 template <class Mesh, class Basis, class FData>
 GenericField<Mesh, Basis, FData>::GenericField() : 
