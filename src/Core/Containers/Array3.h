@@ -68,7 +68,7 @@ public:
 
   void resize(size_t size1, size_t size2, size_t size3)
   {
-    impl_type::extent_gen extents;
+    typename impl_type::extent_gen extents;
     impl_.resize(extents[size1][size2][size3]);
   }
 

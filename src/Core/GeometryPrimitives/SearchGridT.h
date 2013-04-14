@@ -58,7 +58,7 @@ class SearchGridT : boost::noncopyable
         transform_.pre_scale(Core::Geometry::Vector(1.0 / x, 1.0 / y, 1.0 / z));
         transform_.pre_scale(max - min);
 
-        transform_.pre_translate(Vector(min));
+        transform_.pre_translate(Core::Geometry::Vector(min));
         transform_.compute_imat();
         bin_.resize(x*y*z);
       }         
