@@ -26,12 +26,8 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Algorithms/Fields classes
-SET(Core_Algorithms_Fields_SRCS
+SET(Core_Algorithms_Legacy_Fields_SRCS
   RegisterWithCorrespondences.cc
-)
-
-SET(Core_Algorithms_Fields_SRCS ${Core_Algorithms_Fields_SRCS}
   MeshData/FlipSurfaceNormals.cc
   Cleanup/CleanupTetMesh.cc
   Cleanup/RemoveUnusedNodes.cc
@@ -129,33 +125,36 @@ SET(Core_Algorithms_Fields_SRCS ${Core_Algorithms_Fields_SRCS}
 )
 
 IF(WITH_TETGEN)
-  SET(Core_Algorithms_Fields_SRCS ${Core_Algorithms_Fields_SRCS}
+  SET(Core_Algorithms_Legacy_Fields_SRCS ${Core_Algorithms_Legacy_Fields_SRCS}
     TetGen/InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
 
-SCIRUN_ADD_LIBRARY(Core_Algorithms_Fields ${Core_Algorithms_Fields_SRCS})
+ADD_LIBRARY(Core_Algorithms_Legacy_Fields 
+  ${Core_Algorithms_Fields_SRCS}
+)
 
-TARGET_LINK_LIBRARIES(Core_Algorithms_Fields 
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields 
   Core_Datatypes 
+  Core_Datatypes_Legacy_Fields
   Core_Util 
   Core_Exceptions 
   Core_Thread 
   Core_Geom 
   Core_Geometry 
-  Core_Algorithms_Converter
-  Core_Algorithms_Math
-  Core_Algorithms_Util 
-  Core_Persistent 
+  #Core_Algorithms_Legacy_Converter
+  #Core_Algorithms_Legacy_Math
+  #Core_Algorithms_Util 
+  #Core_Persistent 
   Core_Basis 
-  ${SCI_TEEM_LIBRARY}
+  #${SCI_TEEM_LIBRARY}
 )
 
 IF(WITH_TETGEN)
-  TARGET_LINK_LIBRARIES(Core_Algorithms_Fields
+  TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields
      ${SCI_TETGEN_LIBRARY}
   )
 ENDIF(WITH_TETGEN)
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Fields)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_Fields)
 ENDIF(BUILD_SHARED_LIBS)
