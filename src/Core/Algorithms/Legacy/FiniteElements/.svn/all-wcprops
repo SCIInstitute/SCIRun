@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/cibc/!svn/ver/45671/cibc/trunk/SCIRun/src/Core/Algorithms/FiniteElements
+END
+share.h
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/cibc/!svn/ver/43072/cibc/trunk/SCIRun/src/Core/Algorithms/FiniteElements/share.h
+END
+CMakeLists.txt
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/cibc/!svn/ver/45671/cibc/trunk/SCIRun/src/Core/Algorithms/FiniteElements/CMakeLists.txt
+END
