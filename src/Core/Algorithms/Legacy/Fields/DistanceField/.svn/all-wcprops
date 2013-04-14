@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField
+END
+CalculateIsInsideField.h
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/cibc/!svn/ver/43072/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateIsInsideField.h
+END
+CalculateDistanceField.cc
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateDistanceField.cc
+END
+CalculateDistanceField.h
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/cibc/!svn/ver/43072/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateDistanceField.h
+END
+CalculateInsideWhichField.cc
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateInsideWhichField.cc
+END
+CalculateInsideWhichField.h
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/cibc/!svn/ver/43072/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateInsideWhichField.h
+END
+CalculateSignedDistanceField.cc
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateSignedDistanceField.cc
+END
+CalculateSignedDistanceField.h
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/cibc/!svn/ver/43072/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateSignedDistanceField.h
+END
+CalculateIsInsideField.cc
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/DistanceField/CalculateIsInsideField.cc
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/RefineMesh
+END
+RefineMesh.cc
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/cibc/!svn/ver/45609/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/RefineMesh/RefineMesh.cc
+END
+RefineMesh.h
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/cibc/!svn/ver/43072/cibc/trunk/SCIRun/src/Core/Algorithms/Fields/RefineMesh/RefineMesh.h
+END
