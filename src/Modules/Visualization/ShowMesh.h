@@ -37,7 +37,7 @@ namespace Modules {
 namespace Visualization {
 
   class SCISHARE ShowMeshModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<MeshPortTag>,
+    public Has1InputPort<Mesh5PortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
   public:
@@ -50,7 +50,7 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
     static Core::Algorithms::AlgorithmParameterName FaceTransparency;
 
-    INPUT_PORT(0, Mesh, Mesh);
+    INPUT_PORT(0, Mesh, Mesh5);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
   };
 }}}

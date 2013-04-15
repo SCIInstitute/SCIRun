@@ -56,7 +56,7 @@ void ReadMeshModule::execute()
   algo.setLogger(getLogger());
   algo.setUpdaterFunc(getUpdaterFunc());
 
-  MeshHandle mesh = algo.run(filename_);
+  auto mesh = algo.run(filename_);
   sendOutput(OutputSampleField, mesh);
   sendOutput(FileLoaded, boost::make_shared<String>(filename_));
 }

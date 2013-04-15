@@ -39,7 +39,7 @@ namespace Visualization {
   class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<Field5PortTag>,
     public Has1OutputPort<GeometryPortTag>
-  {s
+  {
   public:
     ShowFieldModule();
     virtual void execute();

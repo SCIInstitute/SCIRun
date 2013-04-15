@@ -366,6 +366,8 @@ namespace Modules
   OUTPUT_PORT_SPEC(String);
   OUTPUT_PORT_SPEC(Field);
   OUTPUT_PORT_SPEC(Mesh);  //TODO temporary
+  OUTPUT_PORT_SPEC(Field5);
+  OUTPUT_PORT_SPEC(Mesh5);  //TODO temporary
   OUTPUT_PORT_SPEC(Geometry);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
