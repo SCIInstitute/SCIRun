@@ -57,6 +57,9 @@ namespace Datatypes {
   class Mesh;
   class GeometryObject;
 
+  typedef boost::shared_ptr<Field> FieldHandle;
+  typedef boost::shared_ptr<Mesh> MeshHandle;
+
 }}}
 
 

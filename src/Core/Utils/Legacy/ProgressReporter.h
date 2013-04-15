@@ -1,3 +1,4 @@
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -86,4 +87,5 @@ class SCISHARE ProgressReporter
 
 } // Namespace SCIRun
 
+#endif
 #endif
