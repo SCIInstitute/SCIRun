@@ -26,6 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+SET(Core_Algorithms_Legacy_Fields_HEADERS
+  FieldData/CalculateFieldDataMetric.h         
+  FieldData/ConvertIndicesToFieldData.h
+  FieldData/CalculateGradients.h               
+  FieldData/CalculateVectorMagnitudes.h        
+  FieldData/ConvertMappingMatrixToFieldData.h
+  FieldData/ConvertFieldDataType.h             
+  FieldData/ConvertFieldBasisType.h            
+  FieldData/CalculateLatVolGradientsAtNodes.h  
+  FieldData/GetFieldData.h
+  FieldData/SetFieldData.h
+  FieldData/SetFieldDataToConstantValue.h
+  FieldData/SmoothVecFieldMedian.h
+)
+
 SET(Core_Algorithms_Legacy_Fields_SRCS
   #RegisterWithCorrespondences.cc
   #MeshData/FlipSurfaceNormals.cc
@@ -54,7 +69,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DomainFields/SplitNodesByDomain.cc
   #DomainFields/SplitFieldByDomain.cc
   #FieldData/CalculateGradients.cc
-  FieldData/CalculateLatVolGradientsAtNodes.cc
+  #FieldData/CalculateLatVolGradientsAtNodes.cc
   #FieldData/CalculateVectorMagnitudes.cc
   #FieldData/CalculateFieldDataMetric.cc
   #FieldData/ConvertFieldDataType.cc
@@ -130,6 +145,7 @@ IF(WITH_TETGEN)
 ENDIF(WITH_TETGEN)
 
 ADD_LIBRARY(Core_Algorithms_Legacy_Fields 
+  ${Core_Algorithms_Legacy_Fields_HEADERS}
   ${Core_Algorithms_Legacy_Fields_SRCS}
 )
 
