@@ -58,11 +58,19 @@ find . -name "*.ii" -print | xargs cat | sort | uniq -c | sort -nr | more
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 
-template class MatrixBase<double>;
-template class SparseRowMatrixGeneric<double>;
-template class DenseColumnMatrixGeneric<double>;
-template class boost::shared_ptr<DenseColumnMatrix>;
-template class boost::shared_ptr< MatrixBase<double> >;
+namespace SCIRun
+{
+  namespace Core
+  {
+    namespace Datatypes
+    {
+      template class MatrixBase<double>;
+      template class SparseRowMatrixGeneric<double>;
+      template class DenseColumnMatrixGeneric<double>;
+    }
+  }
+}
+
 
 //Index types
 const TypeDescription* get_type_description(NodeIndex<int>*);
