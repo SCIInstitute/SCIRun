@@ -43,8 +43,6 @@
 namespace SCIRun {
 
 // Define a handle to the virtual interface
-class Field;
-typedef boost::shared_ptr<Field> FieldHandle;
 
 class SCISHARE VField {
 //! The FieldTypeInformation call introduces functions to check type of the field

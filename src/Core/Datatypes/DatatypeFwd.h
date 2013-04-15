@@ -60,7 +60,12 @@ namespace Datatypes {
   typedef boost::shared_ptr<Field> FieldHandle;
   typedef boost::shared_ptr<Mesh> MeshHandle;
 
-}}}
+}}
+  class Field;
+  class Mesh;
+  typedef boost::shared_ptr<Field> FieldHandle;
+  typedef boost::shared_ptr<Mesh> MeshHandle;
+}
 
 
 #endif
