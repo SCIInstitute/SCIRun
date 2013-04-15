@@ -26,23 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
-
-/*
- *  CreateLatVol.cc:  Make an LatVol that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
-
-#ifndef MODULES_FIELDS_CREATELATVOLMESH_H
-#define MODULES_FIELDS_CREATELATVOLMESH_H
+#ifndef MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
+#define MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/Share.h>
@@ -51,21 +36,19 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-class SCISHARE CreateLatVolMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<Mesh5PortTag>
+class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::Module,
+  public Has1InputPort<FieldPortTag>,
+  public Has1OutputPort<FieldPortTag>
 {
   public:
-    CreateLatVolMesh();
+    CreateScalarFieldDataBasic();
 
     virtual void execute();
 
-    OUTPUT_PORT(0, OutputSampleField, Mesh5);
-
-    static Core::Algorithms::AlgorithmParameterName XSize;
-    static Core::Algorithms::AlgorithmParameterName YSize;
-    static Core::Algorithms::AlgorithmParameterName ZSize;
-    static Core::Algorithms::AlgorithmParameterName PadPercent;
-    static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+    INPUT_PORT(0, InputField, LegacyField);
+  OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
+  
+  static Core::Algorithms::AlgorithmParameterName DataMap;
 
   private:
 

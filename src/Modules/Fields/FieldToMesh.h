@@ -45,8 +45,8 @@ class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
 
     virtual void execute();
 
-    INPUT_PORT(0, Field, Field);
-    OUTPUT_PORT(0, Mesh, Mesh);
+    INPUT_PORT(0, Field, LegacyField);
+    OUTPUT_PORT(0, Mesh, LegacyMesh);
 };
 
 }}}

@@ -31,4 +31,11 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-FieldToMesh::FieldToMesh() : Module(MLI
+FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", "SCIRun"))
+{
+}
+
+void FieldToMesh::execute()
+{
+  std::cout << "hello ...converting field to mesh" << std::endl;
+}

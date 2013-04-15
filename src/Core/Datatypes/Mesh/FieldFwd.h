@@ -29,7 +29,7 @@
 #ifndef CORE_DATATYPES_FIELD_FWD_H
 #define CORE_DATATYPES_FIELD_FWD_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Datatypes/DatatypeFwd.h>
 
 namespace SCIRun {
 namespace Core {
@@ -50,7 +50,11 @@ namespace Datatypes {
   class TypeDescription5;
 
   class Field5Information;
+  
+  typedef SCIRun::Field LegacyField;
+  typedef SCIRun::Mesh LegacyMesh;
 
+  
 }}}
 
 #endif
