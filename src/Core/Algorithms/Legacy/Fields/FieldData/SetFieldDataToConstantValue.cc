@@ -26,21 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Algorithms/Fields/FieldData/SetFieldDataToConstantValue.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-namespace SCIRunAlgo {
-
+using namespace SCIRunAlgo;
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
 bool 
-SetFieldDataToConstantValueAlgo::
-run(FieldHandle input, FieldHandle& output)
+SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
 {
   algo_start("SetFieldDataToConstantValue");
-  if (!(input.get_rep()))
+  if (!input)
   {
     error("No input field was provided");
     algo_end(); return (false);  
@@ -66,7 +65,7 @@ run(FieldHandle input, FieldHandle& output)
 
   output = CreateField(fi,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not allocate output field");
     algo_end(); return (false);
@@ -80,6 +79,3 @@ run(FieldHandle input, FieldHandle& output)
   algo_end();
   return (true);
 }
-
-} // namespace SCIRunAlgo
-
