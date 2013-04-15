@@ -26,9 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/FieldData/SetFieldDataToConstantValue.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>
 
 
