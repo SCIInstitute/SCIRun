@@ -34,31 +34,31 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-Mesh::Mesh()
+Mesh5::Mesh5()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  DEBUG_CONSTRUCTOR("Mesh")  
+  DEBUG_CONSTRUCTOR("Mesh5")  
 #endif
 }
 
-Mesh::~Mesh() 
+Mesh5::~Mesh5() 
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  DEBUG_DESTRUCTOR("Mesh")  
+  DEBUG_DESTRUCTOR("Mesh5")  
 #endif
 }
 
-Mesh::Mesh(const Mesh& copy)
+Mesh5::Mesh5(const Mesh5& copy)
 {
 
 }
 
-int Mesh::basis_order()
+int Mesh5::basis_order()
 {
   return (-1);
 }
 
-VirtualMeshHandle Mesh::vmesh() const
+VirtualMeshHandle Mesh5::vmesh() const
 {
   return VirtualMeshHandle();
 } 

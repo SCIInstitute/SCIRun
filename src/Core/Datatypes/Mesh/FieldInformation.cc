@@ -40,7 +40,7 @@ using namespace SCIRun::Core::Geometry;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-void FieldTypeInformation::insert_field_type_information(Field* field)
+void Field5TypeInformation::insert_field_type_information(Field5* field)
 {
   std::string temp;
   // Get the name of the GenericField class
@@ -48,12 +48,12 @@ void FieldTypeInformation::insert_field_type_information(Field* field)
   
   if (!field) 
     return;
-  field_type = field->get_type_description(Field::FIELD_NAME_ONLY_E)->get_name();
+  field_type = field->get_type_description(Field5::FIELD_NAME_ONLY_E)->get_name();
 
   // Analyze the mesh type
   // This will result in
   // mesh_type, mesh_basis_type, and point_type
-  const TypeDescription* mesh_td = field->get_type_description(Field::MESH_TD_E);
+  const TypeDescription* mesh_td = field->get_type_description(Field5::MESH_TD_E);
   TypeDescription::td_vec* mesh_sub_td = mesh_td->get_sub_type();
   const TypeDescription* mesh_basis_td = (*mesh_sub_td)[0]; 
   TypeDescription::td_vec* mesh_basis_sub_td = mesh_basis_td->get_sub_type();
@@ -67,7 +67,7 @@ void FieldTypeInformation::insert_field_type_information(Field* field)
   
   // Analyze the basis type
   
-  const TypeDescription* basis_td = field->get_type_description(Field::BASIS_TD_E);
+  const TypeDescription* basis_td = field->get_type_description(Field5::BASIS_TD_E);
   TypeDescription::td_vec* basis_sub_td = basis_td->get_sub_type();
   const TypeDescription* data_td = (*basis_sub_td)[0]; 
   
@@ -76,13 +76,13 @@ void FieldTypeInformation::insert_field_type_information(Field* field)
   data_type = data_td->get_name();
   for (size_t j=0; j<data_type.size(); j++) if(data_type[j] == ' ') data_type[j] = '_';
 
-  const TypeDescription* container_td = field->get_type_description(Field::FDATA_TD_E);
+  const TypeDescription* container_td = field->get_type_description(Field5::FDATA_TD_E);
   temp = container_td->get_name(); 
   container_type = temp.substr(0,temp.find("<"));
 }
 
 
-FieldInformation::FieldInformation(const std::string& meshtype,const std::string& meshbasis,const std::string& databasis, const std::string& datatype)
+Field5Information::Field5Information(const std::string& meshtype,const std::string& meshbasis,const std::string& databasis, const std::string& datatype)
 {
   set_field_type("GenericField");
   set_point_type("Point");
@@ -93,7 +93,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,const std::string
   set_data_basis_type(databasis);
 }
 
-FieldInformation::FieldInformation(const std::string& meshtype,int meshbasis,int databasis, const std::string& datatype)
+Field5Information::Field5Information(const std::string& meshtype,int meshbasis,int databasis, const std::string& datatype)
 {
   set_field_type("GenericField");
   set_point_type("Point");
@@ -104,7 +104,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,int meshbasis,int
   set_data_basis_type(databasis);
 }    
 
-FieldInformation::FieldInformation(const std::string& meshtype,const std::string& basis, const std::string& datatype)
+Field5Information::Field5Information(const std::string& meshtype,const std::string& basis, const std::string& datatype)
 {
   set_field_type("GenericField");
   set_point_type("Point");
@@ -116,7 +116,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,const std::string
 }
 #endif
 
-FieldInformation::FieldInformation(const std::string& meshtype,int basis, const std::string& datatype)
+Field5Information::Field5Information(const std::string& meshtype,int basis, const std::string& datatype)
 {
   set_field_type("GenericField");
   set_point_type("Point");
@@ -128,7 +128,7 @@ FieldInformation::FieldInformation(const std::string& meshtype,int basis, const 
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-FieldInformation::FieldInformation(mesh_info_type meshtype,
+Field5Information::Field5Information(mesh_info_type meshtype,
                                    meshbasis_info_type meshbasis,
                                    databasis_info_type databasis, 
                                    data_info_type datatype)
@@ -142,7 +142,7 @@ FieldInformation::FieldInformation(mesh_info_type meshtype,
   set_data_basis_type(databasis);
 }    
 
-FieldInformation::FieldInformation(mesh_info_type meshtype,
+Field5Information::Field5Information(mesh_info_type meshtype,
                                    databasis_info_type databasis, 
                                    data_info_type datatype)
 {
@@ -157,37 +157,37 @@ FieldInformation::FieldInformation(mesh_info_type meshtype,
 }    
 
 
-FieldInformation::FieldInformation(FieldHandle handle)
+Field5Information::Field5Information(FieldHandle5 handle)
 {
   insert_field_type_information(handle.get_rep());
 }
 
 
-FieldInformation::FieldInformation(Field* field)
+Field5Information::Field5Information(Field5* field)
 {
   insert_field_type_information(field);
 }
 #endif
 std::string
-FieldInformation::get_field_type() const
+Field5Information::get_field_type() const
 {
   return(field_type);
 }
 
 void
-FieldInformation::set_field_type(const std::string& type)
+Field5Information::set_field_type(const std::string& type)
 {
   field_type = type;
 }
 
 std::string
-FieldInformation::get_mesh_type() const
+Field5Information::get_mesh_type() const
 {
   return(mesh_type);
 }
 
 void
-FieldInformation::set_mesh_type(const std::string& type)
+Field5Information::set_mesh_type(const std::string& type)
 {
   std::string typeLower = boost::algorithm::to_lower_copy(type);
   if (typeLower == "scanlinemesh") set_mesh_type(SCANLINEMESH_E);
@@ -211,7 +211,7 @@ FieldInformation::set_mesh_type(const std::string& type)
 
 
 void
-FieldInformation::set_mesh_type(mesh_info_type type)
+Field5Information::set_mesh_type(mesh_info_type type)
 {
   switch (type)
   {
@@ -476,13 +476,13 @@ FieldInformation::set_mesh_type(mesh_info_type type)
 
 
 std::string
-FieldInformation::get_mesh_basis_type() const
+Field5Information::get_mesh_basis_type() const
 {
   return(mesh_basis_type);
 }
 
 void
-FieldInformation::set_mesh_basis_type(int order)
+Field5Information::set_mesh_basis_type(int order)
 {
   if (order == 1) set_mesh_basis_type("linear");
   if (order == 2) set_mesh_basis_type("quadratic");
@@ -490,7 +490,7 @@ FieldInformation::set_mesh_basis_type(int order)
 }
 
 void
-FieldInformation::set_mesh_basis_type(const std::string& type)
+Field5Information::set_mesh_basis_type(const std::string& type)
 {
   if (type == "Linear" || type == "linear" || type == "linearmesh" || type == "LinearMesh" ) 
     { make_linearmesh(); return; }
@@ -502,26 +502,26 @@ FieldInformation::set_mesh_basis_type(const std::string& type)
 }
 
 std::string
-FieldInformation::get_point_type() const
+Field5Information::get_point_type() const
 {
   return(point_type);
 }
 
 void
-FieldInformation::set_point_type(const std::string& type)
+Field5Information::set_point_type(const std::string& type)
 {
   point_type = type;
 }
 
 
 std::string
-FieldInformation::get_basis_type() const
+Field5Information::get_basis_type() const
 {
   return(basis_type);
 }
 
 void
-FieldInformation::set_basis_type(int order)
+Field5Information::set_basis_type(int order)
 {
   if (order == -1) set_basis_type("nodata");
   if (order == 0) set_basis_type("constant");
@@ -532,7 +532,7 @@ FieldInformation::set_basis_type(int order)
 
 
 void
-FieldInformation::set_basis_type(const std::string& type)
+Field5Information::set_basis_type(const std::string& type)
 {
   if (type == "NoData" || type == "nodata" || type == "No" || type == "no") 
     { make_nodata(); return; }
@@ -550,13 +550,13 @@ FieldInformation::set_basis_type(const std::string& type)
 
 
 std::string
-FieldInformation::get_data_type() const
+Field5Information::get_data_type() const
 {
   return(data_type);
 }
 
 void
-FieldInformation::set_data_type(const std::string& type1)
+Field5Information::set_data_type(const std::string& type1)
 {
   std::string type = type1;
   if (type == "nodata") type = "double";
@@ -573,7 +573,7 @@ FieldInformation::set_data_type(const std::string& type1)
 
 
 void
-FieldInformation::set_data_type(data_info_type type)
+Field5Information::set_data_type(data_info_type type)
 {
   switch (type)
   {
@@ -597,20 +597,20 @@ FieldInformation::set_data_type(data_info_type type)
 }
 
 std::string 
-FieldInformation::get_container_type() const
+Field5Information::get_container_type() const
 {
   return(container_type);
 }
 
 void
-FieldInformation::set_container_type(const std::string& type)
+Field5Information::set_container_type(const std::string& type)
 {
   container_type = type;
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 std::string
-FieldInformation::get_field_name()
+Field5Information::get_field_name()
 {
   // Deal with some SCIRun design flaw
   std::string meshptr = "";
@@ -626,7 +626,7 @@ FieldInformation::get_field_name()
 }
 
 std::string
-FieldInformation::get_field_type_id()
+Field5Information::get_field_type_id()
 {
   // Deal with some SCIRun design flaw
   std::string meshptr = "";
@@ -644,7 +644,7 @@ FieldInformation::get_field_type_id()
 }
 #endif
 
-std::string FieldInformation::get_mesh_type_id() const
+std::string Field5Information::get_mesh_type_id() const
 {
   std::string mesh_template = mesh_type + "<" + mesh_basis_type + "<" + point_type + ">" + ">";
   
@@ -654,63 +654,63 @@ std::string FieldInformation::get_mesh_type_id() const
 }
 
 bool
-FieldTypeInformation::is_isomorphic()
+Field5TypeInformation::is_isomorphic()
 {
   return((mesh_basis_type == basis_type));
 }
 
 bool
-FieldTypeInformation::is_nonlinear()
+Field5TypeInformation::is_nonlinear()
 {
   return((is_nonlineardata())||(is_nonlinearmesh()));
 }
 
 bool
-FieldTypeInformation::is_linear()
+Field5TypeInformation::is_linear()
 {
   return((is_lineardata())&&(is_linearmesh()));
 }
 
 bool
-FieldTypeInformation::is_nodata()
+Field5TypeInformation::is_nodata()
 {
   return((basis_type == "NoDataBasis"));
 }
 
 bool
-FieldTypeInformation::is_constantdata()
+Field5TypeInformation::is_constantdata()
 {
   return((basis_type == "ConstantBasis"));
 }
 
 bool
-FieldTypeInformation::is_lineardata()
+Field5TypeInformation::is_lineardata()
 {
   return((basis_type.find("inear") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_nonlineardata()
+Field5TypeInformation::is_nonlineardata()
 {
   return( (basis_type.find("uadratic") != std::string::npos)||
           (basis_type.find("ubicHmt") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_quadraticdata()
+Field5TypeInformation::is_quadraticdata()
 {
   return ((basis_type.find("uadratic") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_cubicdata()
+Field5TypeInformation::is_cubicdata()
 {
   return ((basis_type.find("ubicHmt") != std::string::npos));
 }
 
 // TODO: an enum would be good for keeping track of basis order...
 int
-FieldTypeInformation::field_basis_order()
+Field5TypeInformation::field_basis_order()
 {
   if (is_nodata()) return (-1);
   if (is_constantdata()) return (0);
@@ -722,38 +722,38 @@ FieldTypeInformation::field_basis_order()
 
 
 bool
-FieldTypeInformation::is_constantmesh()
+Field5TypeInformation::is_constantmesh()
 {
   return((mesh_basis_type == "ConstantBasis"));
 }
 
 bool
-FieldTypeInformation::is_linearmesh()
+Field5TypeInformation::is_linearmesh()
 {
   return((mesh_basis_type.find("inear") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_nonlinearmesh()
+Field5TypeInformation::is_nonlinearmesh()
 {
   return( (mesh_basis_type.find("uadratic") != std::string::npos)||
           (mesh_basis_type.find("ubicHmt") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_quadraticmesh()
+Field5TypeInformation::is_quadraticmesh()
 {
   return ((mesh_basis_type.find("uadratic") != std::string::npos));
 }
 
 bool
-FieldTypeInformation::is_cubicmesh()
+Field5TypeInformation::is_cubicmesh()
 {
   return ((mesh_basis_type.find("ubicHmt") != std::string::npos));
 }
 
 int
-FieldTypeInformation::mesh_basis_order()
+Field5TypeInformation::mesh_basis_order()
 {
   if (is_constantmesh()) return (0);
   if (is_linearmesh()) return (1);
@@ -763,25 +763,25 @@ FieldTypeInformation::mesh_basis_order()
 }
 
 bool
-FieldTypeInformation::is_tensor()
+Field5TypeInformation::is_tensor()
 {
   return ((data_type == "Tensor"));
 }
 
 bool
-FieldTypeInformation::is_vector()
+Field5TypeInformation::is_vector()
 {
   return ((data_type == "Vector"));
 }
 
 bool
-FieldTypeInformation::is_scalar()
+Field5TypeInformation::is_scalar()
 {
   return((!is_tensor())&&(!is_vector())&&(data_type!=""));
 }
 
 bool
-FieldTypeInformation::is_integer()
+Field5TypeInformation::is_integer()
 {
   return(is_char()||is_short()||is_int()||is_long()||is_longlong()
       ||is_unsigned_char()||is_unsigned_short()
@@ -790,92 +790,92 @@ FieldTypeInformation::is_integer()
 }
 
 bool
-FieldTypeInformation::is_double()
+Field5TypeInformation::is_double()
 {
   return((data_type == "double"));
 }
 
 bool
-FieldTypeInformation::is_float()
+Field5TypeInformation::is_float()
 {
   return((data_type == "float"));
 }
 
 bool
-FieldTypeInformation::is_longlong()
+Field5TypeInformation::is_longlong()
 {
   return((data_type == "long_long")||(data_type == "signed_long_long"));
 }
 
 bool
-FieldTypeInformation::is_long()
+Field5TypeInformation::is_long()
 {
   return((data_type == "long")||(data_type == "signed_long"));
 }
 
 bool
-FieldTypeInformation::is_int()
+Field5TypeInformation::is_int()
 {
   return((data_type == "int")||(data_type == "signed_int"));
 }
 
 bool
-FieldTypeInformation::is_short()
+Field5TypeInformation::is_short()
 {
   return((data_type == "short")||(data_type == "signed_short"));
 }
 
 bool
-FieldTypeInformation::is_char()
+Field5TypeInformation::is_char()
 {
   return((data_type == "char")||(data_type == "signed_char"));
 }
 
 bool
-FieldTypeInformation::is_unsigned_longlong()
+Field5TypeInformation::is_unsigned_longlong()
 {
   return(data_type == "unsigned_long_long");
 }
 
 bool
-FieldTypeInformation::is_unsigned_long()
+Field5TypeInformation::is_unsigned_long()
 {
   return(data_type == "unsigned_long");
 }
 
 bool
-FieldTypeInformation::is_unsigned_int()
+Field5TypeInformation::is_unsigned_int()
 {
   return(data_type == "unsigned_int");
 }
 
 bool
-FieldTypeInformation::is_unsigned_short()
+Field5TypeInformation::is_unsigned_short()
 {
   return(data_type == "unsigned_short");
 }
 
 bool
-FieldTypeInformation::is_unsigned_char()
+Field5TypeInformation::is_unsigned_char()
 {
   return(data_type == "unsigned_char");
 }
 
 bool
-FieldTypeInformation::is_dvt()
+Field5TypeInformation::is_dvt()
 {
   return(is_double()||is_vector()||is_tensor());
 }
 
 bool
-FieldTypeInformation::is_svt()
+Field5TypeInformation::is_svt()
 {
   return(is_scalar()||is_vector()||is_tensor());
 }
 
 
 bool
-FieldTypeInformation::is_structuredmesh()
+Field5TypeInformation::is_structuredmesh()
 {
   return((mesh_type.find("Struct")!=std::string::npos) ||
 	 (mesh_type=="ScanlineMesh")||
@@ -884,7 +884,7 @@ FieldTypeInformation::is_structuredmesh()
 }
 
 bool
-FieldTypeInformation::is_regularmesh()
+Field5TypeInformation::is_regularmesh()
 {
   return((mesh_type=="ScanlineMesh")||
 	 (mesh_type=="ImageMesh")||
@@ -892,25 +892,25 @@ FieldTypeInformation::is_regularmesh()
 }
 
 bool
-FieldTypeInformation::is_irregularmesh()
+Field5TypeInformation::is_irregularmesh()
 {
   return(!is_regularmesh());
 }
 
 bool
-FieldTypeInformation::is_unstructuredmesh()
+Field5TypeInformation::is_unstructuredmesh()
 {
   return(!is_structuredmesh());
 }
 
 bool
-FieldTypeInformation::is_pnt_element()
+Field5TypeInformation::is_pnt_element()
 {
   return((mesh_type=="PointCloud"));
 }
 
 bool
-FieldTypeInformation::is_crv_element()
+Field5TypeInformation::is_crv_element()
 {
   return((mesh_type=="CurveMesh")||
 	 (mesh_type=="StructCurveMesh")||
@@ -918,13 +918,13 @@ FieldTypeInformation::is_crv_element()
 }
 
 bool
-FieldTypeInformation::is_tri_element()
+Field5TypeInformation::is_tri_element()
 {
   return((mesh_type=="TriSurfMesh"));
 }
 
 bool
-FieldTypeInformation::is_quad_element()
+Field5TypeInformation::is_quad_element()
 {
   return((mesh_type=="QuadSurfMesh")||
 	 (mesh_type=="ImageMesh")||
@@ -932,19 +932,19 @@ FieldTypeInformation::is_quad_element()
 }
 
 bool
-FieldTypeInformation::is_tet_element()
+Field5TypeInformation::is_tet_element()
 {
   return((mesh_type=="TetVolMesh"));
 }
 
 bool
-FieldTypeInformation::is_prism_element()
+Field5TypeInformation::is_prism_element()
 {
   return((mesh_type=="PrismVolMesh"));
 }
 
 bool
-FieldTypeInformation::is_hex_element()
+Field5TypeInformation::is_hex_element()
 {
   return((mesh_type=="HexVolMesh")||
 	 (mesh_type=="StructHexVolMesh")||
@@ -953,91 +953,91 @@ FieldTypeInformation::is_hex_element()
 }
 
 bool
-FieldTypeInformation::is_pointcloudmesh()
+Field5TypeInformation::is_pointcloudmesh()
 {
   if (mesh_type == "PointCloudMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_scanlinemesh()
+Field5TypeInformation::is_scanlinemesh()
 {
   if (mesh_type == "ScanlineMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_imagemesh()
+Field5TypeInformation::is_imagemesh()
 {
   if (mesh_type == "ImageMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_latvolmesh()
+Field5TypeInformation::is_latvolmesh()
 {
   if (mesh_type == "LatVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_curvemesh()
+Field5TypeInformation::is_curvemesh()
 {
   if (mesh_type == "CurveMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_trisurfmesh()
+Field5TypeInformation::is_trisurfmesh()
 {
   if (mesh_type == "TriSurfMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_quadsurfmesh()
+Field5TypeInformation::is_quadsurfmesh()
 {
   if (mesh_type == "QuadSurfMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_tetvolmesh()
+Field5TypeInformation::is_tetvolmesh()
 {
   if (mesh_type == "TetVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_prismvolmesh()
+Field5TypeInformation::is_prismvolmesh()
 {
   if (mesh_type == "PrismVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_hexvolmesh()
+Field5TypeInformation::is_hexvolmesh()
 {
   if (mesh_type == "HexVolMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_structcurvemesh()
+Field5TypeInformation::is_structcurvemesh()
 {
   if (mesh_type == "StructCurveMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_structquadsurfmesh()
+Field5TypeInformation::is_structquadsurfmesh()
 {
   if (mesh_type == "StructQuadSurfMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_structhexvolmesh()
+Field5TypeInformation::is_structhexvolmesh()
 {
   if (mesh_type == "StructHexVolMesh") return (true);
   return false;
@@ -1045,14 +1045,14 @@ FieldTypeInformation::is_structhexvolmesh()
 
 
 bool
-FieldTypeInformation::is_point()
+Field5TypeInformation::is_point()
 {
   if (mesh_type == "PointCloudMesh") return (true);
   return false;
 }
 
 bool
-FieldTypeInformation::is_line()
+Field5TypeInformation::is_line()
 {
   if ((mesh_type == "CurveMesh")||
       (mesh_type == "ScanlineMesh")||
@@ -1061,7 +1061,7 @@ FieldTypeInformation::is_line()
 }
 
 bool
-FieldTypeInformation::is_surface()
+Field5TypeInformation::is_surface()
 {
   if ((mesh_type == "TriSurfMesh")||
       (mesh_type == "QuadSurfMesh")||
@@ -1071,7 +1071,7 @@ FieldTypeInformation::is_surface()
 }
 
 bool
-FieldTypeInformation::is_volume()
+Field5TypeInformation::is_volume()
 {
   if ((mesh_type == "TetVolMesh")||(mesh_type == "PrismVolMesh")||
       (mesh_type == "HexVolMesh")||(mesh_type == "LatVolMesh")||
@@ -1082,7 +1082,7 @@ FieldTypeInformation::is_volume()
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 bool        
-FieldInformation::operator==(const FieldInformation& fi) const
+Field5Information::operator==(const Field5Information& fi) const
 {
   if ( (field_type == fi.field_type) && (mesh_type == fi.mesh_type) && (mesh_basis_type == fi.mesh_basis_type) &&
        (point_type == fi.point_type) && (basis_type == fi.basis_type) && (data_type == fi.data_type) &&
@@ -1092,7 +1092,7 @@ FieldInformation::operator==(const FieldInformation& fi) const
 
 
 bool        
-FieldInformation::operator!=(const FieldInformation& fi) const
+Field5Information::operator!=(const Field5Information& fi) const
 {
   if ( (field_type != fi.field_type) || (mesh_type != fi.mesh_type) || (mesh_basis_type != fi.mesh_basis_type) ||
        (point_type != fi.point_type) || (basis_type != fi.basis_type) || (data_type != fi.data_type) ||
@@ -1102,7 +1102,7 @@ FieldInformation::operator!=(const FieldInformation& fi) const
 
 #endif
 bool
-FieldInformation::make_nodata()
+Field5Information::make_nodata()
 {
   set_basis_type("NoDataBasis");
   set_data_type("double");
@@ -1110,105 +1110,105 @@ FieldInformation::make_nodata()
 }
 
 bool
-FieldInformation::make_constantdata()
+Field5Information::make_constantdata()
 {
   set_basis_type("ConstantBasis");
   return (true);
 }
 
 bool
-FieldInformation::make_constantmesh()
+Field5Information::make_constantmesh()
 {
   set_mesh_basis_type("ConstantBasis");
   return (true);
 }
 
 bool
-FieldInformation::make_scanlinemesh()
+Field5Information::make_scanlinemesh()
 {
   set_mesh_type("ScanlineMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_curvemesh()
+Field5Information::make_curvemesh()
 {
   set_mesh_type("CurveMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_structcurvemesh()
+Field5Information::make_structcurvemesh()
 {
   set_mesh_type("StructCurveMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_imagemesh()
+Field5Information::make_imagemesh()
 {
   set_mesh_type("ImageMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_trisurfmesh()
+Field5Information::make_trisurfmesh()
 {
   set_mesh_type("TriSurfMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_quadsurfmesh()
+Field5Information::make_quadsurfmesh()
 {
   set_mesh_type("QuadSurfMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_structquadsurfmesh()
+Field5Information::make_structquadsurfmesh()
 {
   set_mesh_type("StructQuadSurfMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_latvolmesh()
+Field5Information::make_latvolmesh()
 {
   set_mesh_type("LatVolMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_tetvolmesh()
+Field5Information::make_tetvolmesh()
 {
   set_mesh_type("TetVolMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_prismvolmesh()
+Field5Information::make_prismvolmesh()
 {
   set_mesh_type("PrismVolMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_hexvolmesh()
+Field5Information::make_hexvolmesh()
 {
   set_mesh_type("HexVolMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_structhexvolmesh()
+Field5Information::make_structhexvolmesh()
 {
   set_mesh_type("StructHexVolMesh");
   return (true);
 }
 
 bool
-FieldInformation::make_pointcloudmesh()
+Field5Information::make_pointcloudmesh()
 {
   set_mesh_type("PointCloudMesh");
   return (true);
@@ -1216,7 +1216,7 @@ FieldInformation::make_pointcloudmesh()
 
 
 bool
-FieldInformation::make_unstructuredmesh()
+Field5Information::make_unstructuredmesh()
 {
   if (is_pnt_element()) return(make_pointcloudmesh());
   if (is_crv_element()) return(make_curvemesh());
@@ -1230,7 +1230,7 @@ FieldInformation::make_unstructuredmesh()
 
 
 bool
-FieldInformation::make_irregularmesh()
+Field5Information::make_irregularmesh()
 {
   if (is_regularmesh())
   {
@@ -1242,7 +1242,7 @@ FieldInformation::make_irregularmesh()
 }
 
 bool
-FieldInformation::make_linearmesh()
+Field5Information::make_linearmesh()
 {
   if (mesh_type == "ScanlineMesh") set_mesh_basis_type("CrvLinearLgn");
   if (mesh_type == "ImageMesh")  set_mesh_basis_type("QuadBilinearLgn");
@@ -1263,7 +1263,7 @@ FieldInformation::make_linearmesh()
 
 
 bool
-FieldInformation::make_lineardata()
+Field5Information::make_lineardata()
 {
   if (mesh_type == "ScanlineMesh") set_basis_type("CrvLinearLgn");
   if (mesh_type == "ImageMesh")  set_basis_type("QuadBilinearLgn");
@@ -1283,7 +1283,7 @@ FieldInformation::make_lineardata()
 }
 
 bool
-FieldInformation::make_quadraticdata()
+Field5Information::make_quadraticdata()
 {
   if (mesh_type == "ScanlineMesh") set_basis_type("CrvQuadraticLgn");
   if (mesh_type == "ImageMesh")  set_basis_type("QuadBiquadraticLgn");
@@ -1303,7 +1303,7 @@ FieldInformation::make_quadraticdata()
 }
 
 bool
-FieldInformation::make_quadraticmesh()
+Field5Information::make_quadraticmesh()
 {
   if (mesh_type == "ScanlineMesh") set_mesh_basis_type("CrvQuadraticLgn");
   if (mesh_type == "ImageMesh")  set_mesh_basis_type("QuadBiquadraticLgn");
@@ -1323,7 +1323,7 @@ FieldInformation::make_quadraticmesh()
 }
 
 bool
-FieldInformation::make_cubicdata()
+Field5Information::make_cubicdata()
 {    
   if (mesh_type == "ScanlineMesh") set_basis_type("CrvCubicHmt");
   if (mesh_type == "ImageMesh")  set_basis_type("QuadBicubicHmt");
@@ -1344,7 +1344,7 @@ FieldInformation::make_cubicdata()
 
 
 bool
-FieldInformation::make_cubicmesh()
+Field5Information::make_cubicmesh()
 {    
   if (mesh_type == "ScanlineMesh") set_mesh_basis_type("CrvCubicHmt");
   if (mesh_type == "ImageMesh")  set_mesh_basis_type("QuadBicubicHmt");
@@ -1364,7 +1364,7 @@ FieldInformation::make_cubicmesh()
 }
 
 bool
-FieldInformation::make_scalar()
+Field5Information::make_scalar()
 {
   set_data_type("double");
   return (true);
@@ -1372,91 +1372,91 @@ FieldInformation::make_scalar()
 
 
 bool
-FieldInformation::make_char()
+Field5Information::make_char()
 {
   set_data_type("char");
   return (true);
 }
 
 bool
-FieldInformation::make_unsigned_char()
+Field5Information::make_unsigned_char()
 {
   set_data_type("unsigned_char");
   return (true);
 }
 
 bool
-FieldInformation::make_short()
+Field5Information::make_short()
 {
   set_data_type("short");
   return (true);
 }
 
 bool
-FieldInformation::make_unsigned_short()
+Field5Information::make_unsigned_short()
 {
   set_data_type("unsigned_short");
   return (true);
 }
 
 bool
-FieldInformation::make_int()
+Field5Information::make_int()
 {
   set_data_type("int");
   return (true);
 }
 
 bool
-FieldInformation::make_unsigned_int()
+Field5Information::make_unsigned_int()
 {
   set_data_type("unsigned_int");
   return (true);
 }
 
 bool
-FieldInformation::make_long()
+Field5Information::make_long()
 {
   set_data_type("long");
   return (true);
 }
 
 bool
-FieldInformation::make_unsigned_long()
+Field5Information::make_unsigned_long()
 {
   set_data_type("unsigned_long");
   return (true);
 }
 
 bool
-FieldInformation::make_long_long()
+Field5Information::make_long_long()
 {
   set_data_type("long_long");
   return (true);
 }
 
 bool
-FieldInformation::make_unsigned_long_long()
+Field5Information::make_unsigned_long_long()
 {
   set_data_type("unsigned_long_long");
   return (true);
 }
 
 bool
-FieldInformation::make_float()
+Field5Information::make_float()
 {
   set_data_type("float");
   return (true);
 }
 
 bool
-FieldInformation::make_double()
+Field5Information::make_double()
 {
   set_data_type("double");
   return (true);
 }
 
 bool
-FieldInformation::make_vector()
+Field5Information::make_vector()
 {
   set_data_type("Vector");
   return (true);
@@ -1464,7 +1464,7 @@ FieldInformation::make_vector()
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool
-FieldInformation::make_tensor()
+Field5Information::make_tensor()
 {
   set_data_type("Tensor");
   return (true);
@@ -1472,95 +1472,95 @@ FieldInformation::make_tensor()
 
 //TODO DAN: REFACTORING NEEDED: LEVEL MEDIUM
 
-FieldHandle CreateField(const std::string& meshtype, 
+FieldHandle5 CreateField(const std::string& meshtype, 
                          const std::string& basistype, const std::string& datatype)
 {
-  FieldInformation fi(meshtype,basistype,datatype);
+  Field5Information fi(meshtype,basistype,datatype);
   return(CreateField(fi));
 }
 
-FieldHandle CreateField(const std::string& meshtype, const std::string& meshbasistype, 
+FieldHandle5 CreateField(const std::string& meshtype, const std::string& meshbasistype, 
                          const std::string& databasistype, const std::string& datatype)
 {
-  FieldInformation fi(meshtype,meshbasistype,databasistype,datatype);
+  Field5Information fi(meshtype,meshbasistype,databasistype,datatype);
   return(CreateField(fi));
 }
 
-FieldHandle CreateField(mesh_info_type mesh, 
+FieldHandle5 CreateField(mesh_info_type mesh, 
                         meshbasis_info_type meshbasis, 
                         databasis_info_type databasis, 
                         data_info_type data)
 {
-  FieldInformation fi(mesh,meshbasis,databasis,data);
+  Field5Information fi(mesh,meshbasis,databasis,data);
   return(CreateField(fi));
 }
 
-FieldHandle CreateField(mesh_info_type mesh,  
+FieldHandle5 CreateField(mesh_info_type mesh,  
                         databasis_info_type databasis, 
                         data_info_type data)
 {
-  FieldInformation fi(mesh,databasis,data);
+  Field5Information fi(mesh,databasis,data);
   return(CreateField(fi));
 }
 
-FieldHandle
-CreateField(FieldInformation &info)
+FieldHandle5
+CreateField(Field5Information &info)
 {
   if (info.is_nodata()) info.set_data_type("double");
   std::string type = info.get_field_type_id();
   std::string meshtype = info.get_mesh_type_id();
 
-  MeshHandle meshhandle = CreateMesh(meshtype);
+  MeshHandle5 meshhandle = CreateMesh(meshtype);
   
   if (meshhandle.get_rep() == 0) return (0);
 
   return (CreateField(type,meshhandle));              
 }
 
-FieldHandle
-CreateField(FieldInformation &info, MeshHandle mesh)
+FieldHandle5
+CreateField(Field5Information &info, MeshHandle5 mesh)
 {
   if (info.is_nodata()) info.set_data_type("double");
   std::string type = info.get_field_type_id();
   return (CreateField(type,mesh));              
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info)
+MeshHandle5 
+CreateMesh(Field5Information &info)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type));
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info,Mesh::size_type x)
+MeshHandle5 
+CreateMesh(Field5Information &info,Mesh5::size_type x)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x));
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info,Mesh::size_type x,const Point& min,const Point& max)
+MeshHandle5 
+CreateMesh(Field5Information &info,Mesh5::size_type x,const Point& min,const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,min,max));
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y)
+MeshHandle5 
+CreateMesh(Field5Information &info,Mesh5::size_type x,Mesh5::size_type y)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y));
 }
 
-MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, MeshTraits::size_type x, MeshTraits::size_type y, const Point& min, const Point& max)
+MeshHandle5 MeshFactory::CreateMesh(const Field5Information& info, MeshTraits::size_type x, MeshTraits::size_type y, const Point& min, const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,min,max));
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z)
+MeshHandle5 
+CreateMesh(Field5Information &info,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z));
@@ -1570,103 +1570,103 @@ CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size
 
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-MeshHandle 
-CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim)
+MeshHandle5 
+CreateMesh(Field5Information &info, const std::vector<Mesh5::size_type>& dim)
 {
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0]));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1]));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2]));
-  else return (MeshHandle(0));
+  else return (MeshHandle5(0));
 }
 
-MeshHandle 
-CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim,const Point& min,const Point& max)
+MeshHandle5 
+CreateMesh(Field5Information &info, const std::vector<Mesh5::size_type>& dim,const Point& min,const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0],min,max));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1],min,max));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2],min,max));
-  else return (MeshHandle(0));
+  else return (MeshHandle5(0));
 }
 
 
-MeshHandle 
+MeshHandle5 
 CreateMesh(mesh_info_type mesh)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,Mesh::size_type x)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,Mesh5::size_type x)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Point& min,const Point& max)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,Mesh5::size_type x,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,min,max));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,min,max));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z,min,max));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,const std::vector<Mesh5::size_type>& dim)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0]));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1]));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2]));
-  else return (MeshHandle(0));
+  else return (MeshHandle5(0));
 }
 
-MeshHandle 
-CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim,const Point& min,const Point& max)
+MeshHandle5 
+CreateMesh(mesh_info_type mesh,const std::vector<Mesh5::size_type>& dim,const Point& min,const Point& max)
 {
-  FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
+  Field5Information info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0],min,max));
   if (dim.size() == 2) return (CreateMesh(type,dim[0],dim[1],min,max));
   if (dim.size() == 3) return (CreateMesh(type,dim[0],dim[1],dim[2],min,max));
-  else return (MeshHandle(0));
+  else return (MeshHandle5(0));
 }
 
 #endif

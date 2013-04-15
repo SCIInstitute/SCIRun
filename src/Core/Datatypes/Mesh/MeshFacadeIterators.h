@@ -39,12 +39,12 @@ namespace Core {
 namespace Datatypes {
   
   /*
-    IDEA: Mesh iterators should iterate over entire values, not just indexes, producing values on demand. 
+    IDEA: Mesh5 iterators should iterate over entire values, not just indexes, producing values on demand. 
     A "SmartIndex" for the mesh.
     E.G. for LatVols:
-    class SmartNodeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point> >
-    class SmartEdgeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[2]> >
-    class SmartFaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh::index_type,Point[4],SmartIndex<Edge>[4]> >
+    class SmartNodeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh5::index_type,Point> >
+    class SmartEdgeIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh5::index_type,Point[2]> >
+    class SmartFaceIterator : public std::iterator<std::forward_iterator_tag, SmartIndex<Mesh5::index_type,Point[4],SmartIndex<Edge>[4]> >
   */
 
   // TODO: Being conservative with mesh synchronization flags until more
@@ -65,7 +65,7 @@ namespace Datatypes {
       }
       else
       {
-        vmesh_->synchronize(Mesh::EDGES_E);
+        vmesh_->synchronize(Mesh5::EDGES_E);
         vmesh_->end(iter_);
       }
       current_.setIndex(*iter_);
@@ -103,7 +103,7 @@ namespace Datatypes {
     typedef VirtualMesh::Edge::iterator iterator;
     explicit EdgeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) 
     {
-      vmesh_->synchronize(Mesh::EDGES_E);
+      vmesh_->synchronize(Mesh5::EDGES_E);
     }
     void setIndex(VirtualMesh::Edge::index_type i) { index_ = i; }
 
@@ -187,7 +187,7 @@ namespace Datatypes {
     {
       if (!synched_)
       {
-        vmesh_->synchronize(Mesh::NODE_NEIGHBORS_E);
+        vmesh_->synchronize(Mesh5::NODE_NEIGHBORS_E);
         synched_ = true;
       }
       VirtualMesh::Edge::array_type edgesFromNode(6);

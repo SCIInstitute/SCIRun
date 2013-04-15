@@ -53,14 +53,12 @@ namespace Datatypes {
   typedef Scalar<double> Double;
 
   class String;
-  class Field;
-  class Mesh;
+  class Field5;
+  class Mesh5;
   class GeometryObject;
 
-  typedef boost::shared_ptr<Field> FieldHandle;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
-
 }}
+
   class Field;
   class Mesh;
   typedef boost::shared_ptr<Field> FieldHandle;

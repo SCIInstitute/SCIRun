@@ -67,12 +67,12 @@ public:
   //! so we can alter the underlying type easily
   
   //! All indices are always of index_type
-  typedef Mesh::index_type                        index_type;
+  typedef Mesh5::index_type                        index_type;
   //! Weights for interpolation
   typedef double                                  weight_type;
   //! size_type and index_type need to be the same
   //! but they have their own type to make the code more readable
-  typedef Mesh::size_type                         size_type;
+  typedef Mesh5::size_type                         size_type;
   //! Array of indices
   typedef std::vector<index_type>                 array_type;
   //! Array of points
@@ -1277,13 +1277,13 @@ protected:
   int basis_order_;
   int dimension_;
   
-  //! Mesh properties
+  //! Mesh5 properties
   bool has_normals_;
   bool is_editable_;
   bool is_regular_;
   bool is_structured_;
 
-  //! Mesh statistics
+  //! Mesh5 statistics
   unsigned int num_nodes_per_elem_;
   unsigned int num_enodes_per_elem_;
   unsigned int num_edges_per_elem_;

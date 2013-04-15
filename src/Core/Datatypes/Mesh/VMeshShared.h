@@ -69,10 +69,10 @@ public:
     //! cache whether we have node points defined or whether we derive them
     //! implicitly. 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    is_regular_    = static_cast<bool>(mesh_->topology_geometry()&Mesh::REGULAR);
+    is_regular_    = static_cast<bool>(mesh_->topology_geometry()&Mesh5::REGULAR);
     //! cache whether we  have connectivity defined or whether we assume the data
     //! to be structured enough so we can derive it implicitly
-    is_structured_ = static_cast<bool>(mesh_->topology_geometry()&Mesh::STRUCTURED);
+    is_structured_ = static_cast<bool>(mesh_->topology_geometry()&Mesh5::STRUCTURED);
 #endif
     //! Store topology information on the mesh:
     //! This section converts the relevant data out of the underlying older data
@@ -136,7 +136,7 @@ public:
   
   virtual ~VirtualMeshShared() {}
   
-  virtual MeshHandle mesh();
+  virtual MeshHandle5 mesh();
   virtual VirtualMesh*     vmesh();  
   virtual bool synchronize(unsigned int sync);
   virtual bool unsynchronize(unsigned int sync);
@@ -171,10 +171,10 @@ protected:
 
 
 template <class MESH>
-MeshHandle
+MeshHandle5
 VirtualMeshShared<MESH>::mesh()
 {
-  return (MeshHandle(mesh_));
+  return (MeshHandle5(mesh_));
 }
 
 template <class MESH>

@@ -38,7 +38,6 @@
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Utils/Exception.h>
-//#include <Core/Datatypes/Mesh/Field.h>
 
 #include <Core/Datatypes/Mesh/Share.h>
 
@@ -47,7 +46,7 @@ namespace Core {
 namespace Datatypes {
 
 //TODO: split into separate header--but could we just merge these two classes into one?
-class SCISHARE FieldTypeInformation 
+class SCISHARE Field5TypeInformation 
 {
 public:
   bool        is_isomorphic();
@@ -122,7 +121,7 @@ public:
   bool        is_prism_element();
   bool        is_hex_element();
 
-  void insert_field_type_information(Field* field);
+  void insert_field_type_information(Field5* field);
 protected:
   std::string field_type;
   std::string mesh_type;
@@ -134,21 +133,21 @@ protected:
 };
 
 
-class SCISHARE FieldInformation : public FieldTypeInformation 
+class SCISHARE Field5Information : public Field5TypeInformation 
 {
   public:
-    FieldInformation(const std::string& meshtype,const std::string& meshbasis,
+    Field5Information(const std::string& meshtype,const std::string& meshbasis,
                                   const std::string& databasis, const std::string& datatype);
-    FieldInformation(const std::string& meshtype,const std::string& basis, const std::string& datatype);
+    Field5Information(const std::string& meshtype,const std::string& basis, const std::string& datatype);
 
-    FieldInformation(const std::string& meshtype,int,int, const std::string& datatype);
-    FieldInformation(const std::string& meshtype,int, const std::string& datatype);
-    FieldInformation(mesh_info_type mesh, meshbasis_info_type databasis,
+    Field5Information(const std::string& meshtype,int,int, const std::string& datatype);
+    Field5Information(const std::string& meshtype,int, const std::string& datatype);
+    Field5Information(mesh_info_type mesh, meshbasis_info_type databasis,
                      databasis_info_type, data_info_type data);
-    FieldInformation(mesh_info_type mesh,databasis_info_type databasis, 
+    Field5Information(mesh_info_type mesh,databasis_info_type databasis, 
                      data_info_type data);
-    explicit FieldInformation(FieldHandle handle);
-    explicit FieldInformation(Field* field);
+    explicit Field5Information(FieldHandle5 handle);
+    explicit Field5Information(Field5* field);
   
     std::string get_field_type() const;
     void        set_field_type(const std::string&);
@@ -229,8 +228,8 @@ class SCISHARE FieldInformation : public FieldTypeInformation
     bool        make_unstructuredmesh();
     bool        make_irregularmesh();
     
-    bool        operator==(const FieldInformation&) const;
-    bool        operator!=(const FieldInformation&) const;
+    bool        operator==(const Field5Information&) const;
+    bool        operator!=(const Field5Information&) const;
     
     // testing for the data type
 
@@ -274,126 +273,126 @@ struct MeshException : virtual SCIRun::Core::ExceptionBase {};
 
 struct UnknownMeshType : virtual MeshException {};
 
-//TODO: move to Field/MeshFactory classes
+//TODO: move to Field5/MeshFactory classes
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
-SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& meshbasistype, const std::string& databasistype, const std::string& datatype);
+SCISHARE FieldHandle5 CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
+SCISHARE FieldHandle5 CreateField(const std::string& meshtype, const std::string& meshbasistype, const std::string& databasistype, const std::string& datatype);
 
-SCISHARE FieldHandle CreateField(mesh_info_type mesh, 
+SCISHARE FieldHandle5 CreateField(mesh_info_type mesh, 
                                  meshbasis_info_type meshbasis, 
                                  databasis_info_type databasis, 
                                  data_info_type data);
 
-SCISHARE FieldHandle CreateField(mesh_info_type mesh,
+SCISHARE FieldHandle5 CreateField(mesh_info_type mesh,
                                  databasis_info_type databasis, 
                                  data_info_type data);
 
-SCISHARE FieldHandle CreateField(FieldInformation &info);
+SCISHARE FieldHandle5 CreateField(Field5Information &info);
 #endif 
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
+SCISHARE FieldHandle5 CreateField(Field5Information &info,MeshHandle5 mesh);
 #endif
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-SCISHARE MeshHandle CreateMesh(FieldInformation &info);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,const Point& min,const Point& max);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,Mesh5::size_type x);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,Mesh5::size_type x,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,Mesh5::size_type x,Mesh5::size_type y);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,Mesh5::size_type x,Mesh5::size_type y,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z);
 #endif 
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z,const Point& min,const Point& max);
 #endif
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,const std::vector<Mesh5::size_type>& x);
+SCISHARE MeshHandle5 CreateMesh(Field5Information &info,const std::vector<Mesh5::size_type>& x,const Point& min,const Point& max);
 
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Point& min,const Point& max);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh,Mesh5::size_type x);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh,Mesh5::size_type x,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh,Mesh5::size_type x,Mesh5::size_type y,Mesh5::size_type z,const Point& min,const Point& max);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh, const std::vector<Mesh5::size_type>& x);
+SCISHARE MeshHandle5 CreateMesh(mesh_info_type mesh, const std::vector<Mesh5::size_type>& x,const Point& min,const Point& max);
 #endif 
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-inline bool UseIntegerInterface(FieldInformation &info) 
+inline bool UseIntegerInterface(Field5Information &info) 
 { return(info.is_integer()); }
 
-inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2)
+inline bool UseIntegerInterface(Field5Information &info,Field5Information &info2)
 { return(info.is_integer()&info2.is_integer()); }
 
-inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3)
+inline bool UseIntegerInterface(Field5Information &info,Field5Information &info2,Field5Information &info3)
 { return(info.is_integer()&info2.is_integer()&info3.is_integer()); }
 
-inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4)
+inline bool UseIntegerInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4)
 { return(info.is_integer()&info2.is_integer()&info3.is_integer()&info4.is_integer()); }
 
-inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4, FieldInformation &info5)
+inline bool UseIntegerInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4, Field5Information &info5)
 { return(info.is_integer()&info2.is_integer()&info3.is_integer()&info4.is_integer()&info5.is_integer()); }
 
 
 
-inline bool UseScalarInterface(FieldInformation &info) 
+inline bool UseScalarInterface(Field5Information &info) 
 { return(info.is_scalar()); }
 
-inline bool UseScalarInterface(FieldInformation &info,FieldInformation &info2)
+inline bool UseScalarInterface(Field5Information &info,Field5Information &info2)
 { return(info.is_scalar()&info2.is_scalar()); }
 
-inline bool UseScalarInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3)
+inline bool UseScalarInterface(Field5Information &info,Field5Information &info2,Field5Information &info3)
 { return(info.is_scalar()&info2.is_scalar()&info3.is_scalar()); }
 
-inline bool UseScalarInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4)
+inline bool UseScalarInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4)
 { return(info.is_scalar()&info2.is_scalar()&info3.is_scalar()&info4.is_scalar()); }
 
-inline bool UseScalarInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4, FieldInformation &info5)
+inline bool UseScalarInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4, Field5Information &info5)
 { return(info.is_scalar()&info2.is_scalar()&info3.is_scalar()&info4.is_scalar()&info5.is_scalar()); }
 
 
-inline bool UseVectorInterface(FieldInformation &info) 
+inline bool UseVectorInterface(Field5Information &info) 
 { return(info.is_vector()); }
 
-inline bool UseVectorInterface(FieldInformation &info,FieldInformation &info2)
+inline bool UseVectorInterface(Field5Information &info,Field5Information &info2)
 { return(info.is_vector()&info2.is_vector()); }
 
-inline bool UseVectorInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3)
+inline bool UseVectorInterface(Field5Information &info,Field5Information &info2,Field5Information &info3)
 { return(info.is_vector()&info2.is_vector()&info3.is_vector()); }
 
-inline bool UseVectorInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4)
+inline bool UseVectorInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4)
 { return(info.is_vector()&info2.is_vector()&info3.is_vector()&info4.is_vector()); }
 
-inline bool UseVectorInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4, FieldInformation &info5)
+inline bool UseVectorInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4, Field5Information &info5)
 { return(info.is_vector()&info2.is_vector()&info3.is_vector()&info4.is_vector()&info5.is_vector()); }
 
 
-inline bool UseTensorInterface(FieldInformation &info) 
+inline bool UseTensorInterface(Field5Information &info) 
 { return(info.is_tensor()); }
 
-inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2)
+inline bool UseTensorInterface(Field5Information &info,Field5Information &info2)
 { return(info.is_tensor()&info2.is_tensor()); }
 
-inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3)
+inline bool UseTensorInterface(Field5Information &info,Field5Information &info2,Field5Information &info3)
 { return(info.is_tensor()&info2.is_tensor()&info3.is_tensor()); }
 
-inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4)
+inline bool UseTensorInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4)
 { return(info.is_tensor()&info2.is_tensor()&info3.is_tensor()&info4.is_tensor()); }
 
-inline bool UseTensorInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
-                        FieldInformation &info4, FieldInformation &info5)
+inline bool UseTensorInterface(Field5Information &info,Field5Information &info2,Field5Information &info3,
+                        Field5Information &info4, Field5Information &info5)
 { return(info.is_tensor()&info2.is_tensor()&info3.is_tensor()&info4.is_tensor()&info5.is_tensor()); }
 
 #endif

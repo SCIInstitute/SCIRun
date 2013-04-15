@@ -103,7 +103,7 @@ SCISHARE VirtualMeshHandle CreateVTriSurfMesh(TriSurfMesh<Basis::TriCubicHmt<Geo
 #endif
 
 template <class Basis>
-class TriSurfMesh : public Mesh
+class TriSurfMesh : public Mesh5
 {
 
 //! Make sure the virtual interface has access
@@ -121,7 +121,7 @@ public:
   typedef boost::shared_ptr<TriSurfMesh<Basis> > handle_type;
   typedef Basis                              basis_type;
 
-  //! Index and Iterator types required for Mesh Concept.
+  //! Index and Iterator types required for Mesh5 Concept.
   struct Node {
     typedef NodeIndex<under_type>       index_type;
     typedef NodeIterator<under_type>    iterator;
@@ -254,24 +254,24 @@ public:
         mesh_.synchronize_lock_.unlock();
         
         // Sync node neighbors
-        if (sync_ & Mesh::ELEM_NEIGHBORS_E) mesh_.compute_edge_neighbors();
-        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
-        if (sync_ & Mesh::EDGES_E) mesh_.compute_edges();
-        if (sync_ & Mesh::NORMALS_E) mesh_.compute_normals();
-        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_.compute_bounding_box();
+        if (sync_ & Mesh5::ELEM_NEIGHBORS_E) mesh_.compute_edge_neighbors();
+        if (sync_ & Mesh5::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
+        if (sync_ & Mesh5::EDGES_E) mesh_.compute_edges();
+        if (sync_ & Mesh5::NORMALS_E) mesh_.compute_normals();
+        if (sync_ & Mesh5::BOUNDING_BOX_E) mesh_.compute_bounding_box();
         
         // These depend on the bounding box being synchronized
-        if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
+        if (sync_ & (Mesh5::NODE_LOCATE_E|Mesh5::ELEM_LOCATE_E))
         {
           mesh_.synchronize_lock_.lock();
-          while(!(mesh_.synchronized_ & Mesh::BOUNDING_BOX_E)) 
+          while(!(mesh_.synchronized_ & Mesh5::BOUNDING_BOX_E)) 
             mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
           mesh_.synchronize_lock_.unlock();     
-          if (sync_ & Mesh::NODE_LOCATE_E) 
+          if (sync_ & Mesh5::NODE_LOCATE_E) 
           {
             mesh_.compute_node_grid();
           }
-          if (sync_ & Mesh::ELEM_LOCATE_E) 
+          if (sync_ & Mesh5::ELEM_LOCATE_E) 
           {
             mesh_.compute_elem_grid();
           }
@@ -302,8 +302,8 @@ public:
     
     void run()
     {
-      if (sync_ == Mesh::EDGES_E) mesh_.compute_edges();
-      if (sync_ == Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
+      if (sync_ == Mesh5::EDGES_E) mesh_.compute_edges();
+      if (sync_ == Mesh5::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
     }
     
   private:
@@ -346,7 +346,7 @@ public:
   //! structured = no connectivity data
   //! regular    = no node location data
   virtual int topology_geometry() const 
-    { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
+    { return (Mesh5::UNSTRUCTURED | Mesh5::IRREGULAR); }
 
   //! Get the bounding box of the field    
   virtual Geometry::BBox get_bounding_box() const;
@@ -584,7 +584,7 @@ public:
   //! Normals for visualizations      
   void get_normal(Geometry::Vector &result, typename Node::index_type index) const
     {
-      ASSERTMSG(synchronized_ & Mesh::NORMALS_E,
+      ASSERTMSG(synchronized_ & Mesh5::NORMALS_E,
           "Must call synchronize NORMALS_E on TriSurfMesh first"); 
       result = normals_[index]; 
     }
@@ -807,7 +807,7 @@ public:
       }           
     }    
     
-    ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_LOCATE_E,
         "TriSurfMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
     // get grid sizes
@@ -896,7 +896,7 @@ public:
   {
     nodes.clear();
     
-    ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_LOCATE_E,
         "TriSurfMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
     // get grid sizes
@@ -961,7 +961,7 @@ public:
     nodes.clear();
     distances.clear();
     
-    ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_LOCATE_E,
         "TriSurfMesh::find_closest_node requires synchronize(NODE_LOCATE_E).")
 
     // get grid sizes
@@ -1066,7 +1066,7 @@ public:
       }        
     } 
 
-    ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::ELEM_LOCATE_E,
         "TriSurfMesh::find_closest_elem requires synchronize(ELEM_LOCATE_E).")
 
     // get grid sizes
@@ -1214,7 +1214,7 @@ public:
     //! If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
   
-    ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::ELEM_LOCATE_E,
         "TriSurfMesh::find_closest_elems requires synchronize(ELEM_LOCATE_E).")
 
     // get grid sizes
@@ -1330,14 +1330,14 @@ public:
 #endif
 
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() 
+  static MeshHandle5 mesh_maker() 
   { 
     return boost::make_shared<TriSurfMesh<Basis>>(); 
   }
   
 
   //////////////////////////////////////////////////////////////////
-  // Mesh specific functions (these are not implemented in every mesh)
+  // Mesh5 specific functions (these are not implemented in every mesh)
  
   // Extra functionality needed by this specific geometry.
   typename Node::index_type add_find_point(const Geometry::Point &p,
@@ -1413,7 +1413,7 @@ protected:
   template<class ARRAY, class INDEX>
   inline void get_nodes_from_edge(ARRAY& array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
               "TriSurfMesh: Must call synchronize EDGES_E on TriSurfMesh first");
 
     index_type a = edges_[idx][0];
@@ -1458,7 +1458,7 @@ protected:
   template<class ARRAY, class INDEX>
   inline void get_edges_from_face(ARRAY& array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
             "TriSurfMesh: Must call synchronize EDGES_E on TriSurfMesh first");
 
     array.resize(3);
@@ -1478,7 +1478,7 @@ protected:
   template<class ARRAY, class INDEX>
   inline void get_faces_from_node(ARRAY& array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_NEIGHBORS_E,
 	      "TriSurfMesh: Must call synchronize NODE_NEIGHBORS_E on TriSurfMesh first");
     
     array.resize(node_neighbors_[idx].size());
@@ -1490,7 +1490,7 @@ protected:
   template<class ARRAY, class INDEX>
   inline void get_faces_from_edge(ARRAY& array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
               "Must call synchronize EDGES_E on TriSurfMesh first");
 
     const std::vector<index_type>& faces = edges_[idx];
@@ -1511,7 +1511,7 @@ protected:
   template<class ARRAY, class INDEX>
   inline void get_edges_from_node(ARRAY& array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_NEIGHBORS_E,
               "Must call synchronize NODE_NEIGHBORS_E on TriSurfMesh first");
     
     // Get the table of faces that are connected to the two nodes
@@ -1546,7 +1546,7 @@ protected:
   template <class INDEX1, class INDEX2>
   inline bool get_elem_neighbor(INDEX1 &neighbor, INDEX1 elem, INDEX2 delem) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
               "Must call synchronize EDGES_E on TriSurfMesh first");
 
     const std::vector<index_type>& faces = edges_[delem];
@@ -1567,7 +1567,7 @@ protected:
   template <class ARRAY,class INDEX1, class INDEX2>
   inline bool get_elem_neighbors(ARRAY &array, INDEX1 elem, INDEX2 delem) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
               "Must call synchronize EDGES_E on TriSurfMesh first");
 
     // Find the two nodes that make up the edge
@@ -1592,7 +1592,7 @@ protected:
   template <class ARRAY, class INDEX>
   inline void get_elem_neighbors(ARRAY &array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
               "Must call synchronize EDGES_E on TriSurfMesh first");
     
     typename Edge::array_type edges;
@@ -1619,7 +1619,7 @@ protected:
   template <class ARRAY, class INDEX>
   void get_node_neighbors(ARRAY &array, INDEX idx) const
   {
-    ASSERTMSG(synchronized_ & Mesh::NODE_NEIGHBORS_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_NEIGHBORS_E,
               "Must call synchronize NODE_NEIGHBORS_E on TriSurfMesh first");
     // clear old contents
     array.clear();
@@ -1661,7 +1661,7 @@ protected:
     }    
     
     
-    ASSERTMSG(synchronized_ & Mesh::NODE_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::NODE_LOCATE_E,
               "TriSurfMesh::locate_node requires synchronize(NODE_LOCATE_E).")
 
     // get grid sizes
@@ -1742,7 +1742,7 @@ protected:
   template <class INDEX>
   inline bool locate_edge(INDEX &loc, const Geometry::Point &p) const
   {
-    ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+    ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
               "Must call synchronize EDGES_E on TriSurfMesh first");
 
     typename Edge::iterator bi, ei;
@@ -1786,7 +1786,7 @@ protected:
       if (inside3_p(elem*3,p)) return (true);
     }
 
-    ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::ELEM_LOCATE_E,
               "TriSurfMesh::locate_elem requires synchronize(ELEM_LOCATE_E).")
 
     typename SearchGridT<index_type>::iterator it, eit;
@@ -1809,7 +1809,7 @@ protected:
   inline bool locate_elems(ARRAY &array, const BBox &b) const
   {
   
-    ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::ELEM_LOCATE_E,
               "TriSurfMesh::locate_elems requires synchronize(ELEM_LOCATE_E).")  
 
     array.clear();
@@ -1856,7 +1856,7 @@ protected:
       }
     }
 
-    ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
+    ASSERTMSG(synchronized_ & Mesh5::ELEM_LOCATE_E,
               "TriSurfMesh::locate_node requires synchronize(ELEM_LOCATE_E).")
 
     typename SearchGridT<index_type>::iterator it, eit;
@@ -2067,7 +2067,7 @@ struct less_int
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 PersistentTypeID
-TriSurfMesh<Basis>::trisurf_typeid(TriSurfMesh<Basis>::type_name(-1), "Mesh", maker);
+TriSurfMesh<Basis>::trisurf_typeid(TriSurfMesh<Basis>::type_name(-1), "Mesh5", maker);
 
 template <class Basis>
 const std::string
@@ -2101,7 +2101,7 @@ TriSurfMesh<Basis>::TriSurfMesh()
     //elem_grid_(0),
     //synchronize_lock_("TriSurfMesh lock"),
     //synchronize_cond_("TriSurfMesh condition variable"),
-    synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
+    synchronized_(Mesh5::NODES_E | Mesh5::FACES_E | Mesh5::CELLS_E),
     synchronizing_(0),
     epsilon_(0.0),
     epsilon2_(0.0)
@@ -2114,7 +2114,7 @@ TriSurfMesh<Basis>::TriSurfMesh()
 
 template <class Basis>
 TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
-  : Mesh(copy),
+  : Mesh5(copy),
     points_(0),
     edges_(0),
     halfedge_to_edge_(0),
@@ -2126,7 +2126,7 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
     //elem_grid_(0),
     //synchronize_lock_("TriSurfMesh lock"),
     //synchronize_cond_("TriSurfMesh condition variable"),
-    synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
+    synchronized_(Mesh5::NODES_E | Mesh5::FACES_E | Mesh5::CELLS_E),
     synchronizing_(0),
     epsilon_(0.0),
     epsilon2_(0.0)
@@ -2142,18 +2142,18 @@ TriSurfMesh<Basis>::TriSurfMesh(const TriSurfMesh &copy)
 
   edges_ = copy.edges_;
   halfedge_to_edge_ = copy.halfedge_to_edge_;
-  synchronized_ |= copy.synchronized_ & (Mesh::EDGES_E);
+  synchronized_ |= copy.synchronized_ & (Mesh5::EDGES_E);
 
   faces_ = copy.faces_;
 
   edge_neighbors_ = copy.edge_neighbors_;
-  synchronized_ |= copy.synchronized_ & Mesh::ELEM_NEIGHBORS_E;
+  synchronized_ |= copy.synchronized_ & Mesh5::ELEM_NEIGHBORS_E;
 
   normals_ = copy.normals_;
-  synchronized_ |= copy.synchronized_ & Mesh::NORMALS_E;
+  synchronized_ |= copy.synchronized_ & Mesh5::NORMALS_E;
 
   node_neighbors_ = copy.node_neighbors_;
-  synchronized_ |= copy.synchronized_ & Mesh::NODE_NEIGHBORS_E;
+  synchronized_ |= copy.synchronized_ & Mesh5::NODE_NEIGHBORS_E;
 
   //copy.synchronize_lock_.unlock();
 
@@ -2250,7 +2250,7 @@ TriSurfMesh<Basis>::transform(const Geometry::Transform &t)
     epsilon_ = bbox_.diagonal().length()*1e-8;
     epsilon2_ = epsilon_*epsilon_;
     
-    synchronized_ |= Mesh::BOUNDING_BOX_E;
+    synchronized_ |= Mesh5::BOUNDING_BOX_E;
   }
     
   if (node_grid_.get_rep()) { node_grid_->transform(t); }
@@ -2264,7 +2264,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::begin(typename TriSurfMesh::Node::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::NODES_E,
+  ASSERTMSG(synchronized_ & Mesh5::NODES_E,
             "Must call synchronize NODES_E on TriSurfMesh first");
   itr = 0;
 }
@@ -2274,7 +2274,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::end(typename TriSurfMesh::Node::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::NODES_E,
+  ASSERTMSG(synchronized_ & Mesh5::NODES_E,
             "Must call synchronize NODES_E on TriSurfMesh first");
   itr = static_cast<index_type>(points_.size());
 }
@@ -2284,7 +2284,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::begin(typename TriSurfMesh::Edge::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+  ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
             "Must call synchronize EDGES_E on TriSurfMesh first");
   itr = 0;
 }
@@ -2294,7 +2294,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::end(typename TriSurfMesh::Edge::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+  ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
             "Must call synchronize EDGES_E on TriSurfMesh first");
   itr = static_cast<index_type>(edges_.size());
 }
@@ -2304,7 +2304,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::begin(typename TriSurfMesh::Face::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::FACES_E,
+  ASSERTMSG(synchronized_ & Mesh5::FACES_E,
             "Must call synchronize FACES_E on TriSurfMesh first");
   itr = 0;
 }
@@ -2314,7 +2314,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::end(typename TriSurfMesh::Face::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::FACES_E,
+  ASSERTMSG(synchronized_ & Mesh5::FACES_E,
             "Must call synchronize FACES_E on TriSurfMesh first");
   itr = static_cast<index_type>(faces_.size() / 3);
 }
@@ -2324,7 +2324,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::begin(typename TriSurfMesh::Cell::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::CELLS_E,
+  ASSERTMSG(synchronized_ & Mesh5::CELLS_E,
             "Must call synchronize CELLS_E on TriSurfMesh first");
   itr = 0;
 }
@@ -2334,7 +2334,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::end(typename TriSurfMesh::Cell::iterator &itr) const
 {
-  ASSERTMSG(synchronized_ & Mesh::CELLS_E,
+  ASSERTMSG(synchronized_ & Mesh5::CELLS_E,
             "Must call synchronize CELLS_E on TriSurfMesh first");
   itr = 0;
 }
@@ -2409,129 +2409,129 @@ bool
 TriSurfMesh<Basis>::synchronize(mask_type sync)
 {
   // Conversion table
-  if (sync & (Mesh::DELEMS_E)) 
-  { sync |= Mesh::EDGES_E; sync &= ~(Mesh::DELEMS_E); }
+  if (sync & (Mesh5::DELEMS_E)) 
+  { sync |= Mesh5::EDGES_E; sync &= ~(Mesh5::DELEMS_E); }
 
-  if (sync & Mesh::FIND_CLOSEST_NODE_E)
-  { sync |= NODE_LOCATE_E; sync &=  ~(Mesh::FIND_CLOSEST_NODE_E); }
+  if (sync & Mesh5::FIND_CLOSEST_NODE_E)
+  { sync |= NODE_LOCATE_E; sync &=  ~(Mesh5::FIND_CLOSEST_NODE_E); }
 
-  if (sync & Mesh::FIND_CLOSEST_ELEM_E)
-  { sync |= ELEM_LOCATE_E; sync &=  ~(Mesh::FIND_CLOSEST_ELEM_E); }
+  if (sync & Mesh5::FIND_CLOSEST_ELEM_E)
+  { sync |= ELEM_LOCATE_E; sync &=  ~(Mesh5::FIND_CLOSEST_ELEM_E); }
 
-  if (sync & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E)) sync |= Mesh::BOUNDING_BOX_E;
-  if (sync & Mesh::ELEM_NEIGHBORS_E) sync |= Mesh::EDGES_E;
+  if (sync & (Mesh5::NODE_LOCATE_E|Mesh5::ELEM_LOCATE_E)) sync |= Mesh5::BOUNDING_BOX_E;
+  if (sync & Mesh5::ELEM_NEIGHBORS_E) sync |= Mesh5::EDGES_E;
 
   // Filter out the only tables available
-  sync &= (Mesh::EDGES_E|Mesh::NORMALS_E|
-           Mesh::NODE_NEIGHBORS_E|Mesh::BOUNDING_BOX_E|
-           Mesh::ELEM_NEIGHBORS_E|
-           Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E);
+  sync &= (Mesh5::EDGES_E|Mesh5::NORMALS_E|
+           Mesh5::NODE_NEIGHBORS_E|Mesh5::BOUNDING_BOX_E|
+           Mesh5::ELEM_NEIGHBORS_E|
+           Mesh5::NODE_LOCATE_E|Mesh5::ELEM_LOCATE_E);
 
   synchronize_lock_.lock();
 
   // Only sync was hasn't been synched
   sync &= (~synchronized_);
   
-  if (sync == Mesh::EDGES_E)
+  if (sync == Mesh5::EDGES_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::EDGES_E)
+  else if (sync & Mesh5::EDGES_E)
   {
-    mask_type tosync = Mesh::EDGES_E;
+    mask_type tosync = Mesh5::EDGES_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf edges",0,Thread::Activated,1024*20);
     syncthread->detach();
   }
 
-  if (sync == Mesh::NORMALS_E)
+  if (sync == Mesh5::NORMALS_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::NORMALS_E)
+  else if (sync & Mesh5::NORMALS_E)
   {
-    mask_type tosync = Mesh::NORMALS_E;
+    mask_type tosync = Mesh5::NORMALS_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf normals",0,Thread::Activated,1024*20);
     syncthread->detach();
   }
 
-  if (sync == Mesh::NODE_NEIGHBORS_E)
+  if (sync == Mesh5::NODE_NEIGHBORS_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::NODE_NEIGHBORS_E)
+  else if (sync & Mesh5::NODE_NEIGHBORS_E)
   {
-    mask_type tosync = Mesh::NODE_NEIGHBORS_E;
+    mask_type tosync = Mesh5::NODE_NEIGHBORS_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf node_neighbors",0,Thread::Activated,1024*20);
     syncthread->detach();
   }
 
-  if (sync == Mesh::ELEM_NEIGHBORS_E)
+  if (sync == Mesh5::ELEM_NEIGHBORS_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::ELEM_NEIGHBORS_E)
+  else if (sync & Mesh5::ELEM_NEIGHBORS_E)
   {
-    mask_type tosync = Mesh::ELEM_NEIGHBORS_E;
+    mask_type tosync = Mesh5::ELEM_NEIGHBORS_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf elem_neighbors",0,Thread::Activated,1024*20);
     syncthread->detach();
   }
 
-  if (sync == Mesh::BOUNDING_BOX_E)
+  if (sync == Mesh5::BOUNDING_BOX_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::BOUNDING_BOX_E)
+  else if (sync & Mesh5::BOUNDING_BOX_E)
   {
-    mask_type tosync = Mesh::BOUNDING_BOX_E;
+    mask_type tosync = Mesh5::BOUNDING_BOX_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf bounding box",0,Thread::Activated,1024*20);
     syncthread->detach();
   }
 
-  if (sync == Mesh::NODE_LOCATE_E)
+  if (sync == Mesh5::NODE_LOCATE_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::NODE_LOCATE_E)
+  else if (sync & Mesh5::NODE_LOCATE_E)
   {
-    mask_type tosync = Mesh::NODE_LOCATE_E;
+    mask_type tosync = Mesh5::NODE_LOCATE_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf node_locate",0,Thread::Activated,1024*20);
     syncthread->detach();
   }
 
-  if (sync == Mesh::ELEM_LOCATE_E)
+  if (sync == Mesh5::ELEM_LOCATE_E)
   {
     Synchronize Synchronize(*this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
   }
-  else if (sync & Mesh::ELEM_LOCATE_E)
+  else if (sync & Mesh5::ELEM_LOCATE_E)
   {
-    mask_type tosync = Mesh::ELEM_LOCATE_E;
+    mask_type tosync = Mesh5::ELEM_LOCATE_E;
     Synchronize* syncclass = new Synchronize(*this,tosync);
     Thread* syncthread = new Thread(syncclass,"synchronize trisurf elem_locate",0,Thread::Activated,1024*20);
     syncthread->detach();
@@ -2554,7 +2554,7 @@ bool
 TriSurfMesh<Basis>::synchronize(mask_type sync)
 {
   // TODO: there is a lot of duplication in original implementation - it shouldn't be difficult to streamline...
-  if (sync == Mesh::EDGES_E || sync == Mesh::NODE_NEIGHBORS_E)
+  if (sync == Mesh5::EDGES_E || sync == Mesh5::NODE_NEIGHBORS_E)
   {
     Synchronize Synchronize(*this, sync);
     Synchronize.run();
@@ -2581,7 +2581,7 @@ TriSurfMesh<Basis>::clear_synchronization()
 {
   //synchronize_lock_.lock();
   // Undo marking the synchronization 
-  synchronized_ = Mesh::NODES_E | Mesh::ELEMS_E | Mesh::FACES_E | Mesh::CELLS_E;
+  synchronized_ = Mesh5::NODES_E | Mesh5::ELEMS_E | Mesh5::FACES_E | Mesh5::CELLS_E;
 
   // Free memory where possible
 
@@ -2654,7 +2654,7 @@ TriSurfMesh<Basis>::compute_normals()
   }
   
   synchronize_lock_.lock();
-  synchronized_ |= Mesh::NORMALS_E;
+  synchronized_ |= Mesh5::NORMALS_E;
   synchronize_lock_.unlock();
 }
 
@@ -2663,7 +2663,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Geometry::Point &p)
 {
-  const bool do_neighbors = synchronized_ & Mesh::ELEM_NEIGHBORS_E;
+  const bool do_neighbors = synchronized_ & Mesh5::ELEM_NEIGHBORS_E;
   const bool do_normals = false; // synchronized_ & NORMALS_E;
 
   typename Node::index_type pi = add_point(p);
@@ -2720,9 +2720,9 @@ TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Geometry::
 
   }
 
-  if (!do_neighbors) synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~(Mesh::EDGES_E);
-  if (!do_normals) synchronized_ &= ~Mesh::NORMALS_E;
+  if (!do_neighbors) synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  if (!do_normals) synchronized_ &= ~Mesh5::NORMALS_E;
 
   synchronize_lock_.unlock();
 }
@@ -2822,9 +2822,9 @@ TriSurfMesh<Basis>::insert_node_in_edge_aux(typename Face::array_type &tris,
 
   debug_test_edge_neighbors();
 
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~(Mesh::EDGES_E);
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  synchronized_ &= ~Mesh5::NORMALS_E;
 
   for (size_t i = 0; i < tris.size(); i++)
   {
@@ -2889,9 +2889,9 @@ TriSurfMesh<Basis>::insert_node_in_face_aux(typename Face::array_type &tris,
 
   debug_test_edge_neighbors();
 
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~(Mesh::EDGES_E);
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  synchronized_ &= ~Mesh5::NORMALS_E;
 
   for (size_t i = 0; i < tris.size(); i++)
   {
@@ -3027,7 +3027,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::bisect_element(const typename Face::index_type face)
 {
-  const bool do_neighbors = synchronized_ & Mesh::ELEM_NEIGHBORS_E;
+  const bool do_neighbors = synchronized_ & Mesh5::ELEM_NEIGHBORS_E;
   const bool do_normals = false; //synchronized_ & NORMALS_E;
 
   const index_type f0 = face*3;
@@ -3181,9 +3181,9 @@ TriSurfMesh<Basis>::bisect_element(const typename Face::index_type face)
     }
   }
 
-  if (!do_neighbors) synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~(Mesh::EDGES_E);
-  if (!do_normals) synchronized_ &= ~Mesh::NORMALS_E;
+  if (!do_neighbors) synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  if (!do_normals) synchronized_ &= ~Mesh5::NORMALS_E;
 
   synchronize_lock_.unlock();
 }
@@ -3204,10 +3204,10 @@ TriSurfMesh<Basis>::compute_node_neighbors()
   }
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   synchronize_lock_.lock();
-  synchronized_ |= Mesh::NODE_NEIGHBORS_E;
+  synchronized_ |= Mesh5::NODE_NEIGHBORS_E;
   synchronize_lock_.unlock();
 #else
-  synchronized_ |= (Mesh::NODE_NEIGHBORS_E);
+  synchronized_ |= (Mesh5::NODE_NEIGHBORS_E);
 #endif
 }
 
@@ -3256,10 +3256,10 @@ TriSurfMesh<Basis>::compute_edges()
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   synchronize_lock_.lock();
-  synchronized_ |= (Mesh::EDGES_E);
+  synchronized_ |= (Mesh5::EDGES_E);
   synchronize_lock_.unlock();
 #else
-  synchronized_ |= (Mesh::EDGES_E);
+  synchronized_ |= (Mesh5::EDGES_E);
 #endif
 }
 
@@ -3330,9 +3330,9 @@ TriSurfMesh<Basis>::swap_shared_edge(typename Face::index_type f1,
   faces_[face2 + 1] = not_shar[1];
   faces_[face2 + 2] = s1;
 
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
   synchronize_lock_.unlock();
 
   return true;
@@ -3375,9 +3375,9 @@ TriSurfMesh<Basis>::remove_orphan_nodes()
     points_.erase(niter);
   }
 
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
   return rval;
 }
 
@@ -3396,9 +3396,9 @@ TriSurfMesh<Basis>::remove_face(typename Face::index_type f)
   else {
     rval = false;
   }
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
   synchronize_lock_.unlock();
 
   return rval;
@@ -3415,9 +3415,9 @@ TriSurfMesh<Basis>::add_triangle(typename Node::index_type a,
   faces_.push_back(a);
   faces_.push_back(b);
   faces_.push_back(c);
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
   synchronize_lock_.unlock();
   return static_cast<typename Elem::index_type>((static_cast<index_type>(faces_.size()) / 3) - 1);
 }
@@ -3436,10 +3436,10 @@ TriSurfMesh<Basis>::flip_faces()
     flip_face(*fiter);
     ++fiter;
   }
-  synchronized_ &= ~(Mesh::EDGES_E);
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
   synchronize_lock_.unlock();
 }
 
@@ -3453,10 +3453,10 @@ TriSurfMesh<Basis>::flip_face(typename Face::index_type face)
   faces_[base + 1] = faces_[base + 2];
   faces_[base + 2] = tmp;
 
-  synchronized_ &= ~(Mesh::EDGES_E);
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NODE_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NODE_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
 }
 
 
@@ -3487,7 +3487,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::orient_faces()
 {
-  synchronize(Mesh::EDGES_E | Mesh::ELEM_NEIGHBORS_E);
+  synchronize(Mesh5::EDGES_E | Mesh5::ELEM_NEIGHBORS_E);
   synchronize_lock_.lock();
 
   index_type nfaces = (int)faces_.size() / 3;
@@ -3516,9 +3516,9 @@ TriSurfMesh<Basis>::orient_faces()
     ++fiter;
   }
 
-  synchronized_ &= ~(Mesh::EDGES_E);
-  synchronized_ &= ~Mesh::ELEM_NEIGHBORS_E;
-  synchronized_ &= ~Mesh::NORMALS_E;
+  synchronized_ &= ~(Mesh5::EDGES_E);
+  synchronized_ &= ~Mesh5::ELEM_NEIGHBORS_E;
+  synchronized_ &= ~Mesh5::NORMALS_E;
   synchronize_lock_.unlock();
 }
 
@@ -3562,7 +3562,7 @@ TriSurfMesh<Basis>::compute_edge_neighbors()
   debug_test_edge_neighbors();
 
   synchronize_lock_.lock();
-  synchronized_ |= Mesh::ELEM_NEIGHBORS_E;
+  synchronized_ |= Mesh5::ELEM_NEIGHBORS_E;
   synchronize_lock_.unlock();
 }
 
@@ -3647,7 +3647,7 @@ TriSurfMesh<Basis>::compute_elem_grid()
   }
 
   synchronize_lock_.lock();
-  synchronized_ |= Mesh::ELEM_LOCATE_E;
+  synchronized_ |= Mesh5::ELEM_LOCATE_E;
   synchronize_lock_.unlock();
 }
 
@@ -3685,7 +3685,7 @@ TriSurfMesh<Basis>::compute_node_grid()
   }
 
   synchronize_lock_.lock();
-  synchronized_ |= Mesh::NODE_LOCATE_E;
+  synchronized_ |= Mesh5::NODE_LOCATE_E;
   synchronize_lock_.unlock();
 }
 
@@ -3711,7 +3711,7 @@ TriSurfMesh<Basis>::compute_bounding_box()
   epsilon2_ = epsilon_*epsilon_;
   
   synchronize_lock_.lock();
-  synchronized_ |= Mesh::BOUNDING_BOX_E;
+  synchronized_ |= Mesh5::BOUNDING_BOX_E;
   synchronize_lock_.unlock();
 }
 
@@ -3746,7 +3746,7 @@ TriSurfMesh<Basis>::io(Piostream &stream)
 {
   int version = stream.begin_class(type_name(-1), TRISURFMESH_VERSION);
 
-  Mesh::io(stream);
+  Mesh5::io(stream);
 
   Pio(stream, points_);
   Pio_index(stream, faces_);
@@ -3767,7 +3767,7 @@ TriSurfMesh<Basis>::io(Piostream &stream)
 
   if (stream.reading() && edge_neighbors_.size())
   {
-    synchronized_ |= Mesh::ELEM_NEIGHBORS_E;
+    synchronized_ |= Mesh5::ELEM_NEIGHBORS_E;
   }
 
   if (stream.reading())
@@ -3789,7 +3789,7 @@ void
 TriSurfMesh<Basis>::size(typename TriSurfMesh::Edge::size_type &s) const
 {
 //#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  ASSERTMSG(synchronized_ & Mesh::EDGES_E,
+  ASSERTMSG(synchronized_ & Mesh5::EDGES_E,
             "Must call synchronize EDGES_E on TriSurfMesh first");
 //#endif
   typename Edge::iterator itr; end(itr);

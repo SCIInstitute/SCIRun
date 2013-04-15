@@ -58,32 +58,32 @@ MeshRegistry::MeshRegistry()
 {
 }
 
-MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params)
+MeshHandle5 MeshFactory::CreateMesh(const Field5Information& info, const MeshConstructionParameters& params)
 {
   std::string type = info.get_mesh_type_id();
   return CreateMesh(type, params);
 }
 
-MeshHandle MeshFactory::CreateMesh(const FieldInformation& info)
+MeshHandle5 MeshFactory::CreateMesh(const Field5Information& info)
 {
   std::string type = info.get_mesh_type_id();
   return CreateMesh(type);
 }
 
-MeshHandle MeshFactory::CreateMesh(const std::string& type)
+MeshHandle5 MeshFactory::CreateMesh(const std::string& type)
 {
   auto ctorInfo = registry_.meshTypeIdLookup_.findConstructorInfo(type);
   if (ctorInfo)
     return ctorInfo->defCtor_();
-  return MeshHandle();
+  return MeshHandle5();
 }
 
-MeshHandle MeshFactory::CreateMesh(const std::string& type, const MeshConstructionParameters& params)
+MeshHandle5 MeshFactory::CreateMesh(const std::string& type, const MeshConstructionParameters& params)
 {
   auto ctorInfo = registry_.meshTypeIdLookup_.findConstructorInfo(type);
   if (ctorInfo)
     return ctorInfo->ctor_(params);
-  return MeshHandle();
+  return MeshHandle5();
 }
 
 MeshRegistry::MeshTypeID::MeshTypeID() : defCtor_(0), ctor_(0)

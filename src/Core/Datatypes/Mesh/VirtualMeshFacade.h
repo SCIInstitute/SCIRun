@@ -72,7 +72,7 @@ namespace Datatypes {
 
     virtual size_t numEdges() const
     {
-      vmesh_->synchronize(Mesh::EDGES_E);
+      vmesh_->synchronize(Mesh5::EDGES_E);
       size_t num = vmesh_->num_edges();
       vmesh_->clear_synchronization();
       return num;
