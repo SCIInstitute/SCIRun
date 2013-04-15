@@ -130,7 +130,7 @@ IF(WITH_TETGEN)
 ENDIF(WITH_TETGEN)
 
 ADD_LIBRARY(Core_Algorithms_Legacy_Fields 
-  ${Core_Algorithms_Fields_SRCS}
+  ${Core_Algorithms_Legacy_Fields_SRCS}
 )
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields 
