@@ -472,6 +472,14 @@
            <string>Official ported v4 module.</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>CreateFieldDataBasic</string>
+          </property>
+          <property name="text">
+           <string>Set field data via python map.</string>
+          </property>
+         </item>
         </item>
         <item>
          <property name="text">
