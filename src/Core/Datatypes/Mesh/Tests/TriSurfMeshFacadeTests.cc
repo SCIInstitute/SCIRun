@@ -56,7 +56,7 @@ protected:
   virtual void SetUp()
   {
     {
-      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      Field5Information fi("TriSurfMesh", LINEARDATA_E, "double");
       basicTriangleMesh_ = MeshFactory::Instance().CreateMesh(fi);
       VirtualMeshHandle triangleVMesh = basicTriangleMesh_->vmesh();
       triangleVMesh->add_point(Point(0.0, 0.0, 0.0));
@@ -69,7 +69,7 @@ protected:
     }
     
     {
-      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      Field5Information fi("TriSurfMesh", LINEARDATA_E, "double");
       cubeMesh_ = MeshFactory::Instance().CreateMesh(fi);
       VirtualMeshHandle cubeVMesh = cubeMesh_->vmesh();
       cubeVMesh->add_point(Point(0.0, 1.0, 0.0));
@@ -120,8 +120,8 @@ protected:
     }
   }
   
-  MeshHandle basicTriangleMesh_;
-  MeshHandle cubeMesh_;
+  MeshHandle5 basicTriangleMesh_;
+  MeshHandle5 cubeMesh_;
 };
 
 // TODO: move to utils file (duplicated in LatticeVolumeMeshFacadeTests.cc)

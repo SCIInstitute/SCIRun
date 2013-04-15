@@ -93,7 +93,7 @@ public:
   }
   
   // these files just contain geometry (note that data can be applied to field from matrix)
-  MeshHandle readField();
+  MeshHandle5 readField();
 
 private:
   class FileStreamWrapper
@@ -276,10 +276,10 @@ bool TextToTriSurfFieldPrivate::validateFacesFile(const std::string& filename)
   return true;
 }
 
-MeshHandle TextToTriSurfFieldPrivate::readField()
+MeshHandle5 TextToTriSurfFieldPrivate::readField()
 {
-  FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle triSurfMesh = MeshFactory::Instance().CreateMesh(fi);
+  Field5Information fi("TriSurfMesh", LINEARDATA_E, "double");
+  auto triSurfMesh = MeshFactory::Instance().CreateMesh(fi);
   VirtualMeshHandle triSurfVMesh = triSurfMesh->vmesh();
 
   triSurfVMesh->node_reserve(numberPointsFromHeader_);
@@ -327,7 +327,7 @@ MeshHandle TextToTriSurfFieldPrivate::readField()
 // Text file format for tetrahedral meshes (files supported with or without headers)
 // points: x y z
 // elems: n1 n2 n3
-MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
+MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
 {
   TextToTriSurfFieldPrivate privateImpl(*this);
 
@@ -352,7 +352,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << filename << " is invalid. Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle();
+        return MeshHandle5();
       }
       
       bool foundFacesFile = false;
@@ -384,7 +384,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << "Cannot locate a valid faces file corresponding to " << filename << ". Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle();
+        return MeshHandle5();
       }
     }
     else if ( privateImpl.validFacesFileExtention(filename) ) // if .fac file was supplied
@@ -402,7 +402,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << filename << " is invalid. Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle();
+        return MeshHandle5();
       }
 
       bool foundPointsFile = false;
@@ -434,12 +434,12 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << "Cannot locate a valid points file corresponding to " << filename << ". Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle();
+        return MeshHandle5();
       }
     }
     
     // TODO: change to FieldHandle when available...
-    MeshHandle mesh = privateImpl.readField();
+    auto mesh = privateImpl.readField();
     return mesh;
   }
   catch(std::ifstream::failure e)
@@ -455,7 +455,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
     error(oss.str());
   }
   // TODO: other exceptions?
-  return MeshHandle();
+  return MeshHandle5();
 }
   
   
