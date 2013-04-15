@@ -48,9 +48,17 @@ class SCISHARE SetFieldDataToConstantValueAlgo : public SCIRun::Core::Algorithms
       add_option("basis_order","same as input","nodata|constant|linear|quadratic|same as input");
       add_scalar("value",0.0);
 #endif
+      //TODO
+      addParameter(Value, SCIRun::Core::Algorithms::AlgorithmParameter::Value(0.0));
+      addParameter(DataType, SCIRun::Core::Algorithms::AlgorithmParameter::Value("double"));
+      addParameter(BasisOrder, SCIRun::Core::Algorithms::AlgorithmParameter::Value("constant"));
     }
   
-    bool run(SCIRun::Core::Datatypes::FieldHandle input, SCIRun::Core::Datatypes::FieldHandle& output);
+    static SCIRun::Core::Algorithms::AlgorithmParameterName Value;
+    static SCIRun::Core::Algorithms::AlgorithmParameterName DataType;
+    static SCIRun::Core::Algorithms::AlgorithmParameterName BasisOrder;
+
+    bool run(SCIRun::FieldHandle input, SCIRun::FieldHandle& output);
 };
 
 }

@@ -33,21 +33,26 @@
 
 using namespace SCIRunAlgo;
 using namespace SCIRun;
-using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+
+
+AlgorithmParameterName SetFieldDataToConstantValueAlgo::Value("value");
+AlgorithmParameterName SetFieldDataToConstantValueAlgo::DataType("data_type");
+AlgorithmParameterName SetFieldDataToConstantValueAlgo::BasisOrder("basis_order");
 
 bool 
 SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
 {
-  algo_start("SetFieldDataToConstantValue");
+  ScopedAlgorithmStatusReporter asr(this, "SetFieldDataToConstantValue");
   if (!input)
   {
     error("No input field was provided");
-    algo_end(); return (false);  
+    return (false);  
   }
 
   FieldInformation fi(input);
 
-  std::string data_type = get_option("data_type");
+  std::string data_type = get(DataType).getString();
   if (data_type != "same as input")
   {
     fi.set_data_type(data_type);
@@ -57,7 +62,7 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
     fi.make_double();
   }
 
-  std::string basis_order = get_option("basis_order");
+  std::string basis_order = get(BasisOrder).getString();
   if (basis_order != "same as input")
   {
     fi.set_basis_type(basis_order);
@@ -68,14 +73,13 @@ SetFieldDataToConstantValueAlgo::run(FieldHandle input, FieldHandle& output)
   if (!output)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  double new_value = get_scalar("value");
+  double new_value = get(Value).getDouble();
   
   output->vfield()->resize_values();
   output->vfield()->set_all_values(new_value);
   
-  algo_end();
   return (true);
 }
