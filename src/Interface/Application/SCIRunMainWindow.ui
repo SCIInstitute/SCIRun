@@ -447,6 +447,14 @@
          </property>
          <item>
           <property name="text">
+           <string>FieldToMesh</string>
+          </property>
+          <property name="text">
+           <string>Returns underlying mesh from a field.</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>CreateLatVolMesh</string>
           </property>
           <property name="text">
@@ -454,6 +462,14 @@
           </property>
           <property name="text">
            <string/>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>CreateLatVol</string>
+          </property>
+          <property name="text">
+           <string>Official ported v4 module.</string>
           </property>
          </item>
         </item>
