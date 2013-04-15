@@ -116,3 +116,15 @@ void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, con
 }
 
 AlgorithmStatusReporter::UpdaterFunc AlgorithmStatusReporter::defaultUpdaterFunc_([](double r) { std::cout << "Algorithm at " << std::setiosflags(std::ios::fixed) << std::setprecision(2) << r*100 << "% complete" << std::endl;});
+
+ScopedAlgorithmStatusReporter::ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag) : asr_(asr) 
+{
+  if (asr_)
+    asr_->report_start(tag);
+}
+
+ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
+{
+  if (asr_)
+    asr_->report_end();
+}
