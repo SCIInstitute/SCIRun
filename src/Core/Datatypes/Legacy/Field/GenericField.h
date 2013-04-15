@@ -115,8 +115,9 @@ public:
   
   //! Function to retrieve the name of this field class
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return type_id.type; }
- 
+#endif
   //! A different way of tagging a class. Currently two systems are used next
   //! to each other: type_name and get_type_description. Neither is perfect
   virtual 
@@ -152,9 +153,11 @@ class VGenericField : public VField {
       DEBUG_CONSTRUCTOR("VGenericField")   
 
       field_ = field;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
       pm_ = field;
+#endif
       vfdata_ = vfdata;
-      mesh_ = field_->mesh().get_rep();
+      mesh_ = field_->mesh().get();
       vmesh_ = mesh_->vmesh();
       basis_order_ = field->basis_order();
       number_of_nodes_ = field->get_basis().number_of_mesh_vertices();
@@ -202,7 +205,7 @@ template <class Mesh, class Basis, class FData>
 FieldHandle
 GenericField<Mesh, Basis, FData>::field_maker()
 {
-  return FieldHandle(new GenericField<Mesh, Basis, FData>());
+  return boost::make_shared<GenericField<Mesh, Basis, FData>>();
 }
 
 
@@ -210,9 +213,11 @@ template <class Mesh, class Basis, class FData>
 FieldHandle
 GenericField<Mesh, Basis, FData>::field_maker_mesh(MeshHandle mesh)
 {
-  mesh_handle_type mesh_handle = dynamic_cast<mesh_type *>(mesh.get_rep());
-  if (mesh_handle.get_rep()) return FieldHandle(new GenericField<Mesh, Basis, FData>(mesh_handle));
-  else return FieldHandle(0);
+  mesh_handle_type mesh_handle = boost::dynamic_pointer_cast<mesh_type *>(mesh);
+  if (mesh_handle)
+    return boost::make_shared<GenericField<Mesh, Basis, FData>>(mesh_handle);
+  else
+    return FieldHandle();
 }
 
 
@@ -282,7 +287,7 @@ GenericField<Mesh, Basis, FData>::GenericField() :
   DEBUG_CONSTRUCTOR("GenericField")   
 
   basis_order_ = basis_order();
-  if (mesh_.get_rep()) mesh_dimensionality_ = mesh_->dimensionality();
+  if (mesh_) mesh_dimensionality_ = mesh_->dimensionality();
   
   VFData* vfdata = CreateVFData(fdata_,get_basis().get_nodes(),get_basis().get_derivs());
   vfield_ = new VGenericField<GenericField<Mesh,Basis,FData> >(this, vfdata);
@@ -322,7 +327,7 @@ GenericField<Mesh, Basis, FData>::GenericField(mesh_handle_type mesh) :
   DEBUG_CONSTRUCTOR("GenericField")   
 
   basis_order_ = basis_order();
-  if (mesh_.get_rep()) mesh_dimensionality_ = mesh_->dimensionality();
+  if (mesh_) mesh_dimensionality_ = mesh_->dimensionality();
  
   VFData* vfdata = CreateVFData(fdata_,get_basis().get_nodes(),get_basis().get_derivs());
   vfield_ = new VGenericField<GenericField<Mesh,Basis,FData> >(this, vfdata);
@@ -348,14 +353,14 @@ template <class Mesh, class Basis, class FData>
 MeshHandle
 GenericField<Mesh, Basis, FData>::mesh() const
 {
-  return MeshHandle(mesh_.get_rep());
+  return MeshHandle(mesh_);
 }
 
 template <class Mesh, class Basis, class FData>
 VMesh*
 GenericField<Mesh, Basis, FData>::vmesh() const
 {
-  if (mesh_.get_rep()) return mesh_->vmesh();
+  if (mesh_) return mesh_->vmesh();
   return (0);
 }
 
@@ -366,6 +371,7 @@ GenericField<Mesh, Basis, FData>::vfield() const
   return (vfield_);
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Mesh, class Basis, class FData>
 void
 GenericField<Mesh, Basis, FData>::mesh_detach()
@@ -375,6 +381,7 @@ GenericField<Mesh, Basis, FData>::mesh_detach()
   mesh_->thaw();
   vfield_->update_mesh_pointer(mesh_.get_rep());
 }
+#endif
 
 template <class Mesh, class Basis, class FData>
 const std::string GenericField<Mesh, Basis, FData>::type_name(int n)
