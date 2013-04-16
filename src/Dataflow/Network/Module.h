@@ -288,12 +288,12 @@ namespace Modules
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeField5Port(const std::string& name)
   {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Field5", "yellow"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Field5", "darkYellow"); 
   }
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeMesh5Port(const std::string& name)
   {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh5", "darkYellow"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh5", "darkCyan"); 
   }
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeFieldPort(const std::string& name)
@@ -303,7 +303,7 @@ namespace Modules
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeMeshPort(const std::string& name)
   {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh", "darkYellow"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh", "cyan"); 
   }
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeGeometryPort(const std::string& name)

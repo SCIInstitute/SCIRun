@@ -64,6 +64,12 @@ namespace {
       return Qt::red;
     if (str == "blue")
       return Qt::blue;
+    if (str == "darkBlue")
+      return Qt::darkBlue;
+    if (str == "cyan")
+      return Qt::cyan;
+    if (str == "darkCyan")
+      return Qt::darkCyan;
     if (str == "darkGreen")
       return Qt::darkGreen;
     if (str == "cyan")
