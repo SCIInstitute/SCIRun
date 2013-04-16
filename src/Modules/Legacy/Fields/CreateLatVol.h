@@ -26,30 +26,53 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_FIELDTOMESH_H
-#define MODULES_FIELDS_FIELDTOMESH_H
+#ifndef MODULES_LEGACY_FIELDS_CREATELATVOL_H__
+#define MODULES_LEGACY_FIELDS_CREATELATVOL_H__
+
+/*
+ *  CreateLatVol.cc:  Make an ImageField that fits the source field.
+ *
+ *  Written by:
+ *   Michael Callahan
+ *   Department of Computer Science
+ *   University of Utah
+ *   March 2001
+ *
+ */
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has2InputPorts<FieldPortTag, Field5PortTag>,
-  public Has1OutputPort<MeshPortTag>
-{
-  public:
-    FieldToMesh();
+      class SCISHARE CreateLatVol : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CreateLatVol();
 
-    virtual void execute();
+        virtual void execute();
 
-    INPUT_PORT(0, Field, LegacyField);
-    INPUT_PORT(1, Field5, Field5);
-    OUTPUT_PORT(0, Mesh, LegacyMesh);
-};
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, LatVolSize, DenseMatrix);
+        OUTPUT_PORT(0, OutputField, LegacyField);
 
-}}}
+        static Core::Algorithms::AlgorithmParameterName XSize;
+        static Core::Algorithms::AlgorithmParameterName YSize;
+        static Core::Algorithms::AlgorithmParameterName ZSize;
+        static Core::Algorithms::AlgorithmParameterName PadPercent;
+        static Core::Algorithms::AlgorithmParameterName DataAtLocation;
+        static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
+
+      private:
+        enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+      };
+
+    }
+  }
+}
 
 #endif

@@ -39,44 +39,14 @@
  *
  */
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-//#include <Core/Util/StringUtil.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
-
-      class CreateLatVol : public Module,
-        Has2InputPorts<FieldPortTag, MatrixPortTag>,
-        Has1OutputPort<FieldPortTag>
-      {
-      public:
-        CreateLatVol();
-
-        virtual void execute();
-
-        INPUT_PORT(0, InputField, LegacyField);
-        INPUT_PORT(1, LatVolSize, DenseMatrix);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-
-        static AlgorithmParameterName XSize, YSize, ZSize, PadPercent, DataAtLocation, ElementSizeNormalized;
-
-      private:
-        enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-      };
-
-    }
-  }
-}
-
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;

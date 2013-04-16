@@ -51,8 +51,8 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
 
 Module::Module(const ModuleLookupInfo& info,
-  ModuleStateFactoryHandle stateFactory,
   bool hasUi,
+  ModuleStateFactoryHandle stateFactory,
   const std::string& version)
   : info_(info), has_ui_(hasUi), 
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),

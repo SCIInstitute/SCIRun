@@ -45,7 +45,7 @@ class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::M
 
     virtual void execute();
 
-    INPUT_PORT(0, InputField, LegacyField);
+  INPUT_PORT(0, InputField, LegacyField);
   OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
   
   static Core::Algorithms::AlgorithmParameterName DataMap;

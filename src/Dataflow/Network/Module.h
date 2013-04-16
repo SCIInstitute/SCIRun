@@ -52,8 +52,8 @@ namespace Networks {
   {
   public:
     Module(const ModuleLookupInfo& info, 
-      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       bool hasUi = true, 
+      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       const std::string& version = "1.0");
     virtual ~Module();
 

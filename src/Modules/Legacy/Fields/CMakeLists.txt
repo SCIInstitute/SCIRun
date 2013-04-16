@@ -28,6 +28,10 @@
 
 # CMakeLists.txt for Dataflow/Modules/Fields
 
+SET(Dataflow_Modules_Legacy_Fields_HEADERS
+  CreateLatVol.h
+)
+
 SET(Dataflow_Modules_Legacy_Fields_SRCS
   #FlipSurfaceNormals.cc
   #GenerateElectrode.cc
@@ -149,7 +153,10 @@ IF(WITH_TETGEN)
     InterfaceWithTetGen.cc)
 ENDIF(WITH_TETGEN)
     
-ADD_LIBRARY(Dataflow_Modules_Legacy_Fields ${Dataflow_Modules_Legacy_Fields_SRCS})
+ADD_LIBRARY(Dataflow_Modules_Legacy_Fields 
+  ${Dataflow_Modules_Legacy_Fields_HEADERS}
+  ${Dataflow_Modules_Legacy_Fields_SRCS}
+)
 
 TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
   Dataflow_Network
