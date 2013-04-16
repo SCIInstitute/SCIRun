@@ -70,13 +70,6 @@ namespace SCIRun {
         static AlgorithmParameterName XSize, YSize, ZSize, PadPercent, DataAtLocation, ElementSizeNormalized;
 
       private:
-//         GuiInt size_x_;
-//         GuiInt size_y_;
-//         GuiInt size_z_;
-//         GuiDouble padpercent_;
-//         GuiString data_at_;
-//         GuiString element_size_;
-// 
         enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
       };
 
@@ -88,6 +81,13 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
+
+AlgorithmParameterName CreateLatVol::XSize("XSize");
+AlgorithmParameterName CreateLatVol::YSize("YSize");
+AlgorithmParameterName CreateLatVol::ZSize("ZSize");
+AlgorithmParameterName CreateLatVol::PadPercent("PadPercent");
+AlgorithmParameterName CreateLatVol::DataAtLocation("DataAtLocation");
+AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalized");
 
 CreateLatVol::CreateLatVol()
   : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))

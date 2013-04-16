@@ -156,23 +156,23 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
   #Dataflow_Widgets
   #Dataflow_GuiInterface
   #Dataflow_TkExtensions
-  Core_Algorithms_Fields
-  Core_Algorithms_Util
+  Core_Algorithms_Legacy_Fields
+  Algorithms_Base
   #Core_Algorithms_Visualization
   #Core_Algorithms_Geometry
   #Core_Algorithms_Converter
   Core_Basis
   Core_Datatypes
-  Core_Exceptions
+  Core_Exceptions_Legacy
   #Core_Geom
-  Core_Geometry
+  Core_Geometry_Primitives
   #Core_GeomInterface
   #Core_ImportExport
   Core_Math
   #Core_Parser
   #Core_Persistent
-  Core_Thread
-  Core_Util
+  #Core_Thread
+  Core_Util_Legacy
   #${TK_LIBRARY}
   #${GL_LIBRARY}
   #${LEX_LIBRARY}
