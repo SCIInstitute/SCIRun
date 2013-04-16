@@ -455,6 +455,14 @@
          </item>
          <item>
           <property name="text">
+           <string>CreateScalarFieldDataBasic</string>
+          </property>
+          <property name="text">
+           <string>Set field data via python map.</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>CreateLatVolMesh</string>
           </property>
           <property name="text">
@@ -470,14 +478,6 @@
           </property>
           <property name="text">
            <string>Official ported v4 module.</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>CreateFieldDataBasic</string>
-          </property>
-          <property name="text">
-           <string>Set field data via python map.</string>
           </property>
          </item>
         </item>
