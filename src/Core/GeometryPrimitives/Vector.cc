@@ -32,13 +32,14 @@
 
 #include <Core/GeometryPrimitives/Vector.h>
 
-//#include <Core/Util/TypeDescription.h>
+
 //#include <Core/Persistent/Persistent.h>
 
 #include <iostream>
 #include <sstream>
 
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun;
 
 bool SCIRun::Core::Geometry::operator==(const Vector& v1, const Vector& v2)
 {
@@ -182,15 +183,16 @@ Pio(Piostream& stream, Vector& p)
   }
   stream.end_cheap_delim();
 }
+#endif
 
 const std::string& 
-Vector_get_h_file_path() 
+SCIRun::Vector_get_h_file_path() 
 {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
 }
 
-const TypeDescription* get_type_description(Vector*)
+const TypeDescription* SCIRun::get_type_description(Vector*)
 {
   static TypeDescription* td = 0;
   if(!td){
@@ -200,4 +202,4 @@ const TypeDescription* get_type_description(Vector*)
   return td;
 }
 
-#endif
+

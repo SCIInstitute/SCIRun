@@ -36,6 +36,7 @@
 #include <string>
 #include <cmath>
 #include <boost/array.hpp>
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
@@ -237,9 +238,6 @@ inline Vector Max(const Vector &v1, const Vector &v2)
 // For Pio system
 SCISHARE void Pio( Piostream&, Vector& );
 
-// TODO: This one is obsolete when dynamic compilation will be abandoned
-const std::string& Vector_get_h_file_path();
-SCISHARE const TypeDescription* get_type_description(Vector*);
 #endif
 
 inline
@@ -478,6 +476,11 @@ inline void Vector::Set(double x, double y, double z)
   d_[2] = z;
 }
 
-}}}
+}}
+// TODO: This one is obsolete when dynamic compilation will be abandoned
+const std::string& Vector_get_h_file_path();
+SCISHARE const TypeDescription* get_type_description(Core::Geometry::Vector*);
+
+}
 
 #endif
