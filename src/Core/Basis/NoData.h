@@ -111,13 +111,14 @@ public:
   void get_derivate_weights(const VECTOR &coords, unsigned int elem, double *w) const
   {
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str); 
 #endif
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class T>
 const std::string
 NoDataBasis<T>::type_name(int n)
@@ -156,6 +157,7 @@ const TypeDescription* get_type_description(NoDataBasis<T> *)
   return td;
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define NODATABASIS_VERSION 1
 
 template <class T>

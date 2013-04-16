@@ -137,13 +137,13 @@ public:
   {
     return 0.;
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class T>
 const TypeDescription* get_type_description(CrvCubicHmt<T> *)
 {
@@ -180,6 +180,7 @@ CrvCubicHmt<T>::type_name(int n)
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int CRVCUBICHMT_BASIS_VERSION = 1;
 template <class T>
 void

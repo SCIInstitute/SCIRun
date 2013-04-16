@@ -174,15 +174,13 @@ public:
       w[si] = 0;
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Functions for dynamic compilation and storing this object on disk
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 template <class T>
 const std::string
 ConstantBasis<T>::type_name(int n)
@@ -220,7 +218,7 @@ const TypeDescription* get_type_description(ConstantBasis<T> *)
   return td;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define CONSTANTBASIS_VERSION 1
 
 template <class T>
