@@ -76,6 +76,10 @@ namespace {
       return Qt::yellow;
     if (str == "darkYellow")
       return Qt::darkYellow;
+    if (str == "lightGray")
+      return Qt::lightGray;
+    if (str == "darkGray")
+      return Qt::darkGray;
     else
       return Qt::black;
   }
