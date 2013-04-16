@@ -42,9 +42,7 @@
 #include <Core/Basis/Share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Basis {
-        
+         
   template<class T>
     inline T InverseMatrix3x3(const T *p, T *q) 
   {
@@ -141,6 +139,9 @@ namespace SCIRun {
       const double s = std::sqrt((a*a+b*b+c*c)*(d*d+e*e+f*f)*(g*g+h*h+i*i));
       return (detp/s);
     }
+
+    namespace Core {
+      namespace Basis {
 
   //! default case for volume calculation - currently not needed  
   template <class VECTOR, class T>

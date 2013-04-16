@@ -3092,7 +3092,7 @@ protected:
     J[6] = Jv[2].x();
     J[7] = Jv[2].y();
     J[8] = Jv[2].z();
-    Core::Basis::InverseMatrix3x3(J,Ji);
+    InverseMatrix3x3(J,Ji);
   }
 
   Array3<Point>&     points_;
@@ -3548,7 +3548,7 @@ VStructHexVolMesh<MESH>::inverse_jacobian(const VMesh::coords_type& coords,
   J[7] = Jv[2].y();
   J[8] = Jv[2].z();
   
-  return (Core::Basis::InverseMatrix3x3(J,Ji));
+  return (InverseMatrix3x3(J,Ji));
 }
 
 
@@ -3561,13 +3561,13 @@ VStructHexVolMesh<MESH>::scaled_jacobian_metric(VMesh::Elem::index_type idx) con
 
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
-  double min_jacobian = Core::Basis::ScaledDetMatrix3P(Jv);
+  double min_jacobian = ScaledDetMatrix3P(Jv);
   
   size_t num_vertices = this->basis_->number_of_vertices();
   for (size_t j=0;j < num_vertices;j++)
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
-    temp = Core::Basis::ScaledDetMatrix3P(Jv);
+    temp = ScaledDetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
   }
     

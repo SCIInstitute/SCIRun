@@ -1955,7 +1955,7 @@ ImageMesh<Basis>::compute_jacobian()
     
     det_jacobian_ = DetMatrix3x3(jacobian_);
     scaled_jacobian_ = ScaledDetMatrix3x3(jacobian_);
-    det_inverse_jacobian_ = Core::Basis::InverseMatrix3x3(jacobian_,inverse_jacobian_);
+    det_inverse_jacobian_ = InverseMatrix3x3(jacobian_,inverse_jacobian_);
   }
 }
 
