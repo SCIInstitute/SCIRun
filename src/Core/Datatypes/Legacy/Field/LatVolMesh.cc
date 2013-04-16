@@ -2883,35 +2883,35 @@ public:
 
     inline
     const Point &node0() const {
-      return points_(nodes_[0]);
+      return points_[nodes_[0]];
     }
     inline
     const Point &node1() const {
-      return points_(nodes_[1]);
+      return points_[nodes_[1]];
     }
     inline
     const Point &node2() const {
-      return points_(nodes_[2]);
+      return points_[nodes_[2]];
     }
     inline
     const Point &node3() const {
-      return points_(nodes_[3]);
+      return points_[nodes_[3]];
     }
     inline
     const Point &node4() const {
-      return points_(nodes_[4]);
+      return points_[nodes_[4]];
     }
     inline
     const Point &node5() const {
-      return points_(nodes_[5]);
+      return points_[nodes_[5]];
     }
     inline
     const Point &node6() const {
-      return points_(nodes_[6]);
+      return points_[nodes_[6]];
     }
     inline
     const Point &node7() const {
-      return points_(nodes_[7]);
+      return points_[nodes_[7]];
     }
 
   private:
@@ -3119,7 +3119,7 @@ static MeshTypeID StructHexVolMesh_MeshID1(StructHexVolMesh<HexTrilinearLgn<Poin
                   StructHexVolMesh<HexTrilinearLgn<Point> >::structhexvol_maker);
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+//#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 void
 VStructHexVolMesh<MESH>::get_center(Point &p, VMesh::Node::index_type idx) const
@@ -3210,7 +3210,7 @@ VStructHexVolMesh<MESH>::get_centers(Point* points,
                                      VMesh::Elem::array_type& array) const
 {
   Point p;
-  StackVector<VMesh::index_type,4> nodes;
+  StackVector<VMesh::index_type,8> nodes;
   for (size_t j=0; j <array.size(); j++)
   {
     VMesh::Elem::index_type idx = array[j];
@@ -4117,7 +4117,7 @@ VStructHexVolMesh<MESH>::get_mgradient_weights(const std::vector<VMesh::coords_t
   }
   ASSERTFAIL("Gradient of unknown order requested");
 }
-#endif
+//#endif
 
 #endif
 

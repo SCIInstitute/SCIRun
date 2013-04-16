@@ -87,6 +87,11 @@ public:
     return impl_.origin()[idx];
   }
 
+  const T& operator()(size_t i1, size_t i2, size_t i3) const
+  {
+    return impl_[i1][i2][i3];
+  }
+
   inline size_t dim1() const {return impl_.shape()[0];}
   inline size_t dim2() const {return impl_.shape()[1];}
   inline size_t dim3() const {return impl_.shape()[2];}

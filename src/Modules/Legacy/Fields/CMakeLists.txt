@@ -76,7 +76,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #FairMesh.cc
   #GetAllSegmentationBoundaries.cc
   #GetFieldBoundary.cc
-  ReportFieldInfo.cc
+  #ReportFieldInfo.cc
   #ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
   #GetSliceFromStructuredFieldByIndices.cc
