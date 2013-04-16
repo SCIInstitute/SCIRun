@@ -1950,7 +1950,7 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::get_type_description() const
 {
-  return get_type_description((StructHexVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
 }
 
 

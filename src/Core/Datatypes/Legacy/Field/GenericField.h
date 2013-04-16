@@ -418,9 +418,9 @@ GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
   static std::string name(type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(reinterpret_cast<Mesh*>(0));
-  const TypeDescription *sub2 = get_type_description(reinterpret_cast<Basis*>(0));
-  const TypeDescription *sub3 = get_type_description(reinterpret_cast<FData*>(0));
+  const TypeDescription *sub1 = SCIRun::get_type_description(reinterpret_cast<Mesh*>(0));
+  const TypeDescription *sub2 = SCIRun::get_type_description(reinterpret_cast<Basis*>(0));
+  const TypeDescription *sub3 = SCIRun::get_type_description(reinterpret_cast<FData*>(0));
 
   switch (td) {
   default:

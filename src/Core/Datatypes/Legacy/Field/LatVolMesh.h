@@ -1150,7 +1150,7 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::get_type_description() const
 {
-  return get_type_description((LatVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((LatVolMesh<Basis> *)0);
 }
 
 
@@ -1162,7 +1162,7 @@ LatVolMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1180,7 +1180,7 @@ LatVolMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1198,7 +1198,7 @@ LatVolMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1216,7 +1216,7 @@ LatVolMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((LatVolMesh<Basis> *)0);
+      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
