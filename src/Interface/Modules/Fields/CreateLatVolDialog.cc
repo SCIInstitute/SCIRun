@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CreateLatVolMeshDialog.h>
-#include <Modules/Fields/CreateLatVolMesh.h>
+#include <Interface/Modules/Fields/CreateLatVolDialog.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
+typedef SCIRun::Modules::Fields::CreateLatVol CreateLatVolModule;
 
-CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleStateHandle state,
+CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -55,29 +55,29 @@ CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, ModuleSt
   connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
-void CreateLatVolMeshDialog::push()
+void CreateLatVolDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(CreateLatVolMesh::XSize, xSizeSpinBox_->value());
-    state_->setValue(CreateLatVolMesh::YSize, ySizeSpinBox_->value());
-    state_->setValue(CreateLatVolMesh::ZSize, zSizeSpinBox_->value());
-    state_->setValue(CreateLatVolMesh::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
+    state_->setValue(CreateLatVolModule::XSize, xSizeSpinBox_->value());
+    state_->setValue(CreateLatVolModule::YSize, ySizeSpinBox_->value());
+    state_->setValue(CreateLatVolModule::ZSize, zSizeSpinBox_->value());
+    state_->setValue(CreateLatVolModule::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
   }
 }
 
-void CreateLatVolMeshDialog::pull()
+void CreateLatVolDialog::pull()
 {
   Pulling p(this);
-  int newValue = state_->getValue(CreateLatVolMesh::XSize).getInt();
+  int newValue = state_->getValue(CreateLatVolModule::XSize).getInt();
   if (newValue != xSizeSpinBox_->value())
     xSizeSpinBox_->setValue(newValue);
-  newValue = state_->getValue(CreateLatVolMesh::YSize).getInt();
+  newValue = state_->getValue(CreateLatVolModule::YSize).getInt();
   if (newValue != ySizeSpinBox_->value())
     ySizeSpinBox_->setValue(newValue);
-  newValue = state_->getValue(CreateLatVolMesh::ZSize).getInt();
+  newValue = state_->getValue(CreateLatVolModule::ZSize).getInt();
   if (newValue != zSizeSpinBox_->value())
     zSizeSpinBox_->setValue(newValue);
-  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolMesh::ElementSizeNormalized).getBool());
+  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
   elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>CreateLatVol</class>
- <widget class="QDialog" name="CreateLatVol">
+ <class>CreateLatVolMesh</class>
+ <widget class="QDialog" name="CreateLatVolMesh">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -237,7 +237,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>CreateLatVol</receiver>
+   <receiver>CreateLatVolMesh</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -253,7 +253,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>CreateLatVol</receiver>
+   <receiver>CreateLatVolMesh</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

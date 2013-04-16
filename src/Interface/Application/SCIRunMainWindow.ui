@@ -372,7 +372,7 @@
           </property>
           <property name="font">
            <font>
-            <strikeout>true</strikeout>
+            <strikeout>false</strikeout>
            </font>
           </property>
           <property name="text">
@@ -445,14 +445,6 @@
          <property name="text">
           <string/>
          </property>
-         <item>
-          <property name="text">
-           <string>FieldToMesh</string>
-          </property>
-          <property name="text">
-           <string>Returns underlying mesh from a field.</string>
-          </property>
-         </item>
          <item>
           <property name="text">
            <string>CreateScalarFieldDataBasic</string>

@@ -38,7 +38,7 @@ namespace Gui {
   
 class SCISHARE CreateLatVolMeshDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::CreateLatVol
+  public Ui::CreateLatVolMesh
 {
 	Q_OBJECT
 	
