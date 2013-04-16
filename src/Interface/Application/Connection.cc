@@ -238,7 +238,10 @@ ConnectionInProgressManhattan::ConnectionInProgressManhattan(PortWidget* port, C
 
 void ConnectionInProgressManhattan::update(const QPointF& end)
 {
-  drawStrategy_->draw(this, fromPort_->position(), end);
+  if (fromPort_->isInput())
+    drawStrategy_->draw(this, end, fromPort_->position());
+  else
+    drawStrategy_->draw(this, fromPort_->position(), end);
 }
 
 
