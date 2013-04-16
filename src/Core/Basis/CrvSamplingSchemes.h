@@ -29,7 +29,7 @@
 #ifndef CORE_BASIS_CRVSAMPLINGSCHEMES_H
 #define CORE_BASIS_CRVSAMPLINGSCHEMES_H 1
 
-//#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Assert.h>
 #include <vector>
 
 #include <Core/Basis/Share.h>

@@ -575,14 +575,11 @@ public:
   {
     return get_volume3(this, cd);
   }
-  
+  static const std::string type_name(int n = -1);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  static  const std::string type_name(int n = -1);
   virtual void io (Piostream& str);
 #endif
 };
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 template <class T>
 const std::string
@@ -621,7 +618,7 @@ get_type_description(HexTricubicHmtScaleFactorsEdges<T> *)
   return td;
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int HEXTRICUBICHMTSCALEFACTORSEDGES_VERSION = 1;
 template <class T>
 void

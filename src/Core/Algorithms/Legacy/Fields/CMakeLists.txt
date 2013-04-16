@@ -152,8 +152,9 @@ ADD_LIBRARY(Core_Algorithms_Legacy_Fields
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_Fields 
   Core_Datatypes 
   Core_Datatypes_Legacy_Field
+  Algorithms_Base
   #Core_Util 
-  Core_Exceptions 
+  Core_Exceptions_Legacy
   Core_Thread 
   #Core_Geom 
   Core_Geometry_Primitives

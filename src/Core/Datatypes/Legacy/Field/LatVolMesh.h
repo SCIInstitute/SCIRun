@@ -2448,7 +2448,7 @@ LatVolMesh<Basis>::io(Piostream& stream)
 
 }
 
-
+#endif
 
 template <class Basis>
 const std::string
@@ -2470,7 +2470,7 @@ LatVolMesh<Basis>::type_name(int n)
     return find_type_name((Basis *)0);
   }
 }
-#endif
+
 
 template <class Basis>
 void

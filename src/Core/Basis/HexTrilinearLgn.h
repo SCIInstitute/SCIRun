@@ -488,13 +488,13 @@ public:
     return get_volume3(this, cd);
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class T>
 const TypeDescription* 
 get_type_description(HexTrilinearLgn<T> *)
@@ -532,6 +532,7 @@ HexTrilinearLgn<T>::type_name(int n)
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int HEX_TRILINEAR_LGN_VERSION = 1;
 template <class T>
 void

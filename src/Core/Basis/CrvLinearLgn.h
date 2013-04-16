@@ -32,11 +32,11 @@
 #ifndef CORE_BASIS_CRVLINEARLGN_H
 #define CORE_BASIS_CRVLINEARLGN_H 1
 
-#include <float.h>
+#include <cfloat>
 
 #include <Core/Basis/Basis.h>
-//#include <Core/Util/TypeDescription.h>
-//#include <Core/Datatypes/TypeName.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvElementWeights.h>
 #include <Core/Basis/CrvSamplingSchemes.h>
@@ -345,14 +345,14 @@ public:
     tmp1.resize(1);
     tmp[0] = 1.0;
   }  
-  
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   static const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class T>
 const TypeDescription* get_type_description(CrvLinearLgn<T> *)
 {
@@ -368,8 +368,6 @@ const TypeDescription* get_type_description(CrvLinearLgn<T> *)
   }
   return td;
 }
-
-
 
 template <class T>
 const std::string
@@ -390,6 +388,7 @@ CrvLinearLgn<T>::type_name(int n)
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int CRVLINEARLGN_VERSION = 1;
 template <class T>
 void

@@ -30,7 +30,7 @@
 #define CORE_BASIS_TETSAMPLINGSCHEMES_H 1
 
 #include <vector>
-//#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Exception.h>
 
 #include <Core/Basis/Share.h>

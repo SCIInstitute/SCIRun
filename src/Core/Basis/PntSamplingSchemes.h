@@ -30,7 +30,7 @@
 #define CORE_BASIS_PNTSAMPLINGSCHEMES_H 1
 
 #include <vector>
-//#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Assert.h>
 
 #include <Core/Basis/Share.h>
 

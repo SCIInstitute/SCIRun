@@ -35,9 +35,9 @@
 #include <Core/Basis/Basis.h>
 #include <Core/Basis/NoElementWeights.h>
 #include <Core/Basis/PntSamplingSchemes.h>
-//#include <Core/Util/TypeDescription.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
 //#include <Core/Persistent/Persistent.h>
-//#include <Core/Datatypes/TypeName.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Basis/Share.h>
 
 namespace SCIRun {
