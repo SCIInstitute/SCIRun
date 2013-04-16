@@ -76,6 +76,8 @@ typedef TriLinearLgn<unsigned long>         FDulongBasis;
 typedef TriSurfMesh<TriLinearLgn<Point> > TSMesh;
 
 
+namespace SCIRun
+{
 template class TriSurfMesh<TriLinearLgn<Point> >;
 
 //noData
@@ -108,7 +110,7 @@ template class GenericField<TSMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<TSMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<TSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<TSMesh, FDulongBasis,  std::vector<unsigned long> >;
-
+}
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 PersistentTypeID backwards_compat_TSM("TriSurfMesh", "Mesh",
   TSMesh::maker, TSMesh::maker);

@@ -44,9 +44,6 @@ using namespace SCIRun::Core::Basis;
 
 typedef LatVolMesh<HexTrilinearLgn<Point> > LVMesh;
 
-template class LatVolMesh<HexTrilinearLgn<Point> >;
-
-
 typedef HexTrilinearLgn<Tensor>             FDTensorBasis;
 typedef HexTrilinearLgn<Vector>             FDVectorBasis;
 typedef HexTrilinearLgn<double>             FDdoubleBasis;
@@ -74,45 +71,51 @@ typedef ConstantBasis<unsigned char>      CFDucharBasis;
 typedef ConstantBasis<unsigned long>      CFDulongBasis;
 
 typedef NoDataBasis<double>             NDBasis;
-//NoData
-template class GenericField<LVMesh, NoDataBasis<double>,  FData3d<double, LVMesh> >;
-template class GenericField<LVMesh, NoDataBasis<int>,  FData3d<int, LVMesh> >;
 
-//Constant
-template class GenericField<LVMesh, CFDTensorBasis,  FData3d<Tensor, LVMesh> >;
-template class GenericField<LVMesh, CFDVectorBasis,  FData3d<Vector, LVMesh> >;
-template class GenericField<LVMesh, CFDdoubleBasis,  FData3d<double, LVMesh> >;
-template class GenericField<LVMesh, CFDfloatBasis,   FData3d<float, LVMesh> >;
-template class GenericField<LVMesh, CFDintBasis,     FData3d<int, LVMesh> >;
-template class GenericField<LVMesh, CFDlonglongBasis,FData3d<long long, LVMesh> >;
-template class GenericField<LVMesh, CFDshortBasis,   FData3d<short, LVMesh> >;
-template class GenericField<LVMesh, CFDcharBasis,    FData3d<char, LVMesh> >;
-template class GenericField<LVMesh, CFDuintBasis,    
-			    FData3d<unsigned int, LVMesh> >;
-template class GenericField<LVMesh, CFDushortBasis,  
-			    FData3d<unsigned short, LVMesh> >;
-template class GenericField<LVMesh, CFDucharBasis,   
-			    FData3d<unsigned char, LVMesh> >;
-template class GenericField<LVMesh, CFDulongBasis,   
-			    FData3d<unsigned long, LVMesh> >;
+namespace SCIRun
+{
+  template class LatVolMesh<HexTrilinearLgn<Point> >;
 
-//Linear
-template class GenericField<LVMesh, FDTensorBasis,  FData3d<Tensor, LVMesh> >;
-template class GenericField<LVMesh, FDVectorBasis,  FData3d<Vector, LVMesh> >;
-template class GenericField<LVMesh, FDdoubleBasis,  FData3d<double, LVMesh> >;
-template class GenericField<LVMesh, FDfloatBasis,   FData3d<float, LVMesh> >;
-template class GenericField<LVMesh, FDintBasis,     FData3d<int, LVMesh> >;
-template class GenericField<LVMesh, FDlonglongBasis, FData3d<long long, LVMesh> >;
-template class GenericField<LVMesh, FDshortBasis,   FData3d<short, LVMesh> >;
-template class GenericField<LVMesh, FDcharBasis,    FData3d<char, LVMesh> >;
-template class GenericField<LVMesh, FDuintBasis,    
-			    FData3d<unsigned int, LVMesh> >;
-template class GenericField<LVMesh, FDushortBasis,  
-			    FData3d<unsigned short, LVMesh> >;
-template class GenericField<LVMesh, FDucharBasis,   
-			    FData3d<unsigned char, LVMesh> >;
-template class GenericField<LVMesh, FDulongBasis,   
-			    FData3d<unsigned long, LVMesh> >;
+  //NoData
+  template class GenericField<LVMesh, NoDataBasis<double>,  FData3d<double, LVMesh> >;
+  template class GenericField<LVMesh, NoDataBasis<int>,  FData3d<int, LVMesh> >;
+
+  //Constant
+  template class GenericField<LVMesh, CFDTensorBasis,  FData3d<Tensor, LVMesh> >;
+  template class GenericField<LVMesh, CFDVectorBasis,  FData3d<Vector, LVMesh> >;
+  template class GenericField<LVMesh, CFDdoubleBasis,  FData3d<double, LVMesh> >;
+  template class GenericField<LVMesh, CFDfloatBasis,   FData3d<float, LVMesh> >;
+  template class GenericField<LVMesh, CFDintBasis,     FData3d<int, LVMesh> >;
+  template class GenericField<LVMesh, CFDlonglongBasis,FData3d<long long, LVMesh> >;
+  template class GenericField<LVMesh, CFDshortBasis,   FData3d<short, LVMesh> >;
+  template class GenericField<LVMesh, CFDcharBasis,    FData3d<char, LVMesh> >;
+  template class GenericField<LVMesh, CFDuintBasis,    
+    FData3d<unsigned int, LVMesh> >;
+  template class GenericField<LVMesh, CFDushortBasis,  
+    FData3d<unsigned short, LVMesh> >;
+  template class GenericField<LVMesh, CFDucharBasis,   
+    FData3d<unsigned char, LVMesh> >;
+  template class GenericField<LVMesh, CFDulongBasis,   
+    FData3d<unsigned long, LVMesh> >;
+
+  //Linear
+  template class GenericField<LVMesh, FDTensorBasis,  FData3d<Tensor, LVMesh> >;
+  template class GenericField<LVMesh, FDVectorBasis,  FData3d<Vector, LVMesh> >;
+  template class GenericField<LVMesh, FDdoubleBasis,  FData3d<double, LVMesh> >;
+  template class GenericField<LVMesh, FDfloatBasis,   FData3d<float, LVMesh> >;
+  template class GenericField<LVMesh, FDintBasis,     FData3d<int, LVMesh> >;
+  template class GenericField<LVMesh, FDlonglongBasis, FData3d<long long, LVMesh> >;
+  template class GenericField<LVMesh, FDshortBasis,   FData3d<short, LVMesh> >;
+  template class GenericField<LVMesh, FDcharBasis,    FData3d<char, LVMesh> >;
+  template class GenericField<LVMesh, FDuintBasis,    
+    FData3d<unsigned int, LVMesh> >;
+  template class GenericField<LVMesh, FDushortBasis,  
+    FData3d<unsigned short, LVMesh> >;
+  template class GenericField<LVMesh, FDucharBasis,   
+    FData3d<unsigned char, LVMesh> >;
+  template class GenericField<LVMesh, FDulongBasis,   
+    FData3d<unsigned long, LVMesh> >;
+}
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
