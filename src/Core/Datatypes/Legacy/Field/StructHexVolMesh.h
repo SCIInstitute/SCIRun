@@ -1641,23 +1641,23 @@ StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
       
   if (w > (a0 + a1 + a2 + a3))
   {
-    p = Point(p5*a + p2*t + p7*u + p6*v);
+    p = Core::Geometry::Point(p5*a + p2*t + p7*u + p6*v);
   }
   else if (w > (a0 + a1 + a2))
   {
-    p = Point(p0*a + p5*t + p7*u + p5*v);
+    p = Core::Geometry::Point(p0*a + p5*t + p7*u + p5*v);
   }
   else if (w > (a0 + a1))
   {
-    p = Point(p0*a + p5*t + p2*u + p7*v);
+    p = Core::Geometry::Point(p0*a + p5*t + p2*u + p7*v);
   }
   else if (w > a0)
   {
-    p = Point(p0*a + p2*t + p3*u + p7*v);
+    p = Core::Geometry::Point(p0*a + p2*t + p3*u + p7*v);
   }
   else
   {
-    p = Point(p0*a + p1*t + p2*u + p5*v);
+    p = Core::Geometry::Point(p0*a + p1*t + p2*u + p5*v);
   }
 }
 
