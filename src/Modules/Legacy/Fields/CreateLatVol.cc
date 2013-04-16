@@ -40,49 +40,61 @@
  */
 
 #include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
 #include <Core/Datatypes/Matrix.h>
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+//#include <Core/Util/StringUtil.h>
 
-#include <Dataflow/GuiInterface/GuiVar.h>
+using namespace SCIRun::Dataflow::Networks;
 
-#include <iostream>
 
 namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-class CreateLatVol : public Module
-{
-  public:
-    CreateLatVol(GuiContext* ctx);
-    virtual ~CreateLatVol() {}
+      class CreateLatVol : public Module,
+        Has2InputPorts<FieldPortTag, MatrixPortTag>,
+        Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CreateLatVol();
 
-    virtual void execute();
+        virtual void execute();
 
-  private:
-    GuiInt size_x_;
-    GuiInt size_y_;
-    GuiInt size_z_;
-    GuiDouble padpercent_;
-    GuiString data_at_;
-    GuiString element_size_;
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, LatVolSize, DenseMatrix);
+        OUTPUT_PORT(0, OutputField, LegacyField);
 
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-};
+      private:
+//         GuiInt size_x_;
+//         GuiInt size_y_;
+//         GuiInt size_z_;
+//         GuiDouble padpercent_;
+//         GuiString data_at_;
+//         GuiString element_size_;
+// 
+        enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
+      };
 
+    }
+  }
+}
 
-DECLARE_MAKER(CreateLatVol)
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun;
 
-CreateLatVol::CreateLatVol(GuiContext* ctx)
-  : Module("CreateLatVol", ctx, Filter, "NewField", "SCIRun"),
-    size_x_(get_ctx()->subVar("sizex"), 16),
-    size_y_(get_ctx()->subVar("sizey"), 16),
-    size_z_(get_ctx()->subVar("sizez"), 16),
-    padpercent_(get_ctx()->subVar("padpercent"), 0.0),
-    data_at_(get_ctx()->subVar("data-at"), "Nodes"),
-    element_size_(get_ctx()->subVar("element-size"),"Mesh")
+CreateLatVol::CreateLatVol()
+  : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
+  /*,
+  size_x_(get_ctx()->subVar("sizex"), 16),
+  size_y_(get_ctx()->subVar("sizey"), 16),
+  size_z_(get_ctx()->subVar("sizez"), 16),
+  padpercent_(get_ctx()->subVar("padpercent"), 0.0),
+  data_at_(get_ctx()->subVar("data-at"), "Nodes"),
+  element_size_(get_ctx()->subVar("element-size"),"Mesh")*/
 {
 }
 
@@ -90,38 +102,36 @@ CreateLatVol::CreateLatVol(GuiContext* ctx)
 void
 CreateLatVol::execute()
 {
-  FieldHandle   ifieldhandle;
-  MatrixHandle  Size;
+  auto ifieldhandleOption = getOptionalInput(InputField);
+  auto sizeOption = getOptionalInput(LatVolSize);
 	
-  get_input_handle("Input Field", ifieldhandle, false);
-  get_input_handle("LatVol Size",Size,false);
-	
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || size_x_.changed() || size_y_.changed() ||
       size_z_.changed() || padpercent_.changed() || data_at_.changed() ||
       element_size_.changed() || !oport_cached("Output Sample Field") )
+#endif
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
+#endif
     
-    Point minb, maxb;
-    DataTypeEnum datatype;
-
-    if (Size.get_rep())
+    
+    if (sizeOption)
     {
-      if (Size->get_data_size() == 1)
+      auto size = *sizeOption;
+      if (size->rows() == 1 && size->cols() == 1)
       {
-        double* data = Size->get_data_pointer();
-        unsigned int size = static_cast<unsigned int>(data[0]);
+        unsigned int size = static_cast<unsigned int>((*size)(0,0));
         size_x_.set(size);
         size_y_.set(size);
         size_z_.set(size);
         get_ctx()->reset();
       }
-      else if (Size->get_data_size() == 3)
+      else if (size->rows() == 3 && size->cols() == 1)
       {
-        double* data = Size->get_data_pointer();
-        unsigned int size1 = static_cast<unsigned int>(data[0]);
-        unsigned int size2 = static_cast<unsigned int>(data[1]);
-        unsigned int size3 = static_cast<unsigned int>(data[2]);
+        unsigned int size1 = static_cast<unsigned int>((*size)(0,0));
+        unsigned int size2 = static_cast<unsigned int>((*size)(0,1));
+        unsigned int size3 = static_cast<unsigned int>((*size)(0,2));
         size_x_.set(size1);
         size_y_.set(size2);
         size_z_.set(size3);		
@@ -132,13 +142,16 @@ CreateLatVol::execute()
         error("LatVol size matrix needs to have or one element or three elements");
       }	
     }	
+
+    Point minb, maxb;
+    DataTypeEnum datatype;
 		
     // Create blank mesh.
-    VField::size_type sizex = Max(2, size_x_.get());
-    VField::size_type sizey = Max(2, size_y_.get());
-    VField::size_type sizez = Max(2, size_z_.get());		
+    VField::size_type sizex = std::max(2, size_x_.get());
+    VField::size_type sizey = std::max(2, size_y_.get());
+    VField::size_type sizez = std::max(2, size_z_.get());		
 		
-    if (ifieldhandle.get_rep() == 0)
+    if (!ifieldhandleOption)
     {
       datatype = SCALAR;
       if (element_size_.get() == "Mesh")
@@ -157,7 +170,7 @@ CreateLatVol::execute()
     else
     {
       datatype = SCALAR;
-      FieldInformation fi(ifieldhandle);
+      FieldInformation fi(*ifieldhandleOption);
       if (fi.is_vector())
       {
         datatype = VECTOR;
@@ -166,12 +179,12 @@ CreateLatVol::execute()
       {
         datatype = TENSOR;
       }
-      BBox bbox = ifieldhandle->vmesh()->get_bounding_box();
+      BBox bbox = (*ifieldhandleOption)->vmesh()->get_bounding_box();
       minb = bbox.min();
       maxb = bbox.max();
     }
 
-    Vector diag((maxb.asVector() - minb.asVector()) * (padpercent_.get()/100.0));
+    Vector diag((maxb - minb) * (padpercent_.get()/100.0));
     minb -= diag;
     maxb += diag;
 
@@ -194,10 +207,6 @@ CreateLatVol::execute()
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
 
-    send_output_handle("Output Sample Field", ofh);
+    sendOutput(OutputField, ofh);
   }
 }
-
-
-} // End namespace SCIRun
-
