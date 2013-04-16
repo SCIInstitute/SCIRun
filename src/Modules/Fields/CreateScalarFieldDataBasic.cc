@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Algorithms;
 AlgorithmParameterName CreateScalarFieldDataBasic::DataMap("DataMap");
 
 CreateScalarFieldDataBasic::CreateScalarFieldDataBasic()
-  : Module(ModuleLookupInfo("CreateScalarFieldDataBasic", "NewField", "SCIRun"))
+  : Module(ModuleLookupInfo("CreateScalarFieldDataBasic", "NewField", "SCIRun"), false)
 {
 }
 

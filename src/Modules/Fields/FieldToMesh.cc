@@ -31,7 +31,7 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", "SCIRun"))
+FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", "SCIRun"), false)
 {
 }
 
