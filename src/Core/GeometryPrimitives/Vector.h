@@ -208,12 +208,6 @@ inline Vector& Vector::operator*=(const double d)
   return *this;
 }
 
-//inline Vector operator*(const Vector& v, double s)
-//{
-//  Vector vs(v);
-//  return vs *= s;
-//}
-
 // Allows for double * Vector so that everything doesn't have to be
 // Vector * double
 inline Vector operator*(const double s, const Vector& v) {
