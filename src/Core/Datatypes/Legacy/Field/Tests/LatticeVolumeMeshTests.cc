@@ -78,6 +78,7 @@ namespace
 TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
 {
   ASSERT_TRUE(mesh_);
+  ASSERT_TRUE(field_);
   
   auto latVolVMesh = mesh_->vmesh();
   ASSERT_TRUE(latVolVMesh);
@@ -94,11 +95,9 @@ TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
   EXPECT_EQ(6, latVolVMesh->num_faces());
   EXPECT_EQ(1, latVolVMesh->num_elems());
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   ASSERT_TRUE(latVolVMesh->is_linearmesh());
 
   ASSERT_FALSE(latVolVMesh->has_normals());
-#endif
 }
 
 TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
