@@ -66,7 +66,7 @@ MeshTypeID::MeshTypeID(const std::string&type, MeshHandle (*mesh_maker)()) :
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -84,14 +84,14 @@ MeshTypeID::MeshTypeID(const std::string&type, MeshHandle (*mesh_maker)()) :
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
+        
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
+  
 }
 
 MeshTypeID::MeshTypeID(const std::string&type,
@@ -114,7 +114,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -132,14 +132,14 @@ MeshTypeID::MeshTypeID(const std::string&type,
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
+        
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
+  
 }
 
 MeshTypeID::MeshTypeID(const std::string&type,
@@ -161,16 +161,14 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
   else
   {
-    std::map<std::string,MeshTypeID*>::iterator dummy;
-    
-    dummy = MeshTypeIDTable->find(type);
+    auto dummy = MeshTypeIDTable->find(type);
     
     if (dummy != MeshTypeIDTable->end())
     {
@@ -179,14 +177,12 @@ MeshTypeID::MeshTypeID(const std::string&type,
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
 }
 
 MeshTypeID::MeshTypeID(const std::string&type,
@@ -207,16 +203,14 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
   else
   {
-    std::map<std::string,MeshTypeID*>::iterator dummy;
-    
-    dummy = MeshTypeIDTable->find(type);
+    auto dummy = MeshTypeIDTable->find(type);
     
     if (dummy != MeshTypeIDTable->end())
     {
@@ -225,14 +219,12 @@ MeshTypeID::MeshTypeID(const std::string&type,
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
 }
 
 
@@ -254,16 +246,14 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
   }
   else
   {
-    std::map<std::string,MeshTypeID*>::iterator dummy;
-    
-    dummy = MeshTypeIDTable->find(type);
+    auto dummy = MeshTypeIDTable->find(type);
     
     if (dummy != MeshTypeIDTable->end())
     {
@@ -272,14 +262,12 @@ MeshTypeID::MeshTypeID(const std::string&type,
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
 }
 
 MeshTypeID::MeshTypeID(const std::string&type,
@@ -299,7 +287,7 @@ MeshTypeID::MeshTypeID(const std::string&type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -317,14 +305,12 @@ MeshTypeID::MeshTypeID(const std::string&type,
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
 }
 
 
@@ -344,7 +330,7 @@ MeshTypeID::MeshTypeID(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   if (MeshTypeIDTable == 0)
   {
     MeshTypeIDTable = new std::map<std::string,MeshTypeID*>;
@@ -362,14 +348,12 @@ MeshTypeID::MeshTypeID(const std::string& type,
 #if DEBUG
         std::cerr << "WARNING: duplicate mesh type exists: " << type << "\n";
 #endif
-        MeshTypeIDMutex->unlock();
         return;
       }
     }
   }
   
   (*MeshTypeIDTable)[type] = this;
-  MeshTypeIDMutex->unlock();
 }
 
 
@@ -446,7 +430,7 @@ SCIRun::CreateMesh(const std::string& type)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -456,7 +440,7 @@ SCIRun::CreateMesh(const std::string& type)
       handle = (*it).second->mesh_maker();
     }
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }
 
@@ -470,7 +454,7 @@ SCIRun::CreateMesh(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -480,7 +464,7 @@ SCIRun::CreateMesh(const std::string& type,
       handle = (*it).second->latvol_maker(x,y,z,min,max);
     }
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }
 
@@ -494,7 +478,7 @@ SCIRun::CreateMesh(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -504,7 +488,7 @@ SCIRun::CreateMesh(const std::string& type,
       handle = (*it).second->image_maker(x,y,min,max);
     }
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }
 
@@ -517,7 +501,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -527,7 +511,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x,
       handle = (*it).second->scanline_maker(x,min,max);
     }
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }
 
@@ -540,7 +524,7 @@ SCIRun::CreateMesh(const std::string& type,
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -554,7 +538,7 @@ SCIRun::CreateMesh(const std::string& type,
       handle = (*it).second->latvol_maker(x,y,z,Point(0,0,0),Point(1,1,1));
     }    
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }
 
@@ -566,7 +550,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -580,7 +564,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y
       handle = (*it).second->image_maker(x,y,Point(0,0,0),Point(1,1,0));
     }
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }
 
@@ -592,7 +576,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x)
   {
     MeshTypeIDMutex = new Mutex("Mesh Type ID Table Lock");
   }
-  MeshTypeIDMutex->lock();
+  boost::lock_guard<boost::mutex> lock(MeshTypeIDMutex->get());
   std::map<std::string,MeshTypeID*>::iterator it;
   it = MeshTypeIDTable->find(type);
   if (it != MeshTypeIDTable->end()) 
@@ -606,6 +590,6 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x)
       handle = (*it).second->scanline_maker(x,Point(0,0,0),Point(1,0,0));  
     }
   }
-  MeshTypeIDMutex->unlock();
+  
   return (handle);
 }

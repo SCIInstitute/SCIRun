@@ -129,33 +129,31 @@ FieldTypeID::FieldTypeID(const std::string&type,
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  FieldTypeIDMutex->lock();
-  if (FieldTypeIDTable == 0)
+  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
   {
-    FieldTypeIDTable = new std::map<std::string,FieldTypeID*>;
-  }
-  else
-  {
-    std::map<std::string,FieldTypeID*>::iterator dummy;
-    
-    dummy = FieldTypeIDTable->find(type);
-    
-    if (dummy != FieldTypeIDTable->end())
+    if (FieldTypeIDTable == 0)
     {
-      if (((*dummy).second->field_maker != field_maker) ||
-          ((*dummy).second->field_maker_mesh != field_maker_mesh))
+      FieldTypeIDTable = new std::map<std::string,FieldTypeID*>;
+    }
+    else
+    {
+      auto dummy = FieldTypeIDTable->find(type);
+
+      if (dummy != FieldTypeIDTable->end())
       {
+        if (((*dummy).second->field_maker != field_maker) ||
+          ((*dummy).second->field_maker_mesh != field_maker_mesh))
+        {
 #if DEBUG
-        std::cerr << "WARNING: duplicate field type exists: " << type << "\n";
+          std::cerr << "WARNING: duplicate field type exists: " << type << "\n";
 #endif
-        FieldTypeIDMutex->unlock();
-        return;
+          return;
+        }
       }
     }
+
+    (*FieldTypeIDTable)[type] = this;
   }
-  
-  (*FieldTypeIDTable)[type] = this;
-  FieldTypeIDMutex->unlock();
 }
 
 
@@ -167,18 +165,18 @@ SCIRun::CreateField(const std::string& type, MeshHandle mesh)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  FieldTypeIDMutex->lock();
-  std::map<std::string,FieldTypeID*>::iterator it;
-  it = FieldTypeIDTable->find(type);
-  if (it != FieldTypeIDTable->end()) 
+  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
   {
-    handle = (*it).second->field_maker_mesh(mesh);
+    auto it = FieldTypeIDTable->find(type);
+    if (it != FieldTypeIDTable->end()) 
+    {
+      handle = (*it).second->field_maker_mesh(mesh);
+    }
+    else
+    {
+      std::cerr << "Cannot find "<<type<<" in database\n";
+    }
   }
-  else
-  {
-    std::cout << "Cannot find "<<type<<" in database\n";
-  }
-  FieldTypeIDMutex->unlock();
   return (handle);
 }
 
@@ -190,13 +188,14 @@ SCIRun::CreateField(const std::string& type)
   {
     FieldTypeIDMutex = new Mutex("Field Type ID Table Lock");
   }
-  FieldTypeIDMutex->lock();
-  std::map<std::string,FieldTypeID*>::iterator it;
-  it = FieldTypeIDTable->find(type);
-  if (it != FieldTypeIDTable->end()) 
+  boost::lock_guard<boost::mutex> lock(FieldTypeIDMutex->get());
   {
-    handle = (*it).second->field_maker();
+    std::map<std::string,FieldTypeID*>::iterator it;
+    it = FieldTypeIDTable->find(type);
+    if (it != FieldTypeIDTable->end()) 
+    {
+      handle = (*it).second->field_maker();
+    }
   }
-  FieldTypeIDMutex->unlock();
   return (handle);
 }
