@@ -40,13 +40,14 @@
  */
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 //#include <Core/Util/StringUtil.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 
 namespace SCIRun {
@@ -65,6 +66,8 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, LatVolSize, DenseMatrix);
         OUTPUT_PORT(0, OutputField, LegacyField);
+
+        static AlgorithmParameterName XSize, YSize, ZSize, PadPercent, DataAtLocation, ElementSizeNormalized;
 
       private:
 //         GuiInt size_x_;
@@ -118,28 +121,27 @@ CreateLatVol::execute()
     
     if (sizeOption)
     {
-      auto size = *sizeOption;
-      if (size->rows() == 1 && size->cols() == 1)
+      auto sizeMatrix = *sizeOption;
+      if (sizeMatrix->rows() == 1 && sizeMatrix->cols() == 1)
       {
-        unsigned int size = static_cast<unsigned int>((*size)(0,0));
-        size_x_.set(size);
-        size_y_.set(size);
-        size_z_.set(size);
-        get_ctx()->reset();
+        int size = static_cast<int>((*sizeMatrix)(0,0));
+        get_state()->setValue(XSize, size);
+        get_state()->setValue(YSize, size);
+        get_state()->setValue(ZSize, size);
       }
-      else if (size->rows() == 3 && size->cols() == 1)
+      else if (sizeMatrix->rows() == 3 && sizeMatrix->cols() == 1)
       {
-        unsigned int size1 = static_cast<unsigned int>((*size)(0,0));
-        unsigned int size2 = static_cast<unsigned int>((*size)(0,1));
-        unsigned int size3 = static_cast<unsigned int>((*size)(0,2));
-        size_x_.set(size1);
-        size_y_.set(size2);
-        size_z_.set(size3);		
-        get_ctx()->reset();		
+        int size1 = static_cast<int>((*sizeMatrix)(0,0));
+        int size2 = static_cast<int>((*sizeMatrix)(0,1));
+        int size3 = static_cast<int>((*sizeMatrix)(0,2));
+        get_state()->setValue(XSize, size1);
+        get_state()->setValue(YSize, size2);
+        get_state()->setValue(ZSize, size3);	
       }
       else
       {
         error("LatVol size matrix needs to have or one element or three elements");
+        return;
       }	
     }	
 
@@ -147,14 +149,14 @@ CreateLatVol::execute()
     DataTypeEnum datatype;
 		
     // Create blank mesh.
-    VField::size_type sizex = std::max(2, size_x_.get());
-    VField::size_type sizey = std::max(2, size_y_.get());
-    VField::size_type sizez = std::max(2, size_z_.get());		
+    VField::size_type sizex = std::max(2, get_state()->getValue(XSize).getInt());
+    VField::size_type sizey = std::max(2, get_state()->getValue(YSize).getInt());
+    VField::size_type sizez = std::max(2, get_state()->getValue(ZSize).getInt());		
 		
     if (!ifieldhandleOption)
     {
       datatype = SCALAR;
-      if (element_size_.get() == "Mesh")
+      if (get_state()->getValue(ElementSizeNormalized).getBool())
       {
         minb = Point(-1.0, -1.0, -1.0);
         maxb = Point(1.0, 1.0, 1.0);
@@ -184,17 +186,19 @@ CreateLatVol::execute()
       maxb = bbox.max();
     }
 
-    Vector diag((maxb - minb) * (padpercent_.get()/100.0));
+    double padPercent = get_state()->getValue(PadPercent).getDouble();
+    Vector diag((maxb - minb) * (padPercent/100.0));
     minb -= diag;
     maxb += diag;
 
     int basis_order;
-    if (data_at_.get() == "Nodes") basis_order = 1;
-    else if (data_at_.get() == "Cells") basis_order = 0;
-    else if (data_at_.get() == "None") basis_order = -1;
+    auto dataAtLocation = get_state()->getValue(DataAtLocation).getString();
+    if (dataAtLocation == "Nodes") basis_order = 1;
+    else if (dataAtLocation == "Cells") basis_order = 0;
+    else if (dataAtLocation == "None") basis_order = -1;
     else 
     {
-      error("Unsupported data_at location " + data_at_.get() + ".");
+      error("Unsupported data_at location " + dataAtLocation + ".");
       return;
     }
 
