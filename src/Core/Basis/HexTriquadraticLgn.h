@@ -226,23 +226,6 @@ public:
 #endif
 };
 
-
-template <class T>
-const TypeDescription* get_type_description(HexTriquadraticLgn<T> *)
-{
-  static TypeDescription* td = 0;
-  if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
-    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new TypeDescription("HexTriquadraticLgn", subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				TypeDescription::BASIS_E);
-  }
-  return td;
-}
-
 template <class T>
 const std::string
 HexTriquadraticLgn<T>::type_name(int n)
@@ -274,6 +257,22 @@ HexTriquadraticLgn<T>::io(Piostream &stream)
   stream.end_class();
 }
 #endif
-}}}
+}}
+template <class T>
+const TypeDescription* get_type_description(Core::Basis::HexTriquadraticLgn<T> *)
+{
+  static TypeDescription* td = 0;
+  if(!td){
+    const TypeDescription *sub = get_type_description((T*)0);
+    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new TypeDescription("HexTriquadraticLgn", subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      TypeDescription::BASIS_E);
+  }
+  return td;
+}
+}
 
 #endif

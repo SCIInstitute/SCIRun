@@ -419,22 +419,7 @@ HexTricubicHmt<T>::type_name(int n)
   }
 }
 
-template <class T>
-const SCIRun::TypeDescription*
-get_type_description(HexTricubicHmt<T> *)
-{
-  static SCIRun::TypeDescription* td = 0;
-  if(!td){
-    const SCIRun::TypeDescription *sub = get_type_description((T*)0);
-    SCIRun::TypeDescription::td_vec *subs = new SCIRun::TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new SCIRun::TypeDescription("HexTricubicHmt", subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				SCIRun::TypeDescription::BASIS_E);
-  }
-  return td;
-}
+
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int HEXTRICUBICHMT_VERSION = 1;
@@ -448,6 +433,23 @@ HexTricubicHmt<T>::io(Piostream &stream)
   stream.end_class();
 }
 #endif
-}}}
+}}
+template <class T>
+const SCIRun::TypeDescription*
+  get_type_description(Core::Basis::HexTricubicHmt<T> *)
+{
+  static SCIRun::TypeDescription* td = 0;
+  if(!td){
+    const SCIRun::TypeDescription *sub = get_type_description((T*)0);
+    SCIRun::TypeDescription::td_vec *subs = new SCIRun::TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new SCIRun::TypeDescription("HexTricubicHmt", subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      SCIRun::TypeDescription::BASIS_E);
+  }
+  return td;
+}
+}
 
 #endif

@@ -599,23 +599,7 @@ HexTricubicHmtScaleFactors<T>::type_name(int n)
   }
 }
 
-template <class T>
-const TypeDescription*
-get_type_description(HexTricubicHmtScaleFactors<T> *)
-{
-  static TypeDescription* td = 0;
-  if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
-    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new TypeDescription("HexTricubicHmtScaleFactors", 
-				subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				TypeDescription::BASIS_E);
-  }
-  return td;
-}
+
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
@@ -631,7 +615,25 @@ HexTricubicHmtScaleFactors<T>::io(Piostream &stream)
   stream.end_class();
 }
 #endif
-}}}
+}}
+template <class T>
+const TypeDescription*
+  get_type_description(Core::Basis::HexTricubicHmtScaleFactors<T> *)
+{
+  static TypeDescription* td = 0;
+  if(!td){
+    const TypeDescription *sub = get_type_description((T*)0);
+    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new TypeDescription("HexTricubicHmtScaleFactors", 
+      subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      TypeDescription::BASIS_E);
+  }
+  return td;
+}
+}
 
 
 #endif
