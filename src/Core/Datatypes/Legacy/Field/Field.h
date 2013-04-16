@@ -69,9 +69,10 @@ class SCISHARE Field: public Core::Datatypes::Datatype
     virtual VMesh* vmesh()   const = 0;
     virtual VField* vfield() const = 0;
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     //! Detach the mesh from the field, if needed make a new copy of it.
     virtual void mesh_detach() = 0;
-
+#endif
     //! The order of the field: we could get this one from the type_description
     virtual int basis_order() const = 0;
 

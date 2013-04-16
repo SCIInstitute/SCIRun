@@ -69,9 +69,6 @@ class SCISHARE Field5 : public Datatype
     virtual VirtualMeshHandle vmesh()   const = 0;
     virtual VirtualFieldHandle vfield() const = 0;
     
-    //! Detach the mesh from the field, if needed make a new copy of it.
-    virtual void mesh_detach() = 0;
-
     //! The order of the field: we could get this one from the type_description
     virtual int basis_order() const = 0;
 

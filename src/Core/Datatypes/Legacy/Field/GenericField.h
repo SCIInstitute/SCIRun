@@ -85,8 +85,10 @@ public:
   virtual VMesh*  vmesh() const;
   virtual VField* vfield() const;
   
-  //! Clone the the mesh
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  //! Clone the mesh
   virtual void mesh_detach();
+  #endif
 
   //! Get the order of the field data
   //! -1 = no data
