@@ -161,13 +161,13 @@ Pio(Piostream& stream, Point& p)
 #endif
 
 const std::string& 
-SCIRun::Core::Geometry::Point_get_h_file_path() 
+SCIRun::Point_get_h_file_path() 
 {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
 }
 
-const TypeDescription* SCIRun::Core::Geometry::get_type_description(Point*)
+const TypeDescription* SCIRun::get_type_description(Core::Geometry::Point*)
 {
   static TypeDescription* td = 0;
   if(!td){

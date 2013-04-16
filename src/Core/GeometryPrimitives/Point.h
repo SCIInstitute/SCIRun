@@ -177,9 +177,6 @@ SCISHARE Point AffineCombination(const Point&, double, const Point&, double);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE void Pio( Piostream&, Point& );
 #endif
-// TODO: This one is obsolete when last part dynamic compilation is gone
-SCISHARE const std::string& Point_get_h_file_path();
-SCISHARE const SCIRun::TypeDescription* get_type_description(Point*);
 
 inline 
 Point operator*(double d, const Point &p) {
@@ -211,7 +208,12 @@ inline Point Max(const Point& p1, const Point& p2)
 }
 
 
-}}}
+}}
+
+// TODO: This one is obsolete when last part dynamic compilation is gone
+SCISHARE const std::string& Point_get_h_file_path();
+SCISHARE const SCIRun::TypeDescription* get_type_description(Core::Geometry::Point*);
+}
 
 #include <Core/GeometryPrimitives/PointVectorOperators.h>
 

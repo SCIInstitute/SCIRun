@@ -709,7 +709,6 @@ protected:
     const VirtualMesh::index_type num_j_edges = this->ni_*(this->nj_-1)*this->nk_; // jki
     const VirtualMesh::index_type num_k_edges = this->ni_*this->nj_*(this->nk_-1); // jki
 
-    VirtualMesh::index_type facei, facej, facek;
     VirtualMesh::index_type edge = static_cast<VirtualMesh::index_type>(idx);
 
     if (idx < num_i_edges)
