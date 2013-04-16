@@ -41,6 +41,7 @@
 #ifndef Geometry_Tensor_h
 #define Geometry_Tensor_h 1
 
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Containers/Array1.h>
 #include <Core/GeometryPrimitives/Vector.h>
@@ -157,11 +158,13 @@ inline
 Tensor operator*(double d, const Tensor &t) {
   return t*d;
 }
-SCISHARE const TypeDescription* get_type_description(Tensor*);
 
 SCISHARE std::ostream& operator<<(std::ostream& os, const Tensor& t);
 SCISHARE std::istream& operator>>(std::istream& os, Tensor& t);
     }}
+
+  SCISHARE const TypeDescription* get_type_description(Core::Geometry::Tensor*);
+
 } // End namespace SCIRun
 
 #endif // Geometry_Tensor_h

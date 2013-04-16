@@ -405,14 +405,14 @@ void Pio(Piostream& stream, Tensor& t){
   stream.end_cheap_delim();
 }
 
-
+#endif
 const std::string& 
 Tensor::get_h_file_path() {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
 }
 
-const TypeDescription* get_type_description(Tensor*)
+const TypeDescription* SCIRun::get_type_description(Tensor*)
 {
   static TypeDescription* td = 0;
   if(!td){
@@ -422,7 +422,7 @@ const TypeDescription* get_type_description(Tensor*)
   }
   return td;
 }
-#endif
+
 
 std::ostream& operator<<( std::ostream& os, const Tensor& t )
 {
