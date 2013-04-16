@@ -1099,7 +1099,6 @@ StructHexVolMesh<Basis>::StructHexVolMesh():
   this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh(size_type i,
                                           size_type j,
@@ -1119,7 +1118,6 @@ StructHexVolMesh<Basis>::StructHexVolMesh(size_type i,
   //! virtual interface class
   this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
-#endif
 
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh(const StructHexVolMesh<Basis> &copy):
@@ -1185,7 +1183,6 @@ StructHexVolMesh<Basis>::get_bounding_box() const
   return result;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 void
 StructHexVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
@@ -1217,7 +1214,6 @@ StructHexVolMesh<Basis>::get_center(Core::Geometry::Point &result,
 {
   result = points_(idx.k_, idx.j_, idx.i_);
 }
-#endif
 
 template <class Basis>
 void
@@ -1592,7 +1588,6 @@ StructHexVolMesh<Basis>::set_point(const Core::Geometry::Point &p,
   points_(idx.k_, idx.j_, idx.i_) = p;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template<class Basis>
 void
 StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
@@ -1646,26 +1641,25 @@ StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
       
   if (w > (a0 + a1 + a2 + a3))
   {
-    p = (p5.vector()*a + p2.vector()*t + p7.vector()*u + p6.vector()*v).point();
+    p = Point(p5*a + p2*t + p7*u + p6*v);
   }
   else if (w > (a0 + a1 + a2))
   {
-    p = (p0.vector()*a + p5.vector()*t + p7.vector()*u + p5.vector()*v).point();
+    p = Point(p0*a + p5*t + p7*u + p5*v);
   }
   else if (w > (a0 + a1))
   {
-    p = (p0.vector()*a + p5.vector()*t + p2.vector()*u + p7.vector()*v).point();
+    p = Point(p0*a + p5*t + p2*u + p7*v);
   }
   else if (w > a0)
   {
-    p = (p0.vector()*a + p2.vector()*t + p3.vector()*u + p7.vector()*v).point();
+    p = Point(p0*a + p2*t + p3*u + p7*v);
   }
   else
   {
-    p = (p0.vector()*a + p1.vector()*t + p2.vector()*u + p5.vector()*v).point();
+    p = Point(p0*a + p1*t + p2*u + p5*v);
   }
 }
-#endif
 
 template <class Basis>
 bool
@@ -1679,7 +1673,7 @@ StructHexVolMesh<Basis>::synchronize(mask_type sync)
         !(synchronized_ & Mesh::ELEM_LOCATE_E) ||
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
-    //! These computations share the evalution of the bounding box
+    //! These computations share the evaluation of the bounding box
     Core::Geometry::BBox bb = get_bounding_box(); 
 
     //! Compute the epsilon for geometrical closeness comparisons
@@ -1736,8 +1730,6 @@ StructHexVolMesh<Basis>::clear_synchronization()
   return (true);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 template <class Basis>
 void
 StructHexVolMesh<Basis>::insert_elem_into_grid(typename LatVolMesh<Basis>::Elem::index_type idx)
@@ -1792,7 +1784,7 @@ StructHexVolMesh<Basis>::remove_node_from_grid(typename LatVolMesh<Basis>::Node:
 {
   node_grid_->remove(ni,points_[ni]);
 }
-#endif
+
 template <class Basis>
 void
 StructHexVolMesh<Basis>::compute_elem_grid(Core::Geometry::BBox& bb)
@@ -1912,6 +1904,7 @@ StructHexVolMesh<Basis>::io(Piostream& stream)
   if (stream.reading())
     this->vmesh_ = CreateVStructHexVolMesh(this);
 }
+#endif
 
 template <class Basis>
 const std::string
@@ -1941,7 +1934,7 @@ get_type_description(StructHexVolMesh<Basis> *)
   static TypeDescription *td = 0;
   if (!td)
   {
-    const TypeDescription *sub = SCIRun::get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("StructHexVolMesh", subs,
@@ -2031,7 +2024,7 @@ StructHexVolMesh<Basis>::cell_type_description()
   }
   return td;
 }
-#endif
+
 } //! namespace SCIRun
 
 #endif //! SCI_project_StructHexVolMesh_h

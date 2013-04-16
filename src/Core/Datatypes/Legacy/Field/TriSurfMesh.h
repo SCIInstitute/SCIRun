@@ -2027,7 +2027,7 @@ struct less_int
 template <class Basis>
 PersistentTypeID
 TriSurfMesh<Basis>::trisurf_typeid(TriSurfMesh<Basis>::type_name(-1), "Mesh", maker);
-
+#endif
 template <class Basis>
 const std::string
 TriSurfMesh<Basis>::type_name(int n)
@@ -2048,7 +2048,7 @@ TriSurfMesh<Basis>::type_name(int n)
     return find_type_name((Basis *)0);
   }
 }
-#endif
+
 
 template <class Basis>
 TriSurfMesh<Basis>::TriSurfMesh()

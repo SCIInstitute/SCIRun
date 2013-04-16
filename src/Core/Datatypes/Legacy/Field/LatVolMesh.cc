@@ -3490,7 +3490,6 @@ VStructHexVolMesh<MESH>::set_point(const Point &point, VMesh::Node::index_type i
   points_[idx] = point;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class MESH>
 Point*
 VStructHexVolMesh<MESH>::get_points_pointer() const
@@ -3498,7 +3497,6 @@ VStructHexVolMesh<MESH>::get_points_pointer() const
   if (points_.size() == 0) return (0);
   return (&(points_[0]));
 }
-#endif
 
 template <class MESH>
 double 
