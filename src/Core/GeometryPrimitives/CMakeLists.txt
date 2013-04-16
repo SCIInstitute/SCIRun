@@ -56,6 +56,7 @@ ADD_LIBRARY(Core_Geometry_Primitives
 
 TARGET_LINK_LIBRARIES(Core_Geometry_Primitives
   Core_Math
+  Core_Util_Legacy
 )
 
 IF(BUILD_SHARED_LIBS)

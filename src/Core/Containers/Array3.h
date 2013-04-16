@@ -66,6 +66,13 @@ public:
   typedef boost::multi_array<T, 3> impl_type;
   typedef T value_type;
 
+  Array3() {}
+
+  Array3(size_t size1, size_t size2, size_t size3) 
+  {
+    resize(size1, size2, size3);
+  }
+
   void resize(size_t size1, size_t size2, size_t size3)
   {
     typename impl_type::extent_gen extents;
@@ -88,6 +95,11 @@ public:
   }
 
   const T& operator()(size_t i1, size_t i2, size_t i3) const
+  {
+    return impl_[i1][i2][i3];
+  }
+
+  T& operator()(size_t i1, size_t i2, size_t i3) 
   {
     return impl_[i1][i2][i3];
   }

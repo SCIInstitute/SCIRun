@@ -35,6 +35,7 @@
 
 #include <string>
 #include <vector>
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
@@ -175,11 +176,10 @@ SCISHARE Point AffineCombination(const Point&, double, const Point&, double);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE void Pio( Piostream&, Point& );
-
+#endif
 // TODO: This one is obsolete when last part dynamic compilation is gone
 SCISHARE const std::string& Point_get_h_file_path();
-SCISHARE const TypeDescription* get_type_description(Point*);
-#endif
+SCISHARE const SCIRun::TypeDescription* get_type_description(Point*);
 
 inline 
 Point operator*(double d, const Point &p) {
@@ -193,18 +193,6 @@ Point operator+(const Vector &v, const Point &p) {
 SCISHARE std::ostream& operator<<(std::ostream& os, const Point& p);
 SCISHARE std::istream& operator>>(std::istream& os, Point& p);
 SCISHARE Point centroid(const std::vector<Point>& points);
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-inline const Vector &Point::vector() const
-{
-  return reinterpret_cast<const Vector &>(*this);
-}
-
-inline Vector &Point::asVector() const
-{
-  return reinterpret_cast<Vector &>(const_cast<Point &>(*this));
-}
-#endif
 
 inline Point Min(const Point& p1, const Point& p2)
 {

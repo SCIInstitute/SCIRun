@@ -28,10 +28,10 @@
 
 
 #include <Core/GeometryPrimitives/Point.h>
-
 #include <iostream>
 #include <sstream>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 std::string Point::get_string() const
@@ -158,15 +158,16 @@ Pio(Piostream& stream, Point& p)
   }
   stream.end_cheap_delim();
 }
+#endif
 
 const std::string& 
-Point_get_h_file_path() 
+SCIRun::Core::Geometry::Point_get_h_file_path() 
 {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));
   return path;
 }
 
-const TypeDescription* get_type_description(Point*)
+const TypeDescription* SCIRun::Core::Geometry::get_type_description(Point*)
 {
   static TypeDescription* td = 0;
   if(!td){
@@ -175,4 +176,3 @@ const TypeDescription* get_type_description(Point*)
   }
   return td;
 }
-#endif
