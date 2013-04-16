@@ -38,7 +38,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #GetDomainStructure.cc
   #RegisterWithCorrespondences.cc
   #SmoothVecFieldMedian.cc
-  SetFieldDataToConstantValue.cc
+  #SetFieldDataToConstantValue.cc
   #RemoveUnusedNodes.cc
   #MapFieldDataOntoNodes.cc
   #MapFieldDataOntoElems.cc
