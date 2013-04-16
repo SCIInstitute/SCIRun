@@ -26,9 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#endif
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/QuadBilinearLgn.h>
@@ -39,10 +41,11 @@
 
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
+
 typedef ImageMesh<QuadBilinearLgn<Point> > IMesh;
 
-PersistentTypeID backwards_compat_IM("ImageMesh", "Mesh",
-				      IMesh::maker, IMesh::maker);
 
  template class ImageMesh<QuadBilinearLgn<Point> >;
 
@@ -109,6 +112,10 @@ template class GenericField<IMesh, FDuintBasis,   FData2d<unsigned int, IMesh> >
 template class GenericField<IMesh, FDushortBasis, FData2d<unsigned short, IMesh> >;
 template class GenericField<IMesh, FDucharBasis,  FData2d<unsigned char, IMesh> >;
 template class GenericField<IMesh, FDulongBasis,  FData2d<unsigned long, IMesh> >;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+PersistentTypeID backwards_compat_IM("ImageMesh", "Mesh",
+  IMesh::maker, IMesh::maker);
 
 PersistentTypeID 
 backwards_compat_IFT("ImageField<Tensor>", "Field",
@@ -178,7 +185,7 @@ backwards_compat_IFul("ImageField<unsigned_long>", "Field",
 		      FData2d<unsigned long, IMesh> >::maker, 
 		      GenericField<IMesh, CFDulongBasis, 
 		      FData2d<unsigned long, IMesh> >::maker);
-
+#endif
 
 
 
@@ -220,6 +227,7 @@ template class GenericField<QSMesh, FDushortBasis, std::vector<unsigned short> >
 template class GenericField<QSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<QSMesh, FDulongBasis,  std::vector<unsigned long> >;
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 PersistentTypeID 
 backwards_compat_QSFT("QuadSurfField<Tensor>", "Field",

@@ -1291,7 +1291,7 @@ public:
   static  const std::string type_name(int n = -1);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
-
+#endif
   //! Type description, used for finding names of the mesh class for
   //! dynamic compilation purposes. Some of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
@@ -1302,6 +1302,7 @@ public:
   static const TypeDescription* elem_type_description()
     { return face_type_description(); }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
 #endif
@@ -2631,10 +2632,11 @@ TriSurfMesh<Basis>::insert_node(typename Face::index_type face, const Core::Geom
 
   if (do_normals)
   {
-    Core::Geometry::Vector normal = Core::Geometry::Vector( (p +
+    Core::Geometry::Vector normal = Core::Geometry::Vector(p +
                              normals_[faces_[f0]] +
                              normals_[faces_[f1]] +
-                             normals_[faces_[f2]]).safe_normalize() );
+                             normals_[faces_[f2]]);
+    normal.safe_normalize();
     normals_.push_back(normals_[faces_[f1]]);
     normals_.push_back(normals_[faces_[f2]]);
     normals_.push_back(normal);
@@ -2965,7 +2967,7 @@ TriSurfMesh<Basis>::bisect_element(const typename Face::index_type face)
   {
     Core::Geometry::Point p = ((points_[faces_[f0+edge]] +
                 points_[faces_[next(f0+edge)]]) / 2.0).asPoint();
-    nodes.push_back(add_point(p));
+    nodes[edge] = add_point(p);
 
     if (do_normals)
     {
@@ -3728,7 +3730,7 @@ TriSurfMesh<Basis>::size(typename TriSurfMesh::Cell::size_type &s) const
   s = *itr;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class Basis>
 const TypeDescription*
 get_type_description(TriSurfMesh<Basis> *)
@@ -3752,7 +3754,7 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::get_type_description() const
 {
-  return get_type_description((TriSurfMesh<Basis> *)0);
+  return SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
 }
 
 
@@ -3764,7 +3766,7 @@ TriSurfMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3782,7 +3784,7 @@ TriSurfMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3800,7 +3802,7 @@ TriSurfMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3818,7 +3820,7 @@ TriSurfMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TriSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3826,7 +3828,7 @@ TriSurfMesh<Basis>::cell_type_description()
   }
   return td;
 }
-#endif
+
 template <class Basis>
 bool
 TriSurfMesh<Basis>::get_neighbor(index_type &nbr_half_edge,

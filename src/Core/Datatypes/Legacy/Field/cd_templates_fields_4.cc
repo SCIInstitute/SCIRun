@@ -26,16 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#endif
+
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/TriLinearLgn.h>
 #include <Core/Basis/CrvLinearLgn.h>
-#include <Core/Datatypes/TriSurfMesh.h>
-#include <Core/Datatypes/CurveMesh.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
+//#include <Core/Datatypes/CurveMesh.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
 
@@ -72,8 +75,6 @@ typedef TriLinearLgn<unsigned long>         FDulongBasis;
 
 typedef TriSurfMesh<TriLinearLgn<Point> > TSMesh;
 
-PersistentTypeID backwards_compat_TSM("TriSurfMesh", "Mesh",
-				      TSMesh::maker, TSMesh::maker);
 
 template class TriSurfMesh<TriLinearLgn<Point> >;
 
@@ -107,6 +108,10 @@ template class GenericField<TSMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<TSMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<TSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<TSMesh, FDulongBasis,  std::vector<unsigned long> >;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+PersistentTypeID backwards_compat_TSM("TriSurfMesh", "Mesh",
+  TSMesh::maker, TSMesh::maker);
 
 PersistentTypeID 
 backwards_compat_TSFT("TriSurfField<Tensor>", "Field",
@@ -174,6 +179,7 @@ backwards_compat_TSFul("TriSurfField<unsigned_long>", "Field",
 		       std::vector<unsigned long> >::maker,
 		       GenericField<TSMesh, CFDulongBasis, 
 		       std::vector<unsigned long> >::maker);
+#endif
 
 //Linear
 typedef CrvLinearLgn<Tensor>                CrFDTensorBasis;
@@ -188,6 +194,8 @@ typedef CrvLinearLgn<unsigned int>          CrFDuintBasis;
 typedef CrvLinearLgn<unsigned short>        CrFDushortBasis;
 typedef CrvLinearLgn<unsigned char>         CrFDucharBasis;
 typedef CrvLinearLgn<unsigned long>         CrFDulongBasis;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 typedef CurveMesh<CrvLinearLgn<Point> > CMesh;
 PersistentTypeID backwards_compat_CM("CurveMesh", "Mesh",
@@ -294,3 +302,4 @@ backwards_compat_CFul("CurveField<unsigned_long>", "Field",
 		      std::vector<unsigned long> >::maker,
 		      GenericField<CMesh, CFDulongBasis, 
 		      std::vector<unsigned long> >::maker);
+#endif
