@@ -600,7 +600,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVLatVolMesh(this);   
+    vmesh_.reset(CreateVLatVolMesh(this));
   }
   
   LatVolMesh(const LatVolMesh &copy) :
@@ -834,19 +834,13 @@ public:
   {
     ni_ = i;
   
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
-    vmesh_ = CreateVLatVolMesh(this); 
+    vmesh_.reset(CreateVLatVolMesh(this));  
   }
   void set_nj(index_type j)
   {
     nj_ = j;
   
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
-    vmesh_ = CreateVLatVolMesh(this); 
+    vmesh_.reset(CreateVLatVolMesh(this));  
   }
   void set_nk(index_type k)
   {
@@ -855,7 +849,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVLatVolMesh(this); 
+    vmesh_.reset(CreateVLatVolMesh(this));  
   }
   virtual void set_dim(std::vector<size_type> dims);
 
@@ -1156,7 +1150,7 @@ template <class Basis>
 const TypeDescription*
 LatVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+  return get_type_description((LatVolMesh<Basis> *)0);
 }
 
 
@@ -1168,7 +1162,7 @@ LatVolMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1186,7 +1180,7 @@ LatVolMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1204,7 +1198,7 @@ LatVolMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1222,7 +1216,7 @@ LatVolMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((LatVolMesh<Basis> *)0);
+      get_type_description((LatVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

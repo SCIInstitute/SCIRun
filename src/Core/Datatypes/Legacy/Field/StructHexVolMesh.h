@@ -1950,7 +1950,7 @@ template <class Basis>
 const TypeDescription*
 StructHexVolMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+  return get_type_description((StructHexVolMesh<Basis> *)0);
 }
 
 
@@ -1962,7 +1962,7 @@ StructHexVolMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      get_type_description((StructHexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1980,7 +1980,7 @@ StructHexVolMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      get_type_description((StructHexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1998,7 +1998,7 @@ StructHexVolMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      get_type_description((StructHexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -2016,7 +2016,7 @@ StructHexVolMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((StructHexVolMesh<Basis> *)0);
+      get_type_description((StructHexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

@@ -1194,7 +1194,7 @@ get_type_description(StructCurveMesh<Basis> *)
   static TypeDescription *td = 0;
   if (!td)
   {
-    const TypeDescription *sub = SCIRun::get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("StructCurveMesh", subs,
@@ -1210,7 +1210,7 @@ template <class Basis>
 const TypeDescription*
 StructCurveMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((StructCurveMesh<Basis> *)0);
+  return get_type_description((StructCurveMesh<Basis> *)0);
 }
 
 

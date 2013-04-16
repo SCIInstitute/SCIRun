@@ -129,7 +129,7 @@ const TypeDescription* get_type_description(std::vector<T>*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    const TypeDescription *sub = SCIRun::get_type_description(reinterpret_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(reinterpret_cast<T*>(0));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("vector", subs, "std::vector", "std",
@@ -143,8 +143,8 @@ const TypeDescription* get_type_description (std::pair<T1,T2> *)
 {
   static TypeDescription* td = 0;
   if(!td){
-    const TypeDescription *sub1 = SCIRun::get_type_description(reinterpret_cast<T1*>(0));
-    const TypeDescription *sub2 = SCIRun::get_type_description(reinterpret_cast<T2*>(0));
+    const TypeDescription *sub1 = get_type_description(reinterpret_cast<T1*>(0));
+    const TypeDescription *sub2 = get_type_description(reinterpret_cast<T2*>(0));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(2);
     (*subs)[0] = sub1;
     (*subs)[1] = sub2;

@@ -3736,7 +3736,7 @@ get_type_description(TriSurfMesh<Basis> *)
   static TypeDescription *td = 0;
   if (!td)
   {
-    const TypeDescription *sub = SCIRun::get_type_description((Basis*)0);
+    const TypeDescription *sub = get_type_description((Basis*)0);
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("TriSurfMesh", subs,
@@ -3752,7 +3752,7 @@ template <class Basis>
 const TypeDescription*
 TriSurfMesh<Basis>::get_type_description() const
 {
-  return SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+  return get_type_description((TriSurfMesh<Basis> *)0);
 }
 
 
@@ -3764,7 +3764,7 @@ TriSurfMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3782,7 +3782,7 @@ TriSurfMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3800,7 +3800,7 @@ TriSurfMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -3818,7 +3818,7 @@ TriSurfMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      SCIRun::get_type_description((TriSurfMesh<Basis> *)0);
+      get_type_description((TriSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

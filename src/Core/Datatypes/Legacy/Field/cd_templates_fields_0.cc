@@ -26,24 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#endif
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/HexTrilinearLgn.h>
-#include <Core/Datatypes/LatVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 #include <Core/Containers/FData.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
+
 typedef LatVolMesh<HexTrilinearLgn<Point> > LVMesh;
 
 template class LatVolMesh<HexTrilinearLgn<Point> >;
 
-PersistentTypeID backwards_compat_LVM("LatVolMesh", "Mesh",
-				      LVMesh::maker,  
-				      LVMesh::maker);
 
 typedef HexTrilinearLgn<Tensor>             FDTensorBasis;
 typedef HexTrilinearLgn<Vector>             FDVectorBasis;
@@ -111,6 +113,12 @@ template class GenericField<LVMesh, FDucharBasis,
 			    FData3d<unsigned char, LVMesh> >;
 template class GenericField<LVMesh, FDulongBasis,   
 			    FData3d<unsigned long, LVMesh> >;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+PersistentTypeID backwards_compat_LVM("LatVolMesh", "Mesh",
+  LVMesh::maker,  
+  LVMesh::maker);
 
 PersistentTypeID 
 backwards_compat_LVFT("LatVolField<Tensor>", "Field",
@@ -180,3 +188,4 @@ backwards_compat_LVFul("LatVolField<unsigned_long>", "Field",
 		       FData3d<unsigned long, LVMesh> >::maker, 
 		       GenericField<LVMesh, CFDulongBasis, 
 		       FData3d<unsigned long, LVMesh> >::maker);
+#endif
