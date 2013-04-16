@@ -764,7 +764,7 @@ public:
     StackVector<Point,3> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    return (InverseMatrix3P(Jv,Ji));
+    return (Core::Basis::InverseMatrix3P(Jv,Ji));
   }
 
   template<class INDEX>

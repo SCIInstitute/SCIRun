@@ -675,7 +675,7 @@ public:
     Core::Geometry::Vector v = Cross(Vector(Jv[0]), Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();
 
-    return (InverseMatrix3P(Jv,Ji));
+    return (Core::Basis::InverseMatrix3P(Jv,Ji));
   }
 
   template<class INDEX>
