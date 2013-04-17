@@ -63,8 +63,14 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
     //gui_generation_.set(to_string(f->generation));
     
     // Typename
-    const std::string &tname = f->get_type_description()->get_name();
-    output.type = tname;
+    auto td = f->get_type_description();
+    if (td)
+    {
+      const std::string &tname = td->get_name();
+      output.type = tname;
+    }
+    else
+      output.type = "Null";
     
     // Basis
     static const char *at_table[4] = { "Nodes", "Edges", "Faces", "Cells" };

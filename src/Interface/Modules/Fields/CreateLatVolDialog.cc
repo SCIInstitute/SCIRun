@@ -53,6 +53,9 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
   connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(dataAtNodesButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(dataAtCellsButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(dataAtNoneButton_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
 void CreateLatVolDialog::push()
@@ -63,7 +66,20 @@ void CreateLatVolDialog::push()
     state_->setValue(CreateLatVolModule::YSize, ySizeSpinBox_->value());
     state_->setValue(CreateLatVolModule::ZSize, zSizeSpinBox_->value());
     state_->setValue(CreateLatVolModule::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
+    state_->setValue(CreateLatVolModule::DataAtLocation, getDataAtLocation());
   }
+}
+
+std::string CreateLatVolDialog::getDataAtLocation() const
+{
+  //TODO: need to standardize these options at the algo/module level
+  if (dataAtNodesButton_->isChecked())
+    return "Nodes";
+  if (dataAtCellsButton_->isChecked())
+    return "Cells";
+  if (dataAtNoneButton_->isChecked())
+    return "None";
+  return "Unknown";
 }
 
 void CreateLatVolDialog::pull()
@@ -80,4 +96,9 @@ void CreateLatVolDialog::pull()
     zSizeSpinBox_->setValue(newValue);
   elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
   elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
+
+  std::string loc = state_->getValue(CreateLatVolModule::DataAtLocation).getString();
+  dataAtNodesButton_->setChecked(loc == "Nodes");
+  dataAtCellsButton_->setChecked(loc == "Cells");
+  dataAtNoneButton_->setChecked(loc == "None");
 }

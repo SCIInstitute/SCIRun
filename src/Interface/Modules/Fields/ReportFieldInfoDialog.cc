@@ -55,14 +55,13 @@ void ReportFieldInfoDialog::pullAndDisplayInfo()
   
 
   std::ostringstream ostr;
-  ostr << "**************" << std::endl;
-  ostr << info.type << std::endl;
-  //ostr << info.get<0>() << "\n"
-  //  << info.get<1>() << "\n"
-  //  << info.get<2>() << "\n"
-  //  << info.get<3>() << "\n"
-  //  << info.get<4>() << "\n"
-  //  << info.get<5>();
+  ostr << "Type: " << info.type << std::endl;
+  ostr << "Data location: " << info.dataLocation << std::endl;
+  ostr << "Center: " << info.center << std::endl;
+  ostr << "Size: " << info.size << std::endl;
+  ostr << "Data min,max: " << info.dataMin << " , " << info.dataMax << std::endl;
+  ostr << "# data: " << info.numdata_ << std::endl;
+  ostr << "# nodes: " << info.numnodes_ << std::endl;
 
   fieldInfoTextEdit_->setPlainText(ostr.str().c_str());
 }

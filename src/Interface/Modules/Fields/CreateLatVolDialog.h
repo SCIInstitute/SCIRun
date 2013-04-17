@@ -49,6 +49,8 @@ public:
 
 private Q_SLOTS:
   void push();
+private:
+  std::string getDataAtLocation() const;
 };
 
 }
