@@ -42,7 +42,7 @@ namespace Engine {
   {
   public:
     typedef boost::shared_ptr<ProvenanceItem<Memento>> Handle;
-    ~ProvenanceItem() {}
+    virtual ~ProvenanceItem() {}
     virtual Memento memento() const = 0;
     virtual std::string name() const = 0;
   };
