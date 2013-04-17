@@ -108,24 +108,39 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
+Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+{
+  // Extract appropriate key.
+  Spire::SCIRun::SRInterface::MouseButton btn = Spire::SCIRun::SRInterface::MOUSE_NONE;
+  if (event->buttons() & Qt::LeftButton)
+    btn = Spire::SCIRun::SRInterface::MOUSE_LEFT;
+  else if (event->buttons() & Qt::RightButton)
+    btn = Spire::SCIRun::SRInterface::MOUSE_RIGHT;
+  else if (event->buttons() & Qt::MidButton)
+    btn = Spire::SCIRun::SRInterface::MOUSE_MIDDLE;
+  
+  return btn;
+}
+
+//------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  /// \todo Include specific button info.
-  mGraphics->inputMouseMove(Vector2<int32_t>(event->x(), event->y()));
+  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  mGraphics->inputMouseMove(Vector2<int32_t>(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  /// \todo Include specific button info.
-  mGraphics->inputMouseDown(Vector2<int32_t>(event->x(), event->y()));
+  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  mGraphics->inputMouseDown(Vector2<int32_t>(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  /// \todo Include specific button info.
-  mGraphics->inputMouseUp(Vector2<int32_t>(event->x(), event->y()));
+  Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
+  mGraphics->inputMouseUp(Vector2<int32_t>(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------

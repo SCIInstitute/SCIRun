@@ -79,7 +79,7 @@
           <item>
            <widget class="QCheckBox" name="showNodesCheckBox_">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="mouseTracking">
              <bool>true</bool>
@@ -95,7 +95,7 @@
           <item>
            <widget class="QCheckBox" name="enableTransparencyNodesCheckBox_">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Enable Transparency</string>

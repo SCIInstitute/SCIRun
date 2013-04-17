@@ -36,16 +36,19 @@
 
 namespace SCIRun {
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // Count objects
 SCISHARE void   debug_incr_object_count(const std::string& type);
 SCISHARE void   debug_decr_object_count(const std::string& type);
 SCISHARE void   debug_print_objects();
 SCISHARE size_t debug_number_of_objects();
 SCISHARE void   debug_tag_default_number_of_objects();
+#endif
 
 // MACROS THAT ARE INSERTED INTO OBJECTS
 // These macros are there so we can selectively insert the system
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #if DEBUG
 #define DEBUG_CONSTRUCTOR(type) \
 debug_incr_object_count(type);
@@ -54,11 +57,14 @@ debug_incr_object_count(type);
 debug_decr_object_count(type);
 
 #else
+#endif
+#endif
+
 
 #define DEBUG_CONSTRUCTOR(type)
 #define DEBUG_DESTRUCTOR(type)
 
-#endif
+
 
 } // End namespace SCIRun
 

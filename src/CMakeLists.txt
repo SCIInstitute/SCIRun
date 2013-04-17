@@ -332,7 +332,7 @@ ENDIF()
 ExternalProject_Add(Spire_external
   PREFIX ${spire_BINARY_DIR}
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire.git"
-  GIT_TAG "v0.3.1"
+  GIT_TAG "origin/master"
   SOURCE_DIR ${SPIRE_SOURCE_DIR}
   BINARY_DIR ${SPIRE_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/spire"

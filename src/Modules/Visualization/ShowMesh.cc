@@ -27,9 +27,6 @@
 */
 
 #include <Modules/Visualization/ShowMesh.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
-#include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Geometry.h>
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Modules::Visualization;
@@ -39,6 +36,7 @@ using namespace SCIRun::Core::Algorithms;
 
 ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")) 
 {
+  get_state()->setValue(ShowNodes, false);
   get_state()->setValue(ShowEdges, true);
   get_state()->setValue(ShowFaces, true);
 }
@@ -49,11 +47,10 @@ void ShowMeshModule::execute()
   MeshFacadeHandle facade(mesh->getFacade());
 
   /// \todo Determine a better way of handling all of the various object state.
+  bool showNodes = get_state()->getValue(ShowNodes).getBool();
   bool showEdges = get_state()->getValue(ShowEdges).getBool();
   bool showFaces = get_state()->getValue(ShowFaces).getBool();
   bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
-  bool edgeTransparency = get_state()->getValue(EdgeTransparency).getBool();
-  bool faceTransparency = get_state()->getValue(FaceTransparency).getBool();
 
   GeometryHandle geom(new GeometryObject(mesh));
   geom->objectName = get_id();
@@ -97,122 +94,188 @@ void ShowMeshModule::execute()
     i+=3;
   }
 
-
   // Build the edges
-  size_t iboEdgesSize = sizeof(uint32_t) * facade->numEdges() * 2;
-  uint32_t* iboEdges = nullptr;
   if (showEdges)
   {
-    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-    //rawIBO->reserve(iboEdgesSize);
-    rawIBO->resize(iboEdgesSize);   // Linear in complexity... If we need more performance,
-                                    // use malloc to generate buffer and then vector::assign.
-    iboEdges = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
-    i = 0;
-    BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
-    {
-      // There should *only* be two indicies (linestrip would be better...)
-      VirtualMesh::Node::array_type nodes = edge.nodeIndices();
-      ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
-      // Winding order looks good from tests.
-      // Render two triangles.
-      iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
-      i += 2;
-    }
-
-    // Add IBO for the faces.
-    std::string edgesIBOName = "edgesIBO";
-    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(edgesIBOName, sizeof(uint32_t), rawIBO));
-
-    // Build pass for the faces.
-    /// \todo Find an appropriate place to put program names like UniformColor.
-    GeometryObject::SpirePass pass = 
-        GeometryObject::SpirePass("edgesPass", primVBOName,
-                                  edgesIBOName, "UniformColor",
-                                  Spire::StuInterface::LINES);
-
-    Spire::GPUState state;
-    state.mLineWidth = 2.5f;
-    pass.addGPUState(state);
-
-    // Add appropriate uniforms to the pass (in this case, uColor).
-    if (edgeTransparency)
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
-    else
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
-
-    geom->mPasses.emplace_back(pass);
+    buildEdgesNoNormals(facade, geom, primVBOName);
   }
 
   // Build the faces
-  uint32_t* iboFaces = nullptr;
   if (showFaces)
   {
-    // Determine the size of the face structure (taking into account the varying
-    // types of faces -- only quads and triangles are currently supported).
-    size_t iboFacesSize = 0;
-    BOOST_FOREACH(const FaceInfo& face, facade->faces())
-    {
-      VirtualMesh::Node::array_type nodes = face.nodeIndices();
-      if (nodes.size() == 4)
-      {
-        iboFacesSize += sizeof(uint32_t) * 6;
-      }
-      else if (nodes.size() == 3)
-      {
-        iboFacesSize += sizeof(uint32_t) * 3;
-      }
-      else
-      {
-        BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() 
-                                << SCIRun::Core::ErrorMessage("Only Quads and Triangles are supported."));
-      }
-    }
-    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-    rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
-                                    // use malloc to generate buffer and then vector::assign.
-    iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
-    i = 0;
-    BOOST_FOREACH(const FaceInfo& face, facade->faces())
-    {
-      VirtualMesh::Node::array_type nodes = face.nodeIndices();
-      if (nodes.size() == 4)
-      {
-        // Winding order looks good from tests.
-        iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
-        iboFaces[i+3] = static_cast<uint32_t>(nodes[0]); iboFaces[i+4] = static_cast<uint32_t>(nodes[2]); iboFaces[i+5] = static_cast<uint32_t>(nodes[3]);
-        i += 6;
-      }
-      else if (nodes.size() == 3)
-      {
-        iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
-        i += 3;
-      }
-      // All other cases have been checked in the loop above which determines
-      // the size of the face IBO.
-    }
+    buildFacesNoNormals(facade, geom, primVBOName);
+  }
 
-    // Add IBO for the faces.
-    std::string facesIBOName = "facesIBO";
-    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
-
-    // Build pass for the faces.
-    /// \todo Find an appropriate place to put program names like UniformColor.
-    GeometryObject::SpirePass pass = 
-        GeometryObject::SpirePass("facesPass", primVBOName,
-                                  facesIBOName, "UniformColor",
-                                  Spire::StuInterface::TRIANGLES);
-    if (faceTransparency)
-      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
-    else
-      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
-
-    geom->mPasses.emplace_back(pass);
+  // Build the nodes
+  if (showNodes)
+  {
+    buildNodesNoNormals(facade, geom, primVBOName);
   }
 
   sendOutput(SceneGraph, geom);
 }
 
+void ShowMeshModule::buildFacesNoNormals(MeshFacadeHandle facade, 
+                                         GeometryHandle geom,
+                                         const std::string& primaryVBOName)
+{
+  bool faceTransparency = get_state()->getValue(FaceTransparency).getBool();
+  uint32_t* iboFaces = nullptr;
+
+  // Determine the size of the face structure (taking into account the varying
+  // types of faces -- only quads and triangles are currently supported).
+  size_t iboFacesSize = 0;
+  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  {
+    VirtualMesh::Node::array_type nodes = face.nodeIndices();
+    if (nodes.size() == 4)
+    {
+      iboFacesSize += sizeof(uint32_t) * 6;
+    }
+    else if (nodes.size() == 3)
+    {
+      iboFacesSize += sizeof(uint32_t) * 3;
+    }
+    else
+    {
+      BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() 
+                            << SCIRun::Core::ErrorMessage("Only Quads and Triangles are supported."));
+    }
+  }
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
+  // use malloc to generate buffer and then vector::assign.
+  iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
+  size_t i = 0;
+  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  {
+    VirtualMesh::Node::array_type nodes = face.nodeIndices();
+    if (nodes.size() == 4)
+    {
+      // Winding order looks good from tests.
+      iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
+      iboFaces[i+3] = static_cast<uint32_t>(nodes[0]); iboFaces[i+4] = static_cast<uint32_t>(nodes[2]); iboFaces[i+5] = static_cast<uint32_t>(nodes[3]);
+      i += 6;
+    }
+    else if (nodes.size() == 3)
+    {
+      iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
+      i += 3;
+    }
+    // All other cases have been checked in the loop above which determines
+    // the size of the face IBO.
+  }
+
+  // Add IBO for the faces.
+  std::string facesIBOName = "facesIBO";
+  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
+
+  // Build pass for the faces.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::SpirePass pass = 
+      GeometryObject::SpirePass("facesPass", primaryVBOName,
+                                facesIBOName, "UniformColor",
+                                Spire::StuInterface::TRIANGLES);
+  if (faceTransparency)
+    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
+  else
+    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+
+  geom->mPasses.emplace_back(pass);
+}
+
+void ShowMeshModule::buildEdgesNoNormals(MeshFacadeHandle facade,
+                                         GeometryHandle geom,
+                                         const std::string& primaryVBOName)
+{
+  bool edgeTransparency = get_state()->getValue(EdgeTransparency).getBool();
+
+  size_t iboEdgesSize = sizeof(uint32_t) * facade->numEdges() * 2;
+  uint32_t* iboEdges = nullptr;
+
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawIBO->resize(iboEdgesSize);   // Linear in complexity... If we need more performance,
+  // use malloc to generate buffer and then vector::assign.
+  iboEdges = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
+  size_t i = 0;
+  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+  {
+    // There should *only* be two indicies (linestrip would be better...)
+    VirtualMesh::Node::array_type nodes = edge.nodeIndices();
+    ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
+    iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
+    i += 2;
+  }
+
+  // Add IBO for the edges.
+  std::string edgesIBOName = "edgesIBO";
+  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(edgesIBOName, sizeof(uint32_t), rawIBO));
+
+  // Build pass for the edges.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::SpirePass pass = 
+      GeometryObject::SpirePass("edgesPass", primaryVBOName,
+                                edgesIBOName, "UniformColor",
+                                Spire::StuInterface::LINES);
+
+  Spire::GPUState state;
+  state.mLineWidth = 2.5f;
+  pass.addGPUState(state);
+
+  // Add appropriate uniforms to the pass (in this case, uColor).
+  if (edgeTransparency)
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+  else
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+
+  geom->mPasses.emplace_back(pass);
+}
+
+void ShowMeshModule::buildNodesNoNormals(MeshFacadeHandle facade,
+                                         GeometryHandle geom,
+                                         const std::string& primaryVBOName)
+{
+  bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
+
+  size_t iboNodesSize = sizeof(uint32_t) * facade->numNodes();
+  uint32_t* iboNodes = nullptr;
+
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  rawIBO->resize(iboNodesSize);   // Linear in complexity... If we need more performance,
+  // use malloc to generate buffer and then vector::assign.
+  iboNodes = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
+  size_t i = 0;
+  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  {
+    // There should *only* be two indicies (linestrip would be better...)
+    //node.index()
+    //VirtualMesh::Node::array_type nodes = node.nodeIndices();
+    //ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
+    iboNodes[i] = static_cast<uint32_t>(node.index());
+    i++;
+  }
+
+  // Add IBO for the nodes.
+  std::string nodesIBOName = "nodesIBO";
+  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(nodesIBOName, sizeof(uint32_t), rawIBO));
+
+  // Build pass for the nodes.
+  /// \todo Find an appropriate place to put program names like UniformColor.
+  GeometryObject::SpirePass pass = 
+      GeometryObject::SpirePass("nodesPass", primaryVBOName,
+                                nodesIBOName, "UniformColor",
+                                Spire::StuInterface::POINTS);
+
+  // Add appropriate uniforms to the pass (in this case, uColor).
+  if (nodeTransparency)
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+  else
+    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+
+  geom->mPasses.emplace_back(pass);
+}
+
+AlgorithmParameterName ShowMeshModule::ShowNodes("Show nodes");
 AlgorithmParameterName ShowMeshModule::ShowEdges("Show edges");
 AlgorithmParameterName ShowMeshModule::ShowFaces("Show faces");
 AlgorithmParameterName ShowMeshModule::NodeTransparency("Node Transparency");
