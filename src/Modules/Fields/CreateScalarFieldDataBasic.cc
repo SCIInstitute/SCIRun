@@ -27,13 +27,13 @@
 */
 
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName CreateScalarFieldDataBasic::DataMap("DataMap");
 
@@ -44,5 +44,36 @@ CreateScalarFieldDataBasic::CreateScalarFieldDataBasic()
 
 void CreateScalarFieldDataBasic::execute()
 {
-  std::cout << "hello ...creating data map" << std::endl;
+  auto field = getRequiredInput(InputField);
+  
+  VField* vfield = field->vfield();
+  VMesh* vmesh = field->vmesh();
+
+  if (vfield && vmesh)
+  {
+    std::cout << "Assuming values on nodes." << std::endl;
+    {
+      VMesh::Node::iterator meshNodeIter;
+      VMesh::Node::iterator meshNodeEnd;
+
+      vmesh->begin(meshNodeIter);
+      vmesh->end(meshNodeEnd);
+      std::ostringstream ostr;
+
+      double value = 0.1;
+      for (; meshNodeIter != meshNodeEnd; ++meshNodeIter)
+      {
+        // get edges and point from mesh node
+
+        VMesh::Node::index_type nodeID = *meshNodeIter;
+        value += 0.123;
+        vfield->set_value(value, nodeID);
+        std::cout << "Set value " << value << " at node " << nodeID << std::endl;
+      }
+    }
+  }
+  else
+    error("VField object is null");
+
+  sendOutput(OutputFieldWithData, field);
 }

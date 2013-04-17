@@ -58,7 +58,6 @@ namespace Fields {
       std::string dataLocation;
       double geometricSize;
     };
-    //typedef boost::tuple<std::string, Geometry::Point, Geometry::Point, double, double, size_t, size_t, std::string, Geometry::Point, size_t> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
   private:
