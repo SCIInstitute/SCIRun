@@ -126,7 +126,7 @@ public:
   //! A different way of tagging a class. Currently two systems are used next
   //! to each other: type_name and get_type_description. Neither is perfect
   virtual 
-  const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const {return 0;}
+  const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Static functions to instantiate the field from Pio or using CreateField()
@@ -416,7 +416,6 @@ const std::string GenericField<Mesh, Basis, FData>::type_name(int n)
   }
 }
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Mesh, class Basis, class FData>
 const TypeDescription *
 GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
@@ -466,7 +465,6 @@ GenericField<Mesh, Basis, FData>::get_type_description(td_info_e td) const
     }
   };
 }
-#endif
 
 //! These ended up here, due to the problem with the include order in get_typedescription.
 //! Once we have dismanteled that system this can go back to VFData
