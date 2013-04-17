@@ -26,9 +26,29 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
+SET(Algorithms_Field_SRCS
+  ReportFieldInfoAlgorithm.cc
+)
 
+SET(Algorithms_Field_HEADERS
+  ReportFieldInfoAlgorithm.h
+  Share.h
+)
+
+ADD_LIBRARY(Algorithms_Field 
+  ${Algorithms_Field_HEADERS}
+  ${Algorithms_Field_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Field
+  Core_Datatypes
+  Core_Datatypes_Legacy_Field
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Field)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)

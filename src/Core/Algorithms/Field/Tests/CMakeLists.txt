@@ -26,9 +26,19 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
+SET(Algorithms_Field_Tests_SRCS
+  ReportFieldInfoTests.cc
+)
 
+SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
+  ${Algorithms_Field_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
+  Algorithms_Field
+  Core_Datatypes_Legacy_Field
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
+)
