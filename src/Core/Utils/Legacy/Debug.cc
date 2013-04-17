@@ -1,5 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -28,10 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #include <Core/Utils/Legacy/Debug.h>
 #include <Core/Thread/Legacy/Mutex.h>
 #include <map>
 #include <iostream>
+
+#if DEBUG
 
 namespace SCIRun {
 
@@ -117,8 +119,6 @@ void debug_tag_default_number_of_objects()
 
 
 } // End namespace SCIRun
-
-
-
+#endif
 
 #endif
