@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_REPORTMATRIXINFO_H
-#define ALGORITHMS_MATH_REPORTMATRIXINFO_H
+#ifndef ALGORITHMS_MATH_REPORTFIELDINFO_H
+#define ALGORITHMS_MATH_REPORTFIELDINFO_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
@@ -43,7 +43,17 @@ namespace Fields {
   public:
     typedef SCIRun::FieldHandle Inputs;
     typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
-    typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
+    
+    struct Outputs
+    {
+      std::string type;
+      Geometry::Point center, size, dims;
+      double dataMin, dataMax;
+      size_t nodes, elements;
+      std::string dataLocation;
+      size_t geometricSize;
+    };
+    //typedef boost::tuple<std::string, Geometry::Point, Geometry::Point, double, double, size_t, size_t, std::string, Geometry::Point, size_t> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
   };
