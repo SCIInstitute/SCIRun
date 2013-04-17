@@ -386,9 +386,6 @@
           <property name="text">
            <string/>
           </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-          </property>
          </item>
         </item>
         <item>
@@ -470,6 +467,16 @@
           </property>
           <property name="text">
            <string>Official ported v4 module.</string>
+          </property>
+         </item>
+        </item>
+        <item>
+         <property name="text">
+          <string>MiscField</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>ReportFieldInfo</string>
           </property>
          </item>
         </item>
