@@ -412,7 +412,7 @@ Tensor::get_h_file_path() {
   return path;
 }
 
-const TypeDescription* SCIRun::get_type_description(Tensor*)
+const TypeDescription* SCIRun::Core::Geometry::get_type_description(Tensor*)
 {
   static TypeDescription* td = 0;
   if(!td){

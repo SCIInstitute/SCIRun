@@ -161,9 +161,11 @@ Tensor operator*(double d, const Tensor &t) {
 
 SCISHARE std::ostream& operator<<(std::ostream& os, const Tensor& t);
 SCISHARE std::istream& operator>>(std::istream& os, Tensor& t);
+
+SCISHARE const TypeDescription* get_type_description(Tensor*);
     }}
 
-  SCISHARE const TypeDescription* get_type_description(Core::Geometry::Tensor*);
+  
 
 } // End namespace SCIRun
 
