@@ -53,8 +53,8 @@ namespace Datatypes {
     MeshConstructionParameters(MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Geometry::Point& min, const Geometry::Point& max);
   };
 
-  typedef MeshHandle (*MeshDefaultConstructor)();
-  typedef MeshHandle (*MeshConstructor)(const MeshConstructionParameters&);
+  typedef MeshHandle5 (*MeshDefaultConstructor)();
+  typedef MeshHandle5 (*MeshConstructor)(const MeshConstructionParameters&);
 
   //TODO: yucky double-singleton to separate registration from construction.
 
@@ -63,13 +63,13 @@ namespace Datatypes {
     CORE_SINGLETON( MeshFactory );
 
   public:
-    MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
-    MeshHandle CreateMesh(const FieldInformation& info);
-    MeshHandle CreateMesh(const std::string& type);
+    MeshHandle5 CreateMesh(const Field5Information& info, const MeshConstructionParameters& params);
+    MeshHandle5 CreateMesh(const Field5Information& info);
+    MeshHandle5 CreateMesh(const std::string& type);
 
   private:
     MeshFactory();
-    MeshHandle CreateMesh(const std::string& type, const MeshConstructionParameters& params);
+    MeshHandle5 CreateMesh(const std::string& type, const MeshConstructionParameters& params);
     class MeshRegistry& registry_;
   };
 

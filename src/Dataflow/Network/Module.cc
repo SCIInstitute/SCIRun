@@ -51,8 +51,8 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
 
 Module::Module(const ModuleLookupInfo& info,
-  ModuleStateFactoryHandle stateFactory,
   bool hasUi,
+  ModuleStateFactoryHandle stateFactory,
   const std::string& version)
   : info_(info), has_ui_(hasUi), 
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
@@ -236,7 +236,7 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
   if (module_)
   {
     DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
-    InputPortHandle port(new InputPort(module_.get(), params, sink));
+    InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
     port->setIndex(module_->add_input_port(port));
   }
   return *this;
@@ -247,7 +247,7 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   if (module_)
   {
     DatatypeSourceInterfaceHandle source(source_maker_ ? source_maker_() : 0);
-    OutputPortHandle port(new OutputPort(module_.get(), params, source));
+    OutputPortHandle port(boost::make_shared<OutputPort>(module_.get(), params, source));
     port->setIndex(module_->add_output_port(port));
   }
   return *this;
@@ -277,4 +277,10 @@ boost::signals2::connection Module::connectExecuteEnds(const ExecuteEndsSignalTy
 boost::signals2::connection Module::connectErrorListener(const ErrorSignalType::slot_type& subscriber)
 {
   return errorSignal_.connect(subscriber);
+}
+
+void Module::setUiVisible(bool visible)
+{
+  if (uiToggleFunc_)
+    uiToggleFunc_(visible);
 }

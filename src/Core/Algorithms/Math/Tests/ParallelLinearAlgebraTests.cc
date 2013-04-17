@@ -52,7 +52,7 @@ namespace
   const int size = 1000;
   SparseRowMatrixHandle matrix1() 
   {
-    SparseRowMatrixHandle m(new SparseRowMatrix(size,size));
+    SparseRowMatrixHandle m(boost::make_shared<SparseRowMatrix>(size,size));
     m->insert(0,0) = 1;
     m->insert(1,2) = -1;
     m->insert(size-1,size-1) = 2;
@@ -79,7 +79,7 @@ namespace
 
   DenseColumnMatrixHandle vector1()
   {
-    DenseColumnMatrixHandle v(new DenseColumnMatrix(size));
+    DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
     v->setZero();
     *v << 1, 2, 4;
     (*v)[size-1] = -1;
@@ -88,7 +88,7 @@ namespace
 
   DenseColumnMatrixHandle vector2()
   {
-    DenseColumnMatrixHandle v(new DenseColumnMatrix(size));
+    DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
     v->setZero();
     *v << -1, -2, -4;
     (*v)[size-1] = 1;
@@ -97,7 +97,7 @@ namespace
 
   DenseColumnMatrixHandle vector3()
   {
-    DenseColumnMatrixHandle v(new DenseColumnMatrix(size));
+    DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
     v->setZero();
     *v << 0, 1, 0;
     (*v)[size-1] = -7;
@@ -204,17 +204,10 @@ struct Copy
 
   void operator()()
   {
-    //std::cout << proc_ << " starting" << std::endl;
     ParallelLinearAlgebra pla(data_, proc_);
-    
     pla.new_vector(v1_);
-    //std::cout << "pla" << proc_ << " new vector" << std::endl;
-    
     pla.add_vector(vec2copy_, v2_);
-    //std::cout << "pla" << proc_ << " add vector" << std::endl;
-
     pla.copy(v2_, v1_);
-    //std::cout << "pla" << proc_ << "  copy" << std::endl;
   }
 };
 

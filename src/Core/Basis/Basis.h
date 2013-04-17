@@ -35,7 +35,7 @@
 #include <vector>
 #include <cfloat>
 #include <boost/array.hpp>
-//#include <Core/Util/Assert.h>
+#include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Exception.h>
 
 

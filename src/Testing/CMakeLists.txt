@@ -54,7 +54,7 @@ IF(RUN_BASIC_REGRESSION_TESTS)
    MESSAGE(STATUS "Using executable: ${EXE_LOC} to test networks")
    
   # Run all the possible .srn files in src/ExampleNets
-  FILE(GLOB_RECURSE scirun_srns "${SCIRun5Prototype_SOURCE_DIR}/ExampleNets/*.srn5")
+  FILE(GLOB_RECURSE scirun_srns "${SCIRun5Prototype_SOURCE_DIR}/ExampleNets/regression/*.srn5")
   FOREACH(srn ${scirun_srns})
     GET_FILENAME_COMPONENT(srn_name ${srn} NAME_WE)
     #SET(SRN_ROOT_NAMES "${SRN_ROOT_NAMES} ${srn_name}" CACHE INTERNAL "List of root net names that correspond with image names")

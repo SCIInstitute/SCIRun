@@ -27,10 +27,34 @@
 #
 
 SET(Core_Math_SRCS
+  CubicPWI.cc 
+  Gaussian.cc
+  LinAlg.c
+  LinearPWI.cc
+  Mat.c
   MiscMath.cc
+  MiscMath2.cc
+  MusilRNG.cc
+  PiecewiseInterp.cc
+  TrigTable.cc
+  #sci_lapack.cc
+  fft.c	
 )
 
 SET(Core_Math_HEADERS
+  CatmullRomSpline.h
+  CubicPWI.h
+  Gaussian.h
+  LinAlg.h
+  LinearPWI.h
+  Mat.h
+  MiscMath.h
+  MiscMath2.h
+  MusilRNG.h
+  PiecewiseInterp.h
+  TrigTable.h
+  #sci_lapack.h
+  fft.h
   MiscMath.h
   Share.h
 )
@@ -38,6 +62,10 @@ SET(Core_Math_HEADERS
 ADD_LIBRARY(Core_Math 
   ${Core_Math_HEADERS}
   ${Core_Math_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Math
+  Core_Exceptions_Legacy
 )
 
 IF(BUILD_SHARED_LIBS)

@@ -43,6 +43,5 @@ void CreateStringModule::execute()
 {
   stringValue_ = get_state()->getValue(InputString).getString();
 
-  StringHandle s(new String(stringValue_));
-  sendOutput(NewString, s);
+  sendOutput(NewString, boost::make_shared<String>(stringValue_));
 }

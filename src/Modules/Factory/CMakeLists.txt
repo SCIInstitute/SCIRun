@@ -49,6 +49,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_String
   Modules_Render
   Modules_Visualization
+  Dataflow_Modules_Legacy_Fields
 )
 
 IF(BUILD_SHARED_LIBS)

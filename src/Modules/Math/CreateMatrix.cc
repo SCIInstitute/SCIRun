@@ -43,7 +43,7 @@ CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix
 
 void CreateMatrixModule::execute()
 {
-  DenseMatrixHandle matrix(new DenseMatrix);
+  DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
   try
   {
 	  std::string matrixString = get_state()->getValue(TextEntry).getString();

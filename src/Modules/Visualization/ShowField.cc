@@ -83,11 +83,10 @@ void ShowFieldModule::execute()
   //  i += 6;
   //}
 
-  GeometryHandle geom(new GeometryObject(field));
   //geom->vboFaces = (uint8_t*)vbo;
   //geom->vboFacesSize = vboSize;
   //geom->iboFaces = (uint8_t*)iboFaces;
   //geom->iboFacesSize = iboFacesSize;
 
-  sendOutput(SceneGraph, geom);
+  sendOutput(SceneGraph, boost::make_shared<GeometryObject>(field));
 }

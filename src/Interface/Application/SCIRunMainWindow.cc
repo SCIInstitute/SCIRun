@@ -38,6 +38,10 @@
 #include <Interface/Application/Connection.h>
 #include <Interface/Application/Preferences.h>
 #include <Interface/Application/PythonConsoleWidget.h>
+#include <Interface/Application/TreeViewCollaborators.h>
+#include <Interface/Application/MainWindowCollaborators.h>
+#include <Interface/Application/GuiCommandFactory.h>
+#include <Interface/Application/GuiCommands.h>
 #include <Core/Logging/Logger.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
@@ -49,101 +53,15 @@
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
+#include <Core/Command/CommandFactory.h>
+#include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
-
-namespace
-{
-  struct GrabNameAndSetFlags
-  {
-    QStringList nameList_;
-    void operator()(QTreeWidgetItem* item)
-    {
-      nameList_ << item->text(0) + "," + QString::number(item->childCount());
-      if (item->childCount() != 0)
-        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    }
-  };
-
-  template <class Func>
-  void visitItem(QTreeWidgetItem* item, Func& itemFunc)
-  {
-    itemFunc(item);
-    for (int i = 0; i < item->childCount(); ++i)
-      visitItem(item->child(i), itemFunc);
-  }
-
-  template <class Func>
-  void visitTree(QTreeWidget* tree, Func& itemFunc) 
-  {
-    for (int i = 0; i < tree->topLevelItemCount(); ++i)
-      visitItem(tree->topLevelItem(i), itemFunc);
-  }
-
-  class TextEditAppender : public Core::Logging::LoggerInterface
-  {
-  public:
-    explicit TextEditAppender(QTextEdit* text) : text_(text) {}
-
-    void log(const QString& message) const 
-    {
-      text_->append(message);
-    }
-
-    virtual void error(const std::string& msg) const
-    {
-      log("Error: " + QString::fromStdString(msg));
-    }
-
-    virtual void warning(const std::string& msg) const
-    {
-      log("Warning: " + QString::fromStdString(msg));
-    }
-
-    virtual void remark(const std::string& msg) const
-    {
-      log("Remark: " + QString::fromStdString(msg));
-    }
-
-    virtual void status(const std::string& msg) const
-    {
-      log(QString::fromStdString(msg));
-    }
-  private:
-    QTextEdit* text_;
-  };
-
-  class TreeViewModuleGetter : public CurrentModuleSelection
-  {
-  public:
-    explicit TreeViewModuleGetter(QTreeWidget& tree) : tree_(tree) {}
-    virtual QString text() const
-    {
-      return tree_.currentItem()->text(0);
-    }
-    virtual bool isModule() const
-    {
-      return tree_.currentItem()->childCount() == 0;
-    }
-  private:
-    QTreeWidget& tree_;
-  };
-
-  class ComboBoxDefaultNotePositionGetter : public DefaultNotePositionGetter
-  {
-  public:
-    explicit ComboBoxDefaultNotePositionGetter(QComboBox& combo) : combo_(combo) {}
-    virtual NotePosition position() const
-    {
-      return NotePosition(combo_.currentIndex() + 1);
-    }
-  private:
-    QComboBox& combo_;
-  };
-}
+using namespace SCIRun::Core::Commands;
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
 
@@ -188,6 +106,8 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   actionExecute_All_->setStatusTip(tr("Execute all modules"));
   actionExecute_All_->setWhatsThis(tr("Click this option to execute all modules in the current network editor."));
+  actionNew_->setStatusTip(tr("New network"));
+  actionNew_->setWhatsThis(tr("Click this option to start editing a blank network file."));
   actionSave_->setStatusTip(tr("Save network"));
   actionSave_->setWhatsThis(tr("Click this option to save the current network to disk."));
   actionLoad_->setStatusTip(tr("Load network"));
@@ -197,7 +117,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
 
   connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
-  connect(actionClear_Network_, SIGNAL(triggered()), this, SLOT(clearNetwork()));
+  connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
 
   connect(defaultNotePositionComboBox_, SIGNAL(activated(int)), this, SLOT(readDefaultNotePosition(int)));
@@ -227,6 +147,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   setActionIcons();
 
   QToolBar* standardBar = addToolBar("Standard");
+  standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
   standardBar->addAction(actionEnterWhatsThisMode_);
@@ -295,10 +216,17 @@ SCIRunMainWindow::SCIRunMainWindow()
   setupPythonConsole();
 
   makeFilterButtonMenu();
-  activateWindow();
+  
 }
 
 void SCIRunMainWindow::initialize()
+{
+  postConstructionSignalHookup();
+
+  executeCommandLineRequests();
+}
+
+void SCIRunMainWindow::postConstructionSignalHookup()
 {
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
@@ -317,33 +245,38 @@ void SCIRunMainWindow::initialize()
   connect(networkEditor_, SIGNAL(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)), 
     commandConverter_.get(), SLOT(moduleMoved(const SCIRun::Dataflow::Networks::ModuleId&, double, double)));
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
-  
-  prefs_->setRegressionTestDataDir();
 
-  //TODO: obviously need to move this lower for headless mode.
-  auto inputFile = SCIRun::Core::Application::Instance().parameters()->inputFile();
-  if (inputFile)
-  {
-    loadNetworkFile(QString::fromStdString(inputFile.get()));
-    if (SCIRun::Core::Application::Instance().parameters()->executeNetwork())
-    {
-      // -e
-      networkEditor_->executeAll();
-    }
-    else if (SCIRun::Core::Application::Instance().parameters()->executeNetworkAndQuit())
-    {
-      // -E
-      connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
-      prefs_->setRegressionMode(true);
-      networkEditor_->executeAll();
-    }
-  }
+  prefs_->setRegressionTestDataDir();
+}
+
+void SCIRunMainWindow::executeCommandLineRequests()
+{
+  GlobalCommandFactoryHandle gcf(boost::make_shared<GuiGlobalCommandFactory>());
+  GlobalCommandBuilderFromCommandLine builder(gcf);
+  auto queue = builder.build(SCIRun::Core::Application::Instance().parameters());
+  queue->runAll();
+}
+
+void SCIRunMainWindow::executeAll()
+{
+  networkEditor_->executeAll();
+}
+
+void SCIRunMainWindow::setupQuitAfterExecute()
+{
+  connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(exitApplication(int)));
+  prefs_->setRegressionMode(true);
 }
 
 void SCIRunMainWindow::exitApplication(int code)
 {
   close(); 
   /*qApp->*/exit(code);
+}
+
+void SCIRunMainWindow::quit()
+{
+  exitApplication(0);
 }
 
 void SCIRunMainWindow::saveNetwork()
@@ -373,41 +306,6 @@ void SCIRunMainWindow::saveNetworkFile(const QString& fileName)
   setWindowModified(false);
 }
 
-class FileOpenCommand
-{
-public:
-  FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-  bool execute()
-  {
-    GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
-
-    try
-    {
-      openedFile_ = XMLSerializer::load_xml<NetworkFile>(filename_);
-
-      if (openedFile_)
-      {
-        networkEditor_->clear();
-        networkEditor_->loadNetwork(openedFile_);
-        GuiLogger::Instance().log("File load done.");
-        return true;
-      }
-      else
-        GuiLogger::Instance().log("File load failed.");
-    }
-    catch (...)
-    {
-      GuiLogger::Instance().log("File load failed.");
-    }
-    return false;
-  }
-
-  NetworkFileHandle openedFile_;
-private:
-  std::string filename_;
-  NetworkEditor* networkEditor_;
-};
-
 void SCIRunMainWindow::loadNetwork()
 {
   if (okToContinue())
@@ -433,7 +331,7 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
   }
 }
 
-bool SCIRunMainWindow::clearNetwork()
+bool SCIRunMainWindow::newNetwork()
 {
   if (okToContinue())
   {
@@ -539,6 +437,7 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::setActionIcons() 
 {
+  //actionNew_->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
   actionLoad_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
   actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
@@ -547,55 +446,6 @@ void SCIRunMainWindow::setActionIcons()
   actionRedo_->setIcon(QIcon::fromTheme("edit-redo"));
   //actionCut_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
 }
-
-struct HideItemsNotMatchingString
-{
-  explicit HideItemsNotMatchingString(bool useRegex, const QString& pattern) : match_("*" + pattern + "*", Qt::CaseInsensitive, QRegExp::Wildcard), start_(pattern), useRegex_(useRegex) {}
-  QRegExp match_;
-  QString start_;
-  bool useRegex_;
-
-  void operator()(QTreeWidgetItem* item)
-  {
-    if (item)
-    {
-      if (0 == item->childCount())
-      {
-        item->setHidden(shouldHide(item));
-      }
-      else
-      {
-        bool shouldHideCategory = true;
-        for (int i = 0; i < item->childCount(); ++i)
-        {
-          auto child = item->child(i);
-          if (!child->isHidden())
-          {
-            shouldHideCategory = false;
-            break;
-          }
-        }
-        item->setHidden(shouldHideCategory);
-      }
-    }
-  }
-
-  bool shouldHide(QTreeWidgetItem* item) 
-  {
-    auto text = item->text(0);
-    if (useRegex_)
-      return !match_.exactMatch(text);
-    return !text.startsWith(start_, Qt::CaseInsensitive);
-  }
-};
-
-struct ShowAll
-{
-  void operator()(QTreeWidgetItem* item)
-  {
-    item->setHidden(false);
-  }
-};
 
 void SCIRunMainWindow::filterModuleNamesInTreeView(const QString& start)
 {
@@ -641,7 +491,7 @@ void SCIRunMainWindow::makePipesEuclidean()
 
 void SCIRunMainWindow::makePipesManhattan()
 {
-  //TODO
+  networkEditor_->setConnectionPipelineType(MANHATTAN);
 }
 
 void SCIRunMainWindow::readSettings()
@@ -675,6 +525,25 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: default note position = " + QString::number(notePositionIndex));
   }
 
+  const QString pipeTypeKey = "connectionPipeType";
+  if (settings.contains(pipeTypeKey))
+  {
+    int pipeType = settings.value(pipeTypeKey).toInt();
+    networkEditor_->setConnectionPipelineType(pipeType);
+    GuiLogger::Instance().log("Setting read: connection pipe style = " + QString::number(pipeType));
+    switch (pipeType)
+    {
+    case MANHATTAN: 
+      manhattanPipesRadioButton_->setChecked(true);
+      break;
+    case CUBIC: 
+      cubicPipesRadioButton_->setChecked(true);
+      break;
+    case EUCLIDEAN: 
+      euclideanPipesRadioButton_->setChecked(true);
+      break;
+    }
+  }
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -686,6 +555,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
   settings.setValue("backgroundColor", networkEditor_->background().color().name());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
+  settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
 }
 
 void SCIRunMainWindow::disableInputWidgets()
@@ -694,9 +564,14 @@ void SCIRunMainWindow::disableInputWidgets()
   actionSave_->setDisabled(true);
   actionLoad_->setDisabled(true);
   actionSave_As_->setDisabled(true);
+  actionNew_->setDisabled(true);
   moduleSelectorTreeWidget_->setDisabled(true);
   networkEditor_->disableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+  
+  Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
+    action->setDisabled(true);
+
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_->setDisabled(true);
 #endif
@@ -708,9 +583,14 @@ void SCIRunMainWindow::enableInputWidgets()
   actionSave_->setEnabled(true);
   actionLoad_->setEnabled(true);
   actionSave_As_->setEnabled(true);
+  actionNew_->setEnabled(true);
   moduleSelectorTreeWidget_->setEnabled(true);
   networkEditor_->enableInputWidgets();
   scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+  Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
+    action->setEnabled(true);
+
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_->setDisabled(false);
 #endif

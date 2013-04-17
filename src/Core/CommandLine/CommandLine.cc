@@ -28,6 +28,7 @@
 
 #include <Core/CommandLine/CommandLine.h>
 #include <boost/program_options.hpp>
+#include <boost/make_shared.hpp>
 
 using namespace SCIRun::Core::CommandLine;
 namespace po = boost::program_options;
@@ -45,14 +46,14 @@ public:
   {
       desc_.add_options()
       ("help,h", "prints usage information")
-      ("version,v", "prints out version information--TODO")
+      ("version,v", "prints out version information")
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory--TODO")
       ("regression,r", "regression test a network--TODO")
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("interactive,i", "interactive mode--TODO")
-      ("headless,x", "disable GUI--TODO")
+      ("headless,x", "disable GUI (Qt still needed, for now)")
       ("input-file", po::value<std::string>(), "SCIRun Network Input File")
       ;
       
@@ -162,7 +163,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
 {
   auto parsed = impl_->parse(argc, argv);
   boost::optional<std::string> inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
-  ApplicationParametersHandle aph(new ApplicationParametersImpl
+  return boost::make_shared<ApplicationParametersImpl>
     (
       inputFile,
       parsed.count("help") != 0,
@@ -170,9 +171,7 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       parsed.count("execute") != 0,
       parsed.count("Execute") != 0,
       parsed.count("headless") != 0
-    ));
-
-  return aph;
+    );
 }
 
 ApplicationParameters::~ApplicationParameters()

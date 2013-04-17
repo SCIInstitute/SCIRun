@@ -56,7 +56,7 @@ namespace Core {
 namespace Datatypes {
 
 template <class Basis>
-class LatVolMesh : public Mesh
+class LatVolMesh : public Mesh5
 {
 
 template <class MESH>
@@ -201,7 +201,7 @@ public:
     RangeCellIter operator++(int);
   };
 
-  //! Index and Iterator types required for Mesh Concept.
+  //! Index and Iterator types required for Mesh5 Concept.
   struct Node {
     typedef NodeIndex                  index_type;
     typedef NodeIter                   iterator;
@@ -569,16 +569,14 @@ public:
   static Persistent *maker() { return new LatVolMesh(); }
 #endif
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() 
+  static MeshHandle5 mesh_maker() 
   { 
-    MeshHandle ret(new LatVolMesh()); 
-    return ret;
+    return boost::make_shared<LatVolMesh>();
   }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle latvol_maker(const SCIRun::Core::Datatypes::MeshConstructionParameters& params) 
+  static MeshHandle5 latvol_maker(const SCIRun::Core::Datatypes::MeshConstructionParameters& params) 
   { 
-    MeshHandle ret(new LatVolMesh(params.x_, params.y_, params.z_, params.min_, params.max_)); 
-    return ret;
+    return boost::make_shared<LatVolMesh>(params.x_, params.y_, params.z_, params.min_, params.max_); 
   }
 
 protected:

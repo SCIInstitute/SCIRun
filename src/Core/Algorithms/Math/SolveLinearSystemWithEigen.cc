@@ -106,7 +106,7 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
   if (x.size() != 0)
   {
     //TODO: move ctor
-    DenseColumnMatrixHandle solution(new DenseColumnMatrix(x));
+    DenseColumnMatrixHandle solution(boost::make_shared<DenseColumnMatrix>(x));
     return SolveLinearSystemAlgorithm::Outputs(solution, impl.tolerance_, impl.maxIterations_);
   }
   else

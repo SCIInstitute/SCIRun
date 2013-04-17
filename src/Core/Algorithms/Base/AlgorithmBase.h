@@ -111,6 +111,15 @@ namespace Algorithms {
     static UpdaterFunc defaultUpdaterFunc_;
   };
 
+  class SCISHARE ScopedAlgorithmStatusReporter
+  {
+  public:
+    ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag);
+    ~ScopedAlgorithmStatusReporter();
+  private:
+    const AlgorithmStatusReporter* asr_;
+  };
+
   //TODO: link this to ModuleState via meeting discussion
   class SCISHARE AlgorithmParameterList
   {

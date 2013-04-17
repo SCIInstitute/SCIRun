@@ -417,10 +417,12 @@ INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_SOURCE_DIR}/
+  ${SCIRun5Prototype_SOURCE_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
   ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
+  ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen_3_1_1
 )
 
@@ -455,11 +457,80 @@ ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
 ADD_SUBDIRECTORY(Externals)
+ADD_SUBDIRECTORY(include)
 
 ADD_SUBDIRECTORY(Main)
 
 ADD_SUBDIRECTORY(Testing)
 
+
+########################################################################
+# sci_defs variables
+
+# sci_defs/error_defs.h
+SET(THROW_LEVEL 0 CACHE STRING "Set throw level N(0-3)")
+SET(ASSERTION_LEVEL 1 CACHE STRING "Set assertion level N(0-3)")
+IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+  SET(ASSERTION_LEVEL 3)
+ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+# sci_defs/environment_defs.h
+SET(scirun_src_dir "${SCIRun5Prototype_SOURCE_DIR}" CACHE INTERNAL "Path to SCIRun's src directory")
+# DV Technically, I don't have access to this variable once we fix building
+# these projets separately!!!
+SET(scirun_obj_dir ${SCIRun5Prototype_BINARY_DIR} CACHE INTERNAL "Path to SCIRun's binary directory")
+
+MARK_AS_ADVANCED(THROW_LEVEL ASSERTION_LEVEL DEF_HASH)
+# DV Add with_exc stuff from configure.ac
+INCLUDE (${CMAKE_ROOT}/Modules/CheckIncludeFile.cmake)
+CHECK_INCLUDE_FILE(limits.h HAVE_LIMITS)
+IF(HAVE_LIMITS)
+  SET(HAVE_LIMITS_H 1)
+ELSE(HAVE_LIMITS)
+  SET(HAVE_LIMITS_H 0)
+ENDIF(HAVE_LIMITS)
+
+CHECK_INCLUDE_FILE(sys/select.h HAVE_SYS_SELECT)
+IF(HAVE_SYS_SELECT)
+  SET(HAVE_SYS_SELECT_H 1)
+ELSE(HAVE_SYS_SELECT)
+  SET(HAVE_SYS_SELECT_H 0)
+ENDIF(HAVE_SYS_SELECT)
+
+CHECK_INCLUDE_FILE(sys/time.h HAVE_SYS_TIME)
+IF(HAVE_SYS_TIME)
+  SET(HAVE_SYS_TIME_H 1)
+ELSE(HAVE_SYS_TIME)
+  SET(HAVE_SYS_TIME_H 0)
+ENDIF(HAVE_SYS_TIME)
+
+# BW Fix to figure out if we have ext/algorithm
+#TRY_COMPILE(HAVE_EXT_ALGORITHM
+#  ${CMAKE_CURRENT_BINARY_DIR}/CMakeTmp
+#  ${SCIRUN_CORE_SOURCE_DIR}/CMake/SCIRunTestExtAlgorithm.cc
+#  OUTPUT_VARIABLE OUTPUT)
+IF(HAVE_EXT_ALGORITHM)
+  SET(HAVE_EXT_ALGORITHM_H 1)
+ELSE(HAVE_EXT_ALGORITHM)
+  SET(HAVE_EXT_ALGORITHM_H 0)
+ENDIF(HAVE_EXT_ALGORITHM)
+
+CHECK_INCLUDE_FILE(stdint.h HAVE_STDINT)
+IF(HAVE_STDINT)
+  SET(HAVE_STDINT_H 1)
+ELSE(HAVE_STDINT)
+  SET(HAVE_STDINT_H 0)
+ENDIF(HAVE_STDINT)
+
+CHECK_INCLUDE_FILE(inttypes.h HAVE_INTTYPES)
+IF(HAVE_INTTYPES)
+  SET(HAVE_INTTYPES_H 1)
+ELSE(HAVE_INTTYPES)
+  SET(HAVE_INTTYPES_H 0)
+ENDIF(HAVE_INTTYPES)
+
+SET(HAVE_SYS_UUID_H 0)
+SET(HAVE_UUID_UUID_H 0)
 
 ########################################################################
 # Organize projects into folders for Visual Studio projects
@@ -472,6 +543,7 @@ SET_PROPERTY(TARGET Algorithms_DataIO       PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_DataIO_Tests PROPERTY FOLDER "Core/Algorithms/Tests")
 SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
 
 SET_PROPERTY(TARGET Dataflow_Network         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET Dataflow_Network_Tests   PROPERTY FOLDER "Dataflow/Tests")
@@ -479,6 +551,10 @@ SET_PROPERTY(TARGET Core_Datatypes         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Tests   PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Datatypes_Mesh         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Datatypes_Mesh_Tests   PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Datatypes_Legacy_Base         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_Legacy_Base_Tests   PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Datatypes_Legacy_Field_Tests   PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Basis         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Basis_Tests   PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Logging         PROPERTY FOLDER "Core")
@@ -497,6 +573,11 @@ SET_PROPERTY(TARGET Core_Utils         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Utils_Tests         PROPERTY FOLDER "Core/Tests")
 SET_PROPERTY(TARGET Core_Math         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Math_Tests         PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Exceptions_Legacy         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Util_Legacy         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Containers         PROPERTY FOLDER "Core")
+SET_PROPERTY(TARGET Core_Containers_Tests         PROPERTY FOLDER "Core/Tests")
+SET_PROPERTY(TARGET Core_Thread_Legacy         PROPERTY FOLDER "Core")
 SET_PROPERTY(TARGET Core_Serialization_Network         PROPERTY FOLDER "Dataflow/Serialization")
 SET_PROPERTY(TARGET Core_Serialization_Network_Tests         PROPERTY FOLDER "Dataflow/Serialization/Tests")
 SET_PROPERTY(TARGET Engine_Network         PROPERTY FOLDER "Dataflow/Engine")
@@ -537,6 +618,7 @@ SET_PROPERTY(TARGET Modules_String   PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
+SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")

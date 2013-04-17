@@ -29,11 +29,15 @@
 SET(Core_Command_SRCS
   Command.cc
   CommandFactory.cc
+  CommandQueue.cc
+  GlobalCommandBuilderFromCommandLine.cc
 )
 
 SET(Core_Command_HEADERS
   Command.h
   CommandFactory.h
+  CommandQueue.h
+  GlobalCommandBuilderFromCommandLine.h
   Share.h
 )
 
@@ -44,6 +48,7 @@ ADD_LIBRARY(Core_Command
 
 TARGET_LINK_LIBRARIES(Core_Command
   Core_CommandLine
+  Core_Utils
   ${SCI_BOOST_LIBRARY}
 )
 

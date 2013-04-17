@@ -28,16 +28,22 @@
 
 SET(Core_GeometryPrimitives_SRCS
   BBox.cc
+  CompGeom.cc
   Point.cc
+  SearchGridT.cc
+  Tensor.cc
   Transform.cc
   Vector.cc
 )
 
 SET(Core_GeometryPrimitives_HEADERS
   BBox.h
+  CompGeom.h
   GeomFwd.h
   Point.h
   PointVectorOperators.h
+  SearchGridT.h
+  Tensor.h
   Transform.h
   Vector.h
   Share.h
@@ -46,6 +52,11 @@ SET(Core_GeometryPrimitives_HEADERS
 ADD_LIBRARY(Core_Geometry_Primitives 
   ${Core_GeometryPrimitives_HEADERS}
   ${Core_GeometryPrimitives_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Geometry_Primitives
+  Core_Math
+  Core_Util_Legacy
 )
 
 IF(BUILD_SHARED_LIBS)

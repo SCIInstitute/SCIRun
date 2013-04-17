@@ -32,11 +32,11 @@
 #ifndef CORE_BASIS_CRVLINEARLGN_H
 #define CORE_BASIS_CRVLINEARLGN_H 1
 
-#include <float.h>
+#include <cfloat>
 
 #include <Core/Basis/Basis.h>
-//#include <Core/Util/TypeDescription.h>
-//#include <Core/Datatypes/TypeName.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvElementWeights.h>
 #include <Core/Basis/CrvSamplingSchemes.h>
@@ -174,7 +174,7 @@ protected:
     double dist = DBL_MAX;
 	
     VECTOR coord(1);
-    StackVector<T,1> derivs(1);
+    StackVector<T,1> derivs;
     guess.resize(1);
     
     const int end = 3;
@@ -345,29 +345,12 @@ public:
     tmp1.resize(1);
     tmp[0] = 1.0;
   }  
-  
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   static const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-template <class T>
-const TypeDescription* get_type_description(CrvLinearLgn<T> *)
-{
-  static TypeDescription* td = 0;
-  if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
-    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new TypeDescription("CrvLinearLgn", subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				TypeDescription::BASIS_E);
-  }
-  return td;
-}
 
 
 
@@ -390,6 +373,7 @@ CrvLinearLgn<T>::type_name(int n)
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int CRVLINEARLGN_VERSION = 1;
 template <class T>
 void
@@ -401,6 +385,22 @@ CrvLinearLgn<T>::io(Piostream &stream)
 }
 #endif
 
-}}}
+}}
+
+template <class T>
+const TypeDescription* get_type_description(Core::Basis::CrvLinearLgn<T> *)
+{
+  static TypeDescription* td = 0;
+  if(!td){
+    const TypeDescription *sub = get_type_description((T*)0);
+    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new TypeDescription("CrvLinearLgn", subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      TypeDescription::BASIS_E);
+  }
+  return td;
+}}
 
 #endif

@@ -49,7 +49,7 @@ TEST(ReadTriSurfTests, ReadFromFilePoints)
 {
   TextToTriSurfFieldAlgorithm algo;
   auto filename = testPath / "simple_triangle_trisurf.pts";
-  MeshHandle mesh = algo.run(filename.string());
+  auto mesh = algo.run(filename.string());
   ASSERT_TRUE(mesh);
   
   VirtualMeshHandle vmesh = mesh->vmesh();
@@ -63,7 +63,7 @@ TEST(ReadTriSurfTests, ReadFromFileFaces)
 {
   TextToTriSurfFieldAlgorithm algo;
   auto filename = testPath / "simple_triangle_trisurf.fac";
-  MeshHandle mesh = algo.run(filename.string());
+  auto mesh = algo.run(filename.string());
   ASSERT_TRUE(mesh);
   
   VirtualMeshHandle vmesh = mesh->vmesh();
@@ -78,7 +78,7 @@ TEST(ReadTriSurfTests, ReadInvalidPointsFile)
 {
   TextToTriSurfFieldAlgorithm algo;
   const std::string filename("not_a_valid_file.pts");
-  MeshHandle mesh = algo.run(filename);
+  auto mesh = algo.run(filename);
   ASSERT_FALSE(mesh);
 }
 
@@ -87,7 +87,7 @@ TEST(ReadTriSurfTests, ReadInvalidFacesFile)
 {
   TextToTriSurfFieldAlgorithm algo;
   const std::string filename("not_a_valid_file.fac");
-  MeshHandle mesh = algo.run(filename);
+  auto mesh = algo.run(filename);
   ASSERT_FALSE(mesh);
 }
 

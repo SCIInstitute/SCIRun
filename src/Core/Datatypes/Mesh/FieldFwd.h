@@ -29,17 +29,17 @@
 #ifndef CORE_DATATYPES_FIELD_FWD_H
 #define CORE_DATATYPES_FIELD_FWD_H
 
-#include <boost/shared_ptr.hpp>
+#include <Core/Datatypes/DatatypeFwd.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class Field;
-  typedef boost::shared_ptr<Field> FieldHandle;
+  class Field5;
+  typedef boost::shared_ptr<Field5> FieldHandle5;
 
-  class Mesh;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
+  class Mesh5;
+  typedef boost::shared_ptr<Mesh5> MeshHandle5;
 
   class VirtualField;
   typedef boost::shared_ptr<VirtualField> VirtualFieldHandle;
@@ -47,10 +47,14 @@ namespace Datatypes {
   class VirtualMesh;
   typedef boost::shared_ptr<VirtualMesh> VirtualMeshHandle;
 
-  class TypeDescription;
+  class TypeDescription5;
 
-  class FieldInformation;
+  class Field5Information;
+  
+  typedef SCIRun::Field LegacyField;
+  typedef SCIRun::Mesh LegacyMesh;
 
+  
 }}}
 
 #endif

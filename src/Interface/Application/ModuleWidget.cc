@@ -64,6 +64,12 @@ namespace {
       return Qt::red;
     if (str == "blue")
       return Qt::blue;
+    if (str == "darkBlue")
+      return Qt::darkBlue;
+    if (str == "cyan")
+      return Qt::cyan;
+    if (str == "darkCyan")
+      return Qt::darkCyan;
     if (str == "darkGreen")
       return Qt::darkGreen;
     if (str == "cyan")
@@ -76,6 +82,10 @@ namespace {
       return Qt::yellow;
     if (str == "darkYellow")
       return Qt::darkYellow;
+    if (str == "lightGray")
+      return Qt::lightGray;
+    if (str == "darkGray")
+      return Qt::darkGray;
     else
       return Qt::black;
   }
@@ -205,9 +215,11 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   //TODO: doh, how do i destroy myself?
   //connect(actionsMenu_->getAction("Destroy"), SIGNAL(triggered()), this, SIGNAL(removeModule(const std::string&)));
 
-  LoggerHandle logger(new ModuleLogger(logWindow_));
+  LoggerHandle logger(boost::make_shared<ModuleLogger>(logWindow_));
   theModule_->setLogger(logger);
   theModule_->setUpdaterFunc(boost::bind(&ModuleWidget::updateProgressBarSignal, this, _1));
+  if (theModule_->has_ui())
+    theModule_->setUiToggleFunc([&](bool b){ dialog_->setVisible(b); });
 }
 
 void ModuleWidget::setLogButtonColor(const QColor& color)

@@ -44,8 +44,8 @@ ModuleLogWindow::ModuleLogWindow(const QString& moduleName, QWidget* parent) : Q
   setModal(false);
   setWindowTitle("Log for " + moduleName);
   setVisible(false);
-  moveIncrement += moveIncrement;
-  move(moveIncrement, moveIncrement);
+  //moveIncrement += moveIncrement;
+  //move(moveIncrement, moveIncrement);
 
   connect(buttonBox->button(QDialogButtonBox::Discard), SIGNAL(clicked()), logTextEdit_, SLOT(clear()));
 }

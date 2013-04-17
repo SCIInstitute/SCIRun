@@ -131,6 +131,8 @@ Q_SIGNALS:
     void setBackground(const QBrush& brush);
     QBrush background() const;
 
+    int connectionPipelineType() const;
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);

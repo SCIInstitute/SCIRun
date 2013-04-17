@@ -45,6 +45,9 @@
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/CreateLatVolMesh.h>
+#include <Modules/Fields/CreateScalarFieldDataBasic.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadMesh.h>
@@ -232,6 +235,24 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
     description.input_ports_ += MatrixAsVectorFieldModule::inputPortDescription(MatrixAsVectorFieldModule::inputPort0Name());
     description.output_ports_ += MatrixAsVectorFieldModule::outputPortDescription(MatrixAsVectorFieldModule::outputPort0Name());
     description.maker_ = boost::factory<MatrixAsVectorFieldModule*>();
+  }
+  else if (name.find("CreateLatVol") != std::string::npos)
+  {
+    description.input_ports_ = CreateLatVol::inputPortDescription(CreateLatVol::inputPort0Name(), CreateLatVol::inputPort1Name());
+    description.output_ports_ += CreateLatVol::outputPortDescription(CreateLatVol::outputPort0Name());
+    description.maker_ = boost::factory<CreateLatVol*>();
+  }
+  else if (name.find("FieldToMesh") != std::string::npos)
+  {
+    description.input_ports_ = FieldToMesh::inputPortDescription(FieldToMesh::inputPort0Name(), FieldToMesh::inputPort1Name());
+    description.output_ports_ += FieldToMesh::outputPortDescription(FieldToMesh::outputPort0Name());
+    description.maker_ = boost::factory<FieldToMesh*>();
+  }
+  else if (name.find("CreateScalarFieldDataBasic") != std::string::npos)
+  {
+    description.input_ports_ += CreateScalarFieldDataBasic::inputPortDescription(CreateScalarFieldDataBasic::inputPort0Name());
+    description.output_ports_ += CreateScalarFieldDataBasic::outputPortDescription(CreateScalarFieldDataBasic::outputPort0Name());
+    description.maker_ = boost::factory<CreateScalarFieldDataBasic*>();
   }
   else if (name.find("ViewScene") != std::string::npos)
   {

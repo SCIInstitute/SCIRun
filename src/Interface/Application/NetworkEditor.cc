@@ -157,6 +157,11 @@ void NetworkEditor::duplicateModule(const SCIRun::Dataflow::Networks::ModuleHand
   controller_->duplicateModule(module);
 }
 
+namespace 
+{
+  QPointF moduleAddIncrement(20,90);
+}
+
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
@@ -181,7 +186,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   proxy->setVisible(true);
   proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
-  lastModulePosition_ += QPointF(10,10);
+  lastModulePosition_ += moduleAddIncrement;
   proxy->setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemSendsGeometryChanges);
   connect(scene_, SIGNAL(selectionChanged()), proxy, SLOT(highlightIfSelected()));
   connect(proxy, SIGNAL(selected()), this, SLOT(bringToFront()));
@@ -454,7 +459,7 @@ void NetworkEditor::addNewModuleAtPosition(const QPoint& position)
 
 void NetworkEditor::addModuleViaDoubleClickedTreeItem()
 {
-  defaultModulePosition_ += QPoint(10,10);
+  defaultModulePosition_ += moduleAddIncrement.toPoint();
   addNewModuleAtPosition(defaultModulePosition_);
 }
 
@@ -477,7 +482,7 @@ void NetworkEditor::mousePressEvent(QMouseEvent *event)
 
 SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePositions() const
 {
-  ModulePositionsHandle positions(new ModulePositions);
+  ModulePositionsHandle positions(boost::make_shared<ModulePositions>());
   Q_FOREACH(QGraphicsItem* item, scene_->items())
   {
     if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
@@ -554,6 +559,11 @@ size_t NetworkEditor::numModules() const
 void NetworkEditor::setConnectionPipelineType(int type)
 {
   ModuleWidget::connectionFactory_->setType(ConnectionDrawType(type));
+}
+
+int NetworkEditor::connectionPipelineType() const
+{
+  return (int) ModuleWidget::connectionFactory_->getType();
 }
 
 int NetworkEditor::errorCode() const

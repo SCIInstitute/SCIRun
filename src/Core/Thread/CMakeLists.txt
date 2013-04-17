@@ -28,11 +28,15 @@
 
 SET(Core_Thread_SRCS
   Barrier.cc
+  ConditionVariable.cc
+  Mutex.cc
   Parallel.cc
 )
 
 SET(Core_Thread_HEADERS
   Barrier.h
+  ConditionVariable.h
+  Mutex.h
   Parallel.h
   Share.h
 )
@@ -51,3 +55,4 @@ IF(BUILD_SHARED_LIBS)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_SUBDIRECTORY(Tests)
+ADD_SUBDIRECTORY(Legacy)

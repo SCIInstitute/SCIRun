@@ -41,7 +41,7 @@ namespace Engine {
   class SCISHARE ModuleAddCommand : public Core::Commands::RedoableCommand
   {
   public:
-    virtual void execute();
+    virtual bool execute();
     virtual void undo();
     virtual void redo();
   };

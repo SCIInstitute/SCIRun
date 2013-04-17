@@ -36,6 +36,7 @@
 #include <vector>
 #include <Core/Logging/Logger.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -51,8 +52,8 @@ namespace Networks {
   {
   public:
     Module(const ModuleLookupInfo& info, 
-      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       bool hasUi = true, 
+      ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       const std::string& version = "1.0");
     virtual ~Module();
 
@@ -66,6 +67,7 @@ namespace Networks {
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
 
     bool has_ui() const { return has_ui_; }
+    void setUiVisible(bool visible); 
     size_t num_input_ports() const;
     size_t num_output_ports() const;
 
@@ -93,6 +95,7 @@ namespace Networks {
 
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) { updaterFunc_ = func; }
+    virtual void setUiToggleFunc(UiToggleFunc func) { uiToggleFunc_ = func; }
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
@@ -163,6 +166,7 @@ namespace Networks {
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
+    UiToggleFunc uiToggleFunc_;
     static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
   };
@@ -261,6 +265,8 @@ namespace Modules
   struct SCISHARE MatrixPortTag {};
   struct SCISHARE ScalarPortTag {};
   struct SCISHARE StringPortTag {};
+  struct SCISHARE Field5PortTag {};
+  struct SCISHARE Mesh5PortTag {}; //TODO temporary
   struct SCISHARE FieldPortTag {};
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
@@ -280,6 +286,16 @@ namespace Modules
     return SCIRun::Dataflow::Networks::PortDescription(name, "String", "darkGreen"); 
   }
 
+  inline SCIRun::Dataflow::Networks::PortDescription MakeField5Port(const std::string& name)
+  {
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Field5", "darkYellow"); 
+  }
+
+  inline SCIRun::Dataflow::Networks::PortDescription MakeMesh5Port(const std::string& name)
+  {
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh5", "darkCyan"); 
+  }
+
   inline SCIRun::Dataflow::Networks::PortDescription MakeFieldPort(const std::string& name)
   {
     return SCIRun::Dataflow::Networks::PortDescription(name, "Field", "yellow"); 
@@ -287,7 +303,7 @@ namespace Modules
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeMeshPort(const std::string& name)
   {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh", "darkYellow"); 
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh", "cyan"); 
   }
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeGeometryPort(const std::string& name)
@@ -308,6 +324,8 @@ namespace Modules
   INPUT_PORT_SPEC(Matrix);
   INPUT_PORT_SPEC(Scalar);
   INPUT_PORT_SPEC(String);
+  INPUT_PORT_SPEC(Field5);
+  INPUT_PORT_SPEC(Mesh5);  //TODO temporary
   INPUT_PORT_SPEC(Field);
   INPUT_PORT_SPEC(Mesh);  //TODO temporary
   INPUT_PORT_SPEC(Geometry);
@@ -349,6 +367,8 @@ namespace Modules
   OUTPUT_PORT_SPEC(String);
   OUTPUT_PORT_SPEC(Field);
   OUTPUT_PORT_SPEC(Mesh);  //TODO temporary
+  OUTPUT_PORT_SPEC(Field5);
+  OUTPUT_PORT_SPEC(Mesh5);  //TODO temporary
   OUTPUT_PORT_SPEC(Geometry);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type

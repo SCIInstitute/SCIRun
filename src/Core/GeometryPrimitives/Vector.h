@@ -36,6 +36,7 @@
 #include <string>
 #include <cmath>
 #include <boost/array.hpp>
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
@@ -90,7 +91,7 @@ class Vector
       return d_[idx];
     }
 
-    //inline Vector operator*(const double) const;
+    inline Vector operator*(const double) const;
     inline Vector operator*(const Vector&) const;
     inline Vector& operator*=(const double);
     inline Vector& operator*=(const Vector&);
@@ -207,12 +208,6 @@ inline Vector& Vector::operator*=(const double d)
   return *this;
 }
 
-inline Vector operator*(const Vector& v, double s)
-{
-  Vector vs(v);
-  return vs *= s;
-}
-
 // Allows for double * Vector so that everything doesn't have to be
 // Vector * double
 inline Vector operator*(const double s, const Vector& v) {
@@ -237,9 +232,6 @@ inline Vector Max(const Vector &v1, const Vector &v2)
 // For Pio system
 SCISHARE void Pio( Piostream&, Vector& );
 
-// TODO: This one is obsolete when dynamic compilation will be abandoned
-const std::string& Vector_get_h_file_path();
-SCISHARE const TypeDescription* get_type_description(Vector*);
 #endif
 
 inline
@@ -297,14 +289,6 @@ inline Vector Vector::operator-(const Vector& v2) const
 }
 
 
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-
-inline Vector Vector::operator-(const Point& v2) const
-{
-  return Vector(d_[0]-v2[0], d_[1]-v2[1], d_[2]-v2[2]);
-}
 inline Vector& Vector::operator=(const double& d)
 {
   d_[0] = d;
@@ -449,15 +433,7 @@ inline double Vector::w() const
   return d_[2];
 }
 
-inline double Dot(const Vector& v1, const Vector& v2)
-{
-  return v1.d_[0]*v2.d_[0]+v1.d_[1]*v2.d_[1]+v1.d_[2]*v2.d_[2];
-}
 
-inline double Dot(const Vector& v, const Point& p)
-{
-  return v.d_[0]*p.d_[0]+v.d_[1]*p.d_[1]+v.d_[2]*p.d_[2];
-}
 
 inline
 double Vector::normalize()
@@ -494,19 +470,11 @@ inline void Vector::Set(double x, double y, double z)
   d_[2] = z;
 }
 
+}}
+// TODO: This one is obsolete when dynamic compilation will be abandoned
+const std::string& Vector_get_h_file_path();
+SCISHARE const TypeDescription* get_type_description(Core::Geometry::Vector*);
 
-
-} // End namespace SCIRun
-#endif
 }
 
-template <class T, size_t N>
-class StackVector : public boost::array<T,N>
-{
-public:
-  StackVector() {}
-  StackVector(size_t s) {}
-};
-
-}}
 #endif

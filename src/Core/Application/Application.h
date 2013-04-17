@@ -67,6 +67,8 @@ public:
   CommandLine::ApplicationParametersHandle parameters();
   boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
   boost::filesystem::path executablePath() const;
+  std::string commandHelpString() const;
+  std::string version() const;
 
   //TODO: following will be useful later
 #if 0
@@ -94,7 +96,7 @@ private:
   
 //public:
 //	static bool IsApplicationThread();
-//	static std::string GetVersion();
+//	static 
 //	static int GetMajorVersion();
 //	static int GetMinorVersion();
 //	static int GetPatchVersion();

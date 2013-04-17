@@ -57,7 +57,7 @@ SimpleMapModuleState& SimpleMapModuleState::operator=(const SimpleMapModuleState
 
 ModuleStateHandle SimpleMapModuleState::clone() const
 {
-  return ModuleStateHandle(new SimpleMapModuleState(*this));
+  return boost::make_shared<SimpleMapModuleState>(*this);
 }
 
 const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& parameterName) const
@@ -66,15 +66,23 @@ const ModuleStateInterface::Value SimpleMapModuleState::getValue(const Name& par
   return i != stateMap_.end() ? i->second : Value(AlgorithmParameterName(""), -1);
 }
 
+bool SimpleMapModuleState::containsKey(const Name& name) const
+{
+  return stateMap_.find(name) != stateMap_.end();
+}
+
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
   auto oldLocation = stateMap_.find(parameterName);
-  bool newValue = oldLocation != stateMap_.end() && !(oldLocation->second.value_ == value);
+  bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value_ == value);
 
   stateMap_[parameterName] = AlgorithmParameter(parameterName, value);
   
   if (newValue)
+  {
+    //std::cout << "----signalling from state map: " << parameterName.name_ << ", " << value << std::endl;
     stateChangedSignal_();
+  }
 }
 
 boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)

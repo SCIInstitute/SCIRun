@@ -200,7 +200,7 @@ void CreateLatVolMesh::execute()
 #endif
     
     
-    FieldInformation lfi("LatVolMesh", basis_order, "double");
+    Field5Information lfi("LatVolMesh", basis_order, "double");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (datatype == VECTOR) 
@@ -211,7 +211,7 @@ void CreateLatVolMesh::execute()
 
 
     // Create Image Field.
-    MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+    auto mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
     sendOutput(OutputSampleField, mesh);
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED

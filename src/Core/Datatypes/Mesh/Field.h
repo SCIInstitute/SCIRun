@@ -39,7 +39,6 @@
 //#include <Core/Datatypes/Mesh.h>
 //#include <Core/Datatypes/VMesh.h>
 //#include <Core/Datatypes/VField.h>
-//#include <Core/Containers/LockingHandle.h>
 //
 //#include <Core/Util/Debug.h>
 //#include <Core/Util/ProgressReporter.h>
@@ -50,29 +49,26 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
  
-class SCISHARE Field : public Datatype
+class SCISHARE Field5 : public Datatype
 {
   public:
-    Field();
-    Field(const Field& copy);// : PropertyManager(copy)       { DEBUG_CONSTRUCTOR("Field");  }
-    virtual ~Field();
+    Field5();
+    Field5(const Field5& copy);// : PropertyManager(copy)       { DEBUG_CONSTRUCTOR("Field5");  }
+    virtual ~Field5();
     
-    virtual Field* clone() const = 0;
+    virtual Field5* clone() const = 0;
 
     //! Get pointers to associated structures
     //! mesh -> handle to mesh
     //! vmesh -> handle to virtual mesh interface
     //! field -> handle to this object
     //! vfield -> handle to virtual field interface
-    virtual MeshHandle mesh() const = 0;
-    FieldHandle field();// { return (this); }
+    virtual MeshHandle5 mesh() const = 0;
+    FieldHandle5 field();// { return (this); }
 
     virtual VirtualMeshHandle vmesh()   const = 0;
     virtual VirtualFieldHandle vfield() const = 0;
     
-    //! Detach the mesh from the field, if needed make a new copy of it.
-    virtual void mesh_detach() = 0;
-
     //! The order of the field: we could get this one from the type_description
     virtual int basis_order() const = 0;
 
@@ -86,7 +82,7 @@ class SCISHARE Field : public Datatype
       FDATA_TD_E
     };
 
-    virtual const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const = 0; 
+    virtual const TypeDescription5* get_type_description(td_info_e td = FULL_TD_E) const = 0; 
     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     //! Persistent I/O.
@@ -96,8 +92,8 @@ class SCISHARE Field : public Datatype
 #endif
 };
 
-typedef boost::function<FieldHandle()> FieldMaker;
-typedef boost::function<FieldHandle(MeshHandle)> FieldMakerFromMesh;
+typedef boost::function<FieldHandle5()> FieldMaker;
+typedef boost::function<FieldHandle5(MeshHandle5)> FieldMakerFromMesh;
 
 class SCISHARE FieldTypeID 
 {
@@ -120,8 +116,8 @@ class SCISHARE FieldFactory
 
 
 //TODO: FieldFactory class
-SCISHARE FieldHandle CreateField(const std::string& type);
-SCISHARE FieldHandle CreateField(const std::string& type, MeshHandle mesh);
+SCISHARE FieldHandle5 CreateField(const std::string& type);
+SCISHARE FieldHandle5 CreateField(const std::string& type, MeshHandle5 mesh);
 
 }}}
 

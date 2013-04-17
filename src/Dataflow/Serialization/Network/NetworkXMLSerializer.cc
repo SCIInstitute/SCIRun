@@ -47,7 +47,7 @@ NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, Modu
 
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
-  NetworkHandle network(new Network(moduleFactory_, stateFactory_));
+  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_));
 
   BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
   {
@@ -90,7 +90,7 @@ NetworkFileHandle NetworkToXML::to_xml_data(const NetworkHandle& network)
     networkXML.modules[module->get_id()] = ModuleWithState(module->get_info(), stateXML ? *stateXML : SimpleMapModuleStateXML());
   }
 
-  NetworkFileHandle file(new NetworkFile);
+  NetworkFileHandle file(boost::make_shared<NetworkFile>());
   file->network = networkXML;
   if (mpg_)
     file->modulePositions = *mpg_->dumpModulePositions();

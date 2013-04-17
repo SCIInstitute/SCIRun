@@ -35,9 +35,9 @@
 #include <Core/Basis/Basis.h>
 #include <Core/Basis/NoElementWeights.h>
 #include <Core/Basis/PntSamplingSchemes.h>
-//#include <Core/Util/TypeDescription.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
 //#include <Core/Persistent/Persistent.h>
-//#include <Core/Datatypes/TypeName.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Basis/Share.h>
 
 namespace SCIRun {
@@ -174,15 +174,13 @@ public:
       w[si] = 0;
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Functions for dynamic compilation and storing this object on disk
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 template <class T>
 const std::string
 ConstantBasis<T>::type_name(int n)
@@ -204,23 +202,8 @@ ConstantBasis<T>::type_name(int n)
   }
 }
 
-template <class T>
-const TypeDescription* get_type_description(ConstantBasis<T> *)
-{
-  static TypeDescription* td = 0;
-  if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
-    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new TypeDescription("ConstantBasis", subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				TypeDescription::BASIS_E);
-  }
-  return td;
-}
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define CONSTANTBASIS_VERSION 1
 
 template <class T>
@@ -233,6 +216,23 @@ ConstantBasis<T>::io(Piostream &stream)
 }
 #endif
 
-}}}
+}}
+
+template <class T>
+const TypeDescription* get_type_description(Core::Basis::ConstantBasis<T> *)
+{
+  static TypeDescription* td = 0;
+  if(!td){
+    const TypeDescription *sub = get_type_description((T*)0);
+    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new TypeDescription("ConstantBasis", subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      TypeDescription::BASIS_E);
+  }
+  return td;
+}
+}
 
 #endif

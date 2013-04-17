@@ -68,7 +68,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   if (boost::filesystem::extension(filename) == ".txt")
   {
     std::ifstream reader(filename.c_str());
-    DenseMatrixHandle matrix(new DenseMatrix);
+    DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
     reader >> *matrix;
     return matrix;
   }

@@ -58,7 +58,7 @@ struct FieldIteratorBase {
   FieldIteratorBase(T i) :
     index_(i) {}
 
-  //! Field Iterators need to be able to increment.
+  //! Field5 Iterators need to be able to increment.
   inline 
   T operator ++() { return ++index_; }
   T operator --() { return --index_; }

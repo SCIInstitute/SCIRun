@@ -44,9 +44,7 @@ class BBox {
   public:
     enum { INSIDE, INTERSECT, OUTSIDE };
 
-    // Default constructor and destructor
     BBox() : is_valid_(false) {}
-    ~BBox() {}
     
     BBox(const BBox& copy) 
     : cmin_(copy.cmin_), cmax_(copy.cmax_), is_valid_(copy.is_valid_) {}
@@ -80,7 +78,7 @@ class BBox {
       extend(p3);
     }
     
-    BBox(const std::vector<Point>& points) :
+    explicit BBox(const std::vector<Point>& points) :
       is_valid_(false)
     {
       for (size_t j=0; j<points.size(); j++)

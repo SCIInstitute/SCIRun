@@ -41,13 +41,13 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE Mesh : public Datatype, public MeshTraits
+  class SCISHARE Mesh5 : public Datatype, public MeshTraits
   {
   public: 
-    Mesh();
-    Mesh(const Mesh& copy); //: PropertyManager(copy) { DEBUG_CONSTRUCTOR("Mesh");  }
-    virtual ~Mesh();
-    virtual Mesh* clone() const = 0;
+    Mesh5();
+    Mesh5(const Mesh5& copy); //: PropertyManager(copy) { DEBUG_CONSTRUCTOR("Mesh5");  }
+    virtual ~Mesh5();
+    virtual Mesh5* clone() const = 0;
     //! Virtual interface functions:
     //! Get the virtual mesh interface, this returns the pointer to an internal
     //! object that has all the virtual functions. This object will be destroyed

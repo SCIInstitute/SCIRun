@@ -46,16 +46,16 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg) : 
+  theNetwork_(new Network(mf, sf)),
   moduleFactory_(mf), 
   stateFactory_(sf), 
   executorFactory_(executorFactory),
   modulePositionEditor_(mpg)
 {
-  //TODO should this class own or just keep a reference?
-  theNetwork_.reset(new Network(mf, sf));
+  //TODO should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
-  NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface>(new PythonImpl(*this)));
+  NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this));
 #endif
 }
 

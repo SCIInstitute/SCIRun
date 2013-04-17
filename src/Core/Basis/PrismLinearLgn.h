@@ -253,7 +253,7 @@ protected:
     double dist = DBL_MAX;
 	
     VECTOR coord(3);
-    StackVector<T,3> derivs(3);
+    StackVector<T,3> derivs;
     guess.resize(3);
 
     const int end = 3;
@@ -451,29 +451,16 @@ public:
     return get_volume3(this, cd);
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
-template <class T>
-const TypeDescription* get_type_description(PrismLinearLgn<T> *)
-{
-  static TypeDescription* td = 0;
-  if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
-    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new TypeDescription("PrismLinearLgn", subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				TypeDescription::BASIS_E);
-  }
-  return td;
-}
+
+
 
 template <class T>
 const std::string
@@ -493,7 +480,7 @@ PrismLinearLgn<T>::type_name(int n)
     return find_type_name((T *)0);
   }
 }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 const int PRISMLINEARLGN_VERSION = 1;
 template <class T>
@@ -505,6 +492,22 @@ PrismLinearLgn<T>::io(Piostream &stream)
   stream.end_class();
 }
 #endif
-}}}
+}}
+template <class T>
+const TypeDescription* get_type_description(Core::Basis::PrismLinearLgn<T> *)
+{
+  static TypeDescription* td = 0;
+  if(!td){
+    const TypeDescription *sub = get_type_description((T*)0);
+    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new TypeDescription("PrismLinearLgn", subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      TypeDescription::BASIS_E);
+  }
+  return td;
+}
+}
 
 #endif

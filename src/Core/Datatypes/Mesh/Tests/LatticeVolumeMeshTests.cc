@@ -47,7 +47,7 @@ protected:
   virtual void SetUp()
   {
     int basisOrder = 1;
-    FieldInformation lfi("LatVolMesh", basisOrder, "double");
+    Field5Information lfi("LatVolMesh", basisOrder, "double");
     int sizex,sizey,sizez;
     sizex = sizey = sizez = 2;
     Point minb(0,0,0);
@@ -55,7 +55,7 @@ protected:
     mesh_ = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
   }
 
-  MeshHandle mesh_;
+  MeshHandle5 mesh_;
 };
 
 namespace

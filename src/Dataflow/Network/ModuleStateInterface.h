@@ -53,6 +53,7 @@ namespace Networks {
     //serialized state
     virtual const Value getValue(const Name& name) const = 0;
     virtual void setValue(const Name& name, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value) = 0;
+    virtual bool containsKey(const Name& name) const = 0;
     virtual Keys getKeys() const = 0;
     virtual ModuleStateHandle clone() const = 0;
 

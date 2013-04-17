@@ -36,17 +36,17 @@
 
 using namespace SCIRun::Core::Datatypes;
 
-Field::Field()
+Field5::Field5()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  DEBUG_CONSTRUCTOR("Field")  
+  DEBUG_CONSTRUCTOR("Field5")  
 #endif
 }
 
-Field::~Field()
+Field5::~Field5()
 {
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  DEBUG_DESTRUCTOR("Field")  
+  DEBUG_DESTRUCTOR("Field5")  
 #endif
 }
 
@@ -54,9 +54,9 @@ const int FIELD_VERSION = 3;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void 
-Field::io(Piostream& stream)
+Field5::io(Piostream& stream)
 {
-  int version = stream.begin_class("Field", FIELD_VERSION);
+  int version = stream.begin_class("Field5", FIELD_VERSION);
   if (version < 2) 
   {
     // The following was FIELD_VERSION 1 data_at ordering
@@ -110,12 +110,12 @@ Field::io(Piostream& stream)
   stream.end_class();
 }
 
-PersistentTypeID Field::type_id("Field", "PropertyManager", 0);
+PersistentTypeID Field5::type_id("Field5", "PropertyManager", 0);
 
 #endif
 
 //TODO DAN: REFACTORING NEEDED: LEVEL HIGH
-// A list to keep a record of all the different Field types that
+// A list to keep a record of all the different Field5 types that
 // are supported through a virtual interface
 static boost::mutex *FieldTypeIDMutex = 0;
 static std::map<std::string,FieldTypeID*>* FieldTypeIDTable = 0;
@@ -127,7 +127,7 @@ FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromM
 {
   if (!FieldTypeIDMutex)
   {
-    FieldTypeIDMutex = new boost::mutex(/*"Field Type ID Table Lock"*/);
+    FieldTypeIDMutex = new boost::mutex(/*"Field5 Type ID Table Lock"*/);
   }
 
   boost::mutex::scoped_lock lock(*FieldTypeIDMutex);
@@ -162,12 +162,12 @@ FieldTypeID::FieldTypeID(const std::string& type, FieldMaker fm, FieldMakerFromM
 }
 
 
-FieldHandle
-CreateField(const std::string& type, MeshHandle mesh)
+FieldHandle5
+CreateField(const std::string& type, MeshHandle5 mesh)
 {
   if (!FieldTypeIDMutex)
   {
-    FieldTypeIDMutex = new boost::mutex(/*"Field Type ID Table Lock"*/);
+    FieldTypeIDMutex = new boost::mutex(/*"Field5 Type ID Table Lock"*/);
   }
   boost::mutex::scoped_lock lock(*FieldTypeIDMutex);
   auto it = FieldTypeIDTable->find(type);
@@ -180,15 +180,15 @@ CreateField(const std::string& type, MeshHandle mesh)
     //TODO: use real logger here
     std::cout << "Cannot find "<<type<<" in database\n";
   }
-  return FieldHandle();
+  return FieldHandle5();
 }
 
-FieldHandle
+FieldHandle5
 CreateField(const std::string& type)
 {
   if (!FieldTypeIDMutex)
   {
-    FieldTypeIDMutex = new boost::mutex(/*"Field Type ID Table Lock"*/);
+    FieldTypeIDMutex = new boost::mutex(/*"Field5 Type ID Table Lock"*/);
   }
   boost::mutex::scoped_lock lock(*FieldTypeIDMutex);
 
@@ -197,5 +197,5 @@ CreateField(const std::string& type)
   {
     return it->second->field_maker_();
   }
-  return FieldHandle();
+  return FieldHandle5();
 }

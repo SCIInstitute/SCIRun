@@ -32,15 +32,41 @@
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Python/SCIRunPythonModule.h>
 
-using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun;
 using namespace SCIRun::Dataflow::Networks;
 
 boost::shared_ptr<NetworkEditorPythonInterface> NetworkEditorPythonAPI::impl_;
 ExecutableLookup* NetworkEditorPythonAPI::lookup_ = 0;
+std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules_;
+
+
+template< class T >
+class StdVectorToListConverter : public boost::python::converter::wrap_pytype< &PyList_Type >
+{
+public:
+  static PyObject* convert( const std::vector< T >& v )
+  {
+    boost::python::list result;
+    for ( size_t i = 0; i < v.size(); ++i )
+    {
+      result.append( v[ i ] );
+    }
+
+    return boost::python::incref( result.ptr() );
+  }
+};
 
 void NetworkEditorPythonAPI::setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl) 
 {
-  impl_ = impl;
+  if (!impl_)
+  {
+    impl_ = impl;
+
+    boost::python::to_python_converter< std::vector< boost::shared_ptr<PyModule> >, 
+      StdVectorToListConverter< boost::shared_ptr<PyModule> >, true >();
+    boost::python::to_python_converter< std::vector< std::string >, 
+      StdVectorToListConverter< std::string >, true >();
+  }
 }
 
 void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
@@ -48,24 +74,37 @@ void NetworkEditorPythonAPI::setExecutionContext(ExecutableLookup* lookup)
   lookup_ = lookup;
 }
 
-std::string NetworkEditorPythonAPI::addModule(const std::string& name)
+boost::shared_ptr<PyModule> NetworkEditorPythonAPI::addModule(const std::string& name)
 {
   if (impl_)
-    return impl_->addModule(name);
+  {
+    auto m = impl_->addModule(name);
+    modules_.push_back(m);
+    return m;
+  }
   else
   {
-    return "Null implementation: NetworkEditorPythonAPI::addModule()";
+    std::cout << "Null implementation: NetworkEditorPythonAPI::addModule()" << std::endl;
+    return boost::shared_ptr<PyModule>();
   }
 }
 
 std::string NetworkEditorPythonAPI::removeModule(const std::string& id)
 {
   if (impl_)
+  {
+    modules_.erase(std::remove_if(modules_.begin(), modules_.end(), [&](boost::shared_ptr<PyModule> m) -> bool { bool same = m->id() == id; if (same) m->reset(); return same; }), modules_.end());
     return impl_->removeModule(id);
+  }
   else
   {
     return "Null implementation: NetworkEditorPythonAPI::removeModule()";
   }
+}
+
+std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
+{
+  return modules_;
 }
 
 std::string NetworkEditorPythonAPI::executeAll()
@@ -75,26 +114,6 @@ std::string NetworkEditorPythonAPI::executeAll()
   else
   {
     return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()"; 
-  }
-}
-
-std::string NetworkEditorPythonAPI::connect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
-{
-  if (impl_)
-    return impl_->connect(moduleId1, port1, moduleId2, port2);
-  else
-  {
-    return "Null implementation: NetworkEditorPythonAPI::connect()";
-  }
-}
-
-std::string NetworkEditorPythonAPI::disconnect(const std::string& moduleId1, int port1, const std::string& moduleId2, int port2)
-{
-  if (impl_)
-    return impl_->disconnect(moduleId1, port1, moduleId2, port2);
-  else
-  {
-    return "Null implementation: NetworkEditorPythonAPI::disconnect()";
   }
 }
 
@@ -126,4 +145,11 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   {
     return "Null implementation: NetworkEditorPythonAPI::quit()";
   }
+}
+
+//TODO: bizarre reason for this return type and casting. but it works.
+boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
+{
+  from.connect(to);
+  return boost::ref(const_cast<PyPort&>(to).shared_from_this());
 }

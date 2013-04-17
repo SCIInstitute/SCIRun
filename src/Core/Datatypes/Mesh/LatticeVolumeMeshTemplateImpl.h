@@ -79,7 +79,7 @@ min_i_(0),
 
 template <class Basis>
 LatVolMesh<Basis>::LatVolMesh(const LatVolMesh &copy) :
-Mesh(copy),
+Mesh5(copy),
   min_i_(copy.min_i_),
   min_j_(copy.min_j_),
   min_k_(copy.min_k_),
@@ -116,7 +116,7 @@ VirtualMeshHandle LatVolMesh<Basis>::vmesh() const {
 template <class Basis>
 MeshFacadeHandle LatVolMesh<Basis>::getFacade() const 
 {
-  return MeshFacadeHandle(new VirtualMeshFacade(vmesh()));
+  return boost::make_shared<VirtualMeshFacade>(vmesh());
 }
 
 template <class Basis>

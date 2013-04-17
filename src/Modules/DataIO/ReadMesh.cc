@@ -46,14 +46,17 @@ ReadMeshModule::ReadMeshModule() : Module(ModuleLookupInfo("ReadMesh", "DataIO",
 // Only support TriSurf (initial test)
 void ReadMeshModule::execute()
 {
-  filename_ = get_state()->getValue(TextToTriSurfFieldAlgorithm::Filename).getString();
+  auto fileOption = getOptionalInput(Filename);
+  if (!fileOption)
+    filename_ = get_state()->getValue(TextToTriSurfFieldAlgorithm::Filename).getString();
+  else
+    filename_ = (*fileOption)->value();
 
   TextToTriSurfFieldAlgorithm algo;
   algo.setLogger(getLogger());
   algo.setUpdaterFunc(getUpdaterFunc());
 
-  MeshHandle mesh = algo.run(filename_);
+  auto mesh = algo.run(filename_);
   sendOutput(OutputSampleField, mesh);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
+  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
 }

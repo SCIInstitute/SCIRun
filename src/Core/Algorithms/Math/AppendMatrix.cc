@@ -50,7 +50,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
     if (lhs.cols() != rhs.cols())
       return Outputs(); //TODO: error
 
-    DenseMatrixHandle output(new DenseMatrix(lhs.rows() + rhs.rows(), lhs.cols()));
+    DenseMatrixHandle output(boost::make_shared<DenseMatrix>(lhs.rows() + rhs.rows(), lhs.cols()));
     for (int i = 0; i < lhs.rows(); ++i)
       for (int j = 0; j < lhs.cols(); ++j)
         (*output)(i,j) = lhs(i,j);
@@ -64,7 +64,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
     if (lhs.rows() != rhs.rows())
       return Outputs(); //TODO: error
 
-    DenseMatrixHandle output(new DenseMatrix(lhs.rows(), lhs.cols() + rhs.cols()));
+    DenseMatrixHandle output(boost::make_shared<DenseMatrix>(lhs.rows(), lhs.cols() + rhs.cols()));
     for (int i = 0; i < lhs.rows(); ++i)
       for (int j = 0; j < lhs.cols(); ++j)
         (*output)(i,j) = lhs(i,j);

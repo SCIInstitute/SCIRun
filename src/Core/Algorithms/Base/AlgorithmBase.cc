@@ -45,7 +45,7 @@ int AlgorithmParameter::getInt() const
 double AlgorithmParameter::getDouble() const
 {
   const double* v = boost::get<double>(&value_);
-  return v ? *v : 0;
+  return v ? *v : getInt();
 }
 
 std::string AlgorithmParameter::getString() const
@@ -116,3 +116,15 @@ void AlgorithmParameterList::addParameter(const AlgorithmParameterName& key, con
 }
 
 AlgorithmStatusReporter::UpdaterFunc AlgorithmStatusReporter::defaultUpdaterFunc_([](double r) { std::cout << "Algorithm at " << std::setiosflags(std::ios::fixed) << std::setprecision(2) << r*100 << "% complete" << std::endl;});
+
+ScopedAlgorithmStatusReporter::ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag) : asr_(asr) 
+{
+  if (asr_)
+    asr_->report_start(tag);
+}
+
+ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
+{
+  if (asr_)
+    asr_->report_end();
+}

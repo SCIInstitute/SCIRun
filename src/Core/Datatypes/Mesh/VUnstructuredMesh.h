@@ -1071,7 +1071,7 @@ get_gradient_weights(const VirtualMesh::coords_type& coords,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1081,7 +1081,7 @@ get_gradient_weights(const VirtualMesh::coords_type& coords,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       this->mesh_->get_edges_from_elem(eg.edge_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1091,7 +1091,7 @@ get_gradient_weights(const VirtualMesh::coords_type& coords,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1133,7 +1133,7 @@ get_gradient_weights(const Geometry::Point& point,
       this->basis_->get_linear_derivate_weights(coords,&(eg.weights[0]));
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1143,7 +1143,7 @@ get_gradient_weights(const Geometry::Point& point,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       this->mesh_->get_edges_from_elem(eg.edge_index,elem);
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1153,7 +1153,7 @@ get_gradient_weights(const Geometry::Point& point,
       this->mesh_->get_nodes_from_elem(eg.node_index,elem);
       eg.num_hderivs = this->basis_->num_hderivs();
 
-      //eg.inverse_jacobian.resize(9);
+      eg.inverse_jacobian.resize(9);
       this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg.inverse_jacobian[0]));
       eg.num_derivs = this->basis_->num_derivs();
       return;
@@ -1206,7 +1206,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
             this->basis_->get_linear_derivate_weights(coords,&(eg[i].weights[0]));
             this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -1233,7 +1233,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
             this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
             this->mesh_->get_edges_from_elem(eg[i].edge_index,elem);
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -1261,7 +1261,7 @@ get_mgradient_weights(const std::vector<Geometry::Point>& point,
             this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
             eg[i].num_hderivs = this->basis_->num_hderivs();
 
-            //eg[i].inverse_jacobian.resize(9);
+            eg[i].inverse_jacobian.resize(9);
             this->mesh_->inverse_jacobian(coords,typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
             eg[i].num_derivs = this->basis_->num_derivs();
           }
@@ -1304,7 +1304,7 @@ get_mgradient_weights(const std::vector<VirtualMesh::coords_type>& coords,
         this->basis_->get_linear_derivate_weights(coords[i],&(eg[i].weights[0]));
         this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         this->mesh_->inverse_jacobian(coords[i],typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -1317,7 +1317,7 @@ get_mgradient_weights(const std::vector<VirtualMesh::coords_type>& coords,
         this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
         this->mesh_->get_edges_from_elem(eg[i].edge_index,elem);
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         this->mesh_->inverse_jacobian(coords[i],typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }
@@ -1330,7 +1330,7 @@ get_mgradient_weights(const std::vector<VirtualMesh::coords_type>& coords,
         this->mesh_->get_nodes_from_elem(eg[i].node_index,elem);
         eg[i].num_hderivs = this->basis_->num_hderivs();
 
-        //eg[i].inverse_jacobian.resize(9);
+        eg[i].inverse_jacobian.resize(9);
         this->mesh_->inverse_jacobian(coords[i],typename MESH::Elem::index_type(elem),&(eg[i].inverse_jacobian[0]));
         eg[i].num_derivs = this->basis_->num_derivs();
       }

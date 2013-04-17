@@ -41,19 +41,19 @@ using ::testing::Return;
 
 TEST(MeshFactoryTests, CanCreateLatticeVolumeMesh)
 {
-  FieldInformation lfi("LatVolMesh", LINEARDATA_E, "double");
+  Field5Information lfi("LatVolMesh", LINEARDATA_E, "double");
   int sizex,sizey,sizez;
   sizex = sizey = sizez = 4;
   Point minb(0,0,0);
   Point maxb(4,4,4);
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+  auto mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
   ASSERT_TRUE(mesh);
 }
 
 TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
 {
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
+  Field5Information lfi("TriSurfMesh", LINEARDATA_E, "double");
+  auto mesh = MeshFactory::Instance().CreateMesh(lfi.get_mesh_type_id());
   ASSERT_TRUE(mesh);
 
   auto vmeshHandle = mesh->vmesh();
@@ -63,10 +63,10 @@ TEST(MeshFactoryTests, CreateTriSurfMeshWithString)
 
 TEST(MeshFactoryTests, CreateTriSurfMeshStringWithFieldInforomation)
 {
-  FieldInformation lfi("TriSurfMesh", LINEARDATA_E, "double");
-  MeshHandle mesh = MeshFactory::Instance().CreateMesh(lfi);
+  Field5Information lfi("TriSurfMesh", LINEARDATA_E, "double");
+  auto mesh = MeshFactory::Instance().CreateMesh(lfi);
   ASSERT_TRUE(mesh);
 
-  VirtualMeshHandle vmeshHandle = mesh->vmesh();
+  auto vmeshHandle = mesh->vmesh();
   ASSERT_TRUE(vmeshHandle);
 }

@@ -38,7 +38,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
   const std::string expectedHelp = 
     "SCIRun5 basic options:\n"
     "  -h [ --help ]         prints usage information\n"
-    "  -v [ --version ]      prints out version information--TODO\n"
+    "  -v [ --version ]      prints out version information\n"
     "  -e [ --execute ]      executes the given network on startup\n"
     "  -E [ --Execute ]      executes the given network on startup and quits when \n"
     "                        done\n"
@@ -46,7 +46,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -r [ --regression ]   regression test a network--TODO\n"
     "  -l [ --logfile ] arg  add output messages to a logfile--TODO\n"
     "  -i [ --interactive ]  interactive mode--TODO\n"
-    "  -x [ --headless ]     disable GUI--TODO\n"
+    "  -x [ --headless ]     disable GUI (Qt still needed, for now)\n"
     "  --input-file arg      SCIRun Network Input File\n";
   
   EXPECT_EQ(expectedHelp, parser.describe());

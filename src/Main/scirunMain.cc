@@ -36,11 +36,7 @@ int main(int argc, const char* argv[])
 {
   Application::Instance().readCommandLine(argc, argv);
   
-  if (Application::Instance().parameters()->disableGui())
-  {
-    //TODO
-    std::cout << "SCIRun headless mode not implemented yet, starting GUI." << std::endl;
-  }
+  //TODO: must read --headless flag here, or try pushing command queue building all the way up here
 
 	return GuiApplication::run(argc, argv);
 }

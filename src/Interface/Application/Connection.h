@@ -94,7 +94,7 @@ template <class Base>
 class ConnectionInProgressGraphicsItem : public Base, public ConnectionInProgress
 {
 public:
-  explicit ConnectionInProgressGraphicsItem(PortWidget* port) : fromPort_(port)
+  ConnectionInProgressGraphicsItem(PortWidget* port, ConnectionDrawStrategyPtr drawer) : fromPort_(port), drawStrategy_(drawer)
   {
     Base::setZValue(1000); //TODO
     setColor(port->color());
@@ -112,19 +112,27 @@ public:
 
 protected:
   PortWidget* fromPort_;
+  ConnectionDrawStrategyPtr drawStrategy_;
 };
 
 class ConnectionInProgressStraight : public ConnectionInProgressGraphicsItem<QGraphicsLineItem>
 {
 public:
-  explicit ConnectionInProgressStraight(PortWidget* port);
+  ConnectionInProgressStraight(PortWidget* port, ConnectionDrawStrategyPtr drawer);
   virtual void update(const QPointF& end);
 };
 
 class ConnectionInProgressCurved : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
 {
 public:
-  explicit ConnectionInProgressCurved(PortWidget* port);
+  ConnectionInProgressCurved(PortWidget* port, ConnectionDrawStrategyPtr drawer);
+  virtual void update(const QPointF& end);
+};
+
+class ConnectionInProgressManhattan : public ConnectionInProgressGraphicsItem<QGraphicsPathItem>
+{
+public:
+  ConnectionInProgressManhattan(PortWidget* port, ConnectionDrawStrategyPtr drawer);
   virtual void update(const QPointF& end);
 };
 
@@ -136,6 +144,7 @@ public:
   ConnectionInProgress* makeConnectionInProgress(PortWidget* port) const;
   ConnectionLine* makeFinishedConnection(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id) const;
   void setType(ConnectionDrawType type);
+  ConnectionDrawType getType() const;
 Q_SIGNALS:
   void typeChanged(ConnectionDrawStrategyPtr drawerMaker);
 private:
@@ -144,6 +153,7 @@ private:
   QGraphicsScene* scene_;
   ConnectionDrawStrategyPtr euclidean_;
   ConnectionDrawStrategyPtr cubic_;
+  ConnectionDrawStrategyPtr manhattan_;
   ConnectionDrawStrategyPtr getCurrentDrawer() const;
 };
 

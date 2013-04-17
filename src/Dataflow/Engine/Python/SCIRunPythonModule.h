@@ -30,17 +30,42 @@
 #define ENGINE_PYTHON_SCIRUNPYTHONMODULE_H
 
 #include <boost/python.hpp>
+#include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Python/Share.h>
 
 BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 {
-  using namespace SCIRun::Dataflow::Engine;
+  using namespace SCIRun;
+
+  boost::python::class_<PyPort, boost::shared_ptr<PyPort>, boost::noncopyable>("SCIRun::PyPort", boost::python::no_init)
+    .add_property("name", &PyPort::name)
+    .add_property("type", &PyPort::type)
+    .add_property("isInput", &PyPort::isInput)
+    .def(boost::python::self >> boost::python::self)
+    ;
+
+  boost::python::class_<PyPorts, boost::shared_ptr<PyPorts>, boost::noncopyable>("SCIRun::PyPorts", boost::python::no_init)
+    .def("__getattr__", &PyPorts::getattr)
+    .def("__getitem__", &PyPorts::getitem)
+    .def("__len__", &PyPorts::size)
+    ;
+
+  boost::python::class_<PyModule, boost::shared_ptr<PyModule>, boost::noncopyable>("SCIRun::PyModule", boost::python::no_init)
+    .add_property("id", &PyModule::id)
+    .add_property("stateVars", &PyModule::stateVars)
+    .add_property("input", &PyModule::input)
+    .add_property("output", &PyModule::output)
+    .def("showUI", &PyModule::showUI)
+    .def("hideUI", &PyModule::hideUI)
+    .def("__getattr__", &PyModule::getattr)
+    .def("__setattr__", &PyModule::setattr)
+    ;
+
   boost::python::def("addModule", &NetworkEditorPythonAPI::addModule);
   boost::python::def("removeModule", &NetworkEditorPythonAPI::removeModule);
+  boost::python::def("modules", &NetworkEditorPythonAPI::modules);
   boost::python::def("executeAll", &NetworkEditorPythonAPI::executeAll);
-  boost::python::def("connect", &NetworkEditorPythonAPI::connect);
-  boost::python::def("disconnect", &NetworkEditorPythonAPI::disconnect);
   boost::python::def("saveNetwork", &NetworkEditorPythonAPI::saveNetwork);
   boost::python::def("loadNetwork", &NetworkEditorPythonAPI::loadNetwork);
   boost::python::def("quit", &NetworkEditorPythonAPI::quit);

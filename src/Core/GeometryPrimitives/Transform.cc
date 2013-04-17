@@ -32,7 +32,7 @@
 //#include <Core/Util/TypeDescription.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/Math/MiscMath.h>
+#include <Core/Math/MiscMath2.h>
 //#include <Core/Geometry/Tensor.h>
 
 using namespace SCIRun::Core::Geometry;
@@ -440,7 +440,7 @@ Transform::project(const Point& p) const
                mat[2][0]*p.x()+mat[2][1]*p.y()+mat[2][2]*p.z()+mat[2][3],
                mat[3][0]*p.x()+mat[3][1]*p.y()+mat[3][2]*p.z()+mat[3][3]);
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 void
 Transform::project(const Vector& p, Vector& res) const
 {
@@ -581,7 +581,7 @@ Transform::project_normal_inplace(Vector& p) const
   res.z(imat[0][2]*p.x()+imat[1][2]*p.y()+imat[2][2]*p.z());
   p = res;
 }
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void
 Transform::get(double* gmat) const
 {

@@ -171,19 +171,20 @@ public:
     for(unsigned j = 0; j < div_per_unit; j++) 
     {
       const double dj = (double)j / (double)div_per_unit;
-      typename VECTOR::value_type& jvec = *citer++;
-      jvec.resize((div_per_unit + 1) * 2, typename VECTOR2::value_type(3, 0.0));
+      VECTOR2& jvec = *citer++;
+      jvec.resize((div_per_unit + 1) * 2, VECTOR3(3, 0.0));
       typename VECTOR2::iterator e = jvec.begin(); 
       for(unsigned i=0; i <= div_per_unit; i++) {
         const double di = (double) i / (double)div_per_unit;
-        typename VECTOR2::value_type &c0 = *e++;
-        c0[0] = static_cast<typename VECTOR3::value_type>(v0[0] + dj * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
-        c0[1] = static_cast<typename VECTOR3::value_type>(v0[1] + dj * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
-        c0[2] = static_cast<typename VECTOR3::value_type>(v0[2] + dj * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
-        typename VECTOR2::value_type &c1 = *e++;
-        c1[0] = static_cast<typename VECTOR3::value_type>(v0[0] + (dj + d) * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
-        c1[1] = static_cast<typename VECTOR3::value_type>(v0[1] + (dj + d) * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
-        c1[2] = static_cast<typename VECTOR3::value_type>(v0[2] + (dj + d) * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
+        VECTOR3 &c0 = *e++;
+        typedef typename VECTOR3::value_type VECTOR4;
+        c0[0] = static_cast<VECTOR4>(v0[0] + dj * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
+        c0[1] = static_cast<VECTOR4>(v0[1] + dj * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
+        c0[2] = static_cast<VECTOR4>(v0[2] + dj * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
+        VECTOR3 &c1 = *e++;
+        c1[0] = static_cast<VECTOR4>(v0[0] + (dj + d) * (v3[0] - v0[0]) + di * (v1[0] - v0[0]));
+        c1[1] = static_cast<VECTOR4>(v0[1] + (dj + d) * (v3[1] - v0[1]) + di * (v1[1] - v0[1]));
+        c1[2] = static_cast<VECTOR4>(v0[2] + (dj + d) * (v3[2] - v0[2]) + di * (v1[2] - v0[2]));
       }
     }
   }
@@ -236,7 +237,7 @@ protected:
     double dist = DBL_MAX;
 	
     VECTOR coord(3);
-    StackVector<T,3> derivs(3);
+    StackVector<T,3> derivs;
     guess.resize(3);
 
     const int end = 3;
@@ -487,30 +488,11 @@ public:
     return get_volume3(this, cd);
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   static  const std::string type_name(int n = -1);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
 #endif
 };
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-template <class T>
-const TypeDescription* 
-get_type_description(HexTrilinearLgn<T> *)
-{
-  static TypeDescription* td = 0;
-  if(!td){
-    const TypeDescription *sub = get_type_description((T*)0);
-    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
-    (*subs)[0] = sub;
-    td = new TypeDescription("HexTrilinearLgn", subs, 
-				std::string(__FILE__),
-				"SCIRun", 
-				TypeDescription::BASIS_E);
-  }
-  return td;
-}
-
 
 template <class T>
 const std::string
@@ -531,6 +513,7 @@ HexTrilinearLgn<T>::type_name(int n)
   }
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int HEX_TRILINEAR_LGN_VERSION = 1;
 template <class T>
 void
@@ -542,6 +525,23 @@ HexTrilinearLgn<T>::io(Piostream &stream)
 }
 #endif
 
-}}}
+}}
+template <class T>
+const TypeDescription* 
+  get_type_description(Core::Basis::HexTrilinearLgn<T> *)
+{
+  static TypeDescription* td = 0;
+  if(!td){
+    const TypeDescription *sub = get_type_description((T*)0);
+    TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
+    (*subs)[0] = sub;
+    td = new TypeDescription("HexTrilinearLgn", subs, 
+      std::string(__FILE__),
+      "SCIRun", 
+      TypeDescription::BASIS_E);
+  }
+  return td;
+}
+}
 
 #endif

@@ -38,8 +38,10 @@ using namespace SCIRun::Dataflow::Networks;
 
 ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
 
+//TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void ReadMatrixModule::execute()
 {
+  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
     filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
@@ -52,6 +54,5 @@ void ReadMatrixModule::execute()
 
   ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
   sendOutput(Matrix, matrix);
-  StringHandle file(new String(filename_));
-  sendOutput(FileLoaded, file);
+  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
 }

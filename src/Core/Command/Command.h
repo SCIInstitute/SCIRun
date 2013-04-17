@@ -42,7 +42,7 @@ namespace SCIRun
       {
       public:
         virtual ~Command();
-        virtual void execute() = 0;
+        virtual bool execute() = 0;
       };
 
       typedef boost::shared_ptr<Command> CommandHandle;
@@ -61,36 +61,32 @@ namespace SCIRun
         virtual void redo() = 0;
       };
 
-      //class SCISHARE GlobalCommand
-      //{
-      //public:
-      //  virtual ~GlobalCommand();
-      //  virtual void execute() = 0;
-      //};
+      class SCISHARE GuiCommand : public Command
+      {
+      };
 
-      //class SCISHARE CommandWithGui : public GlobalCommand
-      //{
-      //};
-
-      //class SCISHARE HeadlessCommand : public GlobalCommand
-      //{
-      //};
+      class SCISHARE ConsoleCommand : public Command
+      {
+      };
 
       enum GlobalCommands
       {
+        ShowMainWindow,
+        PrintHelp,
+        PrintVersion,
         LoadNetworkFile,
         ExecuteCurrentNetwork,
-        Quit
+        SetupQuitAfterExecute,
+        QuitCommand
       };
-
-      /*
-      class SCISHARE LoadFileCommand : public *Command
-      {};
-      class SCISHARE ExecuteCurrentNetworkCommand : public *Command
-      {};
-      class SCISHARE QuitCommand : public *Command
-      {};
-      */
+     
+      //class SCISHARE LoadFileCommandConsole : public ConsoleCommand
+      //{};
+      //class SCISHARE ExecuteCurrentNetworkCommandConsole : public ConsoleCommand
+      //{};
+      //class SCISHARE QuitCommandConsole : public ConsoleCommand
+      //{};
+      
     }
   }
 }
