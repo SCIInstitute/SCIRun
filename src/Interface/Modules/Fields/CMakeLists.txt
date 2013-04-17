@@ -30,17 +30,20 @@
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
   CreateLatVolMesh.ui
+  ReportFieldInfoDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   CreateLatVolMeshDialog.h
+  ReportFieldInfoDialog.h
   Share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
   CreateLatVolMeshDialog.cc
+  ReportFieldInfoDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})
@@ -54,7 +57,7 @@ ADD_LIBRARY(Interface_Modules_Fields
 )
 
 TARGET_LINK_LIBRARIES(Interface_Modules_Fields 
-  #Algorithms_Fields
+  Algorithms_Field
   Modules_Fields
   Interface_Modules_Base
   Dataflow_Modules_Legacy_Fields

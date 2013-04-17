@@ -46,6 +46,7 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/CreateLatVolMesh.h>
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
+#include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
@@ -172,6 +173,11 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     description.input_ports_ += ReportMatrixInfoModule::inputPortDescription(ReportMatrixInfoModule::inputPort0Name());
     description.maker_ = boost::factory<ReportMatrixInfoModule*>();
+  }
+  else if (name.find("ReportFieldInfo") != std::string::npos)
+  {
+    description.input_ports_ += ReportFieldInfoModule::inputPortDescription(ReportFieldInfoModule::inputPort0Name());
+    description.maker_ = boost::factory<ReportFieldInfoModule*>();
   }
   else if (name.find("AppendMatrix") != std::string::npos)
   {

@@ -42,6 +42,7 @@
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolMeshDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
+#include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -83,6 +84,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new CreateStringDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ReportMatrixInfo") != std::string::npos)
     return new ReportMatrixInfoDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ReportFieldInfo") != std::string::npos)
+    return new ReportFieldInfoDialog(moduleId, state, parentToUse_);
   if (moduleId.find("MatrixAsVectorField") != std::string::npos)
     return new MatrixAsVectorFieldDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ViewScene") != std::string::npos)

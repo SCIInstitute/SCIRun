@@ -31,7 +31,10 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/Math/Share.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Field/Share.h>
 
 namespace SCIRun {
 namespace Core {
@@ -44,18 +47,22 @@ namespace Fields {
     typedef SCIRun::FieldHandle Inputs;
     typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
     
-    struct Outputs
+    struct SCISHARE Outputs
     {
+      Outputs();
       std::string type;
-      Geometry::Point center, size, dims;
+      Geometry::Point center;
+      Geometry::Vector size, dims;
       double dataMin, dataMax;
-      size_t nodes, elements;
+      size_t numdata_, numnodes_, numelements_;
       std::string dataLocation;
-      size_t geometricSize;
+      double geometricSize;
     };
     //typedef boost::tuple<std::string, Geometry::Point, Geometry::Point, double, double, size_t, size_t, std::string, Geometry::Point, size_t> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
+  private:
+    Outputs update_input_attributes(SCIRun::FieldHandle f) const;
   };
 
 }}}}

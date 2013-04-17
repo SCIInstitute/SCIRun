@@ -26,29 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATE_LATVOL_H
-#define INTERFACE_MODULES_CREATE_LATVOL_H
+#ifndef INTERFACE_MODULES_REPORTFIELDINFO_H
+#define INTERFACE_MODULES_REPORTFIELDINFO_H
 
-#include "Interface/Modules/Fields/ui_CreateLatVol.h"
+#include "Interface/Modules/Fields/ui_ReportFieldInfoDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Fields/Share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE CreateLatVolDialog : public ModuleDialogGeneric, 
-  public Ui::CreateLatVol
+class SCISHARE ReportFieldInfoDialog : public ModuleDialogGeneric, 
+  public Ui::ReportFieldInfoDialog
 {
 	Q_OBJECT
 	
 public:
-  CreateLatVolDialog(const std::string& name, 
+  ReportFieldInfoDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull();
-
+  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+  virtual void pull() {}
 private Q_SLOTS:
-  void push();
+    void pullAndDisplayInfo();
 };
 
 }

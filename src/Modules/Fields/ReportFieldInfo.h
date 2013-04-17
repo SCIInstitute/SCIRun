@@ -26,11 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_REPORTFIELDINFO_H
-#define MODULES_MATH_REPORTFIELDINFO_H
+#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
+#define MODULES_FIELDS_REPORTFIELDINFO_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/Share.h>
+#include <Modules/Fields/Share.h>
 
 namespace SCIRun {
 namespace Modules {

@@ -26,15 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Fields/CreateLatVolDialog.h>
-#include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
+#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-typedef SCIRun::Modules::Fields::CreateLatVol CreateLatVolModule;
+using namespace SCIRun::Core::Algorithms::Fields;
 
-CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandle state,
+
+ReportFieldInfoDialog::ReportFieldInfoDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -42,42 +43,26 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   //executeButton_->setEnabled(false);
-  
+
   //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //TODO: here is where to start on standardizing module dialog buttons.
-  //connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
-  //push();
-
-  connect(xSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(ySizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
+  //connect(executeButton_, SIGNAL(clicked()), this, SLOT(pullAndDisplayInfo()));
 }
 
-void CreateLatVolDialog::push()
+void ReportFieldInfoDialog::pullAndDisplayInfo() 
 {
-  if (!pulling_)
-  {
-    state_->setValue(CreateLatVolModule::XSize, xSizeSpinBox_->value());
-    state_->setValue(CreateLatVolModule::YSize, ySizeSpinBox_->value());
-    state_->setValue(CreateLatVolModule::ZSize, zSizeSpinBox_->value());
-    state_->setValue(CreateLatVolModule::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
-  }
-}
+  auto info = any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
 
-void CreateLatVolDialog::pull()
-{
-  Pulling p(this);
-  int newValue = state_->getValue(CreateLatVolModule::XSize).getInt();
-  if (newValue != xSizeSpinBox_->value())
-    xSizeSpinBox_->setValue(newValue);
-  newValue = state_->getValue(CreateLatVolModule::YSize).getInt();
-  if (newValue != ySizeSpinBox_->value())
-    ySizeSpinBox_->setValue(newValue);
-  newValue = state_->getValue(CreateLatVolModule::ZSize).getInt();
-  if (newValue != zSizeSpinBox_->value())
-    zSizeSpinBox_->setValue(newValue);
-  elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
-  elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
+  
+
+  std::ostringstream ostr;
+  ostr << "**************" << std::endl;
+  ostr << info.type << std::endl;
+  //ostr << info.get<0>() << "\n"
+  //  << info.get<1>() << "\n"
+  //  << info.get<2>() << "\n"
+  //  << info.get<3>() << "\n"
+  //  << info.get<4>() << "\n"
+  //  << info.get<5>();
+
+  fieldInfoTextEdit_->setPlainText(ostr.str().c_str());
 }
