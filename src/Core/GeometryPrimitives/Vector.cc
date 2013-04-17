@@ -192,7 +192,7 @@ SCIRun::Vector_get_h_file_path()
   return path;
 }
 
-const TypeDescription* SCIRun::get_type_description(Vector*)
+const TypeDescription* SCIRun::Core::Geometry::get_type_description(Vector*)
 {
   static TypeDescription* td = 0;
   if(!td){

@@ -470,11 +470,11 @@ inline void Vector::Set(double x, double y, double z)
   d_[2] = z;
 }
 
+SCISHARE const TypeDescription* get_type_description(Vector*);
+
 }}
 // TODO: This one is obsolete when dynamic compilation will be abandoned
 const std::string& Vector_get_h_file_path();
-SCISHARE const TypeDescription* get_type_description(Core::Geometry::Vector*);
-
 }
 
 #endif
