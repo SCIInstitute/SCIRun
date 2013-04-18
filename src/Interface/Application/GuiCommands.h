@@ -46,6 +46,12 @@ namespace Gui {
     virtual bool execute();
   };
 
+  class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
+  {
+  public:
+    virtual bool execute();
+  };
+
   class ExecuteCurrentNetworkCommandGui : public Core::Commands::GuiCommand
   {
   public:

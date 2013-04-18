@@ -75,18 +75,11 @@ namespace SCIRun
         PrintHelp,
         PrintVersion,
         LoadNetworkFile,
+        RunPythonScript,
         ExecuteCurrentNetwork,
         SetupQuitAfterExecute,
         QuitCommand
       };
-     
-      //class SCISHARE LoadFileCommandConsole : public ConsoleCommand
-      //{};
-      //class SCISHARE ExecuteCurrentNetworkCommandConsole : public ConsoleCommand
-      //{};
-      //class SCISHARE QuitCommandConsole : public ConsoleCommand
-      //{};
-      
     }
   }
 }

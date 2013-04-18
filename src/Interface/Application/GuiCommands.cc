@@ -134,3 +134,11 @@ bool FileOpenCommand::execute()
   }
   return false;
 }
+
+bool RunPythonScriptCommandGui::execute()
+{
+  //TODO
+  std::cout << "HELLO I'm RUNNING THIS PYTHON SCRIPT: " << std::endl;
+  std::cout << Application::Instance().parameters()->pythonScriptFile().get() << std::endl;
+  return true;
+}

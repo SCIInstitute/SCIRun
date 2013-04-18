@@ -30,6 +30,7 @@
 #define CORE_COMMANDLINE_COMMANDLINESPEC_H 
 
 #include <string>
+#include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
@@ -44,6 +45,7 @@ namespace SCIRun {
       public:
         virtual ~ApplicationParameters();
         virtual boost::optional<std::string> inputFile() const = 0;
+        virtual boost::optional<boost::filesystem::path> pythonScriptFile() const = 0;
         virtual bool help() const = 0;
         virtual bool version() const = 0;
         virtual bool executeNetwork() const = 0;

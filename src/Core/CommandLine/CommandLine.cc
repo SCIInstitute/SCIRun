@@ -55,6 +55,7 @@ public:
       ("interactive,i", "interactive mode--TODO")
       ("headless,x", "disable GUI (Qt still needed, for now)")
       ("input-file", po::value<std::string>(), "SCIRun Network Input File")
+      ("script,s", po::value<std::string>(), "SCIRun Python Script")
       ;
       
       positional_.add("input-file", -1);
@@ -100,18 +101,24 @@ class ApplicationParametersImpl : public ApplicationParameters
 public:
   ApplicationParametersImpl(
     const boost::optional<std::string>& inputFile,
+    const boost::optional<boost::filesystem::path>& pythonScriptFile,
     bool help,
     bool version,
     bool executeNetwork,
     bool executeNetworkAndQuit,
     bool disableGui) 
-    : inputFile_(inputFile), help_(help), version_(version), executeNetwork_(executeNetwork),
+    : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui)
   {}
 
   virtual boost::optional<std::string> inputFile() const
   {
     return inputFile_;
+  }
+
+  virtual boost::optional<boost::filesystem::path> pythonScriptFile() const 
+  {
+    return pythonScriptFile_;
   }
 
   virtual bool help() const
@@ -141,6 +148,7 @@ public:
 
 private:
   boost::optional<std::string> inputFile_;
+  boost::optional<boost::filesystem::path> pythonScriptFile_;
   bool help_;
   bool version_;
   bool executeNetwork_;
@@ -162,10 +170,14 @@ std::string CommandLineParser::describe() const
 ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[])
 {
   auto parsed = impl_->parse(argc, argv);
-  boost::optional<std::string> inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
+  auto inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
+  auto pythonScriptFile = parsed.count("script") != 0 ? 
+    boost::filesystem::path(parsed["script"].as<std::string>()) : 
+    boost::optional<boost::filesystem::path>();
   return boost::make_shared<ApplicationParametersImpl>
     (
       inputFile,
+      pythonScriptFile,
       parsed.count("help") != 0,
       parsed.count("version") != 0,
       parsed.count("execute") != 0,

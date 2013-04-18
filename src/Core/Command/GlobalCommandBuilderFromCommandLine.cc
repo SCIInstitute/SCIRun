@@ -65,6 +65,8 @@ using namespace SCIRun::Core::Commands;
 
     if (params->inputFile())
       q->enqueue(cmdFactory_->create(LoadNetworkFile));
+    else if (params->pythonScriptFile())
+      q->enqueue(cmdFactory_->create(RunPythonScript));
 
     if (params->executeNetwork())
       q->enqueue(cmdFactory_->create(ExecuteCurrentNetwork));
