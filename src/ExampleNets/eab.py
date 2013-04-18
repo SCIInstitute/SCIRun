@@ -1,3 +1,5 @@
+#$ ./SCIRunGUIPrototype.exe --script="E:\git\SCIRunGUIPrototype\src\ExampleNets\eab.py" -E --headless
+
 import glob
 import os
 dir = r"E:\git\SCIRunGUIPrototype\src\Samples\matrices"
