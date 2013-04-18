@@ -15,5 +15,3 @@ for i in range(n):
 	write = addModule("WriteMatrix")
 	write.Filename = os.path.join(dir, "ident" + str(i) + ".txt")
 	eval.output.Result >> write.input[0]
-
-executeAll()

@@ -64,6 +64,7 @@ public:
   void setupQuitAfterExecute();
   void executeAll();
   void quit();
+  void runPythonScript(const QString& scriptFileName);
 
 protected:
   virtual void closeEvent(QCloseEvent* event);

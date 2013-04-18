@@ -55,6 +55,7 @@
 
 #include <Core/Command/CommandFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Gui;
@@ -689,5 +690,15 @@ void SCIRunMainWindow::setupPythonConsole()
   addDockWidget(Qt::TopDockWidgetArea, pythonConsole_);
 #else
   actionPythonConsole_->setEnabled(false);
+#endif
+}
+
+void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
+{
+#ifdef BUILD_WITH_PYTHON
+  GuiLogger::Instance().log("RUNNING PYTHON SCRIPT: " + scriptFileName);
+  SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
+#else
+  GuiLogger::Instance().log("Python not included in this build, cannot run " + scriptFileName);
 #endif
 }

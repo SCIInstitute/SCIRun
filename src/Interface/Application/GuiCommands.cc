@@ -137,8 +137,7 @@ bool FileOpenCommand::execute()
 
 bool RunPythonScriptCommandGui::execute()
 {
-  //TODO
-  std::cout << "HELLO I'm RUNNING THIS PYTHON SCRIPT: " << std::endl;
-  std::cout << Application::Instance().parameters()->pythonScriptFile().get() << std::endl;
+  auto script = Application::Instance().parameters()->pythonScriptFile().get();
+  SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
   return true;
 }
