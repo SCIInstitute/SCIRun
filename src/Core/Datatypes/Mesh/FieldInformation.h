@@ -30,8 +30,8 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_FIELDINFORMATION
-#define CORE_DATATYPES_FIELDINFORMATION
+#ifndef CORE_DATATYPES_MESH_FIELDINFORMATION
+#define CORE_DATATYPES_MESH_FIELDINFORMATION
 
 #include <string>
 #include <Core/Datatypes/Mesh/MeshTraits.h>

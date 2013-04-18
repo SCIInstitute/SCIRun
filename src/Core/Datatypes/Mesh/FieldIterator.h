@@ -41,8 +41,8 @@
  *
  */
 
-#ifndef Datatypes_FieldIterator_h
-#define Datatypes_FieldIterator_h
+#ifndef Datatypes_MESH_FieldIterator_h
+#define Datatypes_MESH_FieldIterator_h
 
 #include <Core/Datatypes/Mesh/FieldIndex.h>
 

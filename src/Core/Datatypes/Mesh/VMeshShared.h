@@ -27,8 +27,8 @@
 */
 
 
-#ifndef CORE_DATATYPES_VMESHSHARED_H
-#define CORE_DATATYPES_VMESHSHARED_H
+#ifndef CORE_DATATYPES_MESH_VMESHSHARED_H
+#define CORE_DATATYPES_MESH_VMESHSHARED_H
 
 #include <iostream>
 #include <Core/Datatypes/Mesh/VMesh.h>

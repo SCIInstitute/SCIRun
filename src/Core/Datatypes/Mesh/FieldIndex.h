@@ -40,8 +40,8 @@
  *
  */
 
-#ifndef Datatypes_FieldIndex_h
-#define Datatypes_FieldIndex_h
+#ifndef Datatypes_MESH_FieldIndex_h
+#define Datatypes_MESH_FieldIndex_h
 
 //#include <Core/Persistent/Persistent.h>
 //#include <Core/Util/TypeDescription.h>

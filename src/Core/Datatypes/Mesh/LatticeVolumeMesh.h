@@ -30,8 +30,8 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-#ifndef CORE_DATATYPES_LATVOLMESH_H
-#define CORE_DATATYPES_LATVOLMESH_H 
+#ifndef CORE_DATATYPES_MESH_LATVOLMESH_H
+#define CORE_DATATYPES_MESH_LATVOLMESH_H 
 
 #include <boost/array.hpp>
 

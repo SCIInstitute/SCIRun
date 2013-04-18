@@ -27,8 +27,8 @@
 */
 
 
-#ifndef CORE_DATATYPES_FIELDRNG_H
-#define CORE_DATATYPES_FIELDRNG_H 1
+#ifndef CORE_DATATYPES_MESH_FIELDRNG_H
+#define CORE_DATATYPES_MESH_FIELDRNG_H 1
 
 #include <Core/Datatypes/Mesh/Share.h>
 
