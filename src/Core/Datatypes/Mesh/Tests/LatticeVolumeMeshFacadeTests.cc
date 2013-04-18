@@ -82,7 +82,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, BasicCubeTest)
 {
   ASSERT_TRUE(mesh_);
   
-  MeshFacadeHandle facade(mesh_->getFacade());
+  auto facade(mesh_->getFacade());
 
   EXPECT_EQ(8, facade->numNodes());
   EXPECT_EQ(12, facade->numEdges());
@@ -92,10 +92,10 @@ TEST_F(LatticeVolumeMeshFacadeTests, BasicCubeTest)
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
 {
-  MeshFacadeHandle facade(mesh_->getFacade());
+  auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+  BOOST_FOREACH(const EdgeInfo<VirtualMesh>& edge, facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -121,10 +121,10 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
 {
-  MeshFacadeHandle facade(mesh_->getFacade());
+  auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VirtualMesh>& face, facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -150,10 +150,10 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
 
 TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
 {
-  MeshFacadeHandle facade(mesh_->getFacade());
+  auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
   {
     ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(node.edgeIndices()) << "]" << std::endl;
   }

@@ -28,8 +28,8 @@
 
 
 
-#ifndef CORE_DATATYPES_FIELD_H
-#define CORE_DATATYPES_FIELD_H 1
+#ifndef CORE_DATATYPES_LEGACY_FIELD_H
+#define CORE_DATATYPES_LEGACY_FIELD_H 1
 
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>

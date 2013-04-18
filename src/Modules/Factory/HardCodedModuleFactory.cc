@@ -227,7 +227,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("ShowMesh") != std::string::npos)
   {
-    description.input_ports_ += ShowMeshModule::inputPortDescription(ShowMeshModule::inputPort0Name());
+    description.input_ports_ = ShowMeshModule::inputPortDescription(ShowMeshModule::inputPort0Name(), ShowMeshModule::inputPort1Name());
     description.output_ports_ += ShowMeshModule::outputPortDescription(ShowMeshModule::outputPort0Name());
     description.maker_ = boost::factory<ShowMeshModule*>();
   }

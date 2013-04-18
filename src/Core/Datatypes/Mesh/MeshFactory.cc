@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 
-MeshConstructionParameters::MeshConstructionParameters(MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Point& min, const Point& max)
+MeshConstructionParameters::MeshConstructionParameters(Mesh5::size_type x, Mesh5::size_type y, Mesh5::size_type z, const Point& min, const Point& max)
   : x_(x), y_(y), z_(z), min_(min), max_(max) {}
 
 CORE_SINGLETON_IMPLEMENTATION( MeshFactory )

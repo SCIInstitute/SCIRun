@@ -27,8 +27,8 @@
 */
 
 
-#ifndef CORE_DATATYPES_MESH_H
-#define CORE_DATATYPES_MESH_H 1
+#ifndef CORE_DATATYPES_LEGACY_MESH_H
+#define CORE_DATATYPES_LEGACY_MESH_H 1
 
 #include <Core/Containers/StackVector.h>
 
@@ -47,8 +47,8 @@
 #include <Core/Utils/Legacy/Debug.h>
 
 #include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Mesh/MeshTraits.h>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -59,28 +59,16 @@ class TypeDescription;
 
 typedef boost::shared_ptr<Mesh> MeshHandle;
 
-// Maximum number of weights get_weights will return.
-#define MESH_WEIGHT_MAXSIZE 64
-
 // We reserve the last unsigned int value as a marker for bad mesh
 // indices.  This is useful for example when there are no neighbors,
 // or when elements are deleted.
-#define MESH_INVALID_INDEX -1
 #define MESH_NO_NEIGHBOR -1
 
 
 
-class SCISHARE Mesh : public Core::Datatypes::Datatype
+class SCISHARE Mesh : public Core::Datatypes::Datatype, public Core::Datatypes::MeshTraits<VMesh>
 {
 public: 
-
-  typedef SCIRun::mask_type                  mask_type;  
-  typedef SCIRun::index_type                 under_type;  
-  typedef SCIRun::index_type                 index_type;
-  typedef SCIRun::index_type                 size_type;
-  typedef std::vector<index_type>            array_type;
-  typedef std::vector<size_type>             dimension_type;
-
 
   //! Constructor
   Mesh();

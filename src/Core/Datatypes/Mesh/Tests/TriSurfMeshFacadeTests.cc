@@ -146,7 +146,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleTest)
 {
   ASSERT_TRUE(basicTriangleMesh_);
   
-  MeshFacadeHandle facade(basicTriangleMesh_->getFacade());
+  auto facade(basicTriangleMesh_->getFacade());
   
   EXPECT_EQ(3, facade->numNodes());
   EXPECT_EQ(1, facade->numFaces());
@@ -158,7 +158,7 @@ TEST_F(TriSurfMeshFacadeTests, CubeTest)
 {
   ASSERT_TRUE(cubeMesh_);
   
-  MeshFacadeHandle facade(cubeMesh_->getFacade());
+  auto facade(cubeMesh_->getFacade());
   
   EXPECT_EQ(8, facade->numNodes());
   EXPECT_EQ(12, facade->numFaces());
@@ -168,10 +168,10 @@ TEST_F(TriSurfMeshFacadeTests, CubeTest)
 
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
 {
-  MeshFacadeHandle facade(basicTriangleMesh_->getFacade());
+  auto facade(basicTriangleMesh_->getFacade());
   
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+  BOOST_FOREACH(const EdgeInfo<VirtualMesh>& edge, facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -188,10 +188,10 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
 
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
 {
-  MeshFacadeHandle facade(basicTriangleMesh_->getFacade());
+  auto facade(basicTriangleMesh_->getFacade());
   
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VirtualMesh>& face, facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -207,10 +207,10 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
 
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
 {
-  MeshFacadeHandle facade(basicTriangleMesh_->getFacade());
+  auto facade(basicTriangleMesh_->getFacade());
   
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
   {
     // special case, since this is essentially a 2D mesh with a single element,
     // the last edge value is not filled

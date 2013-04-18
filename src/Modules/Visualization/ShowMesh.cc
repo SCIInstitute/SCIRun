@@ -27,6 +27,11 @@
 */
 
 #include <Modules/Visualization/ShowMesh.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
+
+
 #include <boost/foreach.hpp>
 
 using namespace SCIRun::Modules::Visualization;
@@ -34,7 +39,43 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")) 
+
+namespace SCIRun {
+  namespace Modules {
+    namespace Visualization {
+
+      class ShowMeshModuleImpl
+      {
+      public:
+        /// Constructs faces without normal information. We can share the primary
+        /// VBO with the nodes and the edges in this case.
+        template <typename VMeshType>
+        void buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+          SCIRun::Core::Datatypes::GeometryHandle geom,
+          const std::string& primaryVBOName,
+          ModuleStateHandle state);
+
+        /// Constructs edges without normal information. We can share the primary
+        /// VBO with faces and nodes.
+        template <typename VMeshType>
+        void buildEdgesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+          SCIRun::Core::Datatypes::GeometryHandle geom,
+          const std::string& primaryVBOName,
+          ModuleStateHandle state);
+
+        /// Constructs nodes without normal information. We can share the primary
+        /// VBO with edges and faces.
+        template <typename VMeshType>
+        void buildNodesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+          SCIRun::Core::Datatypes::GeometryHandle geom,
+          const std::string& primaryVBOName,
+          ModuleStateHandle state);
+      };
+
+    }}}
+
+ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualization", "SCIRun")),
+  impl_(new ShowMeshModuleImpl)
 {
   get_state()->setValue(ShowNodes, false);
   get_state()->setValue(ShowEdges, true);
@@ -44,7 +85,7 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 void ShowMeshModule::execute()
 {
   auto mesh = getRequiredInput(Mesh);
-  MeshFacadeHandle facade(mesh->getFacade());
+  auto facade(mesh->getFacade());
 
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = get_state()->getValue(ShowNodes).getBool();
@@ -88,7 +129,7 @@ void ShowMeshModule::execute()
   // Build index buffer. Based off of the node indices that came out of old
   // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
   size_t i = 0;
-  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
     i+=3;
@@ -97,35 +138,37 @@ void ShowMeshModule::execute()
   // Build the edges
   if (showEdges)
   {
-    buildEdgesNoNormals(facade, geom, primVBOName);
+    impl_->buildEdgesNoNormals<VirtualMesh>(facade, geom, primVBOName, get_state());
   }
 
   // Build the faces
   if (showFaces)
   {
-    buildFacesNoNormals(facade, geom, primVBOName);
+    impl_->buildFacesNoNormals<VirtualMesh>(facade, geom, primVBOName, get_state());
   }
 
   // Build the nodes
   if (showNodes)
   {
-    buildNodesNoNormals(facade, geom, primVBOName);
+    impl_->buildNodesNoNormals<VirtualMesh>(facade, geom, primVBOName, get_state());
   }
 
   sendOutput(SceneGraph, geom);
 }
 
-void ShowMeshModule::buildFacesNoNormals(MeshFacadeHandle facade, 
+template <typename VMeshType>
+void ShowMeshModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
                                          GeometryHandle geom,
-                                         const std::string& primaryVBOName)
+                                         const std::string& primaryVBOName,
+                                         ModuleStateHandle state)
 {
-  bool faceTransparency = get_state()->getValue(FaceTransparency).getBool();
+  bool faceTransparency = state->getValue(ShowMeshModule::FaceTransparency).getBool();
   uint32_t* iboFaces = nullptr;
 
   // Determine the size of the face structure (taking into account the varying
   // types of faces -- only quads and triangles are currently supported).
   size_t iboFacesSize = 0;
-  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
   {
     VirtualMesh::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
@@ -147,7 +190,7 @@ void ShowMeshModule::buildFacesNoNormals(MeshFacadeHandle facade,
   // use malloc to generate buffer and then vector::assign.
   iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
   size_t i = 0;
-  BOOST_FOREACH(const FaceInfo& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
   {
     VirtualMesh::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
@@ -184,11 +227,13 @@ void ShowMeshModule::buildFacesNoNormals(MeshFacadeHandle facade,
   geom->mPasses.emplace_back(pass);
 }
 
-void ShowMeshModule::buildEdgesNoNormals(MeshFacadeHandle facade,
+template <typename VMeshType>
+void ShowMeshModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
                                          GeometryHandle geom,
-                                         const std::string& primaryVBOName)
+                                         const std::string& primaryVBOName,
+                                         ModuleStateHandle modState)
 {
-  bool edgeTransparency = get_state()->getValue(EdgeTransparency).getBool();
+  bool edgeTransparency = modState->getValue(ShowMeshModule::EdgeTransparency).getBool();
 
   size_t iboEdgesSize = sizeof(uint32_t) * facade->numEdges() * 2;
   uint32_t* iboEdges = nullptr;
@@ -198,7 +243,7 @@ void ShowMeshModule::buildEdgesNoNormals(MeshFacadeHandle facade,
   // use malloc to generate buffer and then vector::assign.
   iboEdges = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
   size_t i = 0;
-  BOOST_FOREACH(const EdgeInfo& edge, facade->edges())
+  BOOST_FOREACH(const EdgeInfo<VMeshType>& edge, facade->edges())
   {
     // There should *only* be two indicies (linestrip would be better...)
     VirtualMesh::Node::array_type nodes = edge.nodeIndices();
@@ -231,11 +276,13 @@ void ShowMeshModule::buildEdgesNoNormals(MeshFacadeHandle facade,
   geom->mPasses.emplace_back(pass);
 }
 
-void ShowMeshModule::buildNodesNoNormals(MeshFacadeHandle facade,
+template <typename VMeshType>
+void ShowMeshModuleImpl::buildNodesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
                                          GeometryHandle geom,
-                                         const std::string& primaryVBOName)
+                                         const std::string& primaryVBOName,
+                                         ModuleStateHandle state)
 {
-  bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
+  bool nodeTransparency = state->getValue(ShowMeshModule::NodeTransparency).getBool();
 
   size_t iboNodesSize = sizeof(uint32_t) * facade->numNodes();
   uint32_t* iboNodes = nullptr;
@@ -245,7 +292,7 @@ void ShowMeshModule::buildNodesNoNormals(MeshFacadeHandle facade,
   // use malloc to generate buffer and then vector::assign.
   iboNodes = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
   size_t i = 0;
-  BOOST_FOREACH(const NodeInfo& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
   {
     // There should *only* be two indicies (linestrip would be better...)
     //node.index()

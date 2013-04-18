@@ -34,13 +34,14 @@
 #define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 
 #include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Mesh/VMesh.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class VirtualMeshFacade : public MeshFacade
+  class VirtualMeshFacade : public MeshFacade<VirtualMesh>
   {
   public:
     explicit VirtualMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh)
@@ -52,17 +53,17 @@ namespace Datatypes {
 
     virtual Edges edges() const 
     {
-      return Edges(SmartEdgeIterator(vmesh_.get()), SmartEdgeIterator(vmesh_.get(), true));
+      return Edges(SmartEdgeIterator<VirtualMesh>::Type(vmesh_.get()), SmartEdgeIterator<VirtualMesh>::Type(vmesh_.get(), true));
     }
 
     virtual Faces faces() const 
     {
-      return Faces(SmartFaceIterator(vmesh_.get()), SmartFaceIterator(vmesh_.get(), true));
+      return Faces(SmartFaceIterator<VirtualMesh>::Type(vmesh_.get()), SmartFaceIterator<VirtualMesh>::Type(vmesh_.get(), true));
     }
 
     virtual Nodes nodes() const
     {
-      return Nodes(SmartNodeIterator(vmesh_.get()), SmartNodeIterator(vmesh_.get(), true));
+      return Nodes(SmartNodeIterator<VirtualMesh>::Type(vmesh_.get()), SmartNodeIterator<VirtualMesh>::Type(vmesh_.get(), true));
     }
 
     virtual size_t numNodes() const

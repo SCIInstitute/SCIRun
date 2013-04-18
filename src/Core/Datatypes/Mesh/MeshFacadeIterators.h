@@ -31,7 +31,7 @@
 
 #include <boost/iterator/iterator_facade.hpp>
 #include <Core/Utils/Exception.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
@@ -51,12 +51,12 @@ namespace Datatypes {
   // synchronize infrastructure is implemented and tested,
   // so clear_synchronization() is always called after synchronize and operation
   // that requires synchronize to be called.
-  template <typename MeshComponent>
-  class SmartMeshIterator : public boost::iterator_facade<SmartMeshIterator<MeshComponent>, MeshComponent, boost::bidirectional_traversal_tag>
+  template <class VirtualMeshType, template <typename> class MeshComponent>
+  class SmartMeshIterator : public boost::iterator_facade<SmartMeshIterator<VirtualMeshType, MeshComponent>, MeshComponent<VirtualMeshType>, boost::bidirectional_traversal_tag>
   {
   public:
     //TODO: need to look up pattern for creating "end" iterators.
-    explicit SmartMeshIterator(VirtualMesh* vmesh = 0, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
+    explicit SmartMeshIterator(VirtualMeshType* vmesh = 0, bool isEnd = false) : iter_(0), vmesh_(vmesh), current_(vmesh)
     {
       ENSURE_NOT_NULL(vmesh, "virtual mesh");
       if (!isEnd)
@@ -76,41 +76,39 @@ namespace Datatypes {
     void increment() { ++iter_; }
     void decrement() { --iter_; }
 
-    bool equal(const SmartMeshIterator<MeshComponent>& other) const
+    bool equal(const SmartMeshIterator<VirtualMeshType, MeshComponent>& other) const
     {
       return this->vmesh_ == other.vmesh_ 
         && this->iter_ == other.iter_;
     }
 
-    MeshComponent& dereference() const
+    MeshComponent<VirtualMeshType>& dereference() const
     { 
       current_.setIndex(*iter_);
       return current_; 
     }
 
-    typename MeshComponent::iterator iter_;
-    VirtualMesh* vmesh_;
-    mutable MeshComponent current_;
+    typename MeshComponent<VirtualMeshType>::iterator iter_;
+    VirtualMeshType* vmesh_;
+    mutable MeshComponent<VirtualMeshType> current_;
   };
 
-  class EdgeInfo;
-  typedef SmartMeshIterator<EdgeInfo> SmartEdgeIterator;
-
   //TODO: templatize with traits and stuff. for now, a specialized version for edges.
+  template <class VirtualMeshType>
   class EdgeInfo
   {
   public:
-    typedef VirtualMesh::Edge::iterator iterator;
-    explicit EdgeInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) 
+    typedef typename VirtualMeshType::Edge::iterator iterator;
+    explicit EdgeInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh) 
     {
       vmesh_->synchronize(Mesh5::EDGES_E);
     }
-    void setIndex(VirtualMesh::Edge::index_type i) { index_ = i; }
+    void setIndex(typename VirtualMeshType::Edge::index_type i) { index_ = i; }
 
-    VirtualMesh::Edge::index_type index() const { return index_; }
-    VirtualMesh::Node::array_type nodeIndices() const
+    typename VirtualMeshType::Edge::index_type index() const { return index_; }
+    typename VirtualMeshType::Node::array_type nodeIndices() const
     {
-      VirtualMesh::Node::array_type nodesFromEdge(2);
+      typename VirtualMeshType::Node::array_type nodesFromEdge(2);
       vmesh_->get_nodes(nodesFromEdge, index_);
 
       return nodesFromEdge;
@@ -126,24 +124,28 @@ namespace Datatypes {
       return ps;
     }
   private:
-    VirtualMesh::Edge::index_type index_;
-    VirtualMesh* vmesh_;
+    typename VirtualMeshType::Edge::index_type index_;
+    VirtualMeshType* vmesh_;
   };
 
-  class FaceInfo;
-  typedef SmartMeshIterator<FaceInfo> SmartFaceIterator;
+  template <typename VirtualMeshType>
+  struct SmartEdgeIterator
+  {
+    typedef SmartMeshIterator<VirtualMeshType, EdgeInfo> Type;
+  };
 
+  template <class VirtualMeshType>
   class FaceInfo 
   {
   public:
-    typedef VirtualMesh::Face::iterator iterator;
-    explicit FaceInfo(VirtualMesh* mesh) : index_(0), vmesh_(mesh) {}
-    void setIndex(VirtualMesh::Face::index_type i) { index_ = i; }
+    typedef typename VirtualMeshType::Face::iterator iterator;
+    explicit FaceInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh) {}
+    void setIndex(typename VirtualMeshType::Face::index_type i) { index_ = i; }
 
-    VirtualMesh::Face::index_type index() const { return index_; }
-    VirtualMesh::Node::array_type nodeIndices() const
+    typename VirtualMeshType::Face::index_type index() const { return index_; }
+    typename VirtualMeshType::Node::array_type nodeIndices() const
     {
-      VirtualMesh::Node::array_type nodesFromFace(4);
+      typename VirtualMeshType::Node::array_type nodesFromFace(4);
       vmesh_->get_nodes(nodesFromFace, index_);
       return nodesFromFace;
     }
@@ -155,49 +157,59 @@ namespace Datatypes {
         vmesh_->get_point(ps[i], indices[i]);
       return ps;
     }
-    VirtualMesh::Edge::array_type edgeIndices() const
+    typename VirtualMeshType::Edge::array_type edgeIndices() const
     {
-      VirtualMesh::Edge::array_type edgesFromFace(4);
+      typename VirtualMeshType::Edge::array_type edgesFromFace(4);
       vmesh_->get_edges(edgesFromFace, index_);
       return edgesFromFace;
     }
   private:
-    VirtualMesh::Face::index_type index_;
-    VirtualMesh* vmesh_;
+    typename VirtualMeshType::Face::index_type index_;
+    VirtualMeshType* vmesh_;
   };
 
-  class NodeInfo;
-  typedef SmartMeshIterator<NodeInfo> SmartNodeIterator;
+  template <typename VirtualMeshType>
+  struct SmartFaceIterator
+  {
+    typedef SmartMeshIterator<VirtualMeshType, FaceInfo> Type;
+  };
 
+  template <class VirtualMeshType>
   class NodeInfo 
   {
   public:
-    typedef VirtualMesh::Node::iterator iterator;
-    explicit NodeInfo(VirtualMesh* mesh) : synched_(false), index_(0), vmesh_(mesh) {}
-    void setIndex(VirtualMesh::Node::index_type i) { index_ = i; }
+    typedef typename VirtualMeshType::Node::iterator iterator;
+    explicit NodeInfo(VirtualMeshType* mesh) : synched_(false), index_(0), vmesh_(mesh) {}
+    void setIndex(typename VirtualMeshType::Node::index_type i) { index_ = i; }
 
-    VirtualMesh::Node::index_type index() const { return index_; }
+    typename VirtualMeshType::Node::index_type index() const { return index_; }
     Geometry::Point point() const 
     {
       Geometry::Point p;
       vmesh_->get_point(p, index_);
       return p;
     }
-    VirtualMesh::Edge::array_type edgeIndices() const
+    typename VirtualMeshType::Edge::array_type edgeIndices() const
     {
       if (!synched_)
       {
         vmesh_->synchronize(Mesh5::NODE_NEIGHBORS_E);
         synched_ = true;
       }
-      VirtualMesh::Edge::array_type edgesFromNode(6);
+      typename VirtualMeshType::Edge::array_type edgesFromNode(6);
       vmesh_->get_edges(edgesFromNode, index_);
       return edgesFromNode;
     }
   private:
     mutable bool synched_;
-    VirtualMesh::Node::index_type index_;
-    VirtualMesh* vmesh_;
+    typename VirtualMeshType::Node::index_type index_;
+    VirtualMeshType* vmesh_;
+  };
+
+  template <typename VirtualMeshType>
+  struct SmartNodeIterator
+  {
+    typedef SmartMeshIterator<VirtualMeshType, NodeInfo> Type;
   };
   
 }}}

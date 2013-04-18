@@ -30,6 +30,8 @@
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Modules/Visualization/Share.h>
 
 namespace SCIRun {
@@ -37,14 +39,23 @@ namespace Modules {
 namespace Visualization {
 
   class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<Field5PortTag>,
+    public Has1InputPort<FieldPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
   public:
     ShowFieldModule();
     virtual void execute();
-    INPUT_PORT(0, Mesh, Field5);
+
+    static Core::Algorithms::AlgorithmParameterName ShowNodes;
+    static Core::Algorithms::AlgorithmParameterName ShowEdges;
+    static Core::Algorithms::AlgorithmParameterName ShowFaces;
+    static Core::Algorithms::AlgorithmParameterName NodeTransparency;
+    static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
+    static Core::Algorithms::AlgorithmParameterName FaceTransparency;
+
+    INPUT_PORT(0, Field, LegacyField);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
+
   };
 }}}
 

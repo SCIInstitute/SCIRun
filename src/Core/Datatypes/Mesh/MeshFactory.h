@@ -37,7 +37,7 @@
 #include <Core/Utils/Singleton.h>
 #include <Core/Utils/TypeIDTable.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Datatypes/Mesh/MeshTraits.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
@@ -47,10 +47,10 @@ namespace Datatypes {
 
   struct SCISHARE MeshConstructionParameters
   {
-    MeshTraits::size_type x_, y_, z_;
+    Mesh5::size_type x_, y_, z_;
     Geometry::Point min_, max_;
 
-    MeshConstructionParameters(MeshTraits::size_type x, MeshTraits::size_type y, MeshTraits::size_type z, const Geometry::Point& min, const Geometry::Point& max);
+    MeshConstructionParameters(Mesh5::size_type x, Mesh5::size_type y, Mesh5::size_type z, const Geometry::Point& min, const Geometry::Point& max);
   };
 
   typedef MeshHandle5 (*MeshDefaultConstructor)();

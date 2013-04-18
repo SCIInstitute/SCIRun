@@ -36,15 +36,16 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE MeshFacade
+  template <class VirtualMeshType>
+  class MeshFacade
   {
   public:
     virtual ~MeshFacade() {}
 
     // prototype this for use with BOOST_FOREACH, so use pairs of iterators. When upgrading to C++11, will need to support a range concept.
-    typedef std::pair<SmartNodeIterator, SmartNodeIterator> Nodes;
-    typedef std::pair<SmartEdgeIterator, SmartEdgeIterator> Edges;
-    typedef std::pair<SmartFaceIterator, SmartFaceIterator> Faces;
+    typedef std::pair<typename SmartNodeIterator<VirtualMeshType>::Type, typename SmartNodeIterator<VirtualMeshType>::Type> Nodes;
+    typedef std::pair<typename SmartEdgeIterator<VirtualMeshType>::Type, typename SmartEdgeIterator<VirtualMeshType>::Type> Edges;
+    typedef std::pair<typename SmartFaceIterator<VirtualMeshType>::Type, typename SmartFaceIterator<VirtualMeshType>::Type> Faces;
 
     virtual Nodes nodes() const = 0;
     virtual Edges edges() const = 0;

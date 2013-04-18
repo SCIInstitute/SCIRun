@@ -114,7 +114,7 @@ VirtualMeshHandle LatVolMesh<Basis>::vmesh() const {
 }
 
 template <class Basis>
-MeshFacadeHandle LatVolMesh<Basis>::getFacade() const 
+typename LatVolMesh<Basis>::MeshFacadeHandle LatVolMesh<Basis>::getFacade() const 
 {
   return boost::make_shared<VirtualMeshFacade>(vmesh());
 }

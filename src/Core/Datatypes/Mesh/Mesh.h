@@ -41,7 +41,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE Mesh5 : public Datatype, public MeshTraits
+  class SCISHARE Mesh5 : public Datatype, public MeshTraits<VirtualMesh>
   {
   public: 
     Mesh5();

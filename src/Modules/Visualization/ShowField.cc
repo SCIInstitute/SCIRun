@@ -26,22 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <cstdlib>
 #include <Modules/Visualization/ShowField.h>
-#include <Core/Datatypes/Mesh/Field.h>
-#include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <boost/foreach.hpp>
 
+using namespace SCIRun;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun")) {}
+ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun")) 
+{
+  get_state()->setValue(ShowNodes, false);
+  get_state()->setValue(ShowEdges, true);
+  get_state()->setValue(ShowFaces, true);
+}
 
 void ShowFieldModule::execute()
 {
-  auto field = getRequiredInput(Mesh);
-
-
-  sendOutput(SceneGraph, boost::make_shared<GeometryObject>(field));
+ 
 }
+
+AlgorithmParameterName ShowFieldModule::ShowNodes("Show nodes");
+AlgorithmParameterName ShowFieldModule::ShowEdges("Show edges");
+AlgorithmParameterName ShowFieldModule::ShowFaces("Show faces");
+AlgorithmParameterName ShowFieldModule::NodeTransparency("Node Transparency");
+AlgorithmParameterName ShowFieldModule::EdgeTransparency("Edge Transparency");
+AlgorithmParameterName ShowFieldModule::FaceTransparency("Face Transparency");

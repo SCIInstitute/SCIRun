@@ -35,6 +35,7 @@
 
 #include <vector>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Types.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
@@ -42,7 +43,8 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE MeshTraits 
+  template <class VirtualMeshType>
+  class MeshTraits 
   {
   public: 
     typedef SCIRun::mask_type                  mask_type;  
@@ -51,10 +53,9 @@ namespace Datatypes {
     typedef SCIRun::index_type                 size_type;
     typedef std::vector<index_type>            array_type;
     typedef std::vector<size_type>             dimension_type;
-  };
 
-  class MeshFacade;
-  typedef boost::shared_ptr<MeshFacade> MeshFacadeHandle;
+    typedef boost::shared_ptr<MeshFacade<VirtualMeshType>> MeshFacadeHandle;
+  };
 
 }}}
 
