@@ -60,6 +60,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Dataflow_Network
   Core_Datatypes
   Core_Datatypes_Mesh
+  Core_Datatypes_Legacy_Field
   ${OPENGL_LIBRARIES}
   ${SCI_SPIRE_LIBRARY}
   ${SCI_SPIRE_EXTRA_LIBRARIES}

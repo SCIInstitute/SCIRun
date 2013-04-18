@@ -250,7 +250,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   }
   else if (name.find("FieldToMesh") != std::string::npos)
   {
-    description.input_ports_ = FieldToMesh::inputPortDescription(FieldToMesh::inputPort0Name(), FieldToMesh::inputPort1Name());
+    description.input_ports_ += FieldToMesh::inputPortDescription(FieldToMesh::inputPort0Name());
     description.output_ports_ += FieldToMesh::outputPortDescription(FieldToMesh::outputPort0Name());
     description.maker_ = boost::factory<FieldToMesh*>();
   }
