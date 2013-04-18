@@ -47,7 +47,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -l [ --logfile ] arg  add output messages to a logfile--TODO\n"
     "  -i [ --interactive ]  interactive mode--TODO\n"
     "  -x [ --headless ]     disable GUI (Qt still needed, for now)\n"
-    "  --input-file arg      SCIRun Network Input File\n";
+    "  --input-file arg      SCIRun Network Input File\n"
+    "  -s [ --script ] arg   SCIRun Python Script\n";
   
   EXPECT_EQ(expectedHelp, parser.describe());
   
