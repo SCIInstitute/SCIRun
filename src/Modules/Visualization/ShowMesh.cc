@@ -27,10 +27,12 @@
 */
 
 #include <Modules/Visualization/ShowMesh.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Mesh/VMesh.h>
+#include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
-
 
 #include <boost/foreach.hpp>
 
@@ -47,6 +49,12 @@ namespace SCIRun {
       class ShowMeshModuleImpl
       {
       public:
+        template <typename VMeshType>
+        GeometryHandle renderMesh(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+          ModuleStateHandle state, 
+          DatatypeConstHandle mesh, 
+          const std::string& id);
+      private:
         /// Constructs faces without normal information. We can share the primary
         /// VBO with the nodes and the edges in this case.
         template <typename VMeshType>
@@ -84,17 +92,40 @@ ShowMeshModule::ShowMeshModule() : Module(ModuleLookupInfo("ShowMesh", "Visualiz
 
 void ShowMeshModule::execute()
 {
-  auto mesh = getRequiredInput(Mesh);
-  auto facade(mesh->getFacade());
+  GeometryHandle geom;
+  auto mesh5 = getOptionalInput(Mesh);
+  if (mesh5)
+  {
+    geom = impl_->renderMesh<VirtualMesh>((*mesh5)->getFacade(), get_state(), *mesh5, get_id());
+  }
+  else
+  {
+    auto mesh4 = getOptionalInput(LegacyMesh);
+    if (mesh4)
+    {
+      geom = impl_->renderMesh<VMesh>((*mesh4)->getFacade(), get_state(), *mesh4, get_id());
+    }
+    else
+    {
+      error("Must connect one of two mesh ports");
+      return;
+    }
+  }
 
+  sendOutput(SceneGraph, geom);
+}
+
+template <typename VMeshType>
+GeometryHandle ShowMeshModuleImpl::renderMesh(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, ModuleStateHandle state, DatatypeConstHandle mesh, const std::string& id)
+{
   /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = get_state()->getValue(ShowNodes).getBool();
-  bool showEdges = get_state()->getValue(ShowEdges).getBool();
-  bool showFaces = get_state()->getValue(ShowFaces).getBool();
-  bool nodeTransparency = get_state()->getValue(NodeTransparency).getBool();
+  bool showNodes = state->getValue(ShowMeshModule::ShowNodes).getBool();
+  bool showEdges = state->getValue(ShowMeshModule::ShowEdges).getBool();
+  bool showFaces = state->getValue(ShowMeshModule::ShowFaces).getBool();
+  bool nodeTransparency = state->getValue(ShowMeshModule::NodeTransparency).getBool();
 
   GeometryHandle geom(new GeometryObject(mesh));
-  geom->objectName = get_id();
+  geom->objectName = id;
 
   ENSURE_NOT_NULL(facade, "Mesh facade");
 
@@ -129,7 +160,7 @@ void ShowMeshModule::execute()
   // Build index buffer. Based off of the node indices that came out of old
   // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
   size_t i = 0;
-  BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
     i+=3;
@@ -138,22 +169,21 @@ void ShowMeshModule::execute()
   // Build the edges
   if (showEdges)
   {
-    impl_->buildEdgesNoNormals<VirtualMesh>(facade, geom, primVBOName, get_state());
+    buildEdgesNoNormals<VMeshType>(facade, geom, primVBOName, state);
   }
 
   // Build the faces
   if (showFaces)
   {
-    impl_->buildFacesNoNormals<VirtualMesh>(facade, geom, primVBOName, get_state());
+    buildFacesNoNormals<VMeshType>(facade, geom, primVBOName, state);
   }
 
   // Build the nodes
   if (showNodes)
   {
-    impl_->buildNodesNoNormals<VirtualMesh>(facade, geom, primVBOName, get_state());
+    buildNodesNoNormals<VMeshType>(facade, geom, primVBOName, state);
   }
-
-  sendOutput(SceneGraph, geom);
+  return geom;
 }
 
 template <typename VMeshType>
@@ -170,7 +200,7 @@ void ShowMeshModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::M
   size_t iboFacesSize = 0;
   BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
   {
-    VirtualMesh::Node::array_type nodes = face.nodeIndices();
+    typename VMeshType::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
     {
       iboFacesSize += sizeof(uint32_t) * 6;
@@ -192,7 +222,7 @@ void ShowMeshModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::M
   size_t i = 0;
   BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
   {
-    VirtualMesh::Node::array_type nodes = face.nodeIndices();
+    typename VMeshType::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
     {
       // Winding order looks good from tests.
@@ -246,7 +276,7 @@ void ShowMeshModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::M
   BOOST_FOREACH(const EdgeInfo<VMeshType>& edge, facade->edges())
   {
     // There should *only* be two indicies (linestrip would be better...)
-    VirtualMesh::Node::array_type nodes = edge.nodeIndices();
+    typename VMeshType::Node::array_type nodes = edge.nodeIndices();
     ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
     iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
     i += 2;

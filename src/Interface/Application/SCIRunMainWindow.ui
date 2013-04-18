@@ -479,6 +479,11 @@
            <string>ReportFieldInfo</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>FieldToMesh</string>
+          </property>
+         </item>
         </item>
         <item>
          <property name="text">

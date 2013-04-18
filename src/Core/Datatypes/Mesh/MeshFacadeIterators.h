@@ -65,7 +65,8 @@ namespace Datatypes {
       }
       else
       {
-        vmesh_->synchronize(Mesh5::EDGES_E);
+        //TODO: need to split out that Synchronize enum
+        vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
         vmesh_->end(iter_);
       }
       current_.setIndex(*iter_);
@@ -101,7 +102,8 @@ namespace Datatypes {
     typedef typename VirtualMeshType::Edge::iterator iterator;
     explicit EdgeInfo(VirtualMeshType* mesh) : index_(0), vmesh_(mesh) 
     {
-      vmesh_->synchronize(Mesh5::EDGES_E);
+      //TODO: need to split out that Synchronize enum
+      vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
     }
     void setIndex(typename VirtualMeshType::Edge::index_type i) { index_ = i; }
 
@@ -193,7 +195,9 @@ namespace Datatypes {
     {
       if (!synched_)
       {
-        vmesh_->synchronize(Mesh5::NODE_NEIGHBORS_E);
+        //TODO: need to split out that Synchronize enum
+        vmesh_->synchronize(/*Mesh5::NODE_NEIGHBORS_E*/ 1 << 8);
+        //vmesh_->synchronize(Mesh5::NODE_NEIGHBORS_E);
         synched_ = true;
       }
       typename VirtualMeshType::Edge::array_type edgesFromNode(6);

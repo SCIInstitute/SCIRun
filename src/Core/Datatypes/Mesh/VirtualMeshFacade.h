@@ -34,17 +34,17 @@
 #define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 
 #include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class VirtualMeshFacade : public MeshFacade<VirtualMesh>
+  template <class VirtualMeshType>
+  class VirtualMeshFacade : public MeshFacade<VirtualMeshType>
   {
   public:
-    explicit VirtualMeshFacade(VirtualMeshHandle vmesh) : vmesh_(vmesh)
+    explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
       // TODO: necessary? interface to vmesh
       if (! vmesh->is_latvolmesh() && ! vmesh->is_trisurfmesh())
@@ -53,17 +53,17 @@ namespace Datatypes {
 
     virtual Edges edges() const 
     {
-      return Edges(SmartEdgeIterator<VirtualMesh>::Type(vmesh_.get()), SmartEdgeIterator<VirtualMesh>::Type(vmesh_.get(), true));
+      return Edges(typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
     virtual Faces faces() const 
     {
-      return Faces(SmartFaceIterator<VirtualMesh>::Type(vmesh_.get()), SmartFaceIterator<VirtualMesh>::Type(vmesh_.get(), true));
+      return Faces(typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
     virtual Nodes nodes() const
     {
-      return Nodes(SmartNodeIterator<VirtualMesh>::Type(vmesh_.get()), SmartNodeIterator<VirtualMesh>::Type(vmesh_.get(), true));
+      return Nodes(typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
     virtual size_t numNodes() const
@@ -73,10 +73,9 @@ namespace Datatypes {
 
     virtual size_t numEdges() const
     {
-      vmesh_->synchronize(Mesh5::EDGES_E);
-      size_t num = vmesh_->num_edges();
-      vmesh_->clear_synchronization();
-      return num;
+      //TODO: need to split out that Synchronize enum
+      vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
+      return vmesh_->num_edges();
     }
 
     virtual size_t numFaces() const 
@@ -89,7 +88,7 @@ namespace Datatypes {
       return vmesh_->num_elems();
     }
   private:
-    VirtualMeshHandle vmesh_;
+    boost::shared_ptr<VirtualMeshType> vmesh_;
   };
 
 }}}

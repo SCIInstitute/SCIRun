@@ -31,7 +31,6 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Modules/Visualization/Share.h>
 
 namespace SCIRun {

@@ -42,6 +42,7 @@
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/Containers/StackVector.h>
 #include <Core/GeometryPrimitives/SearchGridT.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/TriLinearLgn.h>
@@ -306,6 +307,8 @@ public:
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.    
   virtual TriSurfMesh *clone() const { return new TriSurfMesh(*this); }
+
+  virtual MeshFacadeHandle getFacade() const { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
   //! Destructor 
   virtual ~TriSurfMesh();

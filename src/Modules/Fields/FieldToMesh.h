@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace Fields {
 
 class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has2InputPorts<FieldPortTag, Field5PortTag>,
+  public Has1InputPort<FieldPortTag>,
   public Has1OutputPort<MeshPortTag>
 {
   public:
@@ -46,7 +46,6 @@ class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
     virtual void execute();
 
     INPUT_PORT(0, Field, LegacyField);
-    INPUT_PORT(1, Field5, Field5);
     OUTPUT_PORT(0, Mesh, LegacyMesh);
 };
 

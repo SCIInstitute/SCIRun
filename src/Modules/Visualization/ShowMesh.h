@@ -30,7 +30,6 @@
 #define MODULES_VISUALIZATION_SHOW_MESH_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/Share.h>
 
 namespace SCIRun {

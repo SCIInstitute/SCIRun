@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Fields/FieldToMesh.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -37,5 +38,6 @@ FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", 
 
 void FieldToMesh::execute()
 {
-  std::cout << "hello ...converting field to mesh" << std::endl;
+  auto field = getRequiredInput(Field);
+  sendOutput(Mesh, field->mesh());
 }

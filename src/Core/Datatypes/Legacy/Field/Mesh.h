@@ -81,6 +81,8 @@ public:
   //! Clone the field needed by locking handle system
   virtual Mesh *clone() const = 0;
 
+  virtual MeshFacadeHandle getFacade() const = 0;
+
   //! These will become obsolete at some point
   enum
   { 

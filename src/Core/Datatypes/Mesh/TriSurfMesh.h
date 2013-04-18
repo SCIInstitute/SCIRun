@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_DATATYPES_TRISURFMESH_H
-#define CORE_DATATYPES_TRISURFMESH_H 1
+#ifndef CORE_DATATYPES_MESH_TRISURFMESH_H
+#define CORE_DATATYPES_MESH_TRISURFMESH_H 1
 
 //#include <Core/Datatypes/MeshSupport.h>
 
@@ -326,7 +326,7 @@ public:
 
   virtual MeshFacadeHandle getFacade() const 
   {
-    return boost::make_shared<VirtualMeshFacade>(vmesh());
+    return boost::make_shared<VirtualMeshFacade<VirtualMesh>>(vmesh());
   }
 
   //! Destructor 

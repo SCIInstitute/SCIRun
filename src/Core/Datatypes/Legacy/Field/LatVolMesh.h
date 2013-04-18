@@ -43,6 +43,7 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Math/MiscMath.h>
 
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -634,6 +635,8 @@ public:
   virtual VMesh* vmesh() { 
        return (vmesh_.get()); 
   }
+
+  virtual MeshFacadeHandle getFacade() const { return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_); }
 
   virtual int basis_order() { return (basis_.polynomial_order()); }
   

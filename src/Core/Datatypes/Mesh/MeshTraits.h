@@ -35,13 +35,15 @@
 
 #include <vector>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Types.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
+
+  template <class VirtualMeshType>
+  class MeshFacade;
 
   template <class VirtualMeshType>
   class MeshTraits 
