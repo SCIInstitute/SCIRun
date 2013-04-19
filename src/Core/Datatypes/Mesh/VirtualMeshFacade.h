@@ -44,6 +44,8 @@ namespace Datatypes {
   class VirtualMeshFacade : public MeshFacade<VirtualMeshType>
   {
   public:
+    typedef MeshFacade<VirtualMeshType> my_base;
+    
     explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
       // TODO: necessary? interface to vmesh
@@ -51,19 +53,19 @@ namespace Datatypes {
         THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 
-    virtual Edges edges() const 
+    virtual typename my_base::Edges edges() const
     {
-      return Edges(typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
+      return typename my_base::Edges(typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartEdgeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual Faces faces() const 
+    virtual typename my_base::Faces faces() const
     {
-      return Faces(typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get(), true));
+      return typename my_base::Faces(typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartFaceIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
-    virtual Nodes nodes() const
+    virtual typename my_base::Nodes nodes() const
     {
-      return Nodes(typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
+      return typename my_base::Nodes(typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get()), typename SmartNodeIterator<VirtualMeshType>::Type(vmesh_.get(), true));
     }
 
     virtual size_t numNodes() const
