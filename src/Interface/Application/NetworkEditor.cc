@@ -76,6 +76,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   createActions();
 
   connect(scene_, SIGNAL(selectionChanged()), this, SLOT(updateActions()));
+  connect(scene_, SIGNAL(changed(const QList<QRectF>&)), this, SIGNAL(sceneChanged(const QList<QRectF>&)));
 
   updateActions();
   ensureVisible(0,0,0,0);
@@ -607,6 +608,12 @@ void NetworkEditor::setBackground(const QBrush& brush)
 QBrush NetworkEditor::background() const
 {
   return scene_->backgroundBrush();
+}
+
+QPixmap NetworkEditor::sceneGrab()
+{
+  //TODO: this approach may not be able to show the hidden parts of the network.
+  return QPixmap::grabWidget(this);
 }
 
 NetworkEditor::~NetworkEditor()

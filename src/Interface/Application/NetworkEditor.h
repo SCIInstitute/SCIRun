@@ -133,6 +133,8 @@ Q_SIGNALS:
 
     int connectionPipelineType() const;
 
+    QPixmap sceneGrab();
+
   protected:
     virtual void dropEvent(QDropEvent* event);
     virtual void dragEnterEvent(QDragEnterEvent* event);
@@ -157,6 +159,7 @@ Q_SIGNALS:
     void networkEditorMouseButtonPressed();
     void moduleMoved(const SCIRun::Dataflow::Networks::ModuleId& id, double newX, double newY);
     void defaultNotePositionChanged(NotePosition position);
+    void sceneChanged(const QList<QRectF>& region);
   private Q_SLOTS:
     void del();
     void cut();
