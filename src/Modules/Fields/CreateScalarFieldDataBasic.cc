@@ -58,7 +58,6 @@ void CreateScalarFieldDataBasic::execute()
 
       vmesh->begin(meshNodeIter);
       vmesh->end(meshNodeEnd);
-      std::ostringstream ostr;
 
       double value = 0.1;
       for (; meshNodeIter != meshNodeEnd; ++meshNodeIter)
@@ -68,7 +67,7 @@ void CreateScalarFieldDataBasic::execute()
         VMesh::Node::index_type nodeID = *meshNodeIter;
         value += 0.123;
         vfield->set_value(value, nodeID);
-        std::cout << "Set value " << value << " at node " << nodeID << std::endl;
+        //std::cout << "Set value " << value << " at node " << nodeID << std::endl;
       }
     }
   }

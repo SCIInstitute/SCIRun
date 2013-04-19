@@ -30,7 +30,6 @@
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
 #include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Geometry.h>
 #include <Modules/Visualization/Share.h>
 
 namespace SCIRun {
@@ -55,6 +54,8 @@ namespace Visualization {
     INPUT_PORT(0, Field, LegacyField);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
+  private:
+    boost::shared_ptr<class ShowFieldModuleImpl> impl_;
   };
 }}}
 
