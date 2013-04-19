@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>4</count>
+			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:1</first>
@@ -89,6 +89,22 @@
 						<package_name_>SCIRun</package_name_>
 						<category_name_>NewField</category_name_>
 						<module_name_>CreateScalarFieldDataBasic</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:4</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
 					</module>
 					<state>
 						<stateMap>
@@ -191,7 +207,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="14" tracking_level="0" version="0">
-		<count>4</count>
+		<count>5</count>
 		<item_version>0</item_version>
 		<item class_id="15" tracking_level="0" version="0">
 			<first>CreateLatVol:1</first>
@@ -205,6 +221,13 @@
 			<second>
 				<first>-1081</first>
 				<second>-3</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:4</first>
+			<second>
+				<first>-736</first>
+				<second>107</second>
 			</second>
 		</item>
 		<item>
