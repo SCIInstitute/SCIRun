@@ -17,8 +17,6 @@ report2 = addModule("ReportFieldInfo")
 addDataMod.output[0] >> report2.input[0]
 
 show = addModule("ShowField")
-#write.Filename = os.path.join(dir, "ident" + str(i) + ".txt")
-
 view = addModule("ViewScene")
 
 latvolMod.output[0] >> addDataMod.input[0]

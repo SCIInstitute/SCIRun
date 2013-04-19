@@ -53,21 +53,34 @@ void CreateScalarFieldDataBasic::execute()
   {
     std::cout << "Assuming values on nodes." << std::endl;
     {
-      VMesh::Node::iterator meshNodeIter;
-      VMesh::Node::iterator meshNodeEnd;
-
-      vmesh->begin(meshNodeIter);
-      vmesh->end(meshNodeEnd);
-
-      double value = 0.1;
-      for (; meshNodeIter != meshNodeEnd; ++meshNodeIter)
+      if (vmesh->is_latvolmesh())
       {
-        // get edges and point from mesh node
+        std::cout << "Assuming latvol mesh" << std::endl;
 
-        VMesh::Node::index_type nodeID = *meshNodeIter;
-        value += 0.123;
-        vfield->set_value(value, nodeID);
-        //std::cout << "Set value " << value << " at node " << nodeID << std::endl;
+        std::vector<index_type> dims;
+        vmesh->get_dimensions(dims);
+        auto nodesPerPlane = dims[0] * dims[1];
+
+        VMesh::Node::iterator meshNodeIter;
+        VMesh::Node::iterator meshNodeEnd;
+
+        vmesh->begin(meshNodeIter);
+        vmesh->end(meshNodeEnd);
+
+        double value = 0;
+        auto numNodes = vmesh->num_nodes();
+        for (; meshNodeIter != meshNodeEnd; ++meshNodeIter)
+        {
+          // get edges and point from mesh node
+
+          VMesh::Node::index_type nodeID = *meshNodeIter;
+          vfield->set_value(value, nodeID);
+          std::cout << "Set value " << value << " at node " << nodeID << std::endl;
+          if ((nodeID + 1) % nodesPerPlane == 0)
+          {
+            value += 1;
+          }
+        }
       }
     }
   }
