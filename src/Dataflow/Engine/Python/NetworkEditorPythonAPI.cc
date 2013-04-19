@@ -151,5 +151,6 @@ std::string NetworkEditorPythonAPI::quit(bool force)
 boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
   from.connect(to);
-  return boost::ref(const_cast<PyPort&>(to).shared_from_this());
+  auto ptr = const_cast<PyPort&>(to).shared_from_this();
+  return boost::ref(ptr);
 }
