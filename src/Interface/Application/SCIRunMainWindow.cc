@@ -218,6 +218,7 @@ SCIRunMainWindow::SCIRunMainWindow()
 
   makeFilterButtonMenu();
   
+  connect(networkEditor_, SIGNAL(modified()), this, SLOT(updateMiniView()));
 }
 
 void SCIRunMainWindow::initialize()
@@ -701,4 +702,13 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 #else
   GuiLogger::Instance().log("Python not included in this build, cannot run " + scriptFileName);
 #endif
+}
+
+void SCIRunMainWindow::updateMiniView()
+{
+  //networkEditorMiniViewLabel_->setText("+" + networkEditorMiniViewLabel_->text());
+  QPixmap network = QPixmap::grabWidget(networkEditor_);
+  networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
+                                                   Qt::KeepAspectRatio,
+                                                   Qt::SmoothTransformation));
 }

@@ -124,6 +124,7 @@ private Q_SLOTS:
   void filterDoubleClickedModuleSelectorItem(QTreeWidgetItem* item);
   void setExecutor(int type);
   void readDefaultNotePosition(int index);
+  void updateMiniView();
   void exitApplication(int code);
 };
 
