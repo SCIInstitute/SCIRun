@@ -94,6 +94,34 @@ ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visua
 void ShowFieldModule::execute()
 {
   auto field = getRequiredInput(Field);
+
+  //pass in the field object, get vmesh, vfield, and facade
+  auto vfield = field->vfield();
+  // template<class T>  inline void VField::get_value(T& val, VMesh::Node::index_type idx) const
+  //normals
+  //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
+
+  /*
+  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
+  {
+    iboNodes[i] = static_cast<uint32_t>(node.index());
+    i++;
+
+    //data 
+    double val;
+    vfield->get_value(val, node.index());
+
+    if (vmesh->has_normals())
+    {
+      Vector normal;
+      vmesh->get_normal(normal, node.index());
+    }
+
+  } 
+  
+  
+  */
+
   auto geom = impl_->renderMesh<VMesh>(field->mesh()->getFacade(), get_state(), field, get_id());
 
   sendOutput(SceneGraph, geom);
