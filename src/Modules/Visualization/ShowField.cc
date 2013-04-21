@@ -50,10 +50,8 @@ namespace SCIRun {
       class ShowFieldModuleImpl
       {
       public:
-        template <typename VMeshType>
-        GeometryHandle renderMesh(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+        GeometryHandle renderMesh(boost::shared_ptr<SCIRun::Field> field,
           ModuleStateHandle state, 
-          DatatypeConstHandle mesh, 
           const std::string& id);
       private:
         /// Constructs faces without normal information. We can share the primary
@@ -96,7 +94,6 @@ void ShowFieldModule::execute()
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
 
   //pass in the field object, get vmesh, vfield, and facade
-  VField* vfield = field->vfield();
   // template<class T>  inline void VField::get_value(T& val, VMesh::Node::index_type idx) const
   //normals
   //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
@@ -120,25 +117,32 @@ void ShowFieldModule::execute()
   } 
   */
 
-  auto geom = impl_->renderMesh<VMesh>(field->mesh()->getFacade(), get_state(), field, get_id());
+  GeometryHandle geom = impl_->renderMesh(field, get_state(), get_id());
 
   sendOutput(SceneGraph, geom);
 }
 
-template <typename VMeshType>
+/// \todo Merge ShowMesh and ShowField. The only difference between ShowMesh
+///       ShowField is the field data element in the vertex buffer.
+///       Also, the shaders that are to be used should be changed.
 GeometryHandle ShowFieldModuleImpl::renderMesh(
-    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+    boost::shared_ptr<SCIRun::Field> field,
     ModuleStateHandle state, 
-    DatatypeConstHandle mesh,
     const std::string& id)
 {
+  SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade =
+      field->mesh()->getFacade();
+  VField* vfield = field->vfield();
+  
+  // Since we are rendering a field, we also need to handle data on the nodes.
+
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
 
-  GeometryHandle geom(new GeometryObject(mesh));
+  GeometryHandle geom(new GeometryObject(field));
   geom->objectName = id;
 
   ENSURE_NOT_NULL(facade, "Mesh facade");
@@ -169,12 +173,12 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   std::string primVBOName = "primaryVBO";
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
+  attribs.push_back("aFieldData");
   geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
-  // Build index buffer. Based off of the node indices that came out of old
-  // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
+  // Build vertex buffer.
   size_t i = 0;
-  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
     i+=3;
@@ -183,19 +187,19 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // Build the edges
   if (showEdges)
   {
-    buildEdgesNoNormals<VMeshType>(facade, geom, primVBOName, state);
+    buildEdgesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
 
   // Build the faces
   if (showFaces)
   {
-    buildFacesNoNormals<VMeshType>(facade, geom, primVBOName, state);
+    buildFacesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
 
   // Build the nodes
   if (showNodes)
   {
-    buildNodesNoNormals<VMeshType>(facade, geom, primVBOName, state);
+    buildNodesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
   return geom;
 }
