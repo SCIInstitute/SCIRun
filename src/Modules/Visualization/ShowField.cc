@@ -93,10 +93,10 @@ ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visua
 
 void ShowFieldModule::execute()
 {
-  auto field = getRequiredInput(Field);
+  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
 
   //pass in the field object, get vmesh, vfield, and facade
-  auto vfield = field->vfield();
+  VField* vfield = field->vfield();
   // template<class T>  inline void VField::get_value(T& val, VMesh::Node::index_type idx) const
   //normals
   //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
@@ -118,8 +118,6 @@ void ShowFieldModule::execute()
     }
 
   } 
-  
-  
   */
 
   auto geom = impl_->renderMesh<VMesh>(field->mesh()->getFacade(), get_state(), field, get_id());
@@ -128,7 +126,11 @@ void ShowFieldModule::execute()
 }
 
 template <typename VMeshType>
-GeometryHandle ShowFieldModuleImpl::renderMesh(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, ModuleStateHandle state, DatatypeConstHandle mesh, const std::string& id)
+GeometryHandle ShowFieldModuleImpl::renderMesh(
+    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+    ModuleStateHandle state, 
+    DatatypeConstHandle mesh,
+    const std::string& id)
 {
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
