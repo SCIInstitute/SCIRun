@@ -44,6 +44,7 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
+  buttonBox->setVisible(false);
 }
 
 void SendScalarDialog::pushScalarValueToState(const QString& str) 

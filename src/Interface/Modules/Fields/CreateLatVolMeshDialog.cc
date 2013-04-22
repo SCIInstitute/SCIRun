@@ -46,6 +46,7 @@ CreateLatVolMeshDialog::CreateLatVolMeshDialog(const std::string& name, SCIRun::
   connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
   connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
+  buttonBox->setVisible(false);
 }
 
 void CreateLatVolMeshDialog::push()

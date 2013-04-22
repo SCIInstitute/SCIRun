@@ -49,6 +49,7 @@ ShowMeshDialog::ShowMeshDialog(const std::string& name, ModuleStateHandle state,
   connect(enableTransparencyNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(enableTransparencyEdgesCheckBox_1, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(enableTransparencyFacesCheckBox_2, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  buttonBox->setVisible(false);
 }
 
 void ShowMeshDialog::push()

@@ -42,17 +42,13 @@ ReportFieldInfoDialog::ReportFieldInfoDialog(const std::string& name, ModuleStat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //executeButton_->setEnabled(false);
 
-  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(executeButton_, SIGNAL(clicked()), this, SLOT(pullAndDisplayInfo()));
+  buttonBox->setVisible(false);
 }
 
 void ReportFieldInfoDialog::pullAndDisplayInfo() 
 {
   auto info = any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
-
-  
 
   std::ostringstream ostr;
   ostr << "Type: " << info.type << std::endl;

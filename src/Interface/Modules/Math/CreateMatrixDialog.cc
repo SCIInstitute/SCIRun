@@ -44,6 +44,7 @@ CreateMatrixDialog::CreateMatrixDialog(const std::string& name, ModuleStateHandl
   fixSize();
   
   //TODO: here is where to start on standardizing module dialog buttons.
+  //TODO: need this connection 
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushMatrixToState()));
 }
 

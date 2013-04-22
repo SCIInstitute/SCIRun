@@ -42,4 +42,5 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   executeButton_->setEnabled(false);
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  buttonBox->setVisible(false);
 }

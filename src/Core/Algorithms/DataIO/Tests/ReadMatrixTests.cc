@@ -202,3 +202,15 @@ TEST(ReadMatrixAlgorithmTest, ThrowsForMatlabFilesICantThemReadYet)
   else
     FAIL() << "file does not exist, skipping test." << std::endl;
 }
+
+TEST(ReadMatrixAlgorithmTest, NonMatrixTextFile)
+{
+  ReadMatrixAlgorithm algo;
+  const boost::filesystem::path txt("E:/seg3d/trunk/src/Install.txt");
+  if (boost::filesystem::exists(txt))
+  {
+    EXPECT_THROW(algo.run(txt.string()), Core::Algorithms::AlgorithmInputException);
+  }
+  else
+    FAIL() << "file does not exist, skipping test." << std::endl;
+}

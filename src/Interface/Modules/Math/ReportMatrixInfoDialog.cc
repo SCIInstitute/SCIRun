@@ -42,10 +42,8 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //executeButton_->setEnabled(false);
   
-  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  //connect(executeButton_, SIGNAL(clicked()), this, SLOT(pullAndDisplayInfo()));
+  buttonBox->setVisible(false);
 }
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 

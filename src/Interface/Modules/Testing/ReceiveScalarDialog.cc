@@ -44,6 +44,7 @@ ReceiveScalarDialog::ReceiveScalarDialog(const std::string& name, ModuleStateHan
   executeButton_->setEnabled(false);
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  buttonBox->setVisible(false);
 }
 
 void ReceiveScalarDialog::pull() 

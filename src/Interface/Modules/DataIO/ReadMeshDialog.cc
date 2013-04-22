@@ -52,6 +52,7 @@ ReadMeshDialog::ReadMeshDialog(const std::string& name, ModuleStateHandle state,
   connect(openFileButton_, SIGNAL(clicked()), this, SLOT(openFile()));
   connect(fileNameLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushFileNameToState()));
   connect(fileNameLineEdit_, SIGNAL(returnPressed()), this, SLOT(pushFileNameToState()));
+  buttonBox->setVisible(false);
 }
 
 void ReadMeshDialog::pull()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1440</width>
-    <height>852</height>
+    <height>1075</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1114</width>
-         <height>477</height>
+         <width>1117</width>
+         <height>739</height>
         </rect>
        </property>
        <property name="acceptDrops">
@@ -63,7 +63,7 @@
      <x>0</x>
      <y>0</y>
      <width>1440</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile_">
@@ -330,30 +330,6 @@
          </property>
          <item>
           <property name="text">
-           <string>ShowString</string>
-          </property>
-          <property name="font">
-           <font>
-            <strikeout>true</strikeout>
-           </font>
-          </property>
-          <property name="text">
-           <string>Not working yet.</string>
-          </property>
-          <property name="font">
-           <font>
-            <italic>true</italic>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>ShowMesh</string>
           </property>
           <property name="whatsThis">
@@ -425,7 +401,7 @@
            <string>ViewScene</string>
           </property>
           <property name="text">
-           <string>Can display LatVolMeshes, rotate and zoom.</string>
+           <string>Can display meshes and fields, pan/rotate/zoom.</string>
           </property>
           <property name="text">
            <string/>
@@ -478,10 +454,16 @@
           <property name="text">
            <string>ReportFieldInfo</string>
           </property>
+          <property name="text">
+           <string>Same as v4</string>
+          </property>
          </item>
          <item>
           <property name="text">
            <string>FieldToMesh</string>
+          </property>
+          <property name="text">
+           <string>Returns underlying mesh from a field.</string>
           </property>
          </item>
         </item>
@@ -745,7 +727,7 @@
                 <string>Large</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>
@@ -758,7 +740,7 @@
                 <string>Small</string>
                </property>
                <attribute name="buttonGroup">
-                <string notr="true">moduleSizeButtonGroup_</string>
+                <string>moduleSizeButtonGroup_</string>
                </attribute>
               </widget>
              </item>

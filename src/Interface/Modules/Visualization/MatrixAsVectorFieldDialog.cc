@@ -40,7 +40,6 @@ MatrixAsVectorFieldDialog::MatrixAsVectorFieldDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //executeButton_->setEnabled(false);
   
-  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  buttonBox->setVisible(false);
 }

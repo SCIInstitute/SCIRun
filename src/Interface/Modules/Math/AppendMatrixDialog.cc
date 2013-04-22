@@ -41,11 +41,10 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //executeButton_->setEnabled(false);
   
-  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   connect(appendRowsButton_, SIGNAL(clicked()), this, SLOT(isRows()));
   connect(appendColumnsButton_, SIGNAL(clicked()), this, SLOT(isCols()));
+  buttonBox->setVisible(false);
 }
 
 void AppendMatrixDialog::isRows()
