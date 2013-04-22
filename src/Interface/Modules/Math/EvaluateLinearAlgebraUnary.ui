@@ -27,7 +27,7 @@
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
@@ -41,7 +41,7 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset|QDialogButtonBox::RestoreDefaults</set>
+    <set>QDialogButtonBox::Ok</set>
    </property>
    <property name="centerButtons">
     <bool>false</bool>
