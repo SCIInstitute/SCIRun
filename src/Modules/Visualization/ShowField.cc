@@ -60,6 +60,7 @@ namespace SCIRun {
         void buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
           SCIRun::Core::Datatypes::GeometryHandle geom,
           const std::string& primaryVBOName,
+          float dataMin, float dataMax,
           ModuleStateHandle state);
 
         /// Constructs edges without normal information. We can share the primary
@@ -137,9 +138,9 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // Since we are rendering a field, we also need to handle data on the nodes.
 
   /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
-  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
-  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
+  bool showNodes = false;//state->getValue(ShowFieldModule::ShowNodes).getBool();
+  bool showEdges = true;//state->getValue(ShowFieldModule::ShowEdges).getBool();
+  bool showFaces = true;state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
 
   GeometryHandle geom(new GeometryObject(field));
@@ -181,7 +182,11 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
-    vbo[i+3] = vfield->get_value(val, node.index());
+
+    double val = 0.0;
+    vfield->get_value(val, node.index());
+    vbo[i+3] = static_cast<float>(val);
+    std::cout << static_cast<float>(val) << std::endl;
     i+=4;
   }
 
@@ -194,7 +199,11 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // Build the faces
   if (showFaces)
   {
-    buildFacesNoNormals<VMesh>(facade, geom, primVBOName, state);
+    double dataMin = 0.0;
+    double dataMax = 0.0;
+    vfield->min(dataMin);
+    vfield->max(dataMax);
+    buildFacesNoNormals<VMesh>(facade, geom, primVBOName, dataMin, dataMax, state);
   }
 
   // Build the nodes
@@ -209,6 +218,7 @@ template <typename VMeshType>
 void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
   GeometryHandle geom,
   const std::string& primaryVBOName,
+  float dataMin, float dataMax,   /// Dataset minimum / maximum.
   ModuleStateHandle state)
 {
   bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
@@ -266,12 +276,15 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpirePass pass = 
     GeometryObject::SpirePass("facesPass", primaryVBOName,
-    facesIBOName, "UniformColor",
+    facesIBOName, "ColorMap",
     Spire::StuInterface::TRIANGLES);
   if (faceTransparency)
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
+    pass.addUniform("uTransparency", 0.2f);
   else
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+    pass.addUniform("uTransparency", 1.0f);
+  pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, 1.0f));
+  pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, 1.0f));
+  pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
 
   geom->mPasses.emplace_back(pass);
 }

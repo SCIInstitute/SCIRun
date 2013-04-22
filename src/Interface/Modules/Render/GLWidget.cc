@@ -82,9 +82,14 @@ GLWidget::GLWidget(QtGLContext* context) :
   mGraphics->getStuPipe()->addPersistentShader(
       "UniformColor", 
       shaderFiles);
-//      { {"UniformColor.vs", Spire::StuInterface::VERTEX_SHADER}, 
-//        {"UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER},
-//      });
+
+  shaderFiles.clear();
+  shaderFiles.push_back(std::make_pair("ColorMap.vs", Spire::StuInterface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("ColorMap.fs", Spire::StuInterface::FRAGMENT_SHADER));
+
+  mGraphics->getStuPipe()->addPersistentShader(
+      "ColorMap", 
+      shaderFiles);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
