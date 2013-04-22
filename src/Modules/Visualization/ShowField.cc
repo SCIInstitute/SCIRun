@@ -160,7 +160,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // points associated with the faces.
   // Edges *and* faces should use the same vbo!
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  size_t vboSize = sizeof(float) * 3 * facade->numNodes();
+  size_t vboSize = sizeof(float) * 4 * facade->numNodes();
   rawVBO->resize(vboSize); // linear complexity.
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 
@@ -181,7 +181,8 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
-    i+=3;
+    vbo[i+3] = vfield->get_value(val, node.index());
+    i+=4;
   }
 
   // Build the edges

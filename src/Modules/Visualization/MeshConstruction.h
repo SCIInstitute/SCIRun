@@ -41,16 +41,80 @@ namespace SCIRun {
 namespace Modules {
 namespace Visualization {
 
-class MeshConstruction
+namespace MeshConstruction
 {
-public:
   /// Constructs faces without normal information. We can share the primary
   /// VBO with the nodes and the edges in this case.
   template <typename VMeshType>
-  void buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+  static void buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
                            SCIRun::Core::Datatypes::GeometryHandle geom,
                            const std::string& primaryVBOName,
-                           ModuleStateHandle state);
+                           ModuleStateHandle state)
+  {
+    bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
+    uint32_t* iboFaces = nullptr;
+
+    // Determine the size of the face structure (taking into account the varying
+    // types of faces -- only quads and triangles are currently supported).
+    size_t iboFacesSize = 0;
+    BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
+    {
+      typename VMeshType::Node::array_type nodes = face.nodeIndices();
+      if (nodes.size() == 4)
+      {
+        iboFacesSize += sizeof(uint32_t) * 6;
+      }
+      else if (nodes.size() == 3)
+      {
+        iboFacesSize += sizeof(uint32_t) * 3;
+      }
+      else
+      {
+        BOOST_THROW_EXCEPTION(SCIRun::Core::DimensionMismatch() 
+                              << SCIRun::Core::ErrorMessage("Only Quads and Triangles are supported."));
+      }
+    }
+    std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+    rawIBO->resize(iboFacesSize);   // Linear in complexity... If we need more performance,
+    // use malloc to generate buffer and then vector::assign.
+    iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
+    size_t i = 0;
+    BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
+    {
+      typename VMeshType::Node::array_type nodes = face.nodeIndices();
+      if (nodes.size() == 4)
+      {
+        // Winding order looks good from tests.
+        iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
+        iboFaces[i+3] = static_cast<uint32_t>(nodes[0]); iboFaces[i+4] = static_cast<uint32_t>(nodes[2]); iboFaces[i+5] = static_cast<uint32_t>(nodes[3]);
+        i += 6;
+      }
+      else if (nodes.size() == 3)
+      {
+        iboFaces[i  ] = static_cast<uint32_t>(nodes[0]); iboFaces[i+1] = static_cast<uint32_t>(nodes[1]); iboFaces[i+2] = static_cast<uint32_t>(nodes[2]);
+        i += 3;
+      }
+      // All other cases have been checked in the loop above which determines
+      // the size of the face IBO.
+    }
+
+    // Add IBO for the faces.
+    std::string facesIBOName = "facesIBO";
+    geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
+
+    // Build pass for the faces.
+    /// \todo Find an appropriate place to put program names like UniformColor.
+    GeometryObject::SpirePass pass = 
+        GeometryObject::SpirePass("facesPass", primaryVBOName,
+                                  facesIBOName, "UniformColor",
+                                  Spire::StuInterface::TRIANGLES);
+    if (faceTransparency)
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
+    else
+      pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+
+    geom->mPasses.emplace_back(pass);
+  }
 
   /// Constructs edges without normal information. We can share the primary
   /// VBO with faces and nodes.
