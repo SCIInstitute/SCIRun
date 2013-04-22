@@ -184,12 +184,18 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>3</count>
+			<count>4</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:1</moduleId1_>
 				<port1_>0</port1_>
 				<moduleId2_>CreateScalarFieldDataBasic:2</moduleId2_>
+				<port2_>0</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateScalarFieldDataBasic:2</moduleId1_>
+				<port1_>0</port1_>
+				<moduleId2_>ReportFieldInfo:4</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 			<item>
@@ -219,8 +225,8 @@
 		<item>
 			<first>CreateScalarFieldDataBasic:2</first>
 			<second>
-				<first>-1081</first>
-				<second>-3</second>
+				<first>-1079</first>
+				<second>-56</second>
 			</second>
 		</item>
 		<item>
