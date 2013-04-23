@@ -57,7 +57,7 @@ std::string AlgorithmParameter::getString() const
 bool AlgorithmParameter::getBool() const
 {
   const bool* v = boost::get<bool>(&value_);
-  return v ? *v : false;
+  return v ? *v : (getInt() != 0);
 }
 
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
