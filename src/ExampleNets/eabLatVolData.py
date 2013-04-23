@@ -22,3 +22,9 @@ view = addModule("ViewScene")
 latvolMod.output[0] >> addDataMod.input[0]
 addDataMod.output[0] >> show.input.Field
 show.output[0] >> view.input[0]
+
+view.showUI()
+
+executeAll()
+executeAll()
+executeAll()
