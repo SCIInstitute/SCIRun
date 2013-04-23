@@ -27,11 +27,13 @@
 */
 
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
+#include <Modules/Visualization/ShowField.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Visualization;
 
 ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -39,7 +41,36 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
-  executeButton_->setEnabled(false);
-  
-  connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
+  fixSize();
+
+  connect(showNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(showEdgesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(showFacesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(enableTransparencyNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(enableTransparencyEdgesCheckBox_1, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(enableTransparencyFacesCheckBox_2, SIGNAL(stateChanged(int)), this, SLOT(push()));
+}
+
+void ShowFieldDialog::push()
+{
+  if (!pulling_)
+  {
+    state_->setValue(ShowFieldModule::ShowNodes, showNodesCheckBox_->isChecked());
+    state_->setValue(ShowFieldModule::ShowEdges, showEdgesCheckBox_->isChecked());
+    state_->setValue(ShowFieldModule::ShowFaces, showFacesCheckBox_->isChecked());
+    state_->setValue(ShowFieldModule::NodeTransparency, enableTransparencyNodesCheckBox_->isChecked());
+    state_->setValue(ShowFieldModule::EdgeTransparency, enableTransparencyEdgesCheckBox_1->isChecked());
+    state_->setValue(ShowFieldModule::FaceTransparency, enableTransparencyFacesCheckBox_2->isChecked());
+  }
+}
+
+void ShowFieldDialog::pull()
+{
+  Pulling p(this);
+  showNodesCheckBox_->setChecked(state_->getValue(ShowFieldModule::ShowNodes).getBool());
+  showEdgesCheckBox_->setChecked(state_->getValue(ShowFieldModule::ShowEdges).getBool());
+  showFacesCheckBox_->setChecked(state_->getValue(ShowFieldModule::ShowFaces).getBool());
+  enableTransparencyNodesCheckBox_->setChecked(state_->getValue(ShowFieldModule::NodeTransparency).getBool());
+  enableTransparencyEdgesCheckBox_1->setChecked(state_->getValue(ShowFieldModule::EdgeTransparency).getBool());
+  enableTransparencyFacesCheckBox_2->setChecked(state_->getValue(ShowFieldModule::FaceTransparency).getBool());
 }

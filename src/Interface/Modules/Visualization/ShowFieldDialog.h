@@ -40,7 +40,7 @@ namespace Gui {
   
 class SCISHARE ShowFieldDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::ShowField
+  public Ui::ShowFieldDialog
 {
 	Q_OBJECT
 	
@@ -48,11 +48,10 @@ public:
   ShowFieldDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
-  virtual void pull() {}
+  virtual void pull();
 
-private Q_SLOTS:
-  //void pushFileNameToState(const QString& str);
-  //void saveFile();
+  private Q_SLOTS:
+    void push();
 };
 
 }
