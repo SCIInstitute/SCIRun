@@ -25,36 +25,3 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-#ifndef INTERFACE_MODULES_SHOW_FIELD_H
-#define INTERFACE_MODULES_SHOW_FIELD_H
-
-#include "Interface/Modules/Visualization/ui_ShowField.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Visualization/Share.h>
-
-namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE ShowFieldDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::ShowFieldDialog
-{
-	Q_OBJECT
-	
-public:
-  ShowFieldDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-
-  private Q_SLOTS:
-    void push();
-};
-
-}
-}
-
-#endif

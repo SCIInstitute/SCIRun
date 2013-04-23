@@ -50,10 +50,8 @@ namespace SCIRun {
       class ShowFieldModuleImpl
       {
       public:
-        template <typename VMeshType>
-        GeometryHandle renderMesh(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+        GeometryHandle renderMesh(boost::shared_ptr<SCIRun::Field> field,
           ModuleStateHandle state, 
-          DatatypeConstHandle mesh, 
           const std::string& id);
       private:
         /// Constructs faces without normal information. We can share the primary
@@ -62,6 +60,7 @@ namespace SCIRun {
         void buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
           SCIRun::Core::Datatypes::GeometryHandle geom,
           const std::string& primaryVBOName,
+          float dataMin, float dataMax,
           ModuleStateHandle state);
 
         /// Constructs edges without normal information. We can share the primary
@@ -93,10 +92,9 @@ ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visua
 
 void ShowFieldModule::execute()
 {
-  auto field = getRequiredInput(Field);
+  boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
 
   //pass in the field object, get vmesh, vfield, and facade
-  auto vfield = field->vfield();
   // template<class T>  inline void VField::get_value(T& val, VMesh::Node::index_type idx) const
   //normals
   //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
@@ -118,25 +116,34 @@ void ShowFieldModule::execute()
     }
 
   } 
-  
-  
   */
 
-  auto geom = impl_->renderMesh<VMesh>(field->mesh()->getFacade(), get_state(), field, get_id());
+  GeometryHandle geom = impl_->renderMesh(field, get_state(), get_id());
 
   sendOutput(SceneGraph, geom);
 }
 
-template <typename VMeshType>
-GeometryHandle ShowFieldModuleImpl::renderMesh(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, ModuleStateHandle state, DatatypeConstHandle mesh, const std::string& id)
+/// \todo Merge ShowMesh and ShowField. The only difference between ShowMesh
+///       ShowField is the field data element in the vertex buffer.
+///       Also, the shaders that are to be used should be changed.
+GeometryHandle ShowFieldModuleImpl::renderMesh(
+    boost::shared_ptr<SCIRun::Field> field,
+    ModuleStateHandle state, 
+    const std::string& id)
 {
+  SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade =
+      field->mesh()->getFacade();
+  VField* vfield = field->vfield();
+  
+  // Since we are rendering a field, we also need to handle data on the nodes.
+
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
 
-  GeometryHandle geom(new GeometryObject(mesh));
+  GeometryHandle geom(new GeometryObject(field));
   geom->objectName = id;
 
   ENSURE_NOT_NULL(facade, "Mesh facade");
@@ -154,7 +161,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(typename SCIRun::Core::Datatypes:
   // points associated with the faces.
   // Edges *and* faces should use the same vbo!
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  size_t vboSize = sizeof(float) * 3 * facade->numNodes();
+  size_t vboSize = sizeof(float) * 4 * facade->numNodes();
   rawVBO->resize(vboSize); // linear complexity.
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 
@@ -167,33 +174,42 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(typename SCIRun::Core::Datatypes:
   std::string primVBOName = "primaryVBO";
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
+  attribs.push_back("aFieldData");
   geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
-  // Build index buffer. Based off of the node indices that came out of old
-  // SCIRun, TnL cache coherency will be poor. Maybe room for improvement later.
+  // Build vertex buffer.
   size_t i = 0;
-  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
-    i+=3;
+
+    double val = 0.0;
+    vfield->get_value(val, node.index());
+    vbo[i+3] = static_cast<float>(val);
+    std::cout << static_cast<float>(val) << std::endl;
+    i+=4;
   }
 
   // Build the edges
   if (showEdges)
   {
-    buildEdgesNoNormals<VMeshType>(facade, geom, primVBOName, state);
+    buildEdgesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
 
   // Build the faces
   if (showFaces)
   {
-    buildFacesNoNormals<VMeshType>(facade, geom, primVBOName, state);
+    double dataMin = 0.0;
+    double dataMax = 0.0;
+    vfield->min(dataMin);
+    vfield->max(dataMax);
+    buildFacesNoNormals<VMesh>(facade, geom, primVBOName, dataMin, dataMax, state);
   }
 
   // Build the nodes
   if (showNodes)
   {
-    buildNodesNoNormals<VMeshType>(facade, geom, primVBOName, state);
+    buildNodesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
   return geom;
 }
@@ -202,6 +218,7 @@ template <typename VMeshType>
 void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
   GeometryHandle geom,
   const std::string& primaryVBOName,
+  float dataMin, float dataMax,   /// Dataset minimum / maximum.
   ModuleStateHandle state)
 {
   bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
@@ -259,12 +276,14 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpirePass pass = 
     GeometryObject::SpirePass("facesPass", primaryVBOName,
-    facesIBOName, "UniformColor",
+    facesIBOName, "ColorMap",
     Spire::StuInterface::TRIANGLES);
+  float transparency = 1.0f;
   if (faceTransparency)
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 0.2f));
-  else
-    pass.addUniform("uColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+    transparency = 0.2f;
+  pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
+  pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
+  pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
 
   geom->mPasses.emplace_back(pass);
 }
