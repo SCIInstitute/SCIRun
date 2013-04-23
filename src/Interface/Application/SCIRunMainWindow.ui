@@ -614,6 +614,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Network Miniview</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="networkEditorMiniViewLabel_">
        <property name="minimumSize">
         <size>

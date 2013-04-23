@@ -441,9 +441,9 @@ void SCIRunMainWindow::networkModified()
 
 void SCIRunMainWindow::setActionIcons() 
 {
-  //actionNew_->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
-  actionLoad_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DirOpenIcon));
-  actionSave_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveFDIcon));
+  actionNew_->setIcon(QPixmap(":/general/Resources/new.png"));
+  actionLoad_->setIcon(QPixmap(":/general/Resources/load.png"));
+  actionSave_->setIcon(QPixmap(":/general/Resources/save.png"));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
@@ -687,6 +687,7 @@ void SCIRunMainWindow::setupPythonConsole()
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_ = new PythonConsoleWidget(this);
   connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
+  actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
   pythonConsole_->setFloating(true);

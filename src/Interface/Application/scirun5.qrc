@@ -3,4 +3,10 @@
         <file>Gear.png</file>
         <file>splash-scirun.png</file>
     </qresource>
+    <qresource prefix="/general">
+        <file>Resources/load.png</file>
+        <file>Resources/new.png</file>
+        <file>Resources/save.png</file>
+        <file>Resources/terminal.png</file>
+    </qresource>
 </RCC>
