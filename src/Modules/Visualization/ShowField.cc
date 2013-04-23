@@ -278,12 +278,11 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
     GeometryObject::SpirePass("facesPass", primaryVBOName,
     facesIBOName, "ColorMap",
     Spire::StuInterface::TRIANGLES);
+  float transparency = 1.0f;
   if (faceTransparency)
-    pass.addUniform("uTransparency", 0.2f);
-  else
-    pass.addUniform("uTransparency", 1.0f);
-  pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, 1.0f));
-  pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, 1.0f));
+    transparency = 0.2f;
+  pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
+  pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
   pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
 
   geom->mPasses.emplace_back(pass);
