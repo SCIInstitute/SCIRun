@@ -138,9 +138,9 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // Since we are rendering a field, we also need to handle data on the nodes.
 
   /// \todo Determine a better way of handling all of the various object state.
-  bool showNodes = false;//state->getValue(ShowFieldModule::ShowNodes).getBool();
-  bool showEdges = true;//state->getValue(ShowFieldModule::ShowEdges).getBool();
-  bool showFaces = true;state->getValue(ShowFieldModule::ShowFaces).getBool();
+  bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
+  bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
+  bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
 
   GeometryHandle geom(new GeometryObject(field));
