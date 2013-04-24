@@ -457,7 +457,6 @@ ADD_SUBDIRECTORY(Core)
 ADD_SUBDIRECTORY(Dataflow)
 ADD_SUBDIRECTORY(Modules)
 ADD_SUBDIRECTORY(Externals)
-ADD_SUBDIRECTORY(include)
 
 ADD_SUBDIRECTORY(Main)
 
@@ -466,6 +465,7 @@ ADD_SUBDIRECTORY(Testing)
 
 ########################################################################
 # sci_defs variables
+# TODO: temporarily included to support legacy code
 
 # sci_defs/error_defs.h
 SET(THROW_LEVEL 0 CACHE STRING "Set throw level N(0-3)")
@@ -531,6 +531,8 @@ ENDIF(HAVE_INTTYPES)
 
 SET(HAVE_SYS_UUID_H 0)
 SET(HAVE_UUID_UUID_H 0)
+
+ADD_SUBDIRECTORY(include)
 
 ########################################################################
 # Organize projects into folders for Visual Studio projects
