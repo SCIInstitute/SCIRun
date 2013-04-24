@@ -72,6 +72,7 @@ namespace SCIRun
       enum GlobalCommands
       {
         ShowMainWindow,
+        ShowSplashScreen,
         PrintHelp,
         PrintVersion,
         LoadNetworkFile,

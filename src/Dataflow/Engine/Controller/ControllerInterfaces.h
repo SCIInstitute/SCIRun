@@ -40,7 +40,7 @@ namespace Engine {
   class SCISHARE NetworkIOInterface
   {
   public:
-    ~NetworkIOInterface() {}
+    virtual ~NetworkIOInterface() {}
     virtual Memento saveNetwork() const = 0;
     virtual void loadNetwork(const Memento& xml) = 0;
     virtual void clear() = 0;

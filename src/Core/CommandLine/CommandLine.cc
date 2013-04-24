@@ -56,6 +56,7 @@ public:
       ("headless,x", "disable GUI (Qt still needed, for now)")
       ("input-file", po::value<std::string>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "SCIRun Python Script")
+      ("no_splash", "Turn off splash screen")
       ;
       
       positional_.add("input-file", -1);
@@ -106,9 +107,11 @@ public:
     bool version,
     bool executeNetwork,
     bool executeNetworkAndQuit,
-    bool disableGui) 
+    bool disableGui,
+    bool disableSplash)
     : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), help_(help), version_(version), executeNetwork_(executeNetwork),
-      executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui)
+      executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
+      disableSplash_(disableSplash)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -145,6 +148,11 @@ public:
   {
     return disableGui_;
   }
+  
+  virtual bool disableSplash() const
+  {
+    return disableSplash_;
+  }
 
 private:
   boost::optional<std::string> inputFile_;
@@ -154,6 +162,7 @@ private:
   bool executeNetwork_;
   bool executeNetworkAndQuit_;
   bool disableGui_;
+  bool disableSplash_;
 };
 
 }
@@ -182,7 +191,8 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       parsed.count("version") != 0,
       parsed.count("execute") != 0,
       parsed.count("Execute") != 0,
-      parsed.count("headless") != 0
+      parsed.count("headless") != 0,
+      parsed.count("no_splash") != 0
     );
 }
 

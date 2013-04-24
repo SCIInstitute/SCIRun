@@ -51,6 +51,7 @@ namespace SCIRun {
         virtual bool executeNetwork() const = 0;
         virtual bool executeNetworkAndQuit() const = 0;
         virtual bool disableGui() const = 0;
+        virtual bool disableSplash() const = 0;
       };
 
       typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;

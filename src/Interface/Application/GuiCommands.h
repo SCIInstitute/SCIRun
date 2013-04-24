@@ -85,7 +85,13 @@ namespace Gui {
   class ShowMainWindowGui : public Core::Commands::GuiCommand
   {
   public:
-    ShowMainWindowGui();
+    virtual bool execute();
+  };
+  
+  class ShowSplashScreenGui : public Core::Commands::GuiCommand
+  {
+  public:
+    ShowSplashScreenGui();
     virtual bool execute();
   private:
     static void initSplashScreen();

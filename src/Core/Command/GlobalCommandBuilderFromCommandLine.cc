@@ -58,6 +58,9 @@ using namespace SCIRun::Core::Commands;
       return q;
     }
 
+    if (!params->disableSplash())
+      q->enqueue(cmdFactory_->create(ShowSplashScreen));
+    
     if (!params->disableGui())
       q->enqueue(cmdFactory_->create(ShowMainWindow));
     else

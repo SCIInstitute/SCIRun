@@ -40,6 +40,8 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
   {
   case ShowMainWindow:
     return boost::make_shared<ShowMainWindowGui>();
+  case ShowSplashScreen:
+    return boost::make_shared<ShowSplashScreenGui>();
   case PrintHelp:
     return boost::make_shared<PrintHelpGui>();
   case PrintVersion:

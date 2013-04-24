@@ -48,7 +48,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -i [ --interactive ]  interactive mode--TODO\n"
     "  -x [ --headless ]     disable GUI (Qt still needed, for now)\n"
     "  --input-file arg      SCIRun Network Input File\n"
-    "  -s [ --script ] arg   SCIRun Python Script\n";
+    "  -s [ --script ] arg   SCIRun Python Script\n"
+    "  --no_splash           Turn off splash screen\n";
   
   EXPECT_EQ(expectedHelp, parser.describe());
   
