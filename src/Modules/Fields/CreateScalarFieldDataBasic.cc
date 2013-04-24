@@ -37,6 +37,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
 AlgorithmParameterName CreateScalarFieldDataBasic::ValueFunc("ValueFunc");
+AlgorithmParameterName CreateScalarFieldDataBasic::ValueFuncParam1("ValueFuncParam1");
 
 CreateScalarFieldDataBasic::CreateScalarFieldDataBasic()
   : Module(ModuleLookupInfo("CreateScalarFieldDataBasic", "NewField", "SCIRun"), false)
@@ -70,6 +71,7 @@ void CreateScalarFieldDataBasic::execute()
 
         double value = 0;
         auto numNodes = vmesh->num_nodes();
+        static int mult = 1;
         for (; meshNodeIter != meshNodeEnd; ++meshNodeIter)
         {
           // get edges and point from mesh node
@@ -106,9 +108,10 @@ void CreateScalarFieldDataBasic::execute()
           }
           else if (valueFuncName == "sine")
           {
+            //int mult = get_state()->getValue(ValueFuncParam1).getInt();
             Point p;
             vmesh->get_point(p, nodeID);
-            value = sin(Dot(p,p)*10);
+            value = sin(Dot(p,p)*mult);
           }
           else
           {
@@ -119,11 +122,14 @@ void CreateScalarFieldDataBasic::execute()
 
 
         }
+        mult += 2;
       }
     }
   }
   else
     error("VField object is null");
+  
+
 
   sendOutput(OutputFieldWithData, field);
 }

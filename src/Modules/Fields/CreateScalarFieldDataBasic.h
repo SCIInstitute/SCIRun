@@ -49,6 +49,7 @@ public:
   OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
   
   static Core::Algorithms::AlgorithmParameterName ValueFunc;
+  static Core::Algorithms::AlgorithmParameterName ValueFuncParam1;
 };
 
 }}}
