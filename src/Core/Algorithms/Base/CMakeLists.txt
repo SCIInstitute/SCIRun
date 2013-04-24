@@ -50,5 +50,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Base
   Core_Utils
 )
 
+ADD_DEPENDENCIES(Algorithms_Base Boost_external)
+
 ADD_SUBDIRECTORY(Tests)
 

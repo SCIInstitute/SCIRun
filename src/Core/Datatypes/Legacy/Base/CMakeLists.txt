@@ -53,5 +53,7 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Legacy_Base)
 ENDIF(BUILD_SHARED_LIBS)
 
+ADD_DEPENDENCIES(Core_Datatypes_Legacy_Base Boost_external)
+
 ADD_SUBDIRECTORY(Tests)
 
