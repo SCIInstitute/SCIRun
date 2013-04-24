@@ -43,12 +43,14 @@
  */
 
 #include <Core/Persistent/Pstreams.h>
+#include <Core/Logging/Logger.h>
+#include <Core/Utils/Legacy/StringUtil.h>
 
-#include <Core/Util/StringUtil.h>
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <teem/air.h>
 #include <teem/nrrd.h>
 #include <zlib.h>
+#endif
 
 #include <string.h>
 #include <stdio.h>
@@ -62,11 +64,13 @@
 #  include <io.h>
 #endif
 
+using namespace SCIRun::Core::Logging;
+
 namespace SCIRun {
 
 // BinaryPiostream -- portable
 BinaryPiostream::BinaryPiostream(const std::string& filename, Direction dir,
-                                 const int& v, ProgressReporter *pr)
+                                 const int& v, LoggerHandle pr)
   : Piostream(dir, v, filename, pr),
     fp_(0)
 {
@@ -149,7 +153,7 @@ BinaryPiostream::BinaryPiostream(const std::string& filename, Direction dir,
 
 
 BinaryPiostream::BinaryPiostream(int fd, Direction dir, const int& v,
-                                 ProgressReporter *pr)
+                                 LoggerHandle pr)
   : Piostream(dir, v, "", pr),
     fp_(0)
 {
@@ -265,10 +269,11 @@ BinaryPiostream::reset_post_header()
 const char *
 BinaryPiostream::endianness()
 {
-  if (airMyEndian == airEndianLittle)
+  //TODO SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  //if (airMyEndian == airEndianLittle)
     return "LIT\n";
-  else
-    return "BIG\n";
+  //else
+    //return "BIG\n";
 
 }
 
@@ -582,14 +587,14 @@ BinaryPiostream::block_io(void *data, size_t s, size_t nmemb)
 // BinarySwapPiostream -- portable
 // Piostream used when endianness of machine and file don't match
 BinarySwapPiostream::BinarySwapPiostream(const std::string& filename, Direction dir,
-                                         const int& v, ProgressReporter *pr)
+                                         const int& v, LoggerHandle pr)
   : BinaryPiostream(filename, dir, v, pr)
 {
 }
 
 
 BinarySwapPiostream::BinarySwapPiostream(int fd, Direction dir, const int& v,
-                                         ProgressReporter *pr)
+                                         LoggerHandle pr)
   : BinaryPiostream(fd, dir, v, pr)
 {
 }
@@ -603,10 +608,11 @@ BinarySwapPiostream::~BinarySwapPiostream()
 const char *
 BinarySwapPiostream::endianness()
 {
-  if (airMyEndian == airEndianLittle)
+  //TODO SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  //if (airMyEndian == airEndianLittle)
     return "LIT\n";
-  else
-    return "BIG\n";
+  //else
+    //return "BIG\n";
 }
 
 template <class T>
@@ -776,7 +782,7 @@ BinarySwapPiostream::io(float& data)
 
 
 TextPiostream::TextPiostream(const std::string& filename, Direction dir,
-                             ProgressReporter *pr)
+                             LoggerHandle pr)
   : Piostream(dir, -1, filename, pr),
     ownstreams_p_(true)
 {
@@ -830,7 +836,7 @@ TextPiostream::TextPiostream(const std::string& filename, Direction dir,
 }
 
 
-TextPiostream::TextPiostream(std::istream *strm, ProgressReporter *pr)
+TextPiostream::TextPiostream(std::istream *strm, LoggerHandle pr)
   : Piostream(Read, -1, "", pr),
     istr(strm),
     ostr(0),
@@ -861,7 +867,7 @@ TextPiostream::TextPiostream(std::istream *strm, ProgressReporter *pr)
 }
 
 
-TextPiostream::TextPiostream(std::ostream *strm, ProgressReporter *pr)
+TextPiostream::TextPiostream(std::ostream *strm, LoggerHandle pr)
   : Piostream(Write, -1, "", pr),
     istr(0),
     ostr(strm),
@@ -1393,7 +1399,11 @@ TextPiostream::io(unsigned long long& data)
   }
 }
 
-
+void airToLower(char* p)
+{
+  for ( ; *p; ++p) *p = tolower(*p);
+}
+  
 void
 TextPiostream::io(double& data)
 {
@@ -1415,11 +1425,11 @@ TextPiostream::io(double& data)
 
       if (strcmp(ibuf,"nan")==0)
       {
-        data = (double) AIR_NAN;
+        data = std::numeric_limits<double>::quiet_NaN();
       }
       else if (strcmp(ibuf,"inf")==0)
       {
-        data = (double) AIR_POS_INF;
+        data = std::numeric_limits<double>::infinity();
       }
       else
       {
@@ -1430,7 +1440,7 @@ TextPiostream::io(double& data)
         airToLower(ibuf);
         if (strcmp(ibuf,"-inf")==0)
         {
-          data = (double) AIR_NEG_INF;
+          data = -std::numeric_limits<double>::infinity();
         }
         else
         {
@@ -1474,11 +1484,11 @@ TextPiostream::io(float& data)
       airToLower(ibuf);
       if (strcmp(ibuf,"nan")==0)
       {
-        data = AIR_NAN;
+        data = std::numeric_limits<float>::quiet_NaN();
       }
       else if (strcmp(ibuf,"inf")==0)
       {
-        data = AIR_POS_INF;
+        data = std::numeric_limits<float>::infinity();
       }
       else
       {
@@ -1489,7 +1499,7 @@ TextPiostream::io(float& data)
         airToLower(ibuf);
         if (strcmp(ibuf,"-inf")==0)
         {
-          data = AIR_NEG_INF;
+          data = -std::numeric_limits<float>::infinity();
         }  	  	
         else
         {
@@ -1716,7 +1726,7 @@ TextPiostream::eof() {
 
 // FastPiostream is a non portable binary output.
 FastPiostream::FastPiostream(const std::string& filename, Direction dir,
-                             ProgressReporter *pr)
+                             LoggerHandle pr)
   : Piostream(dir, -1, filename, pr),
     fp_(0)
 {
@@ -1752,10 +1762,10 @@ FastPiostream::FastPiostream(const std::string& filename, Direction dir,
     if (version() > 1)
     {
       char hdr[16];
-      if (airMyEndian == airEndianLittle)
+      //if (airMyEndian == airEndianLittle)
         sprintf(hdr, "SCI\nFAS\n%03d\nLIT\n", version_);
-      else
-        sprintf(hdr, "SCI\nFAS\n%03d\nBIG\n", version_);
+      //else
+        //sprintf(hdr, "SCI\nFAS\n%03d\nBIG\n", version_);
       // write the header
       size_t wrote = fwrite(hdr, sizeof(char), 16, fp_);
       if (wrote != 16)
@@ -1782,7 +1792,7 @@ FastPiostream::FastPiostream(const std::string& filename, Direction dir,
 }
 
 
-FastPiostream::FastPiostream(int fd, Direction dir, ProgressReporter *pr)
+FastPiostream::FastPiostream(int fd, Direction dir, LoggerHandle pr)
 : Piostream(dir, -1, "", pr),
 fp_(0)
 {
@@ -1821,10 +1831,10 @@ fp_(0)
     if (version() > 1)
     {
       char hdr[16];
-      if (airMyEndian == airEndianLittle)
+      //if (airMyEndian == airEndianLittle)
         sprintf(hdr, "SCI\nFAS\n%03d\nLIT\n", version_);
-      else
-        sprintf(hdr, "SCI\nFAS\n%03d\nBIG\n", version_);
+      //else
+        //sprintf(hdr, "SCI\nFAS\n%03d\nBIG\n", version_);
       // write the header
       size_t wrote = fwrite(hdr, sizeof(char), 16, fp_);
       if (wrote != 16)

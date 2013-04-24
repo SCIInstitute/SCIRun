@@ -50,6 +50,8 @@ namespace Core
       std::string name_;
       boost::mutex impl_;
     };
+    
+    typedef boost::lock_guard<boost::mutex> Guard;
   }
 }
 }

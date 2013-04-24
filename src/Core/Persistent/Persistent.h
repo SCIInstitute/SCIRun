@@ -49,15 +49,17 @@
 // for index and size types
 #include <Core/Datatypes/Types.h>
 
-#include <Core/Util/Assert.h>
-#include <Core/Util/ProgressReporter.h>
+#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Logging/LoggerFwd.h>
 
 #include <Core/Persistent/share.h>
 
 namespace SCIRun {
 
+  namespace Core {
+    namespace Thread {class Mutex; }}
+  
 class Persistent;
-class Mutex;
 class Piostream;
 
 class SCISHARE PersistentTypeID {
@@ -79,9 +81,9 @@ typedef boost::shared_ptr<PersistentTypeID> PersistentTypeIDPtr;
 typedef boost::shared_ptr<Piostream> PiostreamPtr;
 
 SCISHARE PiostreamPtr auto_istream(const std::string& filename,
-                                 ProgressReporter *pr = 0);
+                                   Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
 SCISHARE PiostreamPtr auto_ostream(const std::string& filename, const std::string& type,
-                                 ProgressReporter *pr = 0);
+                                 Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
 
 
 //----------------------------------------------------------------------
@@ -105,7 +107,7 @@ class SCISHARE Piostream {
     void flag_error() { err = 1; }
     
   protected:
-    Piostream(Direction, int, const std::string &, ProgressReporter *pr);
+    Piostream(Direction, int, const std::string &, Core::Logging::LoggerHandle pr);
 
     Direction dir;
     int version_;
@@ -120,13 +122,12 @@ class SCISHARE Piostream {
     bool have_peekname_;
     std::string peekname_;
 
-    ProgressReporter *reporter_;
-    bool own_reporter_;
+    Core::Logging::LoggerHandle reporter_;
     bool backwards_compat_id_;
     bool disable_pointer_hashing_;
     virtual void emit_pointer(int& have_data, int& pointer_id);
   public:
-    static bool readHeader(ProgressReporter *pr,
+    static bool readHeader(Core::Logging::LoggerHandle pr,
                            const std::string& filename, char* hdr,
                            const char* type, int& version, int& endian);
   private:
@@ -176,10 +177,10 @@ class SCISHARE Piostream {
     void disable_pointer_hashing() { disable_pointer_hashing_ = true; }
 
     SCISHARE friend PiostreamPtr auto_istream(const std::string& filename,
-                                   ProgressReporter *pr);
+                                   Core::Logging::LoggerHandle pr);
     SCISHARE friend PiostreamPtr auto_ostream(const std::string& filename, 
                                    const std::string& type,
-                                   ProgressReporter *pr);
+                                   Core::Logging::LoggerHandle pr);
 };
 
 
@@ -220,7 +221,7 @@ class SCISHARE Persistent {
 
     typedef std::map<std::string, PersistentTypeIDPtr>	MapStringPersistentID;
     static MapStringPersistentID* persistent_table_;  
-    static Mutex* persistent_mutex_;
+    static Core::Thread::Mutex* persistent_mutex_;
     
     static void initialize();
 };

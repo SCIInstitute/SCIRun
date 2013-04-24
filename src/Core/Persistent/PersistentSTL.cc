@@ -36,6 +36,7 @@ DEALINGS IN THE SOFTWARE.
 * 
 */
 
+#include <iostream>
 #include <Core/Persistent/Persistent.h>
 #include <Core/Persistent/PersistentSTL.h>
 

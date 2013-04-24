@@ -32,14 +32,14 @@ SET(Core_Persistent_SRCS
   Persistent.cc
   PersistentSTL.cc
   Pstreams.cc
-  GZstream.cc
+  #GZstream.cc
 )
 
 SET(Core_Persistent_HEADERS
   Persistent.h
   PersistentSTL.h
   Pstreams.h
-  GZstream.h
+  #GZstream.h
   share.h
 )
 
@@ -49,9 +49,10 @@ ADD_LIBRARY(Core_Persistent
 )
 
 TARGET_LINK_LIBRARIES( Core_Persistent 
-  Core_Exceptions 
+  Core_Exceptions_Legacy
   Core_Thread 
-  Core_Utils_Legacy
+  Core_Util_Legacy
+  Core_Logging
   #${SCI_ZLIB_LIBRARY}
 )
 

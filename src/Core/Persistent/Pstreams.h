@@ -43,12 +43,8 @@
 #define SCI_project_Pstream_h 1
 
 #include <Core/Persistent/Persistent.h>
-#include <stdio.h>
-
-
-
+#include <cstdio>
 #include <iosfwd>
-
 
 #include <Core/Persistent/share.h>
 
@@ -65,9 +61,9 @@ private:
 
 public:
   BinaryPiostream(const std::string& filename, Direction dir,
-                  const int& v = -1, ProgressReporter *pr = 0);
+                  const int& v = -1, Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   BinaryPiostream(int fd, Direction dir, const int& v = -1,
-                  ProgressReporter *pr = 0);
+                  Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~BinaryPiostream();
 
   virtual void io(char&);
@@ -98,9 +94,9 @@ private:
 
 public:
   BinarySwapPiostream(const std::string& filename, Direction d,
-                      const int& v = -1, ProgressReporter *pr = 0);
+                      const int& v = -1, Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   BinarySwapPiostream(int fd, Direction dir, const int& v = -1,
-                      ProgressReporter *pr = 0);
+                      Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~BinarySwapPiostream();
 
   virtual void io(short&);
@@ -133,9 +129,9 @@ protected:
   virtual void reset_post_header();
 public:
   TextPiostream(const std::string& filename, Direction dir,
-                ProgressReporter *pr = 0);
-  TextPiostream(std::istream *strm, ProgressReporter *pr = 0);
-  TextPiostream(std::ostream *strm, ProgressReporter *pr = 0);
+                Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
+  TextPiostream(std::istream *strm, Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
+  TextPiostream(std::ostream *strm, Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~TextPiostream();
 
   virtual std::string peek_class();
@@ -175,9 +171,9 @@ protected:
   virtual void reset_post_header();
 public:
   FastPiostream(const std::string& filename, Direction dir,
-                ProgressReporter *pr = 0);
+                Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   FastPiostream(int fd, Direction dir,
-                ProgressReporter *pr = 0);
+                Core::Logging::LoggerHandle pr = Core::Logging::LoggerHandle());
   virtual ~FastPiostream();
 
   virtual void io(bool&);

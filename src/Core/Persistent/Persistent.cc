@@ -40,12 +40,16 @@
 
 #include <Core/Persistent/Persistent.h>
 #include <Core/Persistent/Pstreams.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/GZstream.h>
+#endif
 
-#include <Core/Util/StringUtil.h>
-#include <Core/Util/Endian.h>
+#include <Core/Logging/ConsoleLogger.h>
 
-#include <Core/Thread/Guard.h>
+#include <Core/Utils/Legacy/StringUtil.h>
+#include <Core/Utils/Legacy/Endian.h>
+
+//#include <Core/Thread/Guard.h>
 #include <Core/Thread/Mutex.h>
 
 #include <fstream>
@@ -55,8 +59,11 @@
 
 #include <sci_debug.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Thread;
 
+namespace SCIRun {
+  
 const int Piostream::PERSISTENT_VERSION = 2;
 
 //----------------------------------------------------------------------
@@ -87,7 +94,7 @@ Persistent::~Persistent()
 
 //----------------------------------------------------------------------
 Piostream::Piostream(Direction dir, int version, const std::string &name,
-                     ProgressReporter *pr)
+                     LoggerHandle pr)
   : dir(dir),
     version_(version),
     err(false),
@@ -96,22 +103,19 @@ Piostream::Piostream(Direction dir, int version, const std::string &name,
     current_pointer_id(1),
     have_peekname_(false),
     reporter_(pr),
-    own_reporter_(false),
     backwards_compat_id_(false),
     disable_pointer_hashing_(false),
     file_name(name)
 {
-  if (reporter_ == NULL)
+  if (!reporter_)
   {
-    reporter_ = new ProgressReporter();
-    own_reporter_ = true;
+    reporter_.reset(new ConsoleLogger());
   }
 }
 
 //----------------------------------------------------------------------
 Piostream::~Piostream()
 {
-  if (own_reporter_) { delete reporter_; }
 }
 
 //----------------------------------------------------------------------
@@ -386,12 +390,14 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
 
 //----------------------------------------------------------------------
 PiostreamPtr
-auto_istream(const std::string& filename, ProgressReporter *pr)
+auto_istream(const std::string& filename, LoggerHandle pr)
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (filename.find(".gz") != std::string::npos)
   {
     return auto_gzistream(filename, pr);
   }
+#endif
 
   std::ifstream in(filename.c_str());
   if (!in)
@@ -468,7 +474,7 @@ auto_istream(const std::string& filename, ProgressReporter *pr)
 
 //----------------------------------------------------------------------
 PiostreamPtr
-auto_ostream(const std::string& filename, const std::string& type, ProgressReporter *pr)
+auto_ostream(const std::string& filename, const std::string& type, LoggerHandle pr)
 {
   // Based on the type string do the following
   //     Binary:  Return a BinaryPiostream 
@@ -500,7 +506,7 @@ auto_ostream(const std::string& filename, const std::string& type, ProgressRepor
 
 //----------------------------------------------------------------------
 bool
-Piostream::readHeader( ProgressReporter *pr,
+Piostream::readHeader( LoggerHandle pr,
                        const std::string& filename, char* hdr,
                        const char* filetype, int& version,
                        int& endian)
@@ -676,7 +682,7 @@ Persistent::find_derived( const std::string& classname,
   
   {
     initialize();
-    Guard g(persistent_mutex_);
+    Guard g(persistent_mutex_->get());
 
     iter = persistent_table_->find(classname);
     if (iter == persistent_table_->end()) 
@@ -707,7 +713,7 @@ Persistent::add_class(const std::string& type,
                       Persistent* (*bc_maker2)())
 {
   initialize();
-  Guard g(persistent_mutex_);
+  Guard g(persistent_mutex_->get());
    
   MapStringPersistentID::iterator iter = persistent_table_->find(type);
 
