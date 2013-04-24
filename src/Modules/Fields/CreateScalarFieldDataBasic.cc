@@ -34,8 +34,9 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 
-AlgorithmParameterName CreateScalarFieldDataBasic::DataMap("DataMap");
+AlgorithmParameterName CreateScalarFieldDataBasic::ValueFunc("ValueFunc");
 
 CreateScalarFieldDataBasic::CreateScalarFieldDataBasic()
   : Module(ModuleLookupInfo("CreateScalarFieldDataBasic", "NewField", "SCIRun"), false)
@@ -51,11 +52,11 @@ void CreateScalarFieldDataBasic::execute()
 
   if (vfield && vmesh)
   {
-    std::cout << "Assuming values on nodes." << std::endl;
+    //std::cout << "Assuming values on nodes." << std::endl;
     {
       if (vmesh->is_latvolmesh())
       {
-        std::cout << "Assuming latvol mesh" << std::endl;
+        //std::cout << "Assuming latvol mesh" << std::endl;
 
         std::vector<index_type> dims;
         vmesh->get_dimensions(dims);
@@ -75,11 +76,48 @@ void CreateScalarFieldDataBasic::execute()
 
           VMesh::Node::index_type nodeID = *meshNodeIter;
           vfield->set_value(value, nodeID);
-          std::cout << "Set value " << value << " at node " << nodeID << std::endl;
-          if ((nodeID + 1) % nodesPerPlane == 0)
+
+          //std::cout << "Set value " << value << " at node " << nodeID << std::endl;
+
+          // by node id
+          auto valueFuncName = get_state()->getValue(ValueFunc).getString();
+          if (valueFuncName == "byPlane")
           {
-            value += 1;
+            if ((nodeID + 1) % nodesPerPlane == 0)
+            {
+              value += 1;
+            }
           }
+          else if (valueFuncName == "random")
+          {
+            value = rand() / 1000;
+          }
+          else if (valueFuncName == "x+y+z")
+          {
+            Point p;
+            vmesh->get_point(p, nodeID);
+            value = p.x() + p.y() + p.z();
+          }
+          else if (valueFuncName == "distance")
+          {
+            Point p;
+            vmesh->get_point(p, nodeID);
+            value = Dot(p, p);
+          }
+          else if (valueFuncName == "sine")
+          {
+            Point p;
+            vmesh->get_point(p, nodeID);
+            value = sin(Dot(p,p)*10);
+          }
+          else
+          {
+            Point p;
+            vmesh->get_point(p, nodeID);
+            value = sin(Dot(p,p)*10);
+          }
+
+
         }
       }
     }
@@ -89,3 +127,5 @@ void CreateScalarFieldDataBasic::execute()
 
   sendOutput(OutputFieldWithData, field);
 }
+
+

@@ -40,18 +40,15 @@ class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::M
   public Has1InputPort<FieldPortTag>,
   public Has1OutputPort<FieldPortTag>
 {
-  public:
-    CreateScalarFieldDataBasic();
+public:
+  CreateScalarFieldDataBasic();
 
-    virtual void execute();
+  virtual void execute();
 
   INPUT_PORT(0, InputField, LegacyField);
   OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
   
-  static Core::Algorithms::AlgorithmParameterName DataMap;
-
-  private:
-
+  static Core::Algorithms::AlgorithmParameterName ValueFunc;
 };
 
 }}}

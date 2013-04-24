@@ -186,7 +186,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     double val = 0.0;
     vfield->get_value(val, node.index());
     vbo[i+3] = static_cast<float>(val);
-    std::cout << static_cast<float>(val) << std::endl;
+    //std::cout << static_cast<float>(val) << std::endl;
     i+=4;
   }
 
@@ -383,9 +383,9 @@ void ShowFieldModuleImpl::buildNodesNoNormals(typename SCIRun::Core::Datatypes::
   geom->mPasses.emplace_back(pass);
 }
 
-AlgorithmParameterName ShowFieldModule::ShowNodes("Show nodes");
-AlgorithmParameterName ShowFieldModule::ShowEdges("Show edges");
-AlgorithmParameterName ShowFieldModule::ShowFaces("Show faces");
-AlgorithmParameterName ShowFieldModule::NodeTransparency("Node Transparency");
-AlgorithmParameterName ShowFieldModule::EdgeTransparency("Edge Transparency");
-AlgorithmParameterName ShowFieldModule::FaceTransparency("Face Transparency");
+AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
+AlgorithmParameterName ShowFieldModule::ShowEdges("ShowEdges");
+AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
+AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
+AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
+AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
