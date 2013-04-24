@@ -35,13 +35,24 @@ SET(Core_Persistent_SRCS
   GZstream.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_Persistent ${Core_Persistent_SRCS})
+SET(Core_Persistent_HEADERS
+  Persistent.h
+  PersistentSTL.h
+  Pstreams.h
+  GZstream.h
+  share.h
+)
+
+ADD_LIBRARY(Core_Persistent 
+  ${Core_Persistent_SRCS}
+  ${Core_Persistent_HEADERS}
+)
 
 TARGET_LINK_LIBRARIES( Core_Persistent 
   Core_Exceptions 
   Core_Thread 
-  Core_Util
-  ${SCI_ZLIB_LIBRARY}
+  Core_Utils_Legacy
+  #${SCI_ZLIB_LIBRARY}
 )
 
 IF(SCI_TEEM_LIBRARY)
