@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software. 
+#  in all copies or substantial portions of the Software.
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,21 +26,30 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Basis)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(Containers)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Exceptions)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Persistent)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Thread)
+# Sources of Core/Persistent classes
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Core_Persistent_SRCS
+  Persistent.cc
+  PersistentSTL.cc
+  Pstreams.cc
+  GZstream.cc
+)
+
+SCIRUN_ADD_LIBRARY(Core_Persistent ${Core_Persistent_SRCS})
+
+TARGET_LINK_LIBRARIES( Core_Persistent 
+  Core_Exceptions 
+  Core_Thread 
+  Core_Util
+  ${SCI_ZLIB_LIBRARY}
+)
+
+IF(SCI_TEEM_LIBRARY)
+  TARGET_LINK_LIBRARIES( Core_Persistent  ${SCI_TEEM_LIBRARY})
+ENDIF(SCI_TEEM_LIBRARY)
+
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Persistent)
+ENDIF(BUILD_SHARED_LIBS)
+
