@@ -44,6 +44,7 @@ CreateScalarFieldDataBasic::CreateScalarFieldDataBasic()
 {
 }
 
+//TODO: expand this module and then move it to test module category. then it can be used with python to regression test many combinations of latvol visualization!
 void CreateScalarFieldDataBasic::execute()
 {
   auto field = getRequiredInput(InputField);
