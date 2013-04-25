@@ -1283,18 +1283,14 @@ public:
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   //! Export this class using the old Pio system
   virtual void io(Piostream&);
   
   //! This ID is created as soon as this class will be instantiated  
   static PersistentTypeID trisurf_typeid;
-#endif
   //! Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return trisurf_typeid.type; }
-#endif
   //! Type description, used for finding names of the mesh class for
   //! dynamic compilation purposes. Some of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
@@ -1305,10 +1301,8 @@ public:
   static const TypeDescription* elem_type_description()
     { return face_type_description(); }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new TriSurfMesh<Basis>(); }
-#endif
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<TriSurfMesh<Basis>>(); }
   

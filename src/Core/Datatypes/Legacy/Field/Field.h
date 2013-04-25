@@ -87,12 +87,10 @@ class SCISHARE Field: public Core::Datatypes::Datatype
 
     virtual const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const = 0; 
     
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     //! Persistent I/O.
     static  PersistentTypeID type_id;
     virtual void io(Piostream &stream);
     virtual std::string type_name() const { return type_id.type; }    
-#endif
 };
 
 

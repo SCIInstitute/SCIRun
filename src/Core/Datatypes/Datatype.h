@@ -30,6 +30,7 @@
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 
 
+#include <Core/Persistent/Persistent.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Share.h>
 
@@ -37,7 +38,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE Datatype
+  class SCISHARE Datatype : public Persistent
   {
   public:
     Datatype();

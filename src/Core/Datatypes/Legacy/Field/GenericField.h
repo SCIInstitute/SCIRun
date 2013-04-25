@@ -106,32 +106,26 @@ public:
   //! Get the mesh describing how the elements fit together
   // const mesh_handle_type &get_typed_mesh() const;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Persistent I/O.
   virtual void io(Piostream &stream);
   
   //! Tag the constructor of this class and put it in the Pio DataBase
   static  PersistentTypeID type_id;
-#endif
 
   //! Tag the constructor of this class and put it in the Field DataBase
   static  FieldTypeID field_id;
   
   //! Function to retrieve the name of this field class
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual std::string dynamic_type_name() const { return type_id.type; }
-#endif
 
   //! A different way of tagging a class. Currently two systems are used next
   //! to each other: type_name and get_type_description. Neither is perfect
   virtual 
   const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Static functions to instantiate the field from Pio or using CreateField()
   static Persistent *maker();
-#endif
   static FieldHandle field_maker();  
   static FieldHandle field_maker_mesh(MeshHandle mesh);
    
@@ -193,7 +187,6 @@ class VGenericField : public VField {
     
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // PIO
 const int GENERICFIELD_VERSION = 3;
 
@@ -204,7 +197,6 @@ GenericField<Mesh, Basis, FData>::maker()
 {
   return new GenericField<Mesh, Basis, FData>;
 }
-#endif
 
 template <class Mesh, class Basis, class FData>
 FieldHandle
@@ -226,17 +218,14 @@ GenericField<Mesh, Basis, FData>::field_maker_mesh(MeshHandle mesh)
 }
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Mesh, class Basis, class FData>
 PersistentTypeID 
 GenericField<Mesh, Basis, FData>::type_id(type_name(-1), "Field", maker);
-#endif
 
 template <class Mesh, class Basis, class FData>
 FieldTypeID
 GenericField<Mesh, Basis, FData>::field_id(type_name(-1),field_maker,field_maker_mesh);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Mesh, class Basis, class FData>
 void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
 {
@@ -278,7 +267,6 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
     vfield_->update_mesh_pointer(mesh_.get_rep());
   }
 }
-#endif
 
 template <class Mesh, class Basis, class FData>
 GenericField<Mesh, Basis, FData>::GenericField() : 

@@ -68,6 +68,7 @@ ADD_LIBRARY(Core_Datatypes
 )
 
 TARGET_LINK_LIBRARIES(Core_Datatypes
+  Core_Persistent
   ${OPENGL_LIBRARIES}
   ${SCI_SPIRE_LIBRARY}
   ${SCI_SPIRE_EXTRA_LIBRARIES}

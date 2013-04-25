@@ -38,6 +38,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
 #include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
 
+#include <Core/Persistent/Persistent.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -122,29 +123,14 @@ public:
   virtual bool synchronize(mask_type) { return false; }
   virtual bool unsynchronize(mask_type) { return false; }
 
-
-  //! Optional virtual functions.
-//  virtual bool has_normals() const { return false; }
-//  virtual bool has_face_normals() const { return false; }
-//  virtual bool is_editable() const { return false; } // supports add_elem(...)
-//  virtual int  dimensionality() const = 0;
-//  virtual int  topology_geometry() const = 0;
-//  virtual bool get_dim(vector<size_type>&) const { return false; }
-//  virtual bool get_search_grid_info(size_type& /*i*/, size_type& /*j*/, 
-//                          size_type& /*k*/, Transform& /*trans*/) { return false; }
   virtual int basis_order();
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Persistent I/O.
   void    io(Piostream &stream);
   static  PersistentTypeID type_id;
   static  const std::string type_name(int n = -1);
   virtual const TypeDescription *get_type_description() const = 0;
-#endif
-
-  // The minimum value for elemental checking
-//  double MIN_ELEMENT_VAL;
-  
+    
   //! Virtual interface functions:
   //! Get the virtual mesh interface, this returns the pointer to an internal
   //! object that has all the virtual functions. This object will be destroyed
