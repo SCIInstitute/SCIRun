@@ -29,16 +29,16 @@
 #include <cmath>
 #include <cstring>
 
-//#include <Core/Util/TypeDescription.h>
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Math/MiscMath2.h>
-//#include <Core/Geometry/Tensor.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Math;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 Persistent* transform_maker() {
   return new Transform();
@@ -48,7 +48,6 @@ Persistent* transform_maker() {
 PersistentTypeID Transform::type_id("Transform", "Persistent", 
                                     transform_maker);
 
-#endif
 
 Transform::Transform()
 {
@@ -891,7 +890,7 @@ operator*(Transform &t, const Vector &d)
 
   return Vector(result[0], result[1], result[2]);
 }
-
+#endif
 const int TRANSFORM_VERSION = 1;
 
 void 
@@ -1007,4 +1006,4 @@ operator*(const Tensor &d, const Transform &t)
   
   return (SCIRun::Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
 }
-#endif
+

@@ -118,8 +118,8 @@ public:
   //! support dynamic compilation
   static const std::string& get_h_file_path();
 
-  SCISHARE friend void Pio(Piostream&, Tensor&);
-  
+  friend SCISHARE void Pio(Piostream&, Tensor&);
+
   inline double xx() const { return mat_[0][0]; }
   inline double xy() const { return mat_[1][0]; }
   inline double xz() const { return mat_[2][0]; }
@@ -133,6 +133,7 @@ private:
   bool have_eigens_;
 };
 
+SCISHARE void Pio(Piostream&, Tensor&);
 
 inline bool operator<(Tensor t1, Tensor t2)
 {

@@ -46,9 +46,9 @@
 
 #include <iostream>
 
+#include <Core/Persistent/Persistent.h>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Persistent/Persistent.h>
 #include <teem/ten.h>
 #endif
 
@@ -376,8 +376,7 @@ void Tensor::set_outside_eigens(const Vector &e1, const Vector &e2,
   have_eigens_ = 1;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-void Pio(Piostream& stream, Tensor& t){
+void SCIRun::Core::Geometry::Pio(Piostream& stream, Tensor& t){
   
   stream.begin_cheap_delim();
  
@@ -405,7 +404,6 @@ void Pio(Piostream& stream, Tensor& t){
   stream.end_cheap_delim();
 }
 
-#endif
 const std::string& 
 Tensor::get_h_file_path() {
   static const std::string path(TypeDescription::cc_to_h(__FILE__));

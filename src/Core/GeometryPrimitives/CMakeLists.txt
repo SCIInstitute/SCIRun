@@ -29,6 +29,7 @@
 SET(Core_GeometryPrimitives_SRCS
   BBox.cc
   CompGeom.cc
+  Plane.cc
   Point.cc
   SearchGridT.cc
   Tensor.cc
@@ -40,6 +41,7 @@ SET(Core_GeometryPrimitives_HEADERS
   BBox.h
   CompGeom.h
   GeomFwd.h
+  Plane.h
   Point.h
   PointVectorOperators.h
   SearchGridT.h

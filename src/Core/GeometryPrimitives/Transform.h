@@ -37,7 +37,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 //#include <Core/Geometry/Plane.h>
 //#include <Core/Geometry/Tensor.h>
-//#include <Core/Persistent/Persistent.h>
+#include <Core/Persistent/Persistent.h>
 
 #include <Core/GeometryPrimitives/Share.h>
 
@@ -123,7 +123,6 @@ class SCISHARE Transform  //: public Persistent
     void project_normal(const Geometry::Vector&, Geometry::Vector& res) const;
     void project_normal_inplace(Geometry::Vector&) const;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     void pre_shear(const Geometry::Vector&, const Plane&);
     void post_shear(const Geometry::Vector&, const Plane&);
 
@@ -143,14 +142,11 @@ class SCISHARE Transform  //: public Persistent
     void invert();
     bool inv_valid() { return inverse_valid; }
     void set_inv_valid(bool iv) { inverse_valid = iv; }
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     //! Persistent I/O.
     static PersistentTypeID type_id;
     virtual void io(Piostream &stream);
     SCISHARE friend void Pio(Piostream&, Transform*&);
-#endif
 };
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -159,10 +155,10 @@ SCISHARE Geometry::Vector operator*(Transform &t, const Geometry::Vector &d);
 
 SCISHARE SCIRun::Tensor operator*(const SCIRun::Transform &t, const SCIRun::Tensor &d);
 SCISHARE SCIRun::Tensor operator*(const SCIRun::Tensor &d, const SCIRun::Transform &t);
-
+#endif
 SCISHARE void Pio(Piostream&, Transform*&);
 SCISHARE const TypeDescription* get_type_description(Transform*);
-#endif
+
 
 }}}
 
