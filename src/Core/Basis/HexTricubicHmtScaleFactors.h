@@ -574,9 +574,9 @@ public:
     return get_volume3(this, cd);
   }
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 
@@ -601,7 +601,7 @@ HexTricubicHmtScaleFactors<T>::type_name(int n)
 
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 
 const int HEXTRICUBICHMTSCALEFACTORS_VERSION = 1;
 template <class T>
@@ -614,7 +614,7 @@ HexTricubicHmtScaleFactors<T>::io(Piostream &stream)
   Pio(stream, this->scalefactors_);
   stream.end_class();
 }
-#endif
+
 }}
 template <class T>
 const TypeDescription*

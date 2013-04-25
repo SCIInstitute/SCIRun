@@ -37,7 +37,7 @@
 #include <boost/array.hpp>
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Utils/Exception.h>
-
+#include <Core/Persistent/Persistent.h>
 
 namespace SCIRun {
 namespace Core {

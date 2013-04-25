@@ -97,7 +97,7 @@ Pio(Piostream& stream, std::map<Key, Data>& data) {
     int n = data.size();
     Pio(stream, n);
 				// write elements
-    for (typename std::map<Key, Data>::iterator iter = data.begin(); iter != data.end(); iter++) {
+    for (auto iter = data.begin(); iter != data.end(); iter++) {
 				// have to copy iterator elements,
 				// since passing them directly in a
 				// call to Pio can be invalid because

@@ -36,6 +36,7 @@
 #include <string>
 #include <vector>
 #include <Core/Utils/Legacy/TypeDescription.h>
+#include <Core/Persistent/PersistentFwd.h>
 #include <Core/GeometryPrimitives/Share.h>
 
 namespace SCIRun {
@@ -174,9 +175,7 @@ SCISHARE Point AffineCombination(const Point&, double, const Point&, double,
 				  const Point&, double);
 SCISHARE Point AffineCombination(const Point&, double, const Point&, double);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE void Pio( Piostream&, Point& );
-#endif
 
 inline 
 Point operator*(double d, const Point &p) {

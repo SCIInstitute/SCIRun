@@ -33,9 +33,8 @@
 #ifndef CORE_GEOMETRY_VECTOR_H
 #define CORE_GEOMETRY_VECTOR_H 
 
-#include <string>
 #include <cmath>
-#include <boost/array.hpp>
+#include <Core/Persistent/PersistentFwd.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/Share.h>
 
@@ -228,11 +227,7 @@ inline Vector Max(const Vector &v1, const Vector &v2)
     std::max(v1.z(), v2.z()));
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-// For Pio system
 SCISHARE void Pio( Piostream&, Vector& );
-
-#endif
 
 inline
   double Vector::safe_normalize()

@@ -244,9 +244,9 @@ public:
 
   static const std::string type_name(int n = -1);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str); 
-#endif
+
 };
 
 
@@ -272,7 +272,7 @@ TriCubicHmtScaleFactors<T>::type_name(int n)
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 const int TRICUBICHMTSCALEFACTORS_VERSION = 1;
 template <class T>
 void
@@ -284,7 +284,7 @@ void
   Pio(stream, this->scalefactors_);
   stream.end_class();
 }
-#endif
+
 
 }}
 

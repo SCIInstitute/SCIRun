@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+#include <Core/Persistent/Persistent.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <iostream>
 #include <sstream>
@@ -135,9 +135,10 @@ centroid(const std::vector<Point>& points)
     return Point(0.0,0.0,0.0);
   }
 }
+#endif
 
 void 
-Pio(Piostream& stream, Point& p)
+SCIRun::Core::Geometry::Pio(Piostream& stream, Point& p)
 {
   stream.begin_cheap_delim();
   double x,y,z;
@@ -158,7 +159,7 @@ Pio(Piostream& stream, Point& p)
   }
   stream.end_cheap_delim();
 }
-#endif
+
 
 const std::string& 
 SCIRun::Point_get_h_file_path() 

@@ -462,9 +462,9 @@ public:
 
 
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 
@@ -489,7 +489,7 @@ TetLinearLgn<T>::type_name(int n)
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 const int TETLINEARLGN_VERSION = 1;
 template <class T>
 void
@@ -499,7 +499,7 @@ TetLinearLgn<T>::io(Piostream &stream)
                      TETLINEARLGN_VERSION);
   stream.end_class();
 }
-#endif
+
 }}
 
 template <class T>

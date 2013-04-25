@@ -37,6 +37,7 @@ SET(Core_Persistent_SRCS
 
 SET(Core_Persistent_HEADERS
   Persistent.h
+  PersistentFwd.h
   PersistentSTL.h
   Pstreams.h
   #GZstream.h

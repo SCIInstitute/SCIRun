@@ -453,9 +453,9 @@ public:
 
 
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 
@@ -480,7 +480,7 @@ PrismLinearLgn<T>::type_name(int n)
     return find_type_name((T *)0);
   }
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 
 const int PRISMLINEARLGN_VERSION = 1;
 template <class T>
@@ -491,7 +491,7 @@ PrismLinearLgn<T>::io(Piostream &stream)
                      PRISMLINEARLGN_VERSION);
   stream.end_class();
 }
-#endif
+
 }}
 template <class T>
 const TypeDescription* get_type_description(Core::Basis::PrismLinearLgn<T> *)

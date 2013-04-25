@@ -28,8 +28,9 @@
 
 #include <cmath>
 #include <Core/GeometryPrimitives/BBox.h>
-//#include <Core/Persistent/Persistent.h>
+#include <Core/Persistent/Persistent.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 void 
@@ -130,9 +131,6 @@ BBox::intersect(const Point& origin, const Vector& dir,
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
-
 void Pio(Piostream &stream, BBox & box)
 {
   stream.begin_cheap_delim();
@@ -159,4 +157,3 @@ void Pio(Piostream &stream, BBox & box)
   }
   stream.end_cheap_delim();
 }
-#endif

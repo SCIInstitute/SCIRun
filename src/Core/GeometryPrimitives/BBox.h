@@ -29,6 +29,7 @@
 #ifndef CORE_GEOMETRY_BBOX_H
 #define CORE_GEOMETRY_BBOX_H 1
 
+#include <Core/Utils/Legacy/Assert.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Share.h>
@@ -192,7 +193,7 @@ class BBox {
       { return cmax_; }
 
     inline Vector diagonal() const
-      { assert(is_valid_); return cmax_-cmin_; }
+      { ASSERT(is_valid_); return cmax_-cmin_; }
 
     inline bool inside(const Point &p) const 
     {
@@ -242,9 +243,7 @@ class BBox {
     bool is_valid_;
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE void Pio( Piostream &, BBox& );
-#endif
 
 }}}
 

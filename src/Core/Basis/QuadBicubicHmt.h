@@ -163,9 +163,9 @@ public:
   }
 
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 
@@ -189,7 +189,7 @@ QuadBicubicHmt<T>::type_name(int n)
     return find_type_name((T *)0);
   }
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 
 const int QUADBICUBICHMT_VERSION = 1;
 template <class T>
@@ -201,7 +201,7 @@ QuadBicubicHmt<T>::io(Piostream &stream)
   Pio(stream, this->derivs_);
   stream.end_class();
 }
-#endif
+
 
 }}
 

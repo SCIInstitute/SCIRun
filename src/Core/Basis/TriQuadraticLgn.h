@@ -32,6 +32,7 @@
 #ifndef CORE_BASIS_TRIQUADRATICLGN_H
 #define CORE_BASIS_TRIQUADRATICLGN_H 1
 
+#include <Core/Persistent/PersistentSTL.h>
 #include <Core/Basis/TriLinearLgn.h>
 
 namespace SCIRun {
@@ -154,9 +155,9 @@ public:
 
   static const std::string type_name(int n = -1);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 
@@ -181,7 +182,7 @@ TriQuadraticLgn<T>::type_name(int n)
     return find_type_name((T *)0);
   }
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 const int TRIQUADRATICLGN_VERSION = 1;
 template <class T>
 void
@@ -192,7 +193,7 @@ TriQuadraticLgn<T>::io(Piostream &stream)
   Pio(stream, this->nodes_);
   stream.end_class();
 }
-#endif
+
 
 }}
 

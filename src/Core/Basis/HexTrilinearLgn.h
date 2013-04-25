@@ -489,9 +489,9 @@ public:
   }
 
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 template <class T>
@@ -513,7 +513,7 @@ HexTrilinearLgn<T>::type_name(int n)
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 const int HEX_TRILINEAR_LGN_VERSION = 1;
 template <class T>
 void
@@ -523,7 +523,7 @@ HexTrilinearLgn<T>::io(Piostream &stream)
                      HEX_TRILINEAR_LGN_VERSION);
   stream.end_class();
 }
-#endif
+
 
 }}
 template <class T>

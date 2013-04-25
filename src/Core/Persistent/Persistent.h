@@ -42,6 +42,7 @@
 #ifndef CORE_PERSISTENT_H
 #define CORE_PERSISTENT_H 1
 
+#include <Core/Persistent/PersistentFwd.h>
 #include <map>
 #include <string>
 #include <boost/shared_ptr.hpp>
@@ -55,12 +56,6 @@
 #include <Core/Persistent/share.h>
 
 namespace SCIRun {
-
-  namespace Core {
-    namespace Thread {class Mutex; }}
-  
-class Persistent;
-class Piostream;
 
 class SCISHARE PersistentTypeID {
 public:

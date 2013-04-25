@@ -113,9 +113,9 @@ public:
   }
 
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str); 
-#endif
+
 };
 
 
@@ -142,7 +142,7 @@ NoDataBasis<T>::type_name(int n)
 
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #define NODATABASIS_VERSION 1
 
 template <class T>
@@ -153,7 +153,7 @@ NoDataBasis<T>::io(Piostream &stream)
                      NODATABASIS_VERSION);
   stream.end_class();
 }
-#endif
+
 
 }}
 template <class T>

@@ -139,9 +139,9 @@ public:
   }
 
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
   virtual void io (Piostream& str);
-#endif
+
 };
 
 template <class T>
@@ -163,7 +163,7 @@ CrvCubicHmt<T>::type_name(int n)
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 const int CRVCUBICHMT_BASIS_VERSION = 1;
 template <class T>
 void
@@ -174,7 +174,7 @@ CrvCubicHmt<T>::io(Piostream &stream)
   Pio(stream, this->derivs_);
   stream.end_class();
 }
-#endif
+
 
 }}
 
