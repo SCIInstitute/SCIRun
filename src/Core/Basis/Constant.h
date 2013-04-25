@@ -36,7 +36,7 @@
 #include <Core/Basis/NoElementWeights.h>
 #include <Core/Basis/PntSamplingSchemes.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
-//#include <Core/Persistent/Persistent.h>
+#include <Core/Persistent/Persistent.h>
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Basis/Share.h>
 
@@ -176,9 +176,7 @@ public:
 
   //! Functions for dynamic compilation and storing this object on disk
   static  const std::string type_name(int n = -1);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   virtual void io (Piostream& str);
-#endif
 };
   
 template <class T>
@@ -203,7 +201,6 @@ ConstantBasis<T>::type_name(int n)
 }
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define CONSTANTBASIS_VERSION 1
 
 template <class T>
@@ -214,7 +211,6 @@ ConstantBasis<T>::io(Piostream &stream)
                      CONSTANTBASIS_VERSION);
   stream.end_class();
 }
-#endif
 
 }}
 
