@@ -580,7 +580,7 @@ Transform::project_normal_inplace(Vector& p) const
   res.z(imat[0][2]*p.x()+imat[1][2]*p.y()+imat[2][2]*p.z());
   p = res;
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 void
 Transform::get(double* gmat) const
 {
@@ -635,7 +635,7 @@ Transform::set_trans(double* pmat)
   }
   inverse_valid = false;
 }
-#endif
+
 void
 Transform::load_zero(double m[4][4])
 {
@@ -939,11 +939,13 @@ Pio(Piostream& stream, Transform*& obj)
   }
 }
 
-const std::string& 
-Transform::get_h_file_path() 
+namespace 
 {
-  static const std::string path(TypeDescription::cc_to_h(__FILE__));
-  return path;
+  const std::string& get_Transform_h_file_path() 
+  {
+    static const std::string path(TypeDescription::cc_to_h(__FILE__));
+    return path;
+  }
 }
 
 const TypeDescription*
@@ -951,7 +953,7 @@ get_type_description(Transform*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    td = new TypeDescription("Transform", Transform::get_h_file_path(), 
+    td = new TypeDescription("Transform", get_Transform_h_file_path(), 
                                 "SCIRun");
   }
   return td;
@@ -979,7 +981,7 @@ operator*(const Transform &t, const Tensor &d)
     }
   }
 
-  return (SCIRun::Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
+  return (Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
 }
 
 
@@ -1004,6 +1006,6 @@ operator*(const Tensor &d, const Transform &t)
     }
   }
   
-  return (SCIRun::Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
+  return (Tensor(result[0],result[1],result[2],result[4],result[5],result[8]));
 }
 

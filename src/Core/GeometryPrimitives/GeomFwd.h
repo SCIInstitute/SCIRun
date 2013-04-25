@@ -36,6 +36,8 @@ namespace Geometry {
 class Point;
 class Vector;
 class Transform;
+class Tensor;
+class Plane;
 
 }}}
 #endif

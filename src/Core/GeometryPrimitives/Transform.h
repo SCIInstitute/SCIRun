@@ -35,8 +35,7 @@
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
-//#include <Core/Geometry/Plane.h>
-//#include <Core/Geometry/Tensor.h>
+#include <Core/GeometryPrimitives/Plane.h>
 #include <Core/Persistent/Persistent.h>
 
 #include <Core/GeometryPrimitives/Share.h>
@@ -45,7 +44,7 @@ namespace SCIRun {
 namespace Core {
 namespace Geometry {
 
-class SCISHARE Transform  //: public Persistent
+class SCISHARE Transform : public Persistent
 {
   private:
     double mat[4][4];
@@ -54,12 +53,12 @@ class SCISHARE Transform  //: public Persistent
 
     void install_mat(double[4][4]);
     void build_permute(double m[4][4], int, int, int, int pre);
-    void build_rotate(double m[4][4], double, const Geometry::Vector&);
+    void build_rotate(double m[4][4], double, const Vector&);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    void build_shear(double mat[4][4], const Geometry::Vector&, const Plane&);
+    void build_shear(double mat[4][4], const Vector&, const Plane&);
 #endif
-    void build_scale(double m[4][4], const Geometry::Vector&);
-    void build_translate(double m[4][4], const Geometry::Vector&);
+    void build_scale(double m[4][4], const Vector&);
+    void build_translate(double m[4][4], const Vector&);
     void pre_mulmat(const double[4][4]);
     void post_mulmat(const double[4][4]);
     void invmat(double[4][4]);
@@ -76,13 +75,13 @@ class SCISHARE Transform  //: public Persistent
     Transform(const Transform&);
     Transform& operator=(const Transform&);
     ~Transform();
-    Transform(const Geometry::Point&, const Geometry::Vector&, const Geometry::Vector&, const Geometry::Vector&);
+    Transform(const Point&, const Vector&, const Vector&, const Vector&);
 
     double get_mat_val(int i, int j) const { return mat[i][j]; }
     void set_mat_val(int i, int j, double val) { mat[i][j] = val; }
 
-    void load_basis(const Geometry::Point&,const Geometry::Vector&, const Geometry::Vector&, const Geometry::Vector&);
-    void load_frame(const Geometry::Vector&, const Geometry::Vector&, const Geometry::Vector&);
+    void load_basis(const Point&,const Vector&, const Vector&, const Vector&);
+    void load_frame(const Vector&, const Vector&, const Vector&);
 
     void change_basis(Transform&);
     void post_trans(const Transform&);
@@ -93,49 +92,49 @@ class SCISHARE Transform  //: public Persistent
 
     void pre_permute(int xmap, int ymap, int zmap);
     void post_permute(int xmap, int ymap, int zmap);
-    void pre_scale(const Geometry::Vector&);
-    void post_scale(const Geometry::Vector&);
+    void pre_scale(const Vector&);
+    void post_scale(const Vector&);
     
     void load_identity();
     // Returns true if the rotation happened, false otherwise.
-    bool rotate(const Geometry::Vector& from, const Geometry::Vector& to);
-    void pre_translate(const Geometry::Vector&);
-    void post_translate(const Geometry::Vector&);
+    bool rotate(const Vector& from, const Vector& to);
+    void pre_translate(const Vector&);
+    void post_translate(const Vector&);
     
     void compute_imat() const;
 
-    Geometry::Vector project(const Geometry::Vector& p) const;
-    Geometry::Point project(const Geometry::Point& p) const;
+    Vector project(const Vector& p) const;
+    Point project(const Point& p) const;
 
-    Geometry::Point unproject(const Geometry::Point& p) const;
-    void unproject(const Geometry::Point& p, Geometry::Point& res) const;
-    void unproject_inplace(Geometry::Point& p) const;
-    Geometry::Vector unproject(const Geometry::Vector& p) const;
-    void unproject(const Geometry::Vector& v, Geometry::Vector& res) const;
-    void unproject_inplace(Geometry::Vector& v) const;
+    Point unproject(const Point& p) const;
+    void unproject(const Point& p, Point& res) const;
+    void unproject_inplace(Point& p) const;
+    Vector unproject(const Vector& p) const;
+    void unproject(const Vector& v, Vector& res) const;
+    void unproject_inplace(Vector& v) const;
 
-    void project(const Geometry::Point& p, Geometry::Point& res) const;
-    void project_inplace(Geometry::Point& p) const;
+    void project(const Point& p, Point& res) const;
+    void project_inplace(Point& p) const;
 
-    void project(const Geometry::Vector& p, Geometry::Vector& res) const;
-    void project_inplace(Geometry::Vector& p) const;
-    Geometry::Vector project_normal(const Geometry::Vector&) const;
-    void project_normal(const Geometry::Vector&, Geometry::Vector& res) const;
-    void project_normal_inplace(Geometry::Vector&) const;
+    void project(const Vector& p, Vector& res) const;
+    void project_inplace(Vector& p) const;
+    Vector project_normal(const Vector&) const;
+    void project_normal(const Vector&, Vector& res) const;
+    void project_normal_inplace(Vector&) const;
 
-    void pre_shear(const Geometry::Vector&, const Plane&);
-    void post_shear(const Geometry::Vector&, const Plane&);
+    void pre_shear(const Vector&, const Plane&);
+    void post_shear(const Vector&, const Plane&);
 
-    void pre_rotate(double, const Geometry::Vector& axis);
-    void post_rotate(double, const Geometry::Vector& axis);
+    void pre_rotate(double, const Vector& axis);
+    void post_rotate(double, const Vector& axis);
     
     void get(double*) const;
     void get_trans(double*) const;
     void set(double*);
     void set_trans(double*);
     
-    void perspective(const Geometry::Point& eyep, const Geometry::Point& lookat,
-         const Geometry::Vector& up, double fov,
+    void perspective(const Point& eyep, const Point& lookat,
+         const Vector& up, double fov,
          double znear, double zfar,
          int xres, int yres);
     
@@ -150,12 +149,13 @@ class SCISHARE Transform  //: public Persistent
 };
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-SCISHARE Geometry::Point operator*(Transform &t, const Geometry::Point &d);
-SCISHARE Geometry::Vector operator*(Transform &t, const Geometry::Vector &d);
+SCISHARE Point operator*(Transform &t, const Point &d);
+SCISHARE Vector operator*(Transform &t, const Vector &d);
 
 SCISHARE SCIRun::Tensor operator*(const SCIRun::Transform &t, const SCIRun::Tensor &d);
 SCISHARE SCIRun::Tensor operator*(const SCIRun::Tensor &d, const SCIRun::Transform &t);
 #endif
+
 SCISHARE void Pio(Piostream&, Transform*&);
 SCISHARE const TypeDescription* get_type_description(Transform*);
 

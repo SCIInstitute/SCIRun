@@ -161,7 +161,7 @@ Vector::rotz90(const int c)
 #endif
 
 void
-Pio(Piostream& stream, Vector& p)
+SCIRun::Core::Geometry::Pio(Piostream& stream, Vector& p)
 {
   stream.begin_cheap_delim();
   double x,y,z;

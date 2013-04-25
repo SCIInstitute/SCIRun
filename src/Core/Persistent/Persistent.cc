@@ -49,7 +49,6 @@
 #include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Utils/Legacy/Endian.h>
 
-//#include <Core/Thread/Guard.h>
 #include <Core/Thread/Mutex.h>
 
 #include <fstream>
@@ -130,7 +129,7 @@ Piostream::emit_pointer(int& have_data, int& pointer_id)
 std::string
 Piostream::peek_class()
 {
-  if (have_peekname_ == false)
+  if (!have_peekname_)
   {
     have_peekname_ = true;
     io(peekname_);

@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Geometry/Plane.h>
+#include <Core/GeometryPrimitives/Plane.h>
 
 namespace SCIRun {
   namespace Core {
@@ -125,7 +125,7 @@ Plane::ChangePlane(const Point &P, const Vector &N)
 }
 
 int
-Plane::Intersect( Point s, Vector v, Point& hit ) const
+Plane::Intersect( const Point & s, const Vector & v, Point& hit ) const
 {
   Point origin( 0., 0., 0. );
   Point ptOnPlane = origin - n * d;
@@ -170,13 +170,13 @@ Plane::Intersect( Point s, Vector v, Point& hit ) const
 
 
 int
-Plane::Intersect(Point s, Vector v, double &t) const
+Plane::Intersect(const Point & s, const Vector & v, double &t) const
 {
   double tmp = Dot( n, v );
   if(tmp > -1.e-6 && tmp < 1.e-6) // Vector v is parallel to plane
   {
     // vector from origin of line to point on plane
-    Vector temp = (s + n*d).asVector();
+    Vector temp(s + n*d);
     if (temp.length() < 1.e-5)
     {
       // origin of plane and origin of line are almost the same
