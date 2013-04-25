@@ -71,8 +71,6 @@ CMake Build Generators:
     Unix Makfiles
 
 Unix Makefiles notes:
+  Parallel builds can be used:
 
-  Boost must be built before the SCIRun libraries.
-  Parallel make builds can be used as long the Boost target is built first, for example:
-
-  make -j4 Boost_external && make -j4
+  make -j4

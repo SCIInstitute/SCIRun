@@ -62,26 +62,30 @@ SET(Engine_Network_NonPythonDependentLibs
 
 IF(BUILD_WITH_PYTHON)
 
-TARGET_LINK_LIBRARIES(Engine_Network
-  ${Engine_Network_NonPythonDependentLibs}
-  SCIRunPythonAPI
-)
+  TARGET_LINK_LIBRARIES(Engine_Network
+    ${Engine_Network_NonPythonDependentLibs}
+    SCIRunPythonAPI
+  )
 
-INCLUDE_DIRECTORIES(
-  ${PYTHON_INCLUDE_DIR}
-)
+  INCLUDE_DIRECTORIES(
+    ${PYTHON_INCLUDE_DIR}
+  )
+
+  ADD_DEPENDENCIES(Engine_Network Python_external)
 
 ELSE()
 
-TARGET_LINK_LIBRARIES(Engine_Network
-  ${Engine_Network_NonPythonDependentLibs}
-)
+  TARGET_LINK_LIBRARIES(Engine_Network
+    ${Engine_Network_NonPythonDependentLibs}
+  )
 
 ENDIF()
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Network)
 ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Engine_Network Boost_external)
 
 ADD_SUBDIRECTORY(Tests)
 

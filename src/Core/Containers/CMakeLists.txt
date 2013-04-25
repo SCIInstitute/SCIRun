@@ -49,10 +49,12 @@ ADD_LIBRARY(Core_Containers
 TARGET_LINK_LIBRARIES(Core_Containers 
                   #Core_Thread_Legacy
                   Core_Exceptions_Legacy
-				  )
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Containers)
 ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Core_Containers Boost_external)
 
 ADD_SUBDIRECTORY(Tests)
