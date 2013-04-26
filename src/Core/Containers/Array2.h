@@ -92,6 +92,8 @@ private:
 template<class T> void Pio(Piostream& stream, Array2<T>& data);
 template<class T> void Pio(Piostream& stream, Array2<T>*& data);
 
+#define ARRAY2_VERSION 2
+  
 template<class T>
 void Pio(Piostream& stream, Array2<T>& data)
 {
@@ -116,22 +118,22 @@ void Pio(Piostream& stream, Array2<T>& data)
   } 
   else 
   {
-    long long d1 = static_cast<long long>(data.dm1);
-    long long d2 = static_cast<long long>(data.dm2);
+    long long d1 = static_cast<long long>(data.dim1());
+    long long d2 = static_cast<long long>(data.dim2());
     Pio(stream, d1);
     Pio(stream, d2);
   }
   if (stream.supports_block_io())
   {
-    stream.block_io(data.obj,sizeof(T),data.dm1*data.dm2);
+    stream.block_io(&data[0],sizeof(T),data.size());
   }
   else
   {
-    for(index_type i=0;i<data.dm1;i++)
+    for(index_type i=0;i<data.dim1();i++)
     {
-      for(index_type j=0;j<data.dm2;j++)
+      for(index_type j=0;j<data.dim2();j++)
       {
-        Pio(stream, data.objs[i][j]);
+        Pio(stream, data.objs(i,j));
       }
     }
   }

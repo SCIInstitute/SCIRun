@@ -183,18 +183,6 @@ TriQuadraticLgn<T>::type_name(int n)
   }
 }
 
-const int TRIQUADRATICLGN_VERSION = 1;
-template <class T>
-void
-TriQuadraticLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     TRIQUADRATICLGN_VERSION);
-  Pio(stream, this->nodes_);
-  stream.end_class();
-}
-
-
 }}
 
 template <class T>
@@ -212,6 +200,17 @@ const TypeDescription* get_type_description(Core::Basis::TriQuadraticLgn<T> *)
   }
   return td;
 }
+  
+  const int TRIQUADRATICLGN_VERSION = 1;
+  template <class T>
+  void
+  Core::Basis::TriQuadraticLgn<T>::io(Piostream &stream)
+  {
+    stream.begin_class(get_type_description(this)->get_name(),
+                       TRIQUADRATICLGN_VERSION);
+    Pio(stream, this->nodes_);
+    stream.end_class();
+  }
 }
 
 #endif 

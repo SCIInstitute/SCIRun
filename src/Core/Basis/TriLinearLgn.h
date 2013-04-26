@@ -493,17 +493,6 @@ TriLinearLgn<T>::type_name(int n)
   }
 }
 
-const int TRILINEARLGN_VERSION = 1;
-template <class T>
-void 
-TriLinearLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     TRILINEARLGN_VERSION);
-  stream.end_class();
-}
-
-
 }}
 
 template <class T>
@@ -521,6 +510,16 @@ const TypeDescription* get_type_description(Core::Basis::TriLinearLgn<T> *)
   }
   return td;
 }
+  
+  const int TRILINEARLGN_VERSION = 1;
+  template <class T>
+  void
+  Core::Basis::TriLinearLgn<T>::io(Piostream &stream)
+  {
+    stream.begin_class(get_type_description(this)->get_name(),
+                       TRILINEARLGN_VERSION);
+    stream.end_class();
+  }
 }
 
 #endif

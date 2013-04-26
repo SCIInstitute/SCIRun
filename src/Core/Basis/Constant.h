@@ -203,15 +203,6 @@ ConstantBasis<T>::type_name(int n)
 
 #define CONSTANTBASIS_VERSION 1
 
-template <class T>
-void
-ConstantBasis<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     CONSTANTBASIS_VERSION);
-  stream.end_class();
-}
-
 }}
 
 template <class T>
@@ -229,6 +220,15 @@ const TypeDescription* get_type_description(Core::Basis::ConstantBasis<T> *)
   }
   return td;
 }
+  
+  template <class T>
+  void
+  Core::Basis::ConstantBasis<T>::io(Piostream &stream)
+  {
+    stream.begin_class(get_type_description(this)->get_name(),
+                       CONSTANTBASIS_VERSION);
+    stream.end_class();
+  }
 }
 
 #endif

@@ -148,8 +148,8 @@ FData3d<Data, Msh>::get_type_description(int n) const
   static std::string name(type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(reinterpret_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(reinterpret_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
+  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(0));
 
   if (n == -1) {
     static TypeDescription* tdn1 = 0;
@@ -183,8 +183,8 @@ get_type_description(FData3d<Data, Msh>*)
   static std::string name(FData3d<Data, Msh>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(reinterpret_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(reinterpret_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
+  const TypeDescription *sub2 = SCIRun::get_type_description(static_cast<Msh*>(0));
 
   static TypeDescription* tdn1 = 0;
   if (tdn1 == 0) {
@@ -292,8 +292,8 @@ get_type_description(FData2d<Data, Msh>*)
   static std::string name(FData2d<Data, Msh>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(reinterpret_cast<Data*>(0));
-  const TypeDescription *sub2 = get_type_description(reinterpret_cast<Msh*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
+  const TypeDescription *sub2 = get_type_description(static_cast<Msh*>(0));
 
   static TypeDescription* tdn1 = 0;
   if (tdn1 == 0) {
@@ -380,7 +380,7 @@ get_type_description(FData1d<Data>*)
   static std::string name(FData1d<Data>::type_name(0));
   static std::string namesp("SCIRun");
   static std::string path(__FILE__);
-  const TypeDescription *sub1 = get_type_description(reinterpret_cast<Data*>(0));
+  const TypeDescription *sub1 = get_type_description(static_cast<Data*>(0));
 
   static TypeDescription* tdn1 = 0;
   if (tdn1 == 0) 

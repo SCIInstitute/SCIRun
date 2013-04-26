@@ -145,15 +145,6 @@ NoDataBasis<T>::type_name(int n)
 
 #define NODATABASIS_VERSION 1
 
-template <class T>
-void
-NoDataBasis<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     NODATABASIS_VERSION);
-  stream.end_class();
-}
-
 
 }}
 template <class T>
@@ -172,6 +163,15 @@ const TypeDescription* get_type_description(Core::Basis::NoDataBasis<T> *)
   }
   return td;
 }
+  
+  template <class T>
+  void
+  Core::Basis::NoDataBasis<T>::io(Piostream &stream)
+  {
+    stream.begin_class(get_type_description(this)->get_name(),
+                       NODATABASIS_VERSION);
+    stream.end_class();
+  }
 }
 
 #endif

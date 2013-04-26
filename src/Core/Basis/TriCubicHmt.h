@@ -195,18 +195,6 @@ TriCubicHmt<T>::type_name(int n)
   }
 }
 
-
-const int TRICUBICHMT_VERSION = 1;
-template <class T>
-void
-TriCubicHmt<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     TRICUBICHMT_VERSION);
-  Pio(stream, this->derivs_);
-  stream.end_class();
-}
-
 }}
 
 template <class T>
@@ -224,6 +212,17 @@ const TypeDescription* get_type_description(Core::Basis::TriCubicHmt<T> *)
   }
   return td;
 }
+  
+  const int TRICUBICHMT_VERSION = 1;
+  template <class T>
+  void
+  Core::Basis::TriCubicHmt<T>::io(Piostream &stream)
+  {
+    stream.begin_class(get_type_description(this)->get_name(),
+                       TRICUBICHMT_VERSION);
+    Pio(stream, this->derivs_);
+    stream.end_class();
+  }
 }
 
 #endif
