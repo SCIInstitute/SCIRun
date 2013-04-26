@@ -29,7 +29,7 @@
 #ifndef MODULES_DATAIO_READ_FIELD_H
 #define MODULES_DATAIO_READ_FIELD_H
 
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Modules/DataIO/GenericReader.h>
 #include <Modules/DataIO/Share.h>
 
@@ -40,9 +40,10 @@ namespace DataIO {
   class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
   {
   public:
+    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
     ReadFieldModule();
     virtual void execute();
-    
+
     OUTPUT_PORT(0, Field, LegacyField);
   };
 

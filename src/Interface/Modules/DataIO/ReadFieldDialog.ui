@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ReadMatrix</class>
- <widget class="QDialog" name="ReadMatrix">
+ <class>ReadFieldDialog</class>
+ <widget class="QDialog" name="ReadFieldDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -104,7 +104,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ReadMatrix</receiver>
+   <receiver>ReadFieldDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -120,7 +120,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ReadMatrix</receiver>
+   <receiver>ReadFieldDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

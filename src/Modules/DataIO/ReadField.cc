@@ -38,7 +38,9 @@
  *
  */
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/DataIO/ReadField.h>
+
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::DataIO;
@@ -67,9 +69,9 @@ class ReadField : public GenericReader<FieldHandle> {
 DECLARE_MAKER(ReadField)
 #endif
 
-
 ReadFieldModule::ReadFieldModule()
-  : GenericReader<FieldHandle>("ReadField", "DataIO", "SCIRun"),
+  : my_base("ReadField", "DataIO", "SCIRun", "Filename")    
+  //,
     //gui_types_(get_ctx()->subVar("types", false)),
     //gui_filetype_(get_ctx()->subVar("filetype")),
     //gui_filename_base_(get_ctx()->subVar("filename_base"), ""),
@@ -126,7 +128,9 @@ ReadField::call_importer(const std::string &filename,
 void
 ReadFieldModule::execute()
 {     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (gui_types_.changed() || gui_filetype_.changed()) inputs_changed_ = true; 
+
 
   const std::string ftpre = gui_filetype_.get();
   const std::string::size_type loc = ftpre.find(" (");
@@ -135,6 +139,7 @@ ReadFieldModule::execute()
   importing_ = !(ft == "" ||
 		 ft == "SCIRun Field File" ||
 		 ft == "SCIRun Field Any");
-     
-  GenericReader<FieldHandle>::execute();
+#endif
+
+  my_base::execute();
 }

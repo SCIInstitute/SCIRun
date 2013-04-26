@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_READ_MATRIX_H
-#define INTERFACE_MODULES_READ_MATRIX_H
+#ifndef INTERFACE_MODULES_READ_FIELD_H
+#define INTERFACE_MODULES_READ_FIELD_H
 
-#include "Interface/Modules/DataIO/ui_ReadMatrix.h"
+#include "Interface/Modules/DataIO/ui_ReadFieldDialog.h"
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -38,14 +38,13 @@
 namespace SCIRun {
 namespace Gui {
   
-class SCISHARE ReadMatrixDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::ReadMatrix
+class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
+  public Ui::ReadFieldDialog
 {
 	Q_OBJECT
 	
 public:
-  ReadMatrixDialog(const std::string& name, 
+  ReadFieldDialog(const std::string& name, 
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void pull();

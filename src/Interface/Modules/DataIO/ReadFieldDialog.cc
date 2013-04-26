@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/DataIO/ReadMatrixDialog.h>
+#include <Interface/Modules/DataIO/ReadFieldDialog.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
@@ -36,7 +36,7 @@ using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
-ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle state,
+ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -50,18 +50,19 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
   buttonBox->setVisible(false);
 }
 
-void ReadMatrixDialog::pull()
+void ReadFieldDialog::pull()
 {
+  //TODO: need separate APN object
   fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
 }
 
-void ReadMatrixDialog::pushFileNameToState() 
+void ReadFieldDialog::pushFileNameToState() 
 {
   state_->setValue(ReadMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
-void ReadMatrixDialog::openFile()
+void ReadFieldDialog::openFile()
 {
-  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Matrix Text File", ".", "Text files (*.txt);;SCIRun Matrix File [ASCII] (*.mat)"));
+  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Field File", ".", "SCIRun Field File (*.fld)"));
   pushFileNameToState();
 }

@@ -52,6 +52,8 @@
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadMesh.h>
+#include <Modules/DataIO/ReadField.h>
+//#include <Modules/DataIO/WriteField.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
@@ -143,6 +145,17 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
     description.input_ports_ = WriteMatrixModule::inputPortDescription(WriteMatrixModule::inputPort0Name(), WriteMatrixModule::inputPort1Name());
     description.maker_ = boost::factory<WriteMatrixModule*>();
   }
+  else if (name.find("ReadField") != std::string::npos)
+  {
+    description.input_ports_ += ReadFieldModule::inputPortDescription(ReadFieldModule::inputPort0Name());
+    description.output_ports_ = ReadFieldModule::outputPortDescription(ReadFieldModule::outputPort0Name(), ReadFieldModule::outputPort1Name());
+    description.maker_ = boost::factory<ReadFieldModule*>();
+  }
+  //else if (name.find("WriteField") != std::string::npos)
+  //{
+  //  description.input_ports_ = WriteFieldModule::inputPortDescription(WriteFieldModule::inputPort0Name(), WriteFieldModule::inputPort1Name());
+  //  description.maker_ = boost::factory<WriteFieldModule*>();
+  //}
   else if (name.find("ReadMesh") != std::string::npos)
   {
     description.input_ports_ += ReadMeshModule::inputPortDescription(ReadMeshModule::inputPort0Name());

@@ -31,7 +31,7 @@ SET(Interface_Modules_DataIO_FORMS
   ReadFieldDialog.ui
   ReadMatrix.ui
   ReadMesh.ui
-  WriteFieldDialog.ui
+  #WriteFieldDialog.ui
   WriteMatrix.ui
 )
 
@@ -39,7 +39,7 @@ SET(Interface_Modules_DataIO_HEADERS
   ReadFieldDialog.h
   ReadMatrixDialog.h
   ReadMeshDialog.h
-  WriteFieldDialog.h
+  #WriteFieldDialog.h
   WriteMatrixDialog.h
 )
 
@@ -47,7 +47,7 @@ SET(Interface_Modules_DataIO_SOURCES
   ReadFieldDialog.cc
   ReadMatrixDialog.cc
   ReadMeshDialog.cc
-  WriteFieldDialog.cc
+  #WriteFieldDialog.cc
   WriteMatrixDialog.cc
 )
 

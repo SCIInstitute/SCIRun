@@ -40,6 +40,7 @@
 #ifndef MODULES_DATAIO_GENERIC_READER_H
 #define MODULES_DATAIO_GENERIC_READER_H
 
+#include <boost/filesystem.hpp>
 #include <Core/Datatypes/String.h>
 #include <Dataflow/Network/Module.h>
 
@@ -53,15 +54,17 @@ class GenericReader : public SCIRun::Dataflow::Networks::Module,
   public Has2OutputPorts<PortTag, StringPortTag>
 {
 public:
-  GenericReader(const std::string &name, const std::string &category, const std::string &package);
+  GenericReader(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
 
   virtual void execute();
   INPUT_PORT(0, Filename, String);
-  //OUTPUT_PORT(0, Field, LegacyField);
+  //OUTPUT_PORT(0, Object, PortType);
   OUTPUT_PORT(1, FileLoaded, String);
 
 protected:
   std::string filename_;
+  Core::Algorithms::AlgorithmParameterName stateFilename_;
+  PortName<typename HType::element_type, 0> objectPortName_;
   //GuiFilename gui_filename_;
   //GuiString gui_from_env_;
 
@@ -73,31 +76,33 @@ protected:
 };
 
 
-template <class HType>
-GenericReader<HType>::GenericReader(const std::string &name, GuiContext* ctx,
-				    const std::string &cat, const std::string &pack)
+template <class HType, class PortTag> 
+GenericReader<HType, PortTag>::GenericReader(const std::string &name,
+				    const std::string &cat, const std::string &pack, const std::string& stateFilename)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
-    gui_filename_(get_ctx()->subVar("filename"), ""),
-    gui_from_env_(get_ctx()->subVar("from-env"),""),
+    //gui_filename_(get_ctx()->subVar("filename"), ""),
+    //gui_from_env_(get_ctx()->subVar("from-env"),""),
+    stateFilename_(stateFilename),
     old_filemodification_(0),
     importing_(false)
 {
 }
 
 
-template <class HType>
+template <class HType, class PortTag> 
 bool
-GenericReader<HType>::call_importer(const std::string &/*filename*/,
+GenericReader<HType, PortTag>::call_importer(const std::string &/*filename*/,
 				    HType & /*handle*/ )
 {
   return false;
 }
 
 
-template <class HType>
+template <class HType, class PortTag> 
 void
-GenericReader<HType>::execute()
+GenericReader<HType, PortTag>::execute()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   bool filename_changed = gui_filename_.changed();
   
   if (gui_from_env_.get() != "")
@@ -111,59 +116,64 @@ GenericReader<HType>::execute()
       filename_changed = true;
     }
   }
+#endif
 
   // If there is an optional input string set the filename to it in the GUI.
-  StringHandle shandle;
-  if (get_input_handle("Filename",shandle,false))
-  {
-    gui_filename_.set(shandle->get());
-    get_ctx()->reset();
-    filename_changed = true;
-  }
+  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+  auto fileOption = getOptionalInput(Filename);
+  if (!fileOption)
+    filename_ = get_state()->getValue(stateFilename_).getString();
+  else
+    filename_ = (*fileOption)->value();
   
-  const std::string filename(gui_filename_.get());
-
   // Read the status of this file so we can compare modification timestamps
-  struct stat buf;
 
-  if( filename == "" ) 
+  if(filename_.empty()) 
   {
     error("No file has been selected.  Please choose a file.");
     return;
   } 
-  else if (stat(filename.c_str(), &buf)) 
+  else if (!boost::filesystem::exists(filename_)) 
   {
     if (!importing_)
     {
-      error("File '" + filename + "' not found.");
+      error("File '" + filename_ + "' not found.");
       return;
     }
     else
     {
-      warning("File '" + filename + "' not found.  Maybe the plugin can find it?");
+      warning("File '" + filename_ + "' not found.  Maybe the plugin can find it?");
     }
   }
 
   // If we haven't read yet, or if it's a new filename, 
   //  or if the datestamp has changed -- then read...
 
-  time_t new_filemodification = buf.st_mtime;
+  time_t new_filemodification = boost::filesystem::last_write_time(filename_);
 
-  if( inputs_changed_ || filename_changed ||
+  if( 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    inputs_changed_ || filename_changed ||
       new_filemodification != old_filemodification_ ||
       !oport_cached(0) ||
-      !oport_cached("Filename") )
+      !oport_cached("Filename") 
+#else
+    true
+#endif
+      )
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);  
+#endif
     old_filemodification_ = new_filemodification;
 
     HType handle;
 
-    remark("loading file " +filename);
+    remark("loading file " +filename_);
     
     if (importing_)
     {
-      if (!call_importer(filename, handle))
+      if (!call_importer(filename_, handle))
       {
         error("Import failed.");
         return;
@@ -171,27 +181,26 @@ GenericReader<HType>::execute()
     }
     else
     {
-      PiostreamPtr stream = auto_istream(filename, 0);
+      PiostreamPtr stream = auto_istream(filename_, getLogger());
       if (!stream)
       {
-        error("Error reading file '" + filename + "'.");
+        error("Error reading file '" + filename_ + "'.");
         return;
       }
     
       // Read the file
       Pio(*stream, handle);
 
-      if (!handle.get_rep() || stream->error())
+      if (!handle || stream->error())
       {
-        error("Error reading data from file '" + filename +"'.");
+        error("Error reading data from file '" + filename_ +"'.");
         return;
       }
     }
 
-    shandle = new String(gui_filename_.get());
-    send_output_handle("Filename", shandle);
-
-    send_output_handle(0, handle);
+    Core::Datatypes::StringHandle shandle(new Core::Datatypes::String(filename_));
+    sendOutput(Filename, shandle);
+    sendOutput(objectPortName_, handle);
   }
 
 }

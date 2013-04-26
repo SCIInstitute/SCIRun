@@ -58,6 +58,7 @@ ADD_LIBRARY(Modules_DataIO
 TARGET_LINK_LIBRARIES(Modules_DataIO
   Dataflow_Network
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   Algorithms_DataIO
   ${SCI_BOOST_LIBRARY}
 )

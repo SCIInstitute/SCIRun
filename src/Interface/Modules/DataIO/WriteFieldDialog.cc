@@ -1,3 +1,4 @@
+#if 0
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -65,3 +66,4 @@ void WriteMatrixDialog::saveFile()
   fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
   pushFileNameToState();
 }
+#endif
