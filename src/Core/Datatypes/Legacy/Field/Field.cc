@@ -110,6 +110,8 @@ Field::io(Piostream& stream)
   stream.end_class();
 }
 
+std::string Field::type_name() const { return type_id.type; }   
+
 // initialize the static member type_id
 PersistentTypeID Field::type_id("Field", "PropertyManager", 0);
 

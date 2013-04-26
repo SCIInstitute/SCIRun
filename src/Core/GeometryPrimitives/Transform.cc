@@ -929,7 +929,7 @@ Transform::io(Piostream& stream)
 }
 
 void
-Pio(Piostream& stream, Transform*& obj)
+SCIRun::Core::Geometry::Pio(Piostream& stream, Transform*& obj)
 {
   SCIRun::Persistent* pobj=obj;
   stream.io(pobj, Transform::type_id);
@@ -940,7 +940,7 @@ Pio(Piostream& stream, Transform*& obj)
 }
 
 void
-  Pio_old(Piostream& stream, Transform& obj) 
+  SCIRun::Core::Geometry::Pio_old(Piostream& stream, Transform& obj) 
 {
   stream.begin_cheap_delim();
   for (int i=0; i<4; i++) 

@@ -90,7 +90,7 @@ class SCISHARE Field: public Core::Datatypes::Datatype
     //! Persistent I/O.
     static  PersistentTypeID type_id;
     virtual void io(Piostream &stream);
-    virtual std::string type_name() const { return type_id.type; }    
+    virtual std::string type_name() const;
 };
 
 
