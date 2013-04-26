@@ -52,8 +52,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <Core/Persistent/Persistent.h>
 #endif
+
+#include <Core/Persistent/Persistent.h>
+
 
 #include <Core/Utils/Legacy/Assert.h>
 
@@ -112,8 +114,6 @@ private:
   impl_type impl_;
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 template<class T> void Pio(Piostream& stream, Array3<T>& array);
 template<class T> void Pio(Piostream& stream, Array3<T>& array, const std::string&);
 template<class T> void Pio(Piostream& stream, Array3<T>*& array);
@@ -152,9 +152,9 @@ Pio(Piostream& stream, Array3<T>& data)
   else 
   {
     long long d1, d2, d3;
-    d1 = static_cast<long long>(data.dm1);
-    d2 = static_cast<long long>(data.dm2);
-    d3 = static_cast<long long>(data.dm3);
+    d1 = static_cast<long long>(data.dim1());
+    d2 = static_cast<long long>(data.dim2());
+    d3 = static_cast<long long>(data.dim3());
     Pio(stream, d1);
     Pio(stream, d2);
     Pio(stream, d3);
@@ -162,18 +162,17 @@ Pio(Piostream& stream, Array3<T>& data)
   
   if (stream.supports_block_io())
   {
-    stream.block_io(reinterpret_cast<void*>(data.obj), sizeof(T), 
-                    static_cast<size_t>(data.dm1*data.dm2*data.dm3));
+    stream.block_io(reinterpret_cast<void*>(&data[0]), sizeof(T), data.size());
   }
   else
   {
-    for(index_type i=0;i<data.dm1;i++)
+    for(size_t i=0;i<data.dim1();i++)
     {
-      for(index_type j=0;j<data.dm2;j++)
+      for(size_t j=0;j<data.dim2();j++)
       {
-        for(index_type k=0;k<data.dm3;k++)
+        for(size_t k=0;k<data.dim3();k++)
         {
-          Pio(stream, data.objs[i][j][k]);
+          Pio(stream, data(i,j,k));
         }
       }
     }
@@ -240,7 +239,7 @@ Pio( Piostream& stream, Array3<T>& data,
     
   stream.end_class();
 }
-
+#if 0
 template<class T>
 int
 Array3<T>::input( const std::string &filename ) 
@@ -313,8 +312,7 @@ Array3<T>::output( const std::string &filename )
   return 1;
 } 
 #endif
+}
 
-} // End namespace SCIRun
-
-#endif // SCI_Containers_Array3_h
+#endif 
 

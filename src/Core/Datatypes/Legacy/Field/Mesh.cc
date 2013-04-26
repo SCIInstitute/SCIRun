@@ -38,10 +38,8 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // initialize the static member type_id
 PersistentTypeID Mesh::type_id("Mesh", "PropertyManager", NULL);
-#endif
 
 
 namespace 
@@ -373,7 +371,6 @@ Mesh::basis_order()
   return (-1);
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int MESHBASE_VERSION = 2;
 
 void 
@@ -387,7 +384,9 @@ Mesh::io(Piostream& stream)
   {
     stream.begin_class("Mesh", MESHBASE_VERSION);
   }
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   PropertyManager::io(stream);
+#endif
   stream.end_class();
 }
 
@@ -398,7 +397,6 @@ Mesh::type_name(int n)
   static const std::string name = "Mesh";
   return name;
 }
-#endif
 
 //! Return the transformation that takes a 0-1 space bounding box to
 //! the current bounding box of this mesh.

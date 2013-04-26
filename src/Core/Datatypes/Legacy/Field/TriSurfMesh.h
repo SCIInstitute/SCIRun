@@ -2020,12 +2020,10 @@ struct less_int
   }
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 template <class Basis>
 PersistentTypeID
 TriSurfMesh<Basis>::trisurf_typeid(TriSurfMesh<Basis>::type_name(-1), "Mesh", maker);
-#endif
+
 template <class Basis>
 const std::string
 TriSurfMesh<Basis>::type_name(int n)
@@ -3650,8 +3648,6 @@ TriSurfMesh<Basis>::add_triangle(const Core::Geometry::Point &p0,
   return add_triangle(add_find_point(p0), add_find_point(p1), add_find_point(p2));
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 #define TRISURFMESH_VERSION 4
 
 template <class Basis>
@@ -3685,9 +3681,8 @@ TriSurfMesh<Basis>::io(Piostream &stream)
   }
 
   if (stream.reading())
-    vmesh_ = CreateVTriSurfMesh(this);
+    vmesh_.reset(CreateVTriSurfMesh(this));
 }
-#endif
 
 template <class Basis>
 void

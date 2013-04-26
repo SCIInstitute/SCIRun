@@ -1221,11 +1221,10 @@ LatVolMesh<Basis>::cell_type_description()
   }
   return td;
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class Basis>
 PersistentTypeID
 LatVolMesh<Basis>::latvol_typeid(type_name(-1), "Mesh", LatVolMesh<Basis>::maker);
-#endif
 
 template <class Basis>
 LatVolMesh<Basis>::LatVolMesh(size_type i, size_type j, size_type k,
@@ -2372,7 +2371,6 @@ find_type_name(typename LatVolMesh<Basis>::CellIndex *)
   return name;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define LATVOLMESH_VERSION 5
 
 template <class Basis>
@@ -2432,12 +2430,10 @@ LatVolMesh<Basis>::io(Piostream& stream)
   if (stream.reading())
   {
     compute_jacobian();
-    vmesh_ = CreateVLatVolMesh(this);
+    vmesh_.reset(CreateVLatVolMesh(this));
   }
 
 }
-
-#endif
 
 template <class Basis>
 const std::string

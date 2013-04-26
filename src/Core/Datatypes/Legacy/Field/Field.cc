@@ -49,7 +49,6 @@ Field::~Field()
   DEBUG_DESTRUCTOR("Field")  
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 const int FIELD_VERSION = 3;
 
 void 
@@ -105,13 +104,14 @@ Field::io(Piostream& stream)
     }
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   PropertyManager::io(stream);
+#endif
   stream.end_class();
 }
 
 // initialize the static member type_id
 PersistentTypeID Field::type_id("Field", "PropertyManager", 0);
-#endif
 
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface

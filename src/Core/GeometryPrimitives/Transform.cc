@@ -939,6 +939,41 @@ Pio(Piostream& stream, Transform*& obj)
   }
 }
 
+void
+  Pio_old(Piostream& stream, Transform& obj) 
+{
+  stream.begin_cheap_delim();
+  for (int i=0; i<4; i++) 
+  {
+    for (int j=0; j<4; j++) 
+    {
+      if (stream.reading()) 
+      {
+        double tmp;
+        Pio(stream, tmp);
+        obj.set_mat_val(i, j, tmp);
+        Pio(stream, tmp);
+        obj.set_imat_val(i, j, tmp);
+      } 
+      else 
+      {
+        double tmp = obj.get_mat_val(i, j);
+        Pio(stream, tmp);
+        tmp = obj.get_imat_val(i, j);
+        Pio(stream, tmp);
+      }
+    }
+  }
+  int iv = obj.inv_valid();
+  Pio(stream, iv);
+
+  if (stream.reading()) 
+  {
+    obj.set_inv_valid(iv);
+  }
+  stream.end_cheap_delim();
+}
+
 namespace 
 {
   const std::string& get_Transform_h_file_path() 

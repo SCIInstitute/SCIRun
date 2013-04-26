@@ -44,9 +44,7 @@
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Datatypes/Legacy/Field/MeshTypes.h>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
-#endif
 #include <Core/Containers/FData.h>
 #include <Core/Datatypes/Legacy/Field/CastFData.h>
 #include <Core/Containers/StackVector.h>
@@ -229,12 +227,11 @@ GenericField<Mesh, Basis, FData>::field_id(type_name(-1),field_maker,field_maker
 template <class Mesh, class Basis, class FData>
 void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
 {
-  // we need to pass -1 to type_name() on SGI to fix a compile bug
-  int version = stream.begin_class(type_name(-1), GENERICFIELD_VERSION);
+  int version = stream.begin_class(type_name(), GENERICFIELD_VERSION);
   
   if (stream.backwards_compat_id()) 
   {
-    version = stream.begin_class(type_name(-1), GENERICFIELD_VERSION);
+    version = stream.begin_class(type_name(), GENERICFIELD_VERSION);
   }
   Field::io(stream);
   
@@ -255,6 +252,7 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
   }
   
   Pio(stream, fdata_);
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   freeze();
 #endif
@@ -268,7 +266,7 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
   // A new mesh is associated with it
   if (stream.reading())
   {
-    vfield_->update_mesh_pointer(mesh_.get_rep());
+    vfield_->update_mesh_pointer(mesh_.get());
   }
 }
 

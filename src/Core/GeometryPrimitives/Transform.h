@@ -66,7 +66,7 @@ class SCISHARE Transform : public Persistent
     void sub_rows(double m[4][4], int row1, int row2, double mul) const;
     void load_identity(double[4][4]);
     void load_zero(double[4][4]);
-
+public:
     double get_imat_val(int i, int j) const { return imat[i][j]; }
     void set_imat_val(int i, int j, double val) { imat[i][j] = val; }
 
@@ -157,6 +157,7 @@ SCISHARE SCIRun::Tensor operator*(const SCIRun::Tensor &d, const SCIRun::Transfo
 #endif
 
 SCISHARE void Pio(Piostream&, Transform*&);
+SCISHARE void Pio_old(Piostream&, Transform&);
 SCISHARE const TypeDescription* get_type_description(Transform*);
 
 

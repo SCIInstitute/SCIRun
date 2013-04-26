@@ -44,16 +44,9 @@
 
 #include <vector>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/Persistent.h>
-#endif
 
 namespace SCIRun {
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-template<class T> class Array1;
-template<class T> void Pio(Piostream& stream, Array1<T>& array);
-#endif
 
 template<class T> 
 class Array1 : public std::vector<T>
@@ -65,8 +58,8 @@ public:
   explicit Array1(size_t size) : my_base(size) {}
 };
 
+template<class T> void Pio(Piostream& stream, Array1<T>& array);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define ARRAY1_VERSION 3
 
 template<class T>
@@ -112,7 +105,6 @@ void Pio(Piostream& stream, Array1<T>*& array)
     array=new Array1<T>;
   Pio(stream, *array);
 }
-#endif
 
 } // End namespace SCIRun
 

@@ -26,9 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
-#endif
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/Constant.h>
@@ -117,8 +115,6 @@ namespace SCIRun
     FData3d<unsigned long, LVMesh> >;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 PersistentTypeID backwards_compat_LVM("LatVolMesh", "Mesh",
   LVMesh::maker,  
   LVMesh::maker);
@@ -191,4 +187,3 @@ backwards_compat_LVFul("LatVolField<unsigned_long>", "Field",
 		       FData3d<unsigned long, LVMesh> >::maker, 
 		       GenericField<LVMesh, CFDulongBasis, 
 		       FData3d<unsigned long, LVMesh> >::maker);
-#endif

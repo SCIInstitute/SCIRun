@@ -252,7 +252,7 @@ void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_i
   stream.io(trep, T::type_id);
   if(stream.reading())
   {
-    data.reset(trep);
+    data.reset(static_cast<T*>(trep));
   }
   stream.end_cheap_delim();
 }

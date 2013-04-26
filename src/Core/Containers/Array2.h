@@ -44,9 +44,7 @@
 
 #include <boost/multi_array.hpp>
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/Persistent.h>
-#endif
 
 namespace SCIRun {
 
@@ -91,12 +89,8 @@ private:
   impl_type impl_;
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 template<class T> void Pio(Piostream& stream, Array2<T>& data);
 template<class T> void Pio(Piostream& stream, Array2<T>*& data);
-
-#define ARRAY2_VERSION 2
 
 template<class T>
 void Pio(Piostream& stream, Array2<T>& data)
@@ -153,7 +147,6 @@ void Pio(Piostream& stream, Array2<T>*& data)
   }
   Pio(stream, *data);
 }
-#endif
 
 } // End namespace SCIRun
 
