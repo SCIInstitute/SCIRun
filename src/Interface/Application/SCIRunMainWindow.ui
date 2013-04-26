@@ -567,6 +567,11 @@
          </item>
          <item>
           <property name="text">
+           <string>WriteField</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>SendScalar</string>
           </property>
           <property name="text">
@@ -607,6 +612,11 @@
           </property>
           <property name="text">
            <string/>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ReadField</string>
           </property>
          </item>
         </item>
