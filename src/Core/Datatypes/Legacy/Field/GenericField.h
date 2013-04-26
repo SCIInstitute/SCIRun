@@ -245,7 +245,9 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
   else
     Pio(stream, mesh_);
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   mesh_->freeze();
+#endif
   
   if (version >= 3) 
   { 
@@ -253,7 +255,9 @@ void GenericField<Mesh, Basis, FData>::io(Piostream& stream)
   }
   
   Pio(stream, fdata_);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   freeze();
+#endif
 
   if (stream.backwards_compat_id()) 
   {

@@ -42,6 +42,8 @@
 #ifndef CORE_PERSISTENT_H
 #define CORE_PERSISTENT_H 1
 
+#include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/is_base_of.hpp>
 #include <Core/Persistent/PersistentFwd.h>
 #include <map>
 #include <string>
@@ -240,6 +242,20 @@ inline void Pio(Piostream& stream, std::string& data) { stream.io(data); }
 inline void Pio(Piostream& stream, Persistent& data) { data.io(stream); }
 
 SCISHARE void Pio_index(Piostream& stream, index_type* data, size_type sz);
+
+
+template<class T>
+void Pio(Piostream& stream, boost::shared_ptr<T>& data, typename boost::enable_if<typename boost::is_base_of<Persistent, T>::type>* = 0)
+{
+  stream.begin_cheap_delim();
+  Persistent* trep = data.get();
+  stream.io(trep, T::type_id);
+  if(stream.reading())
+  {
+    data.reset(trep);
+  }
+  stream.end_cheap_delim();
+}
 
 template<class T>
 inline void Pio(Piostream& stream, T* data, size_type sz)
