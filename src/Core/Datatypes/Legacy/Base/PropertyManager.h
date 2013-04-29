@@ -1,4 +1,3 @@
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -42,26 +41,26 @@
 #ifndef CORE_DATATYPES_PROPERTYMANAGER_H
 #define CORE_DATATYPES_PROPERTYMANAGER_H 1 
 
-#include <Core/Util/Assert.h>
-#include <Core/Datatypes/TypeName.h>
-#include <Core/Datatypes/builtin.h>
+#include <Core/Utils/Legacy/Assert.h>
+#include <Core/Datatypes/Legacy/Base/TypeName.h>
+#include <Core/Datatypes/Legacy/Other/builtin.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Thread/Guard.h>
+#include <Core/Thread/Mutex.h>
 #include <Core/Containers/Array1.h>
 
 #include <iostream>
 #include <map>
 
 
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Legacy/Base/share.h>
 
 namespace SCIRun {
 
-class SCISHARE PropertyBase : public Datatype {
+class SCISHARE PropertyBase : public Persistent 
+{
 public:
-  PropertyBase(bool trans) : transient_(trans) {}
-  virtual ~PropertyBase() {}
+  explicit PropertyBase(bool trans) : transient_(trans) {}
   virtual PropertyBase* clone() const { 
     ASSERTFAIL("PropertyBase clone called");
   }
@@ -158,7 +157,7 @@ const std::string Property<T>::type_name(int n)
     return nm;
   }
   else
-    return find_type_name( reinterpret_cast<T*>(0));
+    return find_type_name( static_cast<T*>(0));
 }
 
 template <class T>
@@ -191,7 +190,7 @@ Property<T>::io( Piostream &stream)
  * PropertyManager
  */
 
-class PropertyManager : public Datatype
+class PropertyManager : public Persistent
 {
 public:
   PropertyManager();
@@ -249,6 +248,8 @@ protected:
   void clear_transient();
 
   bool frozen_;
+
+  Core::Thread::Mutex lock;
 };
 
 
@@ -262,7 +263,7 @@ PropertyManager::set_property(const std::string &name,  const T& obj,
               << " freezing now!" << std::endl;
     freeze();
   }
-  Guard g(&lock);
+  Core::Thread::Guard g(lock.get());
   map_type::iterator loc = properties_.find(name);
   if (loc != properties_.end())
   {
@@ -276,12 +277,12 @@ template<class T>
 bool 
 PropertyManager::get_property(const std::string &name, T &ref)
 {
-  Guard g(&lock);
+  Core::Thread::Guard g(lock.get());
 
   bool ans = false;
   map_type::iterator loc = properties_.find(name);
   if (loc != properties_.end()) {
-    const Property<T> *prop = SCI_DATATYPE_CAST<const Property<T> *>(loc->second);
+    const Property<T> *prop = dynamic_cast<const Property<T> *>(loc->second);
     if (prop)
     {
       ref = prop->obj_;
@@ -295,5 +296,3 @@ PropertyManager::get_property(const std::string &name, T &ref)
 } // namespace SCIRun
 
 #endif // SCI_project_PropertyManager_h
-
-#endif

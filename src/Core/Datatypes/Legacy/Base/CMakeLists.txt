@@ -28,13 +28,13 @@
 
 SET(Core_Datatypes_Legacy_Base_SRCS
   #Datatype.cc
-  #PropertyManager.cc
+  PropertyManager.cc
   TypeName.cc
 )
 
 SET(Core_Datatypes_Legacy_Base_HEADERS
   #Datatype.h
-  #PropertyManager.h
+  PropertyManager.h
   TypeName.h
   Types.h
   Share.h
@@ -45,9 +45,9 @@ ADD_LIBRARY(Core_Datatypes_Legacy_Base
   ${Core_Datatypes_Legacy_Base_SRCS}
 )
 
-#TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Base
-  
-#)
+TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Base
+  Core_Persistent  
+)
 
 IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Legacy_Base)

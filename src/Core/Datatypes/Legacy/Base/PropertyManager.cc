@@ -38,16 +38,16 @@
  *  Manage properties of persistent objects.
  */
 
-#include <Core/Thread/Guard.h>
-#include <Core/Util/Assert.h>
-#include <Core/Datatypes/PropertyManager.h>
-#include <Core/Util/MemoryUtil.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Utils/Legacy/MemoryUtil.h>
+
+using namespace SCIRun::Core::Thread;
 
 namespace SCIRun {
 
 // TODO: should be using Guards here...
 PersistentTypeID 
-PropertyBase::type_id("PropertyBase", "Datatype", maker);
+PropertyBase::type_id("PropertyBase", "Persistent", maker);
 
 std::string PropertyBase::dynamic_type_name() const { return type_id.type; }
 
@@ -63,14 +63,14 @@ Persistent* make_PropertyManager()
 }
 
 PersistentTypeID PropertyManager::type_id("PropertyManager", 
-					  "Datatype", 
+					  "Persistent", 
 					  make_PropertyManager);
 
 std::string PropertyManager::dynamic_type_name() const { return type_id.type; }
 
 
 PropertyManager::PropertyManager() : 
-  frozen_(false)
+  frozen_(false), lock("PropertyManager")
 {
 }
 
@@ -80,11 +80,12 @@ PropertyManager::PropertyManager() :
 // TODO: this and copy properties share essentially common code.
 // Add a helper function to manage duplicated code.
 PropertyManager::PropertyManager(const PropertyManager &copy) :
-  Datatype(copy),
-  frozen_(false)
+  Persistent(copy),
+  frozen_(false),
+  lock("PropertyManager")
 {
-  Guard this_guard(&this->lock);
-  Guard copy_guard(const_cast<RecursiveMutex*>(&copy.lock));
+  Guard this_guard(lock.get());
+  Guard copy_guard(const_cast<PropertyManager&>(copy).lock.get());
 
   map_type::const_iterator pi = copy.properties_.begin();
   while (pi != copy.properties_.end())
@@ -112,13 +113,13 @@ PropertyManager::operator=(const PropertyManager &src)
 void
 PropertyManager::copy_properties(const PropertyManager* src)
 {
-  Guard this_guard(&this->lock);
+  Guard this_guard(lock.get());
 
   clear_transient();
   this->frozen_ = false;
 
   {
-    Guard src_guard(const_cast<RecursiveMutex*>(&(src->lock)));
+    Guard src_guard(const_cast<PropertyManager*>(src)->lock.get());
     map_type::const_iterator pi = src->properties_.begin();
     while (pi != src->properties_.end())
     {
@@ -139,14 +140,14 @@ PropertyManager::operator==(const PropertyManager &pm)
 {
   bool result = true;
 
-  Guard g(&lock);
+  Guard g(lock.get());
 
   if (nproperties() != pm.nproperties())
   {
     result = false;
   }
 
-  Guard src_guard(const_cast<RecursiveMutex*>(&pm.lock));
+  Guard src_guard(const_cast<PropertyManager&>(pm).lock.get());
   map_type::const_iterator pi = pm.properties_.begin();
   while (result && pi != pm.properties_.end())
   {
@@ -177,7 +178,7 @@ PropertyManager::operator!=(const PropertyManager &pm)
 
 PropertyManager::~PropertyManager()
 {
-  Guard g(&lock);
+  Guard g(lock.get());
   // Clear all the properties.
   delete_all_values(this->properties_);
 }
@@ -189,7 +190,7 @@ PropertyManager::thaw()
   // Assert that detach has been called on any handles to this PropertyManager.
   ASSERT(ref_cnt <= 1);
   // Clean up properties.
-  Guard g(&lock);
+  Guard g(lock.get());
 
   clear_transient();
   this->frozen_ = false;
@@ -199,7 +200,7 @@ PropertyManager::thaw()
 void
 PropertyManager::freeze()
 {
-  Guard g(&lock);
+  Guard g(lock.get());
 
   this->frozen_ = true;
 }
@@ -208,7 +209,7 @@ PropertyManager::freeze()
 bool 
 PropertyManager::is_property(const std::string &name)
 {
-  Guard g(&lock);
+  Guard g(lock.get());
 
   bool ans = false;
   map_type::iterator loc = this->properties_.find(name);
@@ -224,7 +225,7 @@ PropertyManager::get_property_name(size_t index)
 {
   if (index < this->nproperties())
   {
-    Guard g(&lock);
+    Guard g(lock.get());
 
     map_type::const_iterator pi = this->properties_.begin();
 
@@ -245,7 +246,7 @@ PropertyManager::get_property_name(size_t index)
 void
 PropertyManager::remove_property( const std::string &name )
 {
-  Guard g(&lock);
+  Guard g(lock.get());
 
   map_type::iterator loc = this->properties_.find(name);
   if (loc != this->properties_.end())
@@ -289,7 +290,7 @@ PropertyManager::io(Piostream &stream)
     stream.begin_class("PropertyManager", PROPERTYMANAGER_VERSION);
   if ( stream.writing() )
   {
-    Guard g(&lock);
+    Guard g(lock.get());
     unsigned int nprop = this->nproperties();
     Pio(stream, nprop);
     map_type::iterator i = this->properties_.begin(); 
@@ -306,7 +307,7 @@ PropertyManager::io(Piostream &stream)
   {
     unsigned int size;
     Pio( stream, size );
-    Guard g(&lock);
+    Guard g(lock.get());
 
     std::string name;
     Persistent *p = 0;
