@@ -161,7 +161,7 @@ class VGenericField : public VField {
       number_of_enodes_ = field->get_basis().number_of_vertices() - number_of_nodes_;
       element_dim_ = field->get_basis().domain_dimension();
       element_dofs_ = field->get_basis().dofs();
-      data_type_ = find_type_name(reinterpret_cast<typename FIELD::value_type*>(0));
+      data_type_ = find_type_name(static_cast<typename FIELD::value_type*>(0));
       for (size_t j=0; j<data_type_.size(); j++) 
         if(data_type_[j] == '_') data_type_[j] = ' ';
         

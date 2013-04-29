@@ -126,7 +126,7 @@ const TypeDescription* get_type_description(NodeIndex<T>*)
   static TypeDescription* td = 0;
 
   if(!td){
-    const TypeDescription *sub = get_type_description(reinterpret_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("NodeIndex", subs, __FILE__, "SCIRun");
@@ -139,7 +139,7 @@ const TypeDescription* get_type_description(EdgeIndex<T>*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    const TypeDescription *sub = get_type_description(reinterpret_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("EdgeIndex", subs, __FILE__, "SCIRun");
@@ -152,7 +152,7 @@ const TypeDescription* get_type_description(FaceIndex<T>*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    const TypeDescription *sub = get_type_description(reinterpret_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("FaceIndex", subs, __FILE__, "SCIRun");
@@ -165,7 +165,7 @@ const TypeDescription* get_type_description(CellIndex<T>*)
 {
   static TypeDescription* td = 0;
   if(!td){
-    const TypeDescription *sub = get_type_description(reinterpret_cast<T*>(0));
+    const TypeDescription *sub = get_type_description(static_cast<T*>(0));
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("CellIndex", subs, __FILE__, "SCIRun");

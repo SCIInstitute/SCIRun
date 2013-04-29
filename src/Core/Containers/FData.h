@@ -277,11 +277,11 @@ FData2d<Data, Msh>::type_name(int n)
   }
   else if (n == 1)
   {
-    return find_type_name(reinterpret_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(0));
   }
   else
   {
-    return find_type_name(reinterpret_cast<Msh *>(0));
+    return find_type_name(static_cast<Msh *>(0));
   }
 }
 
@@ -369,7 +369,7 @@ FData1d<Data>::type_name(int n)
   }
   else 
   {
-    return find_type_name(reinterpret_cast<Data *>(0));
+    return find_type_name(static_cast<Data *>(0));
   }
 }
 
