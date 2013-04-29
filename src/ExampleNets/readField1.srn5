@@ -16,8 +16,20 @@
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item class_id="8" tracking_level="0" version="0">
+								<first class_id="9" tracking_level="0" version="0">
+									<name>Filename</name>
+								</first>
+								<second class_id="10" tracking_level="0" version="0">
+									<name>Filename</name>
+									<value class_id="11" tracking_level="0" version="0">
+										<which>2</which>
+										<value>E:/lv1.fld</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
@@ -34,13 +46,13 @@
 						<stateMap>
 							<count>3</count>
 							<item_version>0</item_version>
-							<item class_id="8" tracking_level="0" version="0">
-								<first class_id="9" tracking_level="0" version="0">
+							<item>
+								<first>
 									<name>ShowEdges</name>
 								</first>
-								<second class_id="10" tracking_level="0" version="0">
+								<second>
 									<name>ShowEdges</name>
-									<value class_id="11" tracking_level="0" version="0">
+									<value>
 										<which>3</which>
 										<value>1</value>
 									</value>

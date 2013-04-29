@@ -38,6 +38,7 @@
  *
  */
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Persistent/Persistent.h>
 #include <Core/Persistent/Pstreams.h>
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
@@ -245,6 +246,10 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
       Persistent* (*bc_maker1)() = 0;
       Persistent* (*bc_maker2)() = 0;
       
+      //TODO ULTRA HACKY CODE
+      if (in_name == "Manager")
+        return;
+
       if (in_name == want_name || backwards_compat_id_)
       {
         maker = pid.maker;
@@ -262,7 +267,8 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
         }
         else
         {
-//          reporter_->error("Did not find a pt_id.");
+          reporter_->error("Did not find a pt_id.");
+          
         }
       }
       if (!maker)
@@ -270,6 +276,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
         reporter_->error("Maker not found? (class=" + in_name + ").");
         reporter_->error("want_name: " + want_name + ".");
         err = true;
+        BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << SCIRun::Core::ErrorMessage("Could not find something: " + in_name));
         return;
       }
       

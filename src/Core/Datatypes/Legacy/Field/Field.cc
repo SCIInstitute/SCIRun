@@ -104,16 +104,14 @@ Field::io(Piostream& stream)
     }
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  PropertyManager::io(stream);
-#endif
+  PropertyManager().io(stream);
   stream.end_class();
 }
 
 std::string Field::type_name() const { return type_id.type; }   
 
 // initialize the static member type_id
-PersistentTypeID Field::type_id("Field", "PropertyManager", 0);
+PersistentTypeID Field::type_id("Field", "Datatype", 0);
 
 // A list to keep a record of all the different Field types that
 // are supported through a virtual interface

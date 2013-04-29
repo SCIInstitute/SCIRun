@@ -69,87 +69,87 @@ using namespace SCIRun::Core::Logging;
 namespace SCIRun {
 
 // BinaryPiostream -- portable
-BinaryPiostream::BinaryPiostream(const std::string& filename, Direction dir,
-                                 const int& v, LoggerHandle pr)
-  : Piostream(dir, v, filename, pr),
+  BinaryPiostream::BinaryPiostream(const std::string& filename, Direction dir,
+    const int& v, LoggerHandle pr)
+    : Piostream(dir, v, filename, pr),
     fp_(0)
-{
-  if (v == -1) // no version given so use PERSISTENT_VERSION
-    version_ = PERSISTENT_VERSION;
-  else
-    version_ = v;
-
-  if (dir==Read)
   {
-    fp_ = fopen (filename.c_str(), "rb");
-    if (!fp_)
-    {
-      reporter_->error("Error opening file: " + filename + " for reading.");
-      err = true;
-      return;
-    }
+    if (v == -1) // no version given so use PERSISTENT_VERSION
+      version_ = PERSISTENT_VERSION;
+    else
+      version_ = v;
 
-    // Old versions had headers of size 12.
-    if (version() == 1)
+    if (dir==Read)
     {
-      char hdr[12];
-      if (!fread(hdr, 1, 12, fp_))
+      fp_ = fopen (filename.c_str(), "rb");
+      if (!fp_)
       {
-	reporter_->error("Header read failed.");
-	err = true;
-	return;
+        reporter_->error("Error opening file: " + filename + " for reading.");
+        err = true;
+        return;
+      }
+
+      // Old versions had headers of size 12.
+      if (version() == 1)
+      {
+        char hdr[12];
+        if (!fread(hdr, 1, 12, fp_))
+        {
+          reporter_->error("Header read failed.");
+          err = true;
+          return;
+        }
+      }
+      else
+      {
+        // Versions > 1 have size of 16 to account for endianness in
+        // header (LIT | BIG).
+        char hdr[16];
+        if (!fread(hdr, 1, 16, fp_))
+        {
+          reporter_->error("Header read failed.");
+          err = true;
+          return;
+        }
       }
     }
     else
     {
-      // Versions > 1 have size of 16 to account for endianness in
-      // header (LIT | BIG).
-      char hdr[16];
-      if (!fread(hdr, 1, 16, fp_))
+      fp_ = fopen(filename.c_str(), "wb");
+      if (!fp_)
       {
-	reporter_->error("Header read failed.");
-	err = true;
-	return;
+        reporter_->error("Error opening file '" + filename + "' for writing.");
+        err = true;
+        return;
+      }
+
+      if (version() > 1)
+      {
+        // write out 16 bytes, but we need 17 for \0
+        char hdr[17];
+        sprintf(hdr, "SCI\nBIN\n%03d\n%s", version_, endianness());
+
+        if (!fwrite(hdr, 1, 16, fp_))
+        {
+          reporter_->error("Header write failed.");
+          err = true;
+          return;
+        }
+      }
+      else
+      {
+        // write out 12 bytes, but we need 13 for \0
+        char hdr[13];
+        sprintf(hdr, "SCI\nBIN\n%03d\n", version_);
+        if (!fwrite(hdr, 1, 13, fp_))
+        {
+          reporter_->error("Header write failed.");
+          err = true;
+          return;
+        }
       }
     }
   }
-  else
-  {
-    fp_ = fopen(filename.c_str(), "wb");
-    if (!fp_)
-    {
-      reporter_->error("Error opening file '" + filename + "' for writing.");
-      err = true;
-      return;
-    }
-
-    if (version() > 1)
-    {
-      // write out 16 bytes, but we need 17 for \0
-      char hdr[17];
-      sprintf(hdr, "SCI\nBIN\n%03d\n%s", version_, endianness());
-
-      if (!fwrite(hdr, 1, 16, fp_))
-      {
-	reporter_->error("Header write failed.");
-	err = true;
-	return;
-      }
-    }
-    else
-    {
-      // write out 12 bytes, but we need 13 for \0
-      char hdr[13];
-      sprintf(hdr, "SCI\nBIN\n%03d\n", version_);
-      if (!fwrite(hdr, 1, 13, fp_))
-      {
-	reporter_->error("Header write failed.");
-	err = true;
-	return;
-      }
-    }
-  }
-}
 
 
 BinaryPiostream::BinaryPiostream(int fd, Direction dir, const int& v,

@@ -42,9 +42,7 @@
 #define builtin_h
 
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/Persistent.h>
-#endif
 
 namespace SCIRun {
 
@@ -84,7 +82,6 @@ typedef ScalarType<long long> LongLong;
 typedef ScalarType<float>  Float;
 typedef ScalarType<double> Double;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline void Pio(Piostream& stream, Char& d)  {Pio(stream,d.val_);}
 inline void Pio(Piostream& stream, UChar& d) {Pio(stream,d.val_);}
 inline void Pio(Piostream& stream, Short& d) {Pio(stream,d.val_);}
@@ -95,16 +92,15 @@ inline void Pio(Piostream& stream, Float& d) {Pio(stream,d.val_);}
 inline void Pio(Piostream& stream, Double& d){Pio(stream,d.val_);}
 inline void Pio(Piostream& stream, LongLong& d){Pio(stream,d.val_);}
 
-inline const std::string find_type_name(Char*)  {return find_type_name(reinterpret_cast<char *>(0));}
-inline const std::string find_type_name(UChar*) {return find_type_name(reinterpret_cast<unsigned char *>(0));}
-inline const std::string find_type_name(Short*) {return find_type_name(reinterpret_cast<short *>(0));}
-inline const std::string find_type_name(UShort*){return find_type_name(reinterpret_cast<unsigned short *>(0));}
-inline const std::string find_type_name(Int*)   {return find_type_name(reinterpret_cast<int *>(0));}
-inline const std::string find_type_name(UInt*)  {return find_type_name(reinterpret_cast<unsigned int *>(0));}
-inline const std::string find_type_name(Float*) {return find_type_name(reinterpret_cast<float *>(0));}
-inline const std::string find_type_name(Double*){return find_type_name(reinterpret_cast<double *>(0));}
-inline const std::string find_type_name(LongLong*){return find_type_name(reinterpret_cast<double *>(0));}
-#endif
+inline const std::string find_type_name(Char*)  {return find_type_name(static_cast<char *>(0));}
+inline const std::string find_type_name(UChar*) {return find_type_name(static_cast<unsigned char *>(0));}
+inline const std::string find_type_name(Short*) {return find_type_name(static_cast<short *>(0));}
+inline const std::string find_type_name(UShort*){return find_type_name(static_cast<unsigned short *>(0));}
+inline const std::string find_type_name(Int*)   {return find_type_name(static_cast<int *>(0));}
+inline const std::string find_type_name(UInt*)  {return find_type_name(static_cast<unsigned int *>(0));}
+inline const std::string find_type_name(Float*) {return find_type_name(static_cast<float *>(0));}
+inline const std::string find_type_name(Double*){return find_type_name(static_cast<double *>(0));}
+inline const std::string find_type_name(LongLong*){return find_type_name(static_cast<double *>(0));}
 
 template<class T> bool is_scalar() { return false; }
 template<> inline bool is_scalar<char>() { return true; }

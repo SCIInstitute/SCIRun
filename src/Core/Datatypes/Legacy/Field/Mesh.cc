@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 
 // initialize the static member type_id
-PersistentTypeID Mesh::type_id("Mesh", "PropertyManager", NULL);
+PersistentTypeID Mesh::type_id("Mesh", "Datatype", 0);
 
 
 namespace 
@@ -384,9 +384,7 @@ Mesh::io(Piostream& stream)
   {
     stream.begin_class("Mesh", MESHBASE_VERSION);
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  PropertyManager::io(stream);
-#endif
+  PropertyManager().io(stream);
   stream.end_class();
 }
 

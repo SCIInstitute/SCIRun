@@ -54,6 +54,7 @@ TARGET_LINK_LIBRARIES( Core_Persistent
   Core_Thread 
   Core_Util_Legacy
   Core_Logging
+  Algorithms_Base #TODO
   #${SCI_ZLIB_LIBRARY}
 )
 
