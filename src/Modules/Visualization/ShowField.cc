@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Color.h>
 
 #include <boost/foreach.hpp>
 
@@ -88,9 +89,6 @@ namespace SCIRun {
 ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun")),
   impl_(new ShowFieldModuleImpl(getUpdaterFunc()))
 {
-  get_state()->setValue(ShowNodes, false);
-  get_state()->setValue(ShowEdges, true);
-  get_state()->setValue(ShowFaces, true);
 }
 
 void ShowFieldModule::execute()
@@ -120,6 +118,12 @@ void ShowFieldModule::execute()
 
   } 
   */
+
+  {
+    //TODO
+    ColorRGB color = any_cast_or_default<ColorRGB>(get_state()->getTransientValue(DefaultMeshColor.name_));
+    std::cout << "Default mesh color is: " << color << std::endl;
+  }
 
   GeometryHandle geom = impl_->renderMesh(field, get_state(), get_id());
 
@@ -411,3 +415,4 @@ AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
 AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
 AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
 AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
+AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");

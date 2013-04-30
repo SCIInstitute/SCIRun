@@ -44,18 +44,23 @@ namespace Algorithms {
 
   struct SCISHARE AlgorithmParameterName
   {
-    AlgorithmParameterName() : name_("<unspecified>") {}
-    explicit AlgorithmParameterName(const std::string& name) : name_(name) {}
-    std::string name_;
+    AlgorithmParameterName() : name_("_unspecified_") {}
+    explicit AlgorithmParameterName(const std::string& name);
+
+    std::string name1() const { return name_; }
+    
     bool operator<(const AlgorithmParameterName& rhs) const
     {
       return name_ < rhs.name_;
     }
+
+    std::string name_;
   };
 
   class SCISHARE AlgorithmParameter
   {
   public:
+    //TODO: expand this 
     typedef boost::variant<int,double,std::string,bool> Value;
 
     AlgorithmParameter() {}

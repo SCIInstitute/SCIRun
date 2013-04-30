@@ -507,9 +507,9 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_8">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="defaultMeshColorButton_">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
        <property name="text">
         <string>Default Color</string>

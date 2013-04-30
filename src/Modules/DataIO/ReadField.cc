@@ -69,6 +69,8 @@ class ReadField : public GenericReader<FieldHandle> {
 DECLARE_MAKER(ReadField)
 #endif
 
+Core::Algorithms::AlgorithmParameterName ReadFieldModule::Filename("Filename");
+
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Filename")    
   //,

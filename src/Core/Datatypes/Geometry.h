@@ -35,13 +35,13 @@
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Share.h>
-#include "Spire/Interface.h"
-#include "Spire/Core/GPUStateManager.h"
-#include "Spire/AppSpecific/SCIRun/SRInterface.h"
+#include <Spire/Interface.h>
+#include <Spire/Core/GPUStateManager.h>
+#include <Spire/AppSpecific/SCIRun/SRInterface.h>
 
 // The following include contains AbstractUniformStateItem which allows
 // us to store uniforms to be passed, at a later time, to spire.
-#include "Spire/Core/ShaderUniformStateManTemplates.h"
+#include <Spire/Core/ShaderUniformStateManTemplates.h>
 
 namespace SCIRun {
 namespace Core {

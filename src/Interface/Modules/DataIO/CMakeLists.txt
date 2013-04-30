@@ -63,6 +63,7 @@ ADD_LIBRARY(Interface_Modules_DataIO
 
 TARGET_LINK_LIBRARIES(Interface_Modules_DataIO 
   Algorithms_DataIO
+  Modules_DataIO
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES})

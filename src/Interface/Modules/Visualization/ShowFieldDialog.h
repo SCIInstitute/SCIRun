@@ -50,8 +50,12 @@ public:
     QWidget* parent = 0);
   virtual void pull();
 
-  private Q_SLOTS:
-    void push();
+private Q_SLOTS:
+  void push();
+  void pushColor();
+  void assignDefaultMeshColor();
+private:
+  QColor defaultMeshColor_;
 };
 
 }

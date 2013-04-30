@@ -27,12 +27,12 @@
 */
 
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Modules/DataIO/ReadField.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
 
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -52,13 +52,12 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
 
 void ReadFieldDialog::pull()
 {
-  //TODO: need separate APN object
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadFieldModule::Filename).getString()));
 }
 
 void ReadFieldDialog::pushFileNameToState() 
 {
-  state_->setValue(ReadMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(ReadFieldModule::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void ReadFieldDialog::openFile()

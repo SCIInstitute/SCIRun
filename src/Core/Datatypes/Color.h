@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,44 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/Share.h>
+#ifndef CORE_DATATYPES_COLORRGB_H
+#define CORE_DATATYPES_COLORRGB_H 
+
+#include <iosfwd>
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-  
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
+namespace Core {
+namespace Datatypes {
+
+  class SCISHARE ColorRGB 
   {
+  private:
+    int r_, g_, b_;
   public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute();
+    ColorRGB();
+    ColorRGB(int, int, int);
 
-    OUTPUT_PORT(0, Field, LegacyField);
+    inline bool operator==(const ColorRGB& c) const {
+      return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_));
+    }
 
-    static Core::Algorithms::AlgorithmParameterName Filename;
+    inline bool operator!=(const ColorRGB& c) const {
+      return !(*this == c);
+    }
+
+    inline int r() const {return r_;}
+    inline int g() const {return g_;}
+    inline int b() const {return b_;}
   };
 
+  typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
+
+  SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
+
 }}}
+
 
 #endif

@@ -43,7 +43,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("build convergence");
+AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {

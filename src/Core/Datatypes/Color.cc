@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,30 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_DATAIO_READ_FIELD_H
-#define MODULES_DATAIO_READ_FIELD_H
+#include <Core/Datatypes/Color.h>
 
-#include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Modules/DataIO/GenericReader.h>
-#include <Modules/DataIO/Share.h>
+using namespace SCIRun::Core::Datatypes;
 
-namespace SCIRun {
-namespace Modules {
-namespace DataIO {
-  
-  class SCISHARE ReadFieldModule : public GenericReader<FieldHandle, FieldPortTag>
-  {
-  public:
-    typedef GenericReader<FieldHandle, FieldPortTag> my_base;
-    ReadFieldModule();
-    virtual void execute();
+ColorRGB::ColorRGB()
+  : r_(0), g_(0), b_(0)
+{
+}
 
-    OUTPUT_PORT(0, Field, LegacyField);
+ColorRGB::ColorRGB(int r, int g, int b)
+  : r_(r), g_(g), b_(b)
+{
+}
 
-    static Core::Algorithms::AlgorithmParameterName Filename;
-  };
-
-}}}
-
-#endif
+std::ostream& SCIRun::Core::Datatypes::operator<<(std::ostream& out, const ColorRGB& color)
+{
+  out << "Color(" << color.r() << "," << color.g() << "," << color.b() << ")";
+  return out;
+}
