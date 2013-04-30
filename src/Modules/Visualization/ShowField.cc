@@ -50,6 +50,7 @@ namespace SCIRun {
       class ShowFieldModuleImpl
       {
       public:
+        explicit ShowFieldModuleImpl(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updater) : updater_(updater) {}
         GeometryHandle renderMesh(boost::shared_ptr<SCIRun::Field> field,
           ModuleStateHandle state, 
           const std::string& id);
@@ -78,12 +79,14 @@ namespace SCIRun {
           SCIRun::Core::Datatypes::GeometryHandle geom,
           const std::string& primaryVBOName,
           ModuleStateHandle state);
+
+        SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updater_;
       };
 
     }}}
 
 ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun")),
-  impl_(new ShowFieldModuleImpl)
+  impl_(new ShowFieldModuleImpl(getUpdaterFunc()))
 {
   get_state()->setValue(ShowNodes, false);
   get_state()->setValue(ShowEdges, true);
@@ -177,24 +180,36 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   attribs.push_back("aFieldData");
   geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
+  if (updater_)
+    updater_(0.1);
+
   // Build vertex buffer.
   size_t i = 0;
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
 
-    double val = 0.0;
-    vfield->get_value(val, node.index());
-    vbo[i+3] = static_cast<float>(val);
+    if (node.index() < vfield->num_values())
+    {
+      double val = 0.0;
+      vfield->get_value(val, node.index());
+      vbo[i+3] = static_cast<float>(val);
+    }
     //std::cout << static_cast<float>(val) << std::endl;
     i+=4;
   }
+
+  if (updater_)
+    updater_(0.25);
 
   // Build the edges
   if (showEdges)
   {
     buildEdgesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
+
+  if (updater_)
+    updater_(0.5);
 
   // Build the faces
   if (showFaces)
@@ -206,11 +221,18 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     buildFacesNoNormals<VMesh>(facade, geom, primVBOName, dataMin, dataMax, state);
   }
 
+  if (updater_)
+    updater_(0.75);
+
   // Build the nodes
   if (showNodes)
   {
     buildNodesNoNormals<VMesh>(facade, geom, primVBOName, state);
   }
+
+  if (updater_)
+    updater_(1);
+
   return geom;
 }
 

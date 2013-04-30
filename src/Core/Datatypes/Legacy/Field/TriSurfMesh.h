@@ -2479,14 +2479,16 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
     boost::thread syncthread(syncclass);
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
   // Wait until threads are done
   Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
     synchronize_cond_.wait(lock);
   }
-
+#endif
   synchronize_lock_.unlock();
+
 
   return (true);
 }
