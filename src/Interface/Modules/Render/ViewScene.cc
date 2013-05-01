@@ -44,12 +44,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
 
-  auto tools = new QToolBar(this);
-  auto menu = new QComboBox(this);
-  menu->addItem("Legacy Mouse Control");
-  menu->addItem("New Mouse Control");
-  tools->addWidget(menu);
-  glLayout->addWidget(tools);
+  addToolBar();
   
   // Setup Qt OpenGL widget.
   QGLFormat fmt;
@@ -203,4 +198,14 @@ void ViewSceneDialog::moduleExecuted()
       }
     }
   }
+}
+
+void ViewSceneDialog::addToolBar() 
+{
+  auto tools = new QToolBar(this);
+  auto menu = new QComboBox(this);
+  menu->addItem("Legacy Mouse Control");
+  menu->addItem("New Mouse Control");
+  tools->addWidget(menu);
+  glLayout->addWidget(tools);
 }

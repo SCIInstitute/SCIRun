@@ -63,7 +63,7 @@ public:
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
 private:
-
+  void addToolBar();
   GLWidget*                                   mGLWidget;  ///< GL widget containing context.
   std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;     ///< Instance of Spire.
 
