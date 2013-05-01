@@ -191,6 +191,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   makeOptionsDialog();
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
+  connect(this, SIGNAL(styleSheetUpdated(const QString&)), this, SLOT(updateStyleSheet(const QString&)));
 
   setupModuleActions();
 
@@ -348,11 +349,19 @@ QPointF ModuleWidget::outputPortPosition() const
 void ModuleWidget::execute()
 {
   {
+    auto sheet = styleSheet();
+    styleSheetUpdated("background-color: #99FFCC;");
     timer_.restart();
     theModule_->do_execute();
     Q_EMIT updateProgressBarSignal(1);
+    Q_EMIT styleSheetUpdated(sheet);
   }
   Q_EMIT moduleExecuted();
+}
+
+void ModuleWidget::updateStyleSheet(const QString& sheet)
+{
+  setStyleSheet(sheet);
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;

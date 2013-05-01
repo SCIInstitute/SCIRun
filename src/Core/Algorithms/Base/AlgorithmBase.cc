@@ -38,7 +38,7 @@ AlgorithmParameterName::AlgorithmParameterName(const std::string& name) : name_(
 {
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {
-    std::cout << "APN not accessible from Python: " << name << std::endl;
+    //std::cout << "APN not accessible from Python: " << name << std::endl;
     //TODO: log this, exception is overkill.
     //THROW_INVALID_ARGUMENT("Algorithm parameter name must be alphanumeric");
   }

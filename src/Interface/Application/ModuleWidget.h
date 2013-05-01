@@ -90,6 +90,7 @@ public Q_SLOTS:
   void launchDocumentation();
   void updateNote(const Note& note);
   void duplicate();
+  void updateStyleSheet(const QString& sheet);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -100,6 +101,7 @@ Q_SIGNALS:
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+  void styleSheetUpdated(const QString& sheet);
 private:
   Ports inputPorts_;
   Ports outputPorts_;
