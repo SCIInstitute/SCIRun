@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <Core/Datatypes/Color.h>
 
 using namespace SCIRun::Core::Datatypes;
