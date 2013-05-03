@@ -85,12 +85,12 @@ VMesh* CreateVTetVolMesh(MESH*) { return (0); }
 
 #if (SCIRUN_TETVOL_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVTetVolMesh(TetVolMesh<TetLinearLgn<Point> >* mesh);
+SCISHARE VMesh* CreateVTetVolMesh(TetVolMesh<Core::Basis::TetLinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTetVolMesh(TetVolMesh<TetQuadraticLgn<Point> >* mesh);
+SCISHARE VMesh* CreateVTetVolMesh(TetVolMesh<Core::Basis::TetQuadraticLgn<Core::Geometry::Point> >* mesh);
 #endif
 #if (SCIRUN_CUBIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVTetVolMesh(TetVolMesh<TetCubicHmt<Point> >* mesh);
+SCISHARE VMesh* CreateVTetVolMesh(TetVolMesh<Core::Basis::TetCubicHmt<Core::Geometry::Point> >* mesh);
 #endif
 
 #endif
@@ -258,22 +258,22 @@ public:
     }
 
     inline
-    const Point &node0() const 
+    const Core::Geometry::Point &node0() const 
     {
       return mesh_.points_[node0_index()];
     }
     inline
-    const Point &node1() const 
+    const Core::Geometry::Point &node1() const 
     {
       return mesh_.points_[node1_index()];
     }
     inline
-    const Point &node2() const 
+    const Core::Geometry::Point &node2() const 
     {
       return mesh_.points_[node2_index()];
     }
     inline
-    const Point &node3() const 
+    const Core::Geometry::Point &node3() const 
     {
       return mesh_.points_[node3_index()];
     }
@@ -534,13 +534,13 @@ public:
   }  
   
   //! get the center point (in object space) of an element  
-  void get_center(Point &result, typename Node::index_type idx) const
+  void get_center(Core::Geometry::Point &result, typename Node::index_type idx) const
   { get_node_center(result, idx); }
-  void get_center(Point &result, typename Edge::index_type idx) const
+  void get_center(Core::Geometry::Point &result, typename Edge::index_type idx) const
   { get_edge_center(result, idx); }
-  void get_center(Point &result, typename Face::index_type idx) const
+  void get_center(Core::Geometry::Point &result, typename Face::index_type idx) const
   { get_face_center(result, idx); }
-  void get_center(Point &result, typename Cell::index_type idx) const
+  void get_center(Core::Geometry::Point &result, typename Cell::index_type idx) const
   { get_cell_center(result, idx); }
   
   //! Get the size of an element (length, area, volume)
@@ -551,7 +551,7 @@ public:
   {
     typename Node::array_type arr;
     get_nodes(arr, idx);
-    Point p0, p1;
+    Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
     return ((p1.asVector() - p0.asVector()).length());
@@ -561,7 +561,7 @@ public:
   {
     typename Node::array_type ra;
     get_nodes(ra,idx);
-    Point p0,p1,p2;
+    Core::Geometry::Point p0,p1,p2;
     get_point(p0,ra[0]);
     get_point(p1,ra[1]);
     get_point(p2,ra[2]);
@@ -606,43 +606,43 @@ public:
   { get_elem_neighbors(array,elem); }
 
   //! return false if point is out of range.
-  bool locate(typename Node::index_type &node, const Point &p) const
+  bool locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
   { return (locate_node(node,p)); }
-  bool locate(typename Edge::index_type &edge, const Point &p) const
+  bool locate(typename Edge::index_type &edge, const Core::Geometry::Point &p) const
   { return (locate_edge(edge,p)); }
-  bool locate(typename Face::index_type &face, const Point &p) const
+  bool locate(typename Face::index_type &face, const Core::Geometry::Point &p) const
   { return (locate_face(face,p)); }
-  bool locate(typename Cell::index_type &cell, const Point &p) const
+  bool locate(typename Cell::index_type &cell, const Core::Geometry::Point &p) const
   { return (locate_elem(cell,p)); }
 
   bool locate(typename Elem::index_type &elem, 
     std::vector<double>& coords,
-              const Point &p) const
+              const Core::Geometry::Point &p) const
   { return (locate_elem(elem,coords,p)); }
 
   //! These should become obsolete soon, they do not follow the concept
   //! of the basis functions....
-  int get_weights(const Point &p, typename Node::array_type &l, double *w);
-  int get_weights(const Point&, typename Edge::array_type&, double*)
+  int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
+  int get_weights(const Core::Geometry::Point&, typename Edge::array_type&, double*)
   {ASSERTFAIL("TetVolMesh::get_weights for edges isn't supported"); }
-  int get_weights(const Point&, typename Face::array_type&, double*)
+  int get_weights(const Core::Geometry::Point&, typename Face::array_type&, double*)
   {ASSERTFAIL("TetVolMesh::get_weights for faces isn't supported"); }
-  int get_weights(const Point &p, typename Cell::array_type &l, double *w);  
+  int get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l, double *w);  
   
   //! Access the nodes of the mesh 
-  void get_point(Point &result, typename Node::index_type index) const
+  void get_point(Core::Geometry::Point &result, typename Node::index_type index) const
   { result = points_[index]; }
-  void set_point(const Point &point, typename Node::index_type index)
+  void set_point(const Core::Geometry::Point &point, typename Node::index_type index)
   { points_[index] = point; }
-  void get_random_point(Point &p, typename Elem::index_type i, FieldRNG &r) const;
+  void get_random_point(Core::Geometry::Point &p, typename Elem::index_type i, FieldRNG &r) const;
     
   //! Normals for visualizations
-  void get_normal(Vector& /*result*/, typename Node::index_type /*index*/) const
+  void get_normal(Core::Geometry::Vector& /*result*/, typename Node::index_type /*index*/) const
   { ASSERTFAIL("TetVolMesh: This mesh type does not have node normals."); }
 
   //! Get the normals at the outside of the element
   template<class VECTOR, class INDEX1, class INDEX2>
-  void get_normal(Vector &result, VECTOR& coords,
+  void get_normal(Core::Geometry::Vector &result, VECTOR& coords,
 		  INDEX1 eidx, INDEX2 fidx)
   {
     // Improved algorithm, which should be faster as it is fully
@@ -667,8 +667,8 @@ public:
   }
   
   //! Add a new node to the mesh  
-  typename Node::index_type add_point(const Point &p);
-  typename Node::index_type add_node(const Point &p) 
+  typename Node::index_type add_point(const Core::Geometry::Point &p);
+  typename Node::index_type add_node(const Core::Geometry::Point &p) 
   { return(add_point(p)); }
  
   //! Add a new element to the mesh
@@ -685,16 +685,16 @@ public:
  
   //! Functions to improve memory management. Often one knows how many
   //! nodes/elements one needs, prereserving memory is often possible. 
-  void node_reserve(size_type s) { points_.reserve(static_cast<std::vector<Point>::size_type>(s)); }
+  void node_reserve(size_type s) { points_.reserve(static_cast<std::vector<Core::Geometry::Point>::size_type>(s)); }
   void elem_reserve(size_type s) { cells_.reserve(static_cast<std::vector<index_type>::size_type>(s*4)); }
-  void resize_nodes(size_type s) { points_.resize(static_cast<std::vector<Point>::size_type>(s)); }
+  void resize_nodes(size_type s) { points_.resize(static_cast<std::vector<Core::Geometry::Point>::size_type>(s)); }
   void resize_elems(size_type s) { cells_.resize(static_cast<std::vector<index_type>::size_type>(s*4)); }
 
   //! Get the local coordinates for a certain point within an element
   //! This function uses a couple of newton iterations to find the local
   //! coordinate of a point
   template<class VECTOR, class INDEX>
-  bool  get_coords(VECTOR &coords, const Point &p, INDEX idx) const
+  bool  get_coords(VECTOR &coords, const Core::Geometry::Point &p, INDEX idx) const
   {
     ElemData ed(*this, idx);
     return basis_.get_coords(coords, p, ed);
@@ -703,7 +703,7 @@ public:
   //! Find the location in the global coordinate system for a local coordinate
   //! This function is the opposite of get_coords.
   template<class VECTOR, class INDEX>
-  void interpolate(Point &pt, const VECTOR &coords, INDEX idx) const
+  void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, INDEX idx) const
   {
     ElemData ed(*this, idx);
     pt = basis_.interpolate(coords, ed);
@@ -724,7 +724,7 @@ public:
   template<class VECTOR, class INDEX>
   double det_jacobian(const VECTOR& coords, INDEX idx) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Core::Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     return (DetMatrix3P(Jv));
@@ -736,7 +736,7 @@ public:
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords,INDEX idx, double* J) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Core::Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     J[0] = Jv[0].x();
@@ -756,7 +756,7 @@ public:
   template<class VECTOR, class INDEX>                               
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Core::Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     return (InverseMatrix3P(Jv,Ji));
@@ -765,7 +765,7 @@ public:
   template<class INDEX>
   double scaled_jacobian_metric(INDEX idx) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Core::Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
 
     double temp;
@@ -773,10 +773,10 @@ public:
     basis_.derivate(basis_.unit_center,ed,Jv);
     double min_jacobian = DetMatrix3P(Jv);
     INDEX idx2 = idx*4;
-    Point p0 = points_[cells_[idx2]];
-    Point p1 = points_[cells_[idx2+1]];
-    Point p2 = points_[cells_[idx2+2]];
-    Point p3 = points_[cells_[idx2+3]];
+    Core::Geometry::Point p0 = points_[cells_[idx2]];
+    Core::Geometry::Point p1 = points_[cells_[idx2+1]];
+    Core::Geometry::Point p2 = points_[cells_[idx2+2]];
+    Core::Geometry::Point p3 = points_[cells_[idx2+3]];
     
     double l0 = (p1-p0).length();
     double l1 = (p2-p1).length();
@@ -800,7 +800,7 @@ public:
   template<class INDEX>
   double jacobian_metric(INDEX idx) const
   {
-    StackVector<Point,3> Jv;
+    StackVector<Core::Geometry::Point,3> Jv;
     ElemData ed(*this,idx);
 
     double temp;
@@ -823,14 +823,14 @@ public:
   template<class INDEX>
   double inscribed_circumscribed_radius_metric(INDEX idx) const
   {
-    StackVector<Point,3> Vec;
+    StackVector<Core::Geometry::Point,3> Vec;
     ElemData ed(*this,idx);    
     
     INDEX idx2 = idx*4;
-    Point p0 = points_[cells_[idx2]];
-    Point p1 = points_[cells_[idx2+1]];
-    Point p2 = points_[cells_[idx2+2]];
-    Point p3 = points_[cells_[idx2+3]];
+    Core::Geometry::Point p0 = points_[cells_[idx2]];
+    Core::Geometry::Point p1 = points_[cells_[idx2+1]];
+    Core::Geometry::Point p2 = points_[cells_[idx2+2]];
+    Core::Geometry::Point p3 = points_[cells_[idx2+3]];
     
     double l0 = (p1-p0).length();
     double l1 = (p2-p1).length();
@@ -870,15 +870,15 @@ public:
   }
 
   template <class INDEX>
-  bool find_closest_node(double& pdist, Point &result, 
-                         INDEX &node, const Point &p) const
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+                         INDEX &node, const Core::Geometry::Point &p) const
   {
     return(find_closest_node(pdist,result,node,p,-1.0));
   }
   
   template <class INDEX>
-  bool find_closest_node(double& pdist, Point &result, 
-                         INDEX &node, const Point &p,
+  bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
+                         INDEX &node, const Core::Geometry::Point &p,
                          double maxdist) const
   {
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
@@ -889,7 +889,7 @@ public:
     
     if (node >= 0 && node < sz)
     {
-      Point point = points_[node]; 
+      Core::Geometry::Point point = points_[node]; 
       double dist = (point-p).length2();
       
       if ( dist < epsilon2_ )
@@ -947,7 +947,7 @@ public:
 
                 while (it != eit)
                 {
-                  const Point point = points_[*it];
+                  const Core::Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
                   
                   if (dist < dmin) 
@@ -982,7 +982,7 @@ public:
   }
 
   template <class ARRAY>
-  bool find_closest_nodes(ARRAY &nodes, const Point &p, double maxdist) const
+  bool find_closest_nodes(ARRAY &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
     
@@ -997,8 +997,8 @@ public:
     // Convert to grid coordinates.
     index_type bi, bj, bk, ei, ej, ek;
 
-    Point max = p+Vector(maxdist,maxdist,maxdist);
-    Point min = p+Vector(-maxdist,-maxdist,-maxdist);
+    Core::Geometry::Point max = p+Core::Geometry::Vector(maxdist,maxdist,maxdist);
+    Core::Geometry::Point min = p+Core::Geometry::Vector(-maxdist,-maxdist,-maxdist);
 
     node_grid_->unsafe_locate(bi, bj, bk, min);
     node_grid_->unsafe_locate(ei, ej, ek, max);
@@ -1027,7 +1027,7 @@ public:
 
             while (it != eit)
             {
-              const Point point = points_[*it];
+              const Core::Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
               if (dist < maxdist2) 
@@ -1047,7 +1047,7 @@ public:
 
 
   template <class ARRAY1, class ARRAY2>
-  bool find_closest_nodes(ARRAY1 &distances, ARRAY2 &nodes, const Point &p, double maxdist) const
+  bool find_closest_nodes(ARRAY1 &distances, ARRAY2 &nodes, const Core::Geometry::Point &p, double maxdist) const
   {
     nodes.clear();
     distances.clear();
@@ -1063,8 +1063,8 @@ public:
     // Convert to grid coordinates.
     index_type bi, bj, bk, ei, ej, ek;
 
-    Point max = p+Vector(maxdist,maxdist,maxdist);
-    Point min = p+Vector(-maxdist,-maxdist,-maxdist);
+    Core::Geometry::Point max = p+Core::Geometry::Vector(maxdist,maxdist,maxdist);
+    Core::Geometry::Point min = p+Core::Geometry::Vector(-maxdist,-maxdist,-maxdist);
 
     node_grid_->unsafe_locate(bi, bj, bk, min);
     node_grid_->unsafe_locate(ei, ej, ek, max);
@@ -1093,7 +1093,7 @@ public:
 
             while (it != eit)
             {
-              const Point point = points_[*it];
+              const Core::Geometry::Point point = points_[*it];
               const double dist  = (p-point).length2();
 
               if (dist < maxdist2) 
@@ -1115,10 +1115,10 @@ public:
   //! Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
-                         Point &result, 
+                         Core::Geometry::Point &result, 
                          ARRAY &coords,
                          INDEX &elem, 
-                         const Point &p) const
+                         const Core::Geometry::Point &p) const
   {
     return (find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }
@@ -1127,10 +1127,10 @@ public:
   //! Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
-                         Point &result, 
+                         Core::Geometry::Point &result, 
                          ARRAY &coords,
                          INDEX &elem, 
-                         const Point &p,
+                         const Core::Geometry::Point &p,
                          double maxdist) const
   {
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
@@ -1222,7 +1222,7 @@ public:
 
                 while (it != eit)
                 {
-                  Point r;
+                  Core::Geometry::Point r;
                   index_type cidx = (*it);
                   index_type idx = cidx*4;
                   unsigned char b = boundary_faces_[cidx];
@@ -1344,8 +1344,8 @@ public:
   }
   
   template <class INDEX>
-  bool find_closest_elem(double& pdist, Point &result, 
-                         INDEX &elem, const Point &p) const
+  bool find_closest_elem(double& pdist, Core::Geometry::Point &result, 
+                         INDEX &elem, const Core::Geometry::Point &p) const
   {
     StackVector<double,3> coords;
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
@@ -1353,8 +1353,8 @@ public:
 
   //! Find the closest elements to a point  
   template<class ARRAY>
-  bool find_closest_elems(double& /*pdist*/, Point& /*result*/, 
-                          ARRAY& /*elems*/, const Point& /*p*/) const
+  bool find_closest_elems(double& /*pdist*/, Core::Geometry::Point& /*result*/, 
+                          ARRAY& /*elems*/, const Core::Geometry::Point& /*p*/) const
   {  
     ASSERTFAIL("TetVolMesh: Find closest element has not yet been implemented.");  
     return (false);
@@ -1441,7 +1441,7 @@ public:
                 
   // THIS FUNCTION NEEDS TO BE REVISED AS IT DOES NOT SCALE PROPERLY
   // THE TOLERANCE IS NOT RELATIVE, WHICH IS A PROBLEM.........
-  typename Node::index_type     add_find_point(const Point &p,
+  typename Node::index_type     add_find_point(const Core::Geometry::Point &p,
                                                double err = 1.0e-6);
 
   // Short cut for generating an element....   
@@ -1450,18 +1450,18 @@ public:
 				    typename Node::index_type c,
 				    typename Node::index_type d);
   
-  typename Elem::index_type add_tet(const Point &p0,
-				    const Point &p1,
-				    const Point &p2,
-				    const Point &p3);
+  typename Elem::index_type add_tet(const Core::Geometry::Point &p0,
+				    const Core::Geometry::Point &p1,
+				    const Core::Geometry::Point &p2,
+				    const Core::Geometry::Point &p3);
   
   bool insert_node_in_elem(typename Elem::array_type &tets,
 			   typename Node::index_type &ni,
 			   typename Elem::index_type ci,
-			   const Point &p);
+			   const Core::Geometry::Point &p);
 
   //! must detach, if altering points!
-  std::vector<Point>& get_points() { return points_; }
+  std::vector<Core::Geometry::Point>& get_points() { return points_; }
  
   int compute_checksum();
 
@@ -1894,7 +1894,7 @@ protected:
   }
 
   template <class INDEX>
-  inline bool locate_node(INDEX &node, const Point &p) const
+  inline bool locate_node(INDEX &node, const Core::Geometry::Point &p) const
   {
     typename Node::size_type sz; size(sz);
 
@@ -1955,7 +1955,7 @@ protected:
 
                 while (it != eit)
                 {
-                  const Point point = points_[*it];
+                  const Core::Geometry::Point point = points_[*it];
                   const double dist = (p-point).length2();
 
                   if (dist < dmin) 
@@ -1983,7 +1983,7 @@ protected:
 
   // TODO: Fix this function, needs to use search grid
   template <class INDEX>
-  inline bool locate_edge(INDEX &edge, const Point &p) const
+  inline bool locate_edge(INDEX &edge, const Core::Geometry::Point &p) const
   {
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "Must call synchronize EDGES_E on TetVolMesh first");
@@ -2013,7 +2013,7 @@ protected:
 
   // TODO: Fix this function, needs to use search grid
   template <class INDEX>
-  inline bool locate_face(INDEX &face, const Point &p) const
+  inline bool locate_face(INDEX &face, const Core::Geometry::Point &p) const
   {
     ASSERTMSG(synchronized_ & Mesh::FACES_E,
               "Must call synchronize FACES_E on TetVolMesh first");
@@ -2024,7 +2024,7 @@ protected:
     typename Face::iterator ei; end(ei);
     while (bi != ei)
     {
-      Point c;
+      Core::Geometry::Point c;
       get_center(c, *bi);
       const double dist = (p - c).length2();
       if (!found || dist < mindist)
@@ -2039,7 +2039,7 @@ protected:
   }
 
   template <class INDEX>
-  inline bool locate_elem(INDEX &elem, const Point &p) const
+  inline bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
     // TODO: Generate bounding boxes for elements and integrate this into the
     // basis function code.
@@ -2107,7 +2107,7 @@ protected:
   }
 
   template <class INDEX, class ARRAY>
-  inline bool locate_elem(INDEX &elem, ARRAY& coords, const Point &p) const
+  inline bool locate_elem(INDEX &elem, ARRAY& coords, const Core::Geometry::Point &p) const
   {
     // TODO: Generate bounding boxes for elements and integrate this into the
     // basis function code.
@@ -2152,17 +2152,17 @@ protected:
   }
 
   template <class INDEX>
-  inline void get_node_center(Point &p, INDEX idx) const
+  inline void get_node_center(Core::Geometry::Point &p, INDEX idx) const
   {
     p = points_[idx]; 
   }
 
   template <class INDEX>
-  inline void get_edge_center(Point &p, INDEX idx) const
+  inline void get_edge_center(Core::Geometry::Point &p, INDEX idx) const
   {
     typename Node::array_type arr;
     get_nodes_from_edge(arr, idx);
-    Point p1;
+    Core::Geometry::Point p1;
     get_node_center(p, arr[0]);
     get_node_center(p1, arr[1]);
     p.asVector() += p1.asVector();
@@ -2170,14 +2170,14 @@ protected:
   }
 
   template <class INDEX>
-  inline void get_face_center(Point &p, INDEX idx) const
+  inline void get_face_center(Core::Geometry::Point &p, INDEX idx) const
   {
     const double s = 1.0/3.0;
     typename Node::array_type arr;
     get_nodes_from_face(arr, idx);
     p = points_[arr[0]];
-    const Point &p1 = points_[arr[1]];
-    const Point &p2 = points_[arr[2]];
+    const Core::Geometry::Point &p1 = points_[arr[1]];
+    const Core::Geometry::Point &p2 = points_[arr[2]];
 
     p.asVector() += p1.asVector();
     p.asVector() += p2.asVector();
@@ -2185,13 +2185,13 @@ protected:
   }
 
   template <class INDEX>
-  inline void get_cell_center(Point &p, INDEX idx) const
+  inline void get_cell_center(Core::Geometry::Point &p, INDEX idx) const
   {
     const double s = 0.25;
-    const Point &p0 = points_[cells_[idx * 4 + 0]];
-    const Point &p1 = points_[cells_[idx * 4 + 1]];
-    const Point &p2 = points_[cells_[idx * 4 + 2]];
-    const Point &p3 = points_[cells_[idx * 4 + 3]];
+    const Core::Geometry::Point &p0 = points_[cells_[idx * 4 + 0]];
+    const Core::Geometry::Point &p1 = points_[cells_[idx * 4 + 1]];
+    const Core::Geometry::Point &p2 = points_[cells_[idx * 4 + 2]];
+    const Core::Geometry::Point &p3 = points_[cells_[idx * 4 + 3]];
 
     p = ((p0.asVector() + p1.asVector() +
           p2.asVector() + p3.asVector()) * s).asPoint();
@@ -2214,15 +2214,15 @@ protected:
   void insert_node_into_grid(typename Node::index_type ci);
   void remove_node_from_grid(typename Node::index_type ci);
 
-  const Point &point(typename Node::index_type i) { return points_[i]; }
+  const Core::Geometry::Point &point(typename Node::index_type i) { return points_[i]; }
 
   template<class INDEX>
-  bool inside(INDEX idx, const Point &p) const
+  bool inside(INDEX idx, const Core::Geometry::Point &p) const
   {
-    const Point &p0 = points_[cells_[idx*4+0]];
-    const Point &p1 = points_[cells_[idx*4+1]];
-    const Point &p2 = points_[cells_[idx*4+2]];
-    const Point &p3 = points_[cells_[idx*4+3]];
+    const Core::Geometry::Point &p0 = points_[cells_[idx*4+0]];
+    const Core::Geometry::Point &p1 = points_[cells_[idx*4+1]];
+    const Core::Geometry::Point &p2 = points_[cells_[idx*4+2]];
+    const Core::Geometry::Point &p3 = points_[cells_[idx*4+3]];
     
     const double x0 = p0.x();
     const double y0 = p0.y();
@@ -2271,7 +2271,7 @@ protected:
   }
 
   //! all the nodes.
-  std::vector<Point>         points_;
+  std::vector<Core::Geometry::Point>         points_;
 
   //! each 4 indecies make up a tet
   std::vector<under_type>    cells_;
@@ -2595,7 +2595,7 @@ public:
   bool insert_node_in_cell(typename Cell::array_type &tets,
 			   typename Cell::index_type ci,
 			   typename Node::index_type &ni,
-			   const Point &p);
+			   const Core::Geometry::Point &p);
 
   void insert_node_in_face(typename Cell::array_type &tets,
 			   typename Node::index_type ni,
@@ -2700,7 +2700,7 @@ TetVolMesh<Basis>::fill_points(Iter begin, Iter end, Functor fill_ftor)
   synchronize_lock_.lock();
   Iter iter = begin;
   points_.resize(end - begin); // resize to the new size
-  std::vector<Point>::iterator piter = points_.begin();
+  std::vector<Core::Geometry::Point>::iterator piter = points_.begin();
   while (iter != end) 
   {
     *piter = fill_ftor(*iter);
@@ -2764,15 +2764,15 @@ TetVolMesh<Basis>::type_name(int n)
    1 that sum to 1) for the point. */
 template <class Basis>
 void
-TetVolMesh<Basis>::get_random_point(Point &p,
+TetVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 				    typename Elem::index_type ei,
                                     FieldRNG &rng) const
 {
   // get positions of the vertices
-  const Point &p0 = points_[cells_[ei*4+0]];
-  const Point &p1 = points_[cells_[ei*4+1]];
-  const Point &p2 = points_[cells_[ei*4+2]];
-  const Point &p3 = points_[cells_[ei*4+3]];
+  const Core::Geometry::Point &p0 = points_[cells_[ei*4+0]];
+  const Core::Geometry::Point &p1 = points_[cells_[ei*4+1]];
+  const Core::Geometry::Point &p2 = points_[cells_[ei*4+2]];
+  const Core::Geometry::Point &p3 = points_[cells_[ei*4+3]];
 
   double t = rng();
   double u = rng();
@@ -2827,7 +2827,7 @@ TetVolMesh<Basis>::get_canonical_transform(Transform &t) const
   t.load_identity();
   BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
-  t.pre_translate(Vector(bbox.min()));
+  t.pre_translate(Core::Geometry::Vector(bbox.min()));
 }
 
 template <class Basis>
@@ -2836,8 +2836,8 @@ TetVolMesh<Basis>::transform(const Transform &t)
 {
   synchronize_lock_.lock();
   
-  std::vector<Point>::iterator itr = points_.begin();
-  std::vector<Point>::iterator eitr = points_.end();
+  std::vector<Core::Geometry::Point>::iterator itr = points_.begin();
+  std::vector<Core::Geometry::Point>::iterator eitr = points_.end();
   while (itr != eitr)
   {
     *itr = t.project(*itr);
@@ -3661,7 +3661,7 @@ TetVolMesh<Basis>::compute_node_neighbors()
 
 template <class Basis>
 int
-TetVolMesh<Basis>::get_weights(const Point &p, typename Cell::array_type &l,
+TetVolMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Cell::array_type &l,
                                double *w)
 {
   typename Cell::index_type idx;
@@ -3677,7 +3677,7 @@ TetVolMesh<Basis>::get_weights(const Point &p, typename Cell::array_type &l,
 
 template <class Basis>
 int
-TetVolMesh<Basis>::get_weights(const Point &p, typename Node::array_type &l,
+TetVolMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Node::array_type &l,
                                double *w)
 {
   typename Cell::index_type idx;
@@ -3755,7 +3755,7 @@ TetVolMesh<Basis>::compute_elem_grid()
     const size_type s = 
       3*static_cast<size_type>((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
-    Vector diag  = bbox_.diagonal();
+    Core::Geometry::Vector diag  = bbox_.diagonal();
     double trace = (diag.x()+diag.y()+diag.z());
     size_type sx = static_cast<size_type>(ceil(0.5+diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
@@ -3792,7 +3792,7 @@ TetVolMesh<Basis>::compute_node_grid()
     const size_type s =  3*static_cast<size_type>
                   ((ceil(pow(static_cast<double>(esz) , (1.0/3.0))))/2.0 + 1.0);
 
-    Vector diag  = bbox_.diagonal();
+    Core::Geometry::Vector diag  = bbox_.diagonal();
     double trace = (diag.x()+diag.y()+diag.z());
     size_type sx = static_cast<size_type>(ceil(0.5+diag.x()/trace*s));
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
@@ -3829,8 +3829,8 @@ TetVolMesh<Basis>::compute_bounding_box()
   // make sure it does not fail on empty meshes
   if (ni == nie)
   {
-    bbox_.extend(Point(0.0,0.0,0.0));
-    bbox_.extend(Point(1.0,1.0,1.0));
+    bbox_.extend(Core::Geometry::Point(0.0,0.0,0.0));
+    bbox_.extend(Core::Geometry::Point(1.0,1.0,1.0));
   }
 
   while (ni != nie)
@@ -3851,7 +3851,7 @@ TetVolMesh<Basis>::compute_bounding_box()
 
 template <class Basis>
 typename TetVolMesh<Basis>::Node::index_type
-TetVolMesh<Basis>::add_find_point(const Point &p, double /*err*/)
+TetVolMesh<Basis>::add_find_point(const Core::Geometry::Point &p, double /*err*/)
 {
   typename Node::index_type i;
   if (locate(i, p) && (points_[i] - p).length2() < epsilon2_)
@@ -3888,7 +3888,7 @@ TetVolMesh<Basis>::add_tet(typename Node::index_type a,
 
 template <class Basis>
 typename TetVolMesh<Basis>::Node::index_type
-TetVolMesh<Basis>::add_point(const Point &p)
+TetVolMesh<Basis>::add_point(const Core::Geometry::Point &p)
 {
   points_.push_back(p);
   return static_cast<typename Node::index_type>(points_.size() - 1);
@@ -3897,8 +3897,8 @@ TetVolMesh<Basis>::add_point(const Point &p)
 
 template <class Basis>
 typename TetVolMesh<Basis>::Elem::index_type
-TetVolMesh<Basis>::add_tet(const Point &p0, const Point &p1,
-			   const Point &p2, const Point &p3)
+TetVolMesh<Basis>::add_tet(const Core::Geometry::Point &p0, const Core::Geometry::Point &p1,
+			   const Core::Geometry::Point &p2, const Core::Geometry::Point &p3)
 {
   return add_tet(add_find_point(p0), add_find_point(p1),
                  add_find_point(p2), add_find_point(p3));
@@ -3912,10 +3912,10 @@ TetVolMesh<Basis>::add_tet_pos(typename Node::index_type a,
                                typename Node::index_type d)
 {
   const index_type tet = static_cast<index_type>(cells_.size()) / 4;
-  const Point &p0 = point(a);
-  const Point &p1 = point(b);
-  const Point &p2 = point(c);
-  const Point &p3 = point(d);
+  const Core::Geometry::Point &p0 = point(a);
+  const Core::Geometry::Point &p1 = point(b);
+  const Core::Geometry::Point &p2 = point(c);
+  const Core::Geometry::Point &p3 = point(d);
 
   if (Dot(Cross(p1-p0,p2-p0),p3-p0) >= 0.0)
   {
@@ -3940,10 +3940,10 @@ TetVolMesh<Basis>::mod_tet_pos(typename TetVolMesh<Basis>::Elem::index_type ci,
                                typename Node::index_type c, 
                                typename Node::index_type d)
 {
-  const Point &p0 = point(a);
-  const Point &p1 = point(b);
-  const Point &p2 = point(c);
-  const Point &p3 = point(d);
+  const Core::Geometry::Point &p0 = point(a);
+  const Core::Geometry::Point &p1 = point(b);
+  const Core::Geometry::Point &p2 = point(c);
+  const Core::Geometry::Point &p3 = point(d);
 
   if (Dot(Cross(p1-p0,p2-p0),p3-p0) >= 0.0)
   {
@@ -4000,7 +4000,7 @@ TetVolMesh<Basis>::delete_nodes(std::set<index_type> &to_delete)
   while (iter != to_delete.rend()) 
   {
     typename TetVolMesh::Node::index_type n = *iter++;
-    std::vector<Point>::iterator pit = points_.begin() + n;
+    std::vector<Core::Geometry::Point>::iterator pit = points_.begin() + n;
     points_.erase(pit);
   }
   synchronized_ &= ~Mesh::LOCATE_E;
@@ -4023,7 +4023,7 @@ bool
 TetVolMesh<Basis>::insert_node_in_cell(typename Cell::array_type &tets,
                                        typename Cell::index_type ci,
                                        typename Node::index_type &pi,
-                                       const Point &p)
+                                       const Core::Geometry::Point &p)
 {
   if (!inside(ci, p)) return false;
 
@@ -4173,13 +4173,13 @@ bool
 TetVolMesh<Basis>::insert_node_in_elem(typename Elem::array_type &tets,
                                        typename Node::index_type &pi,
                                        typename Elem::index_type ci,
-                                       const Point &p)
+                                       const Core::Geometry::Point &p)
 {
 
-  const Point &p0 = points_[cells_[ci*4 + 0]];
-  const Point &p1 = points_[cells_[ci*4 + 1]];
-  const Point &p2 = points_[cells_[ci*4 + 2]];
-  const Point &p3 = points_[cells_[ci*4 + 3]];
+  const Core::Geometry::Point &p0 = points_[cells_[ci*4 + 0]];
+  const Core::Geometry::Point &p1 = points_[cells_[ci*4 + 1]];
+  const Core::Geometry::Point &p2 = points_[cells_[ci*4 + 2]];
+  const Core::Geometry::Point &p3 = points_[cells_[ci*4 + 3]];
 
   // Compute all the new tet areas.
   const double aerr = Abs(Dot(Cross(p1 - p0, p2 - p0), p3 - p0)) * 0.01;
@@ -4333,10 +4333,10 @@ template <class Basis>
 void
 TetVolMesh<Basis>::orient(typename Cell::index_type ci)
 {
-  const Point &p0 = point(cells_[ci*4+0]);
-  const Point &p1 = point(cells_[ci*4+1]);
-  const Point &p2 = point(cells_[ci*4+2]);
-  const Point &p3 = point(cells_[ci*4+3]);
+  const Core::Geometry::Point &p0 = point(cells_[ci*4+0]);
+  const Core::Geometry::Point &p1 = point(cells_[ci*4+1]);
+  const Core::Geometry::Point &p2 = point(cells_[ci*4+2]);
+  const Core::Geometry::Point &p3 = point(cells_[ci*4+3]);
 
   // Unsigned volumex6 of the tet.
   const double sgn = Dot(Cross(p1-p0,p2-p0),p3-p0);
