@@ -292,50 +292,56 @@ public:
   class Synchronize //: public Runnable
   {
     public:
-      Synchronize(TetVolMesh<Basis>& mesh, mask_type sync) :
+      Synchronize(TetVolMesh<Basis>* mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
         
+      void operator()()
+      {
+        run();
+      }
+
       void run()
       {
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // block out all the tables that are already synchronized
-        sync_ &= ~(mesh_.synchronized_);
+        sync_ &= ~(mesh_->synchronized_);
         // block out all the tables that are already being computed
-        sync_ &= ~(mesh_.synchronizing_);
+        sync_ &= ~(mesh_->synchronizing_);
         // Now sync_ contains what this thread will synchronize
         // Denote what this thread will synchronize
-        mesh_.synchronizing_ |= sync_;
+        mesh_->synchronizing_ |= sync_;
         // Other threads now know what this tread will be doing
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_lock_.unlock();
      
-        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
-        if (sync_ & Mesh::EDGES_E) mesh_.compute_edges();
-        if (sync_ & Mesh::FACES_E) mesh_.compute_faces();
-        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_.compute_bounding_box();
+        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
+        if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
+        if (sync_ & Mesh::FACES_E) mesh_->compute_faces();
+        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
         
         // These depend on the boundign box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_.synchronize_lock_.lock();
-          while(!(mesh_.synchronized_ & Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
-          mesh_.synchronize_lock_.unlock();          
-          if (sync_ & Mesh::NODE_LOCATE_E) mesh_.compute_node_grid();
-          if (sync_ & Mesh::ELEM_LOCATE_E) mesh_.compute_elem_grid();
+          mesh_->synchronize_lock_.lock();
+          Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+          while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
+            mesh_->synchronize_cond_.wait(lock);
+          mesh_->synchronize_lock_.unlock();          
+          if (sync_ & Mesh::NODE_LOCATE_E) mesh_->compute_node_grid();
+          if (sync_ & Mesh::ELEM_LOCATE_E) mesh_->compute_elem_grid();
         }
         
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // Mark the ones that were just synchronized
-        mesh_.synchronized_ |= sync_;
+        mesh_->synchronized_ |= sync_;
         // Unmark the the ones that were done
-        mesh_.synchronizing_ &= ~(sync_);
+        mesh_->synchronizing_ &= ~(sync_);
         //! Tell other threads we are done
-        mesh_.synchronize_cond_.conditionBroadcast();
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_cond_.conditionBroadcast();
+        mesh_->synchronize_lock_.unlock();
       }
 
     private:
-      TetVolMesh<Basis>& mesh_;
+      TetVolMesh<Basis>* mesh_;
       mask_type  sync_;
   };
 
@@ -559,7 +565,7 @@ public:
     Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
-    return ((p1.asVector() - p0.asVector()).length());
+    return ((p1 - p0).length());
   }
     
   double get_size(typename Face::index_type idx) const
@@ -2170,8 +2176,8 @@ protected:
     Core::Geometry::Point p1;
     get_node_center(p, arr[0]);
     get_node_center(p1, arr[1]);
-    p.asVector() += p1.asVector();
-    p.asVector() *= 0.5;
+    p += p1;
+    p *= 0.5;
   }
 
   template <class INDEX>
@@ -2184,9 +2190,9 @@ protected:
     const Core::Geometry::Point &p1 = points_[arr[1]];
     const Core::Geometry::Point &p2 = points_[arr[2]];
 
-    p.asVector() += p1.asVector();
-    p.asVector() += p2.asVector();
-    p.asVector() *= s;
+    p += p1;
+    p += p2;
+    p *= s;
   }
 
   template <class INDEX>
@@ -2198,8 +2204,7 @@ protected:
     const Core::Geometry::Point &p2 = points_[cells_[idx * 4 + 2]];
     const Core::Geometry::Point &p3 = points_[cells_[idx * 4 + 3]];
 
-    p = ((p0.asVector() + p1.asVector() +
-          p2.asVector() + p3.asVector()) * s).asPoint();
+    p = ((p0 + p1 + p2 + p3) * s);
   }
 
   //////////////////////////////////////////////////////////////
@@ -2278,7 +2283,7 @@ protected:
   //! all the nodes.
   std::vector<Core::Geometry::Point>         points_;
 
-  //! each 4 indecies make up a tet
+  //! each 4 indicies make up a tet
   std::vector<under_type>    cells_;
 
   //! Face information.
@@ -2632,8 +2637,6 @@ TetVolMesh<Basis>::TetVolMesh() :
   face_table_(),
   edges_(0),
   edge_table_(),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("TetVolMesh lock"),
   synchronize_cond_("TetVolMesh condition variable"),
   synchronized_(Mesh::NODES_E | Mesh::CELLS_E),
@@ -2656,8 +2659,6 @@ TetVolMesh<Basis>::TetVolMesh(const TetVolMesh &copy) :
   face_table_(),
   edges_(0),
   edge_table_(),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("TetVolMesh lock"),
   synchronize_cond_("TetVolMesh condition variable"),
   synchronized_(Mesh::NODES_E | Mesh::CELLS_E),
@@ -2688,7 +2689,7 @@ TetVolMesh<Basis>::TetVolMesh(const TetVolMesh &copy) :
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVTetVolMesh(this);     
+  vmesh_.reset(CreateVTetVolMesh(this));
 }
 
 template <class Basis>
@@ -2806,7 +2807,7 @@ TetVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 
   // Convert to Barycentric and compute new point.
   const double a = 1.0 - t - u - v;
-  p = (p0.vector()*a + p1.vector()*t + p2.vector()*u + p3.vector()*v).point();
+  p = (p0*a + p1*t + p2*u + p3*v);
 }
 
 template <class Basis>
@@ -2871,8 +2872,8 @@ TetVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
     synchronized_ |= BOUNDING_BOX_E;
   }
   
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
 
   synchronize_lock_.unlock();
 }
@@ -3167,7 +3168,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   
   if (sync == Mesh::EDGES_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3175,14 +3176,13 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::EDGES_E)
   {
     mask_type tosync = Mesh::EDGES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize tetvol edges",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::FACES_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3190,14 +3190,13 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::FACES_E)
   {
     mask_type tosync = Mesh::FACES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize tetvol faces",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3205,14 +3204,13 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize tetvol node_neighbors",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3220,14 +3218,13 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::BOUNDING_BOX_E)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize tetvol bounding_box",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3235,14 +3232,13 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_LOCATE_E)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize tetvol node_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3250,9 +3246,8 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_LOCATE_E)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize tetvol elem_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   // Wait until threads are done
@@ -3292,8 +3287,8 @@ TetVolMesh<Basis>::clear_synchronization()
   node_neighbors_.clear();
   boundary_faces_.clear();
   
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  node_grid_.reset();
+  elem_grid_.reset();
 
   synchronize_lock_.unlock();
     
@@ -3767,7 +3762,7 @@ TetVolMesh<Basis>::compute_elem_grid()
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
 
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    elem_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);
@@ -3804,7 +3799,7 @@ TetVolMesh<Basis>::compute_node_grid()
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    node_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Node::iterator ni, nie;
     begin(ni); end(nie);

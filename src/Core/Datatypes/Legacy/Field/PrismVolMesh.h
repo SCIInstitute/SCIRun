@@ -56,6 +56,7 @@
 
 #include <Core/Utils/Legacy/CheckSum.h>
 
+#include <boost/thread.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 
@@ -279,59 +280,66 @@ public:
   class Synchronize //: public Runnable
   {
     public:
-      Synchronize(PrismVolMesh<Basis>& mesh, mask_type sync) :
+      Synchronize(PrismVolMesh<Basis>* mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
         
+        void operator()()
+        {
+          run();
+        }
+
       void run()
       {      
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // block out all the tables that are already synchronized
-        sync_ &= ~(mesh_.synchronized_);
+        sync_ &= ~(mesh_->synchronized_);
         // block out all the tables that are already being computed
-        sync_ &= ~(mesh_.synchronizing_);
+        sync_ &= ~(mesh_->synchronizing_);
         // Now sync_ contains what this thread will synchronize
         // Denote what this thread will synchronize
-        mesh_.synchronizing_ |= sync_;
+        mesh_->synchronizing_ |= sync_;
         // Other threads now know what this tread will be doing
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_lock_.unlock();
         
         // Sync node neighbors
         if (sync_ & (Mesh::NODE_NEIGHBORS_E))
         {
-          mesh_.synchronize_lock_.lock();
-          while(!(mesh_.synchronized_&Mesh::EDGES_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_.get());
-          mesh_.synchronize_lock_.unlock();        
-          if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
+          mesh_->synchronize_lock_.lock();
+          Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+          while(!(mesh_->synchronized_&Mesh::EDGES_E)) 
+            mesh_->synchronize_cond_.wait(lock);
+          mesh_->synchronize_lock_.unlock();        
+          if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
         }
         
-        if (sync_ & Mesh::EDGES_E) mesh_.compute_edges();
-        if (sync_ & Mesh::FACES_E) mesh_.compute_faces();
-        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_.compute_bounding_box();
+        if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
+        if (sync_ & Mesh::FACES_E) mesh_->compute_faces();
+        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
         
-        // These depend on the boundign box being synchronized
+        // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_.synchronize_lock_.lock();
-          while(!(mesh_.synchronized_&Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_.get());
-          mesh_.synchronize_lock_.unlock();          
-          if (sync_ & Mesh::NODE_LOCATE_E) mesh_.compute_node_grid();
-          if (sync_ & Mesh::ELEM_LOCATE_E) mesh_.compute_elem_grid();
+          mesh_->synchronize_lock_.lock();
+          Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+          while(!(mesh_->synchronized_&Mesh::BOUNDING_BOX_E)) 
+            mesh_->synchronize_cond_.wait(lock);
+          mesh_->synchronize_lock_.unlock();          
+          if (sync_ & Mesh::NODE_LOCATE_E) mesh_->compute_node_grid();
+          if (sync_ & Mesh::ELEM_LOCATE_E) mesh_->compute_elem_grid();
         }
         
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // Mark the ones that were just synchronized
-        mesh_.synchronized_ |= sync_;
+        mesh_->synchronized_ |= sync_;
         // Unmark the the ones that were done
-        mesh_.synchronizing_ &= ~(sync_);
+        mesh_->synchronizing_ &= ~(sync_);
         //! Tell other threads we are done
-        mesh_.synchronize_cond_.conditionBroadcast();
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_cond_.conditionBroadcast();
+        mesh_->synchronize_lock_.unlock();
       }
     
     private:
-      PrismVolMesh<Basis>& mesh_;
+      PrismVolMesh<Basis>* mesh_;
       mask_type  sync_;
   };
 
@@ -2048,8 +2056,8 @@ protected:
     get_nodes_from_edge(arr, idx);
     p = points_[arr[0]];
     const Core::Geometry::Point &p1 = points_[arr[1]];
-    p.asVector() += p1.asVector();
-    p.asVector() *= 0.5;
+    p += p1;
+    p *= 0.5;
   }
 
   template <class INDEX>
@@ -2067,10 +2075,10 @@ protected:
     while (nai != nodes.end())
     {
       get_point(pp, *nai);
-      p.asVector() += pp.asVector();
+      p += pp;
       ++nai;
     }
-    p.asVector() /= nodes.size();
+    p /= nodes.size();
   }
 
 
@@ -2089,10 +2097,10 @@ protected:
     while (nai != nodes.end())
     {
       get_point(pp, *nai);
-      p.asVector() += pp.asVector();
+      p += pp;
       ++nai;
     }
-    p.asVector() /= 6;
+    p /= 6;
   }
 
   //////////////////////////////////////////////////////////////
@@ -2519,7 +2527,6 @@ protected:
     {}
 
     void operator()(typename Edge::index_type e) {
-      nodes_.clear();
       mesh_.get_nodes(nodes_, e);
       nbor_vec_[nodes_[0]].push_back(nodes_[1]);
       nbor_vec_[nodes_[1]].push_back(nodes_[0]);
@@ -2578,8 +2585,6 @@ PrismVolMesh<Basis>::PrismVolMesh() :
   face_table_(),
   edges_(0),
   edge_table_(),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("PrismVolMesh Lock"),
   synchronize_cond_("PrismVolMesh condition variable"),
   synchronized_(Mesh::NODES_E | Mesh::CELLS_E),
@@ -2591,7 +2596,7 @@ PrismVolMesh<Basis>::PrismVolMesh() :
   DEBUG_CONSTRUCTOR("PrismVolMesh") 
 
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVPrismVolMesh(this);
+  vmesh_.reset(CreateVPrismVolMesh(this));
 }
 
 template <class Basis>
@@ -2603,8 +2608,6 @@ PrismVolMesh<Basis>::PrismVolMesh(const PrismVolMesh &copy):
   face_table_(),
   edges_(0),
   edge_table_(),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("PrismVolMesh Lock"),
   synchronize_cond_("PrismVolMesh condition variable"),
   synchronized_(Mesh::NODES_E | Mesh::CELLS_E),
@@ -2635,7 +2638,7 @@ PrismVolMesh<Basis>::PrismVolMesh(const PrismVolMesh &copy):
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVPrismVolMesh(this);   
+  vmesh_.reset(CreateVPrismVolMesh(this));
 }
 
 template <class Basis>
@@ -2763,15 +2766,15 @@ PrismVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   
   if (w > (a0 + a1))
   {
-    p = (p0.vector()*a + p2.vector()*t + p4.vector()*u + p5.vector()*v).point();
+    p = (p0*a + p2*t + p4*u + p5*v);
   }
   else if (w > a0)
   {
-    p = (p3.vector()*a + p4.vector()*t + p5.vector()*u + p0.vector()*v).point();
+    p = (p3*a + p4*t + p5*u + p0*v);
   }
   else
   {
-    p = (p0.vector()*a + p1.vector()*t + p2.vector()*u + p4.vector()*v).point();
+    p = (p0*a + p1*t + p2*u + p4*v);
   }
 }
 
@@ -2837,8 +2840,8 @@ PrismVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
     synchronized_ |= Mesh::BOUNDING_BOX_E;
   }
 
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
   synchronize_lock_.unlock();
 }
 
@@ -3034,7 +3037,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   
   if (sync == Mesh::EDGES_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3042,14 +3045,13 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::EDGES_E)
   {
     mask_type tosync = Mesh::EDGES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize_edges",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::FACES_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3057,14 +3059,13 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::FACES_E)
   {
     mask_type tosync = Mesh::FACES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize_faces",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3072,14 +3073,13 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize node_neighbors",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3087,14 +3087,13 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::BOUNDING_BOX_E)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize bounding box",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3102,14 +3101,13 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_LOCATE_E)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize node_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -3117,16 +3115,16 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_LOCATE_E)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize elem_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   // Wait until threads are done
 
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
-    synchronize_cond_.wait(synchronize_lock_);
+    synchronize_cond_.wait(lock);
   }
 
   synchronize_lock_.unlock();
@@ -3158,8 +3156,8 @@ PrismVolMesh<Basis>::clear_synchronization()
   face_table_.clear();
   boundary_faces_.clear();
   
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  node_grid_.reset();
+  elem_grid_.reset();
 
   synchronize_lock_.unlock();
   
@@ -3416,7 +3414,7 @@ PrismVolMesh<Basis>::compute_elem_grid()
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    elem_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);
@@ -3453,7 +3451,7 @@ PrismVolMesh<Basis>::compute_node_grid()
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    node_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Node::iterator ni, nie;
     begin(ni); end(nie);
@@ -3578,7 +3576,7 @@ PrismVolMesh<Basis>::io(Piostream &stream)
   {
     synchronized_ = NODES_E | CELLS_E;
 
-    vmesh_ = CreateVPrismVolMesh(this);
+    vmesh_.reset(CreateVPrismVolMesh(this));
   }
 }
 
