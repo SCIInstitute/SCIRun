@@ -276,7 +276,7 @@ public:
 
   friend class Synchronize;
   
-  class Synchronize : public Runnable
+  class Synchronize //: public Runnable
   {
     public:
       Synchronize(PrismVolMesh<Basis>& mesh, mask_type sync) :
@@ -367,14 +367,14 @@ public:
   { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   //! Get the bounding box of the field    
-  virtual BBox get_bounding_box() const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
   
   //! Return the transformation that takes a 0-1 space bounding box 
   //! to the current bounding box of this mesh.  
-  virtual void get_canonical_transform(Transform &t) const;
+  virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
   
-  //! Transform a field (transform all nodes using this transformation matrix)  
-  virtual void transform(const Transform &t);
+  //! Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
+  virtual void transform(const Core::Geometry::Transform &t);
     
   //! Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return true; }
@@ -1956,7 +1956,7 @@ protected:
   }
 
   template <class ARRAY>
-  inline bool locate_elems(ARRAY &array, const BBox &b) const
+  inline bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
   
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -2124,7 +2124,7 @@ protected:
     typename Node::array_type nodes;
     get_nodes_from_elem(nodes,idx);
     
-    BBox bbox;
+    Core::Geometry::BBox bbox;
     bbox.extend(points_[nodes[0]]);
     bbox.extend(points_[nodes[1]]);
     bbox.extend(points_[nodes[2]]);  
@@ -2546,7 +2546,7 @@ protected:
   mask_type                     synchronizing_;
   
   Basis                         basis_;
-  BBox                          bbox_; 
+  Core::Geometry::BBox                          bbox_; 
   double                        epsilon_;
   double                        epsilon2_;
   double                        epsilon3_;
@@ -2771,10 +2771,10 @@ PrismVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 }
 
 template <class Basis>
-BBox
+Core::Geometry::BBox
 PrismVolMesh<Basis>::get_bounding_box() const
 {
-  BBox result;
+  Core::Geometry::BBox result;
   typename Node::iterator ni, nie;
   begin(ni);
   end(nie);
@@ -2788,17 +2788,17 @@ PrismVolMesh<Basis>::get_bounding_box() const
 
 template <class Basis>
 void 
-PrismVolMesh<Basis>::get_canonical_transform(Transform &t) const
+PrismVolMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
-  BBox bbox = get_bounding_box();
+  Core::Geometry::BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
   t.pre_translate(Core::Geometry::Vector(bbox.min()));
 }
 
 template <class Basis>
 void
-PrismVolMesh<Basis>::transform(const Transform &t)
+PrismVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   synchronize_lock_.lock();
 
@@ -3348,7 +3348,7 @@ PrismVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
   // Need to recompute grid at that point.
 
   const index_type idx = ci*6;
-  BBox box;
+  Core::Geometry::BBox box;
   box.extend(points_[cells_[idx]]);
   box.extend(points_[cells_[idx+1]]);
   box.extend(points_[cells_[idx+2]]);
@@ -3364,7 +3364,7 @@ void
 PrismVolMesh<Basis>::remove_elem_from_grid(typename Elem::index_type ci)
 {
   const index_type idx = ci*6;
-  BBox box;
+  Core::Geometry::BBox box;
   box.extend(points_[cells_[idx]]);
   box.extend(points_[cells_[idx+1]]);
   box.extend(points_[cells_[idx+2]]);
@@ -3410,7 +3410,7 @@ PrismVolMesh<Basis>::compute_elem_grid()
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    BBox b = bbox_; b.extend(10*epsilon_);
+    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
     elem_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
 
     typename Elem::iterator ci, cie;
@@ -3447,7 +3447,7 @@ PrismVolMesh<Basis>::compute_node_grid()
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    BBox b = bbox_; b.extend(10*epsilon_);
+    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
     node_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
 
     typename Node::iterator ni, nie;
