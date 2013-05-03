@@ -53,9 +53,11 @@
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Math/MiscMath.h>
 
 #include <Core/Utils/Legacy/CheckSum.h>
 
+#include <boost/thread.hpp>
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
 
@@ -1593,8 +1595,6 @@ protected:
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "TetVolMesh: Must call synchronize EDGES_E first");
 
-    array.clear();
-    array.reserve(6);
     const index_type off = idx * 4;
     PEdgeNode e00(cells_[off + 0], cells_[off + 1]);
     PEdgeNode e01(cells_[off + 1], cells_[off + 2]);
@@ -1605,17 +1605,43 @@ protected:
     typename Node::index_type n1,n2;
 
     n1 = cells_[off    ]; n2 = cells_[off + 1];
-    if (n1 != n2) { PEdge e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    size_t i = 0;
+    typedef typename ARRAY::value_type T;
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    }
     n1 = cells_[off + 1]; n2 = cells_[off + 2];
-    if (n1 != n2) { PEdge e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    }
     n1 = cells_[off + 2]; n2 = cells_[off    ];
-    if (n1 != n2) { PEdge e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    }
     n1 = cells_[off    ]; n2 = cells_[off + 3];
-    if (n1 != n2) { PEdge e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    }
     n1 = cells_[off + 1]; n2 = cells_[off + 3];
-    if (n1 != n2) { PEdge e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    }
     n1 = cells_[off + 2]; n2 = cells_[off + 3];
-    if (n1 != n2) { PEdge e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) 
+    { 
+      PEdge e(n1,n2); 
+      array[i++] = (static_cast<T>((*(edge_table_.find(e))).second)); 
+    }
   }
 
   template<class ARRAY, class INDEX>
