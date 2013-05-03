@@ -458,7 +458,6 @@ get_elems_pointer() const
    return (&(this->mesh_->cells_[0]));
 }
 
-
-} // namespace SCIRun
+}
 
 #endif
