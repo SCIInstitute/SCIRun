@@ -35,10 +35,8 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/Handle.h>
-#include <Core/Containers/SearchGridT.h>
 
+#include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -56,16 +54,13 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-#include <Core/Util/CheckSum.h>
+#include <Core/Utils/Legacy/CheckSum.h>
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <Core/Thread/Runnable.h>
-#include <Core/Thread/Thread.h>
 
 #include <set>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -78,8 +73,8 @@ namespace SCIRun {
 template <class Basis> class PrismVolMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVPrismVolMesh(MESH*) { return (0); }
 
@@ -121,7 +116,7 @@ public:
   typedef SCIRun::size_type                 size_type;
   typedef SCIRun::mask_type                 mask_type;
 
-  typedef LockingHandle<PrismVolMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<PrismVolMesh<Basis> > handle_type;
   typedef Basis                               basis_type;
 
   //! Index and Iterator types required for Mesh Concept.

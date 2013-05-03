@@ -27,20 +27,23 @@
 */
 
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/TetQuadraticLgn.h>
 #include <Core/Basis/HexTriquadraticLgn.h>
 #include <Core/Basis/PrismLinearLgn.h>
-#include <Core/Datatypes/PrismVolMesh.h>
-#include <Core/Datatypes/TetVolMesh.h>
-#include <Core/Datatypes/LatVolMesh.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/PrismVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/TetVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
+
 //NoData
 typedef NoDataBasis<double>                  NDBasis;
 
