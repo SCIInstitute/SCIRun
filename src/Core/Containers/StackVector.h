@@ -63,6 +63,7 @@ public:
   {
     //not sure what to do here. semantics is different, but SCIRun 4 probably overruns buffers all the time anyway...
   }
+  void clear() {}
 };
 
 } // End namespace SCIRun

@@ -4378,7 +4378,7 @@ TetVolMesh<Basis>::io(Piostream &stream)
   {
     synchronized_ = NODES_E | CELLS_E;
 
-    vmesh_ = CreateVTetVolMesh(this);
+    vmesh_.reset(CreateVTetVolMesh(this));
   }
 }
 
@@ -4403,7 +4403,7 @@ template <class Basis>
 const TypeDescription*
 TetVolMesh<Basis>::get_type_description() const
 {
-  return get_type_description((TetVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((TetVolMesh<Basis> *)0);
 }
 
 template <class Basis>
@@ -4414,7 +4414,7 @@ TetVolMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4431,7 +4431,7 @@ TetVolMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4448,7 +4448,7 @@ TetVolMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -4465,7 +4465,7 @@ TetVolMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((TetVolMesh<Basis> *)0);
+      SCIRun::get_type_description((TetVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
