@@ -349,13 +349,18 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.    
-  virtual TetVolMesh *clone() { return new TetVolMesh(*this); }
+  virtual TetVolMesh *clone() const { return new TetVolMesh(*this); }
 
   //! Destructor 
   virtual ~TetVolMesh();
 
   //! Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+
+  boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>> getFacade() const
+  {
+    return boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>>();
+  }
   
   //! This one should go at some point, should be reroute throught the
   //! virtual interface

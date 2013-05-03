@@ -300,7 +300,7 @@ public:
         {
           mesh_.synchronize_lock_.lock();
           while(!(mesh_.synchronized_&Mesh::EDGES_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
+            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_.get());
           mesh_.synchronize_lock_.unlock();        
           if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
         }
@@ -314,7 +314,7 @@ public:
         {
           mesh_.synchronize_lock_.lock();
           while(!(mesh_.synchronized_&Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
+            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_.get());
           mesh_.synchronize_lock_.unlock();          
           if (sync_ & Mesh::NODE_LOCATE_E) mesh_.compute_node_grid();
           if (sync_ & Mesh::ELEM_LOCATE_E) mesh_.compute_elem_grid();
@@ -345,13 +345,18 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.    
-  virtual PrismVolMesh *clone() { return new PrismVolMesh(*this); }
+  virtual PrismVolMesh *clone() const { return new PrismVolMesh(*this); }
 
   //! Destructor 
   virtual ~PrismVolMesh();
 
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return (vmesh_.get()); }
+
+  boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>> getFacade() const
+  {
+    return boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>>();
+  }
 
   //! This one should go at some point, should be reroute throught the
   //! virtual interface
@@ -550,7 +555,7 @@ public:
     Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
-    return ((p1.asVector() - p0.asVector()).length());
+    return ((p1 - p0).length());
   }
 
   double get_size(typename Face::index_type idx) const
@@ -1370,7 +1375,7 @@ public:
   //! This function returns a maker for Pio.
   static Persistent* maker() { return new PrismVolMesh<Basis>; }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new PrismVolMesh<Basis>; }
+  static MeshHandle mesh_maker() { return boost::make_shared<PrismVolMesh<Basis>>(); }
 
   //////////////////////////////////////////////////////////////////
   // Mesh specific functions (these are not implemented in every mesh)
