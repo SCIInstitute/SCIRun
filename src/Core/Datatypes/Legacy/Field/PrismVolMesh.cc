@@ -26,8 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/PrismVolMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/PrismVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
+
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
 
 //! Only include this class if we included PrismVol Support
 #if (SCIRUN_PRISMVOL_SUPPORT > 0)
@@ -47,8 +50,8 @@ class VPrismVolMesh : public VUnstructuredMesh<MESH> {
 public:
   virtual bool is_prismvolmesh()       { return (true); }
 
-  //! constructor and descructor
-  VPrismVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
+  //! constructor and destructor
+  explicit VPrismVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VPrismVolMesh") 
   }
