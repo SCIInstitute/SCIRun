@@ -289,7 +289,7 @@ public:
 
   friend class Synchronize;
   
-  class Synchronize : public Runnable
+  class Synchronize //: public Runnable
   {
     public:
       Synchronize(TetVolMesh<Basis>& mesh, mask_type sync) :
@@ -2568,12 +2568,12 @@ protected:
   //!  tets overlap that grid cell -- to find the tet which contains a
   //!  point, we simply find which grid cell contains that point, and
   //!  then search just those tets that overlap that grid cell.
-  LockingHandle<SearchGridT<index_type> >  node_grid_;
-  LockingHandle<SearchGridT<index_type> >  elem_grid_;
+  boost::shared_ptr<SearchGridT<index_type> >  node_grid_;
+  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
-  mutable Mutex                 synchronize_lock_;
-  ConditionVariable             synchronize_cond_;
+  mutable Core::Thread::Mutex                 synchronize_lock_;
+  Core::Thread::ConditionVariable             synchronize_cond_;
   
   // Which tables have been computed
   mask_type                     synchronized_;
@@ -2587,7 +2587,7 @@ protected:
   double                epsilon3_;
   
   //! Pointer to virtual interface  
-  Handle<VMesh>         vmesh_;
+  boost::shared_ptr<VMesh>         vmesh_;
 
 public:
 

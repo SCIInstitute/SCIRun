@@ -2533,12 +2533,12 @@ protected:
   std::vector<std::vector<typename Node::index_type> > node_neighbors_;
 
   std::vector<unsigned char> boundary_faces_;
-  LockingHandle<SearchGridT<index_type> >  node_grid_;
-  LockingHandle<SearchGridT<index_type> >  elem_grid_;
+  boost::shared_ptr<SearchGridT<index_type> >  node_grid_;
+  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
-  mutable Mutex                 synchronize_lock_;
-  ConditionVariable             synchronize_cond_;
+  mutable Core::Thread::Mutex                 synchronize_lock_;
+  Core::Thread::ConditionVariable             synchronize_cond_;
   
   // Which tables have been computed
   mask_type                     synchronized_;
@@ -2552,7 +2552,7 @@ protected:
   double                        epsilon3_;
   
   //! Pointer to virtual interface  
-  Handle<VMesh>                 vmesh_;
+  boost::shared_ptr<VMesh>                 vmesh_;
 };
 
 template <class Basis>
