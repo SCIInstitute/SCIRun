@@ -2204,7 +2204,7 @@ protected:
     const Core::Geometry::Point &p2 = points_[cells_[idx * 4 + 2]];
     const Core::Geometry::Point &p3 = points_[cells_[idx * 4 + 3]];
 
-    p = ((p0 + p1 + p2 + p3) * s);
+    p = Core::Geometry::Point((p0 + p1 + p2 + p3) * s);
   }
 
   //////////////////////////////////////////////////////////////
@@ -2647,7 +2647,7 @@ TetVolMesh<Basis>::TetVolMesh() :
 {
   DEBUG_CONSTRUCTOR("TetVolMesh")      
 
-  vmesh_ = CreateVTetVolMesh(this);
+  vmesh_.reset(CreateVTetVolMesh(this));
 }
 
 template <class Basis>
@@ -2807,7 +2807,7 @@ TetVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
 
   // Convert to Barycentric and compute new point.
   const double a = 1.0 - t - u - v;
-  p = (p0*a + p1*t + p2*u + p3*v);
+  p = Core::Geometry::Point(p0*a + p1*t + p2*u + p3*v);
 }
 
 template <class Basis>
@@ -3252,9 +3252,10 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
 
   // Wait until threads are done
 
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
-    synchronize_cond_.wait(synchronize_lock_);
+    synchronize_cond_.wait(lock);
   }
 
   synchronize_lock_.unlock();

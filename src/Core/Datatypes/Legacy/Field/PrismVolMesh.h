@@ -2766,15 +2766,15 @@ PrismVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   
   if (w > (a0 + a1))
   {
-    p = (p0*a + p2*t + p4*u + p5*v);
+    p = Core::Geometry::Point(p0*a + p2*t + p4*u + p5*v);
   }
   else if (w > a0)
   {
-    p = (p3*a + p4*t + p5*u + p0*v);
+    p = Core::Geometry::Point(p3*a + p4*t + p5*u + p0*v);
   }
   else
   {
-    p = (p0*a + p1*t + p2*u + p4*v);
+    p = Core::Geometry::Point(p0*a + p1*t + p2*u + p4*v);
   }
 }
 
