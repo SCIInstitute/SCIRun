@@ -355,14 +355,14 @@ public:
   virtual ~TetVolMesh();
 
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return vmesh_.get(); }
 
   boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>> getFacade() const
   {
     return boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>>();
   }
   
-  //! This one should go at some point, should be reroute throught the
+  //! This one should go at some point, should be reroute through the
   //! virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
@@ -1391,7 +1391,7 @@ public:
   //! This function returns a maker for Pio.
   static Persistent* maker() { return new TetVolMesh(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new TetVolMesh(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<TetVolMesh>(); }
 
   //////////////////////////////////////////////////////////////////
   // Mesh specific functions (these are not implemented in every mesh)

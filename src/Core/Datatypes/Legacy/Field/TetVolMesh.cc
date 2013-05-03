@@ -26,8 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/TetVolMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/TetVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
+
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Basis;
 
 //! Only include this class if we included TetVol Support
 #if (SCIRUN_TETVOL_SUPPORT > 0)
