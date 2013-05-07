@@ -41,6 +41,7 @@
 #include <log4cpp/OstreamAppender.hh>
 #include <log4cpp/Layout.hh>
 #include <log4cpp/BasicLayout.hh>
+#include <log4cpp/PatternLayout.hh>
 #include <log4cpp/Priority.hh>
 
 class DiagramViewImpl : public DiagramViewInterface
@@ -106,7 +107,9 @@ DiagramWindow::DiagramWindow()
   SCIRun::Core::PythonInterpreter::Instance().run_string("import PythonAPI; from PythonAPI import *");
 
   log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
-  appender1->setLayout(new log4cpp::BasicLayout());
+  auto layout = new log4cpp::PatternLayout();
+  layout->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+  appender1->setLayout(layout);
 
   log4cpp::Category& root = log4cpp::Category::getRoot();
   root.setPriority(log4cpp::Priority::WARN);
