@@ -39,6 +39,7 @@
 #include <log4cpp/Category.hh>
 #include <log4cpp/Appender.hh>
 #include <log4cpp/OstreamAppender.hh>
+#include <log4cpp/FileAppender.hh>
 #include <log4cpp/Layout.hh>
 #include <log4cpp/BasicLayout.hh>
 #include <log4cpp/PatternLayout.hh>
@@ -110,10 +111,13 @@ DiagramWindow::DiagramWindow()
   auto layout = new log4cpp::PatternLayout();
   layout->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
   appender1->setLayout(layout);
+  log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "program.log");
+  appender2->setLayout(layout);
 
   log4cpp::Category& root = log4cpp::Category::getRoot();
   root.setPriority(log4cpp::Priority::WARN);
   root.addAppender(appender1);
+  root.addAppender(appender2);
 }
 
 void DiagramWindow::addNode()
