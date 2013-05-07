@@ -30,6 +30,13 @@
 #include <Interface/PythonTestGui/Node.h>
 #include <Interface/PythonTestGui/Link.h>
 
+#include <log4cpp/Category.hh>
+#include <log4cpp/Appender.hh>
+#include <log4cpp/OstreamAppender.hh>
+#include <log4cpp/Layout.hh>
+#include <log4cpp/BasicLayout.hh>
+#include <log4cpp/Priority.hh>
+
 Node::Node()
 {
   textColor_ = Qt::darkGreen;
@@ -37,6 +44,24 @@ Node::Node()
   backgroundColor_ = Qt::white;
 
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
+
+
+  log4cpp::Category& root = log4cpp::Category::getRoot();
+  
+  // use of functions for logging messages
+  root.error("root error");
+  root.info("root info");
+ 
+  // printf-style for logging variables
+  root.warn("%d + %d == %s ?", 1, 1, "two");
+
+  // use of streams for logging messages
+  root << log4cpp::Priority::ERROR << "Streamed root error";
+  root << log4cpp::Priority::INFO << "Streamed root info";
+ 
+  // or this way:
+  root.errorStream() << "Another streamed error";
+
 }
 
 Node::~Node()
