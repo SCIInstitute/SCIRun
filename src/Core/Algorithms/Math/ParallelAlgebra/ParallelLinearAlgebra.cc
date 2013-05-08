@@ -43,6 +43,10 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Thread/Parallel.h>
 
+#include <log4cpp/Category.hh>
+#include <log4cpp/Priority.hh>
+#undef max
+
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
@@ -70,7 +74,8 @@ ParallelLinearAlgebra::ParallelLinearAlgebra(ParallelLinearAlgebraSharedData& da
   if (proc == nproc_-1) local_size_ = end_ - start_;
   local_size16_ = (local_size_&(~0xf));
 
-  //std::cout << "PLA #" << proc_ << " out of " << nproc_ << " is handling range [" << start_ << "," << end_ << ")" << std::endl;
+  log4cpp::Category& root = log4cpp::Category::getRoot();
+  root << log4cpp::Priority::INFO << "PLA #" << proc_ << " out of " << nproc_ << " is handling range [" << start_ << "," << end_ << ")";
   
   // Set reduction buffers
   // To optimize performance we alternate buffers
@@ -150,6 +155,9 @@ bool ParallelLinearAlgebra::add_matrix(SparseRowMatrixHandle mat, ParallelMatrix
 
 void ParallelLinearAlgebra::mult(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
+  log4cpp::Category& root = log4cpp::Category::getRoot();
+  root << log4cpp::Priority::INFO << "PLA::mult thread id = " << proc_ << " out of " << nproc_;
+
   double* a_ptr = a.data_+start_; 
   double* b_ptr = b.data_+start_; 
   double* r_ptr = r.data_+start_;
