@@ -41,6 +41,16 @@
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #endif
 
+
+#include <log4cpp/Category.hh>
+#include <log4cpp/Appender.hh>
+#include <log4cpp/OstreamAppender.hh>
+#include <log4cpp/FileAppender.hh>
+#include <log4cpp/Layout.hh>
+#include <log4cpp/BasicLayout.hh>
+#include <log4cpp/PatternLayout.hh>
+#include <log4cpp/Priority.hh>
+
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -57,6 +67,21 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this));
 #endif
+
+  log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
+  auto layout1 = new log4cpp::PatternLayout();
+  layout1->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+  appender1->setLayout(layout1);
+
+  log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
+  auto layout2 = new log4cpp::PatternLayout();
+  layout2->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+  appender2->setLayout(layout2);
+
+  log4cpp::Category& root = log4cpp::Category::getRoot();
+  //root.setPriority(log4cpp::Priority::WARN);
+  root.addAppender(appender1);
+  root.addAppender(appender2);
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg)
