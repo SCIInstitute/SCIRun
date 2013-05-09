@@ -44,41 +44,27 @@
  *
  */
 
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/DataIO/WriteField.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/ImportExport/Field/FieldIEPlugin.h>
+#endif
 
-namespace SCIRun {
+using namespace SCIRun::Modules::DataIO;
 
-template class GenericWriter<FieldHandle>;
+SCIRun::Core::Algorithms::AlgorithmParameterName WriteFieldModule::Filename("Filename");
 
-class WriteField : public GenericWriter<FieldHandle> {
-protected:
-  GuiString gui_types_;
-  GuiString gui_exporttype_;
-  GuiInt gui_increment_;
-  GuiInt gui_current_;
-
-  virtual bool call_exporter(const std::string &filename);
-
-public:
-  WriteField(GuiContext* ctx);
-  virtual ~WriteField() {}
-
-  virtual void execute();
-};
-
-
-DECLARE_MAKER(WriteField)
-
-
-WriteField::WriteField(GuiContext* ctx)
-  : GenericWriter<FieldHandle>("WriteField", ctx, "DataIO", "SCIRun"),
-    gui_types_(get_ctx()->subVar("types", false)),
-    gui_exporttype_(get_ctx()->subVar("exporttype"), ""),
-    gui_increment_(get_ctx()->subVar("increment"), 0),
-    gui_current_(get_ctx()->subVar("current"), 0)
+WriteFieldModule::WriteFieldModule()
+  : my_base("WriteField", "DataIO", "SCIRun", "Filename")    
+    //gui_types_(get_ctx()->subVar("types", false)),
+    //gui_exporttype_(get_ctx()->subVar("exporttype"), ""),
+    //gui_increment_(get_ctx()->subVar("increment"), 0),
+    //gui_current_(get_ctx()->subVar("current"), 0)
 {
+  filetype_ = "Binary";
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
   std::vector<std::string> exporters;
   mgr.get_exporter_list(exporters);
@@ -103,8 +89,10 @@ WriteField::WriteField(GuiContext* ctx)
   exporttypes += "}";
 
   gui_types_.set(exporttypes);
+#endif
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 bool
 WriteField::call_exporter(const std::string &filename)
 {
@@ -120,11 +108,13 @@ WriteField::call_exporter(const std::string &filename)
   }
   return false;
 }
+#endif
 
 
 void
-WriteField::execute()
+WriteFieldModule::execute()
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   const std::string ftpre = gui_exporttype_.get();
   const std::string::size_type loc = ftpre.find(" (");
   const std::string ft = ftpre.substr(0, loc);
@@ -161,13 +151,13 @@ WriteField::execute()
     filename_.set(buf);
     gui_current_.set(current+1);
   }
+#endif
 
-  GenericWriter<FieldHandle>::execute();
+  my_base::execute();
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
    if (gui_increment_.get())
-   filename_.set(oldfilename);
+    filename_.set(oldfilename);
+#endif
 
 }
-
-
-} // End namespace SCIRun

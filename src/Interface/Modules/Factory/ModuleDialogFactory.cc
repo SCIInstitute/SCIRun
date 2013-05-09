@@ -34,6 +34,7 @@
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
 #include <Interface/Modules/DataIO/ReadMeshDialog.h>
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
+#include <Interface/Modules/DataIO/WriteFieldDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
@@ -69,6 +70,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new ReadMeshDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ReadField") != std::string::npos)
     return new ReadFieldDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("WriteField") != std::string::npos)
+    return new WriteFieldDialog(moduleId, state, parentToUse_);
   if (moduleId.find("EvaluateLinearAlgebraUnary") != std::string::npos)
     return new EvaluateLinearAlgebraUnaryDialog(moduleId, state, parentToUse_);
   if (moduleId.find("EvaluateLinearAlgebraBinary") != std::string::npos)

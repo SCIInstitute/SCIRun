@@ -29,7 +29,8 @@
 #ifndef MODULES_DATAIO_WRITE_FIELD_H
 #define MODULES_DATAIO_WRITE_FIELD_H
 
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Mesh/FieldFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/DataIO/GenericWriter.h>
 #include <Modules/DataIO/Share.h>
 
@@ -37,16 +38,15 @@ namespace SCIRun {
   namespace Modules {
     namespace DataIO {
 
-      class SCISHARE WriteFieldModule : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, StringPortTag>
+      class SCISHARE WriteFieldModule : public GenericWriter<FieldHandle, FieldPortTag>
       {
       public:
+        typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         WriteFieldModule();
         virtual void execute();
         INPUT_PORT(0, FieldToWrite, LegacyField);
-        INPUT_PORT(1, Filename, String);
-      private:
-        std::string filename_;
+
+        static Core::Algorithms::AlgorithmParameterName Filename;
       };
 
     }}}

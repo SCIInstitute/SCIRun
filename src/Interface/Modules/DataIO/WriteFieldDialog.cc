@@ -1,4 +1,3 @@
-#if 0
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -27,17 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/DataIO/WriteMatrixDialog.h>
-#include <Core/Algorithms/DataIO/WriteMatrix.h>
+#include <Interface/Modules/DataIO/WriteFieldDialog.h>
+#include <Modules/DataIO/WriteField.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Dataflow::Networks;
 
-WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle state,
+WriteFieldDialog::WriteFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
@@ -51,19 +50,18 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
   buttonBox->setVisible(false);
 }
 
-void WriteMatrixDialog::pull()
+void WriteFieldDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(WriteMatrixAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(WriteFieldModule::Filename).getString()));
 }
 
-void WriteMatrixDialog::pushFileNameToState() 
+void WriteFieldDialog::pushFileNameToState() 
 {
-  state_->setValue(WriteMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(WriteFieldModule::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
-void WriteMatrixDialog::saveFile()
+void WriteFieldDialog::saveFile()
 {
-  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
+  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Field Binary File", ".", "*.fld"));
   pushFileNameToState();
 }
-#endif
