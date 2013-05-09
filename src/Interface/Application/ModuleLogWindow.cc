@@ -62,6 +62,8 @@ ModuleLogger::ModuleLogger(ModuleLogWindow* window)
 {
   connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
   connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
+  //TODO
+  //if (!SCIRunOptions::isTrue(ProgramOption::DisableModuleErrorPopups))
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
 }
 
