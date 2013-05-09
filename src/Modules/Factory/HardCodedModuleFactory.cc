@@ -190,6 +190,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   else if (name.find("ReportFieldInfo") != std::string::npos)
   {
     description.input_ports_ += ReportFieldInfoModule::inputPortDescription(ReportFieldInfoModule::inputPort0Name());
+    description.output_ports_ = ReportFieldInfoModule::outputPortDescription(ReportFieldInfoModule::outputPort0Name(), ReportFieldInfoModule::outputPort1Name());
     description.maker_ = boost::factory<ReportFieldInfoModule*>();
   }
   else if (name.find("AppendMatrix") != std::string::npos)
