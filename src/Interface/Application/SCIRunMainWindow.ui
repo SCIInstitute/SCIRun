@@ -376,6 +376,11 @@
          </property>
          <item>
           <property name="text">
+           <string>PrintDatatype</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>CreateString</string>
           </property>
           <property name="text">

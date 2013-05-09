@@ -98,5 +98,5 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
-  EXPECT_EQ(dataValue, (*data)->as<Int32>()->getValue());
+  EXPECT_EQ(dataValue, (*data)->as<Int32>()->value());
 }

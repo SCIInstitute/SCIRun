@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/String/PrintDatatypeDialog.h>
+#include <Modules/Basic/PrintDatatype.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H 
-
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Share.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  template <typename T>
-  class Scalar : public Datatype
-  {
-  public:
-    explicit Scalar(T val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const { return new Scalar(*this); }
-  private:
-    T val_;
-  };
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-  
-}}}
+using namespace SCIRun::Gui;
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
 
 
-#endif
+PrintDatatypeDialog::PrintDatatypeDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  buttonBox->setVisible(false);
+}
+
+void PrintDatatypeDialog::pullAndDisplayInfo() 
+{
+  auto data = state_->getValue(PrintDatatypeModule::ReceivedValue);
+
+  std::ostringstream ostr;
+  ostr << "Value: " << data.value_ << std::endl;
+ 
+
+  datatypeTextEdit_->setPlainText(QString::fromStdString(ostr.str()));
+}

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_BASIC_PRINT_DATATYPE_H
+#define MODULES_BASIC_PRINT_DATATYPE_H
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H 
-
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Basic/Share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+  namespace Modules {
+    namespace Basic {
 
-  template <typename T>
-  class Scalar : public Datatype
-  {
-  public:
-    explicit Scalar(T val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const { return new Scalar(*this); }
-  private:
-    T val_;
-  };
+      class SCISHARE PrintDatatypeModule : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<DatatypePortTag>
+      {
+      public:
+        PrintDatatypeModule();
+        virtual void execute();
 
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-  
-}}}
+        INPUT_PORT(0, Input, Datatype);
 
+        static Core::Algorithms::AlgorithmParameterName ReceivedValue;
+      };
+ }}}
 
 #endif

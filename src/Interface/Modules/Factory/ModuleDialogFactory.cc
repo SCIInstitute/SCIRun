@@ -42,6 +42,7 @@
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
+#include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolMeshDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
@@ -88,6 +89,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new CreateMatrixDialog(moduleId, state, parentToUse_);
   if (moduleId.find("CreateString") != std::string::npos)
     return new CreateStringDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("PrintDatatype") != std::string::npos)
+    return new PrintDatatypeDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ReportMatrixInfo") != std::string::npos)
     return new ReportMatrixInfoDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ReportFieldInfo") != std::string::npos)

@@ -38,6 +38,7 @@
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
+#include <Modules/Basic/PrintDatatype.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
@@ -171,6 +172,11 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   {
     description.input_ports_ += ReceiveScalarModule::inputPortDescription(ReceiveScalarModule::inputPort0Name());
     description.maker_ = boost::factory<ReceiveScalarModule*>();
+  }
+  else if (name.find("PrintDatatype") != std::string::npos)
+  {
+    description.input_ports_ += PrintDatatypeModule::inputPortDescription(PrintDatatypeModule::inputPort0Name());
+    description.maker_ = boost::factory<PrintDatatypeModule*>();
   }
   else if (name.find("SendTestMatrix") != std::string::npos)
   {

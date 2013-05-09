@@ -47,6 +47,6 @@ ReceiveScalarModule::ReceiveScalarModule()
 void ReceiveScalarModule::execute()
 {
   auto doubleData = getRequiredInput(Input);
-  latestValue_ = doubleData->getValue();
+  latestValue_ = doubleData->value();
   get_state()->setValue(ReceivedValue, latestValue_);
 }

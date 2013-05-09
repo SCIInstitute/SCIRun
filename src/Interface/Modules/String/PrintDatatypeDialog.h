@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_PRINTDATATYPE_H
+#define INTERFACE_MODULES_PRINTDATATYPE_H
 
-#ifndef CORE_DATATYPES_SCALAR_H
-#define CORE_DATATYPES_SCALAR_H 
-
-#include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Share.h>
+#include "Interface/Modules/String/ui_PrintDatatypeDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/String/Share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  template <typename T>
-  class Scalar : public Datatype
-  {
-  public:
-    explicit Scalar(T val) : val_(val) {}
-    T value() const { return val_; }
-    virtual Scalar* clone() const { return new Scalar(*this); }
-  private:
-    T val_;
-  };
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
+namespace Gui {
   
-}}}
+class SCISHARE PrintDatatypeDialog : public ModuleDialogGeneric, 
+  public Ui::PrintDatatypeDialog
+{
+	Q_OBJECT
+	
+public:
+  PrintDatatypeDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+  virtual void pull() {}
+private Q_SLOTS:
+    void pullAndDisplayInfo();
+};
 
+}
+}
 
 #endif
