@@ -191,16 +191,7 @@ QuadBicubicHmt<T>::type_name(int n)
 }
 
 
-const int QUADBICUBICHMT_VERSION = 1;
-template <class T>
-void
-QuadBicubicHmt<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     QUADBICUBICHMT_VERSION);
-  Pio(stream, this->derivs_);
-  stream.end_class();
-}
+
 
 
 }}
@@ -219,6 +210,17 @@ const TypeDescription* get_type_description(Core::Basis::QuadBicubicHmt<T> *)
       TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int QUADBICUBICHMT_VERSION = 1;
+template <class T>
+void
+  Core::Basis::QuadBicubicHmt<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    QUADBICUBICHMT_VERSION);
+  Pio(stream, this->derivs_);
+  stream.end_class();
 }
 }
 

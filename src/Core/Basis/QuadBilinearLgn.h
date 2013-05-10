@@ -434,15 +434,7 @@ QuadBilinearLgn<T>::type_name(int n)
   }
 }
 
-const int QUADBILINEARLGN_VERSION = 1;
-template <class T>
-void
-QuadBilinearLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     QUADBILINEARLGN_VERSION);
-  stream.end_class();
-}
+
 
 
 }}
@@ -460,6 +452,16 @@ const TypeDescription* get_type_description(Core::Basis::QuadBilinearLgn<T> *)
       TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int QUADBILINEARLGN_VERSION = 1;
+template <class T>
+void
+  Core::Basis::QuadBilinearLgn<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    QUADBILINEARLGN_VERSION);
+  stream.end_class();
 }
 }
 

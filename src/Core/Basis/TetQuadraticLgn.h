@@ -198,16 +198,7 @@ TetQuadraticLgn<T>::type_name(int n)
 }
 
 
-const int TETQUADRATICLGN_VERSION = 1;
-template <class T>
-void
-TetQuadraticLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     TETQUADRATICLGN_VERSION);
-  Pio(stream, this->nodes_);
-  stream.end_class();
-}
+
 
 }}
 template <class T>
@@ -225,6 +216,18 @@ const TypeDescription* get_type_description(Core::Basis::TetQuadraticLgn<T> *)
   }
   return td;
 }
+
+const int TETQUADRATICLGN_VERSION = 1;
+template <class T>
+void
+  Core::Basis::TetQuadraticLgn<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    TETQUADRATICLGN_VERSION);
+  Pio(stream, this->nodes_);
+  stream.end_class();
+}
+
 }
 
 #endif

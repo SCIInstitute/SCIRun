@@ -482,15 +482,7 @@ PrismLinearLgn<T>::type_name(int n)
 }
 
 
-const int PRISMLINEARLGN_VERSION = 1;
-template <class T>
-void
-PrismLinearLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     PRISMLINEARLGN_VERSION);
-  stream.end_class();
-}
+
 
 }}
 template <class T>
@@ -507,6 +499,16 @@ const TypeDescription* get_type_description(Core::Basis::PrismLinearLgn<T> *)
       TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int PRISMLINEARLGN_VERSION = 1;
+template <class T>
+void
+  Core::Basis::PrismLinearLgn<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    PRISMLINEARLGN_VERSION);
+  stream.end_class();
 }
 }
 

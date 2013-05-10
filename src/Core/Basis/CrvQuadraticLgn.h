@@ -168,16 +168,7 @@ CrvQuadraticLgn<T>::type_name(int n)
 }
 
 
-const int CRVQUADRATICLGN_VERSION = 1;
-template <class T>
-void
-CrvQuadraticLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     CRVQUADRATICLGN_VERSION);
-  Pio(stream, this->nodes_);
-  stream.end_class();
-}
+
 
 
 }}
@@ -197,6 +188,16 @@ const TypeDescription* get_type_description(Core::Basis::CrvQuadraticLgn<T> *)
   return td;
 }
 
+const int CRVQUADRATICLGN_VERSION = 1;
+template <class T>
+void
+  Core::Basis::CrvQuadraticLgn<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    CRVQUADRATICLGN_VERSION);
+  Pio(stream, this->nodes_);
+  stream.end_class();
+}
 }
 
 #endif

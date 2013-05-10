@@ -374,15 +374,7 @@ CrvLinearLgn<T>::type_name(int n)
 }
 
 
-const int CRVLINEARLGN_VERSION = 1;
-template <class T>
-void
-CrvLinearLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     CRVLINEARLGN_VERSION);
-  stream.end_class();
-}
+
 
 
 }}
@@ -401,6 +393,16 @@ const TypeDescription* get_type_description(Core::Basis::CrvLinearLgn<T> *)
       TypeDescription::BASIS_E);
   }
   return td;
-}}
+}
+const int CRVLINEARLGN_VERSION = 1;
+template <class T>
+void
+  Core::Basis::CrvLinearLgn<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    CRVLINEARLGN_VERSION);
+  stream.end_class();
+}
+}
 
 #endif

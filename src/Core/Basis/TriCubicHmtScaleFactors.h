@@ -273,17 +273,7 @@ TriCubicHmtScaleFactors<T>::type_name(int n)
 }
 
 
-const int TRICUBICHMTSCALEFACTORS_VERSION = 1;
-template <class T>
-void
-  TriCubicHmtScaleFactors<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     TRICUBICHMTSCALEFACTORS_VERSION);
-  Pio(stream, this->derivs_);
-  Pio(stream, this->scalefactors_);
-  stream.end_class();
-}
+
 
 
 }}
@@ -302,6 +292,18 @@ const TypeDescription* get_type_description(Core::Basis::TriCubicHmtScaleFactors
       TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int TRICUBICHMTSCALEFACTORS_VERSION = 1;
+template <class T>
+void
+  Core::Basis::TriCubicHmtScaleFactors<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    TRICUBICHMTSCALEFACTORS_VERSION);
+  Pio(stream, this->derivs_);
+  Pio(stream, this->scalefactors_);
+  stream.end_class();
 }
 }
 

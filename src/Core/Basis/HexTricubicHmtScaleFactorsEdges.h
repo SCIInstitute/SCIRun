@@ -603,17 +603,7 @@ HexTricubicHmtScaleFactorsEdges<T>::type_name(int n)
 
 
 
-const int HEXTRICUBICHMTSCALEFACTORSEDGES_VERSION = 1;
-template <class T>
-void
-HexTricubicHmtScaleFactorsEdges<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     HEXTRICUBICHMTSCALEFACTORSEDGES_VERSION);
-  Pio(stream, this->derivs_);
-  Pio(stream, this->scalefactorse_);
-  stream.end_class();
-}
+
 
 }}
 template <class T>
@@ -632,6 +622,18 @@ const TypeDescription*
       TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int HEXTRICUBICHMTSCALEFACTORSEDGES_VERSION = 1;
+template <class T>
+void
+  Core::Basis::HexTricubicHmtScaleFactorsEdges<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    HEXTRICUBICHMTSCALEFACTORSEDGES_VERSION);
+  Pio(stream, this->derivs_);
+  Pio(stream, this->scalefactorse_);
+  stream.end_class();
 }
 }
 
