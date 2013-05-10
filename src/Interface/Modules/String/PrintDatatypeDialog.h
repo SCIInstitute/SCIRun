@@ -26,27 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#ifndef INTERFACE_MODULES_PRINTDATATYPE_H
+#define INTERFACE_MODULES_PRINTDATATYPE_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+#include "Interface/Modules/String/ui_PrintDatatypeDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/String/Share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Fields {
+namespace Gui {
   
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<StringPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    INPUT_PORT(0, Input, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-  };
-}}}
+class SCISHARE PrintDatatypeDialog : public ModuleDialogGeneric, 
+  public Ui::PrintDatatypeDialog
+{
+	Q_OBJECT
+	
+public:
+  PrintDatatypeDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void moduleExecuted() { pullAndDisplayInfo(); }
+  virtual void pull() {}
+private Q_SLOTS:
+    void pullAndDisplayInfo();
+};
+
+}
+}
 
 #endif

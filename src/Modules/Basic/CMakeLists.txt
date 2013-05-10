@@ -30,6 +30,7 @@ SET(Modules_Basic_SRCS
   ReceiveScalar.cc
   ReceiveTestMatrix.cc
   ReceiveScalarModuleState.cc
+  PrintDatatype.cc
   SendScalar.cc
   SendTestMatrix.cc
   SendScalarModuleState.cc
@@ -39,6 +40,7 @@ SET(Modules_Basic_HEADERS
   ReceiveScalar.h
   ReceiveScalarModuleState.h
   ReceiveTestMatrix.h
+  PrintDatatype.h
   SendScalar.h
   SendScalarModuleState.h
   SendTestMatrix.h

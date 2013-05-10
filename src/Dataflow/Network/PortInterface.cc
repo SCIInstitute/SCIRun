@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <iostream>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
@@ -69,20 +70,24 @@ namespace
   {
     return port1.getUnderlyingModuleId() == port2.getUnderlyingModuleId();
   }
+
+  bool isWildPortColor(const PortDescriptionInterface& port)
+  {
+    const static std::string blackGui = "#000000";
+    const static std::string black = "black";
+    auto color = port.get_colorname();
+    return color == black || color == blackGui;
+  }
 }
+
+
 
 //TODO: unit test
 bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2) const
 {
-  //std::cout << "in PortConnectionDeterminer::canBeConnected" << std::endl;
   if (isFullInputPort(port1) || isFullInputPort(port2))
   {
     //std::cout << "can't connect since input ports can only take one connection" << std::endl;
-    return false;
-  }
-  if (port1.get_colorname() != port2.get_colorname())
-  {
-    //std::cout << "can't connect since colors don't match" << std::endl;
     return false;
   }
   if (port1.isInput() == port2.isInput())
@@ -93,6 +98,17 @@ bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& po
   if (sharesParentModule(port1, port2))
   {
     //std::cout << "can't connect since it's the same module" << std::endl;
+    return false;
+  }
+  if (isWildPortColor(port1) || isWildPortColor(port2))
+  {
+    //std::cout << "found wild port" << std::endl;
+    //TODO: trying out "wildcard" ports
+    return true;
+  }
+  if (port1.get_colorname() != port2.get_colorname())
+  {
+    //std::cout << "can't connect since colors don't match" << std::endl;
     return false;
   }
   return true;

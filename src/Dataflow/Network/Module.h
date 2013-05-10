@@ -270,6 +270,7 @@ namespace Modules
   struct SCISHARE FieldPortTag {};
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
+  struct SCISHARE DatatypePortTag {};
 
   inline SCIRun::Dataflow::Networks::PortDescription MakeMatrixPort(const std::string& name)
   {
@@ -311,6 +312,11 @@ namespace Modules
     return SCIRun::Dataflow::Networks::PortDescription(name, "Geometry", "magenta"); 
   }
 
+  inline SCIRun::Dataflow::Networks::PortDescription MakeDatatypePort(const std::string& name)
+  {
+    return SCIRun::Dataflow::Networks::PortDescription(name, "Datatype", "black"); 
+  }
+
 #define INPUT_PORT_SPEC(name)   template <>\
   class Has1InputPort<name ##PortTag>\
   {\
@@ -329,6 +335,7 @@ namespace Modules
   INPUT_PORT_SPEC(Field);
   INPUT_PORT_SPEC(Mesh);  //TODO temporary
   INPUT_PORT_SPEC(Geometry);
+  INPUT_PORT_SPEC(Datatype);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -370,6 +377,7 @@ namespace Modules
   OUTPUT_PORT_SPEC(Field5);
   OUTPUT_PORT_SPEC(Mesh5);  //TODO temporary
   OUTPUT_PORT_SPEC(Geometry);
+  OUTPUT_PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 

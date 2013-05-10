@@ -26,27 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#ifndef MODULES_BASIC_PRINT_DATATYPE_H
+#define MODULES_BASIC_PRINT_DATATYPE_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+#include <Modules/Basic/Share.h>
 
 namespace SCIRun {
-namespace Modules {
-namespace Fields {
-  
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<StringPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    INPUT_PORT(0, Input, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-  };
-}}}
+  namespace Modules {
+    namespace Basic {
+
+      class SCISHARE PrintDatatypeModule : public SCIRun::Dataflow::Networks::Module,
+        public Has1InputPort<DatatypePortTag>
+      {
+      public:
+        PrintDatatypeModule();
+        virtual void execute();
+
+        INPUT_PORT(0, Input, Datatype);
+
+        static Core::Algorithms::AlgorithmParameterName ReceivedValue;
+      };
+ }}}
 
 #endif

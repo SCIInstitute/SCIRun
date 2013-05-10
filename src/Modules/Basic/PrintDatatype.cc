@@ -26,27 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#include <iostream>
+#include <Modules/Basic/PrintDatatype.h>
+#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/String.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 
-namespace SCIRun {
-namespace Modules {
-namespace Fields {
-  
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<StringPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    INPUT_PORT(0, Input, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-  };
-}}}
+AlgorithmParameterName PrintDatatypeModule::ReceivedValue("ReceivedValue");
 
-#endif
+PrintDatatypeModule::PrintDatatypeModule()
+  : Module(ModuleLookupInfo("PrintDatatype", "DataIO", "SCIRun"))
+{
+}
+
+void PrintDatatypeModule::execute()
+{
+  auto data = getRequiredInput(Input);
+  if (auto i = data->as<Int32>())
+    get_state()->setValue(ReceivedValue, i->value());
+  else if (auto d = data->as<Double>())
+    get_state()->setValue(ReceivedValue, d->value());
+  else if (auto s = data->as<String>())
+    get_state()->setValue(ReceivedValue, s->value());
+  else
+    get_state()->setValue(ReceivedValue, "<complicated type>");
+}

@@ -26,6 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_DATAIO_GENERIC_WRITER_H
+#define MODULES_DATAIO_GENERIC_WRITER_H
+
 /*
  *
  *  Written by:
@@ -36,62 +39,60 @@
  *
  */
 
-
-/*
- * Limitations:
- *   Uses .tcl file with "filename" and "filetype"
- *   Input port must be of type SimpleIPort
- */
-
-#include <Dataflow/GuiInterface/GuiVar.h>
-
+#include <boost/filesystem.hpp>
 #include <Dataflow/Network/Module.h>
 #include <Core/Persistent/Pstreams.h>
 #include <Core/Datatypes/String.h>
-#include <Core/Util/FullFileName.h>
-#include <Dataflow/Network/Ports/StringPort.h>
 
 namespace SCIRun {
+  namespace Modules {
+    namespace DataIO {
 
-
-template <class HType>
-class GenericWriter : public Module {
-protected:
-  HType       handle_;
-  GuiFilename filename_;
-  GuiString   filetype_;
-  GuiInt      confirm_;
-	GuiInt			confirm_once_;
-  bool        exporting_;
-
-  virtual bool overwrite();
-  virtual bool call_exporter(const std::string &filename);
-
+template <class HType, class PortTag>
+class GenericWriter : public SCIRun::Dataflow::Networks::Module,
+  public Has2InputPorts<PortTag, StringPortTag>
+{
 public:
-  GenericWriter(const std::string &name, GuiContext* ctx,
-		const std::string &category, const std::string &package);
+  GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);
   virtual ~GenericWriter() { }
 
   virtual void execute();
+
+  INPUT_PORT(1, Filename, String);
+
+protected:
+  HType       handle_;
+  std::string filename_, filetype_;
+  Core::Algorithms::AlgorithmParameterName stateFilename_;
+  PortName<typename HType::element_type, 0> objectPortName_;
+
+  //GuiFilename filename_;
+  //GuiString   filetype_;
+  //GuiInt      confirm_;
+  //GuiInt			confirm_once_;
+  bool        exporting_;
+
+  virtual bool overwrite() { return true; } //TODO
+  virtual bool call_exporter(const std::string &filename);
 };
 
 
-template <class HType>
-GenericWriter<HType>::GenericWriter(const std::string &name, GuiContext* ctx,
-				    const std::string &cat, const std::string &pack)
-  : Module(name, ctx, Sink, cat, pack),
-    filename_(get_ctx()->subVar("filename"), ""),
-    filetype_(get_ctx()->subVar("filetype"), "Binary"),
-    confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
-		confirm_once_(get_ctx()->subVar("confirm-once"),0),
+template <class HType, class PortTag>
+GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std::string &cat, const std::string &pack, const std::string& stateFilename)
+  : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
+    //filename_(get_ctx()->subVar("filename"), ""),
+    //filetype_(get_ctx()->subVar("filetype"), "Binary"),
+    //confirm_(get_ctx()->subVar("confirm"), sci_getenv_p("SCIRUN_CONFIRM_OVERWRITE")),
+		//confirm_once_(get_ctx()->subVar("confirm-once"),0),
+    stateFilename_(stateFilename),
     exporting_(false)
 {
 }
 
-
-template <class HType>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+template <class HType, class PortTag>
 bool
-GenericWriter<HType>::overwrite()
+GenericWriter<HType, PortTag>::overwrite()
 {
   std::string result;
   TCLInterface::eval(get_id() + " overwrite", result);
@@ -102,56 +103,57 @@ GenericWriter<HType>::overwrite()
   }
   return true;
 }
-  
+#endif
 
-template <class HType>
+template <class HType, class PortTag>
 bool
-GenericWriter<HType>::call_exporter(const std::string &/*filename*/)
+GenericWriter<HType, PortTag>::call_exporter(const std::string &/*filename*/)
 {
   return false;
 }
 
 
-template <class HType>
+template <class HType, class PortTag>
 void
-GenericWriter<HType>::execute()
+GenericWriter<HType, PortTag>::execute()
 {
-  get_input_handle(0,handle_,true);
-  
-  StringHandle filename;
-  if (get_input_handle("Filename",filename,false)) 
+  // If there is an optional input string set the filename to it in the GUI.
+  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+  auto fileOption = getOptionalInput(Filename);
+  if (!fileOption)
+    filename_ = get_state()->getValue(stateFilename_).getString();
+  else
   {
-		// This piece of code makes sure that the path to the output
-		// file exists and that we use an absolute filename
-		FullFileName ffn(filename->get());
-		if (!(ffn.create_file_path()))
-		{
-			error("Could not create path to filename");
-			return;
-		}
-		filename = new String(ffn.get_abs_filename());
+    filename_ = (*fileOption)->value();
 
-    filename_.set(filename->get());
-    get_ctx()->reset();
+    boost::filesystem::path path(filename_);
+    path = boost::filesystem::absolute(path);
+    if (!boost::filesystem::exists(path.parent_path()))
+    {
+      error("Could not create path to filename");
+      return;
+    }
+    filename_ = path.string();
   }
-  
-  // If no name is provided, return.
 
-  std::string fn(filename_.get());
-  if (fn == "")
+  handle_ = getRequiredInput(objectPortName_);
+  
+  if (filename_.empty())
   {
-    warning("No filename specified.");
+    error("No filename specified.");
     return;
   }
 
-  update_state(Executing);
-  remark("saving file " +fn);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+  update_state(Executing);  
+#endif
+  remark("saving file " + filename_);
 
   if (!overwrite()) return;
  
   if (exporting_)
   {
-    if (!call_exporter(fn))
+    if (!call_exporter(filename_))
     {
       error("Export failed.");
       return;
@@ -159,28 +161,27 @@ GenericWriter<HType>::execute()
   }
   else
   {
-    // Open up the output stream
     PiostreamPtr stream;
-    std::string ft(filetype_.get());
-    if (ft == "Binary")
+    if (filetype_ == "Binary")
     {
-      stream = auto_ostream(fn, "Binary", this);
+      stream = auto_ostream(filename_, "Binary", getLogger());
     }
     else
     {
-      stream = auto_ostream(fn, "Text", this);
+      stream = auto_ostream(filename_, "Text", getLogger());
     }
 
     if (stream->error())
     {
-      error("Could not open file for writing" + fn);
+      error("Could not open file for writing" + filename_);
     }
     else
     {
-      // Write the file
       Pio(*stream, handle_);
     } 
   }
 }
 
-} // End namespace SCIRun
+}}}
+
+#endif

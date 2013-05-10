@@ -27,11 +27,12 @@
 */
 
 #include <iostream>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
-using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -46,4 +47,6 @@ void ReportFieldInfoModule::execute()
   ReportFieldInfoAlgorithm algo;
   auto output = algo.run(field);
   get_state()->setTransientValue("ReportedInfo", output);
+  sendOutput(FieldType, boost::make_shared<String>(output.type));
+  sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
 }

@@ -422,16 +422,7 @@ HexTricubicHmt<T>::type_name(int n)
 
 
 
-const int HEXTRICUBICHMT_VERSION = 1;
-template <class T>
-void
-HexTricubicHmt<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     HEXTRICUBICHMT_VERSION);
-  Pio(stream, this->derivs_);
-  stream.end_class();
-}
+
 
 }}
 template <class T>
@@ -449,6 +440,17 @@ const SCIRun::TypeDescription*
       SCIRun::TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int HEXTRICUBICHMT_VERSION = 1;
+template <class T>
+void
+  Core::Basis::HexTricubicHmt<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    HEXTRICUBICHMT_VERSION);
+  Pio(stream, this->derivs_);
+  stream.end_class();
 }
 }
 

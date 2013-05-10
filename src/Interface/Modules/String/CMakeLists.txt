@@ -29,15 +29,18 @@
 
 SET(Interface_Modules_String_FORMS
   CreateString.ui
+  PrintDatatypeDialog.ui
 )
 
 SET(Interface_Modules_String_HEADERS
   Share.h
   CreateStringDialog.h
+  PrintDatatypeDialog.h
 )
 
 SET(Interface_Modules_String_SOURCES 
   CreateStringDialog.cc
+  PrintDatatypeDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_String_FORMS_HEADERS ${Interface_Modules_String_FORMS})
@@ -52,6 +55,7 @@ ADD_LIBRARY(Interface_Modules_String
 
 TARGET_LINK_LIBRARIES(Interface_Modules_String 
   Modules_String
+  Modules_Basic
   Interface_Modules_Base
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}

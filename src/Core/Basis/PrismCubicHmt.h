@@ -262,16 +262,6 @@ PrismCubicHmt<T>::type_name(int n)
 }
 
 
-const int PRISMCUBICHMT_VERSION = 1;
-template <class T>
-void
-PrismCubicHmt<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     PRISMCUBICHMT_VERSION);
-  Pio(stream, this->derivs_);
-  stream.end_class();
-}
 
 }}
 
@@ -290,6 +280,18 @@ const TypeDescription* get_type_description(Core::Basis::PrismCubicHmt<T> *)
   }
   return td;
 }
+
+const int PRISMCUBICHMT_VERSION = 1;
+template <class T>
+void
+  Core::Basis::PrismCubicHmt<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    PRISMCUBICHMT_VERSION);
+  Pio(stream, this->derivs_);
+  stream.end_class();
+}
+
 }
 
 #endif

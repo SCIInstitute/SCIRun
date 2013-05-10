@@ -232,16 +232,7 @@ PrismQuadraticLgn<T>::type_name(int n)
 }
 
 
-const int PRISMQUADRATICLGN_VERSION = 1;
-template <class T>
-void
-PrismQuadraticLgn<T>::io(Piostream &stream)
-{
-  stream.begin_class(get_type_description(this)->get_name(),
-                     PRISMQUADRATICLGN_VERSION);
-  Pio(stream, this->nodes_);
-  stream.end_class();
-}
+
 
 
 }}
@@ -260,6 +251,17 @@ const TypeDescription* get_type_description(Core::Basis::PrismQuadraticLgn<T> *)
       TypeDescription::BASIS_E);
   }
   return td;
+}
+
+const int PRISMQUADRATICLGN_VERSION = 1;
+template <class T>
+void
+  Core::Basis::PrismQuadraticLgn<T>::io(Piostream &stream)
+{
+  stream.begin_class(get_type_description(this)->get_name(),
+    PRISMQUADRATICLGN_VERSION);
+  Pio(stream, this->nodes_);
+  stream.end_class();
 }
 }
 

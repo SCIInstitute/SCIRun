@@ -53,6 +53,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Math/MiscMath.h>
 
 #include <Core/Utils/Legacy/CheckSum.h>
@@ -367,7 +368,7 @@ public:
 
   boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>> getFacade() const
   {
-    return boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>>();
+    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
   
   //! This one should go at some point, should be reroute through the
@@ -3277,13 +3278,13 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   }
 
   // Wait until threads are done
-
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
   Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
     synchronize_cond_.wait(lock);
   }
-
+#endif
   synchronize_lock_.unlock();
 
   return (true);

@@ -26,27 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_REPORTFIELDINFO_H
-#define MODULES_FIELDS_REPORTFIELDINFO_H
+#include <Interface/Modules/String/PrintDatatypeDialog.h>
+#include <Modules/Basic/PrintDatatype.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/Share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun {
-namespace Modules {
-namespace Fields {
-  
-  class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<StringPortTag, ScalarPortTag>
-  {
-  public:
-    ReportFieldInfoModule();
-    virtual void execute();
-    INPUT_PORT(0, Input, LegacyField);
-    OUTPUT_PORT(0, FieldType, String);
-    OUTPUT_PORT(1, NumNodes, Int32);
-  };
-}}}
 
-#endif
+PrintDatatypeDialog::PrintDatatypeDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+
+  buttonBox->setVisible(false);
+}
+
+void PrintDatatypeDialog::pullAndDisplayInfo() 
+{
+  auto data = state_->getValue(PrintDatatypeModule::ReceivedValue);
+
+  std::ostringstream ostr;
+  ostr << "Value: " << data.value_ << std::endl;
+ 
+
+  datatypeTextEdit_->setPlainText(QString::fromStdString(ostr.str()));
+}

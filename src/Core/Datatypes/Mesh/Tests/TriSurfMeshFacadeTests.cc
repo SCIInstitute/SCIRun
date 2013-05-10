@@ -189,7 +189,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
 {
   auto facade(basicTriangleMesh_->getFacade());
-  
+  ASSERT_TRUE(facade);
   std::ostringstream ostr;
   BOOST_FOREACH(const FaceInfo<VirtualMesh>& face, facade->faces())
   {
@@ -208,7 +208,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
 {
   auto facade(basicTriangleMesh_->getFacade());
-  
+  ASSERT_TRUE(facade);
   std::ostringstream ostr;
   BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
   {
