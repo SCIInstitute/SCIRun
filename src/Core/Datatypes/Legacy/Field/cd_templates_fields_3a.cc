@@ -78,6 +78,9 @@ typedef PrismLinearLgn<unsigned long>         PFDulongBasis;
 typedef PrismVolMesh<PrismLinearLgn<Point> > PVMesh;
 PersistentTypeID backwards_compat_PVM("PrismVolMesh", "Mesh",
 				      PVMesh::maker, PVMesh::maker);
+
+namespace SCIRun {
+ 
 template class PrismVolMesh<PrismLinearLgn<Point> >;
 
 
@@ -112,7 +115,9 @@ template class GenericField<PVMesh, PFDushortBasis, std::vector<unsigned short> 
 template class GenericField<PVMesh, PFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<PVMesh, PFDulongBasis,  std::vector<unsigned long> >;
 
-PersistentTypeID 
+}
+
+PersistentTypeID
 backwards_compat_PVFT("PrismVolField<Tensor>", "Field",
 		      GenericField<PVMesh, PFDTensorBasis, 
 		      std::vector<Tensor> >::maker, 

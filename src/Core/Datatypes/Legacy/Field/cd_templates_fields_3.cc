@@ -78,6 +78,10 @@ typedef TetLinearLgn<unsigned long>         TFDulongBasis;
 typedef TetVolMesh<TetLinearLgn<Point> > TVMesh;
 PersistentTypeID backwards_compat_TVM("TetVolMesh", "Mesh",
 				      TVMesh::maker, TVMesh::maker);
+
+namespace SCIRun {
+  
+
 template class TetVolMesh<TetLinearLgn<Point> >;
 
 
@@ -112,7 +116,9 @@ template class GenericField<TVMesh, TFDushortBasis, std::vector<unsigned short> 
 template class GenericField<TVMesh, TFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<TVMesh, TFDulongBasis,  std::vector<unsigned long> >;
 
-PersistentTypeID 
+}
+
+PersistentTypeID
 backwards_compat_TVFT("TetVolField<Tensor>", "Field",
 		      GenericField<TVMesh, TFDTensorBasis, 
 		      std::vector<Tensor> >::maker,
@@ -196,6 +202,9 @@ typedef TetQuadraticLgn<unsigned char>         TQFDucharBasis;
 typedef TetQuadraticLgn<unsigned long>         TQFDulongBasis;
 
 typedef TetVolMesh<TetQuadraticLgn<Point> > QTVMesh;
+
+namespace SCIRun {
+  
 template class GenericField<QTVMesh, TQFDTensorBasis, std::vector<Tensor> >;       
 template class GenericField<QTVMesh, TQFDVectorBasis, std::vector<Vector> >;       
 template class GenericField<QTVMesh, TQFDdoubleBasis, std::vector<double> >;       
@@ -208,3 +217,5 @@ template class GenericField<QTVMesh, TQFDuintBasis,   std::vector<unsigned int> 
 template class GenericField<QTVMesh, TQFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<QTVMesh, TQFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<QTVMesh, TQFDulongBasis,  std::vector<unsigned long> >;
+
+}
