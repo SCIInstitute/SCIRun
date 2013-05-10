@@ -49,7 +49,9 @@ namespace Datatypes {
     explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
       // TODO: necessary? interface to vmesh
-      if (! vmesh->is_latvolmesh() && ! vmesh->is_trisurfmesh())
+      if (! vmesh->is_latvolmesh() 
+        && ! vmesh->is_trisurfmesh() 
+        && ! vmesh->is_tetvolmesh())
         THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 
