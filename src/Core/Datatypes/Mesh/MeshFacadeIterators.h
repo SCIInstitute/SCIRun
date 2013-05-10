@@ -66,7 +66,7 @@ namespace Datatypes {
       else
       {
         //TODO: need to split out that Synchronize enum
-        vmesh_->synchronize(MeshComponent<VirtualMeshType>::sync_enum /*Mesh5::EDGES_E*//* 2*/);
+        vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
         vmesh_->end(iter_);
       }
       current_.setIndex(*iter_);
@@ -212,7 +212,6 @@ namespace Datatypes {
       {
         //TODO: need to split out that Synchronize enum
         vmesh_->synchronize(/*Mesh5::NODE_NEIGHBORS_E*/sync_enum);
-        //vmesh_->synchronize(Mesh5::NODE_NEIGHBORS_E);
         synched_ = true;
       }
       typename VirtualMeshType::Edge::array_type edgesFromNode(6);
