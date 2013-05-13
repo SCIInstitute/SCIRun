@@ -423,7 +423,7 @@ INCLUDE_DIRECTORIES(
   ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
-  ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen_3_1_1
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
 )
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
