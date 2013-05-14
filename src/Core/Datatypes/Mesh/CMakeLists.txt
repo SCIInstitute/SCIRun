@@ -27,41 +27,33 @@
 #
 
 SET(Core_Datatypes_Mesh_SRCS
-  Field.cc
-  FieldInformation.cc
-  FieldRNG.cc
-  LatticeVolumeMesh.cc
-  Mesh.cc
+  #Field.cc
+  #FieldInformation.cc
+  #LatticeVolumeMesh.cc
+  #Mesh.cc
   MeshFactory.cc
-  TriSurfMesh.cc
-  VirtualMeshFactory.cc
-  VMesh.cc
+  #TriSurfMesh.cc
+  #VirtualMeshFactory.cc
+  #VMesh.cc
 )
 
 SET(Core_Datatypes_Mesh_HEADERS
-  Field.h
+  #Field.h
   FieldFwd.h
-  FieldIndex.h
-  FieldInformation.h
-  FieldIterator.h
-  FieldRNG.h
-  FieldVIndex.h
-  FieldVIterator.h
-  LatticeVolumeMesh.h
-  LatticeVolumeMeshRegister.h
-  LatticeVolumeMeshTemplateImpl.h
-  Mesh.h
+  #FieldInformation.h
+  #LatticeVolumeMesh.h
+  #LatticeVolumeMeshRegister.h
+  #LatticeVolumeMeshTemplateImpl.h
+  #Mesh.h
   MeshFacade.h
   MeshFacadeIterators.h
   MeshFactory.h
   MeshTraits.h
-  TriSurfMesh.h
-  TriSurfMeshRegister.h
-  VirtualMeshFactory.h
-  VirtualMeshFacade.h
-  VMesh.h
-  VMeshShared.h
-  VUnstructuredMesh.h
+  #TriSurfMesh.h
+  #TriSurfMeshRegister.h
+  #VirtualMeshFactory.h
+  #VirtualMeshFacade.h
+  #VMesh.h
 )
 
 ADD_LIBRARY(Core_Datatypes_Mesh

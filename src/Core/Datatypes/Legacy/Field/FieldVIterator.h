@@ -54,23 +54,17 @@ class FieldVIteratorBase
   bool operator !=(const FieldVIteratorBase &a) const 
   { return this->index_ != a.index_; }
 
-  inline T operator*() { return this->index_; }
+  inline T operator*() const { return this->index_; }
 
   typedef std::bidirectional_iterator_tag iterator_category;
   typedef T difference_type;
 
 protected:
   T index_;
-#ifdef __digital__
-public:
-#else
 private:
-#endif
   //! Hide this in private to prevent it from being called.
-  FieldVIteratorBase<T> operator ++(int) {
-    FieldVIteratorBase<T> tmp(*this); ++index_; return tmp; }
-  FieldVIteratorBase<T> operator --(int) {
-    FieldVIteratorBase<T> tmp(*this); --index_; return tmp; }
+  FieldVIteratorBase<T> operator ++(int);
+  FieldVIteratorBase<T> operator --(int);
 };
 
 
@@ -93,7 +87,7 @@ struct VNodeIterator : public FieldVIteratorBase<T> {
   template <class U> friend U operator+(const VNodeIndex<U> &a, const VNodeIndex<U> &b);
 };
 
-//! Distinct type for lagragian node FieldIterator.
+//! Distinct type for lagrangian node FieldIterator.
 template <class T>
 struct VENodeIterator : public FieldVIteratorBase<T> {
   VENodeIterator() :

@@ -33,9 +33,6 @@
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
 
-#include <vector>
-
-
 namespace SCIRun {
 
 //! Base type for index types.
@@ -66,12 +63,6 @@ public:
   inline FieldVIndexBase<T>& operator-=(const int);
   inline FieldVIndexBase<T>& operator-=(const long long);
   inline FieldVIndexBase<T>& operator-=(const FieldVIndexBase<T>&);
-
-  
-  std::ostream& str_render(std::ostream& os) const {
-    os << index_;
-    return os;
-  }
   
   T index_;
 };
