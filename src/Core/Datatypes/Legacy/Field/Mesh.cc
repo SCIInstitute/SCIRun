@@ -26,7 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Containers/StackVector.h>
+#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
+#include <Core/Utils/Legacy/Debug.h>
 
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -41,6 +48,8 @@ using namespace SCIRun::Core::Thread;
 // initialize the static member type_id
 PersistentTypeID Mesh::type_id("Mesh", "Datatype", 0);
 
+Mesh::Mesh(const Mesh& copy) : Core::Datatypes::Datatype(copy) 
+{ DEBUG_CONSTRUCTOR("Mesh");  }
 
 namespace 
 {

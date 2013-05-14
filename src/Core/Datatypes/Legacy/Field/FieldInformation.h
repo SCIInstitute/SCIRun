@@ -281,6 +281,10 @@ class SCISHARE FieldInformation : public FieldTypeInformation {
     inline void set_data_typeT(Core::Geometry::Tensor*) { make_tensor(); }
 };
 
+struct SCISHARE MeshException : virtual SCIRun::Core::ExceptionBase {};
+
+struct SCISHARE UnknownMeshType : virtual MeshException {};
+
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
 SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& meshbasistype, const std::string& databasistype, const std::string& datatype);
 

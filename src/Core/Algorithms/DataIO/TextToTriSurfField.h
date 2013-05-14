@@ -44,7 +44,7 @@ class SCISHARE TextToTriSurfFieldAlgorithm : public AlgorithmBase
 {
 public:
  public:
-   SCIRun::Core::Datatypes::MeshHandle5 run(const std::string& filename);
+   SCIRun::Core::Datatypes::LegacyMeshHandle run(const std::string& filename);
  
   // sets up parameter name for state engine
   static const AlgorithmParameterName Filename;

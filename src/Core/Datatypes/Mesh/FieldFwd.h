@@ -35,25 +35,27 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class Field5;
-  typedef boost::shared_ptr<Field5> FieldHandle5;
+  //class Field5;
+  //typedef boost::shared_ptr<Field5> FieldHandle5;
 
-  class Mesh5;
-  typedef boost::shared_ptr<Mesh5> MeshHandle5;
+  //class Mesh5;
+  //typedef boost::shared_ptr<Mesh5> MeshHandle5;
 
-  class VirtualField;
-  typedef boost::shared_ptr<VirtualField> VirtualFieldHandle;
+  //class VirtualField;
+  //typedef boost::shared_ptr<VirtualField> VirtualFieldHandle;
 
-  class VirtualMesh;
-  typedef boost::shared_ptr<VirtualMesh> VirtualMeshHandle;
+  //class VirtualMesh;
+  //typedef boost::shared_ptr<VirtualMesh> VirtualMeshHandle;
 
-  class TypeDescription5;
+  //class TypeDescription5;
 
-  class Field5Information;
+  //class Field5Information;
   
   typedef SCIRun::Field LegacyField;
   typedef SCIRun::Mesh LegacyMesh;
 
+  typedef boost::shared_ptr<LegacyMesh> LegacyMeshHandle;
+  typedef boost::shared_ptr<LegacyField> LegacyFieldHandle;
   
 }}}
 

@@ -30,9 +30,10 @@
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using ::testing::_;
@@ -47,7 +48,7 @@ protected:
   virtual void SetUp()
   {
     int basisOrder = 1;
-    Field5Information lfi("LatVolMesh", basisOrder, "double");
+    FieldInformation lfi("LatVolMesh", basisOrder, "double");
     int sizex,sizey,sizez;
     sizex = sizey = sizez = 2;
     Point minb(0,0,0);
@@ -82,10 +83,10 @@ TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
   auto latVolVMesh = mesh_->vmesh();
   ASSERT_TRUE(latVolVMesh);
 
-  VirtualMesh::dimension_type dims;
+  VMesh::dimension_type dims;
   latVolVMesh->get_dimensions(dims);
 
-  VirtualMesh::dimension_type expectedDims;
+  VMesh::dimension_type expectedDims;
   expectedDims += 2,2,2;
   EXPECT_EQ(expectedDims, dims);
 
@@ -106,10 +107,10 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
   auto latVolVMesh = mesh_->vmesh();
 
   {
-    VirtualMesh::Edge::iterator meshEdgeIter;
-    VirtualMesh::Edge::iterator meshEdgeEnd;
+    VMesh::Edge::iterator meshEdgeIter;
+    VMesh::Edge::iterator meshEdgeEnd;
 
-    VirtualMesh::Node::array_type nodesFromEdge(2);
+    VMesh::Node::array_type nodesFromEdge(2);
 
     latVolVMesh->end(meshEdgeEnd);
 
@@ -118,7 +119,7 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
     {
       // get nodes from edge
 
-      VirtualMesh::Edge::index_type edgeID = *meshEdgeIter;
+      VMesh::Edge::index_type edgeID = *meshEdgeIter;
       latVolVMesh->get_nodes(nodesFromEdge, edgeID);
       Point p0, p1;
       latVolVMesh->get_point(p0, nodesFromEdge[0]);
@@ -144,11 +145,11 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
   }
 
   {
-    VirtualMesh::Face::iterator meshFaceIter;
-    VirtualMesh::Face::iterator meshFaceEnd;
+    VMesh::Face::iterator meshFaceIter;
+    VMesh::Face::iterator meshFaceEnd;
 
-    VirtualMesh::Edge::array_type edgesFromFace(4);
-    VirtualMesh::Node::array_type nodesFromFace(4);
+    VMesh::Edge::array_type edgesFromFace(4);
+    VMesh::Node::array_type nodesFromFace(4);
 
     latVolVMesh->end(meshFaceEnd);
 
@@ -157,7 +158,7 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
     {
       // get edges and nodes from face
 
-      VirtualMesh::Face::index_type faceID = *meshFaceIter;
+      VMesh::Face::index_type faceID = *meshFaceIter;
       latVolVMesh->get_edges(edgesFromFace, faceID);
       ostr << "Face " << faceID << " edges=[" << join(edgesFromFace) << "]" << std::endl;
 
@@ -181,11 +182,11 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
   }
 
   {
-    VirtualMesh::Cell::iterator meshCellIter;
-    VirtualMesh::Cell::iterator meshCellEnd;
+    VMesh::Cell::iterator meshCellIter;
+    VMesh::Cell::iterator meshCellEnd;
 
-    VirtualMesh::Edge::array_type edgesFromCell(12);
-    VirtualMesh::Node::array_type nodesFromCell(8);
+    VMesh::Edge::array_type edgesFromCell(12);
+    VMesh::Node::array_type nodesFromCell(8);
 
     latVolVMesh->end(meshCellEnd);
     std::ostringstream ostr;
@@ -194,7 +195,7 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
     {
       // get edges and nodes from mesh element
 
-      VirtualMesh::Cell::index_type elemID = *meshCellIter;
+      VMesh::Cell::index_type elemID = *meshCellIter;
       latVolVMesh->get_edges(edgesFromCell, elemID);
       ostr << "Cell " << elemID << " edges=[" << join(edgesFromCell) << "]" << std::endl;
 
@@ -209,10 +210,10 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
   }
 
   {
-    VirtualMesh::Node::iterator meshNodeIter;
-    VirtualMesh::Node::iterator meshNodeEnd;
+    VMesh::Node::iterator meshNodeIter;
+    VMesh::Node::iterator meshNodeEnd;
 
-    VirtualMesh::Edge::array_type edgesFromNode(3);
+    VMesh::Edge::array_type edgesFromNode(3);
 
     latVolVMesh->end(meshNodeEnd);
     std::ostringstream ostr;
@@ -221,7 +222,7 @@ TEST_F(LatticeVolumeMeshTests, CubeIterationTest)
     {
       // get edges and point from mesh node
 
-      VirtualMesh::Node::index_type nodeID = *meshNodeIter;
+      VMesh::Node::index_type nodeID = *meshNodeIter;
       Point p;
       latVolVMesh->get_point(p, nodeID);
       ostr << "Node " << nodeID << " point=" << p.get_string();

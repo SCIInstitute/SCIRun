@@ -31,18 +31,16 @@
 #define CORE_DATATYPES_VMESH_H
 
 #include <Core/GeometryPrimitives/Transform.h>
-
+#include <Core/Containers/StackBasedVector.h>
+#include <Core/Containers/StackVector.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
+#include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
 
 #include <Core/GeometryPrimitives/SearchGridT.h>
 
-#include <Core/Containers/StackBasedVector.h>
-
-// For debugging information
 #include <Core/Utils/Legacy/Debug.h>
 
-//! Include needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {

@@ -1,3 +1,6 @@
+//TODO: move this somewhere else
+#if 0
+
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -105,3 +108,4 @@ bool MeshRegistry::MeshTypeID::operator!=(const MeshRegistry::MeshTypeID& other)
 {
   return !(*this == other);
 }
+#endif

@@ -30,22 +30,9 @@
 #ifndef CORE_DATATYPES_LEGACY_MESH_H
 #define CORE_DATATYPES_LEGACY_MESH_H 1
 
-#include <Core/Containers/StackVector.h>
-
 #include <Core/Datatypes/Legacy/Base/Types.h>
-#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
-#include <Core/Datatypes/Legacy/Field/FieldRNG.h>
-#include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
-#include <Core/Datatypes/Legacy/Field/FieldVIterator.h>
 
-#include <Core/Persistent/Persistent.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Tensor.h>
-#include <Core/GeometryPrimitives/BBox.h>
-
-#include <Core/Utils/Legacy/Environment.h>
-#include <Core/Utils/Legacy/Debug.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Mesh/MeshTraits.h>
@@ -57,6 +44,7 @@ namespace SCIRun {
 class Mesh;
 class VMesh;
 class TypeDescription;
+class FieldRNG;
 
 typedef boost::shared_ptr<Mesh> MeshHandle;
 
@@ -70,16 +58,11 @@ typedef boost::shared_ptr<Mesh> MeshHandle;
 class SCISHARE Mesh : public Core::Datatypes::Datatype, public Core::Datatypes::MeshTraits<VMesh>
 {
 public: 
-
-  //! Constructor
   Mesh();
-  Mesh(const Mesh& copy) : Core::Datatypes::Datatype(copy) 
-    { DEBUG_CONSTRUCTOR("Mesh");  }
+  Mesh(const Mesh& copy);
   
-  //! Destructor
   virtual ~Mesh();
   
-  //! Clone the field needed by locking handle system
   virtual Mesh *clone() const = 0;
 
   virtual MeshFacadeHandle getFacade() const = 0;
