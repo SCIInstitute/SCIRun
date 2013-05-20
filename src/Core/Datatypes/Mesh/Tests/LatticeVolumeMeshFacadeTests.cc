@@ -30,11 +30,11 @@
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/LatticeVolumeMesh.h>
+//#include <Core/Datatypes/Mesh/MeshFactory.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using ::testing::_;
@@ -49,15 +49,15 @@ protected:
   virtual void SetUp()
   {
     int basisOrder = 1;
-    Field5Information lfi("LatVolMesh", basisOrder, "double");
+    FieldInformation lfi("LatVolMesh", basisOrder, "double");
     int sizex,sizey,sizez;
     sizex = sizey = sizez = 2;
     Point minb(0,0,0);
     Point maxb(1,1,1);
-    mesh_ = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+    mesh_ = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
   }
 
-  MeshHandle5 mesh_;
+  MeshHandle mesh_;
 };
 
 // TODO: move to utils file (duplicated in TriSurfMeshFacadeTests.cc)
@@ -95,7 +95,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeEdgeIterationTest)
   auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo<VirtualMesh>& edge, facade->edges())
+  BOOST_FOREACH(const EdgeInfo<VMesh>& edge, facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -124,7 +124,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeFaceIterationTest)
   auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo<VirtualMesh>& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -153,7 +153,7 @@ TEST_F(LatticeVolumeMeshFacadeTests, CubeNodeIterationTest)
   auto facade(mesh_->getFacade());
 
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(node.edgeIndices()) << "]" << std::endl;
   }

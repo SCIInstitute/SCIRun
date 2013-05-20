@@ -41,6 +41,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Mesh_Tests
 
 TARGET_LINK_LIBRARIES(Core_Datatypes_Mesh_Tests
   Core_Datatypes_Mesh
+  Core_Datatypes_Legacy_Field
   gtest_main
   gtest
   gmock

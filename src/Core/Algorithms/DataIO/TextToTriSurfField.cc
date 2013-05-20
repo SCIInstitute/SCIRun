@@ -41,15 +41,15 @@
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <Core/GeometryPrimitives/Point.h>
 
 
 namespace bfs=boost::filesystem;
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
@@ -93,7 +93,7 @@ public:
   }
   
   // these files just contain geometry (note that data can be applied to field from matrix)
-  MeshHandle5 readField();
+  MeshHandle readField();
 
 private:
   class FileStreamWrapper
@@ -276,11 +276,11 @@ bool TextToTriSurfFieldPrivate::validateFacesFile(const std::string& filename)
   return true;
 }
 
-MeshHandle5 TextToTriSurfFieldPrivate::readField()
+MeshHandle TextToTriSurfFieldPrivate::readField()
 {
-  Field5Information fi("TriSurfMesh", LINEARDATA_E, "double");
-  auto triSurfMesh = MeshFactory::Instance().CreateMesh(fi);
-  VirtualMeshHandle triSurfVMesh = triSurfMesh->vmesh();
+  FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+  auto triSurfMesh = CreateMesh(fi);
+  auto triSurfVMesh = triSurfMesh->vmesh();
 
   triSurfVMesh->node_reserve(numberPointsFromHeader_);
   triSurfVMesh->elem_reserve(numberPointsFromHeader_);
@@ -302,7 +302,7 @@ MeshHandle5 TextToTriSurfFieldPrivate::readField()
     
   FileStreamWrapper facesStreamWrapper(facesFilePath_.string());
 
-  VirtualMesh::Node::array_type vdata;
+  VMesh::Node::array_type vdata;
   vdata.resize(3);
 
   for (auto i = 0; i < numberFacesFromHeader_ && getline(facesStreamWrapper.stream_, line,'\n'); ++i)
@@ -310,7 +310,7 @@ MeshHandle5 TextToTriSurfFieldPrivate::readField()
     if ( lineStartsWithComment(line) ) continue;
     replaceDelimitersWithWhitespace(line);
     
-    std::vector<VirtualMesh::index_type> ivalues(std::move(parseLineOfNumbers<VirtualMesh::index_type>(line)));
+    std::vector<VMesh::index_type> ivalues(std::move(parseLineOfNumbers<VMesh::index_type>(line)));
 
     for (auto j = 0; j < ivalues.size() && j < 3; j++)
     {
@@ -327,7 +327,7 @@ MeshHandle5 TextToTriSurfFieldPrivate::readField()
 // Text file format for tetrahedral meshes (files supported with or without headers)
 // points: x y z
 // elems: n1 n2 n3
-MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
+MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
 {
   TextToTriSurfFieldPrivate privateImpl(*this);
 
@@ -352,7 +352,7 @@ MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << filename << " is invalid. Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle5();
+        return MeshHandle();
       }
       
       bool foundFacesFile = false;
@@ -384,7 +384,7 @@ MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << "Cannot locate a valid faces file corresponding to " << filename << ". Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle5();
+        return MeshHandle();
       }
     }
     else if ( privateImpl.validFacesFileExtention(filename) ) // if .fac file was supplied
@@ -402,7 +402,7 @@ MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << filename << " is invalid. Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle5();
+        return MeshHandle();
       }
 
       bool foundPointsFile = false;
@@ -434,7 +434,7 @@ MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
         std::ostringstream oss;
         oss << "Cannot locate a valid points file corresponding to " << filename << ". Unable to continue reading triangle surface.";
         error(oss.str());
-        return MeshHandle5();
+        return MeshHandle();
       }
     }
     
@@ -442,7 +442,7 @@ MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
     auto mesh = privateImpl.readField();
     return mesh;
   }
-  catch(std::ifstream::failure e)
+  catch(std::ifstream::failure& e)
   {
     std::ostringstream oss;
     oss << "Parsing triangle surface points file " << filename << " failed with error code " << e.code() << ".\n" << e.what();
@@ -455,7 +455,7 @@ MeshHandle5 TextToTriSurfFieldAlgorithm::run(const std::string& filename)
     error(oss.str());
   }
   // TODO: other exceptions?
-  return MeshHandle5();
+  return MeshHandle();
 }
   
   

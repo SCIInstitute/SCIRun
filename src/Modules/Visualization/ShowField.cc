@@ -28,8 +28,6 @@
 
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>

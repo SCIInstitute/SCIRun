@@ -37,7 +37,7 @@
 #ifndef CORE_BASIS_TRICUBICHMTSCALEFACTORS_H
 #define CORE_BASIS_TRICUBICHMTSCALEFACTORS_H 1
 
-//#include <Core/Persistent/PersistentSTL.h>
+#include <Core/Persistent/PersistentSTL.h>
 #include <Core/Basis/TriLinearLgn.h>
 
 namespace SCIRun {

@@ -29,14 +29,12 @@
 SET(Modules_Visualization_SRCS
   MatrixAsVectorField.cc
   ShowField.cc
-  ShowMesh.cc
   ShowString.cc
 )
 
 SET(Modules_Visualization_HEADERS
   MatrixAsVectorField.h
   ShowField.h
-  ShowMesh.h
   ShowString.h
   Share.h
 )

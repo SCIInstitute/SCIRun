@@ -32,7 +32,7 @@
 #ifndef CORE_BASIS_HEXTRICUBICHMTSCALEFACTORS_H
 #define CORE_BASIS_HEXTRICUBICHMTSCALEFACTORS_H 1
 
-//#include <Core/Persistent/PersistentSTL.h>
+#include <Core/Persistent/PersistentSTL.h>
 #include <Core/Basis/HexTrilinearLgn.h>
 
 namespace SCIRun {

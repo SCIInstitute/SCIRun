@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
+#include <Core/Persistent/PersistentSTL.h>
 
 #include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/GeometryPrimitives/BBox.h>

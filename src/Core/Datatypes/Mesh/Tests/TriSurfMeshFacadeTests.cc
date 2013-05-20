@@ -32,16 +32,17 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/TriSurfMesh.h>
+//#include <Core/Datatypes/Legacy/Field/MeshFactory.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/TriSurfMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
-#include <Core/Datatypes/Mesh/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <Core/GeometryPrimitives/Point.h>
 
 #include <iostream>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
@@ -56,22 +57,22 @@ protected:
   virtual void SetUp()
   {
     {
-      Field5Information fi("TriSurfMesh", LINEARDATA_E, "double");
-      basicTriangleMesh_ = MeshFactory::Instance().CreateMesh(fi);
-      VirtualMeshHandle triangleVMesh = basicTriangleMesh_->vmesh();
+      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      basicTriangleMesh_ = CreateMesh(fi);
+      auto triangleVMesh = basicTriangleMesh_->vmesh();
       triangleVMesh->add_point(Point(0.0, 0.0, 0.0));
       triangleVMesh->add_point(Point(1.0, 0.0, 0.0));
       triangleVMesh->add_point(Point(0.5, 1.0, 0.0));
 
-      VirtualMesh::Node::array_type vdata;
+      VMesh::Node::array_type vdata;
       vdata += 0, 1, 2;
       triangleVMesh->add_elem(vdata);
     }
     
     {
-      Field5Information fi("TriSurfMesh", LINEARDATA_E, "double");
-      cubeMesh_ = MeshFactory::Instance().CreateMesh(fi);
-      VirtualMeshHandle cubeVMesh = cubeMesh_->vmesh();
+      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      cubeMesh_ = CreateMesh(fi);
+      auto cubeVMesh = cubeMesh_->vmesh();
       cubeVMesh->add_point(Point(0.0, 1.0, 0.0));
       cubeVMesh->add_point(Point(0.0, 0.0, 0.0));
       cubeVMesh->add_point(Point(1.0, 1.0, 0.0));
@@ -81,47 +82,47 @@ protected:
       cubeVMesh->add_point(Point(0.0, 1.0, -1.0));
       cubeVMesh->add_point(Point(0.0, 0.0, -1.0));
 
-      VirtualMesh::Node::array_type vdata1;
+      VMesh::Node::array_type vdata1;
       vdata1 += 0, 1, 7;
       cubeVMesh->add_elem(vdata1);
-      VirtualMesh::Node::array_type vdata2;
+      VMesh::Node::array_type vdata2;
       vdata2 += 0, 7, 6;
       cubeVMesh->add_elem(vdata2);
-      VirtualMesh::Node::array_type vdata3;
+      VMesh::Node::array_type vdata3;
       vdata3 += 1, 0, 2;
       cubeVMesh->add_elem(vdata2);
-      VirtualMesh::Node::array_type vdata4;
+      VMesh::Node::array_type vdata4;
       vdata4 += 1, 3, 2;
       cubeVMesh->add_elem(vdata4);
-      VirtualMesh::Node::array_type vdata5;
+      VMesh::Node::array_type vdata5;
       vdata5 += 2, 3, 4;
       cubeVMesh->add_elem(vdata5);
-      VirtualMesh::Node::array_type vdata6;
+      VMesh::Node::array_type vdata6;
       vdata6 += 2, 4, 5;
       cubeVMesh->add_elem(vdata6);
-      VirtualMesh::Node::array_type vdata7;
+      VMesh::Node::array_type vdata7;
       vdata7 += 4, 7, 1;
       cubeVMesh->add_elem(vdata7);
-      VirtualMesh::Node::array_type vdata8;
+      VMesh::Node::array_type vdata8;
       vdata8 += 4, 3, 1;
       cubeVMesh->add_elem(vdata8);
-      VirtualMesh::Node::array_type vdata9;
+      VMesh::Node::array_type vdata9;
       vdata9 += 5, 6, 0;
       cubeVMesh->add_elem(vdata9);
-      VirtualMesh::Node::array_type vdata10;
+      VMesh::Node::array_type vdata10;
       vdata10 += 5, 2, 0;
       cubeVMesh->add_elem(vdata10);
-      VirtualMesh::Node::array_type vdata11;
+      VMesh::Node::array_type vdata11;
       vdata11 += 7, 6, 5;
       cubeVMesh->add_elem(vdata11);
-      VirtualMesh::Node::array_type vdata12;
+      VMesh::Node::array_type vdata12;
       vdata12 += 7, 4, 5;
       cubeVMesh->add_elem(vdata12);
     }
   }
   
-  MeshHandle5 basicTriangleMesh_;
-  MeshHandle5 cubeMesh_;
+  MeshHandle basicTriangleMesh_;
+  MeshHandle cubeMesh_;
 };
 
 // TODO: move to utils file (duplicated in LatticeVolumeMeshFacadeTests.cc)
@@ -171,7 +172,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
   auto facade(basicTriangleMesh_->getFacade());
   
   std::ostringstream ostr;
-  BOOST_FOREACH(const EdgeInfo<VirtualMesh>& edge, facade->edges())
+  BOOST_FOREACH(const EdgeInfo<VMesh>& edge, facade->edges())
   {
     auto nodesFromEdge = edge.nodeIndices();
     auto nodePoints = edge.nodePoints();
@@ -191,7 +192,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
   auto facade(basicTriangleMesh_->getFacade());
   ASSERT_TRUE(facade);
   std::ostringstream ostr;
-  BOOST_FOREACH(const FaceInfo<VirtualMesh>& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
     auto faceID = face.index();
     auto edges = face.edgeIndices();
@@ -210,7 +211,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
   auto facade(basicTriangleMesh_->getFacade());
   ASSERT_TRUE(facade);
   std::ostringstream ostr;
-  BOOST_FOREACH(const NodeInfo<VirtualMesh>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     // special case, since this is essentially a 2D mesh with a single element,
     // the last edge value is not filled

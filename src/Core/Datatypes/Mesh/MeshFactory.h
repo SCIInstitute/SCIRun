@@ -1,3 +1,4 @@
+#if 0
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -103,3 +104,4 @@ namespace Datatypes {
 
 #endif
 
+#endif

@@ -33,7 +33,7 @@
 
 #include <cmath>
 #include <limits>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <Core/Math/share.h>
 

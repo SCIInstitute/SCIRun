@@ -50,7 +50,7 @@
 #include <boost/shared_ptr.hpp>
 
 // for index and size types
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Logging/LoggerFwd.h>

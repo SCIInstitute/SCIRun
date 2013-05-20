@@ -43,7 +43,7 @@
 #define Core_Exceptions_DimensionMismatch_h
 
 #include <Core/Exceptions/Exception.h>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Exceptions/share.h>
 
 namespace SCIRun {

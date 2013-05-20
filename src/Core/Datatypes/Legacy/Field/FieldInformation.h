@@ -30,6 +30,7 @@
 #define CORE_DATATYPES_FIELDINFORMATION 1
 
 #include <string>
+#include <Core/Utils/Exception.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 #include <Core/Datatypes/Legacy/Field/share.h>

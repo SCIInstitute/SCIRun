@@ -49,7 +49,6 @@
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
-#include <Interface/Modules/Visualization/ShowMeshDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 
 using namespace SCIRun::Gui;
@@ -81,8 +80,6 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new ShowStringDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ShowField") != std::string::npos)
     return new ShowFieldDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("ShowMesh") != std::string::npos)
-    return new ShowMeshDialog(moduleId, state, parentToUse_);
   if (moduleId.find("AppendMatrix") != std::string::npos)
     return new AppendMatrixDialog(moduleId, state, parentToUse_);
   if (moduleId.find("CreateMatrix") != std::string::npos)

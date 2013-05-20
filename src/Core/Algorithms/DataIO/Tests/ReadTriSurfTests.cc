@@ -26,6 +26,9 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+//TODO DAN
+#if 0
+
 #include <cmath>
 #include <fstream>
 #include <boost/math/constants/constants.hpp>
@@ -124,3 +127,4 @@ TEST(GenerateSphereOfPoints, DISABLED_Run)
     fileFac << i << " " << (i + 1) << " " << (i + 2) << std::endl;
   }
 }
+#endif

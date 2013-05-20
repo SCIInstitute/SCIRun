@@ -25,15 +25,16 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+//TODO DAN
+
+#if 0
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
 #include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
-#include <Core/Datatypes/Mesh/TriSurfMesh.h>
+//#include <Core/Datatypes/Mesh/TriSurfMesh.h>
 
-using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using ::testing::_;
 using ::testing::NiceMock;
@@ -41,7 +42,7 @@ using ::testing::DefaultValue;
 using ::testing::Return;
 using namespace boost::assign;
 
-#if 0
+
 class LatticeVolumeMeshTests : public ::testing::Test
 {
 protected:

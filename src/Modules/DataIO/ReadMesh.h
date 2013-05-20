@@ -39,7 +39,7 @@ namespace DataIO {
   // TODO: convert to ReadField once field support is in place
   class SCISHARE ReadMeshModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<StringPortTag>,
-    public Has2OutputPorts<Mesh5PortTag, StringPortTag>
+    public Has2OutputPorts<MeshPortTag, StringPortTag>
   {
   public:
     ReadMeshModule();
@@ -47,7 +47,7 @@ namespace DataIO {
     virtual void execute();
 
     INPUT_PORT(0, Filename, String);
-    OUTPUT_PORT(0, OutputSampleField, Mesh5);
+    OUTPUT_PORT(0, OutputSampleField, LegacyMesh);
     OUTPUT_PORT(1, FileLoaded, String);
 
   private:

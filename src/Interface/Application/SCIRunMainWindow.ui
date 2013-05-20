@@ -330,20 +330,6 @@
          </property>
          <item>
           <property name="text">
-           <string>ShowMesh</string>
-          </property>
-          <property name="whatsThis">
-           <string>This module takes a mesh object as input and outputs renderable geometry. Options are given for color, shading, etc.</string>
-          </property>
-          <property name="text">
-           <string>Some basic options available, still work in progress.</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </item>
-         <item>
-          <property name="text">
            <string>ShowField</string>
           </property>
           <property name="font">
@@ -352,11 +338,11 @@
            </font>
           </property>
           <property name="text">
-           <string>Not working yet.</string>
+           <string>Some basic options available, still work in progress.</string>
           </property>
           <property name="font">
            <font>
-            <italic>true</italic>
+            <italic>false</italic>
            </font>
           </property>
           <property name="text">

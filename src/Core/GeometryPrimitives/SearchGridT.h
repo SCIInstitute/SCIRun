@@ -33,7 +33,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Transform.h>
-#include <Core/Datatypes/Types.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 
 #include <algorithm>
 #include <vector>

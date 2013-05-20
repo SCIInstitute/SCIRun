@@ -46,10 +46,10 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
+//#include <Core/Datatypes/Mesh/MeshFactory.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 //#include <Core/Datatypes/Mesh/Field.h>
-#include <Core/Datatypes/Mesh/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 //#include <Core/Util/StringUtil.h>
 
 using namespace SCIRun::Modules::Fields;
@@ -200,7 +200,7 @@ void CreateLatVolMesh::execute()
 #endif
     
     
-    Field5Information lfi("LatVolMesh", basis_order, "double");
+    FieldInformation lfi("LatVolMesh", basis_order, "double");
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (datatype == VECTOR) 
@@ -211,7 +211,7 @@ void CreateLatVolMesh::execute()
 
 
     // Create Image Field.
-    auto mesh = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+    auto mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
     sendOutput(OutputSampleField, mesh);
 
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED

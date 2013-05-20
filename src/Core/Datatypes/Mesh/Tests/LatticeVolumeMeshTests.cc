@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
-#include <Core/Datatypes/Mesh/MeshFactory.h>
+//#include <Core/Datatypes/Mesh/MeshFactory.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 
@@ -53,10 +53,10 @@ protected:
     sizex = sizey = sizez = 2;
     Point minb(0,0,0);
     Point maxb(1,1,1);
-    mesh_ = MeshFactory::Instance().CreateMesh(lfi, MeshConstructionParameters(sizex, sizey, sizez, minb, maxb));
+    mesh_ = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
   }
 
-  MeshHandle5 mesh_;
+  MeshHandle mesh_;
 };
 
 namespace
