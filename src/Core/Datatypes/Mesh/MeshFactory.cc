@@ -62,13 +62,13 @@ MeshRegistry::MeshRegistry()
 }
 
 /*
-MeshHandle MeshFactory::CreateMesh(const Field5Information& info, const MeshConstructionParameters& params)
+MeshHandle MeshFactory::CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params)
 {
   std::string type = info.get_mesh_type_id();
   return CreateMesh(type, params);
 }
 
-MeshHandle MeshFactory::CreateMesh(const Field5Information& info)
+MeshHandle MeshFactory::CreateMesh(const FieldInformation& info)
 {
   std::string type = info.get_mesh_type_id();
   return CreateMesh(type);
