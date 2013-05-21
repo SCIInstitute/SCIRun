@@ -29,8 +29,8 @@
 #include <Modules/Visualization/ShowField.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Color.h>
 

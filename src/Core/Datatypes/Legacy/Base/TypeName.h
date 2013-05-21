@@ -108,7 +108,6 @@ template<class T, class S> const std::string find_type_name( std::pair<T,S> *);
 
 class IntVector;
 class NrrdData;
-class Field;
 
 template<> SCISHARE const std::string find_type_name(float*);
 template<> SCISHARE const std::string find_type_name(double*);

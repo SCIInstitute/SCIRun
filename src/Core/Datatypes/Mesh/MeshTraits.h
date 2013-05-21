@@ -59,6 +59,11 @@ namespace Datatypes {
     typedef boost::shared_ptr<MeshFacade<VirtualMeshType>> MeshFacadeHandle;
   };
 
+  // We reserve the last unsigned int value as a marker for bad mesh
+  // indices.  This is useful for example when there are no neighbors,
+  // or when elements are deleted.
+#define MESH_NO_NEIGHBOR -1
+
 }}}
 
 #endif

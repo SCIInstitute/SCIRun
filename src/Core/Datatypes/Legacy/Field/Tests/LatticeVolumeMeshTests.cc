@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <boost/assign.hpp>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;

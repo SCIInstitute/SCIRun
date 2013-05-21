@@ -451,7 +451,7 @@ SCIRun::CreateMesh(const std::string& type)
 
 MeshHandle
 SCIRun::CreateMesh(const std::string& type,
-	   Mesh::size_type x, Mesh::size_type y, Mesh::size_type z,
+	   size_type x, size_type y, size_type z,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
@@ -475,7 +475,7 @@ SCIRun::CreateMesh(const std::string& type,
 
 MeshHandle
 SCIRun::CreateMesh(const std::string& type,
-	   Mesh::size_type x, Mesh::size_type y,
+	   size_type x, size_type y,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
@@ -498,7 +498,7 @@ SCIRun::CreateMesh(const std::string& type,
 }
 
 MeshHandle
-SCIRun::CreateMesh(const std::string& type, Mesh::size_type x,
+SCIRun::CreateMesh(const std::string& type, size_type x,
 	   const Point& min, const Point& max)
 {
   MeshHandle handle;
@@ -522,7 +522,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x,
 
 MeshHandle
 SCIRun::CreateMesh(const std::string& type,
-	   Mesh::size_type x, Mesh::size_type y, Mesh::size_type z)
+	   size_type x, size_type y, size_type z)
 {
   MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
@@ -548,7 +548,7 @@ SCIRun::CreateMesh(const std::string& type,
 }
 
 MeshHandle
-SCIRun::CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y)
+SCIRun::CreateMesh(const std::string& type, size_type x, size_type y)
 {
   MeshHandle handle;
   if (MeshTypeIDMutex == NULL)
@@ -574,7 +574,7 @@ SCIRun::CreateMesh(const std::string& type, Mesh::size_type x, Mesh::size_type y
 }
 
 MeshHandle
-SCIRun::CreateMesh(const std::string& type, Mesh::size_type x)
+SCIRun::CreateMesh(const std::string& type, size_type x)
 {
   MeshHandle handle;
   if (MeshTypeIDMutex == NULL)

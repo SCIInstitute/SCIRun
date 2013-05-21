@@ -31,7 +31,6 @@
 #ifndef CORE_DATATYPES_VFIELD_H
 #define CORE_DATATYPES_VFIELD_H 1
 
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VFData.h>
 #include <Core/Datatypes/Legacy/Base/Datatype.h>
@@ -54,9 +53,7 @@ public:
   VField() :
     field_(0),
     mesh_(0),
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     pm_(0),
-#endif
     vmesh_(0),
     vfdata_(0),
     basis_order_(0),
@@ -664,7 +661,6 @@ public:
   inline bool is_unsigned_integer()   { return (is_unsigned_char()||is_unsigned_short()||is_unsigned_int()); }
   inline bool is_integer()            { return (is_signed_integer()||is_unsigned_integer()); }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Shortcuts to property manager
   inline void copy_properties(VField* ifield)
     { pm_->copy_properties(ifield->pm_); }
@@ -679,7 +675,6 @@ public:
     
   inline bool is_property( const std::string &name)
     { return(pm_->is_property(name)); }
-#endif
 protected:
   
   // Pointers to structures to access the data virtually
@@ -688,10 +683,8 @@ protected:
   Field*        field_;
   Mesh*         mesh_;
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Add this one separately to avoid circular dependencies
   PropertyManager* pm_;
-#endif
   
   // Interface to the data in the field
   VMesh*        vmesh_;

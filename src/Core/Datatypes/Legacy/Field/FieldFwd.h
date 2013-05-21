@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,42 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef CORE_DATATYPES_LEGACY_FIELDFWD_H
+#define CORE_DATATYPES_LEGACY_FIELDFWD_H 
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H 
-
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Share.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+ 
+  class VMesh;
+  class VField;
+  class TypeDescription;
+  class FieldRNG;
+  class FieldInformation;
 
-  class Datatype;
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
-
-  template <typename T>
-  class Scalar;
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
-  class String;
-  class GeometryObject;
-
-}}
-
-  class Field;
-  class Mesh;
-  typedef boost::shared_ptr<Field> FieldHandle;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
 }
 
-
 #endif
+

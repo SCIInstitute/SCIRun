@@ -30,17 +30,17 @@
 #define CORE_DATATYPES_FIELDINFORMATION 1
 
 #include <string>
+#include <vector>
 #include <Core/Utils/Exception.h>
+#include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
 
-class SCISHARE FieldTypeInformation;
-class SCISHARE FieldInformation;
-
-class SCISHARE FieldTypeInformation {
+class SCISHARE FieldTypeInformation 
+{
 
   public:
 
@@ -286,42 +286,6 @@ struct SCISHARE MeshException : virtual SCIRun::Core::ExceptionBase {};
 
 struct SCISHARE UnknownMeshType : virtual MeshException {};
 
-SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& basistype, const std::string& datatype);
-SCISHARE FieldHandle CreateField(const std::string& meshtype, const std::string& meshbasistype, const std::string& databasistype, const std::string& datatype);
-
-SCISHARE FieldHandle CreateField(mesh_info_type mesh, 
-                                 meshbasis_info_type meshbasis, 
-                                 databasis_info_type databasis, 
-                                 data_info_type data);
-
-SCISHARE FieldHandle CreateField(mesh_info_type mesh,
-                                 databasis_info_type databasis, 
-                                 data_info_type data);
-
-SCISHARE FieldHandle CreateField(FieldInformation &info);
-SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
-
-SCISHARE MeshHandle CreateMesh(FieldInformation &info);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x);
-SCISHARE MeshHandle CreateMesh(FieldInformation &info,const std::vector<Mesh::size_type>& x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x);
-SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<Mesh::size_type>& x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
-
-
 inline bool UseIntegerInterface(FieldInformation &info) 
 { return(info.is_integer()); }
 
@@ -338,8 +302,6 @@ inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2,F
 inline bool UseIntegerInterface(FieldInformation &info,FieldInformation &info2,FieldInformation &info3,
                         FieldInformation &info4, FieldInformation &info5)
 { return(info.is_integer()&info2.is_integer()&info3.is_integer()&info4.is_integer()&info5.is_integer()); }
-
-
 
 inline bool UseScalarInterface(FieldInformation &info) 
 { return(info.is_scalar()); }

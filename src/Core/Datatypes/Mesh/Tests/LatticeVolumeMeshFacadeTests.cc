@@ -31,6 +31,7 @@
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
 //#include <Core/Datatypes/Mesh/MeshFactory.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 

@@ -1,4 +1,3 @@
-#if 0
 /*
    For more information, please see: http://software.sci.utah.edu
 
@@ -27,19 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
-
 #ifndef CORE_DATATYPES_MESHFACTORY_H
 #define CORE_DATATYPES_MESHFACTORY_H 
 
 #include <boost/noncopyable.hpp>
 #include <Core/Utils/Singleton.h>
 #include <Core/Utils/TypeIDTable.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
-#include <Core/Datatypes/Mesh/Mesh.h>
-#include <Core/GeometryPrimitives/GeomFwd.h>
+//#include <Core/Datatypes/Mesh/Mesh.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/Mesh/Share.h>
 
 namespace SCIRun {
@@ -48,10 +44,10 @@ namespace Datatypes {
 
   struct SCISHARE MeshConstructionParameters
   {
-    Mesh::size_type x_, y_, z_;
+    size_type x_, y_, z_;
     Geometry::Point min_, max_;
 
-    MeshConstructionParameters(Mesh::size_type x, Mesh::size_type y, Mesh::size_type z, const Geometry::Point& min, const Geometry::Point& max);
+    MeshConstructionParameters(size_type x, size_type y, size_type z, const Geometry::Point& min, const Geometry::Point& max);
   };
 
   typedef MeshHandle (*MeshDefaultConstructor)();
@@ -64,8 +60,8 @@ namespace Datatypes {
     CORE_SINGLETON( MeshFactory );
 
   public:
-    MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
-    MeshHandle CreateMesh(const FieldInformation& info);
+    //MeshHandle CreateMesh(const FieldInformation& info, const MeshConstructionParameters& params);
+    //MeshHandle CreateMesh(const FieldInformation& info);
     MeshHandle CreateMesh(const std::string& type);
 
   private:
@@ -101,7 +97,5 @@ namespace Datatypes {
   };
 
 }}}
-
-#endif
 
 #endif

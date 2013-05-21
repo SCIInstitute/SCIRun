@@ -30,6 +30,7 @@ SET(Core_Datatypes_Legacy_Field_HEADERS
   CastFData.h
   CurveMesh.h
   Field.h
+  FieldFwd.h
   FieldIndex.h
   FieldInformation.h
   FieldIterator.h

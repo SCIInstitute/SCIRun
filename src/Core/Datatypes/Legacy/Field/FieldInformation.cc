@@ -26,12 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
+
+//TODO DAN: use std::replace for strings below.
 
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
@@ -1519,49 +1523,49 @@ SCIRun::CreateMesh(FieldInformation &info)
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info,Mesh::size_type x)
+SCIRun::CreateMesh(FieldInformation &info,size_type x)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x));
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info,Mesh::size_type x,const Point& min,const Point& max)
+SCIRun::CreateMesh(FieldInformation &info,size_type x,const Point& min,const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,min,max));
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y)
+SCIRun::CreateMesh(FieldInformation &info,size_type x,size_type y)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y));
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max)
+SCIRun::CreateMesh(FieldInformation &info,size_type x,size_type y,const Point& min,const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,min,max));
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z)
+SCIRun::CreateMesh(FieldInformation &info,size_type x,size_type y,size_type z)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z));
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max)
+SCIRun::CreateMesh(FieldInformation &info,size_type x,size_type y,size_type z,const Point& min,const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   return (CreateMesh(type,x,y,z,min,max));
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim)
+SCIRun::CreateMesh(FieldInformation &info, const std::vector<size_type>& dim)
 {
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0]));
@@ -1571,7 +1575,7 @@ SCIRun::CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& d
 }
 
 MeshHandle 
-SCIRun::CreateMesh(FieldInformation &info, const std::vector<Mesh::size_type>& dim,const Point& min,const Point& max)
+SCIRun::CreateMesh(FieldInformation &info, const std::vector<size_type>& dim,const Point& min,const Point& max)
 {
   std::string type = info.get_mesh_type_id();
   if (dim.size() == 1) return (CreateMesh(type,dim[0],min,max));
@@ -1590,7 +1594,7 @@ SCIRun::CreateMesh(mesh_info_type mesh)
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x)
+SCIRun::CreateMesh(mesh_info_type mesh,size_type x)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1598,7 +1602,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x)
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Point& min,const Point& max)
+SCIRun::CreateMesh(mesh_info_type mesh,size_type x,const Point& min,const Point& max)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1606,7 +1610,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,const Point& min,const 
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y)
+SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1614,7 +1618,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y)
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const Point& min,const Point& max)
+SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y,const Point& min,const Point& max)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1622,7 +1626,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,const
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z)
+SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y,size_type z)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1630,7 +1634,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh:
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh::size_type z,const Point& min,const Point& max)
+SCIRun::CreateMesh(mesh_info_type mesh,size_type x,size_type y,size_type z,const Point& min,const Point& max)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1638,7 +1642,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,Mesh::size_type x,Mesh::size_type y,Mesh:
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim)
+SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<size_type>& dim)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();
@@ -1649,7 +1653,7 @@ SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim)
 }
 
 MeshHandle 
-SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<Mesh::size_type>& dim,const Point& min,const Point& max)
+SCIRun::CreateMesh(mesh_info_type mesh,const std::vector<size_type>& dim,const Point& min,const Point& max)
 {
   FieldInformation info(mesh,LINEARDATA_E,DOUBLE_E);
   std::string type = info.get_mesh_type_id();

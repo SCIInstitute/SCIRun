@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 #include <Core/Datatypes/Legacy/Field/Field.h>
-
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+#include <Core/Utils/Legacy/Debug.h>
 #include <Core/Utils/Legacy/ProgressReporter.h>
 #include <Core/Thread/Mutex.h>
 #include <sci_debug.h>
@@ -43,6 +43,9 @@ Field::Field()
 {
   DEBUG_CONSTRUCTOR("Field")  
 }
+
+Field::Field(const Field& copy) : Core::Datatypes::Datatype(copy) 
+{ DEBUG_CONSTRUCTOR("Field");  }
 
 Field::~Field()
 {
