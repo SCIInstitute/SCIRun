@@ -50,9 +50,11 @@ CORE_SINGLETON_IMPLEMENTATION( MeshRegistry )
 
 MeshFactory::MeshFactory() : registry_(MeshRegistry::Instance())
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   SCIRun::Core::Datatypes::registerLatticeVolumeMesh();
   SCIRun::Core::Datatypes::registerTriSurfMeshes();
   //fill in all mesh types here, via their basic register functions.
+#endif
 }
 
 MeshRegistry::MeshRegistry()

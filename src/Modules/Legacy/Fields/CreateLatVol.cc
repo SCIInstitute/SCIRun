@@ -40,9 +40,11 @@
  */
 
 #include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -110,7 +112,7 @@ CreateLatVol::execute()
       }
       else
       {
-        error("LatVol size matrix needs to have or one element or three elements");
+        error("LatVol size matrix needs to have either one element or three elements");
         return;
       }	
     }	

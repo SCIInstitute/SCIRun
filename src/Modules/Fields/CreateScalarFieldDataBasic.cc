@@ -28,6 +28,8 @@
 
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 

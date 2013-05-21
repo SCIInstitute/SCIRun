@@ -27,6 +27,7 @@
 */
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Modules/Fields/FieldToMesh.h>
 
 using namespace SCIRun::Dataflow::Networks;
