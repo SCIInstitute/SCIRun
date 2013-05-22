@@ -54,7 +54,6 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 
 #include <Core/Command/CommandFactory.h>
-#include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 #include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun;
@@ -255,10 +254,7 @@ void SCIRunMainWindow::postConstructionSignalHookup()
 
 void SCIRunMainWindow::executeCommandLineRequests()
 {
-  GlobalCommandFactoryHandle gcf(boost::make_shared<GuiGlobalCommandFactory>());
-  GlobalCommandBuilderFromCommandLine builder(gcf);
-  auto queue = builder.build(SCIRun::Core::Application::Instance().parameters());
-  queue->runAll();
+  SCIRun::Core::Application::Instance().executeCommandLineRequests(boost::make_shared<GuiGlobalCommandFactory>());
 }
 
 void SCIRunMainWindow::executeAll()

@@ -34,9 +34,11 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
+#include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::CommandLine;
+using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
@@ -70,7 +72,7 @@ Application::~Application()
 {
 }
 
-ApplicationParametersHandle Application::parameters()
+ApplicationParametersHandle Application::parameters() const
 {
   return private_->parameters_;
 }
@@ -93,6 +95,13 @@ NetworkEditorControllerHandle Application::controller()
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe));
   }
   return private_->controller_;
+}
+
+void Application::executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory)
+{
+  GlobalCommandBuilderFromCommandLine builder(cmdFactory);
+  auto queue = builder.build(parameters());
+  queue->runAll();
 }
 
 boost::filesystem::path Application::executablePath() const

@@ -33,6 +33,7 @@
 
 #include <Core/Utils/Singleton.h>
 #include <Core/CommandLine/CommandLine.h>
+#include <Core/Command/CommandFactory.h>
 #include <Core/Application/Share.h>
 
 namespace SCIRun {
@@ -64,8 +65,12 @@ private:
 
 public:
   void readCommandLine(int argc, const char* argv[]);
-  CommandLine::ApplicationParametersHandle parameters();
+  
+  CommandLine::ApplicationParametersHandle parameters() const;
   boost::shared_ptr<SCIRun::Dataflow::Engine::NetworkEditorController> controller();
+
+  void executeCommandLineRequests(Commands::GlobalCommandFactoryHandle cmdFactory);
+
   boost::filesystem::path executablePath() const;
   std::string commandHelpString() const;
   std::string version() const;

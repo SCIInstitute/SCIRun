@@ -40,6 +40,8 @@ DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
   parallel_(new BasicParallelExecutionStrategy)
 {
 }
+
+  //TODO 5/22: make parallel the default for milestone F
 ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
 {
   switch (type)

@@ -27,9 +27,7 @@
 */
 
 #include <QApplication>
-#include <QSplashScreen>
 #include <QMessageBox>
-#include <QTimer>
 #include <Interface/Application/GuiApplication.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Core/Application/Application.h>

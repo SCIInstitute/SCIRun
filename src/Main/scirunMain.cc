@@ -40,3 +40,11 @@ int main(int argc, const char* argv[])
 
 	return GuiApplication::run(argc, argv);
 }
+
+class ConsoleApplication
+{
+public:
+  static int run(int argc, const char* argv[]);
+private:
+  ConsoleApplication();
+};
