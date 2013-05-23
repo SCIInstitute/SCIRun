@@ -36,32 +36,31 @@ namespace SCIRun {
 namespace Core {
 namespace Console {
 
-
-  class LoadFileCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE LoadFileCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class ExecuteCurrentNetworkCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE ExecuteCurrentNetworkCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class QuitCommandConsole : public Core::Commands::ConsoleCommand
+  class SCISHARE QuitCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
@@ -78,19 +77,6 @@ namespace Console {
   public:
     virtual bool execute();
   };
-
-
-  class FileOpenCommandConsole : public Core::Commands::ConsoleCommand
-  {
-  public:
-//    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-    virtual bool execute();
-
-  //  Dataflow::Networks::NetworkFileHandle openedFile_;
-  private:
-//    std::string filename_;
-  };
-
 
 }}}
 

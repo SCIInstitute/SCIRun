@@ -233,12 +233,12 @@ void NetworkEditorController::clear()
   //std::cout << "NetworkEditorController::clear()" << std::endl;
 }
 
-void NetworkEditorController::executeAll(const ExecutableLookup& lookup)
+void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   if (!currentExecutor_)
     currentExecutor_ = executorFactory_->create(ExecutionStrategy::SERIAL); //TODO: read some setting for default executor type
 
-  currentExecutor_->executeAll(*theNetwork_, lookup);
+  currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const 

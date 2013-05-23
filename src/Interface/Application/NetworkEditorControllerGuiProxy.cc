@@ -79,7 +79,7 @@ void NetworkEditorControllerGuiProxy::loadNetwork(const NetworkFileHandle& xml)
 
 void NetworkEditorControllerGuiProxy::executeAll(const ExecutableLookup& lookup)
 {
-  controller_->executeAll(lookup);
+  controller_->executeAll(&lookup);
 }
 
 size_t NetworkEditorControllerGuiProxy::numModules() const 

@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include <Core/ConsoleApplication/ConsoleCommands.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -34,34 +35,66 @@ DEALINGS IN THE SOFTWARE.
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Commands;
 using namespace SCIRun::Core::Console;
-//using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Dataflow::Networks;
 
 bool LoadFileCommandConsole::execute()
 {
   auto inputFile = Application::Instance().parameters()->inputFile();
-  std::cout << "LoadFileCommandConsole::execute()" << std::endl;
-  //SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
+  if (inputFile)
+  {
+    auto filename = *inputFile;
+    //SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
+
+    //TODO: real logger
+    std::cout << "Attempting load of " + filename << std::endl;
+
+    try
+    {
+      auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename);
+
+      if (openedFile)
+      {
+        Application::Instance().controller()->clear();
+        Application::Instance().controller()->loadNetwork(openedFile);
+        //TODO: real logger
+        std::cout << "File load done." << std::endl;
+        return true;
+      }
+      else //TODO: real logger
+        std::cout << "File load failed." << std::endl;
+    }
+    catch (...)
+    {
+      //TODO: real logger
+      std::cout << "File load failed." << std::endl;
+    }
+    return false;
+
+  }
+
+
   return true;
 }
 
 bool ExecuteCurrentNetworkCommandConsole::execute()
 {
   std::cout << "ExecuteCurrentNetworkCommandConsole::execute()" << std::endl;
-//  SCIRunMainWindow::Instance()->executeAll();
+  Application::Instance().controller()->executeAll(0);
+  std::cout << "execution done" << std::endl;
   return true;
 }
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
   std::cout << "QuitAfterExecuteCommandConsole::execute()" << std::endl;
+  std::cout << "Goodbye!" << std::endl;
   //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
 }
 
 bool QuitCommandConsole::execute()
 {
-  std::cout << "QuitCommandConsole::execute()" << std::endl;
-  //SCIRunMainWindow::Instance()->quit();
+  exit(0);
   return true;
 }
 
@@ -74,33 +107,6 @@ bool PrintHelpCommand::execute()
 bool PrintVersionCommand::execute()
 {
   std::cout << Application::Instance().version() << std::endl;
-  return true;
-}
-
-bool FileOpenCommandConsole::execute()
-{
-  //GuiLogger::Instance().log(QString("Attempting load of ") + filename_.c_str());
-
-  //try
-  //{
-  //  openedFile_ = XMLSerializer::load_xml<NetworkFile>(filename_);
-
-  //  if (openedFile_)
-  //  {
-  //    networkEditor_->clear();
-  //    networkEditor_->loadNetwork(openedFile_);
-  //    GuiLogger::Instance().log("File load done.");
-  //    return true;
-  //  }
-  //  else
-  //    GuiLogger::Instance().log("File load failed.");
-  //}
-  //catch (...)
-  //{
-  //  GuiLogger::Instance().log("File load failed.");
-  //}
-  //return false;
-  std::cout << "FileOpenCommandConsole::execute()" << std::endl;
   return true;
 }
 

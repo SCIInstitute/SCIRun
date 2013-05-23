@@ -63,7 +63,7 @@ namespace Engine {
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
-    void executeAll(const Networks::ExecutableLookup& lookup);
+    void executeAll(const Networks::ExecutableLookup* lookup);
 
     virtual Networks::NetworkFileHandle saveNetwork() const;
     virtual void loadNetwork(const Networks::NetworkFileHandle& xml);
