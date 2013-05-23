@@ -65,18 +65,6 @@ bool QuitCommandGui::execute()
   return true;
 }
 
-bool PrintHelpGui::execute()
-{
-  std::cout << Application::Instance().commandHelpString() << std::endl;
-  return true;
-}
-
-bool PrintVersionGui::execute()
-{
-  std::cout << Application::Instance().version() << std::endl;
-  return true;
-}
-
 bool ShowMainWindowGui::execute()
 {
   auto mainWin = SCIRunMainWindow::Instance();

@@ -30,9 +30,11 @@
 #include <Core/Utils/Exception.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
+#include <Core/ConsoleApplication/ConsoleCommands.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Console;
 
 CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
 {
@@ -43,9 +45,9 @@ CommandHandle GuiGlobalCommandFactory::create(GlobalCommands type) const
   case ShowSplashScreen:
     return boost::make_shared<ShowSplashScreenGui>();
   case PrintHelp:
-    return boost::make_shared<PrintHelpGui>();
+    return boost::make_shared<PrintHelpCommand>();
   case PrintVersion:
-    return boost::make_shared<PrintVersionGui>();
+    return boost::make_shared<PrintVersionCommand>();
   case LoadNetworkFile:
     return boost::make_shared<LoadFileCommandGui>();
   case RunPythonScript:

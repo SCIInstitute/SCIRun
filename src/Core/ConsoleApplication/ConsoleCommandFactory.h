@@ -26,17 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Application/Application.h>
-#include <Interface/Application/GuiApplication.h>
+#ifndef CORE_CONSOLEAPPLICATION_CONSOLECOMMANDFACTORY_H
+#define CORE_CONSOLEAPPLICATION_CONSOLECOMMANDFACTORY_H
 
-using namespace SCIRun::Core;
-using namespace SCIRun::Gui;
+#include <Core/Command/CommandFactory.h>
+#include <Core/ConsoleApplication/Share.h>
 
-int main(int argc, const char* argv[])
-{
-  Application::Instance().readCommandLine(argc, argv);
-  
-  //TODO: must read --headless flag here, or try pushing command queue building all the way up here
+namespace SCIRun {
+namespace Core {
+namespace Console {
 
-	return GuiApplication::run(argc, argv);
-}
+  class SCISHARE ConsoleGlobalCommandFactory : public Core::Commands::GlobalCommandFactory
+  {
+  public:
+    virtual Core::Commands::CommandHandle create(Core::Commands::GlobalCommands type) const;
+  };
+
+}}}
+
+#endif

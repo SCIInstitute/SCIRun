@@ -114,6 +114,7 @@ SET(NonPythonInterface_ApplicationLinkLibraries
   Core_Application
   Core_Logging
   Core_Command
+  Core_ConsoleApplication
   Interface_Modules_Base
   Interface_Modules_Factory
   ${SCI_BOOST_LIBRARY}

@@ -26,17 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Application/Application.h>
-#include <Interface/Application/GuiApplication.h>
+#include <boost/make_shared.hpp>
+#include <Core/Utils/Exception.h>
+#include <Core/ConsoleApplication/ConsoleCommandFactory.h>
+#include <Core/ConsoleApplication/ConsoleCommands.h>
 
-using namespace SCIRun::Core;
-using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Console;
 
-int main(int argc, const char* argv[])
+class NothingCommand : public ConsoleCommand
 {
-  Application::Instance().readCommandLine(argc, argv);
-  
-  //TODO: must read --headless flag here, or try pushing command queue building all the way up here
+public:
+  virtual bool execute() { return true; }
+};
 
-	return GuiApplication::run(argc, argv);
+CommandHandle ConsoleGlobalCommandFactory::create(GlobalCommands type) const
+{
+  switch (type)
+  {
+  case ShowMainWindow:
+    return boost::make_shared<NothingCommand>();
+  case ShowSplashScreen:
+    return boost::make_shared<NothingCommand>();
+  case PrintHelp:
+    return boost::make_shared<PrintHelpCommand>();
+  case PrintVersion:
+    return boost::make_shared<PrintVersionCommand>();
+  case LoadNetworkFile:
+    return boost::make_shared<LoadFileCommandConsole>();
+  case RunPythonScript:
+    return boost::make_shared<RunPythonScriptCommandConsole>();
+  case ExecuteCurrentNetwork:
+    return boost::make_shared<ExecuteCurrentNetworkCommandConsole>();
+  case SetupQuitAfterExecute:
+    return boost::make_shared<QuitAfterExecuteCommandConsole>();
+  case QuitCommand:
+    return boost::make_shared<QuitCommandConsole>();
+  default:
+    THROW_INVALID_ARGUMENT("Unknown global command type.");
+  }
 }

@@ -26,80 +26,72 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_APPLICATION_GUICOMMANDS_H
-#define INTERFACE_APPLICATION_GUICOMMANDS_H
+#ifndef CORE_CONSOLEAPPLICATION_CONSOLECOMMANDS_H
+#define CORE_CONSOLEAPPLICATION_CONSOLECOMMANDS_H
 
-#include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Command/Command.h>
-
-class QSplashScreen;
-class QTimer;
+#include <Core/ConsoleApplication/Share.h>
 
 namespace SCIRun {
-namespace Gui {
+namespace Core {
+namespace Console {
 
-  class NetworkEditor;
 
-  class LoadFileCommandGui : public Core::Commands::GuiCommand
+  class LoadFileCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class RunPythonScriptCommandGui : public Core::Commands::GuiCommand
+  class RunPythonScriptCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class ExecuteCurrentNetworkCommandGui : public Core::Commands::GuiCommand
+  class ExecuteCurrentNetworkCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class QuitAfterExecuteCommandGui : public Core::Commands::GuiCommand
+  class QuitAfterExecuteCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class QuitCommandGui : public Core::Commands::GuiCommand
+  class QuitCommandConsole : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
 
-  class ShowMainWindowGui : public Core::Commands::GuiCommand
+  class SCISHARE PrintHelpCommand : public Core::Commands::ConsoleCommand
   {
   public:
     virtual bool execute();
   };
-  
-  class ShowSplashScreenGui : public Core::Commands::GuiCommand
+
+  class SCISHARE PrintVersionCommand : public Core::Commands::ConsoleCommand
   {
   public:
-    ShowSplashScreenGui();
     virtual bool execute();
+  };
+
+
+  class FileOpenCommandConsole : public Core::Commands::ConsoleCommand
+  {
+  public:
+//    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
+    virtual bool execute();
+
+  //  Dataflow::Networks::NetworkFileHandle openedFile_;
   private:
-    static void initSplashScreen();
-    static QSplashScreen* splash_;
-    static QTimer* splashTimer_;
-  };
-  
-  class FileOpenCommand : public Core::Commands::GuiCommand
-  {
-  public:
-    FileOpenCommand(const std::string& filename, NetworkEditor* networkEditor) : filename_(filename), networkEditor_(networkEditor) {}
-    virtual bool execute();
-
-    Dataflow::Networks::NetworkFileHandle openedFile_;
-  private:
-    std::string filename_;
-    NetworkEditor* networkEditor_;
+//    std::string filename_;
   };
 
 
-}
-}
+}}}
+
 #endif

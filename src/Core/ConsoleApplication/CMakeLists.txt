@@ -26,22 +26,33 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Algorithms)
-ADD_SUBDIRECTORY(Application)
-ADD_SUBDIRECTORY(Basis)
-ADD_SUBDIRECTORY(Command)
-ADD_SUBDIRECTORY(CommandLine)
-ADD_SUBDIRECTORY(ConsoleApplication)
-ADD_SUBDIRECTORY(Containers)
-ADD_SUBDIRECTORY(Datatypes)
-ADD_SUBDIRECTORY(Exceptions)
-ADD_SUBDIRECTORY(GeometryPrimitives)
-ADD_SUBDIRECTORY(Logging)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Persistent)
-ADD_SUBDIRECTORY(Utils)
-ADD_SUBDIRECTORY(Thread)
+SET(Core_ConsoleApplication_SRCS
+  ConsoleApplication.cc
+  ConsoleCommandFactory.cc
+  ConsoleCommands.cc
+)
 
-IF(BUILD_WITH_PYTHON)
-  ADD_SUBDIRECTORY(Python)
-ENDIF()
+SET(Core_ConsoleApplication_HEADERS
+  ConsoleApplication.h
+  ConsoleCommandFactory.h
+  ConsoleCommands.h
+  Share.h
+)
+
+ADD_LIBRARY(Core_ConsoleApplication
+  ${Core_ConsoleApplication_HEADERS}
+  ${Core_ConsoleApplication_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_ConsoleApplication
+  Core_Application
+  Core_Command
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_ConsoleApplication)
+ENDIF(BUILD_SHARED_LIBS)
+
+#ADD_SUBDIRECTORY(Tests)
+
