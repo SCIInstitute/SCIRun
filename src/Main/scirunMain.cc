@@ -28,9 +28,11 @@
 
 #include <Core/Application/Application.h>
 #include <Interface/Application/GuiApplication.h>
+#include <Core/ConsoleApplication/ConsoleApplication.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Console;
 
 int main(int argc, const char* argv[])
 {
@@ -38,5 +40,6 @@ int main(int argc, const char* argv[])
   
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
 
+  //return ConsoleApplication::run(argc, argv);
 	return GuiApplication::run(argc, argv);
 }
