@@ -30,6 +30,8 @@
 #include <boost/program_options.hpp>
 #include <boost/make_shared.hpp>
 
+#include <iostream>
+
 using namespace SCIRun::Core::CommandLine;
 namespace po = boost::program_options;
 
@@ -65,7 +67,6 @@ public:
   po::variables_map parse(int argc, const char* argv[])
   {
     po::variables_map vm;
-
     // basic_command_line_parser::allow_unregistered is needed when launching SCIRun from OS X
     // app bundles; the first argument in argv is the program path, the second is the
     // process serial number (Carbon API ProcessSerialNumber struct), which matches
@@ -178,13 +179,17 @@ std::string CommandLineParser::describe() const
 
 ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[])
 {
-  auto parsed = impl_->parse(argc, argv);
-  auto inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
-  auto pythonScriptFile = parsed.count("script") != 0 ? 
-    boost::filesystem::path(parsed["script"].as<std::string>()) : 
-    boost::optional<boost::filesystem::path>();
-  return boost::make_shared<ApplicationParametersImpl>
-    (
+  try
+  {
+    auto parsed = impl_->parse(argc, argv);
+    auto inputFile = parsed.count("input-file") != 0 ? parsed["input-file"].as<std::string>() : boost::optional<std::string>();
+    auto pythonScriptFile = boost::optional<boost::filesystem::path>();
+    if (parsed.count("script") != 0 && !parsed["script"].empty() && !parsed["script"].defaulted())
+    {
+      pythonScriptFile = boost::filesystem::path(parsed["script"].as<std::string>());
+    }
+    return boost::make_shared<ApplicationParametersImpl>
+      (
       inputFile,
       pythonScriptFile,
       parsed.count("help") != 0,
@@ -193,7 +198,13 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       parsed.count("Execute") != 0,
       parsed.count("headless") != 0,
       parsed.count("no_splash") != 0
-    );
+      );
+  }
+  catch (std::exception& e)
+  {
+    std::cerr << "Failed to parse command line: " << e.what() << std::endl;
+    exit(7);
+  }
 }
 
 ApplicationParameters::~ApplicationParameters()

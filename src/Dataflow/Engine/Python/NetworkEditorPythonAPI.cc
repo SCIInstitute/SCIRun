@@ -109,8 +109,8 @@ std::vector<boost::shared_ptr<PyModule>> NetworkEditorPythonAPI::modules()
 
 std::string NetworkEditorPythonAPI::executeAll()
 {
-  if (impl_ && lookup_)
-    return impl_->executeAll(*lookup_);
+  if (impl_)
+    return impl_->executeAll(lookup_);
   else
   {
     return "Null implementation or execution context: NetworkEditorPythonAPI::executeAll()"; 

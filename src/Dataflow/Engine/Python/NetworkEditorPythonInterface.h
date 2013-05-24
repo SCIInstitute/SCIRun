@@ -102,7 +102,7 @@ namespace SCIRun
     virtual ~NetworkEditorPythonInterface() {}
     virtual boost::shared_ptr<PyModule> addModule(const std::string& name) = 0;
     virtual std::string removeModule(const std::string& id) = 0;
-    virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup& lookup) = 0;
+    virtual std::string executeAll(const Dataflow::Networks::ExecutableLookup* lookup) = 0;
     virtual std::string saveNetwork(const std::string& filename) = 0;
     virtual std::string loadNetwork(const std::string& filename) = 0;
     virtual std::string quit(bool force) = 0;

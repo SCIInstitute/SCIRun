@@ -31,6 +31,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Application/Application.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Core/Python/PythonInterpreter.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Commands;
@@ -94,6 +95,7 @@ bool QuitAfterExecuteCommandConsole::execute()
 
 bool QuitCommandConsole::execute()
 {
+  std::cout << "QuitCommandConsole" << std::endl;
   exit(0);
   return true;
 }
@@ -112,8 +114,21 @@ bool PrintVersionCommand::execute()
 
 bool RunPythonScriptCommandConsole::execute()
 {
-  auto script = Application::Instance().parameters()->pythonScriptFile().get();
-  //SCIRunMainWindow::Instance()->runPythonScript(QString::fromStdString(script.string()));
-  std::cout << "RunPythonScriptCommandConsole::execute()" << std::endl;
-  return true;
+  auto script = Application::Instance().parameters()->pythonScriptFile();
+  if (script)
+  {
+#ifdef BUILD_WITH_PYTHON
+    std::cout << "RUNNING PYTHON SCRIPT: " << *script << std::endl;;
+
+    Application::Instance().controller()->clear();
+    SCIRun::Core::PythonInterpreter::Instance().run_file(script->string());
+
+    std::cout << "Done running Python script." << std::endl;
+    return true;
+#else
+    std::cout << "Python disabled, cannot run script " << *script << std::endl;
+    return false;
+#endif
+  }
+  return false;
 }
