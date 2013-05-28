@@ -424,6 +424,7 @@ INCLUDE_DIRECTORIES(
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
+  ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
 )
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)

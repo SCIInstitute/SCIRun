@@ -36,6 +36,15 @@
 #include <Interface/PythonTestGui/API/DiagramView.h>
 #include <Core/Python/PythonInterpreter.h>
 
+#include <log4cpp/Category.hh>
+#include <log4cpp/Appender.hh>
+#include <log4cpp/OstreamAppender.hh>
+#include <log4cpp/FileAppender.hh>
+#include <log4cpp/Layout.hh>
+#include <log4cpp/BasicLayout.hh>
+#include <log4cpp/PatternLayout.hh>
+#include <log4cpp/Priority.hh>
+
 class DiagramViewImpl : public DiagramViewInterface
 {
 public:
@@ -97,6 +106,18 @@ DiagramWindow::DiagramWindow()
   boost::shared_ptr<DiagramViewInterface> view(new DiagramViewImpl(this));
   DiagramView::setImpl(view);
   SCIRun::Core::PythonInterpreter::Instance().run_string("import PythonAPI; from PythonAPI import *");
+
+  log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
+  auto layout = new log4cpp::PatternLayout();
+  layout->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+  appender1->setLayout(layout);
+  log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "program.log");
+  appender2->setLayout(layout);
+
+  log4cpp::Category& root = log4cpp::Category::getRoot();
+  root.setPriority(log4cpp::Priority::WARN);
+  root.addAppender(appender1);
+  root.addAppender(appender2);
 }
 
 void DiagramWindow::addNode()

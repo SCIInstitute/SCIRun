@@ -66,6 +66,7 @@ ${QtExampleDiagram_RESOURCES_RCC})
 TARGET_LINK_LIBRARIES(diagram 
   PythonAPI
   Core_Python
+  log4cpp
   ${QT_LIBRARIES}
   ${PYTHON_LIBRARIES}
   ${SCI_BOOST_LIBRARY}

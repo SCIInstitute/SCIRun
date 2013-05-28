@@ -58,6 +58,7 @@ SET(Engine_Network_NonPythonDependentLibs
   Core_Serialization_Network
   Core_Command
   Engine_Scheduler
+  log4cpp
 )
 
 IF(BUILD_WITH_PYTHON)

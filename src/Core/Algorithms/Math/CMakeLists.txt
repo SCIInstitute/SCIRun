@@ -56,6 +56,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Math
   Core_Datatypes
   Core_Thread
   Algorithms_Base
+  log4cpp
   ${SCI_BOOST_LIBRARY}
 )
 
