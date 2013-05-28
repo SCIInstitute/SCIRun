@@ -112,6 +112,7 @@ private Q_SLOTS:
   void loadNetwork();
   void loadRecentNetwork();
   bool newNetwork();
+  void runScript();
   void networkModified();
   void filterModuleNamesInTreeView(const QString& start);
   void makePipesEuclidean();

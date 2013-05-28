@@ -8,5 +8,6 @@
         <file>Resources/new.png</file>
         <file>Resources/save.png</file>
         <file>Resources/terminal.png</file>
+        <file>Resources/script.png</file>
     </qresource>
 </RCC>

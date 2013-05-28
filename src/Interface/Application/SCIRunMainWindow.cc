@@ -150,6 +150,7 @@ SCIRunMainWindow::SCIRunMainWindow()
   standardBar->addAction(actionNew_);
   standardBar->addAction(actionLoad_);
   standardBar->addAction(actionSave_);
+  standardBar->addAction(actionRunScript_);
   standardBar->addAction(actionEnterWhatsThisMode_);
 
   QToolBar* executeBar = addToolBar(tr("&Execute"));
@@ -180,7 +181,12 @@ SCIRunMainWindow::SCIRunMainWindow()
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
+  connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
   actionQuit_->setShortcut(QKeySequence::Quit);
+
+#ifndef BUILD_WITH_PYTHON
+  actionRunScript_->setEnabled(false);
+#endif
 
   connect(cubicPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesCubicBezier()));
   connect(manhattanPipesRadioButton_, SIGNAL(clicked()), this, SLOT(makePipesManhattan()));
@@ -440,6 +446,7 @@ void SCIRunMainWindow::setActionIcons()
   actionNew_->setIcon(QPixmap(":/general/Resources/new.png"));
   actionLoad_->setIcon(QPixmap(":/general/Resources/load.png"));
   actionSave_->setIcon(QPixmap(":/general/Resources/save.png"));
+  actionRunScript_->setIcon(QPixmap(":/general/Resources/script.png"));
   //actionSave_As_->setIcon(QApplication::style()->standardIcon(QStyle::SP_DriveCDIcon));  //TODO?
   actionExecute_All_->setIcon(QApplication::style()->standardIcon(QStyle::SP_MediaPlay));
   actionUndo_->setIcon(QIcon::fromTheme("edit-undo"));
@@ -698,9 +705,19 @@ void SCIRunMainWindow::runPythonScript(const QString& scriptFileName)
 #ifdef BUILD_WITH_PYTHON
   GuiLogger::Instance().log("RUNNING PYTHON SCRIPT: " + scriptFileName);
   SCIRun::Core::PythonInterpreter::Instance().run_file(scriptFileName.toStdString());
+  statusBar()->showMessage(tr("Script is running."), 2000);
 #else
   GuiLogger::Instance().log("Python not included in this build, cannot run " + scriptFileName);
 #endif
+}
+
+void SCIRunMainWindow::runScript()
+{
+  if (okToContinue())
+  {
+    QString filename = QFileDialog::getOpenFileName(this, "Load Script...", latestNetworkDirectory_.path(), "*.py");
+    runPythonScript(filename);
+  }
 }
 
 void SCIRunMainWindow::updateMiniView()
