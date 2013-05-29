@@ -269,14 +269,16 @@ inline void Pio(Piostream& stream, T* data, size_type sz)
   }
 }
 
-inline void Pio_size(Piostream& stream, size_type& size)
+template <typename Size>
+inline void Pio_size(Piostream& stream, Size& size)
 {
   long long temp = static_cast<long long>(size);
   stream.io(temp);
   size = static_cast<size_type>(temp);
 }
 
-inline void Pio_index(Piostream& stream, index_type& index)
+template <typename Index>
+inline void Pio_index(Piostream& stream, Index& index)
 {
   long long temp = static_cast<long long>(index);
   stream.io(temp);

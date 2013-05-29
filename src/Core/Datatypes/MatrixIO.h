@@ -33,6 +33,7 @@
 #include <Core/Utils/Exception.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <vector>
 #include <ostream>
@@ -216,6 +217,76 @@ namespace Datatypes {
       }
     }
     stream.end_cheap_delim();
+    stream.end_class();
+  }
+
+
+#define SPARSEROWMATRIX_VERSION 2
+
+  template <typename T>
+  void SparseRowMatrixGeneric<T>::io(Piostream& stream)
+  {
+    int version = stream.begin_class("SparseRowMatrix", SPARSEROWMATRIX_VERSION);
+    // Do the base class first...
+    MatrixBase<T>::io(stream);
+
+    if (version < 2)
+    {
+      int r = static_cast<int>(this->nrows());
+      int c = static_cast<int>(this->ncols());
+      int n = static_cast<int>(this->nonZeros());
+      stream.io(r);
+      stream.io(c);
+      stream.io(n);
+      //this->nrows() = static_cast<size_type>(r);
+      //this->ncols() = static_cast<size_type>(c);
+      //this->nonZeros() = static_cast<size_type>(n);
+      this->resize(r,c);
+      this->resizeNonZeros(n);
+    }
+    else
+    {
+      auto r = this->nrows();
+      Pio_size(stream, r);
+      auto c = this->ncols();
+      Pio_size(stream, c);
+      auto n = this->nonZeros();
+      Pio_size(stream, n);
+      std::cout << "SPARSE resizing to " << r << " x " << c << std::endl;
+      this->resize(r,c);
+      std::cout << "    and " << n << " nnz" << std::endl;
+      this->resizeNonZeros(n);
+    }
+
+    if (stream.reading())
+    {
+      //resizing done above 
+
+      //data_.reset(new T[nnz_]);
+      //columns_.reset(new index_type[nnz_]);
+      //rows_.reset(new index_type[this->nrows_+1]);
+    }
+
+    stream.begin_cheap_delim();  
+    Pio(stream, this->outerIndexPtr(), this->outerSize());
+    stream.end_cheap_delim();
+
+    stream.begin_cheap_delim();
+    Pio(stream, this->innerIndexPtr(), this->nonZeros());
+    stream.end_cheap_delim();
+
+    stream.begin_cheap_delim();
+
+    std::cout << "NNZ array before: " << std::endl;
+    std::copy(this->valuePtr(), this->valuePtr() + this->nonZeros(), std::ostream_iterator<T>(std::cout, " "));
+
+    Pio(stream, this->valuePtr(), this->nonZeros());
+
+    std::cout << "NNZ array after: " << std::endl;
+    std::copy(this->valuePtr(), this->valuePtr() + this->nonZeros(), std::ostream_iterator<T>(std::cout, " "));
+
+    stream.end_cheap_delim();
+
     stream.end_class();
   }
 

@@ -201,6 +201,13 @@ namespace Datatypes {
 
     const MatrixBase<T>& castForPrinting() const { return *this; } //TODO: lame...figure out a better way
 
+    //! Persistent representation...
+    virtual std::string dynamic_type_name() const { return type_id.type; }
+    virtual void io(Piostream&);
+    static PersistentTypeID type_id;
+
+    static Persistent* SparseRowMatrixGenericMaker();
+
   private:
     virtual void print(std::ostream& o) const
     {
@@ -208,7 +215,23 @@ namespace Datatypes {
     }
   };
 
+  template <typename T>
+  Persistent* SparseRowMatrixGeneric<T>::SparseRowMatrixGenericMaker()
+  {
+    return new SparseRowMatrixGeneric<T>;
+  }
+
+  template <typename T>
+  PersistentTypeID SparseRowMatrixGeneric<T>::type_id("SparseRowMatrixGeneric<T>", "MatrixBase<T>",
+    SparseRowMatrixGeneric<T>::SparseRowMatrixGenericMaker);
+
+  template <>
+  PersistentTypeID SparseRowMatrixGeneric<double>::type_id("SparseRowMatrix", "MatrixBase<double>",
+    SparseRowMatrixGeneric<double>::SparseRowMatrixGenericMaker);
+
+
 }}}
 
+#include <Core/Datatypes/MatrixIO.h>
 
 #endif

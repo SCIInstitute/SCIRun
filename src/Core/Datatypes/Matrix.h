@@ -50,7 +50,7 @@ namespace Datatypes {
 
   typedef MatrixVisitorGeneric<double> MatrixVisitor;
 
-  class SCISHARE MatrixIOBase
+  class SCISHARE MatrixIOBase : public Datatype
   {
   public:
     // Persistent representation.
@@ -64,7 +64,7 @@ namespace Datatypes {
   };
 
   template <typename T>
-  class MatrixBase : public Datatype, public MatrixIOBase
+  class MatrixBase : public MatrixIOBase
   {
   public:
     virtual size_t nrows() const = 0;

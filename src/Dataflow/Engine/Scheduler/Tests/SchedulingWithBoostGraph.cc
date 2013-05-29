@@ -33,8 +33,6 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixComparison.h>
-#include <Core/Datatypes/MatrixIO.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>

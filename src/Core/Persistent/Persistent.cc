@@ -647,8 +647,7 @@ void Pio_index(Piostream& stream, index_type* data,
   }
   else
   {
-    std::cerr << "data_size = "<<data_size<< " and index_type size = "<< sizeof(index_type) << "\n";
-    std::cerr << "FILE FORMAT ERROR\n";
+    std::cerr << "data_size = "<<data_size<< " and index_type size = "<< sizeof(index_type) << "\n" << "FILE FORMAT ERROR\n";
   }
 }
 
