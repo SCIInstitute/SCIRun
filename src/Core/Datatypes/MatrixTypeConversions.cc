@@ -32,6 +32,7 @@
 #include <Core/Datatypes/DenseColumnMatrix.h>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
 DenseMatrixHandle matrix_cast::as_dense(const MatrixHandle& mh)
 {
@@ -88,3 +89,10 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 
   return DenseColumnMatrixHandle();
 }
+
+template <>
+PersistentTypeID SparseRowMatrixGeneric<double>::type_id("SparseRowMatrix", "MatrixBase<double>",
+                                                         SparseRowMatrixGeneric<double>::SparseRowMatrixGenericMaker);
+
+template <>
+PersistentTypeID DenseMatrixGeneric<double>::type_id("DenseMatrix", "MatrixBase<double>", DenseMatrixGeneric<double>::maker0);

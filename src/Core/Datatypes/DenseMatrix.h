@@ -101,9 +101,6 @@ namespace Datatypes {
   template <typename T>
   PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrixGeneric<T>", "MatrixBase<T>", maker0);
 
-  template <>
-  PersistentTypeID DenseMatrixGeneric<double>::type_id("DenseMatrix", "MatrixBase<double>", maker0);
-
   namespace
   {
     template <typename T>
