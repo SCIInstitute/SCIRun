@@ -33,6 +33,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <iosfwd>
+#include <Core/Datatypes/Share.h>
 
 namespace SCIRun {
 namespace Core {
@@ -49,8 +50,21 @@ namespace Datatypes {
 
   typedef MatrixVisitorGeneric<double> MatrixVisitor;
 
+  class SCISHARE MatrixIOBase
+  {
+  public:
+    // Persistent representation.
+    MatrixIOBase() : separate_raw_(false) {}
+    virtual std::string dynamic_type_name() const { return "MatrixIOBase"; }
+    virtual void io(Piostream&);
+    static PersistentTypeID type_id;
+  protected:
+    bool           separate_raw_;
+    std::string    raw_filename_;
+  };
+
   template <typename T>
-  class MatrixBase : public Datatype
+  class MatrixBase : public Datatype, public MatrixIOBase
   {
   public:
     virtual size_t nrows() const = 0;
@@ -66,12 +80,15 @@ namespace Datatypes {
       return o;
     }
 
+    static PersistentTypeID type_id;
+
   private:
     virtual void print(std::ostream&) const = 0;
       //TODO: not much to go here for now.
   };
 
-
+  template <>
+  PersistentTypeID MatrixBase<double>::type_id("MatrixBase<double>", "MatrixIOBase", 0);
 
 }}}
 

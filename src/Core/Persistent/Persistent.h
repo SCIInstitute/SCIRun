@@ -59,17 +59,19 @@
 
 namespace SCIRun {
 
+  typedef Persistent* (*PersistentMaker0)();
+
 class SCISHARE PersistentTypeID {
 public:
   PersistentTypeID();
   PersistentTypeID(const std::string& type, 
                      const std::string& parent,
-                     Persistent* (*maker)(), 
+                     PersistentMaker0 maker, 
                      Persistent* (*bc_maker1)() = 0, 
                      Persistent* (*bc_maker2)() = 0);
   std::string type;
   std::string parent;
-  Persistent* (*maker)();
+  PersistentMaker0 maker;
   Persistent* (*bc_maker1)();
   Persistent* (*bc_maker2)();    
 };

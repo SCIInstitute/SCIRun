@@ -27,7 +27,27 @@
 */
 
 #include <sstream>
-#include <Core/Datatypes/Datatype.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
+#define MATRIX_VERSION 3
+
+void MatrixIOBase::io(Piostream& stream)
+{
+  int version = stream.begin_class("Matrix", MATRIX_VERSION);
+  if (version < 2) 
+  {
+    int tmpsym;
+    stream.io(tmpsym);
+  }
+  if (version > 2) 
+  {
+    PropertyManager().io(stream);
+  }
+  stream.end_class();
+}
+
+PersistentTypeID MatrixIOBase::type_id("MatrixIOBase", "Datatype", 0);

@@ -76,6 +76,12 @@ namespace Datatypes {
       visitor.visit(*this);
     }
 
+    //! Persistent representation...
+    virtual std::string dynamic_type_name() const;
+    virtual void io(Piostream&);
+    static PersistentTypeID type_id;
+    static PersistentMaker0 maker0;
+
   private:
     virtual void print(std::ostream& o) const
     {
@@ -92,7 +98,30 @@ namespace Datatypes {
     }
   };
 
+  template <typename T>
+  PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrixGeneric<T>", "MatrixBase<T>", maker0);
+
+  template <>
+  PersistentTypeID DenseMatrixGeneric<double>::type_id("DenseMatrix", "MatrixBase<double>", maker0);
+
+  namespace
+  {
+    template <typename T>
+    Persistent* DenseMatrixGenericMaker()
+    {
+      return new DenseMatrixGeneric<T>;
+    }
+  }
+
+  template <typename T>
+  PersistentMaker0 DenseMatrixGeneric<T>::maker0(DenseMatrixGenericMaker<T>);
+
+  template <typename T>
+  std::string DenseMatrixGeneric<T>::dynamic_type_name() const { return type_id.type; }
+
+
 }}}
 
+#include <Core/Datatypes/MatrixIO.h>
 
 #endif

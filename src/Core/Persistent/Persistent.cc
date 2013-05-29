@@ -69,7 +69,7 @@ const int Piostream::PERSISTENT_VERSION = 2;
 //----------------------------------------------------------------------
 PersistentTypeID::PersistentTypeID(const std::string& type, 
                                    const std::string& parent,
-                                   Persistent* (*maker)(),
+                                   PersistentMaker0 maker,
                                    Persistent* (*bc_maker1)(),
                                    Persistent* (*bc_maker2)()) :
 type(type),
@@ -174,25 +174,21 @@ Piostream::begin_class(const std::string& classname, int current_version)
   return version;
 }
 
-//----------------------------------------------------------------------
 void
 Piostream::end_class()
 {
 }
 
-//----------------------------------------------------------------------
 void
 Piostream::begin_cheap_delim()
 {
 }
 
-//----------------------------------------------------------------------
 void
 Piostream::end_cheap_delim()
 {
 }
 
-//----------------------------------------------------------------------
 void
 Piostream::io(bool& data)
 {
@@ -209,8 +205,6 @@ void
 Persistent::io(Piostream&)
 {
 }
-
-//----------------------------------------------------------------------
 
 void
 Piostream::io(Persistent*& data, const PersistentTypeID& pid)
@@ -267,8 +261,9 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
         }
         else
         {
-          reporter_->error("Did not find a pt_id.");
-          
+          std::ostringstream ostr; 
+          ostr << "Did not find a PersistentTypeID with class name [" << in_name << "], base name [" << want_name << "]";
+          reporter_->error(ostr.str());
         }
       }
       if (!maker)
@@ -276,7 +271,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
         reporter_->error("Maker not found? (class=" + in_name + ").");
         reporter_->error("want_name: " + want_name + ".");
         err = true;
-        BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << SCIRun::Core::ErrorMessage("Could not find something: " + in_name));
+        BOOST_THROW_EXCEPTION(SCIRun::Core::Algorithms::AlgorithmProcessingException() << SCIRun::Core::ErrorMessage("Could not find persistent maker for: " + in_name));
         return;
       }
       
@@ -714,7 +709,7 @@ Persistent::find_derived( const std::string& classname,
 void
 Persistent::add_class(const std::string& type, 
                       const std::string& parent,
-                      Persistent* (*maker)(),
+                      PersistentMaker0 maker,
                       Persistent* (*bc_maker1)(),
                       Persistent* (*bc_maker2)())
 {
@@ -746,7 +741,7 @@ Persistent::add_class(const std::string& type,
 
 void
 Persistent::add_mesh_class(const std::string& type, 
-                      Persistent* (*maker)(),
+                      PersistentMaker0 maker,
                       Persistent* (*bc_maker1)(),
                       Persistent* (*bc_maker2)())
 {
@@ -756,7 +751,7 @@ Persistent::add_mesh_class(const std::string& type,
 
 void
 Persistent::add_field_class(const std::string& type, 
-                      Persistent* (*maker)(),
+                      PersistentMaker0 maker,
                       Persistent* (*bc_maker1)(),
                       Persistent* (*bc_maker2)())
 {

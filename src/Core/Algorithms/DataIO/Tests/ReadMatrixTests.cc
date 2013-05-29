@@ -214,3 +214,99 @@ TEST(ReadMatrixAlgorithmTest, NonMatrixTextFile)
   else
     FAIL() << "file does not exist, skipping test." << std::endl;
 }
+
+TEST(ReadMatrixAlgorithmTest, TestSparseFromRealBinaryMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  auto filename = TestResources::rootDir() / "CGDarrell" / "eye3x3sparse_bin.mat";
+  if (boost::filesystem::exists(filename))
+  {
+    auto matrix = algo.run(filename.string());
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::sparse(matrix));
+
+    auto sp = matrix_cast::as_sparse(matrix);
+
+    DenseMatrix a = DenseMatrix::Identity(3,3);
+
+    //TODO: compare dense and sparse
+    //EXPECT_EQ(a, *mat);
+    EXPECT_EQ(to_string(a), to_string(sp->castForPrinting()));
+  }
+  else
+    FAIL() << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, TestDenseFromRealBinaryMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  auto filename = TestResources::rootDir() / "CGDarrell" / "eye3x3dense_bin.mat";
+  if (boost::filesystem::exists(filename))
+  {
+    auto matrix = algo.run(filename.string());
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::dense(matrix));
+
+    auto dense = matrix_cast::as_dense(matrix);
+    EXPECT_EQ(1, dense->cols());
+
+    DenseMatrix a = DenseMatrix::Identity(3,3);
+
+    EXPECT_EQ(to_string(a), to_string(*dense));
+  }
+  else
+    FAIL() << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile)
+{
+  ReadMatrixAlgorithm algo;
+  auto filename = TestResources::rootDir() / "CGDarrell" / "columnBinMat.mat";
+  if (boost::filesystem::exists(filename))
+  {
+    auto matrix = algo.run(filename.string());
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::column(matrix));
+
+    auto col = matrix_cast::as_column(matrix);
+    DenseColumnMatrix expected(3);
+    expected << 1, 2, 3;
+    EXPECT_EQ(to_string(*col), to_string(expected));
+  }
+  else
+    FAIL() << "file does not exist, skipping test." << std::endl;
+}
+
+void CallLegacyPio(const boost::filesystem::path& filename, const DenseMatrix& expected = DenseMatrix::Identity(3,3))
+{
+  if (boost::filesystem::exists(filename))
+  {
+    PiostreamPtr stream = auto_istream(filename.string());
+    if (!stream)
+    {
+      FAIL() << "Error reading file '" << filename << "'.";
+    }
+
+    MatrixHandle matrix;
+    Pio(*stream, matrix);
+
+    ASSERT_TRUE(matrix);
+    EXPECT_EQ(expected.nrows(), matrix->nrows());
+    EXPECT_EQ(expected.ncols(), matrix->ncols());
+
+    std::cout << *matrix << std::endl;
+    EXPECT_EQ(to_string(*matrix), to_string(expected));
+  }
+  else
+    FAIL() << "file does not exist, skipping test." << std::endl;
+}
+
+TEST(ReadMatrixAlgorithmTest, CallLegacyPioDense)
+{
+  CallLegacyPio(TestResources::rootDir() / "CGDarrell" / "eye3x3dense_bin.mat");
+}
+
+TEST(ReadMatrixAlgorithmTest, CallLegacyPioSparse)
+{
+  CallLegacyPio(TestResources::rootDir() / "CGDarrell" / "eye3x3sparse_bin.mat");
+}

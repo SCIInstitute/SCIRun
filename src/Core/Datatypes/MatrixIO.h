@@ -30,7 +30,10 @@
 #ifndef CORE_DATATYPES_MATRIX_IO_H
 #define CORE_DATATYPES_MATRIX_IO_H 
 
+#include <Core/Utils/Exception.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <vector>
 #include <ostream>
 #include <istream>
@@ -52,19 +55,27 @@ namespace Datatypes {
 
       std::vector<T> lineData;
 
-      while(!reader.eof()) 
+      while (!reader.eof()) 
       {
         T val;
         reader >> val;
 
-        if(reader.fail())
+        if (reader.fail())
+        {
+          //THROW_INVALID_ARGUMENT("Matrix reading failed: stream failed");
           break;
+        }
 
         lineData.push_back(val);
       }
 
       if (!lineData.empty())
+      {
+        if (!values.empty() && values.back().size() != lineData.size())
+          THROW_INVALID_ARGUMENT("Improper format of matrix text stream: not every line contains the same amount of numbers.");
+
         values.push_back(lineData);
+      }
     }
 
     m.resize(values.size(), values[0].size());
@@ -86,6 +97,126 @@ namespace Datatypes {
     std::ostringstream o;
     o << m;
     return o.str();
+  }
+
+#define DENSEMATRIX_VERSION 4
+
+  template <typename T>
+  void DenseMatrixGeneric<T>::io(Piostream& stream)
+  {
+    int version=stream.begin_class("DenseMatrix", DENSEMATRIX_VERSION);
+    // Do the base class first...
+    MatrixIOBase::io(stream);
+
+    if (version < 4)
+    {
+      int nrows = static_cast<int>(this->rows());
+      int ncols = static_cast<int>(this->cols());
+      stream.io(nrows);
+      stream.io(ncols);
+      this->resize(nrows, ncols);
+      //this->nrows_ = static_cast<size_type>(nrows);
+      //this->ncols_ = static_cast<size_type>(ncols);
+    }
+    else
+    {
+      long long nrows = static_cast<long long>(this->rows());
+      long long ncols = static_cast<long long>(this->cols());
+      stream.io(nrows);
+      stream.io(ncols);
+      this->resize(nrows, ncols);
+      //this->nrows_ = static_cast<size_type>(nrows);
+      //this->ncols_ = static_cast<size_type>(ncols);
+    }
+
+    if(stream.reading())
+    {
+      //already resized above
+
+      //data = new double*[this->rows()];
+      //double* tmp = new double[this->rows() * this->cols()];
+      //dataptr_=tmp;
+      //for (index_type i = 0; i < this->rows(); i++)
+      //{
+      //  data[i] = tmp;
+      //  tmp += this->cols();
+      //}
+    }
+    stream.begin_cheap_delim();
+
+    int split;
+    if (stream.reading())
+    {
+      if (version > 2)
+      {
+        split = this->separate_raw_;
+        Pio(stream, split);
+        if (this->separate_raw_)
+        {
+          Pio(stream, this->raw_filename_);
+          FILE *f=fopen(this->raw_filename_.c_str(), "r");
+          if (f)
+          {
+            fread(this->data(), sizeof(T), this->rows() * this->cols(), f);
+            fclose(f);
+          }
+          else
+          {
+            const std::string errmsg = "Error reading separated file '" + this->raw_filename_ + "'";
+            std::cerr << errmsg << "\n";
+            BOOST_THROW_EXCEPTION(SCIRun::Core::ExceptionBase() << FileNotFound(errmsg));
+          }
+        }
+      }
+      else
+      {
+        this->separate_raw_ = false;
+      }
+      split = this->separate_raw_;
+    }
+    else
+    {     // writing
+      std::string filename = this->raw_filename_;
+      split = this->separate_raw_;
+      if (split)
+      {
+        if (filename == "")
+        {
+          if (stream.file_name.c_str())
+          {
+            size_t pos = stream.file_name.rfind('.');
+            if (pos == std::string::npos) filename = stream.file_name + ".raw";
+            else filename = stream.file_name.substr(0,pos) + ".raw";
+          } 
+          else 
+          {
+            split=0;
+          }
+        }
+      }
+      Pio(stream, split);
+      if (split)
+      {
+        Pio(stream, filename);
+        FILE *f = fopen(filename.c_str(), "w");
+        fwrite(this->data(), sizeof(T), this->rows() * this->cols(), f);
+        fclose(f);
+      }
+    }
+
+    if (!split)
+    {
+      size_t block_size = this->rows() * this->cols();
+      if (!stream.block_io(this->data(), sizeof(T), block_size))
+      {
+        for (size_t i = 0; i < block_size; i++)
+        {
+          stream.io(this->data()[i]);
+        }
+      }
+    }
+    stream.end_cheap_delim();
+    stream.end_class();
   }
 
 }}}

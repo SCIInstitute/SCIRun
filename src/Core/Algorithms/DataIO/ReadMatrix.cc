@@ -70,6 +70,9 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
     std::ifstream reader(filename.c_str());
     DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
     reader >> *matrix;
+
+    std::cout << "ALGO OUTPUT:\n" << *matrix << std::endl;
+
     return matrix;
   }
   else if (boost::filesystem::extension(filename) == ".mat")
