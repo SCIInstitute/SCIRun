@@ -87,8 +87,7 @@ namespace Datatypes {
       //TODO: not much to go here for now.
   };
 
-  template <>
-  PersistentTypeID MatrixBase<double>::type_id("MatrixBase<double>", "MatrixIOBase", 0);
+  
 
 }}}
 
