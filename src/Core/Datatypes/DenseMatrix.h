@@ -98,8 +98,8 @@ namespace Datatypes {
     }
   };
 
-  template <typename T>
-  PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrixGeneric<T>", "MatrixBase<T>", maker0);
+  //template <typename T>
+  //PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrixGeneric<T>", "MatrixBase<T>", maker0);
 
   namespace
   {
@@ -116,7 +116,9 @@ namespace Datatypes {
   template <typename T>
   std::string DenseMatrixGeneric<T>::dynamic_type_name() const { return type_id.type; }
 
-
+  template <>
+  PersistentTypeID DenseMatrixGeneric<double>::type_id("DenseMatrix", "MatrixBase<double>", DenseMatrixGeneric<double>::maker0);
+  
 }}}
 
 #include <Core/Datatypes/MatrixIO.h>

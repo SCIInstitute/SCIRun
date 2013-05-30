@@ -52,5 +52,5 @@ void MatrixIOBase::io(Piostream& stream)
 
 PersistentTypeID MatrixIOBase::type_id("MatrixIOBase", "Datatype", 0);
 
-template <>
-PersistentTypeID MatrixBase<double>::type_id("MatrixBase<double>", "MatrixIOBase", 0);
+//template <>
+//PersistentTypeID MatrixBase<double>::type_id("MatrixBase<double>", "MatrixIOBase", 0);
