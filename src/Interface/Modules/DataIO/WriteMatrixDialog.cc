@@ -62,6 +62,6 @@ void WriteMatrixDialog::pushFileNameToState()
 
 void WriteMatrixDialog::saveFile()
 {
-  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt"));
+  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Matrix Text File", ".", "*.txt;;*.mat"));
   pushFileNameToState();
 }
