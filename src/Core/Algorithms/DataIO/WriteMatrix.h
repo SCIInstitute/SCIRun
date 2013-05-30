@@ -42,7 +42,7 @@ namespace SCIRun {
       class SCISHARE WriteMatrixAlgorithm : public AlgorithmBase
       {
       public:
-        typedef SCIRun::Core::Datatypes::MatrixConstHandle Inputs;
+        typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
         typedef std::string Parameters; 
         typedef void Outputs;
         static AlgorithmParameterName Filename;

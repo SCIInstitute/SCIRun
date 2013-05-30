@@ -53,6 +53,14 @@ namespace
     m.setZero();
     return m;
   }
+  SparseRowMatrix id3()
+  {
+    SparseRowMatrix m(3,3);
+    m.insert(0,0) = 1;
+    m.insert(1,1) = 1;
+    m.insert(2,2) = 1;
+    return m;
+  }
 }
 
 #define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
@@ -202,4 +210,23 @@ TEST(SparseRowMatrixTest, CheckingInternalArrays)
   EXPECT_THAT(columns, ElementsAre(0,2,3));
   std::vector<double> rows(mat.outerIndexPtr(), mat.outerIndexPtr() + mat.outerSize());
   EXPECT_THAT(rows, ElementsAre(0,1,2,3));
+}
+
+TEST(SparseRowMatrixTest, CheckingInternalArrays2)
+{
+  SparseRowMatrix mat(id3());
+
+  mat.makeCompressed();
+  EXPECT_EQ(0, mat.innerNonZeroPtr());
+  EXPECT_EQ(3, mat.nonZeros());
+  EXPECT_EQ(mat.rows(), mat.cols());
+  EXPECT_EQ(mat.outerSize(), mat.rows());
+  EXPECT_EQ(mat.innerSize(), mat.cols());
+
+  std::vector<double> values(mat.valuePtr(), mat.valuePtr() + mat.nonZeros());
+  EXPECT_THAT(values, ElementsAre(1, 1, 1));
+  std::vector<double> columns(mat.innerIndexPtr(), mat.innerIndexPtr() + mat.nonZeros());
+  EXPECT_THAT(columns, ElementsAre(0,1,2));
+  std::vector<double> rows(mat.outerIndexPtr(), mat.outerIndexPtr() + mat.outerSize());
+  EXPECT_THAT(rows, ElementsAre(0,1,2));
 }

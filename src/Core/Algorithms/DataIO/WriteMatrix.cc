@@ -43,8 +43,28 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(inputMatrix, "Cannot write null matrix.");
 
-  std::ofstream writer(filename.c_str());
-  writer << *inputMatrix;
+  if (boost::filesystem::extension(filename) == ".txt")
+  {
+    std::ofstream writer(filename.c_str());
+    writer << *inputMatrix;
+  }
+  else if (boost::filesystem::extension(filename) == ".mat")
+  {
+    status("Writing matrix file as binary .mat");
+
+    // Open up the output stream
+    PiostreamPtr stream = auto_ostream(filename, "Binary");
+    
+    if (stream->error()) 
+    {
+      error("Could not open file for writing: " + filename);
+    } 
+    else 
+    {
+      //BOOO const_cast
+      Pio(*stream, const_cast<WriteMatrixAlgorithm::Inputs&>(inputMatrix));
+    } 
+  }
   if (!boost::filesystem::exists(filename))
     THROW_ALGORITHM_PROCESSING_ERROR("file failed to be written!");
 }

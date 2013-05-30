@@ -90,9 +90,6 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
     if (!matrix)
       THROW_ALGORITHM_PROCESSING_ERROR("Import failed.");
     return matrix;
-/*
-    internal::EigenMatrixFromScirunAsciiFormatConverter conv(this);
-    return conv.make(filename);*/
   }
   THROW_ALGORITHM_INPUT_ERROR("Unknown matrix file format");
 }

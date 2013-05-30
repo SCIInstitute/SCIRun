@@ -99,6 +99,21 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
   EXPECT_EQ(*m1, *roundTrip);
 }
 
+TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFile)
+{
+  WriteMatrixAlgorithm write;
+  auto filename = TestResources::rootDir() / "matrix1Out.mat";
+
+  DenseMatrixHandle m1(matrix1().clone());
+  write.run(m1, filename.string());
+
+  ReadMatrixAlgorithm read;
+  DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
+  ASSERT_TRUE(roundTrip);
+
+  EXPECT_EQ(*m1, *roundTrip);
+}
+
 TEST(WriteMatrixAlgorithmTest, ThrowsWithNullInput)
 {
   WriteMatrixAlgorithm algo;

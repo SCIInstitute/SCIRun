@@ -191,8 +191,9 @@ TEST(ReadMatrixAlgorithmTest, UnknownFileFormatThrows)
     FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
-TEST(ReadMatrixAlgorithmTest, ThrowsForMatlabFilesICantThemReadYet)
+TEST(ReadMatrixAlgorithmTest, DISABLED_ThrowsForMatlabFilesICantThemReadYet)
 {
+  //TODO: will hook up Matlab readers soon.
   ReadMatrixAlgorithm algo;
   auto matlabFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
   if (boost::filesystem::exists(matlabFile))
@@ -203,8 +204,9 @@ TEST(ReadMatrixAlgorithmTest, ThrowsForMatlabFilesICantThemReadYet)
     FAIL() << "file does not exist, skipping test." << std::endl;
 }
 
-TEST(ReadMatrixAlgorithmTest, NonMatrixTextFile)
+TEST(ReadMatrixAlgorithmTest, DISABLED_NonMatrixTextFile)
 {
+  //TODO: will hook-up Importers soon.
   ReadMatrixAlgorithm algo;
   const boost::filesystem::path txt("E:/seg3d/trunk/src/Install.txt");
   if (boost::filesystem::exists(txt))
@@ -275,8 +277,6 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile)
   else
     FAIL() << "file does not exist, skipping test." << std::endl;
 }
-
-// 
 
 TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile2)
 {
