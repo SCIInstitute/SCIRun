@@ -38,12 +38,12 @@ namespace Core {
 namespace Datatypes {
 
   template <typename T>
-  class SparseRowMatrixGeneric : public MatrixBase<T>, public Eigen::SparseMatrix<T, Eigen::RowMajor>
+  class SparseRowMatrixGeneric : public MatrixBase<T>, public Eigen::SparseMatrix<T, Eigen::RowMajor, index_type>
   {
   public:
     typedef T value_type;
     typedef SparseRowMatrixGeneric<T> this_type;
-    typedef Eigen::SparseMatrix<T, Eigen::RowMajor> EigenBase;
+    typedef Eigen::SparseMatrix<T, Eigen::RowMajor, index_type> EigenBase;
 
     //TODO: need C++11
     //using Base::Base;

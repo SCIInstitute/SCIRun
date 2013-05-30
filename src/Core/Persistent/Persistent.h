@@ -170,7 +170,7 @@ class SCISHARE Piostream {
     void set_backwards_compat_id(bool p) { backwards_compat_id_ = p; }
     virtual bool supports_block_io() { return false; } // deprecated, redundant.
     
-    // Returns true if bkock_io was supported (even on error).
+    // Returns true if block_io was supported (even on error).
     virtual bool block_io(void*, size_t, size_t) { return false; }
     
     void disable_pointer_hashing() { disable_pointer_hashing_ = true; }

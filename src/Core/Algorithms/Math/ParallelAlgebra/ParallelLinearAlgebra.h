@@ -38,6 +38,7 @@
 #include <boost/noncopyable.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Thread/Barrier.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Algorithms/Math/Share.h>
 
 namespace SCIRun {
@@ -137,8 +138,8 @@ public:
     
   class ParallelMatrix {
     public:
-      int* rows_;
-      int* columns_;
+      index_type* rows_;
+      index_type* columns_;
       double* data_;
         
       size_t   m_;
