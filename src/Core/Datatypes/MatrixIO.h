@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/Legacy/Base/PropertyManager.h>
 #include <vector>
 #include <ostream>
@@ -270,6 +271,45 @@ namespace Datatypes {
     Pio(stream, this->valuePtr(), this->nonZeros());
     stream.end_cheap_delim();
 
+    stream.end_class();
+  }
+
+#define COLUMNMATRIX_VERSION 3
+
+  template <typename T>
+  void DenseColumnMatrixGeneric<T>::io(Piostream& stream)
+  {
+    int version = stream.begin_class("ColumnMatrix", COLUMNMATRIX_VERSION);
+
+    if (version > 1)
+    {
+      // New version inherits from Matrix
+      MatrixBase<T>::io(stream);
+    }
+
+    if (version < 3)
+    {
+      int nrows = static_cast<int>(this->nrows());
+      stream.io(nrows);
+      this->resize(static_cast<size_type>(nrows), 1);
+    }
+    else
+    {
+      long long nrows= static_cast<long long>(this->nrows());
+      stream.io(nrows);
+      this->resize(static_cast<size_type>(nrows), 1);
+    }
+
+    if (stream.reading())
+    {
+      //data_ = new T[this->nrows_];
+    }
+
+    if (!stream.block_io(this->data(), sizeof(T), this->nrows()))
+    {
+      for (index_type i=0; i<this->nrows(); i++)
+        stream.io(this->data()[i]);
+    }
     stream.end_class();
   }
 
