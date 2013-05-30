@@ -248,7 +248,6 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealBinaryMatFile)
     ASSERT_TRUE(matrix_is::dense(matrix));
 
     auto dense = matrix_cast::as_dense(matrix);
-    EXPECT_EQ(1, dense->cols());
 
     DenseMatrix a = DenseMatrix::Identity(3,3);
 
@@ -266,11 +265,32 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile)
   {
     auto matrix = algo.run(filename.string());
     ASSERT_TRUE(matrix);
-    ASSERT_TRUE(matrix_is::column(matrix));
+    ASSERT_TRUE(matrix_is::dense(matrix)); // artifact of v4 IO
 
-    auto col = matrix_cast::as_column(matrix);
+    auto col = matrix_convert::to_column(matrix);
     DenseColumnMatrix expected(3);
     expected << 1, 2, 3;
+    EXPECT_EQ(to_string(*col), to_string(expected));
+  }
+  else
+    FAIL() << "file does not exist, skipping test." << std::endl;
+}
+
+// 
+
+TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile2)
+{
+  ReadMatrixAlgorithm algo;
+  auto filename = boost::filesystem::path("E:\\columnBin2.mat");
+  if (boost::filesystem::exists(filename))
+  {
+    auto matrix = algo.run(filename.string());
+    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix_is::column(matrix)); 
+
+    auto col = matrix_cast::as_column(matrix);
+    DenseColumnMatrix expected(5);
+    expected << 0, 1, 2, 3, 4;
     EXPECT_EQ(to_string(*col), to_string(expected));
   }
   else
