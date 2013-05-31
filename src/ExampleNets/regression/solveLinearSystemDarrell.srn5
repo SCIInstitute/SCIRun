@@ -26,7 +26,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>E:/stuff/CGDarrell/A_txt.mat</value>
+										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests/CGDarrell/A.mat</value>
 									</value>
 								</second>
 							</item>
@@ -54,7 +54,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>E:/stuff/CGDarrell/RHS_text.mat</value>
+										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests/CGDarrell/RHS.mat</value>
 									</value>
 								</second>
 							</item>
@@ -110,7 +110,7 @@
 									<name>Tolerance</name>
 									<value>
 										<which>1</which>
-										<value>0.00069999999999999999</value>
+										<value>0.00069999999999999988</value>
 									</value>
 								</second>
 							</item>
