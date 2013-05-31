@@ -87,8 +87,13 @@ namespace Datatypes {
       //TODO: not much to go here for now.
   };
 
+#ifdef WIN32
   template </*typename T*/>
   PersistentTypeID MatrixBase<double>::type_id("MatrixBase<double>", "MatrixIOBase", 0);
+#else
+  template </*typename T*/>
+  PersistentTypeID MatrixBase<double>::type_id;
+#endif
 
 }}}
 
