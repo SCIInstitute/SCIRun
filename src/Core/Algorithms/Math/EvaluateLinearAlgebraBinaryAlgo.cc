@@ -29,7 +29,6 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <iostream>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;

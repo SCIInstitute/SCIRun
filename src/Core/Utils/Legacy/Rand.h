@@ -33,13 +33,11 @@
 
 #include <Core/Thread/Time.h>
 
-using SCIRun::Time;
-
 inline double drand48()
 {
   static bool initialized = false;
   if (!initialized) {
-    srand((int) Time::currentTicks());
+    srand((int) SCIRun::Time::currentTicks());
     initialized = true;
   }
   return ((double) rand())/ RAND_MAX;

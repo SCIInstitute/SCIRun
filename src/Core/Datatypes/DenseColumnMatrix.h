@@ -92,9 +92,8 @@ namespace Datatypes {
     return new DenseColumnMatrixGeneric<T>();
   }
 
-  template <>
-  PersistentTypeID DenseColumnMatrixGeneric<double>::type_id("ColumnMatrix", "MatrixBase<double>", ColumnMatrixMaker<double>);
-
+  template <typename T>
+  PersistentTypeID DenseColumnMatrixGeneric<T>::type_id("ColumnMatrix", "MatrixBase", ColumnMatrixMaker<T>);
 
 }}}
 

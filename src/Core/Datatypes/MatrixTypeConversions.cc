@@ -89,5 +89,3 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
 
   return DenseColumnMatrixHandle();
 }
-
-

@@ -221,14 +221,9 @@ namespace Datatypes {
     return new SparseRowMatrixGeneric<T>;
   }
 
-  //template <typename T>
-  //PersistentTypeID SparseRowMatrixGeneric<T>::type_id("SparseRowMatrixGeneric<T>", "MatrixBase<T>",
-  //  SparseRowMatrixGeneric<T>::SparseRowMatrixGenericMaker);
-
-  template <>
-  PersistentTypeID SparseRowMatrixGeneric<double>::type_id("SparseRowMatrix", "MatrixBase<double>",
-    SparseRowMatrixGeneric<double>::SparseRowMatrixGenericMaker);
-
+  template <typename T>
+  PersistentTypeID SparseRowMatrixGeneric<T>::type_id("SparseRowMatrix", "MatrixBase",
+    SparseRowMatrixGeneric<T>::SparseRowMatrixGenericMaker);
 
 }}}
 
