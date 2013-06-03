@@ -26,7 +26,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>C:/Dev/Dropbox/CGDarrell/A_txt.mat</value>
+										<value>C:/Dev/Dropbox/CGDarrell/A.mat</value>
 									</value>
 								</second>
 							</item>
@@ -54,7 +54,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>C:/Dev/Dropbox/CGDarrell/RHS_text.mat</value>
+										<value>C:/Dev/Dropbox/CGDarrell/RHS.mat</value>
 									</value>
 								</second>
 							</item>
