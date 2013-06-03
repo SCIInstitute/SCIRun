@@ -496,7 +496,15 @@ SCIRun::Dataflow::Networks::ModulePositionsHandle NetworkEditor::dumpModulePosit
 }
 
 void NetworkEditor::executeAll()
-{
+{ 
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* w = dynamic_cast<ModuleProxyWidget*>(item))
+    {
+      w->setAsWaiting();
+    }
+  }
+
   controller_->executeAll(*this);
   //TODO: not sure about this right now.
   //Q_EMIT modified();

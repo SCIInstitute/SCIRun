@@ -351,12 +351,11 @@ QPointF ModuleWidget::outputPortPosition() const
 void ModuleWidget::execute()
 {
   {
-    auto sheet = styleSheet();
-    styleSheetUpdated("background-color: #99FFCC;");
+    Q_EMIT styleSheetUpdated("background-color: #AACCAA;");
     timer_.restart();
     theModule_->do_execute();
     Q_EMIT updateProgressBarSignal(1);
-    Q_EMIT styleSheetUpdated(sheet);
+    Q_EMIT styleSheetUpdated("background-color: lightgray;");
   }
   Q_EMIT moduleExecuted();
 }

@@ -150,6 +150,11 @@ void ModuleProxyWidget::highlightIfSelected()
     module_->setStyleSheet("background-color: lightgray;");
 }
 
+void ModuleProxyWidget::setAsWaiting()
+{
+  module_->setStyleSheet("background-color: #CDBE70;");
+}
+
 QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant& value)
 {
   if (change == ItemPositionHasChanged)

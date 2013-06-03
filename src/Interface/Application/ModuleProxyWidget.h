@@ -50,6 +50,7 @@ namespace SCIRun
       ModuleWidget* getModuleWidget();
     public Q_SLOTS:
       void highlightIfSelected();
+      void setAsWaiting();
       void setDefaultNotePosition(NotePosition position);
     Q_SIGNALS:
       void selected();
