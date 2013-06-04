@@ -188,7 +188,11 @@ void
 PropertyManager::thaw()
 {
   // Assert that detach has been called on any handles to this PropertyManager.
-  ASSERT(ref_cnt <= 1);
+
+  // TODO: since we're using Boost shared pointers, ref_cnt is no longer used.
+  // Do we need to verify that all handles are detached?
+  //ASSERT(ref_cnt <= 1);
+
   // Clean up properties.
   Guard g(lock.get());
 
