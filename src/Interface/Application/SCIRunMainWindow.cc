@@ -63,41 +63,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Commands;
 
-SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
-
-SCIRunMainWindow* SCIRunMainWindow::Instance()
-{
-  if (!instance_)
-  {
-    instance_ = new SCIRunMainWindow;
-  }
-  return instance_;
-}
-
-void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
-{
-  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
-  networkEditor_->setNetworkEditorController(controllerProxy);
-  //TODO: need better way to wire this up
-  controller->setModulePositionEditor(networkEditor_);
-}
-
-void SCIRunMainWindow::setupNetworkEditor()
-{
-  boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
-  Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
-  GuiLogger::setInstance(logger);
-  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
-  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
-  networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
-  networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
-  networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-  networkEditor_->verticalScrollBar()->setValue(0);
-  networkEditor_->horizontalScrollBar()->setValue(0);
-}
-
-SCIRunMainWindow::SCIRunMainWindow()
+SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
 	setupUi(this);
   setAttribute(Qt::WA_DeleteOnClose);
@@ -256,6 +222,40 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
 
   prefs_->setRegressionTestDataDir();
+}
+
+SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
+
+SCIRunMainWindow* SCIRunMainWindow::Instance()
+{
+  if (!instance_)
+  {
+    instance_ = new SCIRunMainWindow;
+  }
+  return instance_;
+}
+
+void SCIRunMainWindow::setController(SCIRun::Dataflow::Engine::NetworkEditorControllerHandle controller)
+{
+  boost::shared_ptr<NetworkEditorControllerGuiProxy> controllerProxy(new NetworkEditorControllerGuiProxy(controller));
+  networkEditor_->setNetworkEditorController(controllerProxy);
+  //TODO: need better way to wire this up
+  controller->setModulePositionEditor(networkEditor_);
+}
+
+void SCIRunMainWindow::setupNetworkEditor()
+{
+  boost::shared_ptr<TreeViewModuleGetter> getter(new TreeViewModuleGetter(*moduleSelectorTreeWidget_));
+  Core::Logging::LoggerHandle logger(new TextEditAppender(logTextBrowser_));
+  GuiLogger::setInstance(logger);
+  defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
+  networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
+  networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
+  networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+  networkEditor_->verticalScrollBar()->setValue(0);
+  networkEditor_->horizontalScrollBar()->setValue(0);
 }
 
 void SCIRunMainWindow::executeCommandLineRequests()
@@ -692,6 +692,7 @@ void SCIRunMainWindow::setupPythonConsole()
 #ifdef BUILD_WITH_PYTHON
   pythonConsole_ = new PythonConsoleWidget(this);
   connect(actionPythonConsole_, SIGNAL(toggled(bool)), pythonConsole_, SLOT(setVisible(bool)));
+  connect(actionPythonConsole_, SIGNAL(toggled(bool)), this, SLOT(showPythonWarning(bool)));
   actionPythonConsole_->setIcon(QPixmap(":/general/Resources/terminal.png"));
   connect(pythonConsole_, SIGNAL(visibilityChanged(bool)), actionPythonConsole_, SLOT(setChecked(bool)));
   pythonConsole_->setVisible(false);
@@ -729,4 +730,14 @@ void SCIRunMainWindow::updateMiniView()
   networkEditorMiniViewLabel_->setPixmap(network.scaled(networkEditorMiniViewLabel_->size(),
                                                    Qt::KeepAspectRatio,
                                                    Qt::SmoothTransformation));
+}
+
+void SCIRunMainWindow::showPythonWarning(bool visible)
+{
+  if (visible && firstTimePythonShown_)
+  {
+    firstTimePythonShown_ = false;
+    QMessageBox::warning(this, "Warning: Known Python interface issue", 
+      "Attention Python interface user: this feature is not fully implemented. The main issue is that changes made to the current network from the GUI, such as adding/removing modules, are not reflected in the Python console's state. Thus strange bugs can be created by switching between Python-edit mode and standard-GUI-edit mode. Please use the Python console to test your commands, then compose a script that you can run separately without needing the GUI. This issue will be resolved in the next milestone. Thank you!");
+  }
 }
