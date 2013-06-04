@@ -70,9 +70,7 @@ bool LoadFileCommandConsole::execute()
       std::cout << "File load failed." << std::endl;
     }
     return false;
-
   }
-
 
   return true;
 }
@@ -87,7 +85,6 @@ bool ExecuteCurrentNetworkCommandConsole::execute()
 
 bool QuitAfterExecuteCommandConsole::execute()
 {
-  std::cout << "QuitAfterExecuteCommandConsole::execute()" << std::endl;
   std::cout << "Goodbye!" << std::endl;
   //SCIRunMainWindow::Instance()->setupQuitAfterExecute();
   return true;
@@ -95,7 +92,6 @@ bool QuitAfterExecuteCommandConsole::execute()
 
 bool QuitCommandConsole::execute()
 {
-  std::cout << "QuitCommandConsole" << std::endl;
   exit(0);
   return true;
 }

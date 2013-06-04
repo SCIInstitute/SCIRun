@@ -40,6 +40,9 @@ int main(int argc, const char* argv[])
   
   //TODO: must read --headless flag here, or try pushing command queue building all the way up here
 
-  //return ConsoleApplication::run(argc, argv);
-	return GuiApplication::run(argc, argv);
+#ifndef BUILD_HEADLESS
+  return GuiApplication::run(argc, argv);
+#else
+  return ConsoleApplication::run(argc, argv);
+#endif
 }

@@ -35,7 +35,7 @@
 namespace SCIRun {
 
 class SCISHARE FieldRNG {
-  int d[16], n[16];
+  int n[16];
   int stab[2][32];
   int point;
   int d1,d2,d3,d4,d5,d6,d7,d8,d9,d10,d11,d12;
