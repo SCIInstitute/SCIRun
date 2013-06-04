@@ -49,6 +49,12 @@ ENDIF()
 OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON)
 MARK_AS_ADVANCED(BUILD_SHARED_LIBS)
 
+########################################################################
+# Headless build
+
+OPTION(BUILD_HEADLESS "Build headless version, without Qt" OFF)
+MARK_AS_ADVANCED(BUILD_HEADLESS)
+
 
 ########################################################################
 # Set default CMAKE_BUILD_TYPE

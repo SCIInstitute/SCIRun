@@ -30,6 +30,10 @@ SET(SCIRunGUIPrototype_SOURCES
   scirunMain.cc 
 )
 
+IF(BUILD_HEADLESS)
+  ADD_DEFINITIONS(-DBUILD_HEADLESS)
+ENDIF(BUILD_HEADLESS)
+
 IF(APPLE)
   # TODO: temporary - until testing can be configured with app bundle
   ADD_EXECUTABLE(${TEST_APPLICATION_NAME}
