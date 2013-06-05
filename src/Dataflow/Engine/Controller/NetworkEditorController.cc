@@ -68,14 +68,38 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this));
 #endif
 
+  std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+
   log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
   auto layout1 = new log4cpp::PatternLayout();
-  layout1->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+  std::string backupPattern1 = layout1->getConversionPattern();
+  try
+  {
+    layout1->setConversionPattern(pattern);
+  }
+  catch (log4cpp::ConfigureFailure& exception)
+  {
+    // TODO: log?
+    std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+              << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
+    layout1->setConversionPattern(backupPattern1);
+  }
   appender1->setLayout(layout1);
 
   log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
   auto layout2 = new log4cpp::PatternLayout();
-  layout2->setConversionPattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+  std::string backupPattern2 = layout1->getConversionPattern();
+  try
+  {
+    layout2->setConversionPattern(pattern);
+  }
+  catch (log4cpp::ConfigureFailure& exception)
+  {
+    // TODO: log?
+    std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+    << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
+    layout2->setConversionPattern(backupPattern2);
+  }
   appender2->setLayout(layout2);
 
   log4cpp::Category& root = log4cpp::Category::getRoot();
