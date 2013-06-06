@@ -31,6 +31,31 @@ efficient middle layer, with support for Python scripting.
 Features
 ========
 
+What's new in milestone F
+-------------------------
+* Python console works on MacOS now. Known issue when using with GUI on all platforms; some Mac python commands also seem very unstable
+* Binary I/O for SCIRun v4 Matrix and Field files is enabled. Use Read/WriteMatrix and Read/WriteField just as in v4.
+* TetVol Mesh type is available and renderable
+* Updated module coloring while executing (matches v4)
+* Eigen library received minor update
+* ReportMatrixInfo layout improved
+* Pure headless version can be built using a CMake flag (BUILD_HEADLESS). It supports running network files and Python scripts.
+* Logging library chosen and added (log4cpp), not fully integrated yet
+* Module notes have a larger range of font sizes
+
+What's new in milestone E
+-------------------------
+* Manhattan connection lines
+* Prototype network mini-view
+* LatVol and TriSurf Meshes are full field objects with data
+* ShowMesh can show nodes
+* Camera control is closer to v4
+* "Clear Network" is now more appropriate "New Network"
+* Nicer button icons
+* CreateScalarFieldDataBasic module demonstrates rudimentary color mapping of a field. Function is selectable from Python.
+* ReportFieldInfo module
+* Run a Python script from the command line via -s <script-name>
+
 Network Editor
 --------------
 * Module selector: filterable list of modules that you can drag-and-drop into the editor or double-click to add a module.
