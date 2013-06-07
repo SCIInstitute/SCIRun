@@ -207,5 +207,7 @@ void ViewSceneDialog::addToolBar()
   menu->addItem("Legacy Mouse Control");
   menu->addItem("New Mouse Control");
   tools->addWidget(menu);
+  //TODO: hook up to slots. for now, disable.
+  menu->setEnabled(false);
   glLayout->addWidget(tools);
 }
