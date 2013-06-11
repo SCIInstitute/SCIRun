@@ -83,19 +83,17 @@ VMesh::size(DElem::size_type& size) const
   size = 0;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-LockingHandle<SearchGridT<SCIRun::index_type> >
+boost::shared_ptr<SearchGridT<SCIRun::index_type> >
 VMesh::get_elem_search_grid()
 {
   ASSERTFAIL("VMesh interface: get_elem_search_grid() has not been implemented");
 }
 
-LockingHandle<SearchGridT<SCIRun::index_type> >
+boost::shared_ptr<SearchGridT<SCIRun::index_type> >
 VMesh::get_node_search_grid()
 {
   ASSERTFAIL("VMesh interface: get_node_search_grid() has not been implemented");
 }
-#endif
 
 void 
 VMesh::get_nodes(Node::array_type& nodes, Node::index_type i) const

@@ -329,11 +329,9 @@ public:
   inline size_type num_delems() const
     { DElem::index_type s; size(s); return(static_cast<size_t>(s)); }  
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! NOTE NOT VALID FOR EACH MESH:
   virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_elem_search_grid();
   virtual boost::shared_ptr<SearchGridT<SCIRun::index_type> > get_node_search_grid();
-#endif
 
   //! test for special case where the mesh is empty
   //! empty meshes may need a special treatment
