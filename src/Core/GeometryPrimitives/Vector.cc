@@ -55,17 +55,8 @@ std::ostream& SCIRun::Core::Geometry::operator<<( std::ostream& os, const Vector
   return os;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-std::string
-Vector::get_string() const
-{
-  std::ostringstream oss;
-  oss << "[" << d_[0] << ", "<< d_[1] << ", " << d_[2] << "]";
-  return (oss.str());
-}
-
 void
-Vector::find_orthogonal(Vector& v1, Vector& v2) const
+  Vector::find_orthogonal(Vector& v1, Vector& v2) const
 {
   Vector v0(Cross(*this, Vector(1,0,0)));
   if(v0.length2() == 0)
@@ -77,6 +68,17 @@ Vector::find_orthogonal(Vector& v1, Vector& v2) const
   v2=Cross(*this, v1);
   v2.safe_normalize();
 }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+std::string
+Vector::get_string() const
+{
+  std::ostringstream oss;
+  oss << "[" << d_[0] << ", "<< d_[1] << ", " << d_[2] << "]";
+  return (oss.str());
+}
+
+
 
 bool
 Vector::check_find_orthogonal(Vector& v1, Vector& v2) const
