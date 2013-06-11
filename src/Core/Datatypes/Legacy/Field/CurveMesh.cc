@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/CurveMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/CurveMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
 //! Only include this class if we included Curve Support
 #if (SCIRUN_CURVE_SUPPORT > 0)
@@ -41,7 +41,6 @@ class VCurveMesh : public VUnstructuredMesh<MESH> {
 public:
   virtual bool is_curvemesh()          { return (true); }
 
-  //! constructor and descructor
   VCurveMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VCurveMesh")  
