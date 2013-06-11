@@ -99,7 +99,7 @@ public:
   typedef SCIRun::size_type             size_type;
   typedef SCIRun::mask_type             mask_type; 
   
-  typedef LockingHandle<CurveMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<CurveMesh<Basis> > handle_type;
   typedef Basis                            basis_type;
 
   //! Index and Iterator types required for Mesh Concept.
@@ -204,7 +204,7 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.
-  virtual CurveMesh *clone() { return new CurveMesh(*this); }
+  virtual CurveMesh *clone() const { return new CurveMesh(*this); }
 
   //! Destructor
   virtual ~CurveMesh(); 
@@ -1308,7 +1308,7 @@ protected:
   //! Record which parts of the mesh are synchronized
   mask_type               synchronized_;
   //! Lock to synchronize between threads
-  mutable Mutex           synchronize_lock_;
+  mutable Core::Thread::Mutex           synchronize_lock_;
 
   //! Vector indicating which edges are conected to which
   //! node. This is the reverse of the connectivity data
@@ -1323,7 +1323,7 @@ protected:
   //! Pointer to virtual interface
   //! This one is created as soon as the mesh is generated
   //! Put this one in a handle as we have a virtual destructor
-  Handle<VMesh>           vmesh_;
+  boost::shared_ptr<VMesh>           vmesh_;
 };
 
 
