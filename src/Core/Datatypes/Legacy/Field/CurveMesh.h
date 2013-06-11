@@ -196,7 +196,6 @@ public:
 
   //////////////////////////////////////////////////////////////////
 
-  //! Construct a new mesh
   CurveMesh();
   
   //! Copy a mesh, needed for detaching the mesh from a field 
@@ -206,7 +205,11 @@ public:
   //! a new version if needed.
   virtual CurveMesh *clone() const { return new CurveMesh(*this); }
 
-  //! Destructor
+  boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>> getFacade() const
+  {
+    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+  }
+
   virtual ~CurveMesh(); 
 
   //! Obtain the virtual interface pointer
