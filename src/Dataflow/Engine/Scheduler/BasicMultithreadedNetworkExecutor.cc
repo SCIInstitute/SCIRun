@@ -42,8 +42,9 @@ namespace
 {
   struct ParallelExecution
   {
-    ParallelExecution(const ExecutableLookup& lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
+    ParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
     {}
+    
     void operator()() const
     {
       //TODO ESSENTIAL: scoped start/finish signaling
@@ -57,23 +58,24 @@ namespace
         std::transform(groupIter.first, groupIter.second, std::back_inserter(tasks), 
           [&](const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod) -> boost::function<void()>
         {
-          return [&]() { lookup_.lookupExecutable(mod.second)->execute(); };
+          return [=]() { lookup_->lookupExecutable(mod.second)->execute(); };
         });
 
         //std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
         Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
       }
-      bounds_.executeFinishes_(lookup_.errorCode());
+      bounds_.executeFinishes_(lookup_->errorCode());
     }
 
-    const ExecutableLookup& lookup_;
+    const ExecutableLookup* lookup_;
     ParallelModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
   };
+
 }
 
 void BasicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds)
 {
-  ParallelExecution runner(lookup, order, bounds);
+  ParallelExecution runner(&lookup, order, bounds);
   boost::thread execution(runner);
 }
