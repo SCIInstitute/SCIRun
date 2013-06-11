@@ -51,12 +51,15 @@ find . -name "*.ii" -print | xargs cat | sort | uniq -c | sort -nr | more
 #include <Core/Datatypes/Legacy/Nrrd/NrrdData.h>
 #include <Core/Datatypes/Legacy/Matrix/MatrixTypeConverter.h>
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Datatypes/PropertyManager.h>
 #endif
+
+#include <Core/Datatypes/Legacy/Base/PropertyManager.h>
+
 #include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 namespace SCIRun
 {
@@ -83,10 +86,11 @@ const TypeDescription* get_type_description(std::vector<EdgeIndex<int> >*);
 const TypeDescription* get_type_description(std::vector<FaceIndex<int> >*);
 const TypeDescription* get_type_description(std::vector<CellIndex<int> >*);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 // Property types
 template class Property<bool>;
 template class Property<int>;
+template class Property<unsigned int>;
 template class Property<std::string>;
 template class Property<double>;
 template class Property<float>;
@@ -103,6 +107,8 @@ template class Property<std::pair<unsigned char,unsigned char> >;
 template class Property<std::pair<char,char> >;
 template class Property<std::vector<std::pair<std::string,Tensor> > >;
 template class Property<std::vector<std::pair<int,double> > >;
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template class Property<LockingHandle< Matrix<double> > >;
 template class Property<LockingHandle<NrrdData> >;
 template class Property<NodeIndex<unsigned int> >;

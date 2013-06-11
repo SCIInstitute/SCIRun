@@ -75,25 +75,25 @@ void Pio(Piostream& stream, Array1<T>& array)
   }
   else
   {
-    long long sz = static_cast<long long>(array.dm1);
+    long long sz = static_cast<long long>(array.size());
     Pio(stream,sz);
     size = static_cast<size_type>(sz);
   }
   
   if(stream.reading())
   {
-    array.remove_all();
-    array.grow(size);
+    array.clear();
+    array.resize(size);
   }
 
   if (stream.supports_block_io())
   {
-    stream.block_io(array.objs,sizeof(T),size);
+    stream.block_io(&array[0],sizeof(T),size);
   }
   else
   {
     for(index_type i=0;i<size;i++)
-      Pio(stream, array.objs[i]);
+      Pio(stream, array[i]);
   }
   stream.end_class();
 }
