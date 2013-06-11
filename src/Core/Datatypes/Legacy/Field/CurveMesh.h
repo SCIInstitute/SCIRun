@@ -229,16 +229,16 @@ public:
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
   //! Get the bounding box of the field
-  virtual BBox get_bounding_box() const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
 
   //! Return the transformation that takes a 0-1 space bounding box 
   //! to the current bounding box of this mesh.  
-  virtual void get_canonical_transform(Transform &t) const;
+  virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
 
   virtual void compute_bounding_box();
   
   //! Transform a field
-  virtual void transform(const Transform &t);
+  virtual void transform(const Core::Geometry::Transform &t);
   
   //! Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return (true); }
@@ -478,11 +478,11 @@ public:
   void get_random_point(Core::Geometry::Point &p, typename Elem::index_type i, FieldRNG &r) const;
 
   //! Normals for visualizations
-  void get_normal(Vector&, typename Node::index_type) const
+  void get_normal(Core::Geometry::Vector&, typename Node::index_type) const
     { ASSERTFAIL("CurveMesh: This mesh type does not have node normals."); }
   
   template<class VECTOR, class INDEX1, class INDEX2>
-  void get_normal(Vector&, VECTOR&, INDEX1, INDEX2) const
+  void get_normal(Core::Geometry::Vector&, VECTOR&, INDEX1, INDEX2) const
     { ASSERTFAIL("CurveMesh: This mesh type does not have element normals."); }
 
   //! use these to build up a new contour mesh
@@ -567,7 +567,7 @@ public:
     StackVector<Core::Geometry::Point,1> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Vector Jv1, Jv2;
+    Core::Geometry::Vector Jv1, Jv2;
     Jv[0].asVector().find_orthogonal(Jv1,Jv2);
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -590,7 +590,7 @@ public:
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     double J[9];
-    Vector Jv1, Jv2;
+    Core::Geometry::Vector Jv1, Jv2;
     Jv[0].asVector().find_orthogonal(Jv1,Jv2);
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -615,7 +615,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Vector v,w;
+    Core::Geometry::Vector v,w;
     Jv[0].asVector().find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
@@ -647,7 +647,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Vector v,w;
+    Core::Geometry::Vector v,w;
     Jv[0].asVector().find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
@@ -742,7 +742,7 @@ public:
   }
 
   template <class ARRAY>
-  bool locate_elems(ARRAY &array, const BBox &b) const
+  bool locate_elems(ARRAY &array, const Core::Geometry::BBox &b) const
   {
     array.clear();
     
@@ -754,8 +754,8 @@ public:
     while (ei != eie)
     {
       get_nodes(nodes,*ei);
-      BBox be(points_[nodes[0]],points_[nodes[1]]);
-      if (b.intersect(be) != BBox::OUTSIDE)
+      Core::Geometry::BBox be(points_[nodes[0]],points_[nodes[1]]);
+      if (b.intersect(be) != Core::Geometry::BBox::OUTSIDE)
       {
         size_t p=0;
         for (;p<array.size();p++) if (array[p] == typename ARRAY::value_type(*ei)) break;
@@ -1318,7 +1318,7 @@ protected:
   //! stored in the edges_ array.
   typedef std::vector<std::vector<typename Edge::index_type> > NodeNeighborMap;
   NodeNeighborMap         node_neighbors_;
-  BBox                    bbox_; 
+  Core::Geometry::BBox                    bbox_; 
   double                  epsilon_;
   double                  epsilon2_;
   double                  epsilon3_;
@@ -1487,10 +1487,10 @@ CurveMesh<Basis>::curvemesh_typeid(type_name(-1), "Mesh", CurveMesh<Basis>::make
 // Functions in the mesh
 
 template <class Basis>
-BBox
+Core::Geometry::BBox
 CurveMesh<Basis>::get_bounding_box() const
 {
-  BBox result;
+  Core::Geometry::BBox result;
 
   // Compute bounding box
   typename Node::iterator ni, nie;
@@ -1507,12 +1507,12 @@ CurveMesh<Basis>::get_bounding_box() const
 
 template <class Basis>
 void 
-CurveMesh<Basis>::get_canonical_transform(Transform &t) const
+CurveMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t) const
 {
   t.load_identity();
-  BBox bbox = get_bounding_box();
+  Core::Geometry::BBox bbox = get_bounding_box();
   t.pre_scale(bbox.diagonal());
-  t.pre_translate(Vector(bbox.min()));
+  t.pre_translate(Core::Geometry::Vector(bbox.min()));
 }
 
 template <class Basis>
@@ -1543,7 +1543,7 @@ CurveMesh<Basis>::compute_bounding_box()
 
 template <class Basis>
 void
-CurveMesh<Basis>::transform(const Transform &t)
+CurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   auto itr = points_.begin();
   auto eitr = points_.end();
@@ -1889,7 +1889,7 @@ CurveMesh<Basis>::inside2_p(index_type i, const Core::Geometry::Point &p, double
   const Core::Geometry::Point &p0 = points_[edges_[j]];
   const Core::Geometry::Point &p1 = points_[edges_[j+1]];
 
-  const Vector v = p0-p1;
+  const Core::Geometry::Vector v = p0-p1;
   alpha = Dot(p0-p,v)/v.length2();
   
   Core::Geometry::Point point;
@@ -1912,7 +1912,7 @@ CurveMesh<Basis>::distance2_p(index_type i, const Core::Geometry::Point& p,
   const Core::Geometry::Point &p0 = points_[edges_[j]];
   const Core::Geometry::Point &p1 = points_[edges_[j+1]];
 
-  const Vector v = p0-p1;
+  const Core::Geometry::Vector v = p0-p1;
   alpha = Dot(p0-p,v)/v.length2();
 
   if (alpha < 0.0) { result = p0; alpha = 0.0;}
