@@ -213,9 +213,9 @@ public:
   virtual ~CurveMesh(); 
 
   //! Obtain the virtual interface pointer
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return (vmesh_.get()); }
 
-  //! This one should go at some point, should be reroute throught the
+  //! This one should go at some point, should be reroute through the
   //! virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
@@ -1081,7 +1081,7 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new CurveMesh<Basis>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new CurveMesh<Basis>(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<CurveMesh<Basis>>(); }
 
 
   //! Functions local to CurveMesh, the latter are not thread safe
@@ -1339,7 +1339,7 @@ CurveMesh<Basis>::CurveMesh() :
 {
   DEBUG_CONSTRUCTOR("CurveMesh")   
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVCurveMesh(this);
+  vmesh_.reset(CreateVCurveMesh(this));
 }
   
 template<class Basis>
@@ -1369,7 +1369,7 @@ CurveMesh<Basis>::CurveMesh(const CurveMesh &copy) :
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVCurveMesh(this);
+  vmesh_.reset(CreateVCurveMesh(this));
 }
   
 template<class Basis>
@@ -1390,9 +1390,9 @@ const TypeDescription* get_type_description(CurveMesh<Basis> *)
     TypeDescription::td_vec *subs = new TypeDescription::td_vec(1);
     (*subs)[0] = sub;
     td = new TypeDescription("CurveMesh", subs,
-                                std::string(__FILE__),
-                                "SCIRun",
-                                TypeDescription::MESH_E);
+      std::string(__FILE__),
+      "SCIRun",
+      TypeDescription::MESH_E);
   }
   return td;
 }
@@ -1402,7 +1402,7 @@ template <class Basis>
 const TypeDescription*
 CurveMesh<Basis>::get_type_description() const
 {
-  return get_type_description((CurveMesh<Basis> *)0);
+  return SCIRun::get_type_description((CurveMesh<Basis> *)0);
 }
 
 
@@ -1414,7 +1414,7 @@ CurveMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((CurveMesh<Basis> *)0);
+      SCIRun::get_type_description((CurveMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1432,7 +1432,7 @@ CurveMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((CurveMesh<Basis> *)0);
+      SCIRun::get_type_description((CurveMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1450,7 +1450,7 @@ CurveMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((CurveMesh<Basis> *)0);
+      SCIRun::get_type_description((CurveMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1468,7 +1468,7 @@ CurveMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((CurveMesh<Basis> *)0);
+      SCIRun::get_type_description((CurveMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1588,7 +1588,7 @@ CurveMesh<Basis>::get_size(typename Edge::index_type idx) const
     std::vector<double> &c1 = *last++;
     Point p0 = basis_.interpolate(c0, ed);
     Point p1 = basis_.interpolate(c1, ed);
-    total += (p1.asVector() - p0.asVector()).length();
+    total += (p1 - p0).length();
   }
   return total;
 }
@@ -1759,7 +1759,7 @@ CurveMesh<Basis>::io(Piostream& stream)
   stream.end_class();
 
   if (stream.reading())
-    vmesh_ = CreateVCurveMesh(this);
+    vmesh_.reset(CreateVCurveMesh(this));
 }
 
 
