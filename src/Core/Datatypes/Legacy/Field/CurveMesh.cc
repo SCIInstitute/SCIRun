@@ -29,6 +29,9 @@
 #include <Core/Datatypes/Legacy/Field/CurveMesh.h>
 #include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
+
 //! Only include this class if we included Curve Support
 #if (SCIRUN_CURVE_SUPPORT > 0)
 

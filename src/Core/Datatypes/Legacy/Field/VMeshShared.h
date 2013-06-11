@@ -32,7 +32,6 @@
 
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-//! Include needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
