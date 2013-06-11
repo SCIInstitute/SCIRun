@@ -309,7 +309,6 @@ PropertyManager::io(Piostream &stream)
   }
   else
   {
-    std::cout << "PropertyManager::io" << std::endl;
     unsigned int size;
     Pio( stream, size );
     Guard g(lock.get());
@@ -327,7 +326,6 @@ PropertyManager::io(Piostream &stream)
       }
     }
   }
-  std::cout << "end PM::io" << std::endl;
   stream.end_class();
   stream.set_backwards_compat_id(bc);
 }
