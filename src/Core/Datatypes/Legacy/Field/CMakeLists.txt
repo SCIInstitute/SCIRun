@@ -66,7 +66,7 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   cd_templates.cc	    	
   cd_templates_fields_0.cc    	
   #cd_templates_fields_1.cc    	
-  #cd_templates_fields_2.cc    	
+  cd_templates_fields_2.cc    	
   cd_templates_fields_3.cc    	
   cd_templates_fields_3a.cc
   cd_templates_fields_4.cc    	
@@ -80,10 +80,10 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   #ImageMesh.cc
   LatVolMesh.cc
   Mesh.cc		
-  #PointCloudMesh.cc  
+  PointCloudMesh.cc  
   PrismVolMesh.cc
   #QuadSurfMesh.cc
-  #ScanlineMesh.cc
+  ScanlineMesh.cc
   TetVolMesh.cc
   TriSurfMesh.cc
   VFData.cc	
