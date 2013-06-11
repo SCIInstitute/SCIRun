@@ -30,7 +30,7 @@
 #define DATAFLOW_STATE_NULLMODULESTATE_H
 
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Engine {

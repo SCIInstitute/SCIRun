@@ -29,7 +29,7 @@
 #ifndef PYTHONIC_API_HELLO_H
 #define PYTHONIC_API_HELLO_H
 
-#include <Interface/PythonTestGui/API/Share.h>
+#include <Interface/PythonTestGui/API/share.h>
 #include <boost/python.hpp>
 
 struct SCISHARE World

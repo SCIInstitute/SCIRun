@@ -35,7 +35,7 @@ SET(PythonAPI_SOURCES
 SET(PythonAPI_HEADERS
   DiagramView.h
   Hello.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(PythonAPI

@@ -38,7 +38,7 @@
 #include <Core/GeometryPrimitives/Plane.h>
 #include <Core/Persistent/Persistent.h>
 
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/GeometryPrimitives/share.h>
 
 namespace SCIRun {
 namespace Core {

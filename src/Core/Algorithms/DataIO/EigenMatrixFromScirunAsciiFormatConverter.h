@@ -35,7 +35,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Utils/ProgressReporter.h>
-#include <Core/Algorithms/DataIO/Share.h>
+#include <Core/Algorithms/DataIO/share.h>
 
 namespace SCIRun {
 namespace Core {

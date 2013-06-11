@@ -32,7 +32,7 @@
 #include <string>
 #include <stdexcept>
 #include <Core/Utils/Exception.h>
-#include <Core/Algorithms/Base/Share.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
 namespace Core {

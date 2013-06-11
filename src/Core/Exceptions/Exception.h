@@ -57,7 +57,7 @@ namespace SCIRun {
   {
   public:
     Exception();
-    virtual ~Exception();
+    virtual ~Exception() noexcept(true);
     virtual const char* message() const=0;
     virtual const char* type() const=0;
     const char* stackTrace() const {

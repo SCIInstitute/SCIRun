@@ -39,7 +39,7 @@ SET(Core_Serialization_Network_HEADERS
   NetworkDescriptionSerialization.h
   NetworkXMLSerializer.h
   XMLSerializer.h
-  Share.h
+  share.h
   StateSerialization.h
 )
 

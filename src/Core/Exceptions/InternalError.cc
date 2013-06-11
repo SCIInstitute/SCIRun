@@ -63,7 +63,7 @@ InternalError::InternalError(const InternalError& copy)
 {
 }
 
-InternalError::~InternalError()
+InternalError::~InternalError() noexcept(true)
 {
 }
 

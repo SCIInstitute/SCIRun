@@ -34,7 +34,7 @@ SET(Interface_Modules_Base_FORMS
 SET(Interface_Modules_Base_HEADERS
   ModuleDialogBasic.h
   ModuleDialogGeneric.h
-  Share.h
+  share.h
 )
 
 SET(Interface_Modules_Base_SOURCES 

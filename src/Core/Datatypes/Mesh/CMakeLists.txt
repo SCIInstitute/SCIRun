@@ -36,7 +36,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   MeshFacadeIterators.h
   MeshFactory.h
   MeshTraits.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Datatypes_Mesh

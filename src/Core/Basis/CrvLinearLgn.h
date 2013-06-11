@@ -40,7 +40,7 @@
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvElementWeights.h>
 #include <Core/Basis/CrvSamplingSchemes.h>
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

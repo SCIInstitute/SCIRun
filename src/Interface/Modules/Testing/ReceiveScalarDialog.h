@@ -33,7 +33,7 @@
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Testing/Share.h>
+#include <Interface/Modules/Testing/share.h>
 
 namespace SCIRun {
 namespace Gui {

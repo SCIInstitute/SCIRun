@@ -35,7 +35,7 @@
 #include <boost/any.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

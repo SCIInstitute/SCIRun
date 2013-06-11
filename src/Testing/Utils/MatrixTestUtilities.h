@@ -40,7 +40,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Utils/StringUtil.h>
 
-#include <Testing/Utils/Share.h>
+#include <Testing/Utils/share.h>
 
 namespace SCIRun 
 { 

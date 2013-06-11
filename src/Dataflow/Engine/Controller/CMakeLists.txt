@@ -45,7 +45,7 @@ SET(Engine_Network_HEADERS
   ProvenanceItemImpl.h
   ProvenanceManager.h
   PythonImpl.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Engine_Network 

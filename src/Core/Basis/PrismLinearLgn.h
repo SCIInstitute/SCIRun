@@ -40,7 +40,7 @@
 #include <Core/Basis/PrismElementWeights.h>
 #include <Core/Basis/PrismSamplingSchemes.h>
 
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

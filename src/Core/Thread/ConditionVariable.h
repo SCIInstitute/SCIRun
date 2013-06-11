@@ -32,7 +32,7 @@
 #include <boost/noncopyable.hpp>
 #include <Core/Thread/Mutex.h>
 #include <boost/thread/condition_variable.hpp>  //TODO: pimpl?
-#include <Core/Thread/Share.h>
+#include <Core/Thread/share.h>
 
 namespace SCIRun 
 {

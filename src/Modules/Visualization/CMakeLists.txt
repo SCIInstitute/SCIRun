@@ -36,7 +36,7 @@ SET(Modules_Visualization_HEADERS
   MatrixAsVectorField.h
   ShowField.h
   ShowString.h
-  Share.h
+  share.h
 )
 
 FIND_PACKAGE(OpenGL REQUIRED)

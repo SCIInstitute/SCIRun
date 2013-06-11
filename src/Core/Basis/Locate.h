@@ -39,7 +39,7 @@
 #include <Core/Containers/StackVector.h>
 #include <Core/Utils/Exception.h>
 
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
          

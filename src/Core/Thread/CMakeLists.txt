@@ -38,7 +38,7 @@ SET(Core_Thread_HEADERS
   ConditionVariable.h
   Mutex.h
   Parallel.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Thread 

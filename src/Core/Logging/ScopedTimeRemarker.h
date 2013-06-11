@@ -32,7 +32,7 @@
 #include <string>
 #include <boost/timer.hpp>
 #include <Core/Logging/LoggerFwd.h>
-#include <Core/Logging/Share.h>
+#include <Core/Logging/share.h>
 
 namespace SCIRun 
 {

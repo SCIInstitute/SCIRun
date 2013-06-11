@@ -66,7 +66,7 @@ DimensionMismatch::DimensionMismatch(const DimensionMismatch& copy)
 {
 }
     
-DimensionMismatch::~DimensionMismatch()
+DimensionMismatch::~DimensionMismatch() noexcept(true)
 {
 }
 

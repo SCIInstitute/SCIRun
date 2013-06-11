@@ -37,7 +37,7 @@ SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   CreateLatVolMeshDialog.h
   ReportFieldInfoDialog.h
-  Share.h
+  share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 

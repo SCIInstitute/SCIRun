@@ -31,7 +31,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <Core/Command/Command.h>
-#include <Core/Command/Share.h>
+#include <Core/Command/share.h>
 
 namespace SCIRun
 {

@@ -66,7 +66,7 @@ AssertionFailed::AssertionFailed(const AssertionFailed& copy)
 {
 }
 
-AssertionFailed::~AssertionFailed()
+AssertionFailed::~AssertionFailed() noexcept(true)
 {
 }
 

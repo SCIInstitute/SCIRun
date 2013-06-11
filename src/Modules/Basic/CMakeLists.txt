@@ -44,7 +44,7 @@ SET(Modules_Basic_HEADERS
   SendScalar.h
   SendScalarModuleState.h
   SendTestMatrix.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Modules_Basic 

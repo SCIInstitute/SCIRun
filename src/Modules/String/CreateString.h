@@ -30,7 +30,7 @@
 #define MODULES_STRING_CREATE_STRING_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/String/Share.h>
+#include <Modules/String/share.h>
 
 namespace SCIRun {
 namespace Modules {

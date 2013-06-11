@@ -35,7 +35,7 @@
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/GeometryPrimitives/share.h>
 
 namespace SCIRun {
 namespace Core {

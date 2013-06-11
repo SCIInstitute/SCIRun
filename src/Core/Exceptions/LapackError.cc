@@ -52,7 +52,7 @@ LapackError::LapackError(const LapackError& copy)
 {
 }
 
-LapackError::~LapackError()
+LapackError::~LapackError() noexcept(true)
 {
 }
 

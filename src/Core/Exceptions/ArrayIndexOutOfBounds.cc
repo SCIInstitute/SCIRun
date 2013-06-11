@@ -70,7 +70,7 @@ ArrayIndexOutOfBounds::ArrayIndexOutOfBounds(const ArrayIndexOutOfBounds& copy)
 {
 }
     
-ArrayIndexOutOfBounds::~ArrayIndexOutOfBounds()
+ArrayIndexOutOfBounds::~ArrayIndexOutOfBounds() noexcept(true)
 {
 }
 

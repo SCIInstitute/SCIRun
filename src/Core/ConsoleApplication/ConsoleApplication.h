@@ -29,7 +29,7 @@
 #ifndef CORE_CONSOLEAPPLICATION_CONSOLEAPPLICATION_H
 #define CORE_CONSOLEAPPLICATION_CONSOLEAPPLICATION_H
 
-#include <Core/ConsoleApplication/Share.h>
+#include <Core/ConsoleApplication/share.h>
 
 namespace SCIRun {
 namespace Core {

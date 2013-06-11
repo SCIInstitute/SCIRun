@@ -30,7 +30,7 @@
 #define PYTHONIC_API_DIAGRAMVIEW_H
 
 #include <vector>
-#include <Interface/PythonTestGui/API/Share.h>
+#include <Interface/PythonTestGui/API/share.h>
 #include <boost/python.hpp>
 
 class SCISHARE DiagramViewInterface
