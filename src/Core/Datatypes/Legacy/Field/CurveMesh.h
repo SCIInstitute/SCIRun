@@ -34,13 +34,11 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/Handle.h>
 
-#include <Core/GeometryPrimitivesBBox.h>
-#include <Core/GeometryPrimitivesPoint.h>
-#include <Core/GeometryPrimitivesTransform.h>
-#include <Core/GeometryPrimitivesVector.h>
+#include <Core/GeometryPrimitives/BBox.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Transform.h>
+#include <Core/GeometryPrimitives/Vector.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvLinearLgn.h>
@@ -52,7 +50,6 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -63,8 +60,8 @@ namespace SCIRun {
 template <class Basis> class CurveMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVCurveMesh(MESH*) { return (0); }
 
