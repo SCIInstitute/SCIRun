@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
+#include <Core/Persistent/PersistentSTL.h>
 
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -45,6 +46,9 @@
 #include <Core/Basis/CrvQuadraticLgn.h>
 #include <Core/Basis/CrvCubicHmt.h>
 
+#include <Core/Thread/Mutex.h>
+
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
