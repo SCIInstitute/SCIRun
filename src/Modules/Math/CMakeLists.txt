@@ -47,7 +47,7 @@ SET(Modules_Math_HEADERS
   EvaluateLinearAlgebraBinaryState.h
   ReportMatrixInfo.h
   ReportMatrixInfoState.h
-  Share.h
+  share.h
   SolveLinearSystem.h
 )
 

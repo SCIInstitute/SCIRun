@@ -60,7 +60,7 @@ SET(Dataflow_Network_HEADERS
   PortInterface.h
   PortManager.h
   RendererInterface.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Dataflow_Network 

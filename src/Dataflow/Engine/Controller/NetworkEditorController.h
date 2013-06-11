@@ -33,7 +33,7 @@
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
-#include <Dataflow/Engine/Controller/Share.h>
+#include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

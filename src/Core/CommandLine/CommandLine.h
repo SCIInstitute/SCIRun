@@ -34,7 +34,7 @@
 #include <boost/optional.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/noncopyable.hpp>
-#include <Core/CommandLine/Share.h>
+#include <Core/CommandLine/share.h>
 
 namespace SCIRun {
   namespace Core {

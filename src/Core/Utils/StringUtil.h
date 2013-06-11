@@ -30,7 +30,7 @@
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
-#include <Core/Utils/Share.h>
+#include <Core/Utils/share.h>
 
 namespace SCIRun 
 {

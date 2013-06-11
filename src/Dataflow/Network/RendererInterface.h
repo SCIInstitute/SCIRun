@@ -30,7 +30,7 @@
 #define DATAFLOW_NETWORK_RENDERERINTERFACE_H 
 
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
   namespace Dataflow {

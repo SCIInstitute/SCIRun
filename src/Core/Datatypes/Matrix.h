@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <iosfwd>
-#include <Core/Datatypes/Share.h>
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {

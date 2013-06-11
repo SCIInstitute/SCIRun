@@ -36,7 +36,7 @@
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/GeometryPrimitives/GeomFwd.h>
 #include <Core/Basis/BasisFwd.h>
-#include <Core/Datatypes/Mesh/Share.h>
+#include <Core/Datatypes/Mesh/share.h>
 
 namespace SCIRun {
 namespace Core {

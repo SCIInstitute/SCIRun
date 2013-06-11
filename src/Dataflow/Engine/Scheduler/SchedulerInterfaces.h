@@ -33,7 +33,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <boost/signals2.hpp>
 #include <Core/Utils/Exception.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

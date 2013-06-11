@@ -38,7 +38,7 @@
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Persistent/Persistent.h>
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

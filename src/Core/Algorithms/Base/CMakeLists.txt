@@ -33,7 +33,7 @@ SET(Algorithms_Base_SRCS
 SET(Algorithms_Base_HEADERS
   AlgorithmBase.h
   AlgorithmPreconditions.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Algorithms_Base 

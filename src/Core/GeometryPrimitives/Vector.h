@@ -36,7 +36,7 @@
 #include <cmath>
 #include <Core/Persistent/PersistentFwd.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/GeometryPrimitives/share.h>
 
 namespace SCIRun {
 namespace Core {

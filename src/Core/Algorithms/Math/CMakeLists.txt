@@ -41,7 +41,7 @@ SET(Algorithms_Math_HEADERS
   EvaluateLinearAlgebraUnary.h
   EvaluateLinearAlgebraBinary.h
   ReportMatrixInfo.h
-  Share.h
+  share.h
   SolveLinearSystemWithEigen.h
   LinearSystem/SolveLinearSystemAlgo.h
   ParallelAlgebra/ParallelLinearAlgebra.h

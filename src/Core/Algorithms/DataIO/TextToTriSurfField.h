@@ -33,7 +33,7 @@
 
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 
-#include <Core/Algorithms/DataIO/Share.h>
+#include <Core/Algorithms/DataIO/share.h>
 
 namespace SCIRun {
 namespace Core {

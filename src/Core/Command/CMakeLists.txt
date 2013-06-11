@@ -38,7 +38,7 @@ SET(Core_Command_HEADERS
   CommandFactory.h
   CommandQueue.h
   GlobalCommandBuilderFromCommandLine.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Command 

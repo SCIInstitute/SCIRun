@@ -65,7 +65,7 @@ SET(Core_Basis_HEADERS
   PrismCubicHmt.h
   PrismSamplingSchemes.h
   QuadElementWeights.h
-  Share.h
+  share.h
   TetElementWeights.h
   TetLinearLgn.h
   TetQuadraticLgn.h

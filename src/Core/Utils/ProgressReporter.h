@@ -46,7 +46,7 @@
 
 #include <string>
 
-#include <Core/Utils/Share.h>
+#include <Core/Utils/share.h>
 
 namespace SCIRun {
   namespace Core {

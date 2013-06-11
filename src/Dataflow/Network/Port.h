@@ -34,7 +34,7 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/PortInterface.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

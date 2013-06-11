@@ -39,7 +39,7 @@
 #include <Core/Basis/HexElementWeights.h>
 #include <Core/Basis/HexSamplingSchemes.h>
 
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

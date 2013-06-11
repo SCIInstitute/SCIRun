@@ -33,7 +33,7 @@
 #define CORE_BASIS_CRVQUADRATICLGN_H 1
 
 #include <Core/Basis/CrvLinearLgn.h>
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

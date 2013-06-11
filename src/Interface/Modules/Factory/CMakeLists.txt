@@ -29,7 +29,7 @@
 
 SET(Interface_Modules_Factory_HEADERS
   ModuleDialogFactory.h
-  Share.h
+  share.h
 )
 
 SET(Interface_Modules_Factory_SOURCES 

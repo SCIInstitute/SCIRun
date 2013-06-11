@@ -31,7 +31,7 @@
 
 #include "Interface/Modules/Fields/ui_CreateLatVolMesh.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/Share.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
 namespace Gui {

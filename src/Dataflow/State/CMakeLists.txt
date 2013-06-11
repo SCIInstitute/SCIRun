@@ -32,7 +32,7 @@ SET(Dataflow_State_SRCS
 
 SET(Dataflow_State_HEADERS
   SimpleMapModuleState.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Dataflow_State 

@@ -31,7 +31,7 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
-#include <Core/Utils/Share.h>
+#include <Core/Utils/share.h>
 
 namespace SCIRun 
 {

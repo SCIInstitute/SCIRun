@@ -32,7 +32,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 #include <Core/Utils/Exception.h>
 #include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/Mesh/Share.h>
+#include <Core/Datatypes/Mesh/share.h>
 
 namespace SCIRun {
 namespace Core {

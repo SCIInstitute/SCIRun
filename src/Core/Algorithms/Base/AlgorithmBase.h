@@ -36,7 +36,7 @@
 #include <Core/Logging/Logger.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Utils/ProgressReporter.h>
-#include <Core/Algorithms/Base/Share.h>
+#include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
 namespace Core {

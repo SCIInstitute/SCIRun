@@ -29,7 +29,7 @@
 #ifndef CORE_DATATYPES_MESH_LATVOLMESHREGISTER_H
 #define CORE_DATATYPES_MESH_LATVOLMESHREGISTER_H 
 
-#include <Core/Datatypes/Mesh/Share.h>
+#include <Core/Datatypes/Mesh/share.h>
 
 namespace SCIRun {
 namespace Core {

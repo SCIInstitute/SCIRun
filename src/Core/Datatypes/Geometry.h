@@ -34,7 +34,7 @@
 #include <list>
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Share.h>
+#include <Core/Datatypes/share.h>
 #include <Spire/Interface.h>
 #include <Spire/Core/GPUStateManager.h>
 #include <Spire/AppSpecific/SCIRun/SRInterface.h>

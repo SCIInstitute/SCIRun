@@ -36,7 +36,7 @@ SET(Core_Logging_HEADERS
   Logger.h
   LoggerFwd.h
   ScopedTimeRemarker.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Logging 

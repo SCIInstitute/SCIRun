@@ -30,7 +30,7 @@
 #define ENGINE_SCHEDULER_BASIC_PARALLEL_EXECUTION_STRATEGY_H
 
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
   namespace Dataflow {

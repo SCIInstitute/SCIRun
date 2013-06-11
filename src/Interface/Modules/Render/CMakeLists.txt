@@ -32,7 +32,7 @@ SET(Interface_Modules_Render_FORMS
 )
 
 SET(Interface_Modules_Render_HEADERS
-  Share.h
+  share.h
   ViewScene.h
   GLWidget.h
   QtGLContext.h

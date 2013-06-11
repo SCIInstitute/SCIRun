@@ -30,7 +30,7 @@
 #define CORE_THREAD_PARLLEL_H
 
 #include <boost/function.hpp>
-#include <Core/Thread/Share.h>
+#include <Core/Thread/share.h>
 
 namespace SCIRun 
 {
