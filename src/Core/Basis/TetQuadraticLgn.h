@@ -33,7 +33,7 @@
 #define CORE_BASIS_TETQUADRATICLGN_H 1
 
 #include <Core/Basis/TetLinearLgn.h>
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

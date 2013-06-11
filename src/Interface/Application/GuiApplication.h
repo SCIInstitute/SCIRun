@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_GUIAPPLICATION_H
 #define INTERFACE_APPLICATION_GUIAPPLICATION_H
 
-#include <Interface/Application/Share.h>
+#include <Interface/Application/share.h>
 
 namespace SCIRun {
 namespace Gui {

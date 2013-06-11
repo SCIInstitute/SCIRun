@@ -32,7 +32,7 @@ SET(Modules_Render_SRCS
 
 SET(Modules_Render_HEADERS
   ViewScene.h
-  Share.h
+  share.h
 )
 
 FIND_PACKAGE(OpenGL REQUIRED)

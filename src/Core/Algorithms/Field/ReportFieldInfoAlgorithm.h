@@ -34,7 +34,7 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Field/Share.h>
+#include <Core/Algorithms/Field/share.h>
 
 namespace SCIRun {
 namespace Core {

@@ -31,7 +31,7 @@
 
 #include <map>
 #include <Dataflow/Network/ModuleStateInterface.h>
-#include <Dataflow/State/Share.h>
+#include <Dataflow/State/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

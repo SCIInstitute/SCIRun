@@ -31,7 +31,7 @@
 
 #include <vector>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Python/Share.h>
+#include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun {
   

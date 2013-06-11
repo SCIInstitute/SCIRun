@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <boost/type_traits.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <Core/Datatypes/Share.h>
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {

@@ -42,7 +42,7 @@ SET(Interface_Modules_Math_HEADERS
   EvaluateLinearAlgebraBinaryDialog.h
   EvaluateLinearAlgebraUnaryDialog.h
   ReportMatrixInfoDialog.h
-  Share.h
+  share.h
   SolveLinearSystemDialog.h
 )
 

@@ -32,7 +32,7 @@ SET(Modules_Factory_SRCS
 
 SET(Modules_Factory_HEADERS
   HardCodedModuleFactory.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Modules_Factory 

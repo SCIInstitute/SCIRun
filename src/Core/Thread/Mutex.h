@@ -31,7 +31,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>  //TODO: pimpl?
-#include <Core/Thread/Share.h>
+#include <Core/Thread/share.h>
 
 namespace SCIRun 
 {

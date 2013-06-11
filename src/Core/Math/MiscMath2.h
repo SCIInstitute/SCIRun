@@ -33,7 +33,7 @@
 #ifndef CORE_MATH_MISCMATH_H
 #define CORE_MATH_MISCMATH_H 
 
-#include <Core/Math/Share.h>
+#include <Core/Math/share.h>
 
 namespace SCIRun 
 {

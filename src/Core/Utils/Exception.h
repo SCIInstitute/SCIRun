@@ -33,7 +33,7 @@
 #include <boost/exception/all.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/numeric/interval.hpp>
-#include <Core/Utils/Share.h>
+#include <Core/Utils/share.h>
 
 namespace SCIRun 
 {

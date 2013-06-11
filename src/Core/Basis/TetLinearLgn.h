@@ -37,7 +37,7 @@
 #include <Core/Basis/TetElementWeights.h>
 #include <Core/Basis/TetSamplingSchemes.h>
 #include <Core/Basis/TriLinearLgn.h>
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

@@ -45,7 +45,7 @@
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Containers/Array1.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/GeometryPrimitives/share.h>
 
 #include <string>
 #include <iosfwd>

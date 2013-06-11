@@ -37,7 +37,7 @@
 #include <boost/foreach.hpp>
 #include <fstream>
 
-#include <Dataflow/Serialization/Network/Share.h>
+#include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

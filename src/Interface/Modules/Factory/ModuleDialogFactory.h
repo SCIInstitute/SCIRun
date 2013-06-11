@@ -32,7 +32,7 @@
 #include <QWidget>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Interface/Modules/Factory/Share.h>
+#include <Interface/Modules/Factory/share.h>
 
 namespace SCIRun
 {

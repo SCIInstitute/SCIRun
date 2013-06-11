@@ -32,7 +32,7 @@ SET(Algorithms_Field_SRCS
 
 SET(Algorithms_Field_HEADERS
   ReportFieldInfoAlgorithm.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Algorithms_Field 

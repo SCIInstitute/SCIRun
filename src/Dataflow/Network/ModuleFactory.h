@@ -31,7 +31,7 @@
 #define DATAFLOW_NETWORK_MODULE_FACTORY_H 
 
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

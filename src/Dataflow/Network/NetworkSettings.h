@@ -33,7 +33,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/filesystem/path.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

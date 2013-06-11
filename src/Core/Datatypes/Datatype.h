@@ -32,7 +32,7 @@
 
 #include <Core/Persistent/Persistent.h>
 #include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Datatypes/Share.h>
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {

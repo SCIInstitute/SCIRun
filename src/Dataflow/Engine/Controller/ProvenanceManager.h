@@ -33,7 +33,7 @@
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
-#include <Dataflow/Engine/Controller/Share.h>
+#include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

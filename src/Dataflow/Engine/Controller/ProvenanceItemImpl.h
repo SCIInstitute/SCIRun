@@ -32,7 +32,7 @@
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Controller/ProvenanceItem.h>
 #include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Engine/Controller/Share.h>
+#include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

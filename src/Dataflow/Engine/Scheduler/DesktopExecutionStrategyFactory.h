@@ -30,7 +30,7 @@
 #define ENGINE_SCHEDULER_DESKTOP_EXECUTION_STRATEGY_FACTORY_H
 
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

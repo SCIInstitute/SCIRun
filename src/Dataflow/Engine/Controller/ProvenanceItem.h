@@ -31,7 +31,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Controller/Share.h>
+#include <Dataflow/Engine/Controller/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

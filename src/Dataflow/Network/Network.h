@@ -34,7 +34,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/NetworkSettings.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

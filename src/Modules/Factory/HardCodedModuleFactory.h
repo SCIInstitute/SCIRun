@@ -30,7 +30,7 @@
 #define HARD_CODED_MODULE_FACTORY_H
 
 #include <Dataflow/Network/ModuleFactory.h>
-#include <Modules/Factory/Share.h>
+#include <Modules/Factory/share.h>
 
 namespace SCIRun {
   namespace Modules {

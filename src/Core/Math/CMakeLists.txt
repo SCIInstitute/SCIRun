@@ -56,7 +56,7 @@ SET(Core_Math_HEADERS
   #sci_lapack.h
   fft.h
   MiscMath.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Math 
