@@ -155,7 +155,7 @@ public:
     Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
-    return Vector(p1 - p0).length();
+    return Core::Geometry::Vector(p1 - p0).length();
   }
 
   double get_size(typename ScanlineMesh<Basis>::Face::index_type) const
@@ -366,7 +366,7 @@ public:
     ElemData ed(*this,idx);
     this->basis_.derivate(coords,ed,Jv);
     Core::Geometry::Vector Jv1, Jv2;
-    Vector(Jv[0]).find_orthogonal(Jv1,Jv2);
+    Core::Geometry::Vector(Jv[0]).find_orthogonal(Jv1,Jv2);
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
     J[2] = Jv[0].z();
@@ -392,7 +392,7 @@ public:
     this->basis_.derivate(coords,ed,Jv);
     double J[9];
     Core::Geometry::Vector Jv1, Jv2;
-    Vector(Jv[0]).find_orthogonal(Jv1,Jv2);
+    Core::Geometry::Vector(Jv[0]).find_orthogonal(Jv1,Jv2);
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
     J[2] = Jv[0].z();
