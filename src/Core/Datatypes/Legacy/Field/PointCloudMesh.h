@@ -324,7 +324,11 @@ public:
   //! get the parent element(s) of the given index
   void get_elems(typename Elem::array_type &result,
                  typename Node::index_type idx) const
-    { result.clear(); result.push_back(idx); }
+  { 
+  //    result.clear(); 
+  //    result.push_back(idx); 
+    result[0] = idx;
+  }
   void get_elems(typename Elem::array_type&,
                  typename Edge::index_type) const
     { ASSERTFAIL("PointCloudMesh: get_elems has not been implemented for edges"); }
