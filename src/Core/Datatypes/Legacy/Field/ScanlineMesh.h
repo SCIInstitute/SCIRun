@@ -845,7 +845,7 @@ ScanlineMesh<Basis>::ScanlineMesh(size_type ni,
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVScanlineMesh(this);   
+  vmesh_.reset(CreateVScanlineMesh(this));
 }
 
 
