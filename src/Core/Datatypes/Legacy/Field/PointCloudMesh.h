@@ -48,9 +48,6 @@
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 
-#include <float.h>
-
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -63,8 +60,8 @@ namespace SCIRun {
 template <class Basis> class PointCloudMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 
 template<class MESH>
 VMesh* CreateVPointCloudMesh(MESH*) { return (0); }
@@ -72,7 +69,7 @@ VMesh* CreateVPointCloudMesh(MESH*) { return (0); }
 //! Declare that these can be found in a library that is already
 //! precompiled. So dynamic compilation will not instantiate them again.
 #if (SCIRUN_POINTCLOUD_SUPPORT > 0)
-SCISHARE VMesh* CreateVPointCloudMesh(PointCloudMesh<ConstantBasis<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVPointCloudMesh(PointCloudMesh<Core::Basis::ConstantBasis<Core::Geometry::Point> >* mesh);
 
 #endif
 /////////////////////////////////////////////////////
@@ -96,7 +93,7 @@ public:
   typedef SCIRun::size_type             size_type;
   typedef SCIRun::mask_type             mask_type; 
 
-  typedef LockingHandle<PointCloudMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<PointCloudMesh<Basis> > handle_type;
   typedef Basis                                 basis_type;
 
   //! Index and Iterator types required for Mesh Concept.

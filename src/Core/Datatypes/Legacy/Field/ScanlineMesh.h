@@ -60,7 +60,6 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -75,8 +74,8 @@ template <class Basis>
 class ScanlineMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVScanlineMesh(MESH* mesh) { return (0); }
 
@@ -87,7 +86,7 @@ VMesh* CreateVScanlineMesh(MESH* mesh) { return (0); }
 
 #if (SCIRUN_SCANLINE_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVScanlineMesh(ScanlineMesh<CrvLinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVScanlineMesh(ScanlineMesh<Core::Basis::CrvLinearLgn<Core::Geometry::Point> >* mesh);
 
 #endif
 /////////////////////////////////////////////////////
@@ -108,7 +107,7 @@ public:
   typedef SCIRun::size_type             size_type;
   typedef SCIRun::mask_type             mask_type; 
    
-  typedef LockingHandle<ScanlineMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<ScanlineMesh<Basis> > handle_type;
   typedef Basis           basis_type;
 
   //! Index and Iterator types required for Mesh Concept.
@@ -432,7 +431,7 @@ public:
   //! This function uses a couple of newton iterations to find the local
   //! coordinate of a point
   template<class VECTOR>
-  bool get_coords(VECTOR &coords, const Core::Geometry::Core::Geometry::Point &p, typename Elem::index_type idx) const
+  bool get_coords(VECTOR &coords, const Core::Geometry::Point &p, typename Elem::index_type idx) const
   {
     // If polynomial order is larger, use the complicated HO basis implementation
     // Since this is a latvol and most probably linear, this function is to expensive
@@ -607,7 +606,7 @@ public:
   virtual std::string dynamic_type_name() const { return scanline_typeid.type; }
   
   //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Soem of this should be obsolete  
+  //! dynamic compilation purposes. Some of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -619,16 +618,19 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new ScanlineMesh(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new ScanlineMesh(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<ScanlineMesh>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Point& max) { return new ScanlineMesh(x,min,max); }
+  static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
+  { 
+    return boost::make_shared<ScanlineMesh>(x,min,max); 
+  }
 
   //! This function will find the closest element and the location on that
   //! element that is the closest
   template <class INDEX>
   bool
-  find_closest_node(double& pdist, Point &result, 
-                    INDEX &node, const Point &p, double maxdist) const
+  find_closest_node(double& pdist, Core::Geometry::Point &result, 
+                    INDEX &node, const Core::Geometry::Point &p, double maxdist) const
   {
     bool ret = find_closest_node(pdist,result,node,p);
     if (!ret)  return (false);
@@ -794,7 +796,7 @@ protected:
   //! the basis fn
   Basis                basis_;
 
-  Handle<VMesh>        vmesh_;
+  boost::shared_ptr<VMesh>        vmesh_;
 
   // The jacobian is the same for every element
   // hence store them as soon as we know the transfrom_
