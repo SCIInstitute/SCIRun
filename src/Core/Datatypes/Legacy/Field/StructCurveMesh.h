@@ -47,6 +47,7 @@
 //! Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
+#include <Core/Persistent/PersistentSTL.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Plane.h>
@@ -1210,7 +1211,7 @@ template <class Basis>
 const TypeDescription*
 StructCurveMesh<Basis>::get_type_description() const
 {
-  return get_type_description((StructCurveMesh<Basis> *)0);
+  return SCIRun::get_type_description((StructCurveMesh<Basis> *)0);
 }
 
 
