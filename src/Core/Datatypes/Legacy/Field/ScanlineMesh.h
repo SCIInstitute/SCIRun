@@ -87,7 +87,7 @@ VMesh* CreateVScanlineMesh(MESH* mesh) { return (0); }
 
 #if (SCIRUN_SCANLINE_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVScanlineMesh(ScanlineMesh<CrvLinearLgn<Point> >* mesh);
+SCISHARE VMesh* CreateVScanlineMesh(ScanlineMesh<CrvLinearLgn<Core::Geometry::Point> >* mesh);
 
 #endif
 /////////////////////////////////////////////////////
@@ -177,15 +177,15 @@ public:
     }
 
     inline
-    const Point node0() const 
+    const Core::Geometry::Point node0() const 
     {
-      Point p(index_, 0.0, 0.0);
+      Core::Geometry::Point p(index_, 0.0, 0.0);
       return mesh_.transform_.project(p);
     }
     inline
-    const Point node1() const 
+    const Core::Geometry::Point node1() const 
     {
-      Point p(index_ + 1, 0.0, 0.0);
+      Core::Geometry::Point p(index_ + 1, 0.0, 0.0);
       return mesh_.transform_.project(p);
     }
 
@@ -202,7 +202,7 @@ public:
     compute_jacobian();   
   }
   
-  ScanlineMesh(index_type nx, const Point &min, const Point &max);
+  ScanlineMesh(index_type nx, const Core::Geometry::Point &min, const Core::Geometry::Point &max);
   ScanlineMesh(ScanlineMesh* mh, index_type offset, index_type nx)
     : min_i_(offset), ni_(nx), transform_(mh->transform_) 
   { 
@@ -249,10 +249,10 @@ public:
   bool get_min(std::vector<index_type>&) const;
   size_type get_ni() const { return ni_; }
   virtual bool get_dim(std::vector<size_type>&) const;
-  Vector diagonal() const;
-  virtual BBox get_bounding_box() const;
-  virtual void transform(const Transform &t);
-  virtual void get_canonical_transform(Transform &t);
+  Core::Geometry::Vector diagonal() const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual void transform(const Core::Geometry::Transform &t);
+  virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
   //! set the mesh statistics
   void set_min_i(index_type i) {min_i_ = i; }
@@ -330,7 +330,7 @@ public:
   {
     typename Node::array_type ra;
     get_nodes(ra,idx);
-    Point p0,p1;
+    Core::Geometry::Point p0,p1;
     get_point(p0,ra[0]);
     get_point(p1,ra[1]);
     return (p0-p1).length();
@@ -355,44 +355,44 @@ public:
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
   //! get the center point (in object space) of an element
-  void get_center(Point &, typename Node::index_type) const;
-  void get_center(Point &, typename Edge::index_type) const;
-  void get_center(Point &, typename Face::index_type) const
+  void get_center(Core::Geometry::Point &, typename Node::index_type) const;
+  void get_center(Core::Geometry::Point &, typename Edge::index_type) const;
+  void get_center(Core::Geometry::Point &, typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  void get_center(Point &, typename Cell::index_type) const
+  void get_center(Core::Geometry::Point &, typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  bool locate(typename Node::index_type &, const Point &) const;
-  bool locate(typename Edge::index_type &, const Point &) const;
-  bool locate(typename Face::index_type &, const Point &) const
+  bool locate(typename Node::index_type &, const Core::Geometry::Point &) const;
+  bool locate(typename Edge::index_type &, const Core::Geometry::Point &) const;
+  bool locate(typename Face::index_type &, const Core::Geometry::Point &) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  bool locate(typename Cell::index_type &, const Point &) const
+  bool locate(typename Cell::index_type &, const Core::Geometry::Point &) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
   bool locate(typename Elem::index_type&, std::vector<double>& coords, 
-              const Point &) const;
+              const Core::Geometry::Point &) const;
 
-  int get_weights(const Point &p, typename Node::array_type &l, double *w);
-  int get_weights(const Point &p, typename Edge::array_type &l, double *w);
-  int get_weights(const Point & , typename Face::array_type & , double * )
+  int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
+  int get_weights(const Core::Geometry::Point &p, typename Edge::array_type &l, double *w);
+  int get_weights(const Core::Geometry::Point & , typename Face::array_type & , double * )
   { ASSERTFAIL("This mesh type does not have faces use \"elem\"."); }
-  int get_weights(const Point & , typename Cell::array_type & , double * )
+  int get_weights(const Core::Geometry::Point & , typename Cell::array_type & , double * )
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  void get_random_point(Point &p, typename Elem::index_type i, FieldRNG &rng) const;
+  void get_random_point(Core::Geometry::Point &p, typename Elem::index_type i, FieldRNG &rng) const;
 
-  void get_point(Point &p, typename Node::index_type i) const { get_center(p, i); }
-  void get_normal(Vector &, typename Node::index_type) const
+  void get_point(Core::Geometry::Point &p, typename Node::index_type i) const { get_center(p, i); }
+  void get_normal(Core::Geometry::Vector &, typename Node::index_type) const
   { ASSERTFAIL("This mesh type does not have node normals."); }
-  void get_normal(Vector &, std::vector<double> &, typename Elem::index_type,
+  void get_normal(Core::Geometry::Vector &, std::vector<double> &, typename Elem::index_type,
                   unsigned int)
   { ASSERTFAIL("This mesh type does not have element normals."); }
 
 
 
   // Unsafe due to non-constness of unproject.
-  Transform &get_transform() { return transform_; }
-  Transform &set_transform(const Transform &trans)
+  Core::Geometry::Transform &get_transform() { return transform_; }
+  Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans)
   { transform_ = trans; compute_jacobian(); return transform_; }
 
   virtual int dimensionality() const { return 1; }
@@ -432,7 +432,7 @@ public:
   //! This function uses a couple of newton iterations to find the local
   //! coordinate of a point
   template<class VECTOR>
-  bool get_coords(VECTOR &coords, const Point &p, typename Elem::index_type idx) const
+  bool get_coords(VECTOR &coords, const Core::Geometry::Core::Geometry::Point &p, typename Elem::index_type idx) const
   {
     // If polynomial order is larger, use the complicated HO basis implementation
     // Since this is a latvol and most probably linear, this function is to expensive
@@ -445,7 +445,7 @@ public:
     // Cheap implementation that assumes it is a regular grid
     // This implementation should be faster then the interpolate of the linear
     // basis which needs to work as well for the unstructured hexvol :(
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
     
     coords.resize(1);
     coords[0] = static_cast<typename VECTOR::value_type>(r.x()-static_cast<double>(idx));
@@ -461,7 +461,7 @@ public:
   //! Find the location in the global coordinate system for a local coordinate
   //! This function is the opposite of get_coords.
   template<class VECTOR>
-  void interpolate(Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
+  void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
   {
     // only makes sense for higher order
     if (basis_.polynomial_order() > 1) 
@@ -471,7 +471,7 @@ public:
       return;
     }
     
-    Point p(static_cast<double>(idx)+static_cast<double>(coords[0]),0.0,0.0);
+    Core::Geometry::Point p(static_cast<double>(idx)+static_cast<double>(coords[0]),0.0,0.0);
     pt = transform_.project(p);
   }
 
@@ -491,7 +491,7 @@ public:
  
     // Cheaper implementation
     J.resize(1);
-    J[0] = transform_.project(Point(1.0,0.0,0.0)); 
+    J[0] = transform_.project(Core::Geometry::Point(1.0,0.0,0.0)); 
   }
 
   //! Get the determinant of the jacobian, which is the local volume of an element
@@ -518,10 +518,10 @@ public:
   {
     if (basis_.polynomial_order() > 1) 
     {  
-      StackVector<Point,3> Jv;
+      StackVector<Core::Geometry::Point,3> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
-      Vector Jv1, Jv2;
+      Core::Geometry::Vector Jv1, Jv2;
       Jv[0].asVector().find_orthogonal(Jv1,Jv2);
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -555,11 +555,11 @@ public:
   {
     if (basis_.polynomial_order() > 1) 
     {  
-      StackVector<Point,2> Jv;
+      StackVector<Core::Geometry::Point,2> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
       double J[9];
-      Vector Jv1, Jv2;
+      Core::Geometry::Vector Jv1, Jv2;
       Jv[0].asVector().find_orthogonal(Jv1,Jv2);
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -621,7 +621,7 @@ public:
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return new ScanlineMesh(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle scanline_maker(size_type x, const Point& min, const Point& max) { return new ScanlineMesh(x,min,max); }
+  static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Point& max) { return new ScanlineMesh(x,min,max); }
 
   //! This function will find the closest element and the location on that
   //! element that is the closest
@@ -640,20 +640,20 @@ public:
   //! element that is the closest
   template <class INDEX>
   bool 
-  find_closest_node(double& pdist, Point &result, 
-                    INDEX &node, const Point &p) const
+  find_closest_node(double& pdist, Core::Geometry::Point &result, 
+                    INDEX &node, const Core::Geometry::Point &p) const
   {
     //! If there are no elements, we cannot find the closest
     if (ni_ == 0)  return (false);
     
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
 
     double rx = floor(r.x() + 0.5);
     const double nii = static_cast<double>(ni_-1);
 
     if (rx < 0.0) rx = 0.0; if (rx > nii) rx = nii;
 
-    result = transform_.project(Point(rx,0.0,0.0)); 
+    result = transform_.project(Core::Geometry::Point(rx,0.0,0.0)); 
     index_type irx =static_cast<index_type>(rx);
     node = INDEX(irx);
     pdist = (p-result).length();
@@ -665,15 +665,15 @@ public:
   template <class INDEX, class ARRAY>
   bool 
   find_closest_elem(double& pdist, 
-                    Point& result,
+                    Core::Geometry::Point& result,
                     ARRAY &coords, 
                     INDEX &elem, 
-                    const Point &p) const
+                    const Core::Geometry::Point &p) const
   {
     //! If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
     
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     const double nii = static_cast<double>(ni_-2);
@@ -683,7 +683,7 @@ public:
     const double fi = floor(ii);
 
     elem = INDEX(static_cast<index_type>(fi));
-    result = transform_.project(Point(ii,0,0));
+    result = transform_.project(Core::Geometry::Point(ii,0,0));
     pdist = (p-result).length();
 
     coords.resize(1);
@@ -694,9 +694,9 @@ public:
 
   template <class INDEX, class ARRAY>
   bool 
-  find_closest_elem(double& pdist, Point& result,
+  find_closest_elem(double& pdist, Core::Geometry::Point& result,
                     ARRAY& coords, INDEX &elem, 
-                    const Point &p, double maxdist) const
+                    const Core::Geometry::Point &p, double maxdist) const
   {
     bool ret = find_closest_elem(pdist,result,coords,elem,p);
     if (!ret)  return (false);
@@ -709,14 +709,14 @@ public:
   template <class INDEX>
   bool 
   find_closest_elem(double& pdist, 
-                    Point &result, 
+                    Core::Geometry::Point &result, 
                     INDEX &elem, 
-                    const Point &p) const
+                    const Core::Geometry::Point &p) const
   {
     //! If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
     
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     const double nii = static_cast<double>(ni_-2);
@@ -724,7 +724,7 @@ public:
     if (ii < 0.0) ii = 0.0; if (ii > nii) ii = nii;
 
     elem = INDEX(static_cast<index_type>(floor(ii)));
-    result = transform_.project(Point(ii,0,0));
+    result = transform_.project(Core::Geometry::Point(ii,0,0));
     pdist = (p-result).length();
 
     return (true);
@@ -736,15 +736,15 @@ public:
   //! case. 
   template <class ARRAY>
   bool
-  find_closest_elems(double& pdist, Point &result,
-                     ARRAY &elems, const Point &p) const
+  find_closest_elems(double& pdist, Core::Geometry::Point &result,
+                     ARRAY &elems, const Core::Geometry::Point &p) const
   {
     //! If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
     
     const double epsilon_ = 1e-8;
 
-    const Point r = transform_.unproject(p);
+    const Core::Geometry::Point r = transform_.unproject(p);
 
     double ii = r.x();
     const double nii = static_cast<double>(ni_-2);
@@ -765,7 +765,7 @@ public:
       elems.push_back(static_cast<typename ARRAY::value_type>(i+1));  
     }
 
-    result = transform_.project(Point(ii,0,0));
+    result = transform_.project(Core::Geometry::Point(ii,0,0));
     pdist = (p-result).length();
     
     return (true);
@@ -789,7 +789,7 @@ protected:
   size_type            ni_;
 
   //! the object space extents of a ScanlineMesh
-  Transform            transform_;
+  Core::Geometry::Transform            transform_;
 
   //! the basis fn
   Basis                basis_;
@@ -816,20 +816,20 @@ ScanlineMesh<Basis>::scanline_typeid(type_name(-1), "Mesh",
 
 template <class Basis>
 ScanlineMesh<Basis>::ScanlineMesh(size_type ni,
-                                  const Point &min, const Point &max)
+                                  const Core::Geometry::Point &min, const Core::Geometry::Point &max)
   : min_i_(0), ni_(ni)
 {
   DEBUG_CONSTRUCTOR("ScanlineMesh")   
   
-  Vector v0 = max - min;
-  Vector v1, v2;
+  Core::Geometry::Vector v0 = max - min;
+  Core::Geometry::Vector v1, v2;
   v0.find_orthogonal(v1,v2);
   
   // The two points define a line, this sets up the transfrom so it projects
   // to the x-axis
   
   transform_.load_basis(min,v0,v1,v2);
-  transform_.post_scale(Vector(1.0 / (ni_ - 1.0), 1.0, 1.0));
+  transform_.post_scale(Core::Geometry::Vector(1.0 / (ni_ - 1.0), 1.0, 1.0));
   
   transform_.compute_imat();
   compute_jacobian();
@@ -842,13 +842,13 @@ ScanlineMesh<Basis>::ScanlineMesh(size_type ni,
 
 
 template <class Basis>
-BBox
+Core::Geometry::BBox
 ScanlineMesh<Basis>::get_bounding_box() const
 {
-  Point p0(0.0, 0.0, 0.0);
-  Point p1(ni_ - 1, 0.0, 0.0);
+  Core::Geometry::Point p0(0.0, 0.0, 0.0);
+  Core::Geometry::Point p1(ni_ - 1, 0.0, 0.0);
 
-  BBox result;
+  Core::Geometry::BBox result;
   result.extend(transform_.project(p0));
   result.extend(transform_.project(p1));
   return result;
@@ -856,7 +856,7 @@ ScanlineMesh<Basis>::get_bounding_box() const
 
 
 template <class Basis>
-Vector
+Core::Geometry::Vector
 ScanlineMesh<Basis>::diagonal() const
 {
   return get_bounding_box().diagonal();
@@ -865,7 +865,7 @@ ScanlineMesh<Basis>::diagonal() const
 
 template <class Basis>
 void
-ScanlineMesh<Basis>::transform(const Transform &t)
+ScanlineMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   transform_.pre_trans(t);
   compute_jacobian();
@@ -874,10 +874,10 @@ ScanlineMesh<Basis>::transform(const Transform &t)
 
 template <class Basis>
 void
-ScanlineMesh<Basis>::get_canonical_transform(Transform &t)
+ScanlineMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t)
 {
   t = transform_;
-  t.post_scale(Vector(ni_ - 1.0, 1.0, 1.0));
+  t.post_scale(Core::Geometry::Vector(ni_ - 1.0, 1.0, 1.0));
 }
 
 
@@ -959,20 +959,20 @@ ScanlineMesh<Basis>::get_elems(typename Edge::array_type &result,
 
 template <class Basis>
 void
-ScanlineMesh<Basis>::get_center(Point &result,
+ScanlineMesh<Basis>::get_center(Core::Geometry::Point &result,
                                 typename Node::index_type idx) const
 {
-  Point p(idx, 0.0, 0.0);
+  Core::Geometry::Point p(idx, 0.0, 0.0);
   result = transform_.project(p);
 }
 
 
 template <class Basis>
 void
-ScanlineMesh<Basis>::get_center(Point &result,
+ScanlineMesh<Basis>::get_center(Core::Geometry::Point &result,
                                 typename Edge::index_type idx) const
 {
-  Point p(idx + 0.5, 0.0, 0.0);
+  Core::Geometry::Point p(idx + 0.5, 0.0, 0.0);
   result = transform_.project(p);
 }
 
@@ -1016,11 +1016,11 @@ ScanlineMesh<Basis>::get_weights(const Point &p, typename Edge::array_type &l,
 
 template <class Basis>
 void
-ScanlineMesh<Basis>::get_random_point(Point &p,
+ScanlineMesh<Basis>::get_random_point(Core::Geometry::Point &p,
                                       typename Elem::index_type ei,
                                       FieldRNG &rng) const
 {
-  Point p0, p1;
+  Core::Geometry::Point p0, p1;
   get_center(p0, typename Node::index_type(ei));
   get_center(p1, typename Node::index_type(under_type(ei)+1));
 
@@ -1196,10 +1196,10 @@ template <class Basis>
 double
 ScanlineMesh<Basis>::get_epsilon() const
 {
-  Point p0(static_cast<double>(ni_-1),0.0,0.0);
-  Point p1(0.0,0.0,0.0);
-  Point q0 = transform_.project(p0);
-  Point q1 = transform_.project(p1);
+  Core::Geometry::Point p0(static_cast<double>(ni_-1),0.0,0.0);
+  Core::Geometry::Point p1(0.0,0.0,0.0);
+  Core::Geometry::Point q0 = transform_.project(p0);
+  Core::Geometry::Point q1 = transform_.project(p1);
   return ((q0-q1).length()*1e-8);
 }
 
@@ -1308,8 +1308,8 @@ ScanlineMesh<Basis>::compute_jacobian()
 {
   if (basis_.polynomial_order() < 2)
   { 
-    Vector J1 = transform_.project(Vector(1.0,0.0,0.0)); 
-    Vector J2, J3;
+    Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0)); 
+    Core::Geometry::Vector J2, J3;
     J1.find_orthogonal(J2,J3);
     J2.normalize();
     J3.normalize();
@@ -1332,13 +1332,13 @@ ScanlineMesh<Basis>::compute_jacobian()
 
 template <class Basis>
 bool
-ScanlineMesh<Basis>::locate(typename Node::index_type &node, const Point &p) const
+ScanlineMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
 {
   //! If there are no nodes, return false, otherwise there will always be 
   //! a node that is closest
   if (ni_ == 0) return (false);
   
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double rx = floor(r.x() + 0.5);
   const double nii = static_cast<double>(ni_-1);
@@ -1352,7 +1352,7 @@ ScanlineMesh<Basis>::locate(typename Node::index_type &node, const Point &p) con
 
 template <class Basis>
 bool
-ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Point &p) const
+ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Core::Geometry::Point &p) const
 {
   if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -1361,7 +1361,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Point &p) con
 
   const double epsilon_ = 1e-7;
 
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double ii = r.x();
   const double nii = static_cast<double>(ni_-1);
@@ -1386,7 +1386,7 @@ template <class Basis>
 bool
 ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, 
                             std::vector<double>& coords,
-                            const Point &p) const
+                            const Core::Geometry::Point &p) const
 {
   if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -1396,7 +1396,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem,
   coords.resize(1);
   const double epsilon_ = 1e-8;
 
-  const Point r = transform_.unproject(p);
+  const Core::Geometry::Point r = transform_.unproject(p);
 
   double ii = r.x();
   const double nii = static_cast<double>(ni_-1);
