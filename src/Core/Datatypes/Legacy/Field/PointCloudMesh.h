@@ -43,7 +43,7 @@
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/Constant.h>
 
-#include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
@@ -181,7 +181,7 @@ public:
   virtual ~PointCloudMesh();
 
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return (vmesh_.get()); }
 
   virtual MeshFacadeHandle getFacade() const
   {

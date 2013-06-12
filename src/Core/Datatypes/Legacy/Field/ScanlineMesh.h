@@ -55,7 +55,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 
-#include <Core/Datatypes/Mesh/MeshFacade.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -225,7 +225,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVScanlineMesh(this);   
+    vmesh_.reset(CreateVScanlineMesh(this));   
 
     compute_jacobian(); 
   }
@@ -236,7 +236,7 @@ public:
   }
 
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return (vmesh_.get()); }
 
   virtual MeshFacadeHandle getFacade() const
   {
@@ -932,7 +932,7 @@ ScanlineMesh<Basis>::set_dim(std::vector<size_type> dim)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVScanlineMesh(this); 
+  vmesh_.reset(CreateVScanlineMesh(this)); 
 }
 
 
@@ -1077,7 +1077,7 @@ ScanlineMesh<Basis>::io(Piostream& stream)
   if (stream.reading())
   {
     compute_jacobian();
-    vmesh_ = CreateVScanlineMesh(this);
+    vmesh_.reset(CreateVScanlineMesh(this));
   }
 }
 

@@ -121,7 +121,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    ScanlineMesh<Basis>::vmesh_ = CreateVStructCurveMesh(this); 
+    ScanlineMesh<Basis>::vmesh_.reset(CreateVStructCurveMesh(this));
   }
 
   virtual int topology_geometry() const
@@ -800,9 +800,9 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new StructCurveMesh<Basis>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new StructCurveMesh<Basis>();}
+  static MeshHandle mesh_maker() { return boost::make_shared<StructCurveMesh<Basis>>();}
   //! This function returns a handle for the virtual interface.
-  static MeshHandle structcurve_maker(size_type x) { return new StructCurveMesh<Basis>(x);}
+  static MeshHandle structcurve_maker(size_type x) { return boost::make_shared<StructCurveMesh<Basis>>(x);}
 
   std::vector<Core::Geometry::Point>& get_points() { return (points_); }
 
@@ -891,7 +891,7 @@ StructCurveMesh<Basis>::StructCurveMesh(const StructCurveMesh &copy)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  this->vmesh_ = CreateVStructCurveMesh(this);   
+  this->vmesh_.reset(CreateVStructCurveMesh(this));   
 }
 
 
@@ -1161,7 +1161,7 @@ StructCurveMesh<Basis>::io(Piostream& stream)
   stream.end_class();
 
   if (stream.reading())
-    this->vmesh_ = CreateVStructCurveMesh(this);
+    this->vmesh_.reset(CreateVStructCurveMesh(this));
 }
 
 
