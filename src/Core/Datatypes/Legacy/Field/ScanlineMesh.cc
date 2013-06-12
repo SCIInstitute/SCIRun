@@ -2072,7 +2072,7 @@ VStructCurveMesh<MESH>::scaled_jacobian_metric(const VMesh::Elem::index_type idx
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
   Jv.resize(3); 
   Vector v,w;
-  Jv[0].asVector().find_orthogonal(v,w);
+  Vector(Jv[0]).find_orthogonal(v,w);
   Jv[1] = v.asPoint();
   Jv[2] = w.asPoint();
   double min_jacobian = ScaledDetMatrix3P(Jv);
@@ -2083,7 +2083,7 @@ VStructCurveMesh<MESH>::scaled_jacobian_metric(const VMesh::Elem::index_type idx
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
     Jv.resize(3); 
     Vector v,w;
-    Jv[0].asVector().find_orthogonal(v,w);
+    Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
     temp = ScaledDetMatrix3P(Jv);
@@ -2104,7 +2104,7 @@ VStructCurveMesh<MESH>::jacobian_metric(const  VMesh::Elem::index_type idx) cons
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
   Jv.resize(3); 
   Vector v,w;
-  Jv[0].asVector().find_orthogonal(v,w);
+  Vector(Jv[0]).find_orthogonal(v,w);
   Jv[1] = v.asPoint();
   Jv[2] = w.asPoint();
   double min_jacobian = DetMatrix3P(Jv);
@@ -2115,7 +2115,7 @@ VStructCurveMesh<MESH>::jacobian_metric(const  VMesh::Elem::index_type idx) cons
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
     Jv.resize(3); 
     Vector v,w;
-    Jv[0].asVector().find_orthogonal(v,w);
+    Vector(Jv[0]).find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
     temp = DetMatrix3P(Jv);
