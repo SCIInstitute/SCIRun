@@ -198,7 +198,7 @@ public:
   {
     DEBUG_CONSTRUCTOR("ScanlineMesh")   
 
-    vmesh_ = CreateVScanlineMesh(this);   
+    vmesh_.reset(CreateVScanlineMesh(this));
     compute_jacobian();   
   }
   
@@ -211,7 +211,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVScanlineMesh(this);   
+    vmesh_.reset(CreateVScanlineMesh(this));
   
     compute_jacobian(); 
   }
@@ -269,7 +269,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVScanlineMesh(this); 
+    vmesh_.reset(CreateVScanlineMesh(this));
   }
   virtual void set_dim(std::vector<size_type> dims);
 
