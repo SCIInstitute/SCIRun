@@ -32,6 +32,9 @@
 //! Only include this class if we included PointCloud Support
 #if (SCIRUN_POINTCLOUD_SUPPORT > 0)
 
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
 namespace SCIRun {
 
 //! This class is not exposed to the general interface and only the VMesh class

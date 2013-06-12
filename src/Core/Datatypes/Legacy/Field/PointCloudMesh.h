@@ -33,6 +33,7 @@
 //! Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
+#include <Core/Persistent/PersistentSTL.h>
 #include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/Containers/StackVector.h>
 
@@ -40,6 +41,7 @@
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Point.h>
 
+#include <Core/Thread/Mutex.h>
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/Constant.h>
 
@@ -1212,7 +1214,7 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new PointCloudMesh(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new PointCloudMesh(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<PointCloudMesh>(); }
 
 protected:
   template <class ARRAY, class INDEX>
@@ -1280,7 +1282,6 @@ PointCloudMesh<Basis>::PointCloudMesh(const PointCloudMesh &copy) :
   Mesh(copy),
   points_(copy.points_),
   basis_(copy.basis_),  
-  grid_(0),
   synchronized_(copy.synchronized_),
   synchronize_lock_("PointCloudMesh Lock")
 {
@@ -1295,9 +1296,9 @@ PointCloudMesh<Basis>::PointCloudMesh(const PointCloudMesh &copy) :
 
   // Copy element grid
   synchronized_ &= ~Mesh::LOCATE_E;
-  if (copy.grid_.get_rep())
+  if (copy.grid_)
   {
-    grid_ = new SearchGridT<index_type>(*(copy.grid_.get_rep()));
+    grid_.reset(new SearchGridT<index_type>(*copy.grid_));
   }
   
   synchronized_ |= copy.synchronized_ & Mesh::LOCATE_E;
@@ -1312,7 +1313,7 @@ PointCloudMesh<Basis>::PointCloudMesh(const PointCloudMesh &copy) :
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVPointCloudMesh(this);
+  vmesh_.reset(CreateVPointCloudMesh(this));
 }
     
 template<class Basis>
@@ -1380,7 +1381,7 @@ PointCloudMesh<Basis>::transform(const Core::Geometry::Transform &t)
     ++itr;
   }
   
-  if (grid_.get_rep()) { grid_->transform(t); }
+  if (grid_) { grid_->transform(t); }
 
   synchronize_lock_.unlock();  
 }
@@ -1424,7 +1425,7 @@ PointCloudMesh<Basis>::io(Piostream& stream)
   Mesh::io(stream);
 
   // IO data members, in order
-  Pio(stream,points_);
+  Pio(stream, points_);
 
   if (version >= 2) {
     basis_.io(stream);
@@ -1433,7 +1434,7 @@ PointCloudMesh<Basis>::io(Piostream& stream)
   stream.end_class();
 
   if (stream.reading())
-    vmesh_ = CreateVPointCloudMesh(this);
+    vmesh_.reset(CreateVPointCloudMesh(this));
 }
 
 
@@ -1704,7 +1705,7 @@ template <class Basis>
 const TypeDescription*
 PointCloudMesh<Basis>::get_type_description() const
 {
-  return get_type_description((PointCloudMesh<Basis> *)0);
+  return SCIRun::get_type_description((PointCloudMesh<Basis> *)0);
 }
 
 
@@ -1716,7 +1717,7 @@ PointCloudMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((PointCloudMesh<Basis> *)0);
+      SCIRun::get_type_description((PointCloudMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1734,7 +1735,7 @@ PointCloudMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((PointCloudMesh<Basis> *)0);
+      SCIRun::get_type_description((PointCloudMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1752,7 +1753,7 @@ PointCloudMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((PointCloudMesh<Basis> *)0);
+      SCIRun::get_type_description((PointCloudMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1770,7 +1771,7 @@ PointCloudMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((PointCloudMesh<Basis> *)0);
+      SCIRun::get_type_description((PointCloudMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",

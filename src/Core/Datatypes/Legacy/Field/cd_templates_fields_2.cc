@@ -37,6 +37,9 @@
 #include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
 //NoData
 typedef NoDataBasis<double>                  NDBasis;
 
