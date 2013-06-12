@@ -53,7 +53,7 @@ public:
   inline explicit Point(const Vector& v);
   inline Point(double x, double y, double z)
   { d_[0] = x; d_[1] = y; d_[2] = z; }
-    Point(double, double, double, double);
+  SCISHARE Point(double, double, double, double);
   inline Point(const Point&);
   inline Point();
   inline Point& operator=(const Point&);
