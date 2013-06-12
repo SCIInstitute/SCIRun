@@ -33,10 +33,8 @@
 //! Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
-#include <Core/Containers/SearchGridT.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/Handle.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/BBox.h>

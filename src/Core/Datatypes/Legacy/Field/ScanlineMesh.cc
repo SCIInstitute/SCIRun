@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/ScanlineMesh.h>
-#include <Core/Datatypes/VMeshShared.h>
-#include <Core/Datatypes/StructCurveMesh.h>
+#include <Core/Datatypes/Legacy/Field/ScanlineMesh.h>
+#include <Core/Datatypes/Legacy/Field/VMeshShared.h>
+#include <Core/Datatypes/Legacy/Field/StructCurveMesh.h>
 #include <Core/Basis/CrvElementWeights.h>
 
 //! Only include this class if we included Scanline Support

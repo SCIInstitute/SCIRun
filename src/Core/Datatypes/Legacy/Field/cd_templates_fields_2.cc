@@ -27,14 +27,14 @@
 */
 
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/CrvLinearLgn.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/NoData.h>
-#include <Core/Datatypes/ScanlineMesh.h>
-#include <Core/Datatypes/PointCloudMesh.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/ScanlineMesh.h>
+#include <Core/Datatypes/Legacy/Field/PointCloudMesh.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 using namespace SCIRun;
 //NoData

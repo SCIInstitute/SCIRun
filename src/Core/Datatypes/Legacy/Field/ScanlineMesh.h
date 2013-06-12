@@ -47,8 +47,6 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/Handle.h>
 
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/CrvLinearLgn.h>
