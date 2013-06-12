@@ -86,7 +86,7 @@ const TypeDescription* get_type_description(std::vector<EdgeIndex<int> >*);
 const TypeDescription* get_type_description(std::vector<FaceIndex<int> >*);
 const TypeDescription* get_type_description(std::vector<CellIndex<int> >*);
 
-
+namespace SCIRun {
 // Property types
 template class Property<bool>;
 template class Property<int>;
@@ -107,6 +107,7 @@ template class Property<std::pair<unsigned char,unsigned char> >;
 template class Property<std::pair<char,char> >;
 template class Property<std::vector<std::pair<std::string,Tensor> > >;
 template class Property<std::vector<std::pair<int,double> > >;
+}
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template class Property<LockingHandle< Matrix<double> > >;
