@@ -527,7 +527,7 @@ public:
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
       Core::Geometry::Vector Jv1, Jv2;
-      Jv[0].asVector().find_orthogonal(Jv1,Jv2);
+      Core::Geometry::Vector(Jv[0]).find_orthogonal(Jv1,Jv2);
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
       J[2] = Jv[0].z();
@@ -565,7 +565,7 @@ public:
       basis_.derivate(coords,ed,Jv);
       double J[9];
       Core::Geometry::Vector Jv1, Jv2;
-      Jv[0].asVector().find_orthogonal(Jv1,Jv2);
+      Core::Geometry::Vector(Jv[0]).find_orthogonal(Jv1,Jv2);
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
       J[2] = Jv[0].z();
