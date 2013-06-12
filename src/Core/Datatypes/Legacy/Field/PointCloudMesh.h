@@ -1266,7 +1266,6 @@ protected:
 
 template<class Basis>
 PointCloudMesh<Basis>::PointCloudMesh() :
-  grid_(0),
   synchronized_(ALL_ELEMENTS_E),
   synchronize_lock_("PointCloudMesh Lock"),  
   epsilon_(0.0),
@@ -1274,7 +1273,7 @@ PointCloudMesh<Basis>::PointCloudMesh() :
 {
   DEBUG_CONSTRUCTOR("PointCloudMesh") 
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVPointCloudMesh(this);
+  vmesh_.reset(CreateVPointCloudMesh(this));
 }
   
 template<class Basis>
@@ -1610,7 +1609,7 @@ PointCloudMesh<Basis>::clear_synchronization()
   synchronized_ = Mesh::NODES_E | Mesh::ELEMS_E;
 
   // Free memory where possible
-  grid_ = 0;
+  grid_.reset();
 
   synchronize_lock_.unlock();
   return (true);
@@ -1653,7 +1652,7 @@ PointCloudMesh<Basis>::compute_grid(Core::Geometry::BBox& bb)
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
     Core::Geometry::BBox b = bb; b.extend(10*epsilon_);
-    grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);
@@ -1665,7 +1664,7 @@ PointCloudMesh<Basis>::compute_grid(Core::Geometry::BBox& bb)
   }
   else
   {
-    grid_ = new SearchGridT<index_type>(1,1,1,Core::Geometry::Point(0,0,0.0,0.0),Core::Geometry::Point(1.0,1.0,1.0));
+    grid_.reset(new SearchGridT<index_type>(1,1,1,Core::Geometry::Point(0,0,0.0,0.0),Core::Geometry::Point(1.0,1.0,1.0)));
   }
 
   synchronized_ |= Mesh::LOCATE_E;
