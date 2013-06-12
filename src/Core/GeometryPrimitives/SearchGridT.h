@@ -29,7 +29,6 @@
 #ifndef CORE_DATATYPES_SEARCHGRIDT_H
 #define CORE_DATATYPES_SEARCHGRIDT_H 1
 
-#include <boost/noncopyable.hpp>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/Transform.h>
@@ -43,7 +42,7 @@
 namespace SCIRun {
 
 template<class INDEX>
-class SearchGridT : boost::noncopyable
+class SearchGridT 
 {
   public:
     //! Include the types defined in Types into this class
@@ -61,7 +60,7 @@ class SearchGridT : boost::noncopyable
         transform_.pre_translate(Core::Geometry::Vector(min));
         transform_.compute_imat();
         bin_.resize(x*y*z);
-      }         
+      }
 
     inline void transform(const Core::Geometry::Transform &t) 
       { transform_.pre_trans(t);}
