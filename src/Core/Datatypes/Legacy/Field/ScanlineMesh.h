@@ -55,6 +55,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/BBox.h>
 
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -237,7 +238,7 @@ public:
   //! Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
 
-  virtual MeshFacade getFacade() const
+  virtual MeshFacadeHandle getFacade() const
   {
      return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }

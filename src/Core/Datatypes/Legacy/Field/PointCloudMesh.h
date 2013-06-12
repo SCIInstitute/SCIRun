@@ -43,6 +43,7 @@
 #include <Core/Basis/Locate.h>
 #include <Core/Basis/Constant.h>
 
+#include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
@@ -182,7 +183,7 @@ public:
   //! Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
 
-  virtual MeshFacade getFacade() const
+  virtual MeshFacadeHandle getFacade() const
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
@@ -1245,18 +1246,18 @@ protected:
   //! basis fns
   Basis         basis_;
 
-  LockingHandle<SearchGridT<index_type> > grid_;
+  boost::shared_ptr<SearchGridT<index_type> > grid_;
 
   //! Record which parts of the mesh are synchronized
   mask_type     synchronized_;
   //! Lock to synchronize between threads
-  Mutex         synchronize_lock_;
+  Core::Thread::Mutex         synchronize_lock_;
   
   double        epsilon_;
   double        epsilon2_;
 
   //! Virtual interface
-  Handle<VMesh> vmesh_;
+  boost::shared_ptr<VMesh> vmesh_;
 
 };  // end class PointCloudMesh
 

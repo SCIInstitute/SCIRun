@@ -99,7 +99,7 @@ public:
   typedef SCIRun::mask_type             mask_type; 
 
   StructCurveMesh();
-  StructCurveMesh(size_type n);  
+  explicit StructCurveMesh(size_type n);  
   StructCurveMesh(const StructCurveMesh &copy);
   virtual StructCurveMesh *clone() { return new StructCurveMesh(*this); }
   virtual ~StructCurveMesh() 
