@@ -197,8 +197,10 @@ typedef CrvLinearLgn<unsigned long>         CrFDulongBasis;
 typedef CurveMesh<CrvLinearLgn<Point> > CMesh;
 PersistentTypeID backwards_compat_CM("CurveMesh", "Mesh",
 				      CMesh::maker, CMesh::maker);
-template class CurveMesh<CrvLinearLgn<Point> >;
 
+namespace SCIRun {
+
+  template class CurveMesh<CrvLinearLgn<Point> >;
 
 //NoData
 template class GenericField<CMesh, NDBasis,  std::vector<double> >;  
@@ -230,6 +232,7 @@ template class GenericField<CMesh, CrFDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<CMesh, CrFDushortBasis, std::vector<unsigned short> >;
 template class GenericField<CMesh, CrFDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<CMesh, CrFDulongBasis,  std::vector<unsigned long> >;
+}
 
 PersistentTypeID 
 backwards_compat_CFT("CurveField<Tensor>", "Field",
