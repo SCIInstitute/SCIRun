@@ -47,6 +47,7 @@
 //! Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
+#include <Core/Thread/Mutex.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Plane.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
@@ -54,7 +55,6 @@
 #include <Core/Containers/Array2.h>
 #include <Core/Datatypes/Legacy/Field/ScanlineMesh.h>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -67,8 +67,8 @@ template <class Basis>
 class StructCurveMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVStructCurveMesh(MESH* mesh) { return (0); }
 
@@ -109,8 +109,8 @@ public:
 
   //! get the mesh statistics
   double get_cord_length() const;
-  virtual BBox get_bounding_box() const;
-  virtual void transform(const Transform &t);
+  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual void transform(const Core::Geometry::Transform &t);
 
   virtual bool get_dim(std::vector<size_type>&) const;
   virtual void set_dim(std::vector<size_type> dims) {
@@ -228,11 +228,11 @@ public:
                         const typename ScanlineMesh<Basis>::Elem::index_type idx,
                         FieldRNG &rng) const;
 
-  void get_normal(Vector &,
+  void get_normal(Core::Geometry::Vector &,
                   typename ScanlineMesh<Basis>::Node::index_type) const
   { ASSERTFAIL("This mesh type does not have node normals."); }
 
-  void get_normal(Vector &, std::vector<double> &,
+  void get_normal(Core::Geometry::Vector &, std::vector<double> &,
                   typename ScanlineMesh<Basis>::Elem::index_type,
                   unsigned int)
   { ASSERTFAIL("This mesh type does not have element normals."); }
@@ -364,7 +364,7 @@ public:
     StackVector<Core::Geometry::Point,1> Jv;
     ElemData ed(*this,idx);
     this->basis_.derivate(coords,ed,Jv);
-    Vector Jv1, Jv2;
+    Core::Geometry::Vector Jv1, Jv2;
     Jv[0].asVector().find_orthogonal(Jv1,Jv2);
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -390,7 +390,7 @@ public:
     ElemData ed(*this,idx);
     this->basis_.derivate(coords,ed,Jv);
     double J[9];
-    Vector Jv1, Jv2;
+    Core::Geometry::Vector Jv1, Jv2;
     Jv[0].asVector().find_orthogonal(Jv1,Jv2);
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -415,7 +415,7 @@ public:
 
     this->basis_.derivate(this->basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Vector v,w;
+    Core::Geometry::Vector v,w;
     Jv[0].asVector().find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
@@ -447,7 +447,7 @@ public:
 
     this->basis_.derivate(this->basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Vector v,w;
+    Core::Geometry::Vector v,w;
     Jv[0].asVector().find_orthogonal(v,w);
     Jv[1] = v.asPoint();
     Jv[2] = w.asPoint();
@@ -821,7 +821,7 @@ private:
   void compute_epsilon();
 
   std::vector<Core::Geometry::Point> points_;
-  mutable Mutex synchronize_lock_;
+  mutable Core::Thread::Mutex synchronize_lock_;
   mask_type     synchronized_;  
   double        epsilon_;
   double        epsilon2_;
@@ -924,10 +924,10 @@ StructCurveMesh<Basis>::compute_epsilon()
 }
 
 template <class Basis>
-BBox
+Core::Geometry::BBox
 StructCurveMesh<Basis>::get_bounding_box() const
 {
-  BBox result;
+  Core::Geometry::BBox result;
 
   typename ScanlineMesh<Basis>::Node::iterator i, ie;
   this->begin(i);
@@ -945,7 +945,7 @@ StructCurveMesh<Basis>::get_bounding_box() const
 
 template <class Basis>
 void
-StructCurveMesh<Basis>::transform(const Transform &t)
+StructCurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   typename ScanlineMesh<Basis>::Node::iterator i, ie;
   this->begin(i);
@@ -1018,7 +1018,7 @@ StructCurveMesh<Basis>::inside2_p(index_type i, const Core::Geometry::Point &p, 
   const Core::Geometry::Point &p0 = points_[i];
   const Core::Geometry::Point &p1 = points_[i+1];
 
-  const Vector v = p1-p0;
+  const Core::Geometry::Vector v = p1-p0;
   alpha = Dot(p0-p,v)/v.length2();
   
   Core::Geometry::Point point;
@@ -1042,7 +1042,7 @@ StructCurveMesh<Basis>::distance2_p(index_type i,
   const Core::Geometry::Point &p0 = points_[i];
   const Core::Geometry::Point &p1 = points_[i+1];
 
-  const Vector v = p1-p0;
+  const Core::Geometry::Vector v = p1-p0;
   alpha = Dot(p0-p,v)/v.length2();
   
   if (alpha < 0.0) { result = p0; alpha = 0.0; }

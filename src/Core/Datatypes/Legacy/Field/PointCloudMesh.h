@@ -174,13 +174,18 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.
-  virtual PointCloudMesh *clone() { return new PointCloudMesh(*this); }
+  virtual PointCloudMesh *clone() const { return new PointCloudMesh(*this); }
   
   //! Destructor
   virtual ~PointCloudMesh();
 
   //! Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+
+  virtual MeshFacade getFacade() const
+  {
+    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+  }
 
   //! This one should go at some point, should be reroute throught the
   //! virtual interface

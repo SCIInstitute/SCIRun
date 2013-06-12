@@ -34,6 +34,9 @@
 //! Only include this class if we included Scanline Support
 #if (SCIRUN_SCANLINE_SUPPORT > 0 || SCIRUN_STRUCTCURVE_SUPPORT > 0)
 
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
 namespace SCIRun {
 
 //! This is the virtual interface to the curve mesh

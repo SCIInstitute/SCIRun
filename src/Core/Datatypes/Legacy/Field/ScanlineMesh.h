@@ -228,7 +228,7 @@ public:
 
     compute_jacobian(); 
   }
-  virtual ScanlineMesh *clone() { return new ScanlineMesh(*this); }
+  virtual ScanlineMesh *clone() const { return new ScanlineMesh(*this); }
   virtual ~ScanlineMesh() 
   {  
     DEBUG_DESTRUCTOR("ScanlineMesh")     
@@ -236,6 +236,11 @@ public:
 
   //! Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+
+  virtual MeshFacade getFacade() const
+  {
+     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+  }
   
   virtual int basis_order() { return basis_.polynomial_order(); }
 
@@ -981,7 +986,7 @@ ScanlineMesh<Basis>::get_center(Core::Geometry::Point &result,
 
 template <class Basis>
 int
-ScanlineMesh<Basis>::get_weights(const Point &p, typename Node::array_type &l,
+ScanlineMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Node::array_type &l,
                                  double *w)
 {
   typename Edge::index_type idx;
@@ -1001,7 +1006,7 @@ ScanlineMesh<Basis>::get_weights(const Point &p, typename Node::array_type &l,
 
 template <class Basis>
 int
-ScanlineMesh<Basis>::get_weights(const Point &p, typename Edge::array_type &l,
+ScanlineMesh<Basis>::get_weights(const Core::Geometry::Point &p, typename Edge::array_type &l,
                                  double *w)
 {
   typename Edge::index_type idx;
