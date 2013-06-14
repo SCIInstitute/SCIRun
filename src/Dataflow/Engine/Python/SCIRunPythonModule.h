@@ -43,6 +43,7 @@ BOOST_PYTHON_MODULE(SCIRunPythonAPI)
     .add_property("type", &PyPort::type)
     .add_property("isInput", &PyPort::isInput)
     .def(boost::python::self >> boost::python::self)
+    .def("connect", &PyPort::connect)
     ;
 
   boost::python::class_<PyPorts, boost::shared_ptr<PyPorts>, boost::noncopyable>("SCIRun::PyPorts", boost::python::no_init)
