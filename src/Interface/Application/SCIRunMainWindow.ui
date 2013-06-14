@@ -730,10 +730,13 @@
              <item>
               <widget class="QRadioButton" name="largeModuleSizeRadioButton_">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="text">
                 <string>Large</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
                </property>
                <attribute name="buttonGroup">
                 <string>moduleSizeButtonGroup_</string>
