@@ -28,7 +28,15 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QToolBox" name="toolBox">
-     <widget class="QWidget" name="toolBoxPage1" native="true">
+     <widget class="QWidget" name="toolBoxPage1">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>482</width>
+        <height>199</height>
+       </rect>
+      </property>
       <attribute name="label">
        <string>General</string>
       </attribute>
@@ -46,7 +54,15 @@
        </property>
       </widget>
      </widget>
-     <widget class="QWidget" name="toolBoxPage2" native="true">
+     <widget class="QWidget" name="toolBoxPage2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>482</width>
+        <height>199</height>
+       </rect>
+      </property>
       <attribute name="label">
        <string>Advanced</string>
       </attribute>
@@ -55,29 +71,40 @@
         <rect>
          <x>14</x>
          <y>14</y>
-         <width>441</width>
-         <height>31</height>
+         <width>431</width>
+         <height>61</height>
         </rect>
        </property>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Regression test data directory:</string>
-          </property>
-         </widget>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Regression test data directory:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="regressionTestDataDirLineEdit_">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="regressionTestDataButton_">
+            <property name="text">
+             <string>Browse...</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
-        <item>
-         <widget class="QLineEdit" name="regressionTestDataDirLineEdit_">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="regressionTestDataButton_">
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="moduleErrorDialogDisableCheckbox_">
           <property name="text">
-           <string>Browse...</string>
+           <string>Disable Module Error dialogs</string>
           </property>
          </widget>
         </item>

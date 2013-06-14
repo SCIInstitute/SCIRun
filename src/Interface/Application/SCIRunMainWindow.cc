@@ -554,6 +554,14 @@ void SCIRunMainWindow::readSettings()
       break;
     }
   }
+
+  const QString disableModuleErrorDialogsKey = "disableModuleErrorDialogs";
+  if (settings.contains(disableModuleErrorDialogsKey))
+  {
+    bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
+    GuiLogger::Instance().log(QString("Setting read: disable module error dialogs = ") + disableModuleErrorDialogs );
+    prefs_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
+  }
 }
 
 void SCIRunMainWindow::writeSettings()

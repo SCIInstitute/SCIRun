@@ -49,12 +49,16 @@ public:
   QString regressionTestDataDir() const { return regressionTestDataDir_; }
   void setRegressionTestDataDir(const QString& dir) { regressionTestDataDir_ = dir; }
 
+  void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs) { disableModuleErrorDialogs_ = disableModuleErrorDialogs; }
+  bool disableModuleErrorDialogs() const { return disableModuleErrorDialogs_; }
+
 public Q_SLOTS:
   void updateRegressionTestDataDir();
   void setRegressionTestDataDir();
+  
 private:
   NetworkEditor* networkEditor_;
-  bool regressionMode_;
+  bool regressionMode_, disableModuleErrorDialogs_;
   QString regressionTestDataDir_;
 };
 

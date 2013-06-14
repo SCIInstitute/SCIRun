@@ -55,15 +55,15 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-  QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
+  //TODO
+  //if (!SCIRun::Core::Application::Instance().options().isTrue(ProgramOption::DisableModuleErrorPopups))
+    QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
 }
 
 ModuleLogger::ModuleLogger(ModuleLogWindow* window)
 {
   connect(this, SIGNAL(logSignal(const QString&, const QColor&)), window, SLOT(appendMessage(const QString&, const QColor&)));
   connect(this, SIGNAL(alert(const QColor&)), window, SIGNAL(messageReceived(const QColor&)));
-  //TODO
-  //if (!SCIRunOptions::isTrue(ProgramOption::DisableModuleErrorPopups))
   connect(this, SIGNAL(popup(const QString&)), window, SLOT(popupMessageBox(const QString&)));
 }
 
