@@ -36,6 +36,7 @@ SET(Core_Datatypes_Mesh_HEADERS
   MeshFacadeIterators.h
   MeshFactory.h
   MeshTraits.h
+  VirtualMeshFacade.h
   Share.h
 )
 

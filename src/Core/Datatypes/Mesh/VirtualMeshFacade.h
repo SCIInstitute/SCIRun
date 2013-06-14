@@ -26,10 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
-
 #ifndef CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
 #define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 
@@ -48,11 +44,11 @@ namespace Datatypes {
     
     explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
-      // TODO: necessary? interface to vmesh
-      if (! vmesh->is_latvolmesh() 
-        && ! vmesh->is_trisurfmesh() 
-        && ! vmesh->is_tetvolmesh())
-        THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
+      //// TODO: necessary? interface to vmesh
+      //if (! vmesh->is_latvolmesh() 
+      //  && ! vmesh->is_trisurfmesh() 
+      //  && ! vmesh->is_tetvolmesh())
+      //  THROW_INVALID_ARGUMENT("Incorrect mesh type for this facade type.");
     }
 
     virtual typename my_base::Edges edges() const
