@@ -84,11 +84,11 @@ SET(Core_Thread_Legacy_HEADERS
 
 IF(CMAKE_USE_PTHREADS)
   SET(Core_Thread_Legacy ${Core_Thread_Legacy_SRCS} 
-  CrowdMonitor_pthreads.cc
-  Thread_pthreads.cc 
-  Time_unix.cc
+    CrowdMonitor_pthreads.cc
+    Thread_pthreads.cc 
+    Time_unix.cc
   )
-ENDIF(CMAKE_USE_PTHREADS)
+ENDIF()
 
 IF(WIN32)
   SET(Core_Thread_Legacy_SRCS ${Core_Thread_Legacy_SRCS} Thread_win32.cc Time_win32.cc)
@@ -101,7 +101,7 @@ ENDIF(BUILD_SHARED_LIBS)
 ADD_LIBRARY(Core_Thread_Legacy 
   ${Core_Thread_Legacy_SRCS}
   ${Core_Thread_Legacy_HEADERS}
-  )
+)
 
 SET(Core_Thread_Legacy_Link
   Core_Exceptions_Legacy 
@@ -116,3 +116,5 @@ ENDIF(WIN32)
 TARGET_LINK_LIBRARIES(Core_Thread_Legacy 
   ${Core_Thread_Legacy_Link}
 )
+
+ADD_DEPENDENCIES(Core_Thread_Legacy Boost_external)
