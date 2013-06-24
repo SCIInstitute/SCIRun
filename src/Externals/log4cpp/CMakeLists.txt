@@ -91,6 +91,11 @@ ENDIF (WIN32)
 
 SET(SCI_LOG4CPP_LIBRARY ${LOG4CPP_LIBRARY_NAME} CACHE INTERNAL "log4cpp library name." FORCE)
 
+# This works because log4cpp is part of the SCIRun git repository.
+# If this project gets moved to a CMake external project, this directive will have to be revised.
+ADD_DEPENDENCIES(${SCI_LOG4CPP_LIBRARY} Boost_external)
+
+
 #INSTALL (
 #  DIRECTORY include/log4cpp
 #  DESTINATION include
