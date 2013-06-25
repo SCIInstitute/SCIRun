@@ -31,7 +31,7 @@
 
 #include <QDialog>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Interface/Modules/Base/Share.h>
+#include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {

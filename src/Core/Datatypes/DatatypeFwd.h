@@ -35,7 +35,7 @@
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/Share.h>
+#include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {

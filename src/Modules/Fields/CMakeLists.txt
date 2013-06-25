@@ -38,7 +38,7 @@ SET(Modules_Fields_HEADERS
   CreateLatVolMesh.h
   FieldToMesh.h
   ReportFieldInfo.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Modules_Fields 

@@ -31,7 +31,7 @@
 
 #include "Interface/Modules/Base/ui_ModuleDialogBasic.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/Share.h>
+#include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {

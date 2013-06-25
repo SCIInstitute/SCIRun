@@ -32,7 +32,7 @@
 
 #include <map>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Serialization/Network/Share.h>
+#include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

@@ -29,7 +29,7 @@
 #ifndef CORE_BASIS_CRVWEIGHTS_H
 #define CORE_BASIS_CRVWEIGHTS_H 1
 
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

@@ -32,7 +32,7 @@
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Share.h>
+#include <Core/GeometryPrimitives/share.h>
 
 // TODO: replace asserts in this code with warnings or other reporting
 // mechanism that doesn't abort the program

@@ -35,7 +35,7 @@
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <Dataflow/Serialization/Network/Share.h>
+#include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

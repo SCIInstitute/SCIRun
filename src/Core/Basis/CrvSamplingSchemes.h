@@ -32,7 +32,7 @@
 #include <Core/Utils/Legacy/Assert.h>
 #include <vector>
 
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 #include <Core/Utils/Exception.h>
 
 namespace SCIRun {

@@ -36,7 +36,7 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/ExecutableObject.h>
 #include <Core/Logging/LoggerFwd.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

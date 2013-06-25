@@ -33,7 +33,7 @@
 #define CORE_BASIS_PRISMQUADRATICLGN_H 1
 
 #include <Core/Basis/PrismLinearLgn.h>
-#include <Core/Basis/Share.h>
+#include <Core/Basis/share.h>
 
 namespace SCIRun {
 namespace Core {

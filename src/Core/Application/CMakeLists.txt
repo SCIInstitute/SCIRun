@@ -32,7 +32,7 @@ SET(Core_Application_SRCS
 
 SET(Core_Application_HEADERS
   Application.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Application 

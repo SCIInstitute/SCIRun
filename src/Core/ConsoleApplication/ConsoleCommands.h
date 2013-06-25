@@ -30,7 +30,7 @@
 #define CORE_CONSOLEAPPLICATION_CONSOLECOMMANDS_H
 
 #include <Core/Command/Command.h>
-#include <Core/ConsoleApplication/Share.h>
+#include <Core/ConsoleApplication/share.h>
 
 namespace SCIRun {
 namespace Core {

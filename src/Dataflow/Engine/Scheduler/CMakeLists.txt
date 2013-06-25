@@ -54,7 +54,7 @@ SET(Engine_Scheduler_HEADERS
   SchedulerInterfaces.h
   SerialModuleExecutionOrder.h
   SerialExecutionStrategy.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Engine_Scheduler 

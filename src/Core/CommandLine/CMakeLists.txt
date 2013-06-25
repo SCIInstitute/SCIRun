@@ -32,7 +32,7 @@ SET(Core_CommandLine_SRCS
 
 SET(Core_CommandLine_HEADERS
   CommandLine.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_CommandLine 

@@ -31,7 +31,7 @@
 #define DATAFLOW_NETWORK_CONNECTIONID_H 
 
 #include <Dataflow/Network/ModuleDescription.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

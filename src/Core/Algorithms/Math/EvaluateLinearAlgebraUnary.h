@@ -32,7 +32,7 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <boost/optional.hpp>
-#include <Core/Algorithms/Math/Share.h>
+#include <Core/Algorithms/Math/share.h>
 
 /** \addtogroup Algorithms_Math
   * @{

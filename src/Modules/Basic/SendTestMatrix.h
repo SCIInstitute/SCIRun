@@ -31,7 +31,7 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <Modules/Basic/Share.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
 namespace Modules {

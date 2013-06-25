@@ -30,7 +30,7 @@
 #define MODULES_MATH_APPENDMATRIX_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Math/Share.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Modules {

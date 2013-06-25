@@ -30,7 +30,7 @@
 #define MODULES_RENDER_VIEWSCENE_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Render/Share.h>
+#include <Modules/Render/share.h>
 
 #include "Spire/Interface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"

@@ -35,7 +35,7 @@ SET(Interface_Modules_Testing_FORMS
 SET(Interface_Modules_Testing_HEADERS
   SendScalarDialog.h
   ReceiveScalarDialog.h
-  Share.h
+  share.h
 )
 
 SET(Interface_Modules_Testing_SOURCES 

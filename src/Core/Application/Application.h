@@ -34,7 +34,7 @@
 #include <Core/Utils/Singleton.h>
 #include <Core/CommandLine/CommandLine.h>
 #include <Core/Command/CommandFactory.h>
-#include <Core/Application/Share.h>
+#include <Core/Application/share.h>
 
 namespace SCIRun {
   namespace Dataflow {

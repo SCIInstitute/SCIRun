@@ -33,7 +33,7 @@
 #include <boost/python.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <Dataflow/Engine/Python/Share.h>
+#include <Dataflow/Engine/Python/share.h>
 
 namespace SCIRun 
 {

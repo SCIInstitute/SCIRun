@@ -32,7 +32,7 @@ SET(Modules_String_SRCS
 
 SET(Modules_String_HEADERS
   CreateString.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Modules_String 

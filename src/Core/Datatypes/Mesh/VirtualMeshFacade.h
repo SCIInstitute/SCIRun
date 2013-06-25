@@ -30,7 +30,7 @@
 #define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 
 #include <Core/Datatypes/Mesh/MeshFacade.h>
-#include <Core/Datatypes/Mesh/Share.h>
+#include <Core/Datatypes/Mesh/share.h>
 
 namespace SCIRun {
 namespace Core {

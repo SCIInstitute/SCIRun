@@ -31,7 +31,7 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/SerialModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

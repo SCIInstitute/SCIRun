@@ -34,7 +34,7 @@
 #include <boost/bimap.hpp>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
-#include <Dataflow/Engine/Scheduler/Share.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

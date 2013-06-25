@@ -36,7 +36,7 @@
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Render/Share.h>
+#include <Interface/Modules/Render/share.h>
 
 #include "Spire/Interface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"

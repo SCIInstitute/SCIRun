@@ -30,7 +30,7 @@
 #define MODULES_DATAIO_READ_MATRIX_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/DataIO/Share.h>
+#include <Modules/DataIO/share.h>
 
 namespace SCIRun {
 namespace Modules {

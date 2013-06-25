@@ -32,7 +32,7 @@
 #include <boost/python.hpp>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
-#include <Dataflow/Engine/Python/Share.h>
+#include <Dataflow/Engine/Python/share.h>
 
 BOOST_PYTHON_MODULE(SCIRunPythonAPI)
 {

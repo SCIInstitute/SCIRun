@@ -55,7 +55,7 @@ namespace SCIRun {
 	public:
 	    FileNotFound(const std::string&, const char* file, int line);
 	    FileNotFound(const FileNotFound&);
-	    virtual ~FileNotFound();
+	    virtual ~FileNotFound() NOEXCEPT;
 	    virtual const char* message() const;
 	    virtual const char* type() const;
 	protected:

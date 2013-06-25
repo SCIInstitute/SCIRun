@@ -30,7 +30,7 @@
 #define MODULES_BASIC_PRINT_DATATYPE_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Basic/Share.h>
+#include <Modules/Basic/share.h>
 
 namespace SCIRun {
   namespace Modules {

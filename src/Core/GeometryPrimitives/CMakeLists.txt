@@ -48,7 +48,7 @@ SET(Core_GeometryPrimitives_HEADERS
   Tensor.h
   Transform.h
   Vector.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Geometry_Primitives 

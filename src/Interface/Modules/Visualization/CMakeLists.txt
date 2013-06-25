@@ -35,7 +35,7 @@ SET(Interface_Modules_Visualization_FORMS
 
 SET(Interface_Modules_Visualization_HEADERS
   MatrixAsVectorFieldDialog.h
-  Share.h
+  share.h
   ShowFieldDialog.h
   ShowStringDialog.h
 )

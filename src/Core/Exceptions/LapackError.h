@@ -41,7 +41,7 @@ class SCISHARE LapackError : public Exception {
 public:
   LapackError(const std::string&, const char* file = 0, int line = -1);
   LapackError(const LapackError&);
-  virtual ~LapackError();
+  virtual ~LapackError() NOEXCEPT;
   virtual const char* message() const;
   virtual const char* type() const;
 protected:

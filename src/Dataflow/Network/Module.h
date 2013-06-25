@@ -42,7 +42,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/PortManager.h>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

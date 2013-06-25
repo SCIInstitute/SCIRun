@@ -30,7 +30,7 @@
 #define CORE_COMMAND_COMMAND_H
 
 #include <boost/shared_ptr.hpp>
-#include <Core/Command/Share.h>
+#include <Core/Command/share.h>
 
 namespace SCIRun
 {

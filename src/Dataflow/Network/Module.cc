@@ -39,6 +39,7 @@
 #include <Core/Logging/ConsoleLogger.h>
 
 #include <log4cpp/Category.hh>
+#include <log4cpp/CategoryStream.hh>
 #include <log4cpp/Priority.hh>
 
 using namespace SCIRun::Dataflow::Networks;

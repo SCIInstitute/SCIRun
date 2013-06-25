@@ -36,7 +36,7 @@ SET(Core_ConsoleApplication_HEADERS
   ConsoleApplication.h
   ConsoleCommandFactory.h
   ConsoleCommands.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_ConsoleApplication

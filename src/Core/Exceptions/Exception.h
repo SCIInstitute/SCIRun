@@ -47,6 +47,12 @@
 #define SCI_THROW(exc) throw exc
 #endif
 
+#ifdef WIN32 //VS2010 doesn't understand this yet. VS2012 ought to.
+#define NOEXCEPT
+#else
+#define NOEXCEPT noexcept(true)
+#endif
+
 #include <string>
 
 #include <sci_defs/error_defs.h>
@@ -57,7 +63,7 @@ namespace SCIRun {
   {
   public:
     Exception();
-    virtual ~Exception();
+    virtual ~Exception() NOEXCEPT;
     virtual const char* message() const=0;
     virtual const char* type() const=0;
     const char* stackTrace() const {

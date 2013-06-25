@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <Dataflow/Network/Share.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

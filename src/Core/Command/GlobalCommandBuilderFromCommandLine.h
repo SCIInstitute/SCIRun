@@ -33,7 +33,7 @@
 #include <Core/Command/CommandFactory.h>
 #include <Core/Command/CommandQueue.h>
 #include <Core/CommandLine/CommandLine.h>
-#include <Core/Command/Share.h>
+#include <Core/Command/share.h>
 
 namespace SCIRun
 {

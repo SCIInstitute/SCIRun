@@ -33,7 +33,7 @@ SET(Interface_Modules_String_FORMS
 )
 
 SET(Interface_Modules_String_HEADERS
-  Share.h
+  share.h
   CreateStringDialog.h
   PrintDatatypeDialog.h
 )

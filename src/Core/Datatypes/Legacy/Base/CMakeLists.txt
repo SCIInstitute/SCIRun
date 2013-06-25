@@ -37,7 +37,7 @@ SET(Core_Datatypes_Legacy_Base_HEADERS
   PropertyManager.h
   TypeName.h
   Types.h
-  Share.h
+  share.h
 )
 
 ADD_LIBRARY(Core_Datatypes_Legacy_Base

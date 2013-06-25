@@ -35,7 +35,7 @@
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
-#include <Dataflow/Serialization/Network/Share.h>
+#include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {
 namespace Dataflow {

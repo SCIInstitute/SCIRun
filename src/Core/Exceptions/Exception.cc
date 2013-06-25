@@ -77,7 +77,7 @@ Exception::Exception()
   stacktrace_ = strdup(getStackTrace().c_str());
 }
 
-Exception::~Exception()
+Exception::~Exception() NOEXCEPT
 {
   if(stacktrace_) {
     free((char*)stacktrace_);

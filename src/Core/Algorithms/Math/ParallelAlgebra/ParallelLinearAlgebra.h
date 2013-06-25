@@ -39,7 +39,7 @@
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Thread/Barrier.h>
 #include <Core/Datatypes/Legacy/Base/Types.h>
-#include <Core/Algorithms/Math/Share.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 namespace Core {
