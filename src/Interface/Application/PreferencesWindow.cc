@@ -28,7 +28,7 @@
 
 #include <QtGui>
 #include <iostream>
-#include <Interface/Application/Preferences.h>
+#include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 
 using namespace SCIRun::Gui;

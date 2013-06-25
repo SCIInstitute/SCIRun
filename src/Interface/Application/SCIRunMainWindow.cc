@@ -36,7 +36,7 @@
 #include <Interface/Application/ProvenanceWindow.h>
 #include <Interface/Application/DeveloperConsole.h>
 #include <Interface/Application/Connection.h>
-#include <Interface/Application/Preferences.h>
+#include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/PythonConsoleWidget.h>
 #include <Interface/Application/TreeViewCollaborators.h>
 #include <Interface/Application/MainWindowCollaborators.h>

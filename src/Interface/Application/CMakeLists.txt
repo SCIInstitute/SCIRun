@@ -49,7 +49,7 @@ SET(Interface_Application_SOURCES
   Node.cc
   NoteEditor.cc
   Port.cc
-  Preferences.cc
+  PreferencesWindow.cc
   PythonConsoleWidget.cc
   Connection.cc
   NetworkEditor.cc
@@ -76,7 +76,7 @@ SET(Interface_Application_HEADERS
   NoteEditor.h
   Connection.h
   Port.h
-  Preferences.h
+  PreferencesWindow.h
   PythonConsoleWidget.h
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
