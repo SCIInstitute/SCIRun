@@ -52,7 +52,7 @@ namespace SCIRun {
 	    ArrayIndexOutOfBounds(index_type value, index_type lower, index_type upper, 
                                   const char* file, int line);
 	    ArrayIndexOutOfBounds(const ArrayIndexOutOfBounds&);
-	    virtual ~ArrayIndexOutOfBounds() noexcept(true);
+	    virtual ~ArrayIndexOutOfBounds() NOEXCEPT;
 	    virtual const char* message() const;
 	    virtual const char* type() const;
 	protected:

@@ -61,7 +61,7 @@ class SCISHARE AssertionFailed : public Exception {
     AssertionFailed(const std::string& msg, const char* file, int line);
     AssertionFailed(const AssertionFailed&);
 
-    virtual ~AssertionFailed() noexcept(true);
+    virtual ~AssertionFailed() NOEXCEPT;
     virtual const char* message() const;
     virtual const char* type() const;
   private:

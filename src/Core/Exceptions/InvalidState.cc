@@ -67,7 +67,7 @@ InvalidState::InvalidState(const InvalidState& copy)
 {
 }
 
-InvalidState::~InvalidState() noexcept(true)
+InvalidState::~InvalidState() NOEXCEPT
 {
 }
 

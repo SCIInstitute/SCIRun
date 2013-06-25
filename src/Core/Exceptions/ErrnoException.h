@@ -53,7 +53,7 @@ class SCISHARE ErrnoException : public Exception {
 public:
   ErrnoException(const std::string&, int err, const char* file, int line);
   ErrnoException(const ErrnoException&);
-  virtual ~ErrnoException() noexcept(true);
+  virtual ~ErrnoException() NOEXCEPT;
   virtual const char* message() const;
   virtual const char* type() const;
 	 

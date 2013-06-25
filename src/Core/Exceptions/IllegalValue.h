@@ -55,7 +55,7 @@ namespace SCIRun {
   public:
     IllegalValue(const std::string&, const T& value);
     IllegalValue(const IllegalValue&);
-    virtual ~IllegalValue() noexcept(true);
+    virtual ~IllegalValue() NOEXCEPT;
     virtual const char* message() const;
     virtual const char* type() const;
   protected:

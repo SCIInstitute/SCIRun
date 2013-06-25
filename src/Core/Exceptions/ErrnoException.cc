@@ -72,7 +72,7 @@ ErrnoException::ErrnoException(const ErrnoException& copy)
 {
 }
 
-ErrnoException::~ErrnoException() noexcept(true)
+ErrnoException::~ErrnoException() NOEXCEPT
 {
 }
 

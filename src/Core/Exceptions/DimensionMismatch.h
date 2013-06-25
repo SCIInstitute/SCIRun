@@ -51,7 +51,7 @@ namespace SCIRun {
 	public:
     DimensionMismatch(size_type value, size_type expected, const char* file = 0, int line = -1);
     DimensionMismatch(const DimensionMismatch&);
-    virtual ~DimensionMismatch() noexcept(true);
+    virtual ~DimensionMismatch() NOEXCEPT;
     virtual const char* message() const;
     virtual const char* type() const;
 

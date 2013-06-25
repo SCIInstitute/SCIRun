@@ -62,7 +62,7 @@ FileNotFound::FileNotFound(const FileNotFound& copy)
 {
 }
 
-FileNotFound::~FileNotFound() noexcept(true)
+FileNotFound::~FileNotFound() NOEXCEPT
 {
 }
 
