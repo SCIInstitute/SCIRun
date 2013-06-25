@@ -73,7 +73,10 @@ class SCISHARE TetSamplingSchemes
         {0.138196601125011,  0.585410196624969, 0.138196601125011},   
         {0.138196601125011,  0.138196601125011, 0.585410196624969}};
       const unsigned int num_coords = 3;
-      const unsigned int num_points = 3;
+      // Not sure why this is here? It seems to truncate the size of the weights
+      // vector and coords array.  - PRJ June, 2013.
+      //   const unsigned int num_points = 3;
+      const unsigned int num_points = 4;
       
       coords.resize(num_points);
       weights.resize(num_points);
@@ -88,6 +91,9 @@ class SCISHARE TetSamplingSchemes
     else if (order == 3)
     {
       const double gaussian_weights[11] =   {
+        // Note: weights here sum to 1/6 (which equals volume of unit element),
+        //	whereas, above weights sum to 1. This might cause a few scaling
+        //	problems depending on the order of integration chosen - PRJ June, 2013.
         -0.01315556,   // Should check this one Gaussian schemes should not have negative weights
         0.007622222,
         0.007622222,
@@ -112,7 +118,12 @@ class SCISHARE TetSamplingSchemes
         {0.3994034, 0.1005964, 0.3994034},
         {0.3994034, 0.3994034, 0.1005964}};
       const unsigned int num_coords = 3;
-      const unsigned int num_points = 7;
+      // Not sure why this is here? It seems to truncate the size of the weights
+      // vector and coords array. I have set it back to full size go get the
+      // routine BuildMassMatrix to work correctly. The same comment applies
+      // to order = 2 (above) as well - PRJ June, 2013.
+      //   const unsigned int num_points = 7;
+      const unsigned int num_points = 11;
       
       coords.resize(num_points);
       weights.resize(num_points);
