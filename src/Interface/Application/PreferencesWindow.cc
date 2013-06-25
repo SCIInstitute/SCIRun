@@ -30,6 +30,7 @@
 #include <iostream>
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/NetworkEditor.h>
+#include <Core/Application/Preferences.h>
 
 using namespace SCIRun::Gui;
 
@@ -59,5 +60,6 @@ void PreferencesWindow::setRegressionTestDataDir()
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
 {
+  SCIRun::Core::Preferences::Instance().moduleErrorDialogState = (state == 0);
   //std::cout << "update module error: " << state << std::endl;
 }

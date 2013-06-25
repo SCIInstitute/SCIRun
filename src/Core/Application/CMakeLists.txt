@@ -28,10 +28,12 @@
 
 SET(Core_Application_SRCS
   Application.cc
+  Preferences.cc
 )
 
 SET(Core_Application_HEADERS
   Application.h
+  Preferences.h
   share.h
 )
 

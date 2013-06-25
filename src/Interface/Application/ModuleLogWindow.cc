@@ -29,6 +29,7 @@
 #include <QtGui>
 #include <iostream>
 #include <Interface/Application/ModuleLogWindow.h>
+#include <Core/Application/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -55,8 +56,7 @@ void ModuleLogWindow::appendMessage(const QString& message, const QColor& color 
 
 void ModuleLogWindow::popupMessageBox(const QString& message)
 {
-  //TODO
-  //if (!SCIRun::Core::Application::Instance().options().isTrue(ProgramOption::DisableModuleErrorPopups))
+  if (SCIRun::Core::Preferences::Instance().moduleErrorDialogState)
     QMessageBox::critical(this->parentWidget(), windowTitle(), "Error in " + moduleName_ + "\n" + message, QMessageBox::Ok);
 }
 
