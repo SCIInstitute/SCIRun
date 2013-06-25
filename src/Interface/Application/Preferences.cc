@@ -38,7 +38,7 @@ PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* =
 {
   setupUi(this);
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
-  connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(...));
+  connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
 }
 
 void PreferencesWindow::updateRegressionTestDataDir()
@@ -55,4 +55,9 @@ void PreferencesWindow::setRegressionTestDataDir()
 {
   regressionTestDataDirLineEdit_->setText(regressionTestDataDir_);
   networkEditor_->setRegressionTestDataDir(regressionTestDataDir_);
+}
+
+void PreferencesWindow::updateModuleErrorDialogOption(int state)
+{
+  //std::cout << "update module error: " << state << std::endl;
 }

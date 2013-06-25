@@ -55,7 +55,8 @@ public:
 public Q_SLOTS:
   void updateRegressionTestDataDir();
   void setRegressionTestDataDir();
-  
+  void updateModuleErrorDialogOption(int state);
+
 private:
   NetworkEditor* networkEditor_;
   bool regressionMode_, disableModuleErrorDialogs_;
