@@ -158,6 +158,7 @@ namespace
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
   : QFrame(parent),
   deletedFromGui_(true),
+  colorLocked_(false),
   moduleId_(theModule->get_id()),
   theModule_(theModule),
   inputPortLayout_(0),
@@ -193,7 +194,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   makeOptionsDialog();
 
   connect(helpButton_, SIGNAL(clicked()), this, SLOT(launchDocumentation()));
-  connect(this, SIGNAL(styleSheetUpdated(const QString&)), this, SLOT(updateStyleSheet(const QString&)));
+  connect(this, SIGNAL(backgroundColorUpdated(const QString&)), this, SLOT(updateBackgroundColor(const QString&)));
 
   setupModuleActions();
 
@@ -351,18 +352,39 @@ QPointF ModuleWidget::outputPortPosition() const
 void ModuleWidget::execute()
 {
   {
-    Q_EMIT styleSheetUpdated("background-color: #AACCAA;");
+    Q_EMIT backgroundColorUpdated("#AACCAA;");
+    //colorLocked_ = true; //TODO
     timer_.restart();
     theModule_->do_execute();
     Q_EMIT updateProgressBarSignal(1);
-    Q_EMIT styleSheetUpdated("background-color: lightgray;");
+    Q_EMIT backgroundColorUpdated("lightgray;");
+    //colorLocked_ = false;
   }
   Q_EMIT moduleExecuted();
 }
 
-void ModuleWidget::updateStyleSheet(const QString& sheet)
+void ModuleWidget::updateBackgroundColor(const QString& color)
 {
-  setStyleSheet(sheet);
+  if (!colorLocked_)
+  {
+    //std::cout << "background-color: " << color.toStdString() << std::endl;
+    setStyleSheet("background-color: " + color);
+  }
+}
+
+void ModuleWidget::setColorAsWaiting()
+{
+  updateBackgroundColor("#CDBE70;");
+}
+
+void ModuleWidget::setColorSelected()
+{
+  updateBackgroundColor("lightblue;");
+}
+
+void ModuleWidget::setColorUnselected()
+{
+  updateBackgroundColor("lightgray;");
 }
 
 boost::shared_ptr<ModuleDialogFactory> ModuleWidget::dialogFactory_;

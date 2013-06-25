@@ -79,6 +79,10 @@ public:
   static boost::shared_ptr<class ConnectionFactory> connectionFactory_;
   static boost::shared_ptr<class ClosestPortFinder> closestPortFinder_;
   
+  void setColorAsWaiting();
+  void setColorSelected();
+  void setColorUnselected();
+
 public Q_SLOTS:
   virtual void execute();
   void showOptionsDialog();
@@ -90,7 +94,6 @@ public Q_SLOTS:
   void launchDocumentation();
   void updateNote(const Note& note);
   void duplicate();
-  void updateStyleSheet(const QString& sheet);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -101,12 +104,14 @@ Q_SIGNALS:
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
-  void styleSheetUpdated(const QString& sheet);
+  void backgroundColorUpdated(const QString& color);
+private Q_SLOTS:
+  void updateBackgroundColor(const QString& color);
 private:
   Ports inputPorts_;
   Ports outputPorts_;
   boost::timer timer_;
-  bool deletedFromGui_;
+  bool deletedFromGui_, colorLocked_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 

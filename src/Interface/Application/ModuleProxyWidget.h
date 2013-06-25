@@ -70,7 +70,7 @@ namespace SCIRun
       void updateNotePosition();
 
       ModuleWidget* module_;
-      bool grabbedByWidget_;
+      bool grabbedByWidget_, isSelected_;
       QWidget* pressedSubWidget_;
       QPointF position_;
       QGraphicsTextItem* note_;
