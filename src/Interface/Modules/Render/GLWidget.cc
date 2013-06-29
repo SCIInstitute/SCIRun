@@ -76,16 +76,16 @@ GLWidget::GLWidget(QtGLContext* context) :
 
   /// \todo Where should we store common shader names?
   std::vector<std::tuple<std::string, Spire::StuInterface::SHADER_TYPES>> shaderFiles;
-  shaderFiles.push_back(std::make_pair("UniformColor.vs", Spire::StuInterface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.vsh", Spire::StuInterface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fsh", Spire::StuInterface::FRAGMENT_SHADER));
 
   mGraphics->getStuPipe()->addPersistentShader(
       "UniformColor", 
       shaderFiles);
 
   shaderFiles.clear();
-  shaderFiles.push_back(std::make_pair("ColorMap.vs", Spire::StuInterface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("ColorMap.fs", Spire::StuInterface::FRAGMENT_SHADER));
+  shaderFiles.push_back(std::make_pair("ColorMap.vsh", Spire::StuInterface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("ColorMap.fsh", Spire::StuInterface::FRAGMENT_SHADER));
 
   mGraphics->getStuPipe()->addPersistentShader(
       "ColorMap", 
