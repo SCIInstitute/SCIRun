@@ -33,7 +33,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include <QGraphicsWidget>
-#include <QWidget>
+#include <QPushButton>
 #include <QColor>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
@@ -50,8 +50,9 @@ class PositionProvider;
 class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
+class PortActionsMenu;
 
-class PortWidget : public QWidget, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
+class PortWidget : public QPushButton, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
   Q_OBJECT
 public:
@@ -63,7 +64,7 @@ public:
   QColor color() const { return color_; }
   virtual bool isInput() const { return isInput_; }
   bool isConnected() const { return isConnected_; }
-  void setConnected(bool connected);
+  void setConnected(bool connected) { isConnected_ = connected; }
 
   virtual size_t nconnections() const;
   virtual std::string get_colorname() const;
@@ -95,6 +96,7 @@ public:
 public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();
+  void portCachingChanged(bool checked);
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
@@ -122,6 +124,7 @@ private:
   std::set<ConnectionLine*> connections_;
   boost::shared_ptr<ConnectionFactory> connectionFactory_;
   boost::shared_ptr<ClosestPortFinder> closestPortFinder_;
+  PortActionsMenu* menu_;
 
   //TODO
   typedef boost::tuple<std::string, size_t, bool> Key;

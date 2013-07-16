@@ -31,12 +31,68 @@
 
 #include <sstream>
 
+namespace SCIRun {
+
 template <class Point>
 std::string to_string(const Point& p)
 {
   std::ostringstream ostr;
   ostr << "QPoint(" << p.x() << "," << p.y() << ")";
   return ostr.str();
+}
+
+namespace Gui 
+{
+  //TODO un-inline
+
+  inline QColor to_color(const std::string& str)
+  {
+    if (str == "red")
+      return Qt::red;
+    if (str == "blue")
+      return Qt::blue;
+    if (str == "darkBlue")
+      return Qt::darkBlue;
+    if (str == "cyan")
+      return Qt::cyan;
+    if (str == "darkCyan")
+      return Qt::darkCyan;
+    if (str == "darkGreen")
+      return Qt::darkGreen;
+    if (str == "cyan")
+      return Qt::cyan;
+    if (str == "magenta")
+      return Qt::magenta;
+    if (str == "white")
+      return Qt::white;
+    if (str == "yellow")
+      return Qt::yellow;
+    if (str == "darkYellow")
+      return Qt::darkYellow;
+    if (str == "lightGray")
+      return Qt::lightGray;
+    if (str == "darkGray")
+      return Qt::darkGray;
+    if (str == "black")
+      return Qt::black;
+    else
+      return Qt::black;
+  }
+
+  inline QAction* separatorAction(QWidget* parent)
+  {
+    auto sep = new QAction(parent);
+    sep->setSeparator(true);
+    return sep;
+  }
+
+  inline QAction* disabled(QAction* action)
+  {
+    action->setEnabled(false);
+    return action;
+  }
+}
+
 }
 
 #endif

@@ -27,6 +27,7 @@
 */
 
 #include <iostream>
+#include <boost/foreach.hpp>
 #include <QtGui>
 #include <Dataflow/Network/Port.h>
 #include <Interface/Application/Port.h>
@@ -39,20 +40,67 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
+namespace SCIRun {
+  namespace Gui {
+    class PortActionsMenu : public QMenu
+    {
+    public:
+      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent),
+        parent_(parent)
+      {
+        QList<QAction*> actions;
+        if (!parent->isInput())
+        {
+          auto pc = new QAction("Port Caching", parent);
+          pc->setCheckable(true);
+          connect(pc, SIGNAL(triggered(bool)), parent, SLOT(portCachingChanged(bool)));
+          //TODO:
+          //pc->setChecked(parent->getCached())...or something
+          actions.append(pc);
+          actions.append(separatorAction(parent));
+        }
+        addActions(actions);
+
+        auto m = new QMenu("Connect Module -->", parent);
+        addMenu(m);
+
+        //TODO: hook up with ModuleList singleton
+        m->addAction(new QAction("Module 1", parent));
+        m->addAction(new QAction("Module 2", parent));
+        m->addAction(new QAction("Module 3", parent));
+      }
+      QAction* getAction(const char* name) const
+      {
+        BOOST_FOREACH(QAction* action, actions())
+        {
+          if (action->text().contains(name))
+            return action;
+        }
+        return 0;
+      }
+    private:
+      PortWidget* parent_;
+    };
+  }}
+
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const ModuleId& moduleId, size_t index,
   bool isInput, 
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
-  : QWidget(parent), 
+  : QPushButton(parent), 
   name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
   connectionFactory_(connectionFactory),
-  closestPortFinder_(closestPortFinder)
+  closestPortFinder_(closestPortFinder),
+  menu_(new PortActionsMenu(this))
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(name_);
+
+  setMenu(menu_);
+
   portWidgetMap_[boost::make_tuple(moduleId_.id_, index_, isInput_)] = this;
 }
 
@@ -171,6 +219,10 @@ void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
       makeConnection(pos);
     }
   }
+  else if (button == Qt::RightButton && (!isConnected() || !isInput()))
+  {
+    showMenu();
+  }
 }
 
 void PortWidget::makeConnection(const QPointF& pos)
@@ -200,6 +252,7 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
     auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
+    setConnected(true);
   }
 }
 
@@ -230,12 +283,15 @@ void PortWidget::performDrag(const QPointF& endPos)
 
 void PortWidget::addConnection(ConnectionLine* c)
 {
+  setConnected(true);
   connections_.insert(c);
 }
 
 void PortWidget::removeConnection(ConnectionLine* c)
 {
   connections_.erase(c);
+  if (connections_.empty())
+    setConnected(false);
 }
 
 void PortWidget::deleteConnections()
@@ -243,6 +299,7 @@ void PortWidget::deleteConnections()
   Q_FOREACH (ConnectionLine* c, connections_)
     delete c;
   connections_.clear();
+  setConnected(false);
 }
 
 void PortWidget::trackConnections()
@@ -276,6 +333,11 @@ std::string PortWidget::get_portname() const
 ModuleId PortWidget::getUnderlyingModuleId() const
 {
   return moduleId_;
+}
+
+void PortWidget::portCachingChanged(bool checked)
+{
+  std::cout << "Port " << moduleId_.id_ << "::" << name().toStdString() << " Caching turned " << (checked ? "on." : "off.") << std::endl;
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
