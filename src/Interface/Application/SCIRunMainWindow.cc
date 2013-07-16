@@ -132,7 +132,10 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   sep->setSeparator(true);
   scrollAreaWidgetContents_->addAction(sep);
 	scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
-  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+  //TODO???????
+  setContextMenuPolicy(Qt::NoContextMenu);
+  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
 	scrollArea_->viewport()->setAutoFillBackground(true);	
@@ -254,7 +257,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
-  networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->verticalScrollBar()->setValue(0);
@@ -586,7 +589,7 @@ void SCIRunMainWindow::disableInputWidgets()
   moduleSelectorTreeWidget_->setDisabled(true);
   actionRunScript_->setDisabled(true);
   networkEditor_->disableInputWidgets();
-  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
   
   Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
     action->setDisabled(true);
@@ -606,7 +609,7 @@ void SCIRunMainWindow::enableInputWidgets()
   moduleSelectorTreeWidget_->setEnabled(true);
   actionRunScript_->setEnabled(true);
   networkEditor_->enableInputWidgets();
-  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
   Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
     action->setEnabled(true);

@@ -71,7 +71,7 @@ NetworkEditor::NetworkEditor(boost::shared_ptr<CurrentModuleSelection> moduleSel
   setScene(scene_);
   setDragMode(QGraphicsView::RubberBandDrag);
   setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-  setContextMenuPolicy(Qt::ActionsContextMenu);
+  //setContextMenuPolicy(Qt::ActionsContextMenu);
 
   createActions();
 
