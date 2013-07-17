@@ -163,7 +163,7 @@ void PortWidget::mouseMoveEvent(QMouseEvent* event)
 
 void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
 {
-  if (buttons & Qt::LeftButton)
+  if (buttons & Qt::LeftButton && (!isConnected() || !isInput()))
   {
     int distance = (pos - startPos_).manhattanLength();
     if (distance >= QApplication::startDragDistance())
@@ -208,7 +208,7 @@ void PortWidget::cancelConnectionsInProgress()
 
 void PortWidget::doMouseRelease(Qt::MouseButton button, const QPointF& pos)
 {
-  if (button == Qt::LeftButton && !isConnected())
+  if (button == Qt::LeftButton)
   {
     toggleLight();
     update();
