@@ -95,3 +95,8 @@ void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
 }
+
+std::vector<ModuleDescription> MockModuleFactory::viewCurrentModules() const
+{
+  return std::vector<ModuleDescription>();
+}

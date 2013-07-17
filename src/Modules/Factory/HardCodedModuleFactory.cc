@@ -76,7 +76,104 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
 using namespace boost::assign;
 
-HardCodedModuleFactory::HardCodedModuleFactory()
+namespace SCIRun {
+  namespace Modules {
+    namespace Factory {
+
+      struct ModuleLookupInfoLess
+      {
+        bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
+        {
+          return lhs.module_name_ < rhs.module_name_;
+        }
+      };
+
+      class ModuleDescriptionLookup
+      {
+      public:
+        ModuleDescriptionLookup()
+        {
+          //TODO: make EVEN MORE generic...macros? xml?
+
+          addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
+          addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
+          addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
+          //addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+          //addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+          addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
+          addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
+          addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+          addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+          addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "One multithreaded algorithm available.", "...");
+          addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
+          //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
+          addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
+          addModuleDesc<CreateLatVolMesh>("CreateLatVolMesh", "NewField", "SCIRun", "Can create lat vol meshes of arbitrary size.", "...");
+          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Math", "SCIRun", "...", "...");
+          addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
+          addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
+          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "Set field data via python.", "...");
+          addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
+        }
+
+        std::vector<ModuleDescription> viewCurrentModules() const
+        {
+          std::vector<ModuleDescription> descs;
+          std::transform(lookup_.begin(), lookup_.end(), std::back_inserter(descs), [](const Lookup::value_type& p) { return p.second; });
+          return descs;
+        }
+
+        ModuleDescription lookupDescription(const ModuleLookupInfo& info)
+        {
+          auto iter = lookup_.find(info);
+          if (iter == lookup_.end())
+          {
+            //TODO: log
+            std::ostringstream ostr;
+            ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
+            THROW_INVALID_ARGUMENT(ostr.str());
+          }
+          return iter->second;
+        }
+      private:
+        typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> Lookup;
+        Lookup lookup_;
+
+        template <class ModuleType>
+        void addModuleDesc(const std::string& name, const std::string& package, const std::string& category, const std::string& status, const std::string& desc)
+        {
+          ModuleLookupInfo info;
+          info.module_name_ = name;
+          info.package_name_ = package;
+          info.category_name_ = category;
+
+          ModuleDescription description;
+          description.lookupInfo_ = info;
+
+          description.input_ports_ = IPortDescriber<ModuleType::NumIPorts, ModuleType>::inputs();
+          description.output_ports_ = OPortDescriber<ModuleType::NumOPorts, ModuleType>::outputs();
+          description.maker_ = boost::factory<ModuleType*>();
+
+          lookup_[info] = description;
+        }
+      };
+
+      class HardCodedModuleFactoryImpl
+      {
+      public:
+        ModuleDescriptionLookup lookup;
+      };
+
+    }}}
+
+HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFactoryImpl)
 {
   Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
@@ -115,87 +212,12 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   return module;
 }
 
-struct ModuleLookupInfoLess
-{
-  bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
-  {
-    return lhs.module_name_ < rhs.module_name_;
-  }
-};
-
-class ModuleDescriptionLookup
-{
-public:
-  ModuleDescriptionLookup()
-  {
-    //TODO: make EVEN MORE generic...macros? xml?
-
-    addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "...", "...");
-    addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "...", "...");
-    addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "...", "...");
-    addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "...", "...");
-    addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<ReadMatrixModule>("SendScalar", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-    //addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-    //addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
-    addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "...", "...");
-    addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "...", "...");
-    addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "...", "...");
-    addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "...", "...");
-    addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "...", "...");
-    addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "...", "...");
-    addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "...", "...");
-    addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "...", "...");
-    //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
-    addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "...", "...");
-    addModuleDesc<CreateLatVolMesh>("CreateLatVolMesh", "NewField", "SCIRun", "...", "...");
-    addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Math", "SCIRun", "...", "...");
-    addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "...", "...");
-    addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "...", "...");
-    addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "...", "...");
-    addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "...", "...");
-  }
-
-
-  ModuleDescription lookupDescription(const ModuleLookupInfo& info)
-  {
-    auto iter = lookup_.find(info);
-    if (iter == lookup_.end())
-    {
-      //TODO: log
-      std::ostringstream ostr;
-      ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
-      THROW_INVALID_ARGUMENT(ostr.str());
-    }
-    return iter->second;
-  }
-private:
-  std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> lookup_;
-
-  template <class ModuleType>
-  void addModuleDesc(const std::string& name, const std::string& package, const std::string& category, const std::string& status, const std::string& desc)
-  {
-    ModuleLookupInfo info;
-    info.module_name_ = name;
-    info.package_name_ = package;
-    info.category_name_ = category;
-    
-    ModuleDescription description;
-    description.lookupInfo_ = info;
-
-    description.input_ports_ = IPortDescriber<ModuleType::NumIPorts, ModuleType>::inputs();
-    description.output_ports_ = OPortDescriber<ModuleType::NumOPorts, ModuleType>::outputs();
-    description.maker_ = boost::factory<ModuleType*>();
-
-    lookup_[info] = description;
-  }
-};
-
 ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
 {
-  static ModuleDescriptionLookup lookup;
-  return lookup.lookupDescription(info);
+  return impl_->lookup.lookupDescription(info);
 }
 
+std::vector<ModuleDescription> HardCodedModuleFactory::viewCurrentModules() const
+{
+  return impl_->lookup.viewCurrentModules();
+}

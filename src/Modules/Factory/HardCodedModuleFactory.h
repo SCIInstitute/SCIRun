@@ -43,8 +43,10 @@ namespace SCIRun {
         virtual SCIRun::Dataflow::Networks::ModuleDescription lookupDescription(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info);
         virtual SCIRun::Dataflow::Networks::ModuleHandle create(const SCIRun::Dataflow::Networks::ModuleDescription& info);
         virtual void setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory);
+        virtual std::vector<SCIRun::Dataflow::Networks::ModuleDescription> viewCurrentModules() const;
       private:
         SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
+        boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
       };
     }
   }
