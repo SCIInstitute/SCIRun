@@ -45,8 +45,7 @@ namespace SCIRun {
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent),
-        parent_(parent)
+      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent)//, parent_(parent)
       {
         QList<QAction*> actions;
         if (!parent->isInput())
@@ -79,7 +78,7 @@ namespace SCIRun {
         return 0;
       }
     private:
-      PortWidget* parent_;
+      //PortWidget* parent_;
     };
   }}
 
@@ -90,7 +89,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const ModuleId&
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
   : QPushButton(parent), 
-  name_(name), color_(color), moduleId_(moduleId), index_(index), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), moduleId_(moduleId), index_(index), color_(color), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this))
