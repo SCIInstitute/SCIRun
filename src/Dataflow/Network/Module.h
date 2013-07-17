@@ -242,25 +242,6 @@ namespace Networks {
 
 namespace Modules
 {
-  template <class PortTypeTag>
-  class Has1InputPort
-  {
-  public:
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name);
-  };
-
-  template <class PortTypeTag0, class PortTypeTag1>
-  class Has2InputPorts
-  {
-  public:
-    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
-    {
-      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;
-      ports.push_back(Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name));
-      ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name));
-      return ports;
-    }
-  };
 
   struct SCISHARE MatrixPortTag {};
   struct SCISHARE ScalarPortTag {};
@@ -269,12 +250,33 @@ namespace Modules
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE DatatypePortTag {};
+
+  template <class PortTypeTag>
+  class Has1InputPort
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name);
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1>
+  class Has2InputPorts
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
+    {
+      //TODO: use move semantics
+      auto ports = Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name);
+      ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name)[0]);
+      return ports;
+    }
+  };
+
   
   template <class PortTypeTag>
   class Has1OutputPort
   {
   public:
-    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name);
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name);
   };
 
   template <class PortTypeTag0, class PortTypeTag1>
@@ -283,9 +285,9 @@ namespace Modules
   public:
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;
-      ports.push_back(Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name));
-      ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name));
+      //TODO: use move semantics
+      auto ports = Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name);
+      ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name)[0]);
       return ports;
     }
   };
@@ -294,18 +296,22 @@ namespace Modules
   class Has1InputPort<type ##PortTag>\
   {\
   public:\
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)\
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
-      return SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color); \
+      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color)); \
+      return ports;\
     }\
   };\
   template <>\
   class Has1OutputPort<type ##PortTag>\
   {\
   public:\
-    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)\
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
     {\
-      return SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color); \
+      std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color)); \
+      return ports;\
     }\
   }\
 
@@ -325,8 +331,61 @@ namespace Modules
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index> name;
 
+  //TODO: make metafunc for Input/Output
 
+  template <class InputPortDesc, class ModuleType>
+  struct IPortDescriber
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs(boost::disable_if<boost)
+    {
+      return std::vector<SCIRun::Dataflow::Networks::InputPortDescription>();
+    }
+  };
 
+  template <class ModuleType, class Tag>
+  struct IPortDescriber<Has1InputPort<Tag>, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name());
+    }
+  };
+
+  template <class ModuleType, class Tag1, class Tag2>
+  struct IPortDescriber<Has2InputPorts<Tag1, Tag2>, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name());
+    }
+  };
+
+  template <class OutputPortDesc, class ModuleType>
+  struct OPortDescriber
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return std::vector<SCIRun::Dataflow::Networks::OutputPortDescription>();
+    }
+  };
+
+  template <class ModuleType, class Tag>
+  struct OPortDescriber<Has1OutputPort<Tag>, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name());
+    }
+  };
+
+  template <class ModuleType, class Tag1, class Tag2>
+  struct OPortDescriber<Has2OutputPorts<Tag1, Tag2>, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name());
+    }
+  };
 
 }
 }

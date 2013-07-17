@@ -65,6 +65,7 @@
 #include <Modules/Factory/Share.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
@@ -135,33 +136,22 @@ class ModuleDescriptionLookup
 public:
   ModuleDescriptionLookup()
   {
+    //{
+    //  ModuleLookupInfo info;
+    //  info.module_name_ = "ComputeSVD";
+    //  info.category_name_ = "SCIRun";
+    //  info.package_name_ = "Math";
+    //  ModuleDescription description;
+    //  description.lookupInfo_ = info;
+
+    //  description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
+    //  description.output_ports_ += OutputPortDescription("U", "Matrix", "blue"), OutputPortDescription("S", "Matrix", "blue"), OutputPortDescription("V", "Matrix", "blue");
+    //  description.maker_ = 0;
+
+    //  lookup_[info] = description;
+    //}
     {
-      ModuleLookupInfo info;
-      info.module_name_ = "ComputeSVD";
-      info.category_name_ = "SCIRun";
-      info.package_name_ = "Math";
-      ModuleDescription description;
-      description.lookupInfo_ = info;
-
-      description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
-      description.output_ports_ += OutputPortDescription("U", "Matrix", "blue"), OutputPortDescription("S", "Matrix", "blue"), OutputPortDescription("V", "Matrix", "blue");
-      description.maker_ = 0;
-
-      lookup_[info] = description;
-    }
-    {
-      ModuleLookupInfo info;
-      info.module_name_ = "ReadMatrix";
-      info.category_name_ = "SCIRun";
-      info.package_name_ = "DataIO";
-      ModuleDescription description;
-      description.lookupInfo_ = info;
-
-      description.input_ports_ += ReadMatrixModule::inputPortDescription(ReadMatrixModule::inputPort0Name());
-      description.output_ports_ = ReadMatrixModule::outputPortDescription(ReadMatrixModule::outputPort0Name(), ReadMatrixModule::outputPort1Name());
-      description.maker_ = boost::factory<ReadMatrixModule*>();
-
-      lookup_[info] = description;
+      addModuleDesc<ReadMatrixModule>("ReadMatrix","DataIO", "SCIRun", "...", "...", 1, 2);
     }
 #if 0
     else if (name == "WriteMatrix")
@@ -322,7 +312,7 @@ private:
   std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> lookup_;
 
   template <class ModuleType>
-  void addModuleDesc(const std::string& name, const std::string& package, const std::string& category, const std::string& status, const std::string& description, size_t numInputPorts, size_t numOutputPorts)
+  void addModuleDesc(const std::string& name, const std::string& package, const std::string& category, const std::string& status, const std::string& desc, size_t numInputPorts, size_t numOutputPorts)
   {
     ModuleLookupInfo info;
     info.module_name_ = name;
@@ -332,12 +322,43 @@ private:
     ModuleDescription description;
     description.lookupInfo_ = info;
 
-    description.input_ports_ += ModuleType::inputPortDescription(ModuleType::inputPort0Name());
-    description.output_ports_ = ModuleType::outputPortDescription(ReadMatrixModule::outputPort0Name(), ReadMatrixModule::outputPort1Name());
+    description.input_ports_ = IPortDescriber<ModuleType, ModuleType>::inputs();
+    description.output_ports_ = OPortDescriber<ModuleType, ModuleType>::outputs();
     description.maker_ = boost::factory<ModuleType*>();
 
     lookup_[info] = description;
   }
+
+  //template <class ModuleType> //TODO: use preprocessor
+  //std::vector<InputPortDescription> inputs(size_t numInputs)
+  //{
+  //  if (0 == numInputs)
+  //    return std::vector<InputPortDescription>();
+  //  if (1 == numInputs)
+  //    return ModuleType::inputPortDescription(ModuleType::inputPort0Name());
+  //  if (2 == numInputs)
+  //    return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name());
+  //  //TODO
+  //  std::ostringstream ostr;
+  //  ostr << "Error: Unsupported number of ports: " << numInputs;
+  //  THROW_INVALID_ARGUMENT(ostr.str());
+  //}
+
+
+  //template <class ModuleType> //TODO: use preprocessor
+  //std::vector<OutputPortDescription> outputs(size_t numOutputs)
+  //{
+  //  if (0 == numInputs)
+  //    return std::vector<OutputPortDescription>();
+  //  if (1 == numInputs)
+  //    return ModuleType::outputPortDescription(ModuleType::outputPort0Name());
+  //  if (2 == numInputs)
+  //    return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name());
+  //  //TODO
+  //  std::ostringstream ostr;
+  //  ostr << "Error: Unsupported number of ports: " << numOutputs;
+  //  THROW_INVALID_ARGUMENT(ostr.str());
+  //}
 };
 
 //TODO: make more generic...macros?
