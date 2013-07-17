@@ -269,62 +269,7 @@ namespace Modules
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE DatatypePortTag {};
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeMatrixPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Matrix", "blue"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeScalarPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Scalar", "white"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeStringPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "String", "darkGreen"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeFieldPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Field", "yellow"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeMeshPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh", "cyan"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeGeometryPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Geometry", "magenta"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeDatatypePort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Datatype", "black"); 
-  }
-
-#define INPUT_PORT_SPEC(name)   template <>\
-  class Has1InputPort<name ##PortTag>\
-  {\
-  public:\
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)\
-    {\
-      return Make ## name ## Port(port0Name); \
-    }\
-  }\
-
-  INPUT_PORT_SPEC(Matrix);
-  INPUT_PORT_SPEC(Scalar);
-  INPUT_PORT_SPEC(String);
-  INPUT_PORT_SPEC(Field);
-  INPUT_PORT_SPEC(Mesh);  //TODO temporary
-  INPUT_PORT_SPEC(Geometry);
-  INPUT_PORT_SPEC(Datatype);
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+  
   template <class PortTypeTag>
   class Has1OutputPort
   {
@@ -345,23 +290,32 @@ namespace Modules
     }
   };
 
-#define OUTPUT_PORT_SPEC(name)   template <>\
-  class Has1OutputPort<name ##PortTag>\
+#define PORT_SPEC(type, color)   template <>\
+  class Has1InputPort<type ##PortTag>\
+  {\
+  public:\
+    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)\
+    {\
+      return SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color); \
+    }\
+  };\
+  template <>\
+  class Has1OutputPort<type ##PortTag>\
   {\
   public:\
     static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)\
     {\
-      return Make ## name ## Port(port0Name); \
+      return SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color); \
     }\
   }\
 
-  OUTPUT_PORT_SPEC(Matrix);
-  OUTPUT_PORT_SPEC(Scalar);
-  OUTPUT_PORT_SPEC(String);
-  OUTPUT_PORT_SPEC(Field);
-  OUTPUT_PORT_SPEC(Mesh);  //TODO temporary
-  OUTPUT_PORT_SPEC(Geometry);
-  OUTPUT_PORT_SPEC(Datatype);
+  PORT_SPEC(Matrix, "blue");
+  PORT_SPEC(Scalar, "white");
+  PORT_SPEC(String, "darkGreen");
+  PORT_SPEC(Field, "yellow");
+  PORT_SPEC(Mesh, "cyan");  //TODO temporary
+  PORT_SPEC(Geometry, "magenta");
+  PORT_SPEC(Datatype, "black");
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 
