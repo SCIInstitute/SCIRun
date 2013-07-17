@@ -277,7 +277,6 @@ namespace Modules
   class Has2InputPorts : public NumInputPorts<2>
   {
   public:
-    //typedef NumInputPorts<2> NumInputPorts_t;
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
       //TODO: use move semantics
@@ -292,7 +291,6 @@ namespace Modules
   class Has1OutputPort : public NumOutputPorts<1>
   {
   public:
-    //typedef NumOutputPorts<1>::NumOutputPorts_t NumOutputPorts_t;
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name);
   };
 
@@ -300,7 +298,6 @@ namespace Modules
   class Has2OutputPorts : public NumOutputPorts<2>
   {
   public:
-    //typedef NumOutputPorts<2>::NumOutputPorts_t NumOutputPorts_t;
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
       //TODO: use move semantics

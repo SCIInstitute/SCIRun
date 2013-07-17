@@ -95,7 +95,3 @@ void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
 }
-
-void MockModuleFactory::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer)
-{
-}

@@ -44,7 +44,6 @@ namespace Networks {
     virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
     virtual ModuleHandle create(const ModuleDescription& desc) = 0;
     virtual void setStateFactory(ModuleStateFactoryHandle stateFactory) = 0;
-    virtual void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer) = 0;
   };
 
 }}}

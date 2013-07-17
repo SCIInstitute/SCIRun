@@ -47,8 +47,6 @@ namespace Render {
     ViewScene();
     virtual void execute();
 
-    void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r);
-
     /// Used to initialize spire with the context given in the Transient state.
     virtual void preExecutionInitialization();
 
@@ -60,8 +58,6 @@ namespace Render {
     INPUT_PORT(1, GeneralGeom2, GeometryObject);
 
   private:
-    SCIRun::Dataflow::Networks::RendererInterface* renderer_;
-
     std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;
   };
 }}}

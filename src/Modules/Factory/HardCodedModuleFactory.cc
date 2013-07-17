@@ -76,7 +76,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
 using namespace boost::assign;
 
-HardCodedModuleFactory::HardCodedModuleFactory() : renderer_(0)
+HardCodedModuleFactory::HardCodedModuleFactory()
 {
   Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
@@ -86,11 +86,6 @@ void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleS
 {
   stateFactory_ = stateFactory;
   Module::defaultStateFactory_ = stateFactory_;
-}
-
-void HardCodedModuleFactory::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer)
-{
-  renderer_ = renderer;
 }
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
@@ -117,10 +112,6 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 
   ModuleHandle module = builder.build();
 
-  //TODO: delete all this stuff
-  //if (desc.lookupInfo_.module_name_ == "ViewScene")
-  //  boost::dynamic_pointer_cast<ViewScene>(module)->setRenderer(renderer_);
-
   return module;
 }
 
@@ -137,6 +128,8 @@ class ModuleDescriptionLookup
 public:
   ModuleDescriptionLookup()
   {
+    //TODO: make EVEN MORE generic...macros? xml?
+
     addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "...", "...");
     addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "...", "...");
     addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "...", "...");
@@ -199,8 +192,6 @@ private:
     lookup_[info] = description;
   }
 };
-
-//TODO: make more generic...macros?
 
 ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
 {

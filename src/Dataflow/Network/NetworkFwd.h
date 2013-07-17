@@ -55,7 +55,6 @@ class ModuleInfoProvider;
 struct ConnectionDescription;
 class DatatypeSourceInterface;
 class DatatypeSinkInterface;
-class RendererInterface;
 class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
