@@ -50,7 +50,8 @@ namespace SCIRun {
 
 template <class HType, class PortTag>
 class GenericWriter : public SCIRun::Dataflow::Networks::Module,
-  public Has2InputPorts<PortTag, StringPortTag>
+  public Has2InputPorts<PortTag, StringPortTag>,
+  public HasNoOutputPorts
 {
 public:
   GenericWriter(const std::string &name, const std::string &category, const std::string &package, const std::string& stateFilename);

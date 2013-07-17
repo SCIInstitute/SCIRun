@@ -37,7 +37,8 @@ namespace SCIRun {
     namespace DataIO {
 
       class SCISHARE WriteMatrixModule : public SCIRun::Dataflow::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, StringPortTag>
+        public Has2InputPorts<MatrixPortTag, StringPortTag>,
+        public HasNoOutputPorts
       {
       public:
         WriteMatrixModule();

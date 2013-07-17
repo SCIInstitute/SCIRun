@@ -250,18 +250,34 @@ namespace Modules
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE DatatypePortTag {};
-
+  
+  template <size_t N>
+  struct NumInputPorts
+  {
+    enum { NumIPorts = N };
+  };
+  
+  template <size_t N>
+  struct NumOutputPorts
+  {
+    enum { NumOPorts = N };
+  };
+  
+  struct HasNoInputPorts : NumInputPorts<0> {};
+  struct HasNoOutputPorts : NumOutputPorts<0> {};
+  
   template <class PortTypeTag>
-  class Has1InputPort
+  class Has1InputPort : public NumInputPorts<1>
   {
   public:
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name);
   };
 
   template <class PortTypeTag0, class PortTypeTag1>
-  class Has2InputPorts
+  class Has2InputPorts : public NumInputPorts<2>
   {
   public:
+    //typedef NumInputPorts<2> NumInputPorts_t;
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
       //TODO: use move semantics
@@ -273,16 +289,18 @@ namespace Modules
 
   
   template <class PortTypeTag>
-  class Has1OutputPort
+  class Has1OutputPort : public NumOutputPorts<1>
   {
   public:
+    //typedef NumOutputPorts<1>::NumOutputPorts_t NumOutputPorts_t;
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name);
   };
 
   template <class PortTypeTag0, class PortTypeTag1>
-  class Has2OutputPorts
+  class Has2OutputPorts : public NumOutputPorts<2>
   {
   public:
+    //typedef NumOutputPorts<2>::NumOutputPorts_t NumOutputPorts_t;
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
       //TODO: use move semantics
@@ -293,7 +311,7 @@ namespace Modules
   };
 
 #define PORT_SPEC(type, color)   template <>\
-  class Has1InputPort<type ##PortTag>\
+  class Has1InputPort<type ##PortTag> : public NumInputPorts<1>\
   {\
   public:\
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
@@ -304,7 +322,7 @@ namespace Modules
     }\
   };\
   template <>\
-  class Has1OutputPort<type ##PortTag>\
+  class Has1OutputPort<type ##PortTag> : public NumOutputPorts<1>\
   {\
   public:\
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
@@ -333,17 +351,17 @@ namespace Modules
 
   //TODO: make metafunc for Input/Output
 
-  template <class InputPortDesc, class ModuleType>
+  template <size_t numPorts, class ModuleType>
   struct IPortDescriber
   {
-    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs(boost::disable_if<boost)
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
     {
       return std::vector<SCIRun::Dataflow::Networks::InputPortDescription>();
     }
   };
 
-  template <class ModuleType, class Tag>
-  struct IPortDescriber<Has1InputPort<Tag>, ModuleType>
+  template <class ModuleType>
+  struct IPortDescriber<1, ModuleType>
   {
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
     {
@@ -351,8 +369,8 @@ namespace Modules
     }
   };
 
-  template <class ModuleType, class Tag1, class Tag2>
-  struct IPortDescriber<Has2InputPorts<Tag1, Tag2>, ModuleType>
+  template <class ModuleType>
+  struct IPortDescriber<2, ModuleType>
   {
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
     {
@@ -360,7 +378,7 @@ namespace Modules
     }
   };
 
-  template <class OutputPortDesc, class ModuleType>
+  template <size_t numPorts, class ModuleType>
   struct OPortDescriber
   {
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
@@ -369,8 +387,8 @@ namespace Modules
     }
   };
 
-  template <class ModuleType, class Tag>
-  struct OPortDescriber<Has1OutputPort<Tag>, ModuleType>
+  template <class ModuleType>
+  struct OPortDescriber<1, ModuleType>
   {
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
     {
@@ -378,8 +396,8 @@ namespace Modules
     }
   };
 
-  template <class ModuleType, class Tag1, class Tag2>
-  struct OPortDescriber<Has2OutputPorts<Tag1, Tag2>, ModuleType>
+  template <class ModuleType>
+  struct OPortDescriber<2, ModuleType>
   {
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
     {

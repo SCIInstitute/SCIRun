@@ -37,7 +37,8 @@ namespace Modules {
 namespace StringProcessing {
   
   class SCISHARE CreateStringModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<StringPortTag>
+    public Has1OutputPort<StringPortTag>,
+    public HasNoInputPorts
   {
   public:
     CreateStringModule();

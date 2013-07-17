@@ -37,7 +37,8 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE ReceiveScalarModule : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<ScalarPortTag>
+        public Has1InputPort<ScalarPortTag>,
+        public HasNoOutputPorts
       {
       public:
         ReceiveScalarModule();

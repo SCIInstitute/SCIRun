@@ -40,7 +40,8 @@ namespace Modules {
 namespace Render {
 
   class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<GeometryPortTag, GeometryPortTag>
+    public Has2InputPorts<GeometryPortTag, GeometryPortTag>,
+    public HasNoOutputPorts
   {
   public:
     ViewScene();

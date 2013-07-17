@@ -38,7 +38,8 @@ namespace Modules {
 namespace Basic {
   
   class SCISHARE SendTestMatrixModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<MatrixPortTag>
+    public Has1OutputPort<MatrixPortTag>,
+    public HasNoInputPorts
   {
   public:
     SendTestMatrixModule();
