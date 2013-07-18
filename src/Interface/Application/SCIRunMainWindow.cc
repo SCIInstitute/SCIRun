@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
+#include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -142,9 +143,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
 	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 
-  GrabNameAndSetFlags visitor;
-  visitTree(moduleSelectorTreeWidget_, visitor);
-  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
+ 
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -179,10 +178,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   setCurrentFile("");
 
-  moduleSelectorTreeWidget_->expandAll();
-  moduleSelectorTreeWidget_->resizeColumnToContents(0);
-  moduleSelectorTreeWidget_->resizeColumnToContents(1);
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   
@@ -203,12 +198,16 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 void SCIRunMainWindow::initialize()
 {
   postConstructionSignalHookup();
-
+    
+  fillModuleSelector();
+  
   executeCommandLineRequests();
 }
 
 void SCIRunMainWindow::postConstructionSignalHookup()
 {
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
+
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
 
@@ -764,4 +763,63 @@ void SCIRunMainWindow::makeModulesLargeSize()
 void SCIRunMainWindow::makeModulesSmallSize()
 {
   std::cout << "TODO: Modules are small" << std::endl;
+}
+
+namespace {
+typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleMap;
+
+ModuleMap makeModuleMap(const std::vector<ModuleDescription>& moduleDescs)
+{
+  ModuleMap mm;
+  BOOST_FOREACH(const ModuleDescription& md, moduleDescs)
+  {
+    //std::cout << "adding: " << md.lookupInfo_.package_name_ << " / " << md.lookupInfo_.category_name_ << " / " << md.lookupInfo_.module_name_ << std::endl;
+    mm[md.lookupInfo_.package_name_][md.lookupInfo_.category_name_][md.lookupInfo_.module_name_] = md;
+  }
+  return mm;
+}
+
+void fillTreeWidget(QTreeWidget* tree, const ModuleMap& moduleMap)
+{
+  BOOST_FOREACH(const ModuleMap::value_type& package, moduleMap)
+  {
+    const std::string& packageName = package.first;
+    auto p = new QTreeWidgetItem();
+    p->setText(0, QString::fromStdString(packageName));
+    tree->addTopLevelItem(p);
+    BOOST_FOREACH(const ModuleMap::value_type::second_type::value_type& category, package.second)
+    {
+      const std::string& categoryName = category.first;
+      auto c = new QTreeWidgetItem();
+      c->setText(0, QString::fromStdString(categoryName));
+      p->addChild(c);
+      BOOST_FOREACH(const ModuleMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+      {
+        const std::string& moduleName = module.first;
+        auto m = new QTreeWidgetItem();
+        m->setText(0, QString::fromStdString(moduleName));
+        m->setText(1, QString::fromStdString(module.second.moduleStatus_));
+        m->setText(2, QString::fromStdString(module.second.moduleInfo_));
+        c->addChild(m);
+      }
+    }
+  }
+}
+}
+
+void SCIRunMainWindow::fillModuleSelector()
+{
+  moduleSelectorTreeWidget_->clear();
+
+  auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
+  auto moduleMap = makeModuleMap(moduleDescs);
+  fillTreeWidget(moduleSelectorTreeWidget_, moduleMap);
+
+  GrabNameAndSetFlags visitor;
+  visitTree(moduleSelectorTreeWidget_, visitor);
+  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
+
+  moduleSelectorTreeWidget_->expandAll();
+  moduleSelectorTreeWidget_->resizeColumnToContents(0);
+  moduleSelectorTreeWidget_->resizeColumnToContents(1);
 }

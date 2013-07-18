@@ -45,7 +45,7 @@ namespace Networks {
     virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
     virtual ModuleHandle create(const ModuleDescription& desc) = 0;
     virtual void setStateFactory(ModuleStateFactoryHandle stateFactory) = 0;
-    virtual std::vector<ModuleDescription> viewCurrentModules() const = 0;
+    virtual std::vector<ModuleDescription> getAllAvailableModuleDescriptions() const = 0;
   };
 
 }}}

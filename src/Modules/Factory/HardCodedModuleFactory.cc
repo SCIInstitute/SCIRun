@@ -147,7 +147,7 @@ namespace SCIRun {
         Lookup lookup_;
 
         template <class ModuleType>
-        void addModuleDesc(const std::string& name, const std::string& package, const std::string& category, const std::string& status, const std::string& desc)
+        void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)
         {
           ModuleLookupInfo info;
           info.module_name_ = name;
@@ -160,6 +160,8 @@ namespace SCIRun {
           description.input_ports_ = IPortDescriber<ModuleType::NumIPorts, ModuleType>::inputs();
           description.output_ports_ = OPortDescriber<ModuleType::NumOPorts, ModuleType>::outputs();
           description.maker_ = boost::factory<ModuleType*>();
+          description.moduleStatus_ = status;
+          description.moduleInfo_ = desc;
 
           lookup_[info] = description;
         }
@@ -217,7 +219,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   return impl_->lookup.lookupDescription(info);
 }
 
-std::vector<ModuleDescription> HardCodedModuleFactory::viewCurrentModules() const
+std::vector<ModuleDescription> HardCodedModuleFactory::getAllAvailableModuleDescriptions() const
 {
   return impl_->lookup.viewCurrentModules();
 }

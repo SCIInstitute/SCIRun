@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 
 #include <QObject>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 
@@ -56,6 +57,7 @@ namespace Gui {
     int errorCode() const;
     void setExecutorType(int type);
   public:
+    std::vector<SCIRun::Dataflow::Networks::ModuleDescription> getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);

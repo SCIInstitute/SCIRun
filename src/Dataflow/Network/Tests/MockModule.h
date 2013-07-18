@@ -77,7 +77,7 @@ namespace SCIRun {
           virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
           virtual ModuleHandle create(const ModuleDescription& info);
           virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
-          virtual std::vector<ModuleDescription> viewCurrentModules() const;
+          virtual std::vector<ModuleDescription> getAllAvailableModuleDescriptions() const;
         private:
           size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;

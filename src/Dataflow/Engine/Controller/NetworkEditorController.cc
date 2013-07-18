@@ -34,6 +34,7 @@
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #ifdef BUILD_WITH_PYTHON
@@ -305,3 +306,7 @@ void NetworkEditorController::setExecutorType(int type)
   currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
 }
 
+std::vector<ModuleDescription> NetworkEditorController::getAllAvailableModuleDescriptions() const
+{
+  return moduleFactory_->getAllAvailableModuleDescriptions();
+}

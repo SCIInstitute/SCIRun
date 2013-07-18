@@ -106,3 +106,8 @@ void NetworkEditorControllerGuiProxy::duplicateModule(const SCIRun::Dataflow::Ne
 {
   controller_->duplicateModule(module);
 }
+
+std::vector<ModuleDescription> NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const
+{
+  return controller_->getAllAvailableModuleDescriptions();
+}

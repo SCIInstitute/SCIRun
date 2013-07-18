@@ -107,6 +107,8 @@ namespace Networks {
     ~ModuleDescription();
     ModuleLookupInfo lookupInfo_;
     std::string module_version_;
+    std::string moduleStatus_;
+    std::string moduleInfo_;
     std::vector<InputPortDescription> input_ports_;
     std::vector<OutputPortDescription> output_ports_;
     //bool                              optional_;
