@@ -36,12 +36,41 @@
 #include <Interface/Application/PositionProvider.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/ClosestPortFinder.h>
+#include <Core/Application/Application.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
 namespace SCIRun {
   namespace Gui {
+
+    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const QColor& portColorToMatch)
+    {
+      BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+      {
+        const std::string& packageName = package.first;
+        auto p = new QMenu(QString::fromStdString(packageName));
+        menu->addMenu(p);
+        //std::cout << packageName << std::endl;
+        BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+        {
+          const std::string& categoryName = category.first;
+          auto c = new QMenu(QString::fromStdString(categoryName));
+          p->addMenu(c);
+          //std::cout << categoryName << std::endl;
+          BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+          {
+            const std::string& moduleName = module.first;
+            auto m = new QAction(QString::fromStdString(moduleName), menu);
+            c->addAction(m);
+            //std::cout << moduleName << std::endl;
+          }
+        }
+      }
+    }
+
+
     class PortActionsMenu : public QMenu
     {
     public:
@@ -61,12 +90,8 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
+        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent->color());
         addMenu(m);
-
-        //TODO: hook up with ModuleList singleton
-        m->addAction(new QAction("Module 1", parent));
-        m->addAction(new QAction("Module 2", parent));
-        m->addAction(new QAction("Module 3", parent));
       }
       QAction* getAction(const char* name) const
       {
