@@ -42,31 +42,52 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
+
 namespace SCIRun {
   namespace Gui {
 
-    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const QColor& portColorToMatch)
+    bool portColorMatches(const QColor& portColorToMatch, bool isInput, const ModuleDescription& module) 
+    {
+      //std::cout << "Trying to match " << portColorToMatch.name().toStdString() << " " << isInput << std::endl;
+      if (isInput)
+        return std::find_if(module.output_ports_.begin(), module.output_ports_.end(), [&](const OutputPortDescription& out) { return QColor(QString::fromStdString(out.color)).name() == portColorToMatch.name(); }) != module.output_ports_.end();
+      else
+        return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return QColor(QString::fromStdString(in.color)).name() == portColorToMatch.name(); }) != module.input_ports_.end();
+    }
+
+    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const QColor& portColorToMatch, bool isInput)
     {
       BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
       {
         const std::string& packageName = package.first;
-        auto p = new QMenu(QString::fromStdString(packageName));
+        auto p = new QMenu(QString::fromStdString(packageName), menu);
         menu->addMenu(p);
         //std::cout << packageName << std::endl;
         BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
         {
           const std::string& categoryName = category.first;
-          auto c = new QMenu(QString::fromStdString(categoryName));
-          p->addMenu(c);
+          auto c = new QMenu(QString::fromStdString(categoryName), menu);
+          
           //std::cout << categoryName << std::endl;
           BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
           {
-            const std::string& moduleName = module.first;
-            auto m = new QAction(QString::fromStdString(moduleName), menu);
-            c->addAction(m);
+            if (portColorMatches(portColorToMatch, isInput, module.second))
+            {
+              const std::string& moduleName = module.first;
+              auto m = new QAction(QString::fromStdString(moduleName), menu);
+              c->addAction(m);
+            }
             //std::cout << moduleName << std::endl;
           }
+          if (c->actions().count() > 0)
+            p->addMenu(c);
+          else
+            delete c;
+
+          //if (0 == c->children().count())
+//            p->
         }
+        menu->addSeparator();
       }
     }
 
@@ -90,7 +111,7 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
-        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent->color());
+        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent->color(), parent->isInput());
         addMenu(m);
       }
       QAction* getAction(const char* name) const
