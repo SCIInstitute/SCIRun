@@ -48,11 +48,13 @@ namespace SCIRun {
 
     bool portColorMatches(const QColor& portColorToMatch, bool isInput, const ModuleDescription& module) 
     {
-      //std::cout << "Trying to match " << portColorToMatch.name().toStdString() << " " << isInput << std::endl;
+      std::cout << "Trying to match " << portColorToMatch.name().toStdString() << " " << isInput << " " << module.lookupInfo_.module_name_ << std::endl;
       if (isInput)
-        return std::find_if(module.output_ports_.begin(), module.output_ports_.end(), [&](const OutputPortDescription& out) { return QColor(QString::fromStdString(out.color)).name() == portColorToMatch.name(); }) != module.output_ports_.end();
+        return std::find_if(module.output_ports_.begin(), module.output_ports_.end(), [&](const OutputPortDescription& out) -> bool { std::cout << "\t with: " << QColor(QString::fromStdString(out.color)).name().toStdString() << std::endl;
+          return QColor(QString::fromStdString(out.color)).name() == portColorToMatch.name(); }) != module.output_ports_.end();
       else
-        return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return QColor(QString::fromStdString(in.color)).name() == portColorToMatch.name(); }) != module.input_ports_.end();
+        return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) -> bool { std::cout << "\t with: " << QColor(QString::fromStdString(in.color)).name().toStdString() << std::endl;
+      return QColor(QString::fromStdString(in.color)).name() == portColorToMatch.name(); }) != module.input_ports_.end();
     }
 
     void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const QColor& portColorToMatch, bool isInput)

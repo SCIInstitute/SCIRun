@@ -81,6 +81,7 @@ SET(Interface_Application_HEADERS
   NetworkEditor.h
   NetworkEditorControllerGuiProxy.h
   TreeViewCollaborators.h
+  Utility.h
 )
 
 SET(Interface_Application_FORMS
