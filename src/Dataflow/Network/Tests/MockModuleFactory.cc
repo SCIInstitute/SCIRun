@@ -96,7 +96,8 @@ void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
   stateFactory_ = stateFactory;
 }
 
-std::vector<ModuleDescription> MockModuleFactory::getAllAvailableModuleDescriptions() const
+const ModuleDescriptionMap& MockModuleFactory::getAllAvailableModuleDescriptions() const
 {
-  return std::vector<ModuleDescription>();
+  static ModuleDescriptionMap empty;
+  return empty;
 }

@@ -89,7 +89,7 @@ namespace Engine {
     //TODO: eek, getting bloated here. Figure out a better way to wire this one in.
     void setModulePositionEditor(Networks::ModulePositionEditor* editor) { modulePositionEditor_ = editor; }
 
-    std::vector<Networks::ModuleDescription> getAllAvailableModuleDescriptions() const;
+    const Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
 
   private:
     void printNetwork() const;

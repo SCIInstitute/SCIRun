@@ -60,7 +60,7 @@ namespace SCIRun {
         }
         addActions(actions);
 
-        auto m = new QMenu("Connect Module -->", parent);
+        auto m = new QMenu("Connect Module", parent);
         addMenu(m);
 
         //TODO: hook up with ModuleList singleton

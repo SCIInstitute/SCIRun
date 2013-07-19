@@ -30,7 +30,7 @@
 #ifndef DATAFLOW_NETWORK_MODULE_FACTORY_H
 #define DATAFLOW_NETWORK_MODULE_FACTORY_H 
 
-#include <vector>
+#include <map>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/share.h>
 
@@ -45,7 +45,7 @@ namespace Networks {
     virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info) = 0;
     virtual ModuleHandle create(const ModuleDescription& desc) = 0;
     virtual void setStateFactory(ModuleStateFactoryHandle stateFactory) = 0;
-    virtual std::vector<ModuleDescription> getAllAvailableModuleDescriptions() const = 0;
+    virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const = 0;
   };
 
 }}}

@@ -57,7 +57,7 @@ namespace Gui {
     int errorCode() const;
     void setExecutorType(int type);
   public:
-    std::vector<SCIRun::Dataflow::Networks::ModuleDescription> getAllAvailableModuleDescriptions() const;
+    const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);

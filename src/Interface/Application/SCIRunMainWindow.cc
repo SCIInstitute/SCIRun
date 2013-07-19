@@ -766,34 +766,25 @@ void SCIRunMainWindow::makeModulesSmallSize()
 }
 
 namespace {
-typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleMap;
 
-ModuleMap makeModuleMap(const std::vector<ModuleDescription>& moduleDescs)
-{
-  ModuleMap mm;
-  BOOST_FOREACH(const ModuleDescription& md, moduleDescs)
-  {
-    //std::cout << "adding: " << md.lookupInfo_.package_name_ << " / " << md.lookupInfo_.category_name_ << " / " << md.lookupInfo_.module_name_ << std::endl;
-    mm[md.lookupInfo_.package_name_][md.lookupInfo_.category_name_][md.lookupInfo_.module_name_] = md;
-  }
-  return mm;
-}
 
-void fillTreeWidget(QTreeWidget* tree, const ModuleMap& moduleMap)
+
+
+void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
 {
-  BOOST_FOREACH(const ModuleMap::value_type& package, moduleMap)
+  BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
   {
     const std::string& packageName = package.first;
     auto p = new QTreeWidgetItem();
     p->setText(0, QString::fromStdString(packageName));
     tree->addTopLevelItem(p);
-    BOOST_FOREACH(const ModuleMap::value_type::second_type::value_type& category, package.second)
+    BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
     {
       const std::string& categoryName = category.first;
       auto c = new QTreeWidgetItem();
       c->setText(0, QString::fromStdString(categoryName));
       p->addChild(c);
-      BOOST_FOREACH(const ModuleMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
       {
         const std::string& moduleName = module.first;
         auto m = new QTreeWidgetItem();
@@ -812,8 +803,7 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->clear();
 
   auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
-  auto moduleMap = makeModuleMap(moduleDescs);
-  fillTreeWidget(moduleSelectorTreeWidget_, moduleMap);
+  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs);
 
   GrabNameAndSetFlags visitor;
   visitTree(moduleSelectorTreeWidget_, visitor);

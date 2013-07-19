@@ -306,7 +306,7 @@ void NetworkEditorController::setExecutorType(int type)
   currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
 }
 
-std::vector<ModuleDescription> NetworkEditorController::getAllAvailableModuleDescriptions() const
+const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const
 {
   return moduleFactory_->getAllAvailableModuleDescriptions();
 }

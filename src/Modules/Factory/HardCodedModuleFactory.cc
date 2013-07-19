@@ -123,12 +123,7 @@ namespace SCIRun {
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
         }
 
-        std::vector<ModuleDescription> viewCurrentModules() const
-        {
-          std::vector<ModuleDescription> descs;
-          std::transform(lookup_.begin(), lookup_.end(), std::back_inserter(descs), [](const Lookup::value_type& p) { return p.second; });
-          return descs;
-        }
+        ModuleDescriptionMap descMap_;
 
         ModuleDescription lookupDescription(const ModuleLookupInfo& info)
         {
@@ -164,6 +159,8 @@ namespace SCIRun {
           description.moduleInfo_ = desc;
 
           lookup_[info] = description;
+
+          descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
         }
       };
 
@@ -219,7 +216,7 @@ ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupIn
   return impl_->lookup.lookupDescription(info);
 }
 
-std::vector<ModuleDescription> HardCodedModuleFactory::getAllAvailableModuleDescriptions() const
+const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescriptions() const
 {
-  return impl_->lookup.viewCurrentModules();
+  return impl_->lookup.descMap_;
 }
