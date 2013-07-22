@@ -43,35 +43,23 @@ namespace Networks {
 
   struct SCISHARE PortDescription
   {
-    PortDescription(const std::string& n, const std::string& d, const std::string& c) : 
-  name(n), datatype(d), color(c) {}
+    PortDescription(const std::string& n, const std::string& d) : 
+  name(n), datatype(d) {}
     std::string name;
     std::string datatype;
-    std::string color;
+  };
+
+  class SCISHARE PortColorLookup
+  {
+  public:
+    static std::string toColor(const std::string& portDatatype);
+  private:
+    static std::map<std::string, std::string> portColorMap_;
+    static void init();
   };
 
   typedef PortDescription InputPortDescription;
   typedef PortDescription OutputPortDescription;
-
-//   struct SCISHARE InputPortDescription
-//   {
-//     InputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
-//       name(n), datatype(d), color(c) {}
-//     std::string name;
-//     std::string datatype;
-//     std::string color;
-//     //iport_maker maker;
-//   };
-// 
-//   struct SCISHARE OutputPortDescription
-//   {
-//     OutputPortDescription(const std::string& n, const std::string& d, const std::string& c) : 
-//       name(n), datatype(d), color(c) {}
-//     std::string name;
-//     std::string datatype;
-//     std::string color;
-//     //oport_maker maker;
-//   };
 
   struct SCISHARE ModuleId
   {

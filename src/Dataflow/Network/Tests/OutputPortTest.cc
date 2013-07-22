@@ -58,7 +58,7 @@ protected:
 
 TEST_F(OutputPortTest, SendSomeData)
 {
-  Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
+  Port::ConstructionParams pcp("ScalarValue", "Double");
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
   MockModulePtr outputModule(new NiceMock<MockModule>);
@@ -66,7 +66,7 @@ TEST_F(OutputPortTest, SendSomeData)
 
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
   MockModulePtr inputModule(new NiceMock<MockModule>);
-  EXPECT_CALL(*inputPort, get_colorname()).WillRepeatedly(Return(pcp.color_name));
+  EXPECT_CALL(*inputPort, get_typename()).WillRepeatedly(Return(pcp.type_name));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
 
@@ -83,7 +83,7 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 {
   MockModulePtr outputModule(new NiceMock<MockModule>);
   
-  Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
+  Port::ConstructionParams pcp("ScalarValue", "Double");
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
@@ -97,7 +97,7 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 
 TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
 {
-  Port::ConstructionParams pcp("Double", "ScalarVale", "cyan");
+  Port::ConstructionParams pcp("ScalarValue", "Double");
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
   MockModulePtr outputModule(new NiceMock<MockModule>);
@@ -108,8 +108,8 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   MockModulePtr inputModule(new NiceMock<MockModule>);
   EXPECT_CALL(*inputModule, get_input_port(1)).WillRepeatedly(Return(inputPort));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort2));
-  EXPECT_CALL(*inputPort, get_colorname()).WillRepeatedly(Return(pcp.color_name));
-  EXPECT_CALL(*inputPort2, get_colorname()).WillRepeatedly(Return(pcp.color_name));
+  EXPECT_CALL(*inputPort, get_typename()).WillRepeatedly(Return(pcp.type_name));
+  EXPECT_CALL(*inputPort2, get_typename()).WillRepeatedly(Return(pcp.type_name));
   EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
 
   Connection c1(outputModule, 1, inputModule, 1, "test1");

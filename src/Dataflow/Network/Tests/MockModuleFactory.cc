@@ -44,8 +44,8 @@ ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& i
 {
   ModuleDescription d;
   d.lookupInfo_ = info;
-  d.output_ports_ += OutputPortDescription("o1", "d1", "c1");
-  d.input_ports_ += InputPortDescription("i1", "d1", "c1"), InputPortDescription("i2", "d1", "c1"), InputPortDescription("i3", "d2", "c2");
+  d.output_ports_ += OutputPortDescription("o1", "d1");
+  d.input_ports_ += InputPortDescription("i1", "d1"), InputPortDescription("i2", "d1"), InputPortDescription("i3", "d2");
   return d;
 }
 
@@ -60,7 +60,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   BOOST_FOREACH(const InputPortDescription& d, info.input_ports_)
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
-    ON_CALL(*inputPort, get_colorname()).WillByDefault(Return(d.color));
+    ON_CALL(*inputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
     //EXPECT_CALL(*module, get_input_port(portIndex)).WillRepeatedly(Return(inputPort));
     portIndex++;
@@ -71,7 +71,7 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
   BOOST_FOREACH(const OutputPortDescription& d, info.output_ports_)
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
-    ON_CALL(*outputPort, get_colorname()).WillByDefault(Return(d.color));
+    ON_CALL(*outputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
     //EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
     portIndex++;

@@ -63,7 +63,7 @@ protected:
 
 TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 {
-  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+  Port::ConstructionParams pcp("ForwardMatrix", "Matrix");
 
   MockDatatypeSinkPtr sink(new NiceMock<MockDatatypeSink>);
 
@@ -79,7 +79,7 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 //let's just use all "real" objects to see if it works.
 TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 {
-  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+  Port::ConstructionParams pcp("ForwardMatrix", "Matrix");
 
   boost::shared_ptr<SimpleSink> sink(new SimpleSink);
 

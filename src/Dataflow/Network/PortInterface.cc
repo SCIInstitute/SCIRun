@@ -66,12 +66,13 @@ namespace
     return port1.getUnderlyingModuleId() == port2.getUnderlyingModuleId();
   }
 
-  bool isWildPortColor(const PortDescriptionInterface& port)
+  bool isWildPort(const PortDescriptionInterface& port)
   {
-    const static std::string blackGui = "#000000";
-    const static std::string black = "black";
-    auto color = port.get_colorname();
-    return color == black || color == blackGui;
+    return port.get_typename() == "Datatype";
+    //const static std::string blackGui = "#000000";
+    //const static std::string black = "black";
+    //auto color = port.get_typename();
+    //return color == black || color == blackGui;
   }
 }
 
@@ -95,13 +96,13 @@ bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& po
     //std::cout << "can't connect since it's the same module" << std::endl;
     return false;
   }
-  if (isWildPortColor(port1) || isWildPortColor(port2))
+  if (isWildPort(port1) || isWildPort(port2))
   {
     //std::cout << "found wild port" << std::endl;
     //TODO: trying out "wildcard" ports
     return true;
   }
-  if (port1.get_colorname() != port2.get_colorname())
+  if (port1.get_typename() != port2.get_typename())
   {
     //std::cout << "can't connect since colors don't match" << std::endl;
     return false;

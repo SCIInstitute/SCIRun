@@ -28,10 +28,37 @@
 
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
+#include <boost/assign.hpp>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace boost::assign;
+
+std::string PortColorLookup::toColor(const std::string& portDatatype)
+{
+  if (portColorMap_.empty())
+    init();
+
+  auto it = portColorMap_.find(portDatatype);
+  return it != portColorMap_.end() ? it->second : "";
+}
+
+std::map<std::string, std::string> PortColorLookup::portColorMap_;
+
+void PortColorLookup::init()
+{
+  insert(portColorMap_)
+    ("Matrix", "blue")
+    ("Scalar", "white")
+    ("String", "darkGreen")
+    ("Field", "yellow")
+    ("Mesh", "cyan")  //TODO temporary
+    ("Geometry", "magenta")
+    ("Datatype", "black");
+}
+
+
 
 ModuleDescription::ModuleDescription()
 {

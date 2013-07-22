@@ -46,48 +46,39 @@ using namespace SCIRun::Dataflow::Networks;
 namespace SCIRun {
   namespace Gui {
 
-    bool portColorMatches(const QColor& portColorToMatch, bool isInput, const ModuleDescription& module) 
+    bool portTypeMatches(const std::string& portTypeToMatch, bool isInput, const ModuleDescription& module) 
     {
-      std::cout << "Trying to match " << portColorToMatch.name().toStdString() << " " << isInput << " " << module.lookupInfo_.module_name_ << std::endl;
       if (isInput)
-        return std::find_if(module.output_ports_.begin(), module.output_ports_.end(), [&](const OutputPortDescription& out) -> bool { std::cout << "\t with: " << QColor(QString::fromStdString(out.color)).name().toStdString() << std::endl;
-          return QColor(QString::fromStdString(out.color)).name() == portColorToMatch.name(); }) != module.output_ports_.end();
+        return std::find_if(module.output_ports_.begin(), module.output_ports_.end(), [&](const OutputPortDescription& out) { return out.datatype == portTypeToMatch; }) != module.output_ports_.end();
       else
-        return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) -> bool { std::cout << "\t with: " << QColor(QString::fromStdString(in.color)).name().toStdString() << std::endl;
-      return QColor(QString::fromStdString(in.color)).name() == portColorToMatch.name(); }) != module.input_ports_.end();
+        return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return in.datatype == portTypeToMatch; }) != module.input_ports_.end();
     }
 
-    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const QColor& portColorToMatch, bool isInput)
+    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const std::string& portTypeToMatch, bool isInput)
     {
       BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
       {
         const std::string& packageName = package.first;
         auto p = new QMenu(QString::fromStdString(packageName), menu);
         menu->addMenu(p);
-        //std::cout << packageName << std::endl;
         BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
         {
           const std::string& categoryName = category.first;
           auto c = new QMenu(QString::fromStdString(categoryName), menu);
           
-          //std::cout << categoryName << std::endl;
           BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
           {
-            if (portColorMatches(portColorToMatch, isInput, module.second))
+            if (portTypeMatches(portTypeToMatch, isInput, module.second))
             {
               const std::string& moduleName = module.first;
               auto m = new QAction(QString::fromStdString(moduleName), menu);
               c->addAction(m);
             }
-            //std::cout << moduleName << std::endl;
           }
           if (c->actions().count() > 0)
             p->addMenu(c);
           else
             delete c;
-
-          //if (0 == c->children().count())
-//            p->
         }
         menu->addSeparator();
       }
@@ -97,7 +88,7 @@ namespace SCIRun {
     class PortActionsMenu : public QMenu
     {
     public:
-      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent)//, parent_(parent)
+      explicit PortActionsMenu(PortWidget* parent) : QMenu("Actions", parent)
       {
         QList<QAction*> actions;
         if (!parent->isInput())
@@ -113,7 +104,7 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
-        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent->color(), parent->isInput());
+        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent->get_typename(), parent->isInput());
         addMenu(m);
       }
       QAction* getAction(const char* name) const
@@ -125,19 +116,17 @@ namespace SCIRun {
         }
         return 0;
       }
-    private:
-      //PortWidget* parent_;
     };
   }}
 
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
-PortWidget::PortWidget(const QString& name, const QColor& color, const ModuleId& moduleId, size_t index,
+PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId, size_t index,
   bool isInput, 
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
   : QPushButton(parent), 
-  name_(name), moduleId_(moduleId), index_(index), color_(color), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), moduleId_(moduleId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isConnected_(false), lightOn_(false), currentConnection_(0),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this))
@@ -367,9 +356,9 @@ size_t PortWidget::nconnections() const
   return connections_.size();
 }
 
-std::string PortWidget::get_colorname() const
+std::string PortWidget::get_typename() const
 {
-  return color().name().toStdString();
+  return typename_;
 }
 
 std::string PortWidget::get_portname() const
@@ -387,18 +376,20 @@ void PortWidget::portCachingChanged(bool checked)
   std::cout << "Port " << moduleId_.id_ << "::" << name().toStdString() << " Caching turned " << (checked ? "on." : "off.") << std::endl;
 }
 
-InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
+InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
+  const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
   boost::shared_ptr<ConnectionFactory> connectionFactory, 
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, true, connectionFactory, closestPortFinder, parent)
+  : PortWidget(name, color, datatype, moduleId, index, true, connectionFactory, closestPortFinder, parent)
 {
 }
 
-OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
+OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
+  const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
   boost::shared_ptr<ConnectionFactory> connectionFactory, 
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, moduleId, index, false, connectionFactory, closestPortFinder, parent)
+  : PortWidget(name, color, datatype, moduleId, index, false, connectionFactory, closestPortFinder, parent)
 {
 }

@@ -34,9 +34,9 @@ using namespace SCIRun::Dataflow::Networks;
 TEST(ModuleTests, CanBuildWithPorts)
 {
   ModuleHandle module = Module::Builder().with_name("SolveLinearSystem")
-    .add_input_port(Port::ConstructionParams("Matrix", "ForwardMatrix", "blue"))
-    .add_input_port(Port::ConstructionParams("Matrix", "RHS", "blue"))
-    .add_output_port(Port::ConstructionParams("Matrix", "Solution", "blue"))
+    .add_input_port(Port::ConstructionParams("ForwardMatrix", "Matrix"))
+    .add_input_port(Port::ConstructionParams("RHS", "Matrix"))
+    .add_output_port(Port::ConstructionParams("Solution", "Matrix"))
     .build();
   EXPECT_EQ(2, module->num_input_ports());
   EXPECT_EQ(1, module->num_output_ports());

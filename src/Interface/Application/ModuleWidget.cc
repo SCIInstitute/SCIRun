@@ -225,7 +225,8 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), moduleId, i, connectionFactory_, closestPortFinder_, this);
+    auto type = port->get_typename();
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
@@ -233,7 +234,8 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), moduleId, i, connectionFactory_, closestPortFinder_, this);
+    auto type = port->get_typename();
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     addPort(w);
   }

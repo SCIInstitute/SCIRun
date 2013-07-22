@@ -307,14 +307,14 @@ namespace Modules
     }
   };
 
-#define PORT_SPEC(type, color)   template <>\
+#define PORT_SPEC(type)   template <>\
   class Has1InputPort<type ##PortTag> : public NumInputPorts<1>\
   {\
   public:\
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
       return ports;\
     }\
   };\
@@ -325,18 +325,18 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, color)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
       return ports;\
     }\
   }\
 
-  PORT_SPEC(Matrix, "blue");
-  PORT_SPEC(Scalar, "white");
-  PORT_SPEC(String, "darkGreen");
-  PORT_SPEC(Field, "yellow");
-  PORT_SPEC(Mesh, "cyan");  //TODO temporary
-  PORT_SPEC(Geometry, "magenta");
-  PORT_SPEC(Datatype, "black");
+  PORT_SPEC(Matrix);
+  PORT_SPEC(Scalar);
+  PORT_SPEC(String);
+  PORT_SPEC(Field);
+  PORT_SPEC(Mesh);  //TODO temporary
+  PORT_SPEC(Geometry);
+  PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 

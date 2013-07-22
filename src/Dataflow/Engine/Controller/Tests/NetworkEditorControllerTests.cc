@@ -82,8 +82,8 @@ protected:
   std::string portsHaveSameType()
   {
     std::string color("c1");
-    EXPECT_CALL(*port1, get_colorname()).WillRepeatedly(Return(color));
-    EXPECT_CALL(*port2, get_colorname()).WillRepeatedly(Return(color));
+    EXPECT_CALL(*port1, get_typename()).WillRepeatedly(Return(color));
+    EXPECT_CALL(*port2, get_typename()).WillRepeatedly(Return(color));
     return color;
   }
 
@@ -91,8 +91,8 @@ protected:
   {
     std::string color1("c1");
     std::string color2("c2");
-    EXPECT_CALL(*port1, get_colorname()).WillRepeatedly(Return(color1));
-    EXPECT_CALL(*port2, get_colorname()).WillRepeatedly(Return(color2));
+    EXPECT_CALL(*port1, get_typename()).WillRepeatedly(Return(color1));
+    EXPECT_CALL(*port2, get_typename()).WillRepeatedly(Return(color2));
   }
 
   std::pair<ModuleId,ModuleId> portsAreOnDifferentModules()
