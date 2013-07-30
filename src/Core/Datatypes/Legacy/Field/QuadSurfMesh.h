@@ -2434,8 +2434,8 @@ QuadSurfMesh<Basis>::transform(const Core::Geometry::Transform &t)
     synchronized_ |= Mesh::BOUNDING_BOX_E;
   }
     
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
   synchronize_lock_.unlock();
 }
 

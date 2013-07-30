@@ -566,7 +566,7 @@ public:
       StackVector<Core::Geometry::Point,3> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
-      Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+      Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
       Jv2.normalize();
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -604,7 +604,7 @@ public:
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
       double J[9];
-      Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+      Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
       Jv2.normalize();
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -1339,8 +1339,8 @@ ImageMesh<Basis>::get_center(Core::Geometry::Point &result,
   get_center(result, arr[0]);
   get_center(p1, arr[1]);
 
-  result.asVector() += p1.asVector();
-  result.asVector() *= 0.5;
+  result += p1;
+  result *= 0.5;
 }
 
 
