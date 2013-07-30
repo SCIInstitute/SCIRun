@@ -663,7 +663,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
-    result = Cross(Jv[0], Jv[1]);
+    result = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
     result.normalize();
   }
 
@@ -732,7 +732,7 @@ public:
   }
 
   //! Get the jacobian of the transformation. In case one wants the non inverted
-  //! version of this matrix. This is currentl here for completeness of the 
+  //! version of this matrix. This is currently here for completeness of the 
   //! interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
@@ -740,7 +740,7 @@ public:
     StackVector<Core::Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
+    Core::Geometry::Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -763,7 +763,7 @@ public:
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     double J[9];
-    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
+    Core::Geometry::Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -789,7 +789,8 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Core::Geometry::Vector v = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1])); 
+    v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = ScaledDetMatrix3P(Jv);
     
@@ -798,7 +799,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0],Jv[1]); v.normalize();
+      v = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1])); v.normalize();
       Jv[2] = v.asPoint();
       temp = ScaledDetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -818,7 +819,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Core::Geometry::Vector v = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     
@@ -827,7 +828,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0],Jv[1]); v.normalize();
+      v = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1])); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -1659,16 +1660,17 @@ protected:
             "QuadSurfMesh: Must call synchronize EDGES_E on QuadSurfMesh first");
 
     array.clear();
-    array.reserve(4);
+    //array.reserve(4);
     index_type he;
+    int i = 0;
     he = static_cast<typename ARRAY::value_type>(halfedge_to_edge_[idx * 4 ]);
-    if (he >=0)  array.push_back(he);
+    if (he >=0)  array[i++] = he;
     he = static_cast<typename ARRAY::value_type>(halfedge_to_edge_[idx * 4 + 1]);
-    if (he >=0)  array.push_back(he); 
+    if (he >=0)  array[i++] = he; 
     he = static_cast<typename ARRAY::value_type>(halfedge_to_edge_[idx * 4 + 2]);
-    if (he >=0)  array.push_back(he);
+    if (he >=0)  array[i++] = he;
     he = static_cast<typename ARRAY::value_type>(halfedge_to_edge_[idx * 4 + 3]);
-    if (he >=0)  array.push_back(he);
+    if (he >=0)  array[i++] = he;
   }
 
 
