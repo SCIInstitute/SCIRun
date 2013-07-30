@@ -76,6 +76,16 @@ public:
     return impl_.origin()[idx];
   }
 
+  inline const T& operator()(index_type d1, index_type d2) const
+  {
+    return impl_[d1][d2];
+  }
+
+  inline T& operator()(index_type d1, index_type d2)
+  {
+    return impl_[d1][d2];
+  }
+
   //////////
   //Returns number of rows
   inline size_t dim1() const {return impl_.shape()[0];}
