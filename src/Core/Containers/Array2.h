@@ -55,6 +55,13 @@ public:
   typedef boost::multi_array<T, 2> impl_type;
   typedef T value_type;
 
+  Array2() {}
+
+  Array2(size_t size1, size_t size2) 
+  {
+    resize(size1, size2);
+  }
+
   void resize(size_t size1, size_t size2)
   {
     typename impl_type::extent_gen extents;
