@@ -2649,7 +2649,7 @@ jacobian(const VMesh::coords_type& coords,
     StackVector<Point,2> Jv;
     ElemData ed(this,this->mesh_,idx);
     this->basis_->derivate(coords,ed,Jv);
-    Vector Jv2 = Cross(Jv[0],Jv[1]);
+    Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -2673,7 +2673,7 @@ inverse_jacobian(const VMesh::coords_type& coords,
   ElemData ed(this,this->mesh_,idx);
   this->basis_->derivate(coords,ed,Jv);
   double J[9];
-  Vector Jv2 = Cross(Jv[0],Jv[1]);
+  Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
   Jv2.normalize();
   J[0] = Jv[0].x();
   J[1] = Jv[0].y();
@@ -2701,7 +2701,7 @@ scaled_jacobian_metric(const VMesh::Elem::index_type idx) const
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
   Jv.resize(3); 
-  Vector v = Cross(Jv[0],Jv[1]);
+  Vector v = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
   v.normalize();
   Jv[2] = v.asPoint();
   double min_jacobian = ScaledDetMatrix3P(Jv);
@@ -2711,7 +2711,7 @@ scaled_jacobian_metric(const VMesh::Elem::index_type idx) const
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Vector v = Cross(Vector(Jv[0]),Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();    
     temp = ScaledDetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
@@ -2732,7 +2732,7 @@ jacobian_metric(VMesh::Elem::index_type idx) const
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
   Jv.resize(3); 
-  Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+  Vector v = Cross(Vector(Jv[0]),Vector(Jv[1])); v.normalize();
   Jv[2] = v.asPoint();
   double min_jacobian = DetMatrix3P(Jv);
   
@@ -2741,7 +2741,7 @@ jacobian_metric(VMesh::Elem::index_type idx) const
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0],Jv[1]); v.normalize();
+    Vector v = Cross(Vector(Jv[0]),Vector(Jv[1])); v.normalize();
     Jv[2] = v.asPoint();
     temp = DetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
