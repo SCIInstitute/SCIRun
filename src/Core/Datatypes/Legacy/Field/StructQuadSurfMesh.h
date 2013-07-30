@@ -53,11 +53,10 @@
 #include <Core/GeometryPrimitives/CompGeom.h>
 
 #include <Core/Containers/Array2.h>
-#include <Core/Containers/SearchGridT.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
 
 #include <Core/Datatypes/Legacy/Field/ImageMesh.h>
 
-//! Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
@@ -70,8 +69,8 @@ template <class Basis>
 class StructQuadSurfMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVStructQuadSurfMesh(MESH* mesh) { return (0); }
 

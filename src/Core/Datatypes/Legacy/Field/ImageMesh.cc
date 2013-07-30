@@ -39,7 +39,7 @@ namespace SCIRun {
 
 
 //! This is the virtual interface to the curve mesh
-//! This class lives besides the real mesh class for now and solely profides
+//! This class lives besides the real mesh class for now and solely provides
 //! an interface. In the future however when dynamic compilation is gone
 //! this should be put into the ImageMesh class.
 template<class MESH> class VImageMesh;
@@ -54,7 +54,6 @@ class VImageMesh : public VMeshShared<MESH> {
 
     virtual bool is_imagemesh()          { return (true); }
 
-    //! constructor and descructor
     VImageMesh(MESH* mesh) : VMeshShared<MESH>(mesh) 
     {
       DEBUG_CONSTRUCTOR("VImageMesh") 

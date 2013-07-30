@@ -41,7 +41,6 @@ class VQuadSurfMesh : public VUnstructuredMesh<MESH> {
 public:
   virtual bool is_quadsurfmesh()       { return (true); }
 
-  //! constructor and descructor
   VQuadSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VQuadSurfMesh")   
