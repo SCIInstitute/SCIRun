@@ -54,6 +54,7 @@
 
 #include <Core/Containers/Array2.h>
 #include <Core/GeometryPrimitives/SearchGridT.h>
+#include <Core/Thread/Mutex.h>
 
 #include <Core/Datatypes/Legacy/Field/ImageMesh.h>
 
@@ -81,7 +82,7 @@ VMesh* CreateVStructQuadSurfMesh(MESH* mesh) { return (0); }
 
 #if (SCIRUN_STRUCTQUADSURF_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVStructQuadSurfMesh(StructQuadSurfMesh<QuadBilinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVStructQuadSurfMesh(StructQuadSurfMesh<Core::Basis::QuadBilinearLgn<Core::Geometry::Point> >* mesh);
 
 #endif
 
@@ -100,7 +101,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
   
-  typedef LockingHandle<StructQuadSurfMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<StructQuadSurfMesh<Basis> > handle_type;
 
   StructQuadSurfMesh();
   StructQuadSurfMesh(size_type x, size_type y);
@@ -127,7 +128,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    ImageMesh<Basis>::vmesh_ = CreateVStructQuadSurfMesh(this); 
+    ImageMesh<Basis>::vmesh_.reset(CreateVStructQuadSurfMesh(this));
   }
 
   virtual int topology_geometry() const 
@@ -1001,10 +1002,10 @@ protected:
   Array2<Core::Geometry::Point>  points_;
   Array2<Core::Geometry::Vector> normals_; //! normalized per node
 
-  LockingHandle<SearchGridT<typename ImageMesh<Basis>::Node::index_type > > node_grid_;
-  LockingHandle<SearchGridT<typename ImageMesh<Basis>::Elem::index_type > > elem_grid_;
+  boost::shared_ptr<SearchGridT<typename ImageMesh<Basis>::Node::index_type > > node_grid_;
+  boost::shared_ptr<SearchGridT<typename ImageMesh<Basis>::Elem::index_type > > elem_grid_;
   
-  mutable Mutex  synchronize_lock_;
+  mutable Core::Thread::Mutex  synchronize_lock_;
   mask_type      synchronized_;
   double         epsilon_;
   double         epsilon2_;
@@ -1021,9 +1022,7 @@ StructQuadSurfMesh<Basis>::type_idsqs(StructQuadSurfMesh<Basis>::type_name(-1),
 
 template <class Basis>
 StructQuadSurfMesh<Basis>::StructQuadSurfMesh()
-  : node_grid_(0),
-    elem_grid_(0),
-    synchronize_lock_("StructQuadSurfMesh Normals Lock"),
+  : synchronize_lock_("StructQuadSurfMesh Normals Lock"),
     synchronized_(Mesh::ALL_ELEMENTS_E),
     epsilon_(0.0),
     epsilon2_(0.0)
@@ -1041,8 +1040,6 @@ StructQuadSurfMesh<Basis>::StructQuadSurfMesh(size_type x, size_type y)
   : ImageMesh<Basis>(x, y, Core::Geometry::Point(0.0, 0.0, 0.0), Core::Geometry::Point(1.0, 1.0, 1.0)),
     points_( y,x),
     normals_( y,x),
-    node_grid_(0),
-    elem_grid_(0),
     synchronize_lock_("StructQuadSurfMesh Normals Lock"),
     synchronized_(Mesh::ALL_ELEMENTS_E),
     epsilon_(0.0),

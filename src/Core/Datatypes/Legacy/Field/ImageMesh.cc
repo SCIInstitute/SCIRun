@@ -35,6 +35,9 @@
 //! Only include this class if we included Image Support
 #if (SCIRUN_IMAGE_SUPPORT > 0) || (SCIRUN_STRUCTQUADSURF_SUPPORT > 0)
 
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
 namespace SCIRun {
 
 
