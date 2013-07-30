@@ -26,9 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Persistent/PersistentSTL.h>
-#endif
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/NoData.h>
