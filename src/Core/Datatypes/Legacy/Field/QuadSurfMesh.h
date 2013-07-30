@@ -249,7 +249,7 @@ public:
 
   friend class Synchronize;
   
-  class Synchronize : public Runnable
+  class Synchronize //: public Runnable
   {
     public:
       Synchronize(QuadSurfMesh<Basis>& mesh, mask_type sync) :
@@ -2214,8 +2214,8 @@ protected:
   boost::shared_ptr<SearchGridT<index_type> >  elem_grid_; //! Lookup grid for elements
 
   // Lock and Condition Variable for hand shaking
-  mutable Mutex         synchronize_lock_;
-  ConditionVariable     synchronize_cond_;
+  mutable Core::Thread::Mutex         synchronize_lock_;
+  Core::Thread::ConditionVariable     synchronize_cond_;
   
   // Which tables have been computed
   mask_type             synchronized_;
