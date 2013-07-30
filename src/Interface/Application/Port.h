@@ -98,9 +98,11 @@ public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();
   void portCachingChanged(bool checked);
+  void connectNewModule();
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
+  void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);

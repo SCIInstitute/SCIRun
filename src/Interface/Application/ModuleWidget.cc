@@ -249,6 +249,8 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
   connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
+  connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)), 
+    this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
 void ModuleWidget::addPort(OutputPortWidget* port)
@@ -409,4 +411,9 @@ void ModuleWidget::updateNote(const Note& note)
 void ModuleWidget::duplicate()
 {
   Q_EMIT duplicateModule(theModule_);
+}
+
+void ModuleWidget::connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }

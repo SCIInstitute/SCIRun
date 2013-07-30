@@ -94,6 +94,7 @@ public Q_SLOTS:
   void launchDocumentation();
   void updateNote(const Note& note);
   void duplicate();
+  void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -104,6 +105,7 @@ Q_SIGNALS:
   void cancelConnectionsInProgress();
   void noteUpdated(const Note& note);
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+  void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);

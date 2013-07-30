@@ -54,8 +54,10 @@ namespace SCIRun {
         return std::find_if(module.input_ports_.begin(), module.input_ports_.end(), [&](const InputPortDescription& in) { return in.datatype == portTypeToMatch; }) != module.input_ports_.end();
     }
 
-    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, const std::string& portTypeToMatch, bool isInput)
+    void fillMenu(QMenu* menu, const ModuleDescriptionMap& moduleMap, PortWidget* parent)
     {
+      const std::string& portTypeToMatch = parent->get_typename();
+      bool isInput = parent->isInput();
       BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
       {
         const std::string& packageName = package.first;
@@ -72,6 +74,13 @@ namespace SCIRun {
             {
               const std::string& moduleName = module.first;
               auto m = new QAction(QString::fromStdString(moduleName), menu);
+              QHash<QString,QVariant> data;
+              //data["moduleIdSource"] = QString::fromStdString(parent->getUnderlyingModuleId().id_);
+              data["moduleNameToAdd"] = QString::fromStdString(moduleName);
+              //data["portName"] = QString::fromStdString(parent->get_portname());
+              //std::cout << "attaching string list of size " << data.size() << std::endl;
+              m->setData(data);
+              QObject::connect(m, SIGNAL(triggered()), parent, SLOT(connectNewModule()));
               c->addAction(m);
             }
           }
@@ -104,7 +113,7 @@ namespace SCIRun {
         addActions(actions);
 
         auto m = new QMenu("Connect Module", parent);
-        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent->get_typename(), parent->isInput());
+        fillMenu(m, Core::Application::Instance().controller()->getAllAvailableModuleDescriptions(), parent);
         addMenu(m);
       }
       QAction* getAction(const char* name) const
@@ -374,6 +383,29 @@ ModuleId PortWidget::getUnderlyingModuleId() const
 void PortWidget::portCachingChanged(bool checked)
 {
   std::cout << "Port " << moduleId_.id_ << "::" << name().toStdString() << " Caching turned " << (checked ? "on." : "off.") << std::endl;
+}
+
+void PortWidget::connectNewModule()
+{
+  //std::cout << "connectNewModule" << std::endl;
+  QAction* action = qobject_cast<QAction*>(sender());
+  //std::cout << "action sender grabbed" << std::endl;
+  //const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, 
+  /*
+  data["moduleIdSource"] = QString::fromStdString(parent->getUnderlyingModuleId().id_);
+  data["moduleNameToAdd"] = QString::fromStdString(moduleName);
+  data["portName"] = QString::fromStdString(parent->get_portname());
+  */
+  auto data = action->data().toHash();
+
+  //std::cout << "obtained data of length " << data.size() << std::endl;
+  //const QString& moduleSourceName = data["moduleIdSource"].toString();
+  const QString& moduleToAddName = data["moduleNameToAdd"].toString();
+  //const QString& portName = data["portName"].toString();
+
+  //std::cout << "Connecting new module " << moduleToAddName.toStdString() << " from " << moduleSourceName.toStdString() << " via port " << portName.toStdString() << std::endl;
+
+  Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
