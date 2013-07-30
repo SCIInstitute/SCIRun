@@ -72,7 +72,7 @@ VMesh* CreateVImageMesh(MESH*) { return (0); }
 
 #if (SCIRUN_IMAGE_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVImageMesh(ImageMesh<QuadBilinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVImageMesh(ImageMesh<Core::Basis::QuadBilinearLgn<Core::Geometry::Point> >* mesh);
 
 #endif
 /////////////////////////////////////////////////////
@@ -280,9 +280,9 @@ public:
   typedef Face Elem;
   typedef Edge DElem;
 
-  friend class INodeIter;
-  friend class IFaceIter;
-  friend class IFaceIndex;
+  friend struct INodeIter;
+  friend struct IFaceIter;
+  friend struct IFaceIndex;
 
   friend class ElemData;
 
