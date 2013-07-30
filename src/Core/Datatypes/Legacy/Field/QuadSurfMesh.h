@@ -2759,8 +2759,8 @@ QuadSurfMesh<Basis>::clear_synchronization()
   halfedge_to_edge_.clear();
   node_neighbors_.clear();
   
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  node_grid_.reset();
+  elem_grid_.reset();
   
   synchronize_lock_.unlock();  
   return (true);
@@ -3228,7 +3228,7 @@ QuadSurfMesh<Basis>::io(Piostream &stream)
   }
 
   if (stream.reading())
-    vmesh_ = CreateVQuadSurfMesh(this);
+    vmesh_.reset(CreateVQuadSurfMesh(this));
 }
 
 

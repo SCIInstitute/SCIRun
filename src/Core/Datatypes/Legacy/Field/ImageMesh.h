@@ -992,7 +992,7 @@ ImageMesh<Basis>::ImageMesh(size_type i, size_type j,
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVImageMesh(this);  
+  vmesh_.reset(CreateVImageMesh(this));
 }
 
 
@@ -1127,7 +1127,7 @@ ImageMesh<Basis>::set_dim(std::vector<size_type> dim)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVImageMesh(this); 
+  vmesh_.reset(CreateVImageMesh(this));
 }
 
 
@@ -1511,7 +1511,7 @@ ImageMesh<Basis>::io(Piostream& stream)
   if (stream.reading())
   {
     compute_jacobian();
-    vmesh_ = CreateVImageMesh(this);
+    vmesh_.reset(CreateVImageMesh(this));
   }
 }
 
