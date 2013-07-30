@@ -45,6 +45,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
 
@@ -666,7 +667,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVImageMesh(this); 
+    vmesh_.reset(CreateVImageMesh(this));
   }
   void set_nj(size_type j)
   {
@@ -675,7 +676,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVImageMesh(this); 
+    vmesh_.reset(CreateVImageMesh(this));
   }
 
   virtual void set_dim(std::vector<size_type> dims);
@@ -743,7 +744,7 @@ public:
     Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
-    return (p1.asVector() - p0.asVector()).length();
+    return (p1 - p0).length();
   }
   double get_size(const typename Face::index_type &idx) const
   {

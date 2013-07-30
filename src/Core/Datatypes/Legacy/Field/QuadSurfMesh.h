@@ -51,6 +51,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldIterator.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
