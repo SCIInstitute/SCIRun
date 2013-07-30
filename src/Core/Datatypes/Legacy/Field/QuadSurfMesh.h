@@ -1720,7 +1720,7 @@ protected:
     ASSERTMSG(synchronized_ & Mesh::EDGES_E,
               "Must call synchronize EDGES_E on QuadSurfMesh first");    
     // Get the table of faces that are connected to the two nodes
-    Guard nn(&(synchronize_lock_));
+    Core::Thread::Guard nn(synchronize_lock_.get());
  
     const std::vector<typename Face::index_type>& faces  = node_neighbors_[idx];
     array.clear();
@@ -2355,7 +2355,7 @@ QuadSurfMesh<Basis>::QuadSurfMesh(const QuadSurfMesh &copy)
   //! We need to lock before we can copy these as these
   //! structures are generate dynamically when they are
   //! needed.  
-  Core::Thread::Guard rlock(&(copy.synchronize_lock_));
+  Core::Thread::Guard rlock(copy.synchronize_lock_.get());
 
   points_ = copy.points_;
   faces_ = copy.faces_;
@@ -2723,11 +2723,20 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
     boost::thread syncthread(syncclass);
   }
 
+  //// Wait until threads are done
+  //while ((synchronized_ & sync) != sync)
+  //{
+  //  synchronize_cond_.wait(synchronize_lock_);
+  //}
+
   // Wait until threads are done
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
-    synchronize_cond_.wait(synchronize_lock_);
+    synchronize_cond_.wait(lock);
   }
+#endif
 
   synchronize_lock_.unlock();
 
@@ -3082,8 +3091,9 @@ QuadSurfMesh<Basis>::compute_node_grid()
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
-    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    node_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    Core::Geometry::BBox b = bbox_; 
+    b.extend(10*epsilon_);
+    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Node::iterator ni, nie;
     begin(ni); end(nie);
@@ -3118,8 +3128,9 @@ QuadSurfMesh<Basis>::compute_elem_grid()
     size_type sy = static_cast<size_type>(ceil(0.5+diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
-    Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    elem_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    Core::Geometry::BBox b = bbox_; 
+    b.extend(10*epsilon_);
+    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);
