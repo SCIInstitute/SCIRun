@@ -92,7 +92,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef LockingHandle<ImageMesh<Basis> >  handle_type;
+  typedef boost::shared_ptr<ImageMesh<Basis> >  handle_type;
   typedef Basis                             basis_type;
   struct ImageIndex;
   friend struct ImageIndex;
@@ -945,7 +945,7 @@ protected:
   Basis                  basis_;
 
   //! Virtual mesh
-  Handle<VMesh>          vmesh_;
+  boost::shared_ptr<VMesh>          vmesh_;
   // The jacobian is the same for every element
   // hence store them as soon as we know the transfrom_
   // This should speed up FE computations on these regular grids.
