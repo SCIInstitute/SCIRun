@@ -57,7 +57,7 @@
 #include <Core/Thread/ConditionVariable.h>
 //#include <Core/Thread/Guard.h>
 //#include <Core/Thread/Runnable.h>
-//#include <Core/Thread/Thread.h>
+#include <boost/thread.hpp>
 
 //! Needed for some specialized functions
 #include <set>
@@ -662,7 +662,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
-    result = Cross(Jv[0].asVector(), Jv[1].asVector());
+    result = Cross(Jv[0], Jv[1]);
     result.normalize();
   }
 
@@ -739,7 +739,7 @@ public:
     StackVector<Core::Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
-    Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -762,7 +762,7 @@ public:
     ElemData ed(*this,idx);
     basis_.derivate(coords,ed,Jv);
     double J[9];
-    Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -788,7 +788,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = ScaledDetMatrix3P(Jv);
     
@@ -797,7 +797,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+      v = Cross(Jv[0],Jv[1]); v.normalize();
       Jv[2] = v.asPoint();
       temp = ScaledDetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -817,7 +817,7 @@ public:
 
     basis_.derivate(basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     
@@ -826,7 +826,7 @@ public:
     {
       basis_.derivate(basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+      v = Cross(Jv[0],Jv[1]); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -2089,8 +2089,8 @@ protected:
     typename Node::array_type arr;
     get_nodes_from_edge(arr, idx);
     result = points_[arr[0]];
-    result.asVector() += points_[arr[1]].asVector();
-    result.asVector() *= 0.5;
+    result += points_[arr[1]];
+    result *= 0.5;
   }
 
 
@@ -2107,10 +2107,10 @@ protected:
     while (nai != nodes.end())
     {
       const Core::Geometry::Point &pp = points_[*nai];
-      p.asVector() += pp.asVector();
+      p += pp;
       ++nai;
     }
-    p.asVector() *= (1.0 / 4.0);
+    p *= (1.0 / 4.0);
   }
 
 
@@ -2355,7 +2355,7 @@ QuadSurfMesh<Basis>::QuadSurfMesh(const QuadSurfMesh &copy)
   //! We need to lock before we can copy these as these
   //! structures are generate dynamically when they are
   //! needed.  
-  Guard rlock(&(copy.synchronize_lock_));
+  Core::Thread::Guard rlock(&(copy.synchronize_lock_));
 
   points_ = copy.points_;
   faces_ = copy.faces_;
