@@ -376,6 +376,7 @@ ModuleId PortWidget::getUnderlyingModuleId() const
 
 void PortWidget::portCachingChanged(bool checked)
 {
+  //TODO
   std::cout << "Port " << moduleId_.id_ << "::" << name().toStdString() << " Caching turned " << (checked ? "on." : "off.") << std::endl;
 }
 
