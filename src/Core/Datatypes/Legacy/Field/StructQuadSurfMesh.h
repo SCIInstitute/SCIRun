@@ -136,7 +136,7 @@ public:
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
 
-  //! Get the size of an elemnt (length, area, volume)
+  //! Get the size of an element (length, area, volume)
   double get_size(const typename ImageMesh<Basis>::Node::index_type &) const
   { return 0.0; }
   double get_size(typename ImageMesh<Basis>::Edge::index_type idx) const
@@ -964,9 +964,9 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new StructQuadSurfMesh<Basis>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new StructQuadSurfMesh<Basis>(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<StructQuadSurfMesh<Basis>>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle structquadsurf_maker(size_type x ,size_type y) { return new StructQuadSurfMesh<Basis>(x,y); }
+  static MeshHandle structquadsurf_maker(size_type x ,size_type y) { return boost::make_shared<StructQuadSurfMesh<Basis>>(x,y); }
 
   Array2<Core::Geometry::Point>& get_points() { return (points_); }
 
@@ -1056,8 +1056,6 @@ StructQuadSurfMesh<Basis>::StructQuadSurfMesh(size_type x, size_type y)
 template <class Basis>
 StructQuadSurfMesh<Basis>::StructQuadSurfMesh(const StructQuadSurfMesh &copy)
   : ImageMesh<Basis>(copy),
-    node_grid_(0),
-    elem_grid_(0),
     synchronize_lock_("StructQuadSurfMesh Normals Lock"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E)
 {
@@ -1065,7 +1063,7 @@ StructQuadSurfMesh<Basis>::StructQuadSurfMesh(const StructQuadSurfMesh &copy)
 
   copy.synchronize_lock_.lock();
 
-  points_.copy( copy.points_ );
+  points_ = copy.points_;
 
   epsilon_ = copy.epsilon_;
   epsilon2_ = copy.epsilon2_;
@@ -1076,7 +1074,7 @@ StructQuadSurfMesh<Basis>::StructQuadSurfMesh(const StructQuadSurfMesh &copy)
 
   //! Create a new virtual interface for this copy ! all pointers have
   //! changed hence create a new ! virtual interface class
-  this->vmesh_ = CreateVStructQuadSurfMesh(this);  
+  this->vmesh_.reset(CreateVStructQuadSurfMesh(this));
 }
 
 
@@ -1130,8 +1128,8 @@ StructQuadSurfMesh<Basis>::transform(const Core::Geometry::Transform &t)
     ++i;
   }
 
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
   synchronize_lock_.unlock();
 }
 
@@ -1621,7 +1619,7 @@ StructQuadSurfMesh<Basis>::io(Piostream& stream)
   stream.end_class();
 
   if (stream.reading())
-    this->vmesh_ = CreateVStructQuadSurfMesh(this);
+    this->vmesh_.reset(CreateVStructQuadSurfMesh(this));
 }
 
 
@@ -1670,7 +1668,7 @@ template <class Basis>
 const TypeDescription*
 StructQuadSurfMesh<Basis>::get_type_description() const
 {
-  return get_type_description((StructQuadSurfMesh<Basis> *)0);
+  return SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
 }
 
 
@@ -1682,7 +1680,7 @@ StructQuadSurfMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1700,7 +1698,7 @@ StructQuadSurfMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1718,7 +1716,7 @@ StructQuadSurfMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1736,7 +1734,7 @@ StructQuadSurfMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((StructQuadSurfMesh<Basis> *)0);
+      SCIRun::get_type_description((StructQuadSurfMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
