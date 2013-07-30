@@ -2056,19 +2056,19 @@ public:
 
     inline
     const Point &node0() const {
-      return points_(nodes_[0]);
+      return points_[nodes_[0]];
     }
     inline
     const Point &node1() const {
-      return points_(nodes_[1]);
+      return points_[nodes_[1]];
     }
     inline
     const Point &node2() const {
-      return points_(nodes_[2]);
+      return points_[nodes_[2]];
     }
     inline
     const Point &node3() const {
-      return points_(nodes_[3]);
+      return points_[nodes_[3]];
     }
 
   private:
@@ -2236,7 +2236,7 @@ protected:
     ElemData ed(this,this->mesh_,idx);
     this->basis_->derivate(coords,ed,Jv);
     double J[9];
-    Vector Jv2 = Cross(Jv[0],Jv[1]);
+    Vector Jv2 = Cross(Vector(Jv[0]),Vector(Jv[1]));
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();

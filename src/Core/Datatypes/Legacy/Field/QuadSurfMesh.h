@@ -58,6 +58,7 @@
 //#include <Core/Thread/Guard.h>
 //#include <Core/Thread/Runnable.h>
 #include <boost/thread.hpp>
+#include <Core/Persistent/PersistentSTL.h>
 
 //! Needed for some specialized functions
 #include <set>

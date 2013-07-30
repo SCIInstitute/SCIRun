@@ -32,6 +32,9 @@
 //! Only include this class if we included QuadSurf Support
 #if (SCIRUN_QUADSURF_SUPPORT > 0)
 
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
+
 namespace SCIRun {
 
 //! This class is not exposed to the general interface and only the VMesh class
