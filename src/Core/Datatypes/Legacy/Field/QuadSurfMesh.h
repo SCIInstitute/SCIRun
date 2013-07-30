@@ -81,12 +81,12 @@ VMesh* CreateVQuadSurfMesh(MESH* mesh) { return (0); }
 //! as well as virtual functions solution.
 //! Declare that these can be found in a library that is already
 //! precompiled. So dynamic compilation will not instantiate them again.
-SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<QuadBilinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<Core::Basis::QuadBilinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<QuadBiquadraticLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<Core::Basis::QuadBiquadraticLgn<Core::Geometry::Point> >* mesh);
 #endif
 #if (SCIRUN_CUBIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<QuadBicubicHmt<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<Core::Basis::QuadBicubicHmt<Core::Geometry::Point> >* mesh);
 #endif
 
 #endif
