@@ -113,7 +113,7 @@ public:
   typedef SCIRun::size_type                  size_type;
   typedef SCIRun::mask_type                  mask_type;
 
-  typedef LockingHandle<QuadSurfMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<QuadSurfMesh<Basis> > handle_type;
   typedef Basis                         basis_type;
 
   //! Index and Iterator types required for Mesh Concept.
@@ -2210,8 +2210,8 @@ protected:
   NodeNeighborMap                       node_neighbors_;  
   
   std::vector<Core::Geometry::Vector>                           normals_; //! normalized per node
-  LockingHandle<SearchGridT<index_type> >  node_grid_; //! Lookup grid for nodes
-  LockingHandle<SearchGridT<index_type> >  elem_grid_; //! Lookup grid for elements
+  boost::shared_ptr<SearchGridT<index_type> >  node_grid_; //! Lookup grid for nodes
+  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_; //! Lookup grid for elements
 
   // Lock and Condition Variable for hand shaking
   mutable Mutex         synchronize_lock_;
@@ -2229,7 +2229,7 @@ protected:
   double    epsilon2_; //! square of epsilon for squared distance comparisons
   
   //! Pointer to virtual interface
-  Handle<VMesh> vmesh_; //! Virtual function table
+  boost::shared_ptr<VMesh> vmesh_; //! Virtual function table
 
 #ifdef HAVE_HASH_MAP
   struct edgehash
