@@ -107,6 +107,11 @@ void NetworkEditorControllerGuiProxy::duplicateModule(const SCIRun::Dataflow::Ne
   controller_->duplicateModule(module);
 }
 
+void NetworkEditorControllerGuiProxy::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
+}
+
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const
 {
   return controller_->getAllAvailableModuleDescriptions();

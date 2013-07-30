@@ -166,6 +166,35 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   return newModule;
 }
 
+void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  auto newMod = addModule(newModuleName);
+
+  //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
+  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+
+  if (portToConnect->isInput())
+    for (size_t i = 0; i < newMod->num_output_ports(); ++i)
+    {
+      auto p = newMod->get_output_port(i);
+      if (p->get_typename() == portToConnect->get_typename())
+      {
+        requestConnection(p.get(), portToConnect);
+        return;
+      }
+    }
+  else
+    for (size_t i = 0; i < newMod->num_input_ports(); ++i)
+    {
+      auto p = newMod->get_input_port(i);
+      if (p->get_typename() == portToConnect->get_typename())
+      {
+        requestConnection(p.get(), portToConnect);
+        return;
+      }
+    }
+}
+
 void NetworkEditorController::printNetwork() const
 {
   //TODO: and make this switchable

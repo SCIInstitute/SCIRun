@@ -164,8 +164,7 @@ void NetworkEditor::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHan
   QPointF increment(0, portToConnect->isInput() ? -110 : 110);
   lastModulePosition_ = widget->scenePos() + increment;
 
-  controller_->addModule(newModuleName);
-  //controller_->requestConnection(portToConnect, )
+  controller_->connectNewModule(moduleToConnectTo, portToConnect, newModuleName);
 }
 
 

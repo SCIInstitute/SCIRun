@@ -59,7 +59,10 @@ namespace Engine {
 //////////////////////Start: To be Pythonized/////////////////////////////
     Networks::ModuleHandle addModule(const std::string& moduleName);
     void removeModule(const Networks::ModuleId& id);
+    
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
+    void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const Networks::ConnectionId& id);
 
