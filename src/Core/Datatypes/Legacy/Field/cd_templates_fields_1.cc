@@ -42,10 +42,12 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Basis;
 
+
+namespace SCIRun {
+
 typedef ImageMesh<QuadBilinearLgn<Point> > IMesh;
 
-
- template class ImageMesh<QuadBilinearLgn<Point> >;
+template class ImageMesh<QuadBilinearLgn<Point> >;
 
 //NoData
 typedef NoDataBasis<double>               NDBasis;
@@ -110,6 +112,7 @@ template class GenericField<IMesh, FDuintBasis,   FData2d<unsigned int, IMesh> >
 template class GenericField<IMesh, FDushortBasis, FData2d<unsigned short, IMesh> >;
 template class GenericField<IMesh, FDucharBasis,  FData2d<unsigned char, IMesh> >;
 template class GenericField<IMesh, FDulongBasis,  FData2d<unsigned long, IMesh> >;
+}
 
 PersistentTypeID backwards_compat_IM("ImageMesh", "Mesh",
   IMesh::maker, IMesh::maker);
@@ -183,6 +186,7 @@ backwards_compat_IFul("ImageField<unsigned_long>", "Field",
 		      GenericField<IMesh, CFDulongBasis, 
 		      FData2d<unsigned long, IMesh> >::maker);
 
+namespace SCIRun {
 typedef QuadSurfMesh<QuadBilinearLgn<Point> > QSMesh;
 
 template class QuadSurfMesh<QuadBilinearLgn<Point> >;
@@ -220,6 +224,7 @@ template class GenericField<QSMesh, FDuintBasis,   std::vector<unsigned int> >;
 template class GenericField<QSMesh, FDushortBasis, std::vector<unsigned short> >;
 template class GenericField<QSMesh, FDucharBasis,  std::vector<unsigned char> >;
 template class GenericField<QSMesh, FDulongBasis,  std::vector<unsigned long> >;
+}
 
 PersistentTypeID 
 backwards_compat_QSFT("QuadSurfField<Tensor>", "Field",
