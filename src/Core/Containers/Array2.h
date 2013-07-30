@@ -133,7 +133,7 @@ void Pio(Piostream& stream, Array2<T>& data)
     {
       for(index_type j=0;j<data.dim2();j++)
       {
-        Pio(stream, data.objs(i,j));
+        Pio(stream, data.getImpl()[i][j]);
       }
     }
   }
