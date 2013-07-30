@@ -2236,7 +2236,7 @@ protected:
     ElemData ed(this,this->mesh_,idx);
     this->basis_->derivate(coords,ed,Jv);
     double J[9];
-    Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -2300,8 +2300,8 @@ get_center(Point &p, VMesh::Edge::index_type idx) const
   this->get_nodes_from_edge(nodes,idx);
   
   p = points_[nodes[0]];
-  p.asVector() += points_[nodes[1]].asVector();
-  p.asVector() *= 0.5;
+  p += points_[nodes[1]];
+  p *= 0.5;
 }
 
 template <class MESH>
@@ -2313,10 +2313,10 @@ get_center(Point &p, VMesh::Face::index_type idx) const
   this->get_nodes_from_face(nodes,idx);
   
   p = points_[nodes[0]];
-  p.asVector() += points_[nodes[1]].asVector();
-  p.asVector() += points_[nodes[2]].asVector();
-  p.asVector() += points_[nodes[3]].asVector();
-  p.asVector() *= 0.25;
+  p += points_[nodes[1]];
+  p += points_[nodes[2]];
+  p += points_[nodes[3]];
+  p *= 0.25;
 }
 
 template <class MESH>
@@ -2362,10 +2362,10 @@ get_centers(Point* points,
     
     this->get_nodes_from_face(nodes,idx);  
     p = points_[nodes[0]];
-    p.asVector() += points_[nodes[1]].asVector();
-    p.asVector() += points_[nodes[2]].asVector();
-    p.asVector() += points_[nodes[3]].asVector();
-    p.asVector() *= 0.25;
+    p += points_[nodes[1]];
+    p += points_[nodes[2]];
+    p += points_[nodes[3]];
+    p *= 0.25;
   
     points[j] = p;
   }
@@ -2391,7 +2391,7 @@ get_size(VMesh::Edge::index_type idx) const
   const Point &p0 = points_[nodes[0]];
   const Point &p1 = points_[nodes[1]];
   
-  return (p1.asVector() - p0.asVector()).length();
+  return (p1 - p0).length();
 }
 
 template <class MESH>
@@ -2649,7 +2649,7 @@ jacobian(const VMesh::coords_type& coords,
     StackVector<Point,2> Jv;
     ElemData ed(this,this->mesh_,idx);
     this->basis_->derivate(coords,ed,Jv);
-    Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -2673,7 +2673,7 @@ inverse_jacobian(const VMesh::coords_type& coords,
   ElemData ed(this,this->mesh_,idx);
   this->basis_->derivate(coords,ed,Jv);
   double J[9];
-  Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+  Vector Jv2 = Cross(Jv[0],Jv[1]);
   Jv2.normalize();
   J[0] = Jv[0].x();
   J[1] = Jv[0].y();
@@ -2701,7 +2701,7 @@ scaled_jacobian_metric(const VMesh::Elem::index_type idx) const
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
   Jv.resize(3); 
-  Vector v = Cross(Jv[0].asVector(),Jv[1].asVector());
+  Vector v = Cross(Jv[0],Jv[1]);
   v.normalize();
   Jv[2] = v.asPoint();
   double min_jacobian = ScaledDetMatrix3P(Jv);
@@ -2711,7 +2711,7 @@ scaled_jacobian_metric(const VMesh::Elem::index_type idx) const
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();    
     temp = ScaledDetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
@@ -2732,7 +2732,7 @@ jacobian_metric(VMesh::Elem::index_type idx) const
   double temp;
   this->basis_->derivate(this->basis_->unit_center,ed,Jv);
   Jv.resize(3); 
-  Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+  Vector v = Cross(Jv[0],Jv[1]); v.normalize();
   Jv[2] = v.asPoint();
   double min_jacobian = DetMatrix3P(Jv);
   
@@ -2741,7 +2741,7 @@ jacobian_metric(VMesh::Elem::index_type idx) const
   {
     this->basis_->derivate(this->basis_->unit_vertices[j],ed,Jv);
     Jv.resize(3); 
-    Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     temp = DetMatrix3P(Jv);
     if(temp < min_jacobian) min_jacobian = temp;
