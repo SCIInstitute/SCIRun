@@ -735,7 +735,7 @@ public:
   //! return all face_indecies that overlap the BBox in arr.
   void get_faces(typename Face::array_type &arr, const Core::Geometry::BBox &box);
 
-  //! Get the size of an elemnt (length, area, volume)
+  //! Get the size of an element (length, area, volume)
   double get_size(const typename Node::index_type &/*i*/) const { return 0.0; }
   double get_size(typename Edge::index_type idx) const
   {
@@ -779,7 +779,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     basis_.derivate(coords, ed, Jv);
-    result = Cross(Jv[0].asVector(), Jv[1].asVector());
+    result = Cross(Core::Geometry::Vector(Jv[0]), Core::Geometry::Vector(Jv[1]));
     result.normalize();
   }
 
@@ -842,10 +842,10 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new ImageMesh<Basis>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new ImageMesh<Basis>();}
+  static MeshHandle mesh_maker() { return boost::make_shared<ImageMesh<Basis>>();}
   //! This function returns a handle for the virtual interface.
   static MeshHandle image_maker(size_type x, size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
-    { return new ImageMesh<Basis>(x,y,min,max); }
+    { return boost::make_shared<ImageMesh<Basis>>(x,y,min,max); }
 
   //! This function will find the closest element and the location on that
   //! element that is the closest

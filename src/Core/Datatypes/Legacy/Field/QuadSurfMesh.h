@@ -331,7 +331,7 @@ public:
   }
 
   //! Access point to virtual interface
-  virtual VMesh* vmesh() {  return vmesh_.get_rep(); }
+  virtual VMesh* vmesh() {  return vmesh_.get(); }
 
   //! This one should go at some point, should be reroute through the
   //! virtual interface
@@ -515,14 +515,14 @@ public:
   void get_center(Core::Geometry::Point&, typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Get the size of an elemnt (length, area, volume)
+  //! Get the size of an element (length, area, volume)
   double get_size(typename Node::index_type /*idx*/) const 
   { return 0.0; }
   double get_size(typename Edge::index_type idx) const
   {
     typename Node::array_type arr;
     get_nodes_from_edge(arr, idx);
-    return (point(arr[0]).asVector() - point(arr[1]).asVector()).length();
+    return (point(arr[0]) - point(arr[1])).length();
   }
   double get_size(typename Face::index_type idx) const
   {
