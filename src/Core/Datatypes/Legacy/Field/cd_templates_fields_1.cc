@@ -32,10 +32,10 @@
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/QuadBilinearLgn.h>
-#include <Core/Datatypes/ImageMesh.h>
-#include <Core/Datatypes/QuadSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/ImageMesh.h>
+#include <Core/Datatypes/Legacy/Field/QuadSurfMesh.h>
 #include <Core/Containers/FData.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
 
 using namespace SCIRun;
