@@ -281,8 +281,9 @@ public:
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           mesh_.synchronize_lock_.lock();
+          Core::Thread::UniqueLock lock(mesh_.synchronize_lock_.get());
           while(!(mesh_.synchronized_ & Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
+            mesh_.synchronize_cond_.wait(lock);
           mesh_.synchronize_lock_.unlock();     
           if (sync_ & Mesh::NODE_LOCATE_E) 
           {
@@ -1556,7 +1557,7 @@ public:
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new QuadSurfMesh<Basis>(); }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new QuadSurfMesh<Basis>(); }
+  static MeshHandle mesh_maker() { return boost::make_shared<QuadSurfMesh<Basis>>(); }
 
 
   //////////////////////////////////////////////////////////////////
