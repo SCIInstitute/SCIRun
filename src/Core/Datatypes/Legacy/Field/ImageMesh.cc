@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/ImageMesh.h>
-#include <Core/Datatypes/StructQuadSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/ImageMesh.h>
+#include <Core/Datatypes/Legacy/Field/StructQuadSurfMesh.h>
 #include <Core/Basis/QuadElementWeights.h>
-#include <Core/Datatypes/VMeshShared.h>
+#include <Core/Datatypes/Legacy/Field/VMeshShared.h>
 
 
 //! Only include this class if we included Image Support

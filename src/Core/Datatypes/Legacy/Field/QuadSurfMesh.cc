@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/QuadSurfMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/QuadSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
 //! Only include this class if we included QuadSurf Support
 #if (SCIRUN_QUADSURF_SUPPORT > 0)
