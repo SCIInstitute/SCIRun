@@ -256,6 +256,11 @@ public:
       Synchronize(QuadSurfMesh<Basis>& mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
         
+      void operator()()
+      {
+        run();
+      }
+
       void run()
       {
         mesh_.synchronize_lock_.lock();
@@ -2644,9 +2649,8 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::EDGES_E)
   {
     mask_type tosync = Mesh::EDGES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize quadsurf edges",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NORMALS_E)
@@ -2659,9 +2663,8 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NORMALS_E)
   {
     mask_type tosync = Mesh::NORMALS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize quadsurf normals",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -2674,9 +2677,8 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize quadsurf node_neighbors",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -2689,9 +2691,8 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::BOUNDING_BOX_E)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize quadsurf bounding box",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -2704,9 +2705,8 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_LOCATE_E)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize quadsurf node_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -2719,9 +2719,8 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_LOCATE_E)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize quadsurf elem_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   // Wait until threads are done
