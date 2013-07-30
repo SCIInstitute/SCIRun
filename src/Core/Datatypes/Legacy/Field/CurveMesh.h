@@ -209,7 +209,7 @@ public:
   //! a new version if needed.
   virtual CurveMesh *clone() const { return new CurveMesh(*this); }
 
-  boost::shared_ptr<Core::Datatypes::MeshFacade<VMesh>> getFacade() const
+  MeshFacadeHandle getFacade() const
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }

@@ -383,7 +383,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVImageMesh(this);       
+    vmesh_.reset(CreateVImageMesh(this));
   }
 
   ImageMesh(size_type x, size_type y, const Core::Geometry::Point &min, const Core::Geometry::Point &max);
@@ -398,7 +398,7 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVImageMesh(this);   
+    vmesh_.reset(CreateVImageMesh(this));   
   }
   
   ImageMesh(const ImageMesh &copy)
@@ -413,17 +413,22 @@ public:
     //! Create a new virtual interface for this copy
     //! all pointers have changed hence create a new
     //! virtual interface class
-    vmesh_ = CreateVImageMesh(this);   
+    vmesh_.reset(CreateVImageMesh(this));   
   }
   
-  virtual ImageMesh *clone() { return new ImageMesh(*this); }
+  virtual ImageMesh *clone() const { return new ImageMesh(*this); }
   virtual ~ImageMesh() 
   {
     DEBUG_DESTRUCTOR("ImageMesh") 
   }
 
+  MeshFacadeHandle getFacade() const
+  {
+    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+  }
+
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return vmesh_.get(); }
 
   virtual int basis_order() { return (basis_.polynomial_order()); }
 

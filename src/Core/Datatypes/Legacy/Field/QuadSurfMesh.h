@@ -319,15 +319,20 @@ public:
   
   //! Clone function for detaching the mesh and automatically generating
   //! a new version if needed.    
-  virtual QuadSurfMesh *clone() { return new QuadSurfMesh(*this); }
+  virtual QuadSurfMesh *clone() const { return new QuadSurfMesh(*this); }
 
   //! Destructor 
   virtual ~QuadSurfMesh();
 
+  MeshFacadeHandle getFacade() const
+  {
+    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+  }
+
   //! Access point to virtual interface
   virtual VMesh* vmesh() {  return vmesh_.get_rep(); }
 
-  //! This one should go at some point, should be reroute throught the
+  //! This one should go at some point, should be reroute through the
   //! virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
@@ -2310,8 +2315,6 @@ QuadSurfMesh<Basis>::QuadSurfMesh()
     faces_(0),
     edges_(0),
     normals_(0),
-    node_grid_(0),
-    elem_grid_(0),
     synchronize_lock_("QuadSurfMesh lock"),
     synchronize_cond_("QuadSurfMesh condition variable"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
@@ -2322,7 +2325,7 @@ QuadSurfMesh<Basis>::QuadSurfMesh()
   DEBUG_CONSTRUCTOR("QuadSurfMesh") 
 
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVQuadSurfMesh(this);
+  vmesh_.reset(CreateVQuadSurfMesh(this));
 }
 
 
@@ -2333,8 +2336,6 @@ QuadSurfMesh<Basis>::QuadSurfMesh(const QuadSurfMesh &copy)
     faces_(0),
     edges_(0),
     normals_(0),
-    node_grid_(0),
-    elem_grid_(0),
     synchronize_lock_("QuadSurfMesh lock"),
     synchronize_cond_("QuadSurfMesh condition variable"),
     synchronized_(Mesh::NODES_E | Mesh::FACES_E | Mesh::CELLS_E),
@@ -2355,7 +2356,7 @@ QuadSurfMesh<Basis>::QuadSurfMesh(const QuadSurfMesh &copy)
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVQuadSurfMesh(this); 
+  vmesh_.reset(CreateVQuadSurfMesh(this));
 }
 
 
