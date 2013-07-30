@@ -146,7 +146,7 @@ public:
     Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
-    return (p1.asVector() - p0.asVector()).length();
+    return (p1 - p0).length();
   }
   double get_size(const typename ImageMesh<Basis>::Face::index_type &idx) const
   {
@@ -179,7 +179,7 @@ public:
     ElemData ed(*this, eidx);
     std::vector<Core::Geometry::Point> Jv;
     this->basis_.derivate(coords, ed, Jv);
-    result = Cross(Jv[0].asVector(), Jv[1].asVector());
+    result = Cross(Jv[0], Jv[1]);
     result.normalize();
   }
   //! get the center point (in object space) of an element
@@ -417,7 +417,7 @@ public:
     StackVector<Core::Geometry::Point,2> Jv;
     ElemData ed(*this,idx);
     this->basis_.derivate(coords,ed,Jv);
-    Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -443,7 +443,7 @@ public:
     ElemData ed(*this,idx);
     this->basis_.derivate(coords,ed,Jv);
     double J[9];
-    Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+    Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
     Jv2.normalize();
     J[0] = Jv[0].x();
     J[1] = Jv[0].y();
@@ -469,7 +469,7 @@ public:
 
     this->basis_.derivate(this->basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = ScaledDetMatrix3P(Jv);
     
@@ -478,7 +478,7 @@ public:
     {
       this->basis_.derivate(this->basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+      v = Cross(Jv[0],Jv[1]); v.normalize();
       Jv[2] = v.asPoint();
       temp = ScaledDetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -498,7 +498,7 @@ public:
 
     this->basis_.derivate(this->basis_.unit_center,ed,Jv);
     Jv.resize(3); 
-    Core::Geometry::Vector v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+    Core::Geometry::Vector v = Cross(Jv[0],Jv[1]); v.normalize();
     Jv[2] = v.asPoint();
     double min_jacobian = DetMatrix3P(Jv);
     
@@ -507,7 +507,7 @@ public:
     {
       this->basis_.derivate(this->basis_.unit_vertices[j],ed,Jv);
       Jv.resize(3); 
-      v = Cross(Jv[0].asVector(),Jv[1].asVector()); v.normalize();
+      v = Cross(Jv[0],Jv[1]); v.normalize();
       Jv[2] = v.asPoint();
       temp = DetMatrix3P(Jv);
       if(temp < min_jacobian) min_jacobian = temp;
@@ -1163,8 +1163,8 @@ StructQuadSurfMesh<Basis>::get_center(Core::Geometry::Point &result,
   get_center(result, arr[0]);
   get_center(p1, arr[1]);
 
-  result.asVector() += p1.asVector();
-  result.asVector() *= 0.5;
+  result += p1;
+  result *= 0.5;
 }
 
 
@@ -1183,10 +1183,10 @@ StructQuadSurfMesh<Basis>::get_center(Core::Geometry::Point &p,
   while (nai != nodes.end())
   {
     get_point(pp, *nai);
-    p.asVector() += pp.asVector();
+    p += pp;
     ++nai;
   }
-  p.asVector() *= (1.0 / 4.0);
+  p *= (1.0 / 4.0);
 }
 
 template <class Basis>
