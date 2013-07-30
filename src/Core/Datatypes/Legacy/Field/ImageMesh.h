@@ -1680,7 +1680,7 @@ template<class Basis>
 const TypeDescription*
 ImageMesh<Basis>::get_type_description() const
 {
-  return get_type_description((ImageMesh *)0);
+  return SCIRun::get_type_description((ImageMesh *)0);
 }
 
 
@@ -1692,7 +1692,7 @@ ImageMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1710,7 +1710,7 @@ ImageMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1728,7 +1728,7 @@ ImageMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
                                 std::string(__FILE__),
                                 "SCIRun",
@@ -1746,7 +1746,7 @@ ImageMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((ImageMesh<Basis> *)0);
+      SCIRun::get_type_description((ImageMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
