@@ -566,7 +566,7 @@ public:
       StackVector<Core::Geometry::Point,3> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
-      Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
+      Core::Geometry::Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
       Jv2.normalize();
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -604,7 +604,7 @@ public:
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
       double J[9];
-      Core::Geometry::Vector Jv2 = Cross(Jv[0],Jv[1]);
+      Core::Geometry::Vector Jv2 = Cross(Core::Geometry::Vector(Jv[0]),Core::Geometry::Vector(Jv[1]));
       Jv2.normalize();
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
