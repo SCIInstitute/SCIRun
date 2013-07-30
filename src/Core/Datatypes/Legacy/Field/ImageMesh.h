@@ -560,7 +560,7 @@ public:
       StackVector<Core::Geometry::Point,3> Jv;
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
-      Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+      Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
       Jv2.normalize();
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -598,7 +598,7 @@ public:
       ElemData ed(*this,idx);
       basis_.derivate(coords,ed,Jv);
       double J[9];
-      Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
+      Core::Geometry::Vector Jv2 = Cross(Jv[0].asVector(),Jv[1].asVector());
       Jv2.normalize();
       J[0] = Jv[0].x();
       J[1] = Jv[0].y();
@@ -642,10 +642,10 @@ public:
   size_type get_ni() const { return ni_; }
   size_type get_nj() const { return nj_; }
   virtual bool get_dim(std::vector<size_type>&) const;
-  Vector diagonal() const;
-  virtual BBox get_bounding_box() const;
-  virtual void transform(const Transform &t);
-  virtual void get_canonical_transform(Transform &t);
+  Core::Geometry::Vector diagonal() const;
+  virtual Core::Geometry::BBox get_bounding_box() const;
+  virtual void transform(const Core::Geometry::Transform &t);
+  virtual void get_canonical_transform(Core::Geometry::Transform &t);
   virtual bool synchronize(mask_type sync);
   virtual bool unsynchronize(mask_type sync);
   bool clear_synchronization();
@@ -727,7 +727,7 @@ public:
   }
 
   //! return all face_indecies that overlap the BBox in arr.
-  void get_faces(typename Face::array_type &arr, const BBox &box);
+  void get_faces(typename Face::array_type &arr, const Core::Geometry::BBox &box);
 
   //! Get the size of an elemnt (length, area, volume)
   double get_size(const typename Node::index_type &/*i*/) const { return 0.0; }
@@ -765,9 +765,9 @@ public:
 
   void get_neighbors(typename Face::array_type &array, typename Face::index_type idx) const;
 
-  void get_normal(Vector&, const typename Node::index_type&) const
+  void get_normal(Core::Geometry::Vector&, const typename Node::index_type&) const
   { ASSERTFAIL("This mesh type does not have node normals."); }
-  void get_normal(Vector &result, std::vector<double> &coords,
+  void get_normal(Core::Geometry::Vector &result, std::vector<double> &coords,
                   typename Elem::index_type eidx, index_type)
   {
     ElemData ed(*this, eidx);
@@ -814,8 +814,8 @@ public:
   virtual std::string dynamic_type_name() const { return imagemesh_typeid.type; }
 
   // Unsafe due to non-constness of unproject.
-  Transform &get_transform() { return transform_; }
-  Transform &set_transform(const Transform &trans)
+  Core::Geometry::Transform &get_transform() { return transform_; }
+  Core::Geometry::Transform &set_transform(const Core::Geometry::Transform &trans)
   { transform_ = trans; transform_.compute_imat(); compute_jacobian(); return transform_; }
 
   virtual int dimensionality() const { return 2; }
@@ -937,9 +937,9 @@ protected:
   size_type               nj_;
 
   //! the object space extents of a ImageMesh
-  Transform              transform_;
+  Core::Geometry::Transform              transform_;
 
-  Vector                 normal_;
+  Core::Geometry::Vector                 normal_;
 
   //! The basis class
   Basis                  basis_;
@@ -968,16 +968,16 @@ ImageMesh<Basis>::ImageMesh(size_type i, size_type j,
   min_i_(0), min_j_(0), ni_(i), nj_(j)
 {
   DEBUG_CONSTRUCTOR("ImageMesh") 
-  transform_.pre_scale(Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0));
+  transform_.pre_scale(Core::Geometry::Vector(1.0 / (i-1.0), 1.0 / (j-1.0), 1.0));
   
-  Vector scale = max - min;
+  Core::Geometry::Vector scale = max - min;
   scale[2] = 1.0;
 
   transform_.pre_scale(scale);
-  transform_.pre_translate(Vector(min));
+  transform_.pre_translate(Core::Geometry::Vector(min));
   transform_.compute_imat();
 
-  normal_ = Vector(0.0, 0.0, 0.0);
+  normal_ = Core::Geometry::Vector(0.0, 0.0, 0.0);
   transform_.project_normal(normal_);
   normal_.safe_normalize();
   
@@ -1002,7 +1002,7 @@ ImageMesh<Basis>::get_epsilon() const
 }
 
 template<class Basis>
-BBox
+Core::Geometry::BBox
 ImageMesh<Basis>::get_bounding_box() const
 {
   Core::Geometry::Point p0(0.0,   0.0,   0.0);
@@ -1010,7 +1010,7 @@ ImageMesh<Basis>::get_bounding_box() const
   Core::Geometry::Point p2(ni_-1, nj_-1, 0.0);
   Core::Geometry::Point p3(0.0,   nj_-1, 0.0);
 
-  BBox result;
+  Core::Geometry::BBox result;
   result.extend(transform_.project(p0));
   result.extend(transform_.project(p1));
   result.extend(transform_.project(p2));
@@ -1020,7 +1020,7 @@ ImageMesh<Basis>::get_bounding_box() const
 
 
 template<class Basis>
-Vector
+Core::Geometry::Vector
 ImageMesh<Basis>::diagonal() const
 {
   return get_bounding_box().diagonal();
@@ -1029,10 +1029,10 @@ ImageMesh<Basis>::diagonal() const
 
 template<class Basis>
 void
-ImageMesh<Basis>::get_canonical_transform(Transform &t)
+ImageMesh<Basis>::get_canonical_transform(Core::Geometry::Transform &t)
 {
   t = transform_;
-  t.post_scale(Vector(ni_ - 1.0, nj_ - 1.0, 1.0));
+  t.post_scale(Core::Geometry::Vector(ni_ - 1.0, nj_ - 1.0, 1.0));
 }
 
 
@@ -1042,7 +1042,7 @@ ImageMesh<Basis>::synchronize(mask_type sync)
 {
   if (sync & Mesh::NORMALS_E)
   {
-    normal_ = Vector(0.0, 0.0, 0.0);
+    normal_ = Core::Geometry::Vector(0.0, 0.0, 0.0);
     transform_.project_normal(normal_);
     normal_.safe_normalize();
     return true;
@@ -1066,7 +1066,7 @@ ImageMesh<Basis>::clear_synchronization()
 
 template<class Basis>
 void
-ImageMesh<Basis>::transform(const Transform &t)
+ImageMesh<Basis>::transform(const Core::Geometry::Transform &t)
 {
   transform_.pre_trans(t);
   transform_.compute_imat();
@@ -1288,10 +1288,10 @@ ImageMesh<Basis>::get_elems(typename Elem::array_type &result,
 }
 
 
-//! return all face_indecies that overlap the BBox in arr.
+//! return all face_indecies that overlap the Core::Geometry::BBox in arr.
 template<class Basis>
 void
-ImageMesh<Basis>::get_faces(typename Face::array_type &arr, const BBox &bbox)
+ImageMesh<Basis>::get_faces(typename Face::array_type &arr, const Core::Geometry::BBox &bbox)
 {
   arr.clear();
   typename Face::index_type min;
@@ -1402,8 +1402,8 @@ ImageMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   get_center(p10,ra[1]);
   get_center(p11,ra[2]);
   get_center(p01,ra[3]);
-  Vector dx=p10-p00;
-  Vector dy=p01-p00;
+  Core::Geometry::Vector dx=p10-p00;
+  Core::Geometry::Vector dy=p01-p00;
 
   // Generate the barycentric coordinates.
   const double u = rng();
@@ -1935,9 +1935,9 @@ ImageMesh<Basis>::compute_jacobian()
   if (basis_.polynomial_order() < 2)
   { 
 
-    Vector J1 = transform_.project(Vector(1.0,0.0,0.0)); 
-    Vector J2 = transform_.project(Vector(0.0,1.0,0.0)); 
-    Vector J3 = Cross(J1,J2); 
+    Core::Geometry::Vector J1 = transform_.project(Core::Geometry::Vector(1.0,0.0,0.0)); 
+    Core::Geometry::Vector J2 = transform_.project(Core::Geometry::Vector(0.0,1.0,0.0)); 
+    Core::Geometry::Vector J3 = Cross(J1,J2); 
     J3.normalize();
     
     jacobian_[0] = J1.x();
