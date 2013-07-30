@@ -170,9 +170,10 @@ void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks:
 {
   auto newMod = addModule(newModuleName);
 
-  //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
+  //TODO: see above
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 
+  //TODO duplication
   if (portToConnect->isInput())
     for (size_t i = 0; i < newMod->num_output_ports(); ++i)
     {

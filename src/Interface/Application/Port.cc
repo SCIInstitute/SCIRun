@@ -74,12 +74,6 @@ namespace SCIRun {
             {
               const std::string& moduleName = module.first;
               auto m = new QAction(QString::fromStdString(moduleName), menu);
-              QHash<QString,QVariant> data;
-              //data["moduleIdSource"] = QString::fromStdString(parent->getUnderlyingModuleId().id_);
-              data["moduleNameToAdd"] = QString::fromStdString(moduleName);
-              //data["portName"] = QString::fromStdString(parent->get_portname());
-              //std::cout << "attaching string list of size " << data.size() << std::endl;
-              m->setData(data);
               QObject::connect(m, SIGNAL(triggered()), parent, SLOT(connectNewModule()));
               c->addAction(m);
             }
@@ -387,24 +381,8 @@ void PortWidget::portCachingChanged(bool checked)
 
 void PortWidget::connectNewModule()
 {
-  //std::cout << "connectNewModule" << std::endl;
   QAction* action = qobject_cast<QAction*>(sender());
-  //std::cout << "action sender grabbed" << std::endl;
-  //const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, 
-  /*
-  data["moduleIdSource"] = QString::fromStdString(parent->getUnderlyingModuleId().id_);
-  data["moduleNameToAdd"] = QString::fromStdString(moduleName);
-  data["portName"] = QString::fromStdString(parent->get_portname());
-  */
-  auto data = action->data().toHash();
-
-  //std::cout << "obtained data of length " << data.size() << std::endl;
-  //const QString& moduleSourceName = data["moduleIdSource"].toString();
-  const QString& moduleToAddName = data["moduleNameToAdd"].toString();
-  //const QString& portName = data["portName"].toString();
-
-  //std::cout << "Connecting new module " << moduleToAddName.toStdString() << " from " << moduleSourceName.toStdString() << " via port " << portName.toStdString() << std::endl;
-
+  QString moduleToAddName = action->text();
   Q_EMIT connectNewModule(this, moduleToAddName.toStdString());
 }
 
