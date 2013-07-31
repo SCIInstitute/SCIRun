@@ -3943,7 +3943,7 @@ HexVolMesh<Basis>::io(Piostream &stream)
   {
     synchronized_ = NODES_E | CELLS_E;
 
-    vmesh_ = CreateVHexVolMesh(this);
+    vmesh_.reset(CreateVHexVolMesh(this));
   }
 }
 
@@ -3968,7 +3968,7 @@ template <class Basis>
 const TypeDescription*
 HexVolMesh<Basis>::get_type_description() const
 {
-  return get_type_description((HexVolMesh<Basis> *)0);
+  return SCIRun::get_type_description((HexVolMesh<Basis> *)0);
 }
 
 template <class Basis>
@@ -3979,7 +3979,7 @@ HexVolMesh<Basis>::node_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Node",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -3996,7 +3996,7 @@ HexVolMesh<Basis>::edge_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Edge",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -4013,7 +4013,7 @@ HexVolMesh<Basis>::face_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Face",
 			     std::string(__FILE__),
 			     "SCIRun",
@@ -4030,7 +4030,7 @@ HexVolMesh<Basis>::cell_type_description()
   if (!td)
   {
     const TypeDescription *me =
-      get_type_description((HexVolMesh<Basis> *)0);
+      SCIRun::get_type_description((HexVolMesh<Basis> *)0);
     td = new TypeDescription(me->get_name() + "::Cell",
                                 std::string(__FILE__),
                                 "SCIRun",
