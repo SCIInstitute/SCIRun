@@ -619,7 +619,7 @@ public:
   void get_center(Core::Geometry::Point &result, typename Cell::index_type idx) const  
   { get_cell_center(result,idx); }
   
-  //! Get the size of an elemnt (length, area, volume)
+  //! Get the size of an element (length, area, volume)
   double get_size(typename Node::index_type /*idx*/) const 
   { return 0.0; }
     
@@ -630,7 +630,7 @@ public:
     Core::Geometry::Point p0, p1;
     get_center(p0, arr[0]);
     get_center(p1, arr[1]);
-    return ((p1.asVector() - p0.asVector()).length());
+    return ((p1 - p0).length());
   }
   
   double get_size(typename Face::index_type idx) const
@@ -2352,8 +2352,8 @@ protected:
     Core::Geometry::Point p1;
     get_node_center(p, arr[0]);
     get_node_center(p1, arr[1]);
-    p.asVector() += p1.asVector();
-    p.asVector() *= 0.5;
+    p += p1;
+    p *= 0.5;
   }
 
   template <class INDEX>
@@ -2371,10 +2371,10 @@ protected:
     while (nai != nodes.end())
     {
       get_point(pp, *nai);
-      p.asVector() += pp.asVector();
+      p += pp;
       ++nai;
     }
-    p.asVector() *= 0.25;
+    p *= 0.25;
   }
 
   template <class INDEX>
@@ -2392,10 +2392,10 @@ protected:
     while (nai != nodes.end())
     {
       get_point(pp, *nai);
-      p.asVector() += pp.asVector();
+      p += pp;
       ++nai;
     }
-    p.asVector() *= 0.125;
+    p *= 0.125;
   }
 
   //////////////////////////////////////////////////////////////
