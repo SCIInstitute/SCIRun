@@ -41,7 +41,7 @@ std::string PortColorLookup::toColor(const std::string& portDatatype)
     init();
 
   auto it = portColorMap_.find(portDatatype);
-  return it != portColorMap_.end() ? it->second : "";
+  return it != portColorMap_.end() ? it->second : "<undefined>";
 }
 
 std::map<std::string, std::string> PortColorLookup::portColorMap_;
@@ -51,6 +51,8 @@ void PortColorLookup::init()
   insert(portColorMap_)
     ("Matrix", "blue")
     ("Scalar", "white")
+    ("Double", "white")
+    ("Int32", "white")
     ("String", "darkGreen")
     ("Field", "yellow")
     ("Mesh", "cyan")  //TODO temporary
