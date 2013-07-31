@@ -26,16 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/HexVolMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/HexVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
 //! Only include this class if we included HexVol Support
 #if (SCIRUN_HEXVOL_SUPPORT > 0)
 
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
 namespace SCIRun {
 
 //! This is the virtual interface to the curve mesh
-//! This class lives besides the real mesh class for now and solely profides
+//! This class lives besides the real mesh class for now and solely provides
 //! an interface. In the future however when dynamic compilation is gone
 //! this should be put into the HexVolMesh class.
 template<class MESH> class VHexVolMesh;
@@ -47,7 +50,6 @@ class VHexVolMesh : public VUnstructuredMesh<MESH> {
 public:
   virtual bool is_hexvolmesh()         { return (true); }
 
-  //! constructor and descructor
   VHexVolMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VHexVolMesh")    

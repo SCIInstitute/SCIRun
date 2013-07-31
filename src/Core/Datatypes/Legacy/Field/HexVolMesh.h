@@ -55,6 +55,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
+#include <Core/Persistent/PersistentSTL.h>
 #include <Core/Utils/Legacy/CheckSum.h>
 
 #include <Core/Thread/Mutex.h>
