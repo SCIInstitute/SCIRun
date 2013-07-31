@@ -87,12 +87,12 @@ VMesh* CreateVHexVolMesh(MESH*) { return (0); }
 
 #if (SCIRUN_HEXVOL_SUPPORT > 0)
 
-SCISHARE VMesh* CreateVHexVolMesh(HexVolMesh<HexTrilinearLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVHexVolMesh(HexVolMesh<Core::Basis::HexTrilinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVHexVolMesh(HexVolMesh<HexTriquadraticLgn<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVHexVolMesh(HexVolMesh<Core::Basis::HexTriquadraticLgn<Core::Geometry::Point> >* mesh);
 #endif
 #if (SCIRUN_CUBIC_SUPPORT > 0)
-SCISHARE VMesh* CreateVHexVolMesh(HexVolMesh<HexTricubicHmt<Core::Geometry::Point> >* mesh);
+SCISHARE VMesh* CreateVHexVolMesh(HexVolMesh<Core::Basis::HexTricubicHmt<Core::Geometry::Point> >* mesh);
 #endif
 
 #endif

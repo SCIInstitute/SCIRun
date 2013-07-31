@@ -38,10 +38,10 @@
 #include <Core/Datatypes/Legacy/Field/HexVolMesh.h>
 #include <Core/Datatypes/Legacy/Field/GenericField.h>
 
-namespace SCIRun {
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
 
-  using namespace SCIRun::Core::Basis;
-  using namespace SCIRun::Core::Geometry;
+namespace SCIRun {
 
 //NoData
 typedef NoDataBasis<double>                NDBasis;
