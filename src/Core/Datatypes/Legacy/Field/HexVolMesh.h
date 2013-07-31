@@ -53,6 +53,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Mesh/VirtualMeshFacade.h>
 
 #include <Core/Utils/Legacy/CheckSum.h>
 
@@ -355,12 +356,13 @@ public:
 
   friend class Synchronize;
   
-  class Synchronize : public Runnable
+  class Synchronize //: public Runnable
   {
     public:
       Synchronize(HexVolMesh<Basis>& mesh, mask_type sync) :
         mesh_(mesh), sync_(sync) {}
-        
+      
+      void operator()() { run(); }
       void run()
       {      
       
@@ -381,7 +383,7 @@ public:
         if (sync_ & Mesh::FACES_E) mesh_.compute_faces();
         if (sync_ & Mesh::BOUNDING_BOX_E) mesh_.compute_bounding_box();
         
-        // These depend on the boundign box being synchronized
+        // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           mesh_.synchronize_lock_.lock();
@@ -424,6 +426,11 @@ public:
 
   //! Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get()); }
+
+  MeshFacadeHandle getFacade() const
+  {
+    return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
+  }
 
   //! This one should go at some point, should be reroute through the
   //! virtual interface
@@ -2850,8 +2857,8 @@ protected:
   boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
-  Mutex                         synchronize_lock_;
-  ConditionVariable             synchronize_cond_;
+  Core::Thread::Mutex                         synchronize_lock_;
+  Core::Thread::ConditionVariable             synchronize_cond_;
   
   // Which tables have been computed
   mask_type                     synchronized_;
@@ -2859,7 +2866,7 @@ protected:
   mask_type                     synchronizing_;
   
   Basis                         basis_;
-  Core::Geometry::BBox                          bbox_; 
+  Core::Geometry::BBox          bbox_; 
   double                        epsilon_;
   double                        epsilon2_;
   double                        epsilon3_;
