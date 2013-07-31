@@ -387,8 +387,9 @@ public:
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
           mesh_.synchronize_lock_.lock();
+          Core::Thread::UniqueLock lock(mesh_.synchronize_lock_.get());
           while(!(mesh_.synchronized_&Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(mesh_.synchronize_lock_);
+            mesh_.synchronize_cond_.wait(lock);
           mesh_.synchronize_lock_.unlock();          
           if (sync_ & Mesh::NODE_LOCATE_E) mesh_.compute_node_grid();
           if (sync_ & Mesh::ELEM_LOCATE_E) mesh_.compute_elem_grid();
@@ -1480,7 +1481,7 @@ public:
   //! This function returns a maker for Pio.
   static Persistent* maker() { return new HexVolMesh<Basis>; }
   //! This function returns a handle for the virtual interface.
-  static MeshHandle mesh_maker() { return new HexVolMesh<Basis>; }
+  static MeshHandle mesh_maker() { return boost::make_shared<HexVolMesh<Basis>>(); }
 
   //////////////////////////////////////////////////////////////////
   // Mesh specific functions (these are not implemented in every mesh)
@@ -2893,8 +2894,6 @@ HexVolMesh<Basis>::HexVolMesh() :
   face_table_(),
   edges_(0),
   edge_table_(),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("HexVolMesh Lock"),
   synchronize_cond_("HexVolMesh condition variable"),
   synchronized_(Mesh::NODES_E | Mesh::CELLS_E),
@@ -2905,7 +2904,7 @@ HexVolMesh<Basis>::HexVolMesh() :
 {
   DEBUG_CONSTRUCTOR("HexVolMesh")   
   //! Initialize the virtual interface when the mesh is created
-  vmesh_ = CreateVHexVolMesh(this);
+  vmesh_.reset(CreateVHexVolMesh(this));
 }
 
 template <class Basis>
@@ -2917,8 +2916,6 @@ HexVolMesh<Basis>::HexVolMesh(const HexVolMesh &copy) :
   face_table_(),
   edges_(0),
   edge_table_(),
-  node_grid_(0),
-  elem_grid_(0),
   synchronize_lock_("HexVolMesh Lock"),
   synchronize_cond_("HexVolMesh condition variable"),
   synchronized_(Mesh::NODES_E | Mesh::CELLS_E),
@@ -2929,7 +2926,7 @@ HexVolMesh<Basis>::HexVolMesh(const HexVolMesh &copy) :
 {
   DEBUG_CONSTRUCTOR("HexVolMesh")   
   //! Ugly construction circumventing const
-  HexVolMesh &lcopy = (HexVolMesh &)copy;
+  HexVolMesh &lcopy = const_cast<HexVolMesh&>(copy);
 
   //! We need to lock before we can copy these as these
   //! structures are generate dynamically when they are
@@ -2951,7 +2948,7 @@ HexVolMesh<Basis>::HexVolMesh(const HexVolMesh &copy) :
   //! Create a new virtual interface for this copy
   //! all pointers have changed hence create a new
   //! virtual interface class
-  vmesh_ = CreateVHexVolMesh(this);   
+  vmesh_.reset(CreateVHexVolMesh(this));
 }
 
 template <class Basis>
@@ -3538,8 +3535,8 @@ HexVolMesh<Basis>::clear_synchronization()
   face_table_.clear();
   boundary_faces_.clear();
   
-  node_grid_ = 0;
-  elem_grid_ = 0;
+  node_grid_.reset();
+  elem_grid_.reset();
   
   synchronize_lock_.unlock();  
   return (true);
@@ -3802,7 +3799,7 @@ HexVolMesh<Basis>::compute_elem_grid()
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
 
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    elem_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    elem_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Elem::iterator ci, cie;
     begin(ci); end(cie);
@@ -3839,7 +3836,7 @@ HexVolMesh<Basis>::compute_node_grid()
     size_type sz = static_cast<size_type>(ceil(0.5+diag.z()/trace*s));
     
     Core::Geometry::BBox b = bbox_; b.extend(10*epsilon_);
-    node_grid_ = new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max());
+    node_grid_.reset(new SearchGridT<index_type>(sx, sy, sz, b.min(), b.max()));
 
     typename Node::iterator ni, nie;
     begin(ni); end(nie);
