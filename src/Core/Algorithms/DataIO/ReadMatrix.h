@@ -48,7 +48,9 @@ namespace DataIO {
 
         static AlgorithmParameterName Filename;
 
-        Outputs run(/*const Inputs& input,*/ const Parameters& filename) const;
+        Outputs run(const Parameters& filename) const;
+      
+        AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
       };
 
 }}}}

@@ -34,7 +34,7 @@
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
 
-AlgorithmParameterName::AlgorithmParameterName(const std::string& name) : name_(name) 
+Name::Name(const std::string& name) : name_(name)
 {
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {

@@ -42,31 +42,33 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 
-  struct SCISHARE AlgorithmParameterName
+  struct SCISHARE Name
   {
-    AlgorithmParameterName() : name_("_unspecified_") {}
-    explicit AlgorithmParameterName(const std::string& name);
+    Name() : name_("_unspecified_") {}
+    explicit Name(const std::string& name);
 
     std::string name1() const { return name_; }
     
-    bool operator<(const AlgorithmParameterName& rhs) const
+    bool operator<(const Name& rhs) const
     {
       return name_ < rhs.name_;
     }
 
     std::string name_;
   };
+    
+  typedef Name AlgorithmParameterName;
 
-  class SCISHARE AlgorithmParameter
+  class SCISHARE Variable
   {
   public:
     //TODO: expand this 
     typedef boost::variant<int,double,std::string,bool> Value;
 
-    AlgorithmParameter() {}
-    AlgorithmParameter(const AlgorithmParameterName& name, const Value& value) : name_(name), value_(value) {}
+    Variable() {}
+    Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
 
-    AlgorithmParameterName name_;
+    Name name_;
     Value value_;
 
     int getInt() const;
@@ -75,6 +77,8 @@ namespace Algorithms {
     bool getBool() const;
     //etc
   };
+  
+  typedef Variable AlgorithmParameter;
 
   class SCISHARE AlgorithmLogger : public Core::Logging::LoggerInterface
   {
@@ -138,9 +142,22 @@ namespace Algorithms {
     std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
   };
 
+  class SCISHARE AlgorithmData
+  {
+  public:
+    Variable& operator[](const Name& name);
+    const Variable& get(const Name& name) const;
+  private:
+    std::map<Name, Variable> data_;
+  };
   
+  class SCISHARE AlgorithmInput : public AlgorithmData {};
+  
+  class SCISHARE AlgorithmOutput : public AlgorithmData {};
+  
+  typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
+  typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 
-  //template <class Input, class Output, class Parameters>
   class SCISHARE AlgorithmBase : public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
   {
   public:
@@ -156,7 +173,7 @@ namespace Algorithms {
       Output: tuple of Datatypes, possibly delay-executed
     */
 
-    //virtual Output run(const Input& input, const Parameters& params) const = 0;
+    virtual AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const = 0;
 
   };
   
