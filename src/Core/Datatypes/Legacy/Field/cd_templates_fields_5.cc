@@ -27,19 +27,18 @@
 */
 
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/HexTricubicHmt.h>
 #include <Core/Basis/HexTricubicHmtScaleFactors.h>
 #include <Core/Basis/HexTricubicHmtScaleFactorsEdges.h>
 #include <Core/Basis/HexTrilinearLgn.h>
-#include <Core/Datatypes/HexVolMesh.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/HexVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
-using namespace SCIRun;
-
+namespace SCIRun {
 //NoData
 typedef NoDataBasis<double>                NDBasis;
 
@@ -201,3 +200,5 @@ typedef HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> > HVCubSFEMesh;
 template class HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> >;
 
 template class GenericField<HVCubSFEMesh, NDBasis, std::vector<double> >; 
+
+}
