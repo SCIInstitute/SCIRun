@@ -35,10 +35,8 @@
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
-#include <Core/Containers/Handle.h>
-#include <Core/Containers/LockingHandle.h>
-#include <Core/Containers/SearchGridT.h>
 
+#include <Core/GeometryPrimitives/SearchGridT.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/GeometryPrimitives/CompGeom.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -56,12 +54,11 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 
-#include <Core/Util/CheckSum.h>
+#include <Core/Utils/Legacy/CheckSum.h>
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-#include <Core/Thread/Runnable.h>
-#include <Core/Thread/Thread.h>
+#include <boost/thread.hpp>
 
 #include <set>
 
@@ -78,7 +75,7 @@ namespace SCIRun {
 template <class Basis> class HexVolMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
+//! returns no virtual interface. Altering this behavior will allow
 //! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVHexVolMesh(MESH*) { return (0); }
