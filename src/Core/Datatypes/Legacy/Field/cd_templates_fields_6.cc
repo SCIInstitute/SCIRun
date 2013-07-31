@@ -40,22 +40,21 @@
 find . -name "*.ii" -print | xargs cat | sort | uniq -c | sort -nr | more
  */
 
-#include <Core/Containers/LockingHandle.h>
-
-using namespace SCIRun;
-
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/CrvLinearLgn.h>
 #include <Core/Basis/HexTrilinearLgn.h>
 #include <Core/Basis/QuadBilinearLgn.h>
-#include <Core/Datatypes/StructCurveMesh.h>
-#include <Core/Datatypes/StructQuadSurfMesh.h>
-#include <Core/Datatypes/StructHexVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/StructCurveMesh.h>
+#include <Core/Datatypes/Legacy/Field/StructQuadSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/StructHexVolMesh.h>
 #include <Core/Containers/FData.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
+
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
+namespace SCIRun {
 
 //NoData
 typedef NoDataBasis<double>                 NDBasis;
@@ -450,3 +449,4 @@ backwards_compat_SHVFul("StructHexVolField<unsigned_long>", "Field",
 			GenericField<SHMesh, CFDulongBasis, 
 			FData3d<unsigned long, SHMesh> >::maker);
 
+}
