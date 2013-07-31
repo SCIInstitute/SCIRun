@@ -83,7 +83,7 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
     EXPECT_EQ(matrix1(), *matrix);
   }
   else
-    FAIL() << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file " << filename.string() << " does not exist, skipping test." << std::endl;
 }
 
 TEST(ReadMatrixAlgorithmTest, ThrowsForFileNotFound)
@@ -294,7 +294,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile2)
     EXPECT_EQ(to_string(*col), to_string(expected));
   }
   else
-    FAIL() << "file does not exist, skipping test." << std::endl;
+    FAIL() << "file " << filename.string() << " does not exist, skipping test." << std::endl;
 }
 
 void CallLegacyPio(const boost::filesystem::path& filename, const DenseMatrix& expected = DenseMatrix::Identity(3,3))
