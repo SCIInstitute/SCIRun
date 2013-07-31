@@ -1660,36 +1660,37 @@ protected:
       "HexVolMesh: Must call synchronize EDGES_E first");
 
     array.clear();
-    array.reserve(12);
+    //array.reserve(12);
     const index_type off = idx * 8;
     typename Node::index_type n1,n2;
     
+    int i = 0;
     n1 = cells_[off    ]; n2 = cells_[off + 1];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 1]; n2 = cells_[off + 2];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 2]; n2 = cells_[off + 3];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 3]; n2 = cells_[off   ];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
 
     n1 = cells_[off + 4]; n2 = cells_[off + 5];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 5]; n2 = cells_[off + 6];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 6]; n2 = cells_[off + 7];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 7]; n2 = cells_[off + 4];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
 
     n1 = cells_[off    ]; n2 = cells_[off + 4];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 5]; n2 = cells_[off + 1];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 2]; n2 = cells_[off + 6];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
     n1 = cells_[off + 7]; n2 = cells_[off + 3];
-    if (n1 != n2) { PEdgeNode e(n1,n2); array.push_back(static_cast<typename ARRAY::value_type>((*(edge_table_.find(e))).second)); }
+    if (n1 != n2) { PEdgeNode e(n1,n2); array[i++] = static_cast<typename ARRAY::value_type>(edge_table_.find(e)->second); }
   }
 
   template<class ARRAY, class INDEX>
