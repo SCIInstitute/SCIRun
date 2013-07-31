@@ -70,7 +70,7 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   cd_templates_fields_3.cc    	
   cd_templates_fields_3a.cc
   cd_templates_fields_4.cc    	
-  #cd_templates_fields_5.cc	
+  cd_templates_fields_5.cc	
   #cd_templates_fields_6.cc	
   CurveMesh.cc
   Field.cc
