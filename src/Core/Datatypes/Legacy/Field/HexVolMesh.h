@@ -167,7 +167,7 @@ public:
   typedef SCIRun::size_type                 size_type;
   typedef SCIRun::mask_type                 mask_type;
 
-  typedef LockingHandle<HexVolMesh<Basis> > handle_type;
+  typedef boost::shared_ptr<HexVolMesh<Basis> > handle_type;
   typedef Basis                             basis_type;
 
   //! Index and Iterator types required for Mesh Concept.
@@ -423,7 +423,7 @@ public:
   virtual ~HexVolMesh();
 
   //! Access point to virtual interface
-  virtual VMesh* vmesh() { return (vmesh_.get_rep()); }
+  virtual VMesh* vmesh() { return (vmesh_.get()); }
 
   //! This one should go at some point, should be reroute through the
   //! virtual interface
@@ -2846,8 +2846,8 @@ protected:
   //!  tets overlap that grid cell -- to find the tet which contains a
   //!  point, we simply find which grid cell contains that point, and
   //!  then search just those tets that overlap that grid cell.
-  LockingHandle<SearchGridT<index_type> >  node_grid_;
-  LockingHandle<SearchGridT<index_type> >  elem_grid_;
+  boost::shared_ptr<SearchGridT<index_type> >  node_grid_;
+  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_;
 
   // Lock and Condition Variable for hand shaking
   Mutex                         synchronize_lock_;
@@ -2865,7 +2865,7 @@ protected:
   double                        epsilon3_;
   
   //! Pointer to virtual interface  
-  Handle<VMesh>                 vmesh_;
+  boost::shared_ptr<VMesh>                 vmesh_;
 };
 
 template <class Basis>
@@ -3195,8 +3195,8 @@ HexVolMesh<Basis>::transform(const Core::Geometry::Transform &t)
     synchronized_ |= Mesh::BOUNDING_BOX_E;
   }
 
-  if (node_grid_.get_rep()) { node_grid_->transform(t); }
-  if (elem_grid_.get_rep()) { elem_grid_->transform(t); }
+  if (node_grid_) { node_grid_->transform(t); }
+  if (elem_grid_) { elem_grid_->transform(t); }
   synchronize_lock_.unlock();
 }
 
