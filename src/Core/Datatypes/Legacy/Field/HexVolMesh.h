@@ -3088,23 +3088,23 @@ HexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   
   if (w > (a0 + a1 + a2 + a3))
   {
-    p = (p5.vector()*a + p2.vector()*t + p7.vector()*u + p6.vector()*v).point();
+    p = Core::Geometry::Point(p5*a + p2*t + p7*u + p6*v);
   }
   else if (w > (a0 + a1 + a2))
   {
-    p = (p0.vector()*a + p5.vector()*t + p7.vector()*u + p4.vector()*v).point();
+    p = Core::Geometry::Point(p0*a + p5*t + p7*u + p4*v);
   }
   else if (w > (a0 + a1))
   {
-    p = (p0.vector()*a + p5.vector()*t + p2.vector()*u + p7.vector()*v).point();
+    p = Core::Geometry::Point(p0*a + p5*t + p2*u + p7*v);
   }
   else if (w > a0)
   {
-    p = (p0.vector()*a + p2.vector()*t + p3.vector()*u + p7.vector()*v).point();
+    p = Core::Geometry::Point(p0*a + p2*t + p3*u + p7*v);
   }
   else
   {
-    p = (p0.vector()*a + p1.vector()*t + p2.vector()*u + p5.vector()*v).point();
+    p = Core::Geometry::Point(p0*a + p1*t + p2*u + p5*v);
   }
 }
 
