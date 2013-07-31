@@ -76,7 +76,7 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   Field.cc
   FieldInformation.cc
   FieldRNG.cc
-  #HexVolMesh.cc
+  HexVolMesh.cc
   ImageMesh.cc
   LatVolMesh.cc
   Mesh.cc		
