@@ -103,8 +103,8 @@ namespace SCIRun {
           addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
           addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-          //addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-          //addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
           addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
           addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
           addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");

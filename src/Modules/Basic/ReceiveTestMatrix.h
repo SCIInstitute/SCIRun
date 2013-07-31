@@ -38,7 +38,7 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE ReceiveTestMatrixModule : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<MatrixPortTag>
+        public Has1InputPort<MatrixPortTag>, public HasNoOutputPorts
       {
       public:
         ReceiveTestMatrixModule();
