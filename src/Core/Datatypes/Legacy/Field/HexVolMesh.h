@@ -3419,9 +3419,8 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::EDGES_E)
   {
     mask_type tosync = Mesh::EDGES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize hexvol edges",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::FACES_E)
@@ -3434,9 +3433,8 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::FACES_E)
   {
     mask_type tosync = Mesh::FACES_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize hexvol faces",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
@@ -3449,9 +3447,8 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize hexvol node_neighbors",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
@@ -3464,9 +3461,8 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::BOUNDING_BOX_E)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize hexvol bounding box",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
@@ -3479,9 +3475,8 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_LOCATE_E)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize hexvol node_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
@@ -3494,17 +3489,24 @@ HexVolMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_LOCATE_E)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
-    Synchronize* syncclass = new Synchronize(*this,tosync);
-    Thread* syncthread = new Thread(syncclass,"synchronize hexvol elem_locate",0,Thread::Activated,1024*20);
-    syncthread->detach();
+    Synchronize syncclass(*this,tosync);
+    boost::thread syncthread(syncclass);
   }
+
+  //// Wait until threads are done
+  //while ((synchronized_ & sync) != sync)
+  //{
+  //  synchronize_cond_.wait(synchronize_lock_);
+  //}
 
   // Wait until threads are done
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
-    synchronize_cond_.wait(synchronize_lock_);
+    synchronize_cond_.wait(lock);
   }
+#endif
 
   synchronize_lock_.unlock();
   
