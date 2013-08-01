@@ -60,6 +60,9 @@ namespace Fields {
     };
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
+
+    AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
+
   private:
     Outputs update_input_attributes(SCIRun::FieldHandle f) const;
   };

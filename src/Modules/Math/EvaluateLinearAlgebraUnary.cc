@@ -60,3 +60,4 @@ void EvaluateLinearAlgebraUnaryModule::execute()
   DenseMatrixHandle output = algo.run(denseInput, params);  //TODO
   sendOutput(Result, output);
 }
+

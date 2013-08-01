@@ -74,3 +74,8 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
     return output;
   }
 }
+
+AlgorithmOutputHandle AppendMatrixAlgorithm::run_generic(AlgorithmInputHandle input) const
+{
+  throw 2;
+}

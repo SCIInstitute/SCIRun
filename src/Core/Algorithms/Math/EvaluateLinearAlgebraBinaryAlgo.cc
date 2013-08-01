@@ -68,3 +68,8 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
   return result;
 }
+
+AlgorithmOutputHandle EvaluateLinearAlgebraBinaryAlgorithm::run_generic(AlgorithmInputHandle input) const
+{
+  throw 2;
+}

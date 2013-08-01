@@ -1186,3 +1186,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 #endif
   return true;
 }
+
+AlgorithmOutputHandle SolveLinearSystemAlgo::run_generic(AlgorithmInputHandle input) const
+{
+  throw 2;
+}

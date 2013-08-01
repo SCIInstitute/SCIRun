@@ -72,3 +72,8 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 
   return result;
 }
+
+AlgorithmOutputHandle EvaluateLinearAlgebraUnaryAlgorithm::run_generic(AlgorithmInputHandle input) const
+{
+  throw 2;
+}

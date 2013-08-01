@@ -46,6 +46,8 @@ public:
  public:
    SCIRun::Core::Datatypes::LegacyMeshHandle run(const std::string& filename);
  
+   AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
+
   // sets up parameter name for state engine
   static const AlgorithmParameterName Filename;
 };

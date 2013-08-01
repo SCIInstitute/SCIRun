@@ -52,6 +52,8 @@ namespace Math {
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
+
+    AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
   };
 
   typedef boost::error_info<struct tag_eigen_computation, Eigen::ComputationInfo> EigenComputationInfo;

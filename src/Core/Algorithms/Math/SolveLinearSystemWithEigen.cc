@@ -112,3 +112,8 @@ SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs
   else
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("solveWithEigen produced an empty solution."));
 }
+
+AlgorithmOutputHandle SolveLinearSystemAlgorithm::run_generic(AlgorithmInputHandle input) const
+{
+  throw 2;
+}

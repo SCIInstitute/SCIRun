@@ -36,7 +36,7 @@
 
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
-
+using namespace SCIRun::Core::Algorithms;
 
 
 struct NumberOfElements : MatrixVisitor
@@ -134,4 +134,9 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
     min.value(),
     max.value()
     );
+}
+
+AlgorithmOutputHandle ReportMatrixInfoAlgorithm::run_generic(AlgorithmInputHandle input) const
+{
+  throw 2;
 }
