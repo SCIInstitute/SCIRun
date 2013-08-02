@@ -40,8 +40,6 @@
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>

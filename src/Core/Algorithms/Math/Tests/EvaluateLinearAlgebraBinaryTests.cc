@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixComparison.h>
