@@ -38,8 +38,8 @@ SET(Algorithms_Math_SRCS
 
 SET(Algorithms_Math_HEADERS
   AppendMatrix.h
-  EvaluateLinearAlgebraUnary.h
-  EvaluateLinearAlgebraBinary.h
+  EvaluateLinearAlgebraUnaryAlgo.h
+  EvaluateLinearAlgebraBinaryAlgo.h
   ReportMatrixInfo.h
   share.h
   SolveLinearSystemWithEigen.h
