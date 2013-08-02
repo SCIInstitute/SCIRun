@@ -70,12 +70,18 @@ class ModuleTest : public ::testing::Test
 protected:
   ModuleTest()
   {
-    //TODO: mock this to provide hard-wired input
     Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
   }
   ModuleHandle makeModule(const std::string& name)
   {
     return CreateModuleFromUniqueName(factory, name);
+  }
+
+  void stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
+  {
+    module->get_input_port(portNum)->attach(0);
+    DatatypeHandleOption o = data;
+    dynamic_cast<StubbedDatatypeSink*>(module->get_input_port(portNum)->sink().get())->setData(o);
   }
 
 private:
@@ -96,10 +102,7 @@ TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
 
   DenseMatrixHandle m(new DenseMatrix(2,2));
 
-  //TODO: stub input port.
-  module->get_input_port(0)->attach(0);
-  DatatypeHandleOption o = m;
-  dynamic_cast<StubbedDatatypeSink*>(module->get_input_port(0)->sink().get())->setData(o);
+  stubPortNWithThisData(module, 0, m);
 
   module->execute();
 }
