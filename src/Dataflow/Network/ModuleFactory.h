@@ -48,6 +48,8 @@ namespace Networks {
     virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const = 0;
   };
 
+  SCISHARE SCIRun::Dataflow::Networks::ModuleHandle CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName);
+
 }}}
 
 #endif

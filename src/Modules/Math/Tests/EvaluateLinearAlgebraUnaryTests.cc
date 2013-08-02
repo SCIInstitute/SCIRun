@@ -26,22 +26,80 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+
+#include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Dataflow/Network/DataflowInterfaces.h>
+#include <boost/functional/factory.hpp>
+
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Modules::Factory;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
+class StubbedDatatypeSink : public DatatypeSinkInterface
+{
+public:
+  virtual bool hasData() const { return true; }
+  virtual void setHasData(bool dataPresent) {}
+  virtual void waitForData() {}
+
+  virtual DatatypeHandleOption receive() { return data_; }
+
+  void setData(DatatypeHandleOption data) { data_ = data; }
+private:
+  DatatypeHandleOption data_;
+};
+
+class ModuleTest : public ::testing::Test
+{
+protected:
+  ModuleTest()
+  {
+    //TODO: mock this to provide hard-wired input
+    Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
+  }
+  ModuleHandle makeModule(const std::string& name)
+  {
+    return CreateModuleFromUniqueName(factory, name);
+  }
+
+private:
+  HardCodedModuleFactory factory;
+};
+
+class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
+{
+
+};
+
+TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
+{
+  const std::string name = "EvaluateLinearAlgebraUnary";
+  auto module = makeModule(name);
+
+  EXPECT_EQ(name, module->get_module_name());
+
+  DenseMatrixHandle m(new DenseMatrix(2,2));
+
+  //TODO: stub input port.
+  module->get_input_port(0)->attach(0);
+  DatatypeHandleOption o = m;
+  dynamic_cast<StubbedDatatypeSink*>(module->get_input_port(0)->sink().get())->setData(o);
+
+  module->execute();
+}
