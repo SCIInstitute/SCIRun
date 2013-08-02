@@ -51,27 +51,32 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-class StubbedDatatypeSink : public DatatypeSinkInterface
-{
-public:
-  virtual bool hasData() const { return true; }
-  virtual void setHasData(bool dataPresent) {}
-  virtual void waitForData() {}
-
-  virtual DatatypeHandleOption receive() { return data_; }
-
-  void setData(DatatypeHandleOption data) { data_ = data; }
-private:
-  DatatypeHandleOption data_;
-};
-
+//TODO: break out into separate library, we'll want to subclass this for every module we convert over.
 class ModuleTest : public ::testing::Test
 {
+private:
+  HardCodedModuleFactory factory;
+
+  class StubbedDatatypeSink : public DatatypeSinkInterface
+  {
+  public:
+    virtual bool hasData() const { return true; }
+    virtual void setHasData(bool dataPresent) {}
+    virtual void waitForData() {}
+
+    virtual DatatypeHandleOption receive() { return data_; }
+
+    void setData(DatatypeHandleOption data) { data_ = data; }
+  private:
+    DatatypeHandleOption data_;
+  };
+
 protected:
   ModuleTest()
   {
     Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
   }
+
   ModuleHandle makeModule(const std::string& name)
   {
     return CreateModuleFromUniqueName(factory, name);
@@ -83,9 +88,6 @@ protected:
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(module->get_input_port(portNum)->sink().get())->setData(o);
   }
-
-private:
-  HardCodedModuleFactory factory;
 };
 
 class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
@@ -104,5 +106,7 @@ TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
 
   stubPortNWithThisData(module, 0, m);
 
+  //TODO: mock module state for passing to algorithm
+  //TODO: algorithm factory to provide mock algorithm
   module->execute();
 }
