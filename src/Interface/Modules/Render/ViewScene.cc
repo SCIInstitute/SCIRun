@@ -165,22 +165,28 @@ void ViewSceneDialog::moduleExecuted()
       // Add passes
       for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
       {
-        const GeometryObject::SpirePass& pass = *it;
-        stuPipe->addPassToObject(obj->objectName, pass.passName, pass.programName,
-                                 pass.vboName, pass.iboName, pass.type);
+        const GeometryObject::SpireSubPass& pass = *it;
+        stuPipe->addPassToObject(obj->objectName, pass.programName,
+                                 pass.vboName, pass.iboName, pass.type
+                                 SPIRE_DEFAULT_PASS, pass.passName);
 
         // Add uniforms associated with the pass
         for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
         {
           std::string uniformName = std::get<0>(*it);
           std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
-          stuPipe->addPassUniformConcrete(obj->objectName, pass.passName,
-                                          uniformName, uniform);
+
+          // Be sure to always include the pass name as we are updating a
+          // subpass of SPIRE_DEFAULT_PASS.
+          stuPipe->addObjectPassUniformConcrete(obj->objectName, uniformName, 
+                                                uniform, pass.passName);
         }
 
         // Add gpu state if it has been set.
         if (pass.hasGPUState == true)
-          stuPipe->addPassGPUState(obj->objectName, pass.passName, pass.gpuState);
+          // Be sure to always include the pass name as we are updating a
+          // subpass of SPIRE_DEFAULT_PASS.
+          stuPipe->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
       }
 
       // Now that we have created all of the appropriate passes, get rid of the
