@@ -97,20 +97,20 @@ namespace Datatypes {
     {
       SpirePass(const std::string& name, const std::string& vbo, 
                 const std::string& ibo, const std::string& program,
-                Spire::StuInterface::PRIMITIVE_TYPES primType) :
+                Spire::Interface::PRIMITIVE_TYPES primType) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
           programName(program),
-          hasGPUState(false),
-          type(primType)
+          type(primType),
+          hasGPUState(false)
       {}
 
       std::string   passName;
       std::string   vboName;
       std::string   iboName;
       std::string   programName;
-      Spire::StuInterface::PRIMITIVE_TYPES type;
+      Spire::Interface::PRIMITIVE_TYPES type;
       // Want Boost::optional here...
       bool            hasGPUState;
       Spire::GPUState gpuState;
