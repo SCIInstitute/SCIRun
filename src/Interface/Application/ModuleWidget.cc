@@ -40,6 +40,7 @@
 #include <Interface/Application/ModuleLogWindow.h>
 #include <Interface/Application/NoteEditor.h>
 #include <Interface/Application/ClosestPortFinder.h>
+#include <Interface/Application/Utility.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -56,54 +57,14 @@ QPointF ProxyWidgetPosition::currentPosition() const
   return widget_->pos() + offset_;
 }
 
-namespace {
-//TODO move to separate header
-  QColor to_color(const std::string& str)
-  {
-    if (str == "red")
-      return Qt::red;
-    if (str == "blue")
-      return Qt::blue;
-    if (str == "darkBlue")
-      return Qt::darkBlue;
-    if (str == "cyan")
-      return Qt::cyan;
-    if (str == "darkCyan")
-      return Qt::darkCyan;
-    if (str == "darkGreen")
-      return Qt::darkGreen;
-    if (str == "cyan")
-      return Qt::cyan;
-    if (str == "magenta")
-      return Qt::magenta;
-    if (str == "white")
-      return Qt::white;
-    if (str == "yellow")
-      return Qt::yellow;
-    if (str == "darkYellow")
-      return Qt::darkYellow;
-    if (str == "lightGray")
-      return Qt::lightGray;
-    if (str == "darkGray")
-      return Qt::darkGray;
-    if (str == "black")
-      return Qt::black;
-    else
-      return Qt::black;
-  }
+QPointF ProxyWidgetPosition::mapToScene(const QPointF &point) const
+{
+  return widget_->mapToScene(point);
+}
 
-  QAction* separatorAction(QWidget* parent)
-  {
-    auto sep = new QAction(parent);
-    sep->setSeparator(true);
-    return sep;
-  }
-
-  QAction* disabled(QAction* action)
-  {
-    action->setEnabled(false);
-    return action;
-  }
+QPointF ProxyWidgetPosition::mapFromScene(const QPointF &point) const
+{
+  return widget_->mapFromScene(point);
 }
 
 namespace SCIRun {
@@ -264,7 +225,8 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), moduleId, i, connectionFactory_, closestPortFinder_, this);
+    auto type = port->get_typename();
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
@@ -272,7 +234,8 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(port->get_colorname()), moduleId, i, connectionFactory_, closestPortFinder_, this);
+    auto type = port->get_typename();
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, connectionFactory_, closestPortFinder_, this);
     hookUpSignals(w);
     addPort(w);
   }
@@ -286,6 +249,8 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
   connect(port, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)), 
     this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
   connect(this, SIGNAL(cancelConnectionsInProgress()), port, SLOT(cancelConnectionsInProgress()));
+  connect(port, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)), 
+    this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
 void ModuleWidget::addPort(OutputPortWidget* port)
@@ -446,4 +411,9 @@ void ModuleWidget::updateNote(const Note& note)
 void ModuleWidget::duplicate()
 {
   Q_EMIT duplicateModule(theModule_);
+}
+
+void ModuleWidget::connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }

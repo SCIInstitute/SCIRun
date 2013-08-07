@@ -34,6 +34,7 @@
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #ifdef BUILD_WITH_PYTHON
@@ -163,6 +164,36 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   }
   
   return newModule;
+}
+
+void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
+{
+  auto newMod = addModule(newModuleName);
+
+  //TODO: see above
+  boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+
+  //TODO duplication
+  if (portToConnect->isInput())
+    for (size_t i = 0; i < newMod->num_output_ports(); ++i)
+    {
+      auto p = newMod->get_output_port(i);
+      if (p->get_typename() == portToConnect->get_typename())
+      {
+        requestConnection(p.get(), portToConnect);
+        return;
+      }
+    }
+  else
+    for (size_t i = 0; i < newMod->num_input_ports(); ++i)
+    {
+      auto p = newMod->get_input_port(i);
+      if (p->get_typename() == portToConnect->get_typename())
+      {
+        requestConnection(p.get(), portToConnect);
+        return;
+      }
+    }
 }
 
 void NetworkEditorController::printNetwork() const
@@ -305,3 +336,7 @@ void NetworkEditorController::setExecutorType(int type)
   currentExecutor_ = executorFactory_->create((ExecutionStrategy::Type)type);
 }
 
+const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const
+{
+  return moduleFactory_->getAllAvailableModuleDescriptions();
+}

@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_NETWORK_FWD_H 
 
 #include <boost/shared_ptr.hpp>
+#include <map>
 
 namespace SCIRun {
 namespace Dataflow {
@@ -55,7 +56,6 @@ class ModuleInfoProvider;
 struct ConnectionDescription;
 class DatatypeSourceInterface;
 class DatatypeSinkInterface;
-class RendererInterface;
 class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
@@ -80,7 +80,7 @@ typedef boost::shared_ptr<NetworkXML> NetworkXMLHandle;
 typedef boost::shared_ptr<ModulePositions> ModulePositionsHandle;
 typedef boost::shared_ptr<NetworkFile> NetworkFileHandle;
 
-
+typedef std::map<std::string, std::map<std::string, std::map<std::string, ModuleDescription>>> ModuleDescriptionMap;
 
 }}}
 

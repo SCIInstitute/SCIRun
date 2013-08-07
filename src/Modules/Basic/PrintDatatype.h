@@ -37,7 +37,8 @@ namespace SCIRun {
     namespace Basic {
 
       class SCISHARE PrintDatatypeModule : public SCIRun::Dataflow::Networks::Module,
-        public Has1InputPort<DatatypePortTag>
+        public Has1InputPort<DatatypePortTag>,
+        public HasNoOutputPorts
       {
       public:
         PrintDatatypeModule();

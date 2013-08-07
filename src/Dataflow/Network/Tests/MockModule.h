@@ -77,7 +77,7 @@ namespace SCIRun {
           virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
           virtual ModuleHandle create(const ModuleDescription& info);
           virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
-          virtual void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer);
+          virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
         private:
           size_t moduleCounter_;
           ModuleStateFactoryHandle stateFactory_;

@@ -65,6 +65,7 @@
 #include <Modules/Factory/Share.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
@@ -75,7 +76,103 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
 using namespace boost::assign;
 
-HardCodedModuleFactory::HardCodedModuleFactory() : renderer_(0)
+namespace SCIRun {
+  namespace Modules {
+    namespace Factory {
+
+      struct ModuleLookupInfoLess
+      {
+        bool operator()(const ModuleLookupInfo& lhs, const ModuleLookupInfo& rhs) const
+        {
+          return lhs.module_name_ < rhs.module_name_;
+        }
+      };
+
+      class ModuleDescriptionLookup
+      {
+      public:
+        ModuleDescriptionLookup()
+        {
+          //TODO: make EVEN MORE generic...macros? xml?
+
+          addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
+          addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
+          addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
+          //addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+          //addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+          addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
+          addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
+          addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+          addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
+          addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
+          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "One multithreaded algorithm available.", "...");
+          addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
+          //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
+          addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
+          addModuleDesc<CreateLatVolMesh>("CreateLatVolMesh", "NewField", "SCIRun", "Can create lat vol meshes of arbitrary size.", "...");
+          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Math", "SCIRun", "...", "...");
+          addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
+          addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
+          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "Set field data via python.", "...");
+          addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
+        }
+
+        ModuleDescriptionMap descMap_;
+
+        ModuleDescription lookupDescription(const ModuleLookupInfo& info)
+        {
+          auto iter = lookup_.find(info);
+          if (iter == lookup_.end())
+          {
+            //TODO: log
+            std::ostringstream ostr;
+            ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
+            THROW_INVALID_ARGUMENT(ostr.str());
+          }
+          return iter->second;
+        }
+      private:
+        typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> Lookup;
+        Lookup lookup_;
+
+        template <class ModuleType>
+        void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)
+        {
+          ModuleLookupInfo info;
+          info.module_name_ = name;
+          info.package_name_ = package;
+          info.category_name_ = category;
+
+          ModuleDescription description;
+          description.lookupInfo_ = info;
+
+          description.input_ports_ = IPortDescriber<ModuleType::NumIPorts, ModuleType>::inputs();
+          description.output_ports_ = OPortDescriber<ModuleType::NumOPorts, ModuleType>::outputs();
+          description.maker_ = boost::factory<ModuleType*>();
+          description.moduleStatus_ = status;
+          description.moduleInfo_ = desc;
+
+          lookup_[info] = description;
+
+          descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
+        }
+      };
+
+      class HardCodedModuleFactoryImpl
+      {
+      public:
+        ModuleDescriptionLookup lookup;
+      };
+
+    }}}
+
+HardCodedModuleFactory::HardCodedModuleFactory() : impl_(new HardCodedModuleFactoryImpl)
 {
   Module::Builder::use_sink_type(boost::factory<SimpleSink*>());
   Module::Builder::use_source_type(boost::factory<SimpleSource*>());
@@ -85,11 +182,6 @@ void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleS
 {
   stateFactory_ = stateFactory;
   Module::defaultStateFactory_ = stateFactory_;
-}
-
-void HardCodedModuleFactory::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* renderer)
-{
-  renderer_ = renderer;
 }
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
@@ -103,188 +195,28 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
   {
-    builder.add_input_port(Port::ConstructionParams(input.name, input.datatype, input.color));
+    builder.add_input_port(Port::ConstructionParams(input.name, input.datatype));
   }
   BOOST_FOREACH(const OutputPortDescription& output, desc.output_ports_)
   {
-    builder.add_output_port(Port::ConstructionParams(output.name, output.datatype, output.color));
+    builder.add_output_port(Port::ConstructionParams(output.name, output.datatype));
   }
 
+  //TODO: eliminate
   if (desc.lookupInfo_.module_name_.find("ComputeSVD") != std::string::npos)
     builder.disable_ui();
 
   ModuleHandle module = builder.build();
 
-  if (desc.lookupInfo_.module_name_.find("ViewScene") != std::string::npos)
-    boost::dynamic_pointer_cast<ViewScene>(module)->setRenderer(renderer_);
-
   return module;
 }
 
-//TODO: make more generic...macros?
-
 ModuleDescription HardCodedModuleFactory::lookupDescription(const ModuleLookupInfo& info)
 {
-  std::string name = info.module_name_;
-  ModuleDescription description;
-  description.lookupInfo_ = info;
-  if (name.find("ComputeSVD") != std::string::npos)
-  {
-    description.input_ports_ += InputPortDescription("Input", "Matrix", "blue");
-    description.output_ports_ += OutputPortDescription("U", "Matrix", "blue"), OutputPortDescription("S", "Matrix", "blue"), OutputPortDescription("V", "Matrix", "blue");
-    description.maker_ = 0;
-  }
-  else if (name.find("ReadMatrix") != std::string::npos)
-  {
-    description.input_ports_ += ReadMatrixModule::inputPortDescription(ReadMatrixModule::inputPort0Name());
-    description.output_ports_ = ReadMatrixModule::outputPortDescription(ReadMatrixModule::outputPort0Name(), ReadMatrixModule::outputPort1Name());
-    description.maker_ = boost::factory<ReadMatrixModule*>();
-  }
-  else if (name.find("WriteMatrix") != std::string::npos)
-  {
-    description.input_ports_ = WriteMatrixModule::inputPortDescription(WriteMatrixModule::inputPort0Name(), WriteMatrixModule::inputPort1Name());
-    description.maker_ = boost::factory<WriteMatrixModule*>();
-  }
-  else if (name.find("ReadField") != std::string::npos)
-  {
-    description.input_ports_ += ReadFieldModule::inputPortDescription(ReadFieldModule::inputPort0Name());
-    description.output_ports_ = ReadFieldModule::outputPortDescription(ReadFieldModule::outputPort0Name(), ReadFieldModule::outputPort1Name());
-    description.maker_ = boost::factory<ReadFieldModule*>();
-  }
-  else if (name.find("WriteField") != std::string::npos)
-  {
-    description.input_ports_ = WriteFieldModule::inputPortDescription(WriteFieldModule::inputPort0Name(), WriteFieldModule::inputPort1Name());
-    description.maker_ = boost::factory<WriteFieldModule*>();
-  }
-  else if (name.find("ReadMesh") != std::string::npos)
-  {
-    description.input_ports_ += ReadMeshModule::inputPortDescription(ReadMeshModule::inputPort0Name());
-    description.output_ports_ = ReadMeshModule::outputPortDescription(ReadMeshModule::outputPort0Name(), ReadMeshModule::outputPort1Name());
-    description.maker_ = boost::factory<ReadMeshModule*>();
-  }
-  else if (name.find("SendScalar") != std::string::npos)
-  {
-    description.output_ports_ += SendScalarModule::outputPortDescription(SendScalarModule::outputPort0Name());
-    description.maker_ = boost::factory<SendScalarModule*>();
-  }
-  else if (name.find("ReceiveScalar") != std::string::npos)
-  {
-    description.input_ports_ += ReceiveScalarModule::inputPortDescription(ReceiveScalarModule::inputPort0Name());
-    description.maker_ = boost::factory<ReceiveScalarModule*>();
-  }
-  else if (name.find("PrintDatatype") != std::string::npos)
-  {
-    description.input_ports_ += PrintDatatypeModule::inputPortDescription(PrintDatatypeModule::inputPort0Name());
-    description.maker_ = boost::factory<PrintDatatypeModule*>();
-  }
-  else if (name.find("SendTestMatrix") != std::string::npos)
-  {
-    description.output_ports_ += SendTestMatrixModule::outputPortDescription(SendTestMatrixModule::outputPort0Name());
-    description.maker_ = boost::factory<SendTestMatrixModule*>();
-  }
-  else if (name.find("ReceiveTestMatrix") != std::string::npos)
-  {
-    description.input_ports_ += ReceiveTestMatrixModule::inputPortDescription(ReceiveTestMatrixModule::inputPort0Name());
-    description.maker_ = boost::factory<ReceiveTestMatrixModule*>();
-  }
-  else if (name.find("ReportMatrixInfo") != std::string::npos)
-  {
-    description.input_ports_ += ReportMatrixInfoModule::inputPortDescription(ReportMatrixInfoModule::inputPort0Name());
-    description.maker_ = boost::factory<ReportMatrixInfoModule*>();
-  }
-  else if (name.find("ReportFieldInfo") != std::string::npos)
-  {
-    description.input_ports_ += ReportFieldInfoModule::inputPortDescription(ReportFieldInfoModule::inputPort0Name());
-    description.output_ports_ = ReportFieldInfoModule::outputPortDescription(ReportFieldInfoModule::outputPort0Name(), ReportFieldInfoModule::outputPort1Name());
-    description.maker_ = boost::factory<ReportFieldInfoModule*>();
-  }
-  else if (name.find("AppendMatrix") != std::string::npos)
-  {
-    description.input_ports_ = AppendMatrixModule::inputPortDescription(AppendMatrixModule::inputPort0Name(), AppendMatrixModule::inputPort1Name());
-    description.output_ports_ += AppendMatrixModule::outputPortDescription(AppendMatrixModule::outputPort0Name());
-    description.maker_ = boost::factory<AppendMatrixModule*>();
-  }
-  else if (name.find("EvaluateLinearAlgebraUnary") != std::string::npos)
-  {
-    description.input_ports_ += EvaluateLinearAlgebraUnaryModule::inputPortDescription(EvaluateLinearAlgebraUnaryModule::inputPort0Name());
-    description.output_ports_ += EvaluateLinearAlgebraUnaryModule::outputPortDescription(EvaluateLinearAlgebraUnaryModule::outputPort0Name());
-    description.maker_ = boost::factory<EvaluateLinearAlgebraUnaryModule*>();
-  }
-  else if (name.find("EvaluateLinearAlgebraBinary") != std::string::npos)
-  {
-    description.input_ports_ = EvaluateLinearAlgebraBinaryModule::inputPortDescription(EvaluateLinearAlgebraBinaryModule::inputPort0Name(), EvaluateLinearAlgebraBinaryModule::inputPort1Name());
-    description.output_ports_ += EvaluateLinearAlgebraBinaryModule::outputPortDescription(EvaluateLinearAlgebraBinaryModule::outputPort0Name());
-    description.maker_ = boost::factory<EvaluateLinearAlgebraBinaryModule*>();
-  }
-  else if (name.find("CreateMatrix") != std::string::npos)
-  {
-    description.output_ports_ += CreateMatrixModule::outputPortDescription(CreateMatrixModule::outputPort0Name());
-    description.maker_ = boost::factory<CreateMatrixModule*>();
-  }
-  else if (name.find("SolveLinearSystem") != std::string::npos)
-  {
-    description.input_ports_ = SolveLinearSystemModule::inputPortDescription(SolveLinearSystemModule::inputPort0Name(), SolveLinearSystemModule::inputPort1Name());
-    description.output_ports_ += SolveLinearSystemModule::outputPortDescription(SolveLinearSystemModule::outputPort0Name());
-    description.maker_ = boost::factory<SolveLinearSystemModule*>();
-  }
-  else if (name.find("CreateString") != std::string::npos)
-  {
-    description.output_ports_ += CreateStringModule::outputPortDescription(CreateStringModule::outputPort0Name());
-    description.maker_ = boost::factory<CreateStringModule*>();
-  }
-  else if (name.find("ShowString") != std::string::npos)
-  {
-    description.input_ports_ += ShowStringModule::inputPortDescription(ShowStringModule::inputPort0Name());
-    description.output_ports_ += ShowStringModule::outputPortDescription(ShowStringModule::outputPort0Name());
-    description.maker_ = boost::factory<ShowStringModule*>();
-  }
-  else if (name.find("ShowField") != std::string::npos)
-  {
-    description.input_ports_ += ShowFieldModule::inputPortDescription(ShowFieldModule::inputPort0Name());
-    description.output_ports_ += ShowFieldModule::outputPortDescription(ShowFieldModule::outputPort0Name());
-    description.maker_ = boost::factory<ShowFieldModule*>();
-  }
-  else if (name.find("CreateLatVolMesh") != std::string::npos)
-  {
-    description.output_ports_ += CreateLatVolMesh::outputPortDescription(CreateLatVolMesh::outputPort0Name());
-    description.maker_ = boost::factory<CreateLatVolMesh*>();
-  }
-  else if (name.find("MatrixAsVectorField") != std::string::npos)
-  {
-    description.input_ports_ += MatrixAsVectorFieldModule::inputPortDescription(MatrixAsVectorFieldModule::inputPort0Name());
-    description.output_ports_ += MatrixAsVectorFieldModule::outputPortDescription(MatrixAsVectorFieldModule::outputPort0Name());
-    description.maker_ = boost::factory<MatrixAsVectorFieldModule*>();
-  }
-  else if (name.find("CreateLatVol") != std::string::npos)
-  {
-    description.input_ports_ = CreateLatVol::inputPortDescription(CreateLatVol::inputPort0Name(), CreateLatVol::inputPort1Name());
-    description.output_ports_ += CreateLatVol::outputPortDescription(CreateLatVol::outputPort0Name());
-    description.maker_ = boost::factory<CreateLatVol*>();
-  }
-  else if (name.find("FieldToMesh") != std::string::npos)
-  {
-    description.input_ports_ += FieldToMesh::inputPortDescription(FieldToMesh::inputPort0Name());
-    description.output_ports_ += FieldToMesh::outputPortDescription(FieldToMesh::outputPort0Name());
-    description.maker_ = boost::factory<FieldToMesh*>();
-  }
-  else if (name.find("CreateScalarFieldDataBasic") != std::string::npos)
-  {
-    description.input_ports_ += CreateScalarFieldDataBasic::inputPortDescription(CreateScalarFieldDataBasic::inputPort0Name());
-    description.output_ports_ += CreateScalarFieldDataBasic::outputPortDescription(CreateScalarFieldDataBasic::outputPort0Name());
-    description.maker_ = boost::factory<CreateScalarFieldDataBasic*>();
-  }
-  else if (name.find("ViewScene") != std::string::npos)
-  {
-    description.input_ports_ = ViewScene::inputPortDescription(ViewScene::inputPort0Name(), ViewScene::inputPort1Name());
-    description.maker_ = boost::factory<ViewScene*>();
-  }
-  else
-  {
-    //TODO: log
-    std::ostringstream ostr;
-    ostr << "Error: Undefined module \"" << name << "\"";
-    THROW_INVALID_ARGUMENT(ostr.str());
-  }
-  return description;
+  return impl_->lookup.lookupDescription(info);
 }
 
+const ModuleDescriptionMap& HardCodedModuleFactory::getAllAvailableModuleDescriptions() const
+{
+  return impl_->lookup.descMap_;
+}

@@ -242,25 +242,6 @@ namespace Networks {
 
 namespace Modules
 {
-  template <class PortTypeTag>
-  class Has1InputPort
-  {
-  public:
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name);
-  };
-
-  template <class PortTypeTag0, class PortTypeTag1>
-  class Has2InputPorts
-  {
-  public:
-    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
-    {
-      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;
-      ports.push_back(Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name));
-      ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name));
-      return ports;
-    }
-  };
 
   struct SCISHARE MatrixPortTag {};
   struct SCISHARE ScalarPortTag {};
@@ -269,99 +250,93 @@ namespace Modules
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE DatatypePortTag {};
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeMatrixPort(const std::string& name)
+  
+  template <size_t N>
+  struct NumInputPorts
   {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Matrix", "blue"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeScalarPort(const std::string& name)
+    enum { NumIPorts = N };
+  };
+  
+  template <size_t N>
+  struct NumOutputPorts
   {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Scalar", "white"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeStringPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "String", "darkGreen"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeFieldPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Field", "yellow"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeMeshPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Mesh", "cyan"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeGeometryPort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Geometry", "magenta"); 
-  }
-
-  inline SCIRun::Dataflow::Networks::PortDescription MakeDatatypePort(const std::string& name)
-  {
-    return SCIRun::Dataflow::Networks::PortDescription(name, "Datatype", "black"); 
-  }
-
-#define INPUT_PORT_SPEC(name)   template <>\
-  class Has1InputPort<name ##PortTag>\
-  {\
-  public:\
-    static SCIRun::Dataflow::Networks::InputPortDescription inputPortDescription(const std::string& port0Name)\
-    {\
-      return Make ## name ## Port(port0Name); \
-    }\
-  }\
-
-  INPUT_PORT_SPEC(Matrix);
-  INPUT_PORT_SPEC(Scalar);
-  INPUT_PORT_SPEC(String);
-  INPUT_PORT_SPEC(Field);
-  INPUT_PORT_SPEC(Mesh);  //TODO temporary
-  INPUT_PORT_SPEC(Geometry);
-  INPUT_PORT_SPEC(Datatype);
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    enum { NumOPorts = N };
+  };
+  
+  struct HasNoInputPorts : NumInputPorts<0> {};
+  struct HasNoOutputPorts : NumOutputPorts<0> {};
+  
   template <class PortTypeTag>
-  class Has1OutputPort
+  class Has1InputPort : public NumInputPorts<1>
   {
   public:
-    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name);
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name);
   };
 
   template <class PortTypeTag0, class PortTypeTag1>
-  class Has2OutputPorts
+  class Has2InputPorts : public NumInputPorts<2>
   {
   public:
-    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;
-      ports.push_back(Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name));
-      ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name));
+      //TODO: use move semantics
+      auto ports = Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name);
+      ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name)[0]);
       return ports;
     }
   };
 
-#define OUTPUT_PORT_SPEC(name)   template <>\
-  class Has1OutputPort<name ##PortTag>\
+  
+  template <class PortTypeTag>
+  class Has1OutputPort : public NumOutputPorts<1>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name);
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1>
+  class Has2OutputPorts : public NumOutputPorts<2>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
+    {
+      //TODO: use move semantics
+      auto ports = Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name);
+      ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name)[0]);
+      return ports;
+    }
+  };
+
+#define PORT_SPEC(type)   template <>\
+  class Has1InputPort<type ##PortTag> : public NumInputPorts<1>\
   {\
   public:\
-    static SCIRun::Dataflow::Networks::OutputPortDescription outputPortDescription(const std::string& port0Name)\
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
-      return Make ## name ## Port(port0Name); \
+      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      return ports;\
+    }\
+  };\
+  template <>\
+  class Has1OutputPort<type ##PortTag> : public NumOutputPorts<1>\
+  {\
+  public:\
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
+    {\
+      std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      return ports;\
     }\
   }\
 
-  OUTPUT_PORT_SPEC(Matrix);
-  OUTPUT_PORT_SPEC(Scalar);
-  OUTPUT_PORT_SPEC(String);
-  OUTPUT_PORT_SPEC(Field);
-  OUTPUT_PORT_SPEC(Mesh);  //TODO temporary
-  OUTPUT_PORT_SPEC(Geometry);
-  OUTPUT_PORT_SPEC(Datatype);
+  PORT_SPEC(Matrix);
+  PORT_SPEC(Scalar);
+  PORT_SPEC(String);
+  PORT_SPEC(Field);
+  PORT_SPEC(Mesh);  //TODO temporary
+  PORT_SPEC(Geometry);
+  PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 
@@ -371,8 +346,61 @@ namespace Modules
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index> name;
 
+  //TODO: make metafunc for Input/Output
 
+  template <size_t numPorts, class ModuleType>
+  struct IPortDescriber
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return std::vector<SCIRun::Dataflow::Networks::InputPortDescription>();
+    }
+  };
 
+  template <class ModuleType>
+  struct IPortDescriber<1, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct IPortDescriber<2, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name());
+    }
+  };
+
+  template <size_t numPorts, class ModuleType>
+  struct OPortDescriber
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return std::vector<SCIRun::Dataflow::Networks::OutputPortDescription>();
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<1, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<2, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name());
+    }
+  };
 
 }
 }

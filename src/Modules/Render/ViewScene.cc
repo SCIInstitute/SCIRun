@@ -30,7 +30,6 @@
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Dataflow/Network/RendererInterface.h>
 
 #include "Spire/Interface.h"
 
@@ -38,14 +37,8 @@ using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun")),
-  renderer_(0)
+ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun"))
 {
-}
-
-void ViewScene::setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r)
-{
-  renderer_ = r;
 }
 
 void ViewScene::preExecutionInitialization()

@@ -95,6 +95,7 @@ private:
   void setupDevConsole();
   void setupPreferencesWindow();
   void setupPythonConsole();
+  void fillModuleSelector();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;

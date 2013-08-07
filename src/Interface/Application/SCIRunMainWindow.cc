@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
+#include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
 #include <Interface/Application/NetworkEditor.h>
@@ -132,16 +133,17 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   sep->setSeparator(true);
   scrollAreaWidgetContents_->addAction(sep);
 	scrollAreaWidgetContents_->addActions(networkEditor_->getModuleSpecificActions());
-  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+
+  //TODO???????
+  setContextMenuPolicy(Qt::NoContextMenu);
+  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
 	scrollArea_->viewport()->setBackgroundRole(QPalette::Dark);
 	scrollArea_->viewport()->setAutoFillBackground(true);	
 
 	logTextBrowser_->setText("Hello! Welcome to the SCIRun5 Prototype.");
 
-  GrabNameAndSetFlags visitor;
-  visitTree(moduleSelectorTreeWidget_, visitor);
-  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
+ 
 
   connect(actionSave_As_, SIGNAL(triggered()), this, SLOT(saveNetworkAs()));
   connect(actionSave_, SIGNAL(triggered()), this, SLOT(saveNetwork()));
@@ -176,10 +178,6 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 
   setCurrentFile("");
 
-  moduleSelectorTreeWidget_->expandAll();
-  moduleSelectorTreeWidget_->resizeColumnToContents(0);
-  moduleSelectorTreeWidget_->resizeColumnToContents(1);
-  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
   connect(this, SIGNAL(moduleItemDoubleClicked()), networkEditor_, SLOT(addModuleViaDoubleClickedTreeItem()));
   connect(moduleFilterLineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(filterModuleNamesInTreeView(const QString&)));
   
@@ -200,12 +198,16 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 void SCIRunMainWindow::initialize()
 {
   postConstructionSignalHookup();
-
+    
+  fillModuleSelector();
+  
   executeCommandLineRequests();
 }
 
 void SCIRunMainWindow::postConstructionSignalHookup()
 {
+  connect(moduleSelectorTreeWidget_, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(filterDoubleClickedModuleSelectorItem(QTreeWidgetItem*)));
+
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionStarted()), this, SLOT(disableInputWidgets()));
   connect(networkEditor_->getNetworkEditorController().get(), SIGNAL(executionFinished(int)), this, SLOT(enableInputWidgets()));
 
@@ -254,7 +256,7 @@ void SCIRunMainWindow::setupNetworkEditor()
   defaultNotePositionGetter_.reset(new ComboBoxDefaultNotePositionGetter(*defaultNotePositionComboBox_));
   networkEditor_ = new NetworkEditor(getter, defaultNotePositionGetter_, scrollAreaWidgetContents_);
   networkEditor_->setObjectName(QString::fromUtf8("networkEditor_"));
-  networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  //networkEditor_->setContextMenuPolicy(Qt::ActionsContextMenu);
   networkEditor_->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
   networkEditor_->verticalScrollBar()->setValue(0);
@@ -586,7 +588,7 @@ void SCIRunMainWindow::disableInputWidgets()
   moduleSelectorTreeWidget_->setDisabled(true);
   actionRunScript_->setDisabled(true);
   networkEditor_->disableInputWidgets();
-  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
+  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
   
   Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
     action->setDisabled(true);
@@ -606,7 +608,7 @@ void SCIRunMainWindow::enableInputWidgets()
   moduleSelectorTreeWidget_->setEnabled(true);
   actionRunScript_->setEnabled(true);
   networkEditor_->enableInputWidgets();
-  scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
+  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
 
   Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
     action->setEnabled(true);
@@ -761,4 +763,53 @@ void SCIRunMainWindow::makeModulesLargeSize()
 void SCIRunMainWindow::makeModulesSmallSize()
 {
   std::cout << "TODO: Modules are small" << std::endl;
+}
+
+namespace {
+
+
+
+
+void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
+{
+  BOOST_FOREACH(const ModuleDescriptionMap::value_type& package, moduleMap)
+  {
+    const std::string& packageName = package.first;
+    auto p = new QTreeWidgetItem();
+    p->setText(0, QString::fromStdString(packageName));
+    tree->addTopLevelItem(p);
+    BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type& category, package.second)
+    {
+      const std::string& categoryName = category.first;
+      auto c = new QTreeWidgetItem();
+      c->setText(0, QString::fromStdString(categoryName));
+      p->addChild(c);
+      BOOST_FOREACH(const ModuleDescriptionMap::value_type::second_type::value_type::second_type::value_type& module, category.second)
+      {
+        const std::string& moduleName = module.first;
+        auto m = new QTreeWidgetItem();
+        m->setText(0, QString::fromStdString(moduleName));
+        m->setText(1, QString::fromStdString(module.second.moduleStatus_));
+        m->setText(2, QString::fromStdString(module.second.moduleInfo_));
+        c->addChild(m);
+      }
+    }
+  }
+}
+}
+
+void SCIRunMainWindow::fillModuleSelector()
+{
+  moduleSelectorTreeWidget_->clear();
+
+  auto moduleDescs = networkEditor_->getNetworkEditorController()->getAllAvailableModuleDescriptions();
+  fillTreeWidget(moduleSelectorTreeWidget_, moduleDescs);
+
+  GrabNameAndSetFlags visitor;
+  visitTree(moduleSelectorTreeWidget_, visitor);
+  //std::for_each(visitor.nameList_.begin(), visitor.nameList_.end(), boost::bind(&GuiLogger::log, boost::ref(GuiLogger::Instance()), _1));
+
+  moduleSelectorTreeWidget_->expandAll();
+  moduleSelectorTreeWidget_->resizeColumnToContents(0);
+  moduleSelectorTreeWidget_->resizeColumnToContents(1);
 }

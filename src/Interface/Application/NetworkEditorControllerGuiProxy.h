@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_NETWORKEDITORCONTROLLERGUIPROXY_H
 
 #include <QObject>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 
@@ -49,6 +50,7 @@ namespace Gui {
     void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
     void removeConnection(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
+    void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
     SCIRun::Dataflow::Networks::NetworkFileHandle saveNetwork() const;
     void loadNetwork(const SCIRun::Dataflow::Networks::NetworkFileHandle& xml);
     void executeAll(const SCIRun::Dataflow::Networks::ExecutableLookup& lookup);
@@ -56,6 +58,7 @@ namespace Gui {
     int errorCode() const;
     void setExecutorType(int type);
   public:
+    const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);

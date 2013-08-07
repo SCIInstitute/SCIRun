@@ -59,7 +59,7 @@ namespace
 
     virtual std::string type() const
     {
-      return port_ ? port_->get_colorname() : "<Null>";
+      return port_ ? port_->get_typename() : "<Null>";
     }
 
     virtual bool isInput() const

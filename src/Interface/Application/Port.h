@@ -33,7 +33,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include <QGraphicsWidget>
-#include <QWidget>
+#include <QPushButton>
 #include <QColor>
 #include <set>
 #include <Interface/Application/PositionProvider.h>
@@ -50,12 +50,14 @@ class PositionProvider;
 class ConnectionInProgress;
 class ConnectionFactory;
 class ClosestPortFinder;
+class PortActionsMenu;
 
-class PortWidget : public QWidget, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
+class PortWidget : public QPushButton, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::PortDescriptionInterface
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, boost::shared_ptr<ConnectionFactory> connectionFactory,
+  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, 
+    boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
   ~PortWidget();
 
@@ -63,10 +65,10 @@ public:
   QColor color() const { return color_; }
   virtual bool isInput() const { return isInput_; }
   bool isConnected() const { return isConnected_; }
-  void setConnected(bool connected);
+  void setConnected(bool connected) { isConnected_ = connected; }
 
   virtual size_t nconnections() const;
-  virtual std::string get_colorname() const;
+  virtual std::string get_typename() const;
   virtual std::string get_portname() const;
   virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
@@ -95,9 +97,12 @@ public:
 public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();
+  void portCachingChanged(bool checked);
+  void connectNewModule();
 Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
+  void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
@@ -113,6 +118,7 @@ private:
   const SCIRun::Dataflow::Networks::ModuleId moduleId_; 
   const size_t index_;
   const QColor color_;
+  const std::string typename_;
   const bool isInput_;
   bool isConnected_;
   bool lightOn_;
@@ -122,6 +128,7 @@ private:
   std::set<ConnectionLine*> connections_;
   boost::shared_ptr<ConnectionFactory> connectionFactory_;
   boost::shared_ptr<ClosestPortFinder> closestPortFinder_;
+  PortActionsMenu* menu_;
 
   //TODO
   typedef boost::tuple<std::string, size_t, bool> Key;
@@ -131,7 +138,7 @@ private:
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
+  InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);
@@ -140,7 +147,7 @@ public:
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
+  OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);

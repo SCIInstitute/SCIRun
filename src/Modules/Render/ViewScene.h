@@ -40,13 +40,12 @@ namespace Modules {
 namespace Render {
 
   class SCISHARE ViewScene : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<GeometryPortTag, GeometryPortTag>
+    public Has2InputPorts<GeometryPortTag, GeometryPortTag>,
+    public HasNoOutputPorts
   {
   public:
     ViewScene();
     virtual void execute();
-
-    void setRenderer(SCIRun::Dataflow::Networks::RendererInterface* r);
 
     /// Used to initialize spire with the context given in the Transient state.
     virtual void preExecutionInitialization();
@@ -59,8 +58,6 @@ namespace Render {
     INPUT_PORT(1, GeneralGeom2, GeometryObject);
 
   private:
-    SCIRun::Dataflow::Networks::RendererInterface* renderer_;
-
     std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;
   };
 }}}

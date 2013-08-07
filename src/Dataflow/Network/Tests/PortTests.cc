@@ -60,15 +60,15 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix",  "dodgerblue"), DatatypeSinkInterfaceHandle()),  NullPointerException);
-  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix",  "dodgerblue"), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
-  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   "",               "dodgerblue"), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
-  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix",  ""), DatatypeSinkInterfaceHandle()),            InvalidArgumentException);
+  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix"), DatatypeSinkInterfaceHandle()),  NullPointerException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix"), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   ""            ), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix"), DatatypeSinkInterfaceHandle()),            InvalidArgumentException);
 }
 
 TEST_F(PortTests, AggregatesConnections)
 {
-  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+  Port::ConstructionParams pcp("ForwardMatrix", "Matrix");
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
@@ -91,7 +91,7 @@ TEST_F(PortTests, AggregatesConnections)
 
 TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 {
-  Port::ConstructionParams pcp("Matrix", "ForwardMatrix", "dodgerblue");
+  Port::ConstructionParams pcp("ForwardMatrix", "Matrix");
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
@@ -114,8 +114,8 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 //TODO: this verification pushed up to higher layer.
 TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
 {
-  Port::ConstructionParams pcp1("Matrix", "ForwardMatrix", "dodgerblue");
-  Port::ConstructionParams pcp2("Field", "VectorField", "yellow");
+  Port::ConstructionParams pcp1("ForwardMatrix", "Matrix");
+  Port::ConstructionParams pcp2("VectorField", "Field");
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp1, DatatypeSinkInterfaceHandle()));
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp2, DatatypeSourceInterfaceHandle()));
   EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));

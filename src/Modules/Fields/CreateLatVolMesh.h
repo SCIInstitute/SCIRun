@@ -52,7 +52,8 @@ namespace SCIRun {
     namespace Fields {
 
 class SCISHARE CreateLatVolMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<MeshPortTag>
+  public Has1OutputPort<MeshPortTag>,
+  public HasNoInputPorts
 {
   public:
     CreateLatVolMesh();

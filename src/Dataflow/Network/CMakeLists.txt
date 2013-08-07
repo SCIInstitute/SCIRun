@@ -59,7 +59,6 @@ SET(Dataflow_Network_HEADERS
   Port.h
   PortInterface.h
   PortManager.h
-  RendererInterface.h
   share.h
 )
 

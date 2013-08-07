@@ -45,9 +45,9 @@ class SCISHARE Port : virtual public PortInterface, boost::noncopyable
 public:
   struct ConstructionParams
   {
-    std::string type_name, port_name, color_name;
-    ConstructionParams(const std::string& p, const std::string& t, const std::string& c)
-      : type_name(t), port_name(p), color_name(c) {}
+    std::string type_name, port_name;
+    ConstructionParams(const std::string& name, const std::string& type)
+      : type_name(type), port_name(name) {}
   };
   Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();

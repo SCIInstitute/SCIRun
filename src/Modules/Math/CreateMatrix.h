@@ -37,7 +37,8 @@ namespace Modules {
 namespace Math {
 
   class SCISHARE CreateMatrixModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<MatrixPortTag>
+    public Has1OutputPort<MatrixPortTag>,
+    public HasNoInputPorts
   {
   public:
     CreateMatrixModule();
