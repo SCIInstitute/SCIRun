@@ -104,8 +104,8 @@ namespace MeshConstruction
 
     // Build pass for the faces.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    GeometryObject::SpirePass pass = 
-        GeometryObject::SpirePass("facesPass", primaryVBOName,
+    GeometryObject::SpireSubPass pass = 
+        GeometryObject::SpireSubPass("facesPass", primaryVBOName,
                                   facesIBOName, "UniformColor",
                                   Spire::StuInterface::TRIANGLES);
     if (faceTransparency)

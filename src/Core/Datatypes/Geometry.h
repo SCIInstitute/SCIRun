@@ -93,11 +93,11 @@ namespace Datatypes {
     std::list<SpireIBO> mIBOs;  ///< Array of index buffer objects.
 
     /// Defines a Spire object 'pass'.
-    struct SpirePass
+    struct SpireSubPass
     {
-      SpirePass(const std::string& name, const std::string& vbo, 
-                const std::string& ibo, const std::string& program,
-                Spire::Interface::PRIMITIVE_TYPES primType) :
+      SpireSubPass(const std::string& name, const std::string& vbo, 
+                   const std::string& ibo, const std::string& program,
+                   Spire::Interface::PRIMITIVE_TYPES primType) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
@@ -135,7 +135,7 @@ namespace Datatypes {
     };
 
     /// List of passes to setup.
-    std::list<SpirePass>  mPasses;
+    std::list<SpireSubPass>  mPasses;
 
     /// \xxx  Possibly implement a list of global uniforms. Only do this if
     ///       there is a clear need for global uniforms.

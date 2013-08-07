@@ -298,8 +298,8 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
 
   // Build pass for the faces.
   /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpirePass pass = 
-    GeometryObject::SpirePass("facesPass", primaryVBOName,
+  GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass("facesPass", primaryVBOName,
     facesIBOName, "ColorMap",
     Spire::StuInterface::TRIANGLES);
   float transparency = 1.0f;
@@ -343,8 +343,8 @@ void ShowFieldModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::
 
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpirePass pass = 
-    GeometryObject::SpirePass("edgesPass", primaryVBOName,
+  GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass("edgesPass", primaryVBOName,
     edgesIBOName, "UniformColor",
     Spire::StuInterface::LINES);
 
@@ -393,8 +393,8 @@ void ShowFieldModuleImpl::buildNodesNoNormals(typename SCIRun::Core::Datatypes::
 
   // Build pass for the nodes.
   /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpirePass pass = 
-    GeometryObject::SpirePass("nodesPass", primaryVBOName,
+  GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass("nodesPass", primaryVBOName,
     nodesIBOName, "UniformColor",
     Spire::StuInterface::POINTS);
 
