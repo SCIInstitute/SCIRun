@@ -238,6 +238,13 @@ void ViewSceneDialog::moduleExecuted()
         spire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
       }
 
+      // Add default identity transform to the object globally (instead of
+      // per-pass).
+      Spire::M44 xform;
+      xform[3] = Spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
+      spire->addObjectGlobalMetadata(
+        obj->objectName, std::get<0>(Spire::SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
       // This must come *after* adding the passes.
 
       // Now that we have created all of the appropriate passes, get rid of the
