@@ -36,6 +36,54 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+// Simple function to handle object transformations so that the GPU does not
+// need to do the same calculation for each vertex.
+static void lambdaUniformObjTrafs(Spire::ObjectLambdaInterface& iface, 
+                                  std::list<Spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+{
+  // Cache object to world transform.
+  Spire::M44 objToWorld = iface.getObjectMetadata<Spire::M44>(
+      std::get<0>(Spire::SRCommonAttributes::getObjectToWorldTrafo()));
+
+  std::string objectTrafoName = std::get<0>(Spire::SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(Spire::SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(Spire::SRCommonUniforms::getObjectToCameraToProjection());
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  {
+    if (it->uniformName == objectTrafoName)
+    {
+      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+                                                     it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToViewName)
+    {
+      // Grab the inverse view transform.
+      Spire::M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<Spire::M44>(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld())));
+      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+                                              it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToCamProjName)
+    {
+      Spire::M44 inverseViewProjection = iface.getGlobalUniform<Spire::M44>(
+          std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()));
+      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
@@ -125,6 +173,7 @@ void ViewSceneDialog::moduleExecuted()
       //}
 
       spire->addObject(obj->objectName);
+      spire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs);
 
       // Add vertex buffer objects.
       for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
@@ -137,23 +186,23 @@ void ViewSceneDialog::moduleExecuted()
       for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
       {
         const GeometryObject::SpireIBO& ibo = *it;
-        Spire::StuInterface::IBO_TYPE type;
+        Spire::Interface::IBO_TYPE type;
         switch (ibo.indexSize)
         {
           case 1: // 8-bit
-            type = Spire::StuInterface::IBO_8BIT;
+            type = Spire::Interface::IBO_8BIT;
             break;
 
           case 2: // 16-bit
-            type = Spire::StuInterface::IBO_16BIT;
+            type = Spire::Interface::IBO_16BIT;
             break;
 
           case 4: // 32-bit
-            type = Spire::StuInterface::IBO_32BIT;
+            type = Spire::Interface::IBO_32BIT;
             break;
 
           default:
-            type = Spire::StuInterface::IBO_32BIT;
+            type = Spire::Interface::IBO_32BIT;
             throw std::invalid_argument("Unable to determine index buffer depth.");
             break;
         }
@@ -165,8 +214,8 @@ void ViewSceneDialog::moduleExecuted()
       {
         const GeometryObject::SpireSubPass& pass = *it;
         spire->addPassToObject(obj->objectName, pass.programName,
-                                 pass.vboName, pass.iboName, pass.type
-                                 SPIRE_DEFAULT_PASS, pass.passName);
+                               pass.vboName, pass.iboName, pass.type,
+                               SPIRE_DEFAULT_PASS, pass.passName);
 
         // Add uniforms associated with the pass
         for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
