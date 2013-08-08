@@ -36,6 +36,7 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -99,11 +100,8 @@ void ViewSceneDialog::moduleExecuted()
     if (spire == nullptr)
       return;
 
-    // Grab objects (to be regenerated with supplied data)
-    std::shared_ptr<Spire::StuInterface> stuPipe = spire->getStuPipe();
-
     // Remove ALL prior objects.
-    stuPipe->removeAllObjects();
+    spire->removeAllObjects();
 
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
@@ -119,20 +117,20 @@ void ViewSceneDialog::moduleExecuted()
       //  // (remember, we remove the VBOs/IBOs we added at the end of this loop,
       //  //  this is to ensure there is only 1 shared_ptr reference to the IBOs
       //  //  and VBOs in Spire).
-      //  stuPipe->removeObject(obj->objectName);
+      //  spire->removeObject(obj->objectName);
       //}
       //catch (std::out_of_range&)
       //{
       //  // Ignore
       //}
 
-      stuPipe->addObject(obj->objectName);
+      spire->addObject(obj->objectName);
 
       // Add vertex buffer objects.
       for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
       {
         const GeometryObject::SpireVBO& vbo = *it;
-        stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
+        spire->addVBO(vbo.name, vbo.data, vbo.attributeNames);
       }
 
       // Add index buffer objects.
@@ -159,14 +157,14 @@ void ViewSceneDialog::moduleExecuted()
             throw std::invalid_argument("Unable to determine index buffer depth.");
             break;
         }
-        stuPipe->addIBO(ibo.name, ibo.data, type);
+        spire->addIBO(ibo.name, ibo.data, type);
       }
 
       // Add passes
       for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
       {
         const GeometryObject::SpireSubPass& pass = *it;
-        stuPipe->addPassToObject(obj->objectName, pass.programName,
+        spire->addPassToObject(obj->objectName, pass.programName,
                                  pass.vboName, pass.iboName, pass.type
                                  SPIRE_DEFAULT_PASS, pass.passName);
 
@@ -178,7 +176,7 @@ void ViewSceneDialog::moduleExecuted()
 
           // Be sure to always include the pass name as we are updating a
           // subpass of SPIRE_DEFAULT_PASS.
-          stuPipe->addObjectPassUniformConcrete(obj->objectName, uniformName, 
+          spire->addObjectPassUniformConcrete(obj->objectName, uniformName, 
                                                 uniform, pass.passName);
         }
 
@@ -186,7 +184,7 @@ void ViewSceneDialog::moduleExecuted()
         if (pass.hasGPUState == true)
           // Be sure to always include the pass name as we are updating a
           // subpass of SPIRE_DEFAULT_PASS.
-          stuPipe->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+          spire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
       }
 
       // Now that we have created all of the appropriate passes, get rid of the
@@ -194,13 +192,13 @@ void ViewSceneDialog::moduleExecuted()
       for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
       {
         const GeometryObject::SpireVBO& vbo = *it;
-        stuPipe->removeVBO(vbo.name);
+        spire->removeVBO(vbo.name);
       }
 
       for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
       {
         const GeometryObject::SpireIBO& ibo = *it;
-        stuPipe->removeIBO(ibo.name);
+        spire->removeIBO(ibo.name);
       }
     }
   }

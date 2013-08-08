@@ -43,7 +43,6 @@
 #include "GLContext.h"
 #include "QtGLContext.h"
 #include "Spire/Interface.h"
-#include "Spire/StuPipe/StuInterface.h"
 #include "Spire/AppSpecific/SCIRun/SRInterface.h"
 
 namespace SCIRun {
