@@ -301,7 +301,7 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
   GeometryObject::SpireSubPass pass = 
     GeometryObject::SpireSubPass("facesPass", primaryVBOName,
     facesIBOName, "ColorMap",
-    Spire::StuInterface::TRIANGLES);
+    Spire::Interface::TRIANGLES);
   float transparency = 1.0f;
   if (faceTransparency)
     transparency = 0.2f;
@@ -346,7 +346,7 @@ void ShowFieldModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::
   GeometryObject::SpireSubPass pass = 
     GeometryObject::SpireSubPass("edgesPass", primaryVBOName,
     edgesIBOName, "UniformColor",
-    Spire::StuInterface::LINES);
+    Spire::Interface::LINES);
 
   Spire::GPUState state;
   state.mLineWidth = 2.5f;
@@ -396,7 +396,7 @@ void ShowFieldModuleImpl::buildNodesNoNormals(typename SCIRun::Core::Datatypes::
   GeometryObject::SpireSubPass pass = 
     GeometryObject::SpireSubPass("nodesPass", primaryVBOName,
     nodesIBOName, "UniformColor",
-    Spire::StuInterface::POINTS);
+    Spire::Interface::POINTS);
 
   // Add appropriate uniforms to the pass (in this case, uColor).
   if (nodeTransparency)
