@@ -300,14 +300,27 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
   /// \todo Find an appropriate place to put program names like UniformColor.
   GeometryObject::SpireSubPass pass = 
     GeometryObject::SpireSubPass("facesPass", primaryVBOName,
-    facesIBOName, "ColorMap",
+    facesIBOName, "UniformColor",
     Spire::Interface::TRIANGLES);
   float transparency = 1.0f;
   if (faceTransparency)
     transparency = 0.2f;
-  pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
-  pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
-  pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
+  //pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
+  //pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
+  //pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
+  pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+
+  // For color mapping.
+  //GeometryObject::SpireSubPass pass = 
+  //  GeometryObject::SpireSubPass("facesPass", primaryVBOName,
+  //  facesIBOName, "ColorMap",
+  //  Spire::Interface::TRIANGLES);
+  //float transparency = 1.0f;
+  //if (faceTransparency)
+  //  transparency = 0.2f;
+  //pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
+  //pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
+  //pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
 
   geom->mPasses.emplace_back(pass);
 }
