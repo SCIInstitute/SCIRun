@@ -90,6 +90,13 @@ GLWidget::GLWidget(QtGLContext* context) :
       "ColorMap", 
       shaderFiles);
 
+  // Add shader attributes that we will be using.
+  mGraphics->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aFieldData",   1,  false,  sizeof(float),      Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
 }
@@ -157,7 +164,7 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 void GLWidget::resizeGL(int width, int height)
 {
   mGraphics->eventResize(static_cast<size_t>(width),
-                      static_cast<size_t>(height));
+                         static_cast<size_t>(height));
 }
 
 //------------------------------------------------------------------------------
