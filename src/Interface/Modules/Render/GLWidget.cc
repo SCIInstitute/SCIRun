@@ -73,6 +73,13 @@ GLWidget::GLWidget(QtGLContext* context) :
   mTimer->start(35);
 #endif
 
+  // Add shader attributes that we will be using.
+  mGraphics->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aFieldData",   1,  false,  sizeof(float),      Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
+
   /// \todo Where should we store common shader names?
   std::vector<std::tuple<std::string, Spire::Interface::SHADER_TYPES>> shaderFiles;
   shaderFiles.push_back(std::make_pair("UniformColor.vsh", Spire::Interface::VERTEX_SHADER));
@@ -89,13 +96,6 @@ GLWidget::GLWidget(QtGLContext* context) :
   mGraphics->addPersistentShader(
       "ColorMap", 
       shaderFiles);
-
-  // Add shader attributes that we will be using.
-  mGraphics->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aFieldData",   1,  false,  sizeof(float),      Spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);

@@ -173,7 +173,6 @@ void ViewSceneDialog::moduleExecuted()
       //}
 
       spire->addObject(obj->objectName);
-      spire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs);
 
       // Add vertex buffer objects.
       for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
@@ -215,7 +214,7 @@ void ViewSceneDialog::moduleExecuted()
         const GeometryObject::SpireSubPass& pass = *it;
         spire->addPassToObject(obj->objectName, pass.programName,
                                pass.vboName, pass.iboName, pass.type,
-                               SPIRE_DEFAULT_PASS, pass.passName);
+                               pass.passName, SPIRE_DEFAULT_PASS);
 
         // Add uniforms associated with the pass
         for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
@@ -234,7 +233,12 @@ void ViewSceneDialog::moduleExecuted()
           // Be sure to always include the pass name as we are updating a
           // subpass of SPIRE_DEFAULT_PASS.
           spire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+
+        // Add lambda object uniforms to the pass.
+        spire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
       }
+
+      // This must come *after* adding the passes.
 
       // Now that we have created all of the appropriate passes, get rid of the
       // VBOs and IBOs.
