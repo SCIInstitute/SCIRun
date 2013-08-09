@@ -31,8 +31,6 @@
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-#include "Spire/Interface.h"
-
 using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;

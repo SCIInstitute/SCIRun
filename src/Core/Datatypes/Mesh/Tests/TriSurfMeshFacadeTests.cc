@@ -119,10 +119,34 @@ protected:
       vdata12 += 7, 4, 5;
       cubeVMesh->add_elem(vdata12);
     }
+    
+    {
+      FieldInformation fi("TriSurfMesh", LINEARDATA_E, "double");
+      tetrahedronMesh_ = CreateMesh(fi);
+      auto tetrahedronVMesh = tetrahedronMesh_->vmesh();
+      tetrahedronVMesh->add_point(Point(1.0, 0.0, -0.707));
+      tetrahedronVMesh->add_point(Point(-1.0, 0.0, -0.707));
+      tetrahedronVMesh->add_point(Point(0.0, 1.0, 0.707));
+      tetrahedronVMesh->add_point(Point(0.0, -1.0, 0.707));
+      
+      VMesh::Node::array_type vdata1;
+      vdata1 += 0, 1, 2;
+      tetrahedronVMesh->add_elem(vdata1);
+      VMesh::Node::array_type vdata2;
+      vdata2 += 0, 1, 3;
+      tetrahedronVMesh->add_elem(vdata2);
+      VMesh::Node::array_type vdata3;
+      vdata3 += 1, 2, 3;
+      tetrahedronVMesh->add_elem(vdata2);
+      VMesh::Node::array_type vdata4;
+      vdata4 += 0, 2, 3;
+      tetrahedronVMesh->add_elem(vdata4);
+    }
   }
   
   MeshHandle basicTriangleMesh_;
   MeshHandle cubeMesh_;
+  MeshHandle tetrahedronMesh_;
 };
 
 // TODO: move to utils file (duplicated in LatticeVolumeMeshFacadeTests.cc)
@@ -165,6 +189,18 @@ TEST_F(TriSurfMeshFacadeTests, CubeTest)
   EXPECT_EQ(12, facade->numFaces());
   EXPECT_EQ(12, facade->numElements());
   EXPECT_EQ(18, facade->numEdges());
+}
+
+TEST_F(TriSurfMeshFacadeTests, TetrahedronTest)
+{
+  ASSERT_TRUE(tetrahedronMesh_);
+  
+  auto facade(tetrahedronMesh_->getFacade());
+  
+  EXPECT_EQ(4, facade->numNodes());
+  EXPECT_EQ(4, facade->numFaces());
+  EXPECT_EQ(4, facade->numElements());
+  EXPECT_EQ(6, facade->numEdges());
 }
 
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)

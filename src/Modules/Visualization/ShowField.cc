@@ -99,6 +99,12 @@ void ShowFieldModule::execute()
   //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
 
   /*
+
+  VMesh* v = field->vmesh();
+  
+  if (vmesh->has_normals())
+    vmesh_->synchronize(Mesh::NORMALS_E);
+
   BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
   {
     iboNodes[i] = static_cast<uint32_t>(node.index());
@@ -298,16 +304,29 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
 
   // Build pass for the faces.
   /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpirePass pass = 
-    GeometryObject::SpirePass("facesPass", primaryVBOName,
-    facesIBOName, "ColorMap",
-    Spire::StuInterface::TRIANGLES);
+  GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass("facesPass", primaryVBOName,
+    facesIBOName, "UniformColor",
+    Spire::Interface::TRIANGLES);
   float transparency = 1.0f;
   if (faceTransparency)
     transparency = 0.2f;
-  pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
-  pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
-  pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
+  //pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
+  //pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
+  //pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
+  pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+
+  // For color mapping.
+  //GeometryObject::SpireSubPass pass = 
+  //  GeometryObject::SpireSubPass("facesPass", primaryVBOName,
+  //  facesIBOName, "ColorMap",
+  //  Spire::Interface::TRIANGLES);
+  //float transparency = 1.0f;
+  //if (faceTransparency)
+  //  transparency = 0.2f;
+  //pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
+  //pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
+  //pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
 
   geom->mPasses.emplace_back(pass);
 }
@@ -343,10 +362,10 @@ void ShowFieldModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::
 
   // Build pass for the edges.
   /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpirePass pass = 
-    GeometryObject::SpirePass("edgesPass", primaryVBOName,
+  GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass("edgesPass", primaryVBOName,
     edgesIBOName, "UniformColor",
-    Spire::StuInterface::LINES);
+    Spire::Interface::LINES);
 
   Spire::GPUState state;
   state.mLineWidth = 2.5f;
@@ -393,10 +412,10 @@ void ShowFieldModuleImpl::buildNodesNoNormals(typename SCIRun::Core::Datatypes::
 
   // Build pass for the nodes.
   /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpirePass pass = 
-    GeometryObject::SpirePass("nodesPass", primaryVBOName,
+  GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass("nodesPass", primaryVBOName,
     nodesIBOName, "UniformColor",
-    Spire::StuInterface::POINTS);
+    Spire::Interface::POINTS);
 
   // Add appropriate uniforms to the pass (in this case, uColor).
   if (nodeTransparency)

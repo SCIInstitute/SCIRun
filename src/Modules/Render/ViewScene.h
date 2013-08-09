@@ -32,9 +32,6 @@
 #include <Dataflow/Network/Module.h>
 #include <Modules/Render/share.h>
 
-#include "Spire/Interface.h"
-#include "Spire/AppSpecific/SCIRun/SRInterface.h"
-
 namespace SCIRun {
 namespace Modules {
 namespace Render {
@@ -56,9 +53,6 @@ namespace Render {
 
     INPUT_PORT(0, GeneralGeom1, GeometryObject);
     INPUT_PORT(1, GeneralGeom2, GeometryObject);
-
-  private:
-    std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;
   };
 }}}
 

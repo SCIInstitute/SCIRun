@@ -36,6 +36,55 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
+// Simple function to handle object transformations so that the GPU does not
+// need to do the same calculation for each vertex.
+static void lambdaUniformObjTrafs(Spire::ObjectLambdaInterface& iface, 
+                                  std::list<Spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+{
+  // Cache object to world transform.
+  Spire::M44 objToWorld = iface.getObjectMetadata<Spire::M44>(
+      std::get<0>(Spire::SRCommonAttributes::getObjectToWorldTrafo()));
+
+  std::string objectTrafoName = std::get<0>(Spire::SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(Spire::SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(Spire::SRCommonUniforms::getObjectToCameraToProjection());
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  {
+    if (it->uniformName == objectTrafoName)
+    {
+      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+                                                     it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToViewName)
+    {
+      // Grab the inverse view transform.
+      Spire::M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<Spire::M44>(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld())));
+      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+                                              it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToCamProjName)
+    {
+      Spire::M44 inverseViewProjection = iface.getGlobalUniform<Spire::M44>(
+          std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()));
+      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
+
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -99,11 +148,8 @@ void ViewSceneDialog::moduleExecuted()
     if (spire == nullptr)
       return;
 
-    // Grab objects (to be regenerated with supplied data)
-    std::shared_ptr<Spire::StuInterface> stuPipe = spire->getStuPipe();
-
     // Remove ALL prior objects.
-    stuPipe->removeAllObjects();
+    spire->removeAllObjects();
 
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
@@ -119,82 +165,100 @@ void ViewSceneDialog::moduleExecuted()
       //  // (remember, we remove the VBOs/IBOs we added at the end of this loop,
       //  //  this is to ensure there is only 1 shared_ptr reference to the IBOs
       //  //  and VBOs in Spire).
-      //  stuPipe->removeObject(obj->objectName);
+      //  spire->removeObject(obj->objectName);
       //}
       //catch (std::out_of_range&)
       //{
       //  // Ignore
       //}
 
-      stuPipe->addObject(obj->objectName);
+      spire->addObject(obj->objectName);
 
       // Add vertex buffer objects.
       for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
       {
         const GeometryObject::SpireVBO& vbo = *it;
-        stuPipe->addVBO(vbo.name, vbo.data, vbo.attributeNames);
+        spire->addVBO(vbo.name, vbo.data, vbo.attributeNames);
       }
 
       // Add index buffer objects.
       for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
       {
         const GeometryObject::SpireIBO& ibo = *it;
-        Spire::StuInterface::IBO_TYPE type;
+        Spire::Interface::IBO_TYPE type;
         switch (ibo.indexSize)
         {
           case 1: // 8-bit
-            type = Spire::StuInterface::IBO_8BIT;
+            type = Spire::Interface::IBO_8BIT;
             break;
 
           case 2: // 16-bit
-            type = Spire::StuInterface::IBO_16BIT;
+            type = Spire::Interface::IBO_16BIT;
             break;
 
           case 4: // 32-bit
-            type = Spire::StuInterface::IBO_32BIT;
+            type = Spire::Interface::IBO_32BIT;
             break;
 
           default:
-            type = Spire::StuInterface::IBO_32BIT;
+            type = Spire::Interface::IBO_32BIT;
             throw std::invalid_argument("Unable to determine index buffer depth.");
             break;
         }
-        stuPipe->addIBO(ibo.name, ibo.data, type);
+        spire->addIBO(ibo.name, ibo.data, type);
       }
 
       // Add passes
       for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
       {
-        const GeometryObject::SpirePass& pass = *it;
-        stuPipe->addPassToObject(obj->objectName, pass.passName, pass.programName,
-                                 pass.vboName, pass.iboName, pass.type);
+        const GeometryObject::SpireSubPass& pass = *it;
+        spire->addPassToObject(obj->objectName, pass.programName,
+                               pass.vboName, pass.iboName, pass.type,
+                               pass.passName, SPIRE_DEFAULT_PASS);
 
         // Add uniforms associated with the pass
         for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
         {
           std::string uniformName = std::get<0>(*it);
           std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
-          stuPipe->addPassUniformConcrete(obj->objectName, pass.passName,
-                                          uniformName, uniform);
+
+          // Be sure to always include the pass name as we are updating a
+          // subpass of SPIRE_DEFAULT_PASS.
+          spire->addObjectPassUniformConcrete(obj->objectName, uniformName, 
+                                                uniform, pass.passName);
         }
 
         // Add gpu state if it has been set.
         if (pass.hasGPUState == true)
-          stuPipe->addPassGPUState(obj->objectName, pass.passName, pass.gpuState);
+          // Be sure to always include the pass name as we are updating a
+          // subpass of SPIRE_DEFAULT_PASS.
+          spire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+
+        // Add lambda object uniforms to the pass.
+        spire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
       }
+
+      // Add default identity transform to the object globally (instead of
+      // per-pass).
+      Spire::M44 xform;
+      xform[3] = Spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
+      spire->addObjectGlobalMetadata(
+        obj->objectName, std::get<0>(Spire::SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
+      // This must come *after* adding the passes.
 
       // Now that we have created all of the appropriate passes, get rid of the
       // VBOs and IBOs.
       for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
       {
         const GeometryObject::SpireVBO& vbo = *it;
-        stuPipe->removeVBO(vbo.name);
+        spire->removeVBO(vbo.name);
       }
 
       for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
       {
         const GeometryObject::SpireIBO& ibo = *it;
-        stuPipe->removeIBO(ibo.name);
+        spire->removeIBO(ibo.name);
       }
     }
   }

@@ -40,7 +40,6 @@
 #include "GLWidget.h"
 
 using namespace SCIRun::Gui;
-using Spire::Vector2;
 
 void logFunction(const std::string& str, Spire::Interface::LOG_LEVEL level)
 {
@@ -74,20 +73,27 @@ GLWidget::GLWidget(QtGLContext* context) :
   mTimer->start(35);
 #endif
 
-  /// \todo Where should we store common shader names?
-  std::vector<std::tuple<std::string, Spire::StuInterface::SHADER_TYPES>> shaderFiles;
-  shaderFiles.push_back(std::make_pair("UniformColor.vs", Spire::StuInterface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("UniformColor.fs", Spire::StuInterface::FRAGMENT_SHADER));
+  // Add shader attributes that we will be using.
+  mGraphics->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aFieldData",   1,  false,  sizeof(float),      Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  Spire::Interface::TYPE_FLOAT);
+  mGraphics->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   Spire::Interface::TYPE_UBYTE);
 
-  mGraphics->getStuPipe()->addPersistentShader(
+  /// \todo Where should we store common shader names?
+  std::vector<std::tuple<std::string, Spire::Interface::SHADER_TYPES>> shaderFiles;
+  shaderFiles.push_back(std::make_pair("UniformColor.vsh", Spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER));
+
+  mGraphics->addPersistentShader(
       "UniformColor", 
       shaderFiles);
 
   shaderFiles.clear();
-  shaderFiles.push_back(std::make_pair("ColorMap.vs", Spire::StuInterface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("ColorMap.fs", Spire::StuInterface::FRAGMENT_SHADER));
+  shaderFiles.push_back(std::make_pair("ColorMap.vsh", Spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("ColorMap.fsh", Spire::Interface::FRAGMENT_SHADER));
 
-  mGraphics->getStuPipe()->addPersistentShader(
+  mGraphics->addPersistentShader(
       "ColorMap", 
       shaderFiles);
 
@@ -115,7 +121,6 @@ void GLWidget::initializeGL()
 //------------------------------------------------------------------------------
 Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  // Extract appropriate key.
   Spire::SCIRun::SRInterface::MouseButton btn = Spire::SCIRun::SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
     btn = Spire::SCIRun::SRInterface::MOUSE_LEFT;
@@ -130,22 +135,23 @@ Spire::SCIRun::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* ev
 //------------------------------------------------------------------------------
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
+  // Extract appropriate key.
   Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
-  mGraphics->inputMouseMove(Vector2<int32_t>(event->x(), event->y()), btn);
+  mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
   Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
-  mGraphics->inputMouseDown(Vector2<int32_t>(event->x(), event->y()), btn);
+  mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
   Spire::SCIRun::SRInterface::MouseButton btn = getSpireButton(event);
-  mGraphics->inputMouseUp(Vector2<int32_t>(event->x(), event->y()), btn);
+  mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
@@ -157,16 +163,15 @@ void GLWidget::wheelEvent(QWheelEvent * event)
 //------------------------------------------------------------------------------
 void GLWidget::resizeGL(int width, int height)
 {
-  mGraphics->eventResize(static_cast<int32_t>(width),
-                         static_cast<int32_t>(height));
+  mGraphics->eventResize(static_cast<size_t>(width),
+                         static_cast<size_t>(height));
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  mContext->makeCurrent();
-  mGraphics->doFrame();
+  mContext->makeCurrent();    // Required on windows...
+  mGraphics->ntsDoFrame();
   mContext->swapBuffers();
 }
-
 
