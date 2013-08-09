@@ -99,6 +99,12 @@ void ShowFieldModule::execute()
   //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
 
   /*
+
+  VMesh* v = field->vmesh();
+  
+  if (vmesh->has_normals())
+    vmesh_->synchronize(Mesh::NORMALS_E);
+
   BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
   {
     iboNodes[i] = static_cast<uint32_t>(node.index());

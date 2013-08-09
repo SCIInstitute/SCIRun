@@ -35,16 +35,6 @@ SET(Modules_Render_HEADERS
   share.h
 )
 
-FIND_PACKAGE(OpenGL REQUIRED)
-
-# Framework for spire
-if(UNIX)
-  if(APPLE)
-    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    set(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
-  endif()
-endif()
-
 ADD_LIBRARY(Modules_Render 
   ${Modules_Render_HEADERS}
   ${Modules_Render_SRCS}
@@ -53,9 +43,6 @@ ADD_LIBRARY(Modules_Render
 TARGET_LINK_LIBRARIES(Modules_Render
   Dataflow_Network
   Core_Datatypes
-  ${OPENGL_LIBRARIES}
-  ${SCI_SPIRE_LIBRARY}
-  ${SCI_SPIRE_EXTRA_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)

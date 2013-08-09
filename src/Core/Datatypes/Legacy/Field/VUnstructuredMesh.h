@@ -775,16 +775,14 @@ get_random_point(Core::Geometry::Point &p,
 
 template <class MESH>
 void 
-VUnstructuredMesh<MESH>::
-get_normal(Core::Geometry::Vector& norm, VMesh::Node::index_type i) const
+VUnstructuredMesh<MESH>::get_normal(Core::Geometry::Vector& norm, VMesh::Node::index_type i) const
 {
   this->mesh_->get_normal(norm,typename MESH::Node::index_type(i));
 }
 
 template <class MESH>
 void 
-VUnstructuredMesh<MESH>::
-get_normal(Core::Geometry::Vector& norm, VMesh::coords_type& coords, 
+VUnstructuredMesh<MESH>::get_normal(Core::Geometry::Vector& norm, VMesh::coords_type& coords, 
   VMesh::Elem::index_type i, VMesh::DElem::index_type j) const
 {
   this->mesh_->get_normal(norm,coords,i,j);
