@@ -116,7 +116,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   ///       Another VBO will be constructed containing normal information.
   ///       All of this is NOT necessary if we are on OpenGL 3.2+ where we
   ///       can compute all normals in the geometry shader (smooth and face).
-  std::string primVBOName = "primaryVBO";
+  std::string primVBOName = id + "primaryVBO";
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
   attribs.push_back("aFieldData");
@@ -178,11 +178,35 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   // Build the faces
   if (showFaces)
   {
-    double dataMin = 0.0;
-    double dataMax = 0.0;
-    vfield->min(dataMin);
-    vfield->max(dataMax);
-    buildFacesIBO(facade, geom, primVBOName, dataMin, dataMax, state);
+    //double dataMin = 0.0;
+    //double dataMax = 0.0;
+    //vfield->min(dataMin);
+    //vfield->max(dataMax);
+    const std::string iboName = id + "facesIBO";
+    buildFacesIBO(facade, geom, iboName);
+
+    // Construct construct a uniform color pass.
+    /// \todo Allow the user to select from a few different lighting routines
+    ///       and bind them here.
+    if (vmesh->has_normals())
+    {
+      
+    }
+    else
+    {
+      // No normals present in the model, construct a uniform pass
+      GeometryObject::SpireSubPass pass = 
+          GeometryObject::SpireSubPass("facesPass", primVBOName,
+                                       iboName, "UniformColor",
+                                       Spire::Interface::TRIANGLES);
+
+      // Apply misc user settings.
+      bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
+      float transparency    = 1.0f;
+      if (faceTransparency) transparency = 0.2f;
+      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+      geom->mPasses.emplace_back(pass);
+    }
   }
 
   if (progressFunc) progressFunc(0.75);
@@ -198,14 +222,11 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   return geom;
 }
 
+
 void ShowFieldModule::buildFacesIBO(
     SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
-    GeometryHandle geom,
-    const std::string& primaryVBOName,
-    float dataMin, float dataMax,   /// Dataset minimum / maximum.
-    ModuleStateHandle state)
+    GeometryHandle geom, const std::string& desiredIBOName)
 {
-  bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
   uint32_t* iboFaces = nullptr;
 
   // Determine the size of the face structure (taking into account the varying
@@ -253,36 +274,7 @@ void ShowFieldModule::buildFacesIBO(
   }
 
   // Add IBO for the faces.
-  std::string facesIBOName = "facesIBO";
-  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(facesIBOName, sizeof(uint32_t), rawIBO));
-
-  // Build pass for the faces.
-  /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpireSubPass pass = 
-    GeometryObject::SpireSubPass("facesPass", primaryVBOName,
-    facesIBOName, "UniformColor",
-    Spire::Interface::TRIANGLES);
-  float transparency = 1.0f;
-  if (faceTransparency)
-    transparency = 0.2f;
-  //pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
-  //pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
-  //pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
-  pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
-
-  // For color mapping.
-  //GeometryObject::SpireSubPass pass = 
-  //  GeometryObject::SpireSubPass("facesPass", primaryVBOName,
-  //  facesIBOName, "ColorMap",
-  //  Spire::Interface::TRIANGLES);
-  //float transparency = 1.0f;
-  //if (faceTransparency)
-  //  transparency = 0.2f;
-  //pass.addUniform("uColorZero", Spire::V4(1.0f, 0.0f, 0.0f, transparency));
-  //pass.addUniform("uColorOne", Spire::V4(0.0f, 0.7f, 0.0f, transparency));
-  //pass.addUniform("uMinMax", Spire::V2(dataMin, dataMax));
-
-  geom->mPasses.emplace_back(pass);
+  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(desiredIBOName, sizeof(uint32_t), rawIBO));
 }
 
 void ShowFieldModule::buildEdgesIBO(

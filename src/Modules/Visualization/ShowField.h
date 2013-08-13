@@ -74,10 +74,7 @@ namespace Visualization {
     ///       constructing the shaders for the object.
     void buildFacesIBO(
         SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
-        Core::Datatypes::GeometryHandle geom,
-        const std::string& primaryVBOName,
-        float dataMin, float dataMax,   /// Dataset minimum / maximum.
-        Dataflow::Networks::ModuleStateHandle state);
+        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
 
     void buildEdgesIBO(
         SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
