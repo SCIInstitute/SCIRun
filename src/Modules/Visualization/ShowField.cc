@@ -159,6 +159,12 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
 
   ENSURE_NOT_NULL(facade, "Mesh facade");
 
+  // Grab the vmesh object so that we can extract the normals.
+  VMesh* v = field->vmesh();
+  
+  if (vmesh->has_normals())
+    vmesh_->synchronize(Mesh::NORMALS_E); // Ensure the normals are synchronized.
+
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
   ///       a 32 bit index buffer.
@@ -167,12 +173,16 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // is that I cannot get access to face normals in vertex shaders based off of
   // the winding orders of the incoming geometry.
 
+  int numFloats = 4;  // Position + field data.
+  if (vmesh->has_normals())
+    numFloats += 3;   // Position + field data + normals;
+
   // Allocate memory for vertex buffer (*NOT* the index buffer, which is a
   // a function of the number of faces). Only allocating enough memory to hold
   // points associated with the faces.
   // Edges *and* faces should use the same vbo!
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
-  size_t vboSize = sizeof(float) * 4 * facade->numNodes();
+  size_t vboSize = sizeof(float) * numFloats * facade->numNodes();
   rawVBO->resize(vboSize); // linear complexity.
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
 
@@ -186,6 +196,8 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
   attribs.push_back("aFieldData");
+  if (vmesh->has_normals())
+    attribs.push_back("aNormal");
   geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
   if (updater_)
@@ -203,8 +215,23 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
       vfield->get_value(val, node.index());
       vbo[i+3] = static_cast<float>(val);
     }
+    else
+    {
+      vbo[i+3] = 0.0f;
+    }
+
+    if (vmesh->has_normals())
+    {
+      Vector normal;
+      vmesh->get_normal(normal, node.index());
+
+      // Need to use *real* indices instead of these constant offsets like 4, 5,
+      // and 6. These don't take into account any variability in the attributes.
+      vbo[i+4] = node.point().x(); vbo[i+5] = node.point().y(); vbo[i+6] = node.point().z();
+    }
+      
     //std::cout << static_cast<float>(val) << std::endl;
-    i+=4;
+    i+=numFloats;
   }
 
   if (updater_)
