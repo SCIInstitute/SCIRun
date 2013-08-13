@@ -207,30 +207,35 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   size_t i = 0;
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
-    vbo[i+0] = node.point().x(); vbo[i+1] = node.point().y(); vbo[i+2] = node.point().z();
+    size_t nodeOffset = 0;
+    vbo[i+nodeOffset+0] = node.point().x();
+    vbo[i+nodeOffset+1] = node.point().y();
+    vbo[i+nodeOffset+2] = node.point().z();
+    nodeOffset += 3;
 
     if (node.index() < vfield->num_values())
     {
       double val = 0.0;
       vfield->get_value(val, node.index());
-      vbo[i+3] = static_cast<float>(val);
+      vbo[i+nodeOffset] = static_cast<float>(val);
     }
     else
     {
-      vbo[i+3] = 0.0f;
+      vbo[i+nodeOffset] = 0.0f;
     }
+    nodeOffset += 1;
 
     if (vmesh->has_normals())
     {
       Vector normal;
       vmesh->get_normal(normal, node.index());
 
-      // Need to use *real* indices instead of these constant offsets like 4, 5,
-      // and 6. These don't take into account any variability in the attributes.
-      vbo[i+4] = node.point().x(); vbo[i+5] = node.point().y(); vbo[i+6] = node.point().z();
+      vbo[i+nodeOffset+0] = node.point().x();
+      vbo[i+nodeOffset+1] = node.point().y();
+      vbo[i+nodeOffset+2] = node.point().z();
+      nodeOffset += 3;
     }
       
-    //std::cout << static_cast<float>(val) << std::endl;
     i+=numFloats;
   }
 
