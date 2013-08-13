@@ -42,119 +42,73 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Visualization {
-
-      class ShowFieldModuleImpl
-      {
-      public:
-        explicit ShowFieldModuleImpl(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updater) : updater_(updater) {}
-        GeometryHandle renderMesh(boost::shared_ptr<SCIRun::Field> field,
-          ModuleStateHandle state, 
-          const std::string& id);
-      private:
-        /// Constructs faces without normal information. We can share the primary
-        /// VBO with the nodes and the edges in this case.
-        template <typename VMeshType>
-        void buildFacesIBO(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
-          SCIRun::Core::Datatypes::GeometryHandle geom,
-          const std::string& primaryVBOName,
-          float dataMin, float dataMax,
-          ModuleStateHandle state);
-
-        /// Constructs edges without normal information. We can share the primary
-        /// VBO with faces and nodes.
-        template <typename VMeshType>
-        void buildEdgesIBO(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
-          SCIRun::Core::Datatypes::GeometryHandle geom,
-          const std::string& primaryVBOName,
-          ModuleStateHandle state);
-
-        /// Constructs nodes without normal information. We can share the primary
-        /// VBO with edges and faces.
-        template <typename VMeshType>
-        void buildNodesIBO(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
-          SCIRun::Core::Datatypes::GeometryHandle geom,
-          const std::string& primaryVBOName,
-          ModuleStateHandle state);
-
-        SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updater_;
-      };
-
-    }}}
-
-ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun")),
-  impl_(new ShowFieldModuleImpl(getUpdaterFunc()))
+ShowFieldModule::ShowFieldModule() : 
+    Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun"))
 {
 }
+
 
 void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-
-  {
-    //TODO
-    ColorRGB color = any_cast_or_default<ColorRGB>(get_state()->getTransientValue(DefaultMeshColor.name_));
-    std::cout << "Default mesh color is: " << color << std::endl;
-  }
-
-  GeometryHandle geom = impl_->renderMesh(field, get_state(), get_id());
-
+  GeometryHandle geom = buildGeometryObject(field, get_state(), get_id());
   sendOutput(SceneGraph, geom);
 }
 
-/// \todo Merge ShowMesh and ShowField. The only difference between ShowMesh
-///       ShowField is the field data element in the vertex buffer.
-///       Also, the shaders that are to be used should be changed.
-GeometryHandle ShowFieldModuleImpl::renderMesh(
+
+GeometryHandle ShowFieldModule::buildGeometryObject(
     boost::shared_ptr<SCIRun::Field> field,
     ModuleStateHandle state, 
     const std::string& id)
 {
+  // Function for reporting progress.
+  SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc progressFunc =
+      getUpdaterFunc();
+
+  // VMesh facade. A simpler interface to the vmesh type.
   SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade =
       field->mesh()->getFacade();
-  VField* vfield = field->vfield();
-  
-  // Since we are rendering a field, we also need to handle data on the nodes.
+  ENSURE_NOT_NULL(facade, "Mesh facade");
 
+  // VField required only for extracting field data from the field datatype.
+  VField* vfield = field->vfield();
+
+  // Grab the vmesh object so that we can synchronize and extract normals.
+  VMesh* vmesh = field->vmesh();
+
+  // Ensure any changes made to the mesh are reflected in the normals by
+  // by synchronizing the mesh.
+  if (vmesh->has_normals())
+    vmesh->synchronize(Mesh::NORMALS_E);
+  
   /// \todo Determine a better way of handling all of the various object state.
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
 
+  // Resultant geometry type (representing a spire object and a number of passes).
   GeometryHandle geom(new GeometryObject(field));
   geom->objectName = id;
-
-  ENSURE_NOT_NULL(facade, "Mesh facade");
-
-  // Grab the vmesh object so that we can extract the normals.
-  VMesh* vmesh = field->vmesh();
-  
-  if (vmesh->has_normals())
-    vmesh->synchronize(Mesh::NORMALS_E); // Ensure the normals are synchronized.
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
   ///       a 32 bit index buffer.
 
-  // We are going to get no lighting in this first pass. The unfortunate reality
-  // is that I cannot get access to face normals in vertex shaders based off of
-  // the winding orders of the incoming geometry.
-
-  int numFloats = 4;  // Position + field data.
+  // Crude method of counting the attributes we are placing in the VBO.
+  int numFloats = 3 + 1;  // Position + field data.
   if (vmesh->has_normals())
-    numFloats += 3;   // Position + field data + normals;
+    numFloats += 3;       // Position + field data + normals;
 
-  // Allocate memory for vertex buffer (*NOT* the index buffer, which is a
-  // a function of the number of faces). Only allocating enough memory to hold
-  // points associated with the faces.
-  // Edges *and* faces should use the same vbo!
+  // Allocate memory for vertex buffer.
+  // Edges and faces should use the same vbo!
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   size_t vboSize = sizeof(float) * numFloats * facade->numNodes();
   rawVBO->resize(vboSize); // linear complexity.
-  float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]); // Remember, standard guarantees that vectors are contiguous in memory.
+  // The C++ standard guarantees that vectors are contiguous in memory, so we
+  // grab a pointer to the first element and use that as the starting point
+  // for building our VBO.
+  float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]);
 
   // Add shared VBO to the geometry object.
   /// \note This 'primaryVBO' is dependent on the types present in the data.
@@ -170,8 +124,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     attribs.push_back("aNormal");
   geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
-  if (updater_)
-    updater_(0.1);
+  if (progressFunc) progressFunc(0.1);
 
   // Build vertex buffer.
   size_t i = 0;
@@ -212,17 +165,15 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     i += nodeOffset;
   }
 
-  if (updater_)
-    updater_(0.25);
+  if (progressFunc) progressFunc(0.25);
 
   // Build the edges
   if (showEdges)
   {
-    buildEdgesIBO<VMesh>(facade, geom, primVBOName, state);
+    buildEdgesIBO(facade, geom, primVBOName, state);
   }
 
-  if (updater_)
-    updater_(0.5);
+  if (progressFunc) progressFunc(0.5);
 
   // Build the faces
   if (showFaces)
@@ -231,27 +182,24 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     double dataMax = 0.0;
     vfield->min(dataMin);
     vfield->max(dataMax);
-    buildFacesIBO<VMesh>(facade, geom, primVBOName, dataMin, dataMax, state);
+    buildFacesIBO(facade, geom, primVBOName, dataMin, dataMax, state);
   }
 
-  if (updater_)
-    updater_(0.75);
+  if (progressFunc) progressFunc(0.75);
 
   // Build the nodes
   if (showNodes)
   {
-    buildEdgesIBO<VMesh>(facade, geom, primVBOName, state);
+    buildEdgesIBO(facade, geom, primVBOName, state);
   }
 
-  if (updater_)
-    updater_(1);
+  if (progressFunc) progressFunc(1);
 
   return geom;
 }
 
-template <typename VMeshType>
-void ShowFieldModuleImpl::buildFacesIBO(
-    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+void ShowFieldModule::buildFacesIBO(
+    SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
     GeometryHandle geom,
     const std::string& primaryVBOName,
     float dataMin, float dataMax,   /// Dataset minimum / maximum.
@@ -263,9 +211,9 @@ void ShowFieldModuleImpl::buildFacesIBO(
   // Determine the size of the face structure (taking into account the varying
   // types of faces -- only quads and triangles are currently supported).
   size_t iboFacesSize = 0;
-  BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
-    typename VMeshType::Node::array_type nodes = face.nodeIndices();
+    typename VMesh::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
     {
       iboFacesSize += sizeof(uint32_t) * 6;
@@ -285,9 +233,9 @@ void ShowFieldModuleImpl::buildFacesIBO(
   // use malloc to generate buffer and then vector::assign.
   iboFaces = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
   size_t i = 0;
-  BOOST_FOREACH(const FaceInfo<VMeshType>& face, facade->faces())
+  BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
-    typename VMeshType::Node::array_type nodes = face.nodeIndices();
+    typename VMesh::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
     {
       // Winding order looks good from tests.
@@ -337,9 +285,8 @@ void ShowFieldModuleImpl::buildFacesIBO(
   geom->mPasses.emplace_back(pass);
 }
 
-template <typename VMeshType>
-void ShowFieldModuleImpl::buildEdgesIBO(
-    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+void ShowFieldModule::buildEdgesIBO(
+    SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
     GeometryHandle geom,
     const std::string& primaryVBOName,
     ModuleStateHandle modState)
@@ -354,10 +301,10 @@ void ShowFieldModuleImpl::buildEdgesIBO(
   // use malloc to generate buffer and then vector::assign.
   iboEdges = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
   size_t i = 0;
-  BOOST_FOREACH(const EdgeInfo<VMeshType>& edge, facade->edges())
+  BOOST_FOREACH(const EdgeInfo<VMesh>& edge, facade->edges())
   {
     // There should *only* be two indicies (linestrip would be better...)
-    typename VMeshType::Node::array_type nodes = edge.nodeIndices();
+    typename VMesh::Node::array_type nodes = edge.nodeIndices();
     ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
     iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
     i += 2;
@@ -387,9 +334,8 @@ void ShowFieldModuleImpl::buildEdgesIBO(
   geom->mPasses.emplace_back(pass);
 }
 
-template <typename VMeshType>
-void ShowFieldModuleImpl::buildNodesIBO(
-    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+void ShowFieldModule::buildNodesIBO(
+    SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
     GeometryHandle geom,
     const std::string& primaryVBOName,
     ModuleStateHandle state)
@@ -404,7 +350,7 @@ void ShowFieldModuleImpl::buildNodesIBO(
   // use malloc to generate buffer and then vector::assign.
   iboNodes = reinterpret_cast<uint32_t*>(&(*rawIBO)[0]);
   size_t i = 0;
-  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     // There should *only* be two indicies (linestrip would be better...)
     //node.index()
@@ -457,7 +403,7 @@ AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
   if (vmesh->has_normals())
     vmesh_->synchronize(Mesh::NORMALS_E);
 
-  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     iboNodes[i] = static_cast<uint32_t>(node.index());
     i++;

@@ -31,6 +31,8 @@
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Visualization/share.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 
 namespace SCIRun {
 namespace Modules {
@@ -56,8 +58,43 @@ namespace Visualization {
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
   private:
-    boost::shared_ptr<class ShowFieldModuleImpl> impl_;
+
+    /// Constructs a geometry object (essentially a spire object) from the given 
+    /// field data.
+    /// \param field    Field from which to construct geometry.
+    /// \param state    
+    /// \param id       Ends up becoming the name of the spire object.
+    Core::Datatypes::GeometryHandle buildGeometryObject(
+        boost::shared_ptr<SCIRun::Field> field,
+        Dataflow::Networks::ModuleStateHandle state, const std::string& id);
+
+
+    /// \todo The following 3 functions encompass too much functionality and
+    ///       need to be paired down to *just* building the IBO, not also
+    ///       constructing the shaders for the object.
+    void buildFacesIBO(
+        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
+        Core::Datatypes::GeometryHandle geom,
+        const std::string& primaryVBOName,
+        float dataMin, float dataMax,   /// Dataset minimum / maximum.
+        Dataflow::Networks::ModuleStateHandle state);
+
+    void buildEdgesIBO(
+        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
+        Core::Datatypes::GeometryHandle geom,
+        const std::string& primaryVBOName,
+        Dataflow::Networks::ModuleStateHandle modState);
+
+    void buildNodesIBO(
+        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
+        Core::Datatypes::GeometryHandle geom,
+        const std::string& primaryVBOName,
+        Dataflow::Networks::ModuleStateHandle state);
+
   };
-}}}
+
+} // Visualization
+} // Modules
+} // SCIRun
 
 #endif
