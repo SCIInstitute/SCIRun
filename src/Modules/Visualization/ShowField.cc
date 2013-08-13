@@ -57,7 +57,7 @@ namespace SCIRun {
         /// Constructs faces without normal information. We can share the primary
         /// VBO with the nodes and the edges in this case.
         template <typename VMeshType>
-        void buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+        void buildFacesIBO(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
           SCIRun::Core::Datatypes::GeometryHandle geom,
           const std::string& primaryVBOName,
           float dataMin, float dataMax,
@@ -66,7 +66,7 @@ namespace SCIRun {
         /// Constructs edges without normal information. We can share the primary
         /// VBO with faces and nodes.
         template <typename VMeshType>
-        void buildEdgesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+        void buildEdgesIBO(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
           SCIRun::Core::Datatypes::GeometryHandle geom,
           const std::string& primaryVBOName,
           ModuleStateHandle state);
@@ -74,7 +74,7 @@ namespace SCIRun {
         /// Constructs nodes without normal information. We can share the primary
         /// VBO with edges and faces.
         template <typename VMeshType>
-        void buildNodesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+        void buildNodesIBO(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
           SCIRun::Core::Datatypes::GeometryHandle geom,
           const std::string& primaryVBOName,
           ModuleStateHandle state);
@@ -92,36 +92,6 @@ ShowFieldModule::ShowFieldModule() : Module(ModuleLookupInfo("ShowField", "Visua
 void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-
-  //pass in the field object, get vmesh, vfield, and facade
-  // template<class T>  inline void VField::get_value(T& val, VMesh::Node::index_type idx) const
-  //normals
-  //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
-
-  /*
-
-  VMesh* v = field->vmesh();
-  
-  if (vmesh->has_normals())
-    vmesh_->synchronize(Mesh::NORMALS_E);
-
-  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
-  {
-    iboNodes[i] = static_cast<uint32_t>(node.index());
-    i++;
-
-    //data 
-    double val;
-    vfield->get_value(val, node.index());
-
-    if (vmesh->has_normals())
-    {
-      Vector normal;
-      vmesh->get_normal(normal, node.index());
-    }
-
-  } 
-  */
 
   {
     //TODO
@@ -160,10 +130,10 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   ENSURE_NOT_NULL(facade, "Mesh facade");
 
   // Grab the vmesh object so that we can extract the normals.
-  VMesh* v = field->vmesh();
+  VMesh* vmesh = field->vmesh();
   
   if (vmesh->has_normals())
-    vmesh_->synchronize(Mesh::NORMALS_E); // Ensure the normals are synchronized.
+    vmesh->synchronize(Mesh::NORMALS_E); // Ensure the normals are synchronized.
 
   /// \todo Split the mesh into chunks of about ~32,000 vertices. May be able to
   ///       eek out better coherency and use a 16 bit index buffer instead of
@@ -207,12 +177,14 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   size_t i = 0;
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
+    // Add position (aPos)
     size_t nodeOffset = 0;
     vbo[i+nodeOffset+0] = node.point().x();
     vbo[i+nodeOffset+1] = node.point().y();
     vbo[i+nodeOffset+2] = node.point().z();
     nodeOffset += 3;
 
+    // Add field data (aFieldData)
     if (node.index() < vfield->num_values())
     {
       double val = 0.0;
@@ -225,18 +197,19 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     }
     nodeOffset += 1;
 
+    // Add optional normals (aNormal)
     if (vmesh->has_normals())
     {
-      Vector normal;
+      Core::Geometry::Vector normal;
       vmesh->get_normal(normal, node.index());
 
-      vbo[i+nodeOffset+0] = node.point().x();
-      vbo[i+nodeOffset+1] = node.point().y();
-      vbo[i+nodeOffset+2] = node.point().z();
+      vbo[i+nodeOffset+0] = normal.x();
+      vbo[i+nodeOffset+1] = normal.y();
+      vbo[i+nodeOffset+2] = normal.z();
       nodeOffset += 3;
     }
-      
-    i+=numFloats;
+
+    i += nodeOffset;
   }
 
   if (updater_)
@@ -245,7 +218,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // Build the edges
   if (showEdges)
   {
-    buildEdgesNoNormals<VMesh>(facade, geom, primVBOName, state);
+    buildEdgesIBO<VMesh>(facade, geom, primVBOName, state);
   }
 
   if (updater_)
@@ -258,7 +231,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
     double dataMax = 0.0;
     vfield->min(dataMin);
     vfield->max(dataMax);
-    buildFacesNoNormals<VMesh>(facade, geom, primVBOName, dataMin, dataMax, state);
+    buildFacesIBO<VMesh>(facade, geom, primVBOName, dataMin, dataMax, state);
   }
 
   if (updater_)
@@ -267,7 +240,7 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
   // Build the nodes
   if (showNodes)
   {
-    buildNodesNoNormals<VMesh>(facade, geom, primVBOName, state);
+    buildEdgesIBO<VMesh>(facade, geom, primVBOName, state);
   }
 
   if (updater_)
@@ -277,11 +250,12 @@ GeometryHandle ShowFieldModuleImpl::renderMesh(
 }
 
 template <typename VMeshType>
-void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
-  GeometryHandle geom,
-  const std::string& primaryVBOName,
-  float dataMin, float dataMax,   /// Dataset minimum / maximum.
-  ModuleStateHandle state)
+void ShowFieldModuleImpl::buildFacesIBO(
+    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade, 
+    GeometryHandle geom,
+    const std::string& primaryVBOName,
+    float dataMin, float dataMax,   /// Dataset minimum / maximum.
+    ModuleStateHandle state)
 {
   bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
   uint32_t* iboFaces = nullptr;
@@ -364,10 +338,11 @@ void ShowFieldModuleImpl::buildFacesNoNormals(typename SCIRun::Core::Datatypes::
 }
 
 template <typename VMeshType>
-void ShowFieldModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
-  GeometryHandle geom,
-  const std::string& primaryVBOName,
-  ModuleStateHandle modState)
+void ShowFieldModuleImpl::buildEdgesIBO(
+    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+    GeometryHandle geom,
+    const std::string& primaryVBOName,
+    ModuleStateHandle modState)
 {
   bool edgeTransparency = modState->getValue(ShowFieldModule::EdgeTransparency).getBool();
 
@@ -413,10 +388,11 @@ void ShowFieldModuleImpl::buildEdgesNoNormals(typename SCIRun::Core::Datatypes::
 }
 
 template <typename VMeshType>
-void ShowFieldModuleImpl::buildNodesNoNormals(typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
-  GeometryHandle geom,
-  const std::string& primaryVBOName,
-  ModuleStateHandle state)
+void ShowFieldModuleImpl::buildNodesIBO(
+    typename SCIRun::Core::Datatypes::MeshTraits<VMeshType>::MeshFacadeHandle facade,
+    GeometryHandle geom,
+    const std::string& primaryVBOName,
+    ModuleStateHandle state)
 {
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
 
@@ -465,3 +441,37 @@ AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
 AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
 AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
+
+
+
+// Reference code for the vmesh type
+  //pass in the field object, get vmesh, vfield, and facade
+  // template<class T>  inline void VField::get_value(T& val, VMesh::Node::index_type idx) const
+  //normals
+  //virtual void VMesh::get_normal(Core::Geometry::Vector& norm,Node::index_type i) const;
+
+  /*
+
+  VMesh* v = field->vmesh();
+  
+  if (vmesh->has_normals())
+    vmesh_->synchronize(Mesh::NORMALS_E);
+
+  BOOST_FOREACH(const NodeInfo<VMeshType>& node, facade->nodes())
+  {
+    iboNodes[i] = static_cast<uint32_t>(node.index());
+    i++;
+
+    //data 
+    double val;
+    vfield->get_value(val, node.index());
+
+    if (vmesh->has_normals())
+    {
+      Vector normal;
+      vmesh->get_normal(normal, node.index());
+    }
+
+  } 
+  */
+
