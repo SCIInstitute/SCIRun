@@ -216,7 +216,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
       // Add common uniforms.
       pass.addUniform("uAmbientColor", Spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
-      pass.addUniform("uDiffuseColor", Spire::V4(0.0f, 0.8f, 0.0f, 1.0f));
+      pass.addUniform("uDiffuseColor", Spire::V4(0.8f, 0.8f, 0.8f, 1.0f));
       pass.addUniform("uSpecularColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
       pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
