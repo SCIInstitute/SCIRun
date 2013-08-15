@@ -195,10 +195,10 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
                                        "DirPhong", Spire::Interface::TRIANGLES);
 
       // Add common uniforms.
-      spire->addUniform(objName, "uAmbientColor", V4(0.01f, 0.01f, 0.01f, 1.0f));
-      spire->addUniform(objName, "uDiffuseColor", V4(0.0f, 0.8f, 0.0f, 1.0f));
-      spire->addUniform(objName, "uSpecularColor", V4(1.0f, 1.0f, 1.0f, 1.0f));
-      spire->addUniform(objName, "uSpecularPower", 32.0f);
+      pass.addUniform("uAmbientColor", Spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
+      pass.addUniform("uDiffuseColor", Spire::V4(0.0f, 0.8f, 0.0f, 1.0f));
+      pass.addUniform("uSpecularColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+      pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
     }
     else

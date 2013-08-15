@@ -148,6 +148,9 @@ void ViewSceneDialog::moduleExecuted()
     if (spire == nullptr)
       return;
 
+    // Set directional light source (in world space).
+    spire->addGlobalUniform("uLightDirWorld", V3(1.0f, 0.0f, 0.0f));
+
     // Remove ALL prior objects.
     spire->removeAllObjects();
 
