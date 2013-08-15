@@ -119,9 +119,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   std::string primVBOName = id + "primaryVBO";
   std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
   attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
-  attribs.push_back("aFieldData");
   if (vmesh->has_normals())
     attribs.push_back("aNormal");
+  attribs.push_back("aFieldData");
   geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
   if (progressFunc) progressFunc(0.1);
@@ -137,6 +137,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     vbo[i+nodeOffset+2] = node.point().z();
     nodeOffset += 3;
 
+    // Add optional normals (aNormal)
+    if (vmesh->has_normals())
+    {
+      Core::Geometry::Vector normal;
+      vmesh->get_normal(normal, node.index());
+
+      vbo[i+nodeOffset+0] = normal.x();
+      vbo[i+nodeOffset+1] = normal.y();
+      vbo[i+nodeOffset+2] = normal.z();
+      nodeOffset += 3;
+    }
+
     // Add field data (aFieldData)
     if (node.index() < vfield->num_values())
     {
@@ -149,18 +161,6 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       vbo[i+nodeOffset] = 0.0f;
     }
     nodeOffset += 1;
-
-    // Add optional normals (aNormal)
-    if (vmesh->has_normals())
-    {
-      Core::Geometry::Vector normal;
-      vmesh->get_normal(normal, node.index());
-
-      vbo[i+nodeOffset+0] = normal.x();
-      vbo[i+nodeOffset+1] = normal.y();
-      vbo[i+nodeOffset+2] = normal.z();
-      nodeOffset += 3;
-    }
 
     i += nodeOffset;
   }
