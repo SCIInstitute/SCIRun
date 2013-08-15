@@ -69,9 +69,8 @@ namespace Visualization {
         Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
 
-    /// \todo The following 3 functions encompass too much functionality and
-    ///       need to be paired down to *just* building the IBO, not also
-    ///       constructing the shaders for the object.
+    /// IBO Construction
+    /// @{
     void buildFacesIBO(
         SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
         Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
@@ -82,9 +81,8 @@ namespace Visualization {
 
     void buildNodesIBO(
         SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
-        Core::Datatypes::GeometryHandle geom,
-        const std::string& primaryVBOName,
-        Dataflow::Networks::ModuleStateHandle state);
+        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+    /// @}
 
   };
 

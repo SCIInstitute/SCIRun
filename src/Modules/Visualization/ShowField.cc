@@ -179,9 +179,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
         GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
                                      "UniformColor", Spire::Interface::LINES);
 
-    Spire::GPUState state;
-    state.mLineWidth = 2.5f;
-    pass.addGPUState(state);
+    Spire::GPUState gpuState;
+    gpuState.mLineWidth = 2.5f;
+    pass.addGPUState(gpuState);
 
     bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
     // Add appropriate uniforms to the pass (in this case, uColor).
@@ -242,7 +242,23 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   // Build the nodes
   if (showNodes)
   {
-    buildNodesIBO(facade, geom, primVBOName, state);
+    const std::string iboName = id + "nodesIBO";
+    buildNodesIBO(facade, geom, iboName);
+
+    // Build pass for the nodes.
+    /// \todo Find an appropriate place to put program names like UniformColor.
+    GeometryObject::SpireSubPass pass = 
+        GeometryObject::SpireSubPass("nodesPass", primVBOName, iboName,
+                                     "UniformColor", Spire::Interface::POINTS);
+
+    // Add appropriate uniforms to the pass (in this case, uColor).
+    bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
+    if (nodeTransparency)
+      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+    else
+      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+
+    geom->mPasses.emplace_back(pass);
   }
 
   if (progressFunc) progressFunc(1);
@@ -335,12 +351,8 @@ void ShowFieldModule::buildEdgesIBO(
 
 void ShowFieldModule::buildNodesIBO(
     SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
-    GeometryHandle geom,
-    const std::string& primaryVBOName,
-    ModuleStateHandle state)
+    GeometryHandle geom, const std::string& desiredIBOName)
 {
-  bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
-
   size_t iboNodesSize = sizeof(uint32_t) * facade->numNodes();
   uint32_t* iboNodes = nullptr;
 
@@ -360,23 +372,7 @@ void ShowFieldModule::buildNodesIBO(
   }
 
   // Add IBO for the nodes.
-  std::string nodesIBOName = "nodesIBO";
-  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(nodesIBOName, sizeof(uint32_t), rawIBO));
-
-  // Build pass for the nodes.
-  /// \todo Find an appropriate place to put program names like UniformColor.
-  GeometryObject::SpireSubPass pass = 
-    GeometryObject::SpireSubPass("nodesPass", primaryVBOName,
-    nodesIBOName, "UniformColor",
-    Spire::Interface::POINTS);
-
-  // Add appropriate uniforms to the pass (in this case, uColor).
-  if (nodeTransparency)
-    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
-  else
-    pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
-
-  geom->mPasses.emplace_back(pass);
+  geom->mIBOs.emplace_back(GeometryObject::SpireIBO(desiredIBOName, sizeof(uint32_t), rawIBO));
 }
 
 AlgorithmParameterName ShowFieldModule::ShowNodes("ShowNodes");
