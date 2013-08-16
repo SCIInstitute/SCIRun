@@ -30,9 +30,9 @@
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Visualization/share.h>
 #include <Core/Datatypes/Geometry.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Modules/Visualization/share.h>
 
 namespace SCIRun {
 namespace Modules {

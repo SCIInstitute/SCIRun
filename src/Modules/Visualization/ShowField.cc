@@ -40,6 +40,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun;
 
 
 ShowFieldModule::ShowFieldModule() : 
@@ -278,7 +279,7 @@ void ShowFieldModule::buildFacesIBO(
   size_t iboFacesSize = 0;
   BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
-    typename VMesh::Node::array_type nodes = face.nodeIndices();
+    VMesh::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
     {
       iboFacesSize += sizeof(uint32_t) * 6;
@@ -300,7 +301,7 @@ void ShowFieldModule::buildFacesIBO(
   size_t i = 0;
   BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
-    typename VMesh::Node::array_type nodes = face.nodeIndices();
+    VMesh::Node::array_type nodes = face.nodeIndices();
     if (nodes.size() == 4)
     {
       // Winding order looks good from tests.
@@ -338,7 +339,7 @@ void ShowFieldModule::buildEdgesIBO(
   BOOST_FOREACH(const EdgeInfo<VMesh>& edge, facade->edges())
   {
     // There should *only* be two indicies (linestrip would be better...)
-    typename VMesh::Node::array_type nodes = edge.nodeIndices();
+    VMesh::Node::array_type nodes = edge.nodeIndices();
     ENSURE_DIMENSIONS_MATCH(nodes.size(), 2, "Edges require exactly 2 indices.");
     iboEdges[i] = static_cast<uint32_t>(nodes[0]); iboEdges[i+1] = static_cast<uint32_t>(nodes[1]);
     i += 2;
