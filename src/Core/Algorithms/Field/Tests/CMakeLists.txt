@@ -27,6 +27,7 @@
 #
 
 SET(Algorithms_Field_Tests_SRCS
+  GetFieldBoundaryTests.cc
   ReportFieldInfoTests.cc
 )
 
@@ -37,6 +38,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
 TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
   Algorithms_Field
   Core_Datatypes_Legacy_Field
+  Core_Algorithms_Legacy_Fields
   Testing_Utils
   gtest_main
   gtest

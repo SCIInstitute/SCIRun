@@ -37,13 +37,16 @@
 #include <boost/unordered_map.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   add_option("mapping","auto","auto|node|elem|none");
+#endif
 }
 
 struct IndexHash {
@@ -181,7 +184,18 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   
   ofield->resize_fdata();
   
-  if (((ifield->basis_order() == 0)&&(check_option("mapping","auto")))||(check_option("mapping","elem")))
+  if (
+    (
+    (ifield->basis_order() == 0)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+      && check_option("mapping","auto")
+      )
+      ||
+       check_option("mapping","elem")
+#else
+    )
+#endif
+      )
   {
     VMesh::Elem::size_type isize;
     VMesh::Elem::size_type osize;
@@ -215,7 +229,16 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     }
     mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
   }
-  else if (((ifield->basis_order() == 1)&&(check_option("mapping","auto")))||(check_option("mapping","node")))
+  else if (
+    ((ifield->basis_order() == 1) 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    && check_option("mapping","auto"))
+    ||
+      check_option("mapping","node")
+#else
+    )
+#endif
+      )
   {
     VMesh::Node::size_type isize;
     VMesh::Node::size_type osize;
@@ -454,4 +477,9 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 #endif
   
   return (true);
+}
+
+AlgorithmOutputHandle GetFieldBoundaryAlgo::run_generic(AlgorithmInputHandle input) const
+{
+  throw "not implemented";
 }
