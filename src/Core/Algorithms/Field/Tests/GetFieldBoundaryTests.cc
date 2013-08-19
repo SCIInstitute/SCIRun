@@ -30,6 +30,7 @@
 
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
@@ -40,11 +41,12 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-TEST(GetFieldBoundaryTest, LatVolBoundary)
+void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const std::string& expectedMatrixString = "")
 {
-  FieldInformation lfi("LatVolMesh", -1, "double");
+  std::cout << "Basis # " << basis << std::endl;
+  FieldInformation lfi("LatVolMesh", basis, "double");
 
-  size_type sizex = 3, sizey = 4, sizez = 5;
+  size_type sizex = 2, sizey = 3, sizez = 4;
   Point minb(-1.0, -1.0, -1.0);
   Point maxb(1.0, 1.0, 1.0);
   MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
@@ -58,8 +60,81 @@ TEST(GetFieldBoundaryTest, LatVolBoundary)
   algo.run(ofh, boundary, mapping);
 
   ASSERT_TRUE(boundary);
-  ASSERT_TRUE(mapping);
-/*
+  if (basis != -1)
+  {
+    ASSERT_TRUE(mapping);
+    EXPECT_EQ(expectedMatrixRows, mapping->nrows());
+    EXPECT_EQ(expectedMatrixColumns, mapping->ncols());
+    std::ostringstream ostr;
+    ostr << *mapping;
+    std::cout << "expected\n" << expectedMatrixString << std::endl;
+    std::cout << "actual\n" << ostr.str() << std::endl;
+    EXPECT_EQ(expectedMatrixString, ostr.str());
+  }
+}
+
+const std::string matrixCells = 
+  "1 0 0 0 0 0 \n"
+  "1 0 0 0 0 0 \n"
+  "1 0 0 0 0 0 \n"
+  "1 0 0 0 0 0 \n"
+  "0 1 0 0 0 0 \n"
+  "0 1 0 0 0 0 \n"
+  "0 1 0 0 0 0 \n"
+  "0 1 0 0 0 0 \n"
+  "0 0 1 0 0 0 \n"
+  "0 0 1 0 0 0 \n"
+  "0 0 1 0 0 0 \n"
+  "0 0 0 1 0 0 \n"
+  "0 0 0 1 0 0 \n"
+  "0 0 0 1 0 0 \n"
+  "0 0 0 0 1 0 \n"
+  "0 0 0 0 1 0 \n"
+  "0 0 0 0 1 0 \n"
+  "0 0 0 0 1 0 \n"
+  "0 0 0 0 0 1 \n"
+  "0 0 0 0 0 1 \n"
+  "0 0 0 0 0 1 \n"
+  "0 0 0 0 0 1 \n";
+
+const std::string matrixNodes = 
+  "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 \n"
+  "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 \n";
+
+
+TEST(GetFieldBoundaryTest, LatVolBoundary)
+{
+
+  runTest(0, 22, 6, matrixCells);
+  runTest(-1, 0, 0);
+  runTest(1, 24, 24, matrixNodes);
+
+
+  
+  
+  /*
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
   EXPECT_EQ(0, info.dataMin);
   EXPECT_EQ(0, info.dataMax);
