@@ -50,7 +50,7 @@ class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
   }
   
   //! With mapping
-  bool run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping);
+  bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping);
   //! Without mapping
   bool run(FieldHandle input, FieldHandle& output);
 

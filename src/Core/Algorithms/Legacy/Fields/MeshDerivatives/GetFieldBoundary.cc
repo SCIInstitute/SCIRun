@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshDerivatives/GetFieldBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
 
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
