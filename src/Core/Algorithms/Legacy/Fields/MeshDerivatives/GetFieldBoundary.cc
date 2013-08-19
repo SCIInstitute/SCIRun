@@ -60,19 +60,19 @@ struct IndexHash {
 bool 
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 {
+  ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
+
   //! Define types we need for mapping
   typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
 
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  algo_start("GetFieldBoundary");
-  
   //! Check whether we have an input field
   if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Figure out what the input type and output type have to be
@@ -83,7 +83,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Figure out which type of field the output is:
@@ -97,14 +97,14 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   {
     remark("The field boundary of a point cloud is the same point cloud");
     output = input;
-    algo_end(); return (true);
+    return (true);
   }
   
   //! Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Create the output field
@@ -112,7 +112,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Get the virtual interfaces:
@@ -284,9 +284,9 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   }
   
   // copy property manager
-	output->copy_properties(input.get_rep());
+	output->copy_properties(input);
   
-  algo_end(); return (true);
+  return (true);
 }
 
 
@@ -297,19 +297,19 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 bool 
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 {
+  ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
+
   //! Define types we need for mapping
   typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
   
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  algo_start("GetFieldBoundary");
-  
   //! Check whether we have an input field
   if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Figure out what the input type and output type have to be
@@ -320,7 +320,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Figure out which type of field the output is:
@@ -334,14 +334,14 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   {
     remark("The field boundary of a point cloud is the same point cloud");
     output = input;
-    algo_end(); return (true);
+    return (true);
   }
   
   //! Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Create the output field
@@ -349,7 +349,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Get the virtual interfaces:
@@ -447,7 +447,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   }
   
   // copy property manager
-	output->copy_properties(input.get_rep());
+	output->copy_properties(input);
   
-  algo_end(); return (true);
+  return (true);
 }
