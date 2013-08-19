@@ -26,8 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
 //  private:
