@@ -34,9 +34,12 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 
+#include <boost/unordered_map.hpp>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
@@ -58,11 +61,7 @@ bool
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 {
   //! Define types we need for mapping
-#ifdef HAVE_HASH_MAP
-  typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
-#else
-  typedef std::map<index_type,index_type,IndexHash> hash_map_type;
-#endif
+  typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
 
   hash_map_type node_map;
   hash_map_type elem_map;
@@ -299,11 +298,8 @@ bool
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 {
   //! Define types we need for mapping
-#ifdef HAVE_HASH_MAP
-  typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
-#else
-  typedef std::map<index_type,index_type,IndexHash> hash_map_type;
-#endif
+  typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+  
   hash_map_type node_map;
   hash_map_type elem_map;
   
