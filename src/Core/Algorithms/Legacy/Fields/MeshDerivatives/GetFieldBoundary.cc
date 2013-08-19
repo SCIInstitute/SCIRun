@@ -69,7 +69,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   algo_start("GetFieldBoundary");
   
   //! Check whether we have an input field
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
     algo_end(); return (false);
@@ -109,7 +109,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 
   //! Create the output field
   output = CreateField(fo);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
     algo_end(); return (false);
@@ -177,7 +177,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     ++be;
   }
   
-  mapping = 0;
+  mapping.reset();
   
   ofield->resize_fdata();
   
@@ -213,7 +213,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
       d[(*it).first] += 1.0;
       ++it;
     }
-    mapping = new SparseRowMatrix(nrows, ncols, sparseData, nrows);
+    mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
   }
   else if (((ifield->basis_order() == 1)&&(check_option("mapping","auto")))||(check_option("mapping","node")))
   {
@@ -249,7 +249,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
       ++it;
     }
     
-    mapping = new SparseRowMatrix(nrows, ncols, sparseData, nrows);
+    mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
   }
   
   if (ifield->basis_order() == 0)
@@ -306,7 +306,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   algo_start("GetFieldBoundary");
   
   //! Check whether we have an input field
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
     algo_end(); return (false);
@@ -346,7 +346,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 
   //! Create the output field
   output = CreateField(fo);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
     algo_end(); return (false);
