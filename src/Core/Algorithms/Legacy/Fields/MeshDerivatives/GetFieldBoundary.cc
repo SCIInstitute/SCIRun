@@ -31,9 +31,13 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+
+GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
+{
+  add_option("mapping","auto","auto|node|elem|none");
+}
 
 struct IndexHash {
   static const size_t bucket_size = 4;

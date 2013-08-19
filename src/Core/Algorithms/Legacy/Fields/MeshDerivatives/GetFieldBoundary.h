@@ -43,11 +43,7 @@ namespace Fields {
 class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
 {
   public:
-    //! Set defaults
-  GetFieldBoundaryAlgo() 
-  {
-    add_option("mapping","auto","auto|node|elem|none");
-  }
+  GetFieldBoundaryAlgo();
   
   //! With mapping
   bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping);
