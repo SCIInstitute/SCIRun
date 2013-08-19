@@ -283,8 +283,10 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     }
   }
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // copy property manager
 	output->copy_properties(input);
+#endif
   
   return (true);
 }
@@ -446,8 +448,10 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
     }
   }
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // copy property manager
 	output->copy_properties(input);
+#endif
   
   return (true);
 }
