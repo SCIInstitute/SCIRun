@@ -29,7 +29,6 @@
 #ifndef MODULES_LEGACY_FIELDS_GETFIELDBOUNDARY_H__
 #define MODULES_LEGACY_FIELDS_GETFIELDBOUNDARY_H__
 
-
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
 
@@ -37,6 +36,19 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
+      class SCISHARE GetFieldBoundary : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+      {
+      public:
+        GetFieldBoundary();
+
+        virtual void execute();
+
+        INPUT_PORT(0, Field, LegacyField);
+        OUTPUT_PORT(0, BoundaryField, LegacyField);
+        OUTPUT_PORT(1, Mapping, DenseMatrix);
+      };
 
     }
   }

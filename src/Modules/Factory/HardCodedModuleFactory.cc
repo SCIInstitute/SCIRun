@@ -123,7 +123,7 @@ namespace SCIRun {
           addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "Set field data via python.", "...");
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
 
-          addModuleDesc<GetFieldBoundaryModule>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
+          addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
         }
 
         ModuleDescriptionMap descMap_;
