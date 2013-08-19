@@ -32,11 +32,7 @@
 #include <Core/Geometry/CompGeom.h>
 
 #include <Core/Datatypes/FieldInformation.h>
-#include <Core/Thread/Thread.h>
-#include <Core/Thread/Mutex.h>
 
-#include <vector>
-#include <string>
 #include <algorithm>
 #include <sstream>
 
@@ -47,7 +43,7 @@ using namespace SCIRun;
 
 // General streamline code
 
-void CleanupStreamLinePoints(std::vector<Point> &input, std::vector<Point> &output, double e2)
+void CleanupStreamLinePoints(const std::vector<Point> &input, std::vector<Point> &output, double e2)
 {
   // Removes colinear points from the list of points.
   size_t i, j = 0;
@@ -75,16 +71,16 @@ class GenerateStreamLinesAlgoP {
   
   public:
     GenerateStreamLinesAlgoP() :
-      lock_("GenerateStreamLines Lock") {}
+        tolerance_(0), step_size_(0), max_steps_(0), direction_(0), value_(0), remove_colinear_pts_(false),
+          method_(0), seed_field_(0), seed_mesh_(0), field_(0), mesh_(0), ofield_(0), omesh_(0), algo_(0), success_(false)
+       {}
   
     bool run(AlgoBase* algo, FieldHandle input, 
              FieldHandle seeds, FieldHandle& output,
              int method);
 
-    void parallel(int proc, int nproc);
-
   private:
-    // parameters
+    void runImpl();
   
     double tolerance_;
     double step_size_;
@@ -103,7 +99,6 @@ class GenerateStreamLinesAlgoP {
     VField* ofield_;
     VMesh*  omesh_;
     
-    Mutex lock_;
     AlgoBase* algo_;
     
     bool success_;
@@ -111,7 +106,7 @@ class GenerateStreamLinesAlgoP {
 
 
 void
-GenerateStreamLinesAlgoP::parallel(int proc, int nproc)
+GenerateStreamLinesAlgoP::runImpl()
 {
   try 
   {
@@ -129,7 +124,7 @@ GenerateStreamLinesAlgoP::parallel(int proc, int nproc)
     VMesh::size_type num_seeds = seed_mesh_->num_nodes();
     VMesh::Node::array_type newnodes(2);
 
-    for (VMesh::Node::index_type idx=proc; idx<num_seeds; idx+=nproc)
+    for (VMesh::Node::index_type idx=1; idx<num_seeds; ++idx)
     {
       seed_mesh_->get_point(BI.seed_, idx);
 
@@ -164,9 +159,6 @@ GenerateStreamLinesAlgoP::parallel(int proc, int nproc)
         BI.integrate( method_ );
       }
 
-//      if (remove_colinear_pts_)
-//        BI.nodes_.erase(CleanupStreamLinePoints(BI.nodes_, BI.tolerance2_),BI.nodes_.end());
-
       double length = 0;
       Point p1;
 
@@ -191,7 +183,6 @@ GenerateStreamLinesAlgoP::parallel(int proc, int nproc)
       
       if (node_iter != BI.nodes_.end()) 
       {
-        lock_.lock();
         p1 = *node_iter;
         n1 = omesh_->add_point(p1);
 
@@ -244,20 +235,15 @@ GenerateStreamLinesAlgoP::parallel(int proc, int nproc)
 
           cc++;
         }
-
-        lock_.unlock();
       }
 
-      if (proc == 0)
-	algo_->update_progress(idx,num_seeds);
+	    algo_->update_progress(idx,num_seeds);
     }
 
-    if (proc == 0)
-      algo_->set_int("num_streamlines", num_seeds);
+    algo_->set_int("num_streamlines", num_seeds);
  
     // Record the number of streamline. Used downstream.
-    if (proc == 0)
-      ofield_->set_property( "Streamline Count", (unsigned int) num_seeds, false );
+    ofield_->set_property( "Streamline Count", (unsigned int) num_seeds, false );
    }
 
   catch (const Exception &e)
@@ -308,11 +294,8 @@ GenerateStreamLinesAlgoP::run(AlgoBase* algo,
   method_ = method;    
 
   success_ = true;
-  
-//  Thread::parallel(this,&GenerateStreamLinesAlgoP::parallel,
-//    Thread::numProcessors(),Thread::numProcessors());
 
-  Thread::parallel(this,&GenerateStreamLinesAlgoP::parallel,1,1);
+  runImpl();
 
   return (success_);
 }
