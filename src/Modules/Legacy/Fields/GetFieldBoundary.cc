@@ -26,47 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//! Include the algorithm
 #include <Core/Algorithms/Fields/MeshDerivatives/GetFieldBoundary.h>
 
-//! The module class
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
 
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+//  private:
+//    SCIRunAlgo::GetFieldBoundaryAlgo algo_;
 
-namespace SCIRun {
-
-class GetFieldBoundary : public Module {
-  public:
-    //! constructor and execute function
-    GetFieldBoundary(GuiContext*);
-    virtual ~GetFieldBoundary() {}
-    virtual void execute();
-
-  private:
-    //! Define algorithms needed
-    SCIRunAlgo::GetFieldBoundaryAlgo algo_;
-};
-
-
-DECLARE_MAKER(GetFieldBoundary)
-GetFieldBoundary::GetFieldBoundary(GuiContext* ctx)
-  : Module("GetFieldBoundary", ctx, Source, "NewField", "SCIRun")
+GetFieldBoundary::GetFieldBoundary()
+  : Module(ModuleLookupInfo("GetFieldBoundary", "NewField", "SCIRun"), false)
 {
   //! Forward error messages;
   algo_.set_progress_reporter(this);  
 }
 
-
 void
 GetFieldBoundary::execute()
 {
-  // Declare dataflow object
   FieldHandle field;
   
-  // Get data from ports
   get_input_handle("Field",field,true);
   
   // If parameters changed, do algorithm
@@ -75,6 +53,7 @@ GetFieldBoundary::execute()
       !oport_cached("Mapping"))
   {
     update_state(Executing);
+
     // Output dataflow objects:
     FieldHandle ofield;
     MatrixHandle mapping;
@@ -87,5 +66,3 @@ GetFieldBoundary::execute()
     send_output_handle("Mapping", mapping);
   }
 }
-
-} // End namespace SCIRun
