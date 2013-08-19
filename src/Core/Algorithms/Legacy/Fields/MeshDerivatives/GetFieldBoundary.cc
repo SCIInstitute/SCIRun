@@ -29,10 +29,14 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
 
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
