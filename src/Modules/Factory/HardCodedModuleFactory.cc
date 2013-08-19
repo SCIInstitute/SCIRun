@@ -49,6 +49,7 @@
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -121,6 +122,8 @@ namespace SCIRun {
           addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
           addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "Set field data via python.", "...");
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
+
+          addModuleDesc<GetFieldBoundaryModule>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
         }
 
         ModuleDescriptionMap descMap_;

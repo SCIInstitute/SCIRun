@@ -30,6 +30,7 @@
 
 SET(Dataflow_Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
+  GetFieldBoundary.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -79,7 +80,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #RemoveHexVolSheet.cc
   #FairMesh.cc
   #GetAllSegmentationBoundaries.cc
-  #GetFieldBoundary.cc
+  GetFieldBoundary.cc
   #ReportFieldInfo.cc
   #ReportFieldGeometryMeasures.cc
   #SetFieldProperty.cc
