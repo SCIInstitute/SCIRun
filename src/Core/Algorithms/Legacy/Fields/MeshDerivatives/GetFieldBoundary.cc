@@ -202,34 +202,26 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     imesh->size(isize);
     omesh->size(osize);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     size_type nrows = osize;
     size_type ncols = isize;
-    SparseRowMatrix::Data sparseData(nrows+1, nrows);
-    const SparseRowMatrix::Rows& rr = sparseData.rows();
-    const SparseRowMatrix::Columns& cc = sparseData.columns();
-    const SparseRowMatrix::Storage& d = sparseData.data();
 
-    for (index_type p = 0; p < nrows; p++)
-    {
-      cc[p] = 0;
-      rr[p] = p;
-      d[p] = 0.0;
-    }
-    rr[nrows] = nrows; // An extra entry goes on the end of rr.
+    typedef Eigen::Triplet<double> T;
+    std::vector<T> tripletList;
+    tripletList.reserve(nrows);
 
     hash_map_type::iterator it, it_end;
     it = elem_map.begin();
     it_end = elem_map.end();
-    
+
     while (it != it_end)
     {
-      cc[(*it).first] = (*it).second;
-      d[(*it).first] += 1.0;
+      tripletList.push_back(T(it->first, it->second, 1));
       ++it;
     }
-    mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
-#endif
+    SparseRowMatrixHandle mat(new SparseRowMatrix(nrows, ncols));
+    mat->setFromTriplets(tripletList.begin(), tripletList.end());
+    mapping = mat;
   }
   else if (
     ((ifield->basis_order() == 1) 
@@ -246,36 +238,27 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     VMesh::Node::size_type osize;
     imesh->size(isize);
     omesh->size(osize);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
     size_type nrows = osize;
     size_type ncols = isize;
 
-    SparseRowMatrix::Data sparseData(nrows+1, nrows);
-    const SparseRowMatrix::Rows& rr = sparseData.rows();
-    const SparseRowMatrix::Columns& cc = sparseData.columns();
-    const SparseRowMatrix::Storage& d = sparseData.data();
-
-    for (index_type p = 0; p < nrows; p++)
-    {
-      cc[p] = 0;
-      rr[p] = p;
-      d[p] = 0.0;
-    }
-    rr[nrows] = nrows; // An extra entry goes on the end of rr.
+    typedef Eigen::Triplet<double> T;
+    std::vector<T> tripletList;
+    tripletList.reserve(nrows);
 
     hash_map_type::iterator it, it_end;
     it = node_map.begin();
     it_end = node_map.end();
-    
+
+    int row = 0;
     while (it != it_end)
     {
-      cc[(*it).second] = (*it).first;
-      d[(*it).second] += 1.0;
+      tripletList.push_back(T(it->second, it->first, 1));
       ++it;
     }
-    
-    mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
-#endif
+    SparseRowMatrixHandle mat(new SparseRowMatrix(nrows, ncols));
+    mat->setFromTriplets(tripletList.begin(), tripletList.end());
+    mapping = mat;
   }
   
   if (ifield->basis_order() == 0)
