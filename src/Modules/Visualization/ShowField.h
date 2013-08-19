@@ -30,6 +30,8 @@
 #define MODULES_VISUALIZATION_SHOW_FIELD_H
 
 #include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/Geometry.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Modules/Visualization/share.h>
 
 namespace SCIRun {
@@ -56,8 +58,36 @@ namespace Visualization {
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
   private:
-    boost::shared_ptr<class ShowFieldModuleImpl> impl_;
+
+    /// Constructs a geometry object (essentially a spire object) from the given 
+    /// field data.
+    /// \param field    Field from which to construct geometry.
+    /// \param state    
+    /// \param id       Ends up becoming the name of the spire object.
+    Core::Datatypes::GeometryHandle buildGeometryObject(
+        boost::shared_ptr<SCIRun::Field> field,
+        Dataflow::Networks::ModuleStateHandle state, const std::string& id);
+
+
+    /// IBO Construction
+    /// @{
+    void buildFacesIBO(
+        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade, 
+        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+
+    void buildEdgesIBO(
+        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
+        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+
+    void buildNodesIBO(
+        SCIRun::Core::Datatypes::MeshTraits<VMesh>::MeshFacadeHandle facade,
+        Core::Datatypes::GeometryHandle geom, const std::string& desiredIBOName);
+    /// @}
+
   };
-}}}
+
+} // Visualization
+} // Modules
+} // SCIRun
 
 #endif
