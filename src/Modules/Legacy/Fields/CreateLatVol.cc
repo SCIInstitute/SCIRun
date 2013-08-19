@@ -63,13 +63,14 @@ AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalize
 
 CreateLatVol::CreateLatVol()
   : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
-  /*,
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   size_x_(get_ctx()->subVar("sizex"), 16),
   size_y_(get_ctx()->subVar("sizey"), 16),
   size_z_(get_ctx()->subVar("sizez"), 16),
   padpercent_(get_ctx()->subVar("padpercent"), 0.0),
   data_at_(get_ctx()->subVar("data-at"), "Nodes"),
-  element_size_(get_ctx()->subVar("element-size"),"Mesh")*/
+  element_size_(get_ctx()->subVar("element-size"),"Mesh")
+#endif
 {
 }
 
@@ -178,7 +179,6 @@ CreateLatVol::execute()
     if (datatype == VECTOR) lfi.make_vector();
     else if (datatype == TENSOR) lfi.make_tensor();
 
-    // Create Image Field.
     MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
