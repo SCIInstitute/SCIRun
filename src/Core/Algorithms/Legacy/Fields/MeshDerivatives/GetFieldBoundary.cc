@@ -55,8 +55,7 @@ struct IndexHash {
 };
 
 bool 
-GetFieldBoundaryAlgo::
-run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
+GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 {
   //! Define types we need for mapping
 #ifdef HAVE_HASH_MAP
@@ -297,8 +296,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 //! project nodes on.
 
 bool 
-GetFieldBoundaryAlgo::
-run(FieldHandle input, FieldHandle& output)
+GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 {
   //! Define types we need for mapping
 #ifdef HAVE_HASH_MAP
@@ -457,6 +455,3 @@ run(FieldHandle input, FieldHandle& output)
   
   algo_end(); return (true);
 }
-
-
-} // End namespace SCIRunAlgo
