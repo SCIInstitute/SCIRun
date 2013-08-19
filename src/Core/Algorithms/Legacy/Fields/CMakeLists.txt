@@ -39,6 +39,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   FieldData/SetFieldData.h
   FieldData/SetFieldDataToConstantValue.h
   FieldData/SmoothVecFieldMedian.h
+  MeshDerivatives/GetFieldBoundary.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -117,7 +118,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MeshDerivatives/CalculateMeshConnector.cc
   #MeshDerivatives/CalculateMeshCenter.cc
   #MeshDerivatives/GetCentroids.cc
-  #MeshDerivatives/GetFieldBoundary.cc
+  MeshDerivatives/GetFieldBoundary.cc
   #MeshDerivatives/GetBoundingBox.cc
   #MeshDerivatives/SplitByConnectedRegion.cc
   #RefineMesh/RefineMesh.cc
