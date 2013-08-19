@@ -30,22 +30,17 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETFIELDBOUNDARY_H
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETFIELDBOUNDARY_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace Fields {
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetFieldBoundaryAlgo : public AlgoBase
+class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
 {
   public:
     //! Set defaults
@@ -61,6 +56,6 @@ class SCISHARE GetFieldBoundaryAlgo : public AlgoBase
 
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif 
