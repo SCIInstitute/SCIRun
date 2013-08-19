@@ -202,6 +202,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     imesh->size(isize);
     omesh->size(osize);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     size_type nrows = osize;
     size_type ncols = isize;
     SparseRowMatrix::Data sparseData(nrows+1, nrows);
@@ -228,6 +229,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
       ++it;
     }
     mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
+#endif
   }
   else if (
     ((ifield->basis_order() == 1) 
@@ -244,7 +246,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     VMesh::Node::size_type osize;
     imesh->size(isize);
     omesh->size(osize);
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     size_type nrows = osize;
     size_type ncols = isize;
 
@@ -273,6 +275,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     }
     
     mapping.reset(new SparseRowMatrix(nrows, ncols, sparseData, nrows));
+#endif
   }
   
   if (ifield->basis_order() == 0)

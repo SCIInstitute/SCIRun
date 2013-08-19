@@ -35,6 +35,7 @@
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
@@ -52,7 +53,12 @@ TEST(GetFieldBoundaryTest, LatVolBoundary)
 
   GetFieldBoundaryAlgo algo;
 
-  algo.run(ofh, );
+  FieldHandle boundary;
+  MatrixHandle mapping;
+  algo.run(ofh, boundary, mapping);
+
+  ASSERT_TRUE(boundary);
+  ASSERT_TRUE(mapping);
 /*
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
   EXPECT_EQ(0, info.dataMin);
