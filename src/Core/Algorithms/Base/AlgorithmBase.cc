@@ -144,3 +144,8 @@ ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
   if (asr_)
     asr_->report_end();
 }
+
+DatatypeHandle& AlgorithmData::operator[](const Name& name)
+{
+  return data_[name];
+}

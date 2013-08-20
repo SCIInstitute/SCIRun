@@ -110,8 +110,16 @@ namespace Networks {
     template <class Type, size_t N>
     struct PortName
     {
+      explicit PortName(const std::string& name = "") : name_(name) {}
       operator size_t() const { return N; }
-      operator std::string() const;
+      operator std::string() const 
+      { 
+        if (name_.empty())
+          BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
+        return name_; 
+      }
+
+      std::string name_;
     };
 
     // Throws if input is not present or null.
@@ -188,12 +196,6 @@ namespace Networks {
     static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
   };
-
-  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
-  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
-  struct SCISHARE PortNotFoundException : virtual DataPortException {};
 
   template <class T>
   boost::shared_ptr<T> Module::getRequiredInputAtIndex(size_t idx)
@@ -357,12 +359,16 @@ namespace Modules
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
+#define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
 
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index > name;
 
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index> name;
+
+//#define PORT_DEFINITION(module, index, name, type) Module::PortName< ATTACH_NAMESPACE2(type), index > module ## :: ## name (#name)
+#define INITIALIZE_PORT(name) do{name ## .name_ = #name;}while(0);
 
   //TODO: make metafunc for Input/Output
 

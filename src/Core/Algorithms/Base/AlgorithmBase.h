@@ -159,8 +159,8 @@ namespace Algorithms {
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
-    Variable& operator[](const Name& name);
-    const Variable& get(const Name& name) const;
+    Datatypes::DatatypeHandle& operator[](const Name& name);
+    //const Datatypes::DatatypeHandle& get(const Name& name) const;
 
   private:
     Map data_;

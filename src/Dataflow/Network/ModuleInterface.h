@@ -111,6 +111,12 @@ namespace Networks {
     virtual bool needToExecute() const = 0;
   };
 
+  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
+  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
+  struct SCISHARE PortNotFoundException : virtual DataPortException {};
+
   #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 }}}
 
