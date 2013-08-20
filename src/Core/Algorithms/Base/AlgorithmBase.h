@@ -35,6 +35,7 @@
 #include <boost/function.hpp>
 #include <Core/Logging/Logger.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Algorithms/Base/share.h>
 
@@ -177,6 +178,13 @@ namespace Algorithms {
 
   };
   
+  class SCISHARE AlgorithmFactory
+  {
+  public:
+    virtual ~AlgorithmFactory() {}
+    virtual AlgorithmHandle create(const std::string& name, Core::Logging::LoggerHandle logger) const = 0;
+  };
+
 }}}
 
 #endif

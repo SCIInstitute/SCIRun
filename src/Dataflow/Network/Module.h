@@ -37,6 +37,7 @@
 #include <Core/Logging/Logger.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -144,6 +145,9 @@ namespace Networks {
   protected:
     ModuleLookupInfo info_;
     ModuleId id_;
+
+    Core::Algorithms::AlgorithmHandle algo_;
+    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
 
   private:
     template <class T>
