@@ -34,14 +34,10 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
-//  private:
-//    SCIRunAlgo::GetFieldBoundaryAlgo algo_;
-
 GetFieldBoundary::GetFieldBoundary()
   : Module(ModuleLookupInfo("GetFieldBoundary", "NewField", "SCIRun"), false)
 {
-  //! Forward error messages;
-  algo_.set_progress_reporter(this);  
+  algo_ = algoFactory_->create(get_module_name(), getLogger());  
 }
 
 void
