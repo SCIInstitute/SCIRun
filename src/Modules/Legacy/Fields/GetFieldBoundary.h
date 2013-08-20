@@ -45,9 +45,9 @@ namespace SCIRun {
 
         virtual void execute();
 
-        INPUT_PORT(0, Field, LegacyField);
+        INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, BoundaryField, LegacyField);
-        OUTPUT_PORT(1, Mapping, DenseMatrix);
+        OUTPUT_PORT(1, Mapping, Matrix);
       };
 
     }
