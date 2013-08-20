@@ -57,7 +57,7 @@ GetFieldBoundary::execute()
     
     if (!(algo_.run(field,ofield,mapping))) return;
 
-    send_output_handle("BoundaryField", ofield);
-    send_output_handle("Mapping", mapping);
+    sendOutput(BoundaryField, ofield);
+    sendOutput(Mapping, mapping);
   }
 }
