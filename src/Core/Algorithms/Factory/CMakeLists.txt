@@ -26,10 +26,27 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
+SET(Algorithms_Factory_SRCS
+  HardCodedAlgorithmFactory.cc
+)
+
+SET(Algorithms_Factory_HEADERS
+  HardCodedAlgorithmFactory.h
+  share.h
+)
+
+ADD_LIBRARY(Algorithms_Factory 
+  ${Algorithms_Factory_HEADERS}
+  ${Algorithms_Factory_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_Factory
+  Algorithms_Base
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_Factory)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
 
