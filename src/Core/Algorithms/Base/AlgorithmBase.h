@@ -208,6 +208,6 @@ namespace Algorithms {
 
 #define make_input(list) SCIRun::Core::Algorithms::AlgorithmInput(SCIRun::Core::Algorithms::AlgorithmData::Map(boost::assign::map_list_of list))
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
-#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)].getDatatype());
+#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
 
 #endif
