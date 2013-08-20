@@ -43,9 +43,7 @@ GetFieldBoundary::GetFieldBoundary()
 void
 GetFieldBoundary::execute()
 {
-  FieldHandle field;
-  
-  get_input_handle("Field",field,true);
+  FieldHandle field = getRequiredInput(Field);
   
   // If parameters changed, do algorithm
   if (inputs_changed_ || 
