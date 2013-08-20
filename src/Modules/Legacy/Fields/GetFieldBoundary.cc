@@ -52,11 +52,11 @@ GetFieldBoundary::execute()
   {
     update_state(Executing);
 
-    FieldHandle ofield;
-    MatrixHandle mapping;
-    
-    if (!(algo_.run(field,ofield,mapping))) return;
+    auto output = algo_->run_generic(make_input(field));
 
+    FieldHandle ofield = output[BoundaryField];
+    MatrixHandle mapping = output[Mapping];
+    
     sendOutput(BoundaryField, ofield);
     sendOutput(Mapping, mapping);
   }

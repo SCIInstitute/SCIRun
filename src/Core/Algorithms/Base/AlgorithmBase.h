@@ -174,7 +174,7 @@ namespace Algorithms {
       Output: tuple of Datatypes, possibly delay-executed
     */
 
-    virtual AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const = 0;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
 
   };
   
