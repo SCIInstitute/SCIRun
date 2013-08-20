@@ -54,14 +54,11 @@ GetFieldBoundary::execute()
   {
     update_state(Executing);
 
-    // Output dataflow objects:
     FieldHandle ofield;
     MatrixHandle mapping;
     
-    // Entry point to algorithm
     if (!(algo_.run(field,ofield,mapping))) return;
 
-    // Send Data flow objects downstream
     send_output_handle("BoundaryField", ofield);
     send_output_handle("Mapping", mapping);
   }
