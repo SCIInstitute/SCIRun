@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
+#include <boost/assign/list_of.hpp>
 #include <Core/Logging/Logger.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -146,13 +147,23 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
+    typedef std::map<Name, Variable> Map;
+    AlgorithmData() {}
+    explicit AlgorithmData(const Map& m) : data_(m) {}
+
     Variable& operator[](const Name& name);
     const Variable& get(const Name& name) const;
+
   private:
     std::map<Name, Variable> data_;
   };
   
-  class SCISHARE AlgorithmInput : public AlgorithmData {};
+  class SCISHARE AlgorithmInput : public AlgorithmData 
+  {
+  public:
+    AlgorithmInput() {}
+    AlgorithmInput(const Map& m) : AlgorithmData(m) {}
+  };
   
   class SCISHARE AlgorithmOutput : public AlgorithmData {};
   
@@ -186,5 +197,7 @@ namespace Algorithms {
   };
 
 }}}
+
+#define make_input(list) SCIRun::Core::Algorithms::AlgorithmInput(boost::assign::map_list_of list)
 
 #endif

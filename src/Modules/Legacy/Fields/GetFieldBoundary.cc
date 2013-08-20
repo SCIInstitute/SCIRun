@@ -50,9 +50,11 @@ GetFieldBoundary::execute()
       !oport_cached("BoundaryField") || 
       !oport_cached("Mapping"))
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
+#endif
 
-    auto output = algo_->run_generic(make_input(field));
+    auto output = algo_->run_generic(make_input((Field, field)));
 
     FieldHandle ofield = output[BoundaryField];
     MatrixHandle mapping = output[Mapping];
