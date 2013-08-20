@@ -66,12 +66,15 @@ SET(Core_Datatypes_Legacy_Field_SRCS
   cd_templates.cc	    	
   cd_templates_fields_0.cc    	
   cd_templates_fields_1.cc    	
+  cd_templates_fields_1a.cc
   cd_templates_fields_2.cc    	
   cd_templates_fields_3.cc    	
   cd_templates_fields_3a.cc
   cd_templates_fields_4.cc    	
   cd_templates_fields_5.cc	
   cd_templates_fields_6.cc	
+  cd_templates_fields_6a.cc	
+  cd_templates_fields_6b.cc
   CurveMesh.cc
   Field.cc
   FieldInformation.cc
