@@ -50,7 +50,7 @@ class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
   //! Without mapping
   bool run(FieldHandle input, FieldHandle& output);
 
-  AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
+  AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 };
 
 }}}}

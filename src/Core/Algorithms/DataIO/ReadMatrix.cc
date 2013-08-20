@@ -94,7 +94,7 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
   THROW_ALGORITHM_INPUT_ERROR("Unknown matrix file format");
 }
 
-AlgorithmOutputHandle ReadMatrixAlgorithm::run_generic(AlgorithmInputHandle input) const
+AlgorithmOutput ReadMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   throw 2;
 }

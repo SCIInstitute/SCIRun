@@ -98,7 +98,7 @@ namespace Math {
 
     Outputs run(const Inputs& matrix, const Parameters& params) const;
 
-    AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 }}}}
 

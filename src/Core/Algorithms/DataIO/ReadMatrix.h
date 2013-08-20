@@ -50,7 +50,7 @@ namespace DataIO {
 
         Outputs run(const Parameters& filename) const;
       
-        AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
+        AlgorithmOutput run_generic(const AlgorithmInput& input) const;
       };
 
 }}}}

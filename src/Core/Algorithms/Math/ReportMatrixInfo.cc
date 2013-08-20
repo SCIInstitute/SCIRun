@@ -136,7 +136,7 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
     );
 }
 
-AlgorithmOutputHandle ReportMatrixInfoAlgorithm::run_generic(AlgorithmInputHandle input) const
+AlgorithmOutput ReportMatrixInfoAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   throw 2;
 }

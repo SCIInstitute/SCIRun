@@ -153,7 +153,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::run(const Inputs& in
   return update_input_attributes(input);
 }
 
-AlgorithmOutputHandle ReportFieldInfoAlgorithm::run_generic(AlgorithmInputHandle input) const
+AlgorithmOutput ReportFieldInfoAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   throw 2;
 }

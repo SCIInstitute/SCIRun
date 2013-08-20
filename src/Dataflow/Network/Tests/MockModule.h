@@ -66,6 +66,7 @@ namespace SCIRun {
           MOCK_METHOD1(connectExecuteBegins, boost::signals2::connection(const ExecuteBeginsSignalType::slot_type&));
           MOCK_METHOD1(connectExecuteEnds, boost::signals2::connection(const ExecuteEndsSignalType::slot_type&));
           MOCK_METHOD1(connectErrorListener, boost::signals2::connection(const ErrorSignalType::slot_type&));
+          MOCK_CONST_METHOD0(needToExecute, bool());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

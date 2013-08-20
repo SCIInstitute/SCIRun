@@ -465,7 +465,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   return (true);
 }
 
-AlgorithmOutputHandle GetFieldBoundaryAlgo::run_generic(AlgorithmInputHandle input) const
+AlgorithmOutput GetFieldBoundaryAlgo::run_generic(const AlgorithmInput& input) const
 {
   throw "not implemented";
 }

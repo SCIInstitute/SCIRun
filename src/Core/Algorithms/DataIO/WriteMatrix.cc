@@ -69,7 +69,7 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
     THROW_ALGORITHM_PROCESSING_ERROR("file failed to be written!");
 }
 
-AlgorithmOutputHandle WriteMatrixAlgorithm::run_generic(AlgorithmInputHandle input) const
+AlgorithmOutput WriteMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   throw 2;
 }

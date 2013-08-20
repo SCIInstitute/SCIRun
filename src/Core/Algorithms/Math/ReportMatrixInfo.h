@@ -47,7 +47,7 @@ namespace Math {
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
 
-    AlgorithmOutputHandle run_generic(AlgorithmInputHandle input) const;
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 
 }}}}
