@@ -102,10 +102,16 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
 
+    virtual bool needToExecute() const  
+    {
+      return true; //TODO
+    }
+
     template <class Type, size_t N>
     struct PortName
     {
       operator size_t() const { return N; }
+      operator std::string() const;
     };
 
     // Throws if input is not present or null.
@@ -148,6 +154,14 @@ namespace Networks {
 
     Core::Algorithms::AlgorithmHandle algo_;
     Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
+
+    enum State {
+      NeedData,
+      JustStarted,
+      Executing,
+      Completed
+    };
+    void update_state(State) { /*TODO*/ }
 
   private:
     template <class T>

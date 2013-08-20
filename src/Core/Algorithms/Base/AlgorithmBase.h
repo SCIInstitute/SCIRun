@@ -37,6 +37,7 @@
 #include <Core/Logging/Logger.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Algorithms/Base/share.h>
 
@@ -65,19 +66,26 @@ namespace Algorithms {
   {
   public:
     //TODO: expand this 
-    typedef boost::variant<int,double,std::string,bool> Value;
+    typedef boost::variant<
+      int,
+      double,
+      std::string,
+      bool     
+    > Value;
 
     Variable() {}
     Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
+    Variable(const Name& name, const Datatypes::DatatypeHandle& value) : name_(name), data_(value) {}
 
     Name name_;
     Value value_;
+    Datatypes::DatatypeHandle data_;
 
     int getInt() const;
     double getDouble() const;
     std::string getString() const;
     bool getBool() const;
-    //etc
+    Datatypes::DatatypeHandle getDatatype() const;
   };
   
   typedef Variable AlgorithmParameter;
@@ -147,7 +155,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    typedef std::map<Name, Variable> Map;
+    typedef std::map<Name, Datatypes::DatatypeHandle> Map;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -155,7 +163,7 @@ namespace Algorithms {
     const Variable& get(const Name& name) const;
 
   private:
-    std::map<Name, Variable> data_;
+    Map data_;
   };
   
   class SCISHARE AlgorithmInput : public AlgorithmData 
@@ -198,6 +206,8 @@ namespace Algorithms {
 
 }}}
 
-#define make_input(list) SCIRun::Core::Algorithms::AlgorithmInput(boost::assign::map_list_of list)
+#define make_input(list) SCIRun::Core::Algorithms::AlgorithmInput(SCIRun::Core::Algorithms::AlgorithmData::Map(boost::assign::map_list_of list))
+#define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
+#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)].getDatatype());
 
 #endif

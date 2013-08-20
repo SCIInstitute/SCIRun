@@ -28,6 +28,8 @@
 
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -43,21 +45,22 @@ GetFieldBoundary::GetFieldBoundary()
 void
 GetFieldBoundary::execute()
 {
-  FieldHandle field = getRequiredInput(Field);
+  FieldHandle field = getRequiredInput(InputField);
   
   // If parameters changed, do algorithm
-  if (inputs_changed_ || 
-      !oport_cached("BoundaryField") || 
-      !oport_cached("Mapping"))
+  /*
+  inputs_changed_ || 
+  !oport_cached("BoundaryField") || 
+  !oport_cached("Mapping")
+  */
+  if (needToExecute())
   {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
-#endif
 
-    auto output = algo_->run_generic(make_input((Field, field)));
+    auto output = algo_->run_generic(make_input((InputField, field)));
 
-    FieldHandle ofield = output[BoundaryField];
-    MatrixHandle mapping = output[Mapping];
+    FieldHandle ofield = get_output(output, BoundaryField, Field);
+    MatrixHandle mapping = get_output(output, Mapping, Matrix);
     
     sendOutput(BoundaryField, ofield);
     sendOutput(Mapping, mapping);

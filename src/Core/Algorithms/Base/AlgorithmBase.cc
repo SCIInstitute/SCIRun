@@ -33,6 +33,7 @@
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
 Name::Name(const std::string& name) : name_(name)
 {
@@ -68,6 +69,11 @@ bool AlgorithmParameter::getBool() const
 {
   const bool* v = boost::get<bool>(&value_);
   return v ? *v : (getInt() != 0);
+}
+
+DatatypeHandle AlgorithmParameter::getDatatype() const
+{
+  return data_;
 }
 
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
