@@ -30,6 +30,7 @@
 #define ALGORITHMS_BASE_ALGORITHMBASE_H
 
 #include <string>
+#include <set>
 #include <stdexcept>
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
@@ -64,6 +65,17 @@ namespace Algorithms {
   typedef Name AlgorithmInputName;
   typedef Name AlgorithmOutputName;
 
+  class SCISHARE AlgoOption 
+  {
+  public:
+    AlgoOption() {}
+    AlgoOption(const std::string& option, const std::set<std::string>& options) 
+      : option_(option), options_(options) {}
+
+    std::string              option_;
+    std::set<std::string> options_;
+  };
+
   class SCISHARE Variable
   {
   public:
@@ -72,7 +84,8 @@ namespace Algorithms {
       int,
       double,
       std::string,
-      bool     
+      bool,
+      AlgoOption
     > Value;
 
     Variable() {}
@@ -88,6 +101,7 @@ namespace Algorithms {
     std::string getString() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
+    AlgoOption getOption() const;
   };
   
   typedef Variable AlgorithmParameter;
@@ -149,13 +163,13 @@ namespace Algorithms {
     void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
 
-    bool set_option(const std::string& key, const std::string& value);
-    bool get_option(const std::string& key, std::string& value) const;
-    std::string get_option(const std::string& key) const;
+    bool set_option(const AlgorithmParameterName& key, const std::string& value);
+    bool get_option(const AlgorithmParameterName& key, std::string& value) const;
+    std::string get_option(const AlgorithmParameterName& key) const;
 
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
-    void add_option(const std::string& key, const std::string& defval, const std::string& options);
+    void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
   private:
     std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
   };
