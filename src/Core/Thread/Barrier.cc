@@ -30,7 +30,7 @@
 
 using namespace SCIRun::Core::Thread;
 
-Barrier::Barrier(const std::string& name, size_t numThreads) : name_(name), barrier_(numThreads)
+Barrier::Barrier(const std::string& name, unsigned int numThreads) : name_(name), barrier_(numThreads)
 {
 }
 
