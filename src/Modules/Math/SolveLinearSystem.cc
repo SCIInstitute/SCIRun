@@ -69,11 +69,21 @@ void SolveLinearSystemModule::execute()
   ostr << "Running algorithm Parallel CG Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
   remark(ostr.str());
 
+  //TODO: this is next for algo factory
   SolveLinearSystemAlgo algo;
+
+  
+  algo.setLogger(getLogger());
+  //TODO: need to set this in the factory as well!
+  algo.setUpdaterFunc(getUpdaterFunc());
+
+  // these stay here.
   algo.set(SolveLinearSystemAlgo::TargetError(), tolerance);
   algo.set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
+
+  //TODO: grab values from UI
+  algo.set_option("method", "cg");
+  algo.set_option("pre_conditioner", "jacobi");
 
   DenseColumnMatrixHandle solution;
 

@@ -149,6 +149,7 @@ namespace Algorithms {
     void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
 
+    bool set_option(const std::string& key, const std::string& value);
     bool get_option(const std::string& key, std::string& value) const;
     std::string get_option(const std::string& key) const;
 
