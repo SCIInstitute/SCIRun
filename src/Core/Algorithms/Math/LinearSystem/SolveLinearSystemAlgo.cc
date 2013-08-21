@@ -512,10 +512,10 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
     niter++;
     
     callback_step_cnt++;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (algo_->have_callbacks())
       {
         if (PLA.first())
@@ -530,8 +530,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
         max_iter = algo_->get_int("max_iterations");
         callback_step = algo_->get_int("callback_step");
       }
-#endif
     }
+#endif
     cnt++;
     if (cnt == 20) 
     {
@@ -863,10 +863,10 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
     niter++;
     
     callback_step_cnt++;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (algo_->have_callbacks())
       {
         if (PLA.first())
@@ -881,8 +881,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
         max_iter = algo_->get_int("max_iterations");
         callback_step = algo_->get_int("callback_step");
       }
-#endif
     }
+#endif
     ucnt++;
     if (ucnt == 20) 
     {
@@ -1025,10 +1025,10 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
     niter++;
     
     callback_step_cnt++;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (algo_->have_callbacks())
       {
         if (PLA.first())
@@ -1043,8 +1043,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
         max_iter = algo_->get_int("max_iterations");
         callback_step = algo_->get_int("callback_step");
       }
-#endif
     }
+#endif
     
     cnt++;
     if (cnt == 20) 
