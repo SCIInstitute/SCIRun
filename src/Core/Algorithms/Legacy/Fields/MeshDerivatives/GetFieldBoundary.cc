@@ -34,6 +34,8 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+
 #include <boost/unordered_map.hpp>
 
 using namespace SCIRun;
@@ -41,6 +43,10 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+
+AlgorithmInputName GetFieldBoundaryAlgo::InputField("InputField");
+AlgorithmOutputName GetFieldBoundaryAlgo::BoundaryField("BoundaryField");
+AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("MappingMatrix");
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
@@ -61,7 +67,7 @@ struct IndexHash {
 };
 
 bool 
-GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
+GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
@@ -467,5 +473,15 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 
 AlgorithmOutput GetFieldBoundaryAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw "not implemented";
+  auto field = input.get<Field>(InputField);
+
+  FieldHandle boundary;
+  MatrixHandle mapping;
+  if (!run(field, boundary, mapping))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[BoundaryField] = boundary;
+  output[MappingMatrix] = mapping;
+  return output;
 }

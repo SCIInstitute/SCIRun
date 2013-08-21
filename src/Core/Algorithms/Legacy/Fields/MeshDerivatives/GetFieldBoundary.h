@@ -42,11 +42,15 @@ namespace Fields {
 
 class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
 {
-  public:
+public:
   GetFieldBoundaryAlgo();
   
+  static AlgorithmInputName InputField;
+  static AlgorithmOutputName BoundaryField;
+  static AlgorithmOutputName MappingMatrix;
+
   //! With mapping
-  bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping);
+  bool run(FieldHandle input, FieldHandle& output, Datatypes::MatrixHandle& mapping) const;
   //! Without mapping
   bool run(FieldHandle input, FieldHandle& output);
 

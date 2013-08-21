@@ -61,6 +61,8 @@ namespace Algorithms {
   };
     
   typedef Name AlgorithmParameterName;
+  typedef Name AlgorithmInputName;
+  typedef Name AlgorithmOutputName;
 
   class SCISHARE Variable
   {
@@ -160,7 +162,13 @@ namespace Algorithms {
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
     Datatypes::DatatypeHandle& operator[](const Name& name);
-    //const Datatypes::DatatypeHandle& get(const Name& name) const;
+
+    template <typename T>
+    boost::shared_ptr<T> get(const Name& name) const
+    {
+      auto it = data_.find(name);
+      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second);
+    }
 
   private:
     Map data_;
