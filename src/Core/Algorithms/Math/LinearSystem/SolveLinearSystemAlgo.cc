@@ -340,7 +340,6 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 }
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // BICG Solver with simple preconditioner
 class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo 
@@ -384,9 +383,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (PLA.first()) 
     {
       algo_->error("Could not allocate enough memory for algorithm");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",0.0);
       algo_->set_scalar("current_error",0.0);
       algo_->set_int("iteration",niter);
+#endif
     }
     PLA.wait();
 
@@ -422,10 +423,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   {
     if (PLA.first())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",orig);
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
       if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
     }
     PLA.wait();
     return (true);
@@ -446,10 +449,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
       }
       PLA.wait();
       return (true);
@@ -464,9 +469,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
+#endif
       }
       PLA.wait();
       return (true);      
@@ -506,6 +513,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (algo_->have_callbacks())
       {
         if (PLA.first())
@@ -520,6 +528,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         max_iter = algo_->get_int("max_iterations");
         callback_step = algo_->get_int("callback_step");
       }
+#endif
     }
     cnt++;
     if (cnt == 20) 
@@ -531,18 +540,18 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
   }
   PLA.wait();
   
   return (true);
 }
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // BICG Solver with simple preconditioner
 
@@ -592,9 +601,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (PLA.first()) 
     {
       algo_->error("Could not allocate enough memory for algorithm");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",0.0);
       algo_->set_scalar("current_error",0.0);
       algo_->set_int("iteration",niter);
+#endif
     }
     PLA.wait();
 
@@ -604,7 +615,6 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   PLA.copy(X0,X);
   PLA.copy(X0,XMIN);
   
-  // Build a preconditioner
   // Build a preconditioner
   if (pre_conditioner_ == "jacobi")
   {
@@ -630,10 +640,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   {
     if (PLA.first())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",orig);
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
       if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
     }
     PLA.wait();
     return (true);
@@ -698,10 +710,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
       }
       PLA.wait();
       return (true);
@@ -775,9 +789,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         }
         if (PLA.first())
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
           algo_->set_scalar("original_error",orig);
           algo_->set_scalar("current_error",xmin);
           algo_->set_int("iteration",niter);
+#endif
         }
         PLA.wait();
         return (true);                
@@ -796,9 +812,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         }
         if (PLA.first())
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
           algo_->set_scalar("original_error",orig);
           algo_->set_scalar("current_error",xmin);
           algo_->set_int("iteration",niter);
+#endif
         }
         PLA.wait();
         return (true);       
@@ -824,9 +842,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         }
         if (PLA.first())
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
           algo_->set_scalar("original_error",orig);
           algo_->set_scalar("current_error",xmin);
           algo_->set_int("iteration",niter);
+#endif
         }
         PLA.wait();
         return (true);       
@@ -842,6 +862,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (algo_->have_callbacks())
       {
         if (PLA.first())
@@ -856,6 +877,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         max_iter = algo_->get_int("max_iterations");
         callback_step = algo_->get_int("callback_step");
       }
+#endif
     }
     ucnt++;
     if (ucnt == 20) 
@@ -867,21 +889,21 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
   }
   PLA.wait();
   
   return (true);
 }
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 //------------------------------------------------------------------
 // JACOBI Solver with simple preconditioner
-
 
 class SolveLinearSystemJACOBIAlgo : public SolveLinearSystemParallelAlgo 
 {
@@ -919,9 +941,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (PLA.first()) 
     {
       algo_->error("Could not allocate enough memory for algorithm");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",0.0);
       algo_->set_scalar("current_error",0.0);
       algo_->set_int("iteration",niter);
+#endif
     }
     PLA.wait();
 
@@ -950,10 +974,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   {
     if (PLA.first())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",orig);
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
       if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
     }
     PLA.wait();
     return (true);
@@ -970,10 +996,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
       }
       PLA.wait();
       algo_->update_progress(1);
@@ -994,6 +1022,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       if (algo_->have_callbacks())
       {
         if (PLA.first())
@@ -1008,6 +1037,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         max_iter = algo_->get_int("max_iterations");
         callback_step = algo_->get_int("callback_step");
       }
+#endif
     }
     
     cnt++;
@@ -1020,17 +1050,18 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
   }
   PLA.wait();
   
   algo_->update_progress(1);
   return (true);
 }
-#endif
 
 bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
                            DenseColumnMatrixHandle b,
