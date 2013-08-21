@@ -1478,7 +1478,7 @@ protected:
   inline void get_nodes_from_cell(ARRAY &array, INDEX idx) const
   {
     array.resize(6);
-    const int off = idx * 6;
+    const auto off = idx * 6;
     array[0] = static_cast<typename ARRAY::value_type>(cells_[off    ]);
     array[1] = static_cast<typename ARRAY::value_type>(cells_[off + 1]);
     array[2] = static_cast<typename ARRAY::value_type>(cells_[off + 2]);

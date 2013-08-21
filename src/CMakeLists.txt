@@ -102,6 +102,9 @@ INCLUDE(CheckCXXSourceCompiles)
 INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(ExternalProject)
 
+IF(WIN32)
+  ADD_DEFINITIONS("/wd4251 /wd4275") 
+ENDIF(WIN32)
 
 ########################################################################
 # Configure test support

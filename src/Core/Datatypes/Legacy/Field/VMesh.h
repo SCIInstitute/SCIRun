@@ -953,7 +953,7 @@ public:
     { return(get_volume(idx)); }
     
   //! Scaled inscribed to circumscribed ratio
-  virtual double inscribed_circumscribed_radius_metric(const Elem::index_type idx) const;
+  virtual double inscribed_circumscribed_radius_metric(Elem::index_type idx) const;
   
   
   //! TODO: These should go: we have get_weights and get_derivate_weights
