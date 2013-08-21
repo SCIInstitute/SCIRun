@@ -360,9 +360,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN; 
   ParallelLinearAlgebra::ParallelVector DIAG, R, R1, Z, Z1, P, P1;
 
-  double tolerance =     algo_->get_scalar("target_error");
-  int    max_iter =      algo_->get_int("max_iterations");
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
+#endif
   int    niter = 0;
   int    callback_step_cnt =0;
 
@@ -575,9 +577,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   ParallelLinearAlgebra::ParallelVector DIAG, R, V, VOLD, VV;
   ParallelLinearAlgebra::ParallelVector VOLDER, M, MOLD, MOLDER, XCG;
 
-  double tolerance =     algo_->get_scalar("target_error");
-  int    max_iter =      algo_->get_int("max_iterations");
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
+#endif
   int    niter = 0;
   int    callback_step_cnt =0;
 
@@ -923,9 +927,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN; 
   ParallelLinearAlgebra::ParallelVector DIAG,Z;
 
-  double tolerance =     algo_->get_scalar("target_error");
-  int    max_iter =      algo_->get_int("max_iterations");
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
+#endif
   int    niter = 0;
   int    callback_step_cnt =0;
 
