@@ -75,7 +75,8 @@ Module::Module(const ModuleLookupInfo& info,
   if (algoFactory)
   {
     algo_ = algoFactory->create(get_module_name(), getLogger());
-    root << log4cpp::Priority::INFO << "Module algorithm initialized: " << info.module_name_;
+    if (algo_)
+      root << log4cpp::Priority::INFO << "Module algorithm initialized: " << info.module_name_;
   }
 
 }
@@ -130,7 +131,7 @@ void Module::do_execute() throw()
   catch (Core::ExceptionBase& e)
   {
     //TODO: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (false)
+    //if (false)
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName();

@@ -39,6 +39,7 @@ using namespace SCIRun::Modules::Fields;
 GetFieldBoundary::GetFieldBoundary()
   : Module(ModuleLookupInfo("GetFieldBoundary", "NewField", "SCIRun"), false)
 {
+  INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(BoundaryField);
   INITIALIZE_PORT(Mapping);
 }
@@ -54,6 +55,7 @@ GetFieldBoundary::execute()
   !oport_cached("BoundaryField") || 
   !oport_cached("Mapping")
   */
+
   if (needToExecute())
   {
     update_state(Executing);
