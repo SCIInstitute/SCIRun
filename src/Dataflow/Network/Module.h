@@ -88,7 +88,7 @@ namespace Networks {
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
   public:
-    virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
+    virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log);
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const;
     virtual void error(const std::string& msg) const { errorSignal_(id_); getLogger()->error(msg); }
     virtual void warning(const std::string& msg) const { getLogger()->warning(msg); }

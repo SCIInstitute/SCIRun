@@ -60,6 +60,9 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
   algo.run(ofh, boundary, mapping);
 
   ASSERT_TRUE(boundary);
+
+  //TODO: need assertions on boundary field
+
   if (basis != -1)
   {
     ASSERT_TRUE(mapping);
@@ -126,13 +129,9 @@ const std::string matrixNodes =
 
 TEST(GetFieldBoundaryTest, LatVolBoundary)
 {
-
   runTest(0, 22, 6, matrixCells);
   runTest(-1, 0, 0);
   runTest(1, 24, 24, matrixNodes);
-
-
-  
   
   /*
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
@@ -142,4 +141,16 @@ TEST(GetFieldBoundaryTest, LatVolBoundary)
   EXPECT_EQ(sizex * sizey * sizez, info.numnodes_);
   EXPECT_EQ((sizex-1) * (sizey-1) * (sizez-1), info.numelements_);
   EXPECT_EQ("None (nodata basis)", info.dataLocation);*/
+}
+
+TEST(GetFieldBoundaryTest, CanLogErrorMessage)
+{
+  GetFieldBoundaryAlgo algo;
+
+  FieldHandle input, output;
+  MatrixHandle mapping;
+
+  EXPECT_FALSE(algo.run(input, output, mapping));
+
+  EXPECT_FALSE(algo.run(input, output));
 }

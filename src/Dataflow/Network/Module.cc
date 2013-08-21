@@ -303,3 +303,10 @@ void Module::setUiVisible(bool visible)
   if (uiToggleFunc_)
     uiToggleFunc_(visible);
 }
+
+void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
+{ 
+  log_ = log; 
+  if (algo_)
+    algo_->setLogger(log);
+}
