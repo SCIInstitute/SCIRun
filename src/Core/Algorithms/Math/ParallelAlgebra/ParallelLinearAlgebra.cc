@@ -182,8 +182,7 @@ void ParallelLinearAlgebra::mult(const ParallelVector& a, const ParallelVector& 
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-void ParallelLinearAlgebra::add(ParallelVector& a, ParallelVector& b, ParallelVector& r)
+void ParallelLinearAlgebra::add(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
   double* a_ptr = a.data_+start_; 
   double* b_ptr = b.data_+start_; 
@@ -218,7 +217,6 @@ void ParallelLinearAlgebra::add(ParallelVector& a, ParallelVector& b, ParallelVe
     *r_ptr = (*a_ptr)+(*b_ptr); r_ptr++; a_ptr++; b_ptr++;
   }
 }
-#endif
 
 void ParallelLinearAlgebra::sub(const ParallelVector& a, const ParallelVector& b, ParallelVector& r)
 { 
@@ -291,7 +289,6 @@ void ParallelLinearAlgebra::copy(const ParallelVector& a, ParallelVector& r)
   }
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::scale(double s, ParallelVector& a, ParallelVector& r)
 {
   double* a_ptr = a.data_+start_; 
@@ -374,7 +371,6 @@ void ParallelLinearAlgebra::threshold_invert(ParallelVector& a, ParallelVector& 
     r_ptr++; a_ptr++;
   }
 }
-#endif
 
 void ParallelLinearAlgebra::absthreshold_invert(const ParallelVector& a, ParallelVector& r,double threshold)
 {
@@ -463,7 +459,6 @@ double ParallelLinearAlgebra::dot(const ParallelVector& a, const ParallelVector&
   return(reduce_sum(val));
 }
  
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::zeros(ParallelVector& a)
 {
   double* a_ptr = a.data_+start_;
@@ -498,7 +493,6 @@ void ParallelLinearAlgebra::zeros(ParallelVector& a)
     (*a_ptr) = 0.0; a_ptr++;
   }
 }
-#endif
 
 void ParallelLinearAlgebra::ones(ParallelVector& a)
 {
@@ -588,8 +582,7 @@ double ParallelLinearAlgebra::max(const ParallelVector& a)
   return(reduce_max(m));
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-double ParallelLinearAlgebra::min(ParallelVector& a)
+double ParallelLinearAlgebra::min(const ParallelVector& a)
 {
   double m = DBL_MAX;
   double* a_ptr = a.data_+start_;
@@ -602,8 +595,6 @@ double ParallelLinearAlgebra::min(ParallelVector& a)
   
   return(reduce_min(m));
 }
-
-
 
 double ParallelLinearAlgebra::absmin(const ParallelVector& a)
 {
@@ -634,8 +625,6 @@ double ParallelLinearAlgebra::absmax(const ParallelVector& a)
   
   return(reduce_max(m));
 }
-#endif
-
 
 void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& b, ParallelVector& r)
 {
@@ -661,7 +650,6 @@ void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& 
   }    
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, ParallelVector& r)
 {
   wait();
@@ -670,8 +658,8 @@ void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, Par
   double* odata = r.data_;
   
   double* data = a.data_;
-  int* rows = a.rows_;
-  int* columns = a.columns_;  
+  auto rows = a.rows_;
+  auto columns = a.columns_;  
   size_t m = a.m_;
   
   for (size_t i=start_; i<end_; i++) odata[i] = 0.0;
@@ -679,9 +667,9 @@ void ParallelLinearAlgebra::mult_trans(ParallelMatrix& a, ParallelVector& b, Par
   {
     if (idata[j] == 0.0) continue;
     double xj = idata[j];
-    size_t row_idx = rows[j];
-    size_t next_idx = rows[j+1];
-    size_t i=row_idx;
+    auto row_idx = rows[j];
+    auto next_idx = rows[j+1];
+    auto i=row_idx;
     for (; i<next_idx && columns[i] < start_; i++);
     for (; i<next_idx && columns[i] < end_; i++)
       odata[columns[i]] += data[i]*xj;
@@ -693,8 +681,8 @@ void ParallelLinearAlgebra::diag(ParallelMatrix& a, ParallelVector& r)
   double* odata = r.data_;
   
   double* data = a.data_;
-  int* rows = a.rows_;
-  int* columns = a.columns_;
+  auto rows = a.rows_;
+  auto columns = a.columns_;
   
   for(size_t i=start_;i<end_;i++)
   {
@@ -709,7 +697,6 @@ void ParallelLinearAlgebra::diag(ParallelMatrix& a, ParallelVector& r)
     odata[i]=val;
   }    
 }
-#endif
 
 void ParallelLinearAlgebra::absdiag(const ParallelMatrix& a, ParallelVector& r)
 {
