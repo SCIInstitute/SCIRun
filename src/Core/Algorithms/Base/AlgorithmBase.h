@@ -148,8 +148,13 @@ namespace Algorithms {
     AlgorithmParameterList();
     void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
+
+    bool get_option(const std::string& key, std::string& value) const;
+    std::string get_option(const std::string& key) const;
+
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
+    void add_option(const std::string& key, const std::string& defval, const std::string& options);
   private:
     std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
   };
