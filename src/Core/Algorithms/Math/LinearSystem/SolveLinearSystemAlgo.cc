@@ -346,12 +346,12 @@ class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          std::vector<MatrixHandle>& matrix);
+                          SolverInputs& matrices);
 };
 
 bool
 SolveLinearSystemBICGAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 {
   // Algorithm
   
@@ -561,13 +561,13 @@ class SolveLinearSystemMINRESAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          std::vector<MatrixHandle>& matrix);
+                          SolverInputs& matrices);
 };
 
 
 bool
 SolveLinearSystemMINRESAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 {
   // Algorithm
   
@@ -913,13 +913,13 @@ class SolveLinearSystemJACOBIAlgo : public SolveLinearSystemParallelAlgo
 {
   public:
     virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          std::vector<MatrixHandle>& matrix);
+                          SolverInputs& matrices);
 };
 
 
 bool
 SolveLinearSystemJACOBIAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 {
   // Algorithm
   // Define matrices and vectors to be used in the algorithm
