@@ -44,12 +44,14 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
+AlgorithmParameterName SolveLinearSystemAlgo::MethodOption("Method");
+AlgorithmParameterName SolveLinearSystemAlgo::PreconditionerOption("Preconditioner");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
-  add_option("method","cg","jacobi|cg|bicg|minres");
-  add_option("pre_conditioner","jacobi","none|jacobi");
+  add_option(MethodOption,"cg","jacobi|cg|bicg|minres");
+  add_option(PreconditionerOption,"jacobi","none|jacobi");
   
   addParameter(TargetError(), 1e-6);
   addParameter(MaxIterations(), 300);
@@ -116,7 +118,7 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
   algo->set_handle("convergence", convergence);
 #endif
   
-  pre_conditioner_ = algo_->get_option("pre_conditioner");
+  pre_conditioner_ = algo_->get_option(SolveLinearSystemAlgo::PreconditionerOption);
 
   if(!start_parallel(matrices))
   {
@@ -1160,7 +1162,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
-  std::string method = get_option("method");
+  std::string method = get_option(SolveLinearSystemAlgo::MethodOption);
   
   DenseColumnMatrixHandle conv;
   if (method == "cg")

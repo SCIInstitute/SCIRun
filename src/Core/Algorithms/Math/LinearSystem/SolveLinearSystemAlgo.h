@@ -67,6 +67,8 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
     static AlgorithmParameterName TargetError() { return AlgorithmParameterName("target error"); }
     static AlgorithmParameterName MaxIterations() { return AlgorithmParameterName("max iterations"); }
     static AlgorithmParameterName BuildConvergence;
+    static AlgorithmParameterName MethodOption;
+    static AlgorithmParameterName PreconditionerOption;
 };
 
 
