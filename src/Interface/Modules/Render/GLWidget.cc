@@ -83,23 +83,17 @@ GLWidget::GLWidget(QtGLContext* context) :
   std::vector<std::tuple<std::string, Spire::Interface::SHADER_TYPES>> shaderFiles;
   shaderFiles.push_back(std::make_pair("UniformColor.vsh", Spire::Interface::VERTEX_SHADER));
   shaderFiles.push_back(std::make_pair("UniformColor.fsh", Spire::Interface::FRAGMENT_SHADER));
-  mGraphics->addPersistentShader(
-      "UniformColor", 
-      shaderFiles);
+  mGraphics->addPersistentShader("UniformColor", shaderFiles);
 
   shaderFiles.clear();
   shaderFiles.push_back(std::make_pair("ColorMap.vsh", Spire::Interface::VERTEX_SHADER));
   shaderFiles.push_back(std::make_pair("ColorMap.fsh", Spire::Interface::FRAGMENT_SHADER));
-  mGraphics->addPersistentShader(
-      "ColorMap", 
-      shaderFiles);
+  mGraphics->addPersistentShader("ColorMap", shaderFiles);
 
   shaderFiles.clear();
   shaderFiles.push_back(std::make_pair("DirPhong.vsh", Spire::Interface::VERTEX_SHADER));
   shaderFiles.push_back(std::make_pair("DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER));
-  mGraphics->addPersistentShader(
-      "DirPhong", 
-      shaderFiles);
+  mGraphics->addPersistentShader("DirPhong", shaderFiles);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
