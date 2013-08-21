@@ -54,6 +54,7 @@ namespace Networks {
   public:
     Module(const ModuleLookupInfo& info, 
       bool hasUi = true, 
+      Core::Algorithms::AlgorithmFactoryHandle algoFactory = defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       const std::string& version = "1.0");
     virtual ~Module();
@@ -155,6 +156,7 @@ namespace Networks {
 
     //TODO: yuck
     static ModuleStateFactoryHandle defaultStateFactory_;
+    static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
 
   protected:
     ModuleLookupInfo info_;

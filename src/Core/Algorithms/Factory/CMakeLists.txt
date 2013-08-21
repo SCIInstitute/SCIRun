@@ -42,6 +42,7 @@ ADD_LIBRARY(Algorithms_Factory
 
 TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Base
+  Core_Algorithms_Legacy_Fields
 )
 
 IF(BUILD_SHARED_LIBS)

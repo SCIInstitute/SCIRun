@@ -38,11 +38,13 @@
 #include <Dataflow/Network/ModuleFactory.h>
 
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-Network::Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory)
+Network::Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory)
   : moduleFactory_(moduleFactory), stateFactory_(stateFactory), errorCode_(0)
 {
   moduleFactory_->setStateFactory(stateFactory_);
+  moduleFactory_->setAlgorithmFactory(algoFactory);
 }
 
 Network::~Network()

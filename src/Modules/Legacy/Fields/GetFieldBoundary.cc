@@ -41,7 +41,6 @@ GetFieldBoundary::GetFieldBoundary()
 {
   INITIALIZE_PORT(BoundaryField);
   INITIALIZE_PORT(Mapping);
-  algo_ = algoFactory_->create(get_module_name(), getLogger());  
 }
 
 void

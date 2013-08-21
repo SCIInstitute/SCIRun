@@ -187,6 +187,11 @@ void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleS
   Module::defaultStateFactory_ = stateFactory_;
 }
 
+void HardCodedModuleFactory::setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory)
+{
+  Module::defaultAlgoFactory_ = algoFactory;
+}
+
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 {
   Module::Builder builder;

@@ -43,6 +43,7 @@ namespace SCIRun {
         virtual SCIRun::Dataflow::Networks::ModuleDescription lookupDescription(const SCIRun::Dataflow::Networks::ModuleLookupInfo& info);
         virtual SCIRun::Dataflow::Networks::ModuleHandle create(const SCIRun::Dataflow::Networks::ModuleDescription& info);
         virtual void setStateFactory(SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory);
+        virtual void setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory);
         virtual const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
       private:
         SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;

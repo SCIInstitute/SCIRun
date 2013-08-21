@@ -45,6 +45,7 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -56,6 +57,7 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
+  AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
   const std::string& version)
   : info_(info), has_ui_(hasUi), 
@@ -69,6 +71,13 @@ Module::Module(const ModuleLookupInfo& info,
   log4cpp::Category& root = log4cpp::Category::getRoot();
 
   root << log4cpp::Priority::INFO << "Module created: " << info.module_name_ << " with id: " << id_;
+
+  if (algoFactory)
+  {
+    algo_ = algoFactory->create(get_module_name(), getLogger());
+    root << log4cpp::Priority::INFO << "Module algorithm initialized: " << info.module_name_;
+  }
+
 }
 
 Module::~Module()
@@ -77,6 +86,7 @@ Module::~Module()
 }
 
 ModuleStateFactoryHandle Module::defaultStateFactory_;
+AlgorithmFactoryHandle Module::defaultAlgoFactory_;
 
 LoggerHandle Module::getLogger() const { return log_ ? log_ : defaultLogger_; }
 

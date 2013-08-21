@@ -39,15 +39,16 @@
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Core::Algorithms;
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, ModulePositionEditor* mpg)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), mpg_(mpg)
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, ModulePositionEditor* mpg)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), mpg_(mpg)
 {
 }
 
 NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
-  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_));
+  NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_));
 
   BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
   {

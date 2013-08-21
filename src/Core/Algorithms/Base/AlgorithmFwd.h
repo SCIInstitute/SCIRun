@@ -29,7 +29,7 @@
 #ifndef ALGORITHMS_BASE_ALGORITHMFWD_H
 #define ALGORITHMS_BASE_ALGORITHMFWD_H
 
-#include <stdexcept>
+#include <boost/shared_ptr.hpp>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {

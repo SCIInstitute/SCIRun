@@ -551,6 +551,7 @@ SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
 SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Field_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
 
 SET_PROPERTY(TARGET Dataflow_Network         PROPERTY FOLDER "Dataflow")
@@ -633,7 +634,7 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET Spire_external   PROPERTY FOLDER "Externals")
-#SET_PROPERTY(TARGET log4cpp PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET log4cpp PROPERTY FOLDER "Externals")
 
 
 IF(BUILD_WITH_PYTHON)

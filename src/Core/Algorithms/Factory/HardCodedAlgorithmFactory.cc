@@ -28,11 +28,16 @@
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
+
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
 AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name) const
 {
+  if (name == "GetFieldBoundary")
+    return AlgorithmHandle(new GetFieldBoundaryAlgo);
   return AlgorithmHandle();
 }

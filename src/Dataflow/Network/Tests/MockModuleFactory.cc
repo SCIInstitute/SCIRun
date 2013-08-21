@@ -36,6 +36,7 @@
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Core::Algorithms;
 using namespace boost::assign;
 using ::testing::Return;
 using ::testing::NiceMock;
@@ -94,6 +95,10 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
 void MockModuleFactory::setStateFactory(ModuleStateFactoryHandle stateFactory)
 {
   stateFactory_ = stateFactory;
+}
+
+void MockModuleFactory::setAlgorithmFactory(AlgorithmFactoryHandle algoFactory)
+{
 }
 
 const ModuleDescriptionMap& MockModuleFactory::getAllAvailableModuleDescriptions() const
