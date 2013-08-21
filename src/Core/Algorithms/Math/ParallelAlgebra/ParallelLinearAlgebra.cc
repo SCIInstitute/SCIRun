@@ -653,7 +653,7 @@ void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& 
     double sum = 0.0;
     index_type row_idx = rows[i];
     index_type next_idx = rows[i+1];
-    for(size_t j=row_idx;j<next_idx;j++)
+    for(index_type j=row_idx;j<next_idx;j++)
     {
 	    sum+=data[j]*idata[columns[j]];
     }
@@ -792,7 +792,7 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
   //! Below that parallelism is overhead
   if (nproc*50 > static_cast<int>(size))
   {
-    nproc = size / 50;
+    nproc = static_cast<int>(size) / 50;
   }
   if (nproc < 1) 
   {

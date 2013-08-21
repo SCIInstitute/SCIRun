@@ -161,7 +161,6 @@ public:
   // r = s*a + b;
   void scale_add(double s, const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   void add(const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
 
   void scale(double s, ParallelVector& a, ParallelVector& r);
@@ -177,7 +176,6 @@ public:
 
   void diag(ParallelMatrix& a, ParallelVector& r);
   void zeros(ParallelVector& r);
-#endif
   
   void absthreshold_invert(const ParallelVector& a, ParallelVector& r, double threshold);
     
