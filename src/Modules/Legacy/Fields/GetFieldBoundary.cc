@@ -27,7 +27,7 @@
 */
 
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 

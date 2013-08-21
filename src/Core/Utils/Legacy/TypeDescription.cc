@@ -230,7 +230,7 @@ TypeDescription::lookup_type(const std::string& t)
 
 std::string TypeDescription::cc_to_h(const std::string &dot_cc)
 {
-  const unsigned int len = dot_cc.length();
+  const size_t len = dot_cc.length();
   std::string dot_h;
   if (len > 3 && dot_cc.substr(len-3, len) == ".cc") {
     dot_h = dot_cc.substr(0, len-3) + ".h";

@@ -28,7 +28,7 @@
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;

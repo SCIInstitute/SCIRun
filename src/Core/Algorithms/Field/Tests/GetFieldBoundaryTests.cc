@@ -32,7 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
@@ -67,8 +67,8 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
     EXPECT_EQ(expectedMatrixColumns, mapping->ncols());
     std::ostringstream ostr;
     ostr << *mapping;
-    std::cout << "expected\n" << expectedMatrixString << std::endl;
-    std::cout << "actual\n" << ostr.str() << std::endl;
+    //std::cout << "expected\n" << expectedMatrixString << std::endl;
+    //std::cout << "actual\n" << ostr.str() << std::endl;
     EXPECT_EQ(expectedMatrixString, ostr.str());
   }
 }
