@@ -45,6 +45,7 @@ TARGET_LINK_LIBRARIES(Modules_Basic_Tests
   Modules_Basic
   Modules_Factory
   Dataflow_State
+  Algorithms_Factory
   gtest_main
   gtest
   gmock

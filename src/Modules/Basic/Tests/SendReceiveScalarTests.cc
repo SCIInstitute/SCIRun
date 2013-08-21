@@ -35,6 +35,7 @@
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 
@@ -44,6 +45,7 @@ using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Core::Algorithms;
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -57,7 +59,8 @@ TEST(BasicNetworkTest, SendAndReceiveScalarValueUsingManualExecution)
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  Network firstBasicNetwork(mf, sf);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  Network firstBasicNetwork(mf, sf, af);
 
   ModuleLookupInfo sendInfo;
   sendInfo.module_name_ = "SendScalar";

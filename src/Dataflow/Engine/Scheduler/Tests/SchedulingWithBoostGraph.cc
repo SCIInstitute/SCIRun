@@ -47,6 +47,7 @@
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Engine/Scheduler/BasicMultithreadedNetworkExecutor.h>
 #include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
 #include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
@@ -76,6 +77,7 @@ using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Dataflow::Engine;
+using namespace SCIRun::Core::Algorithms;
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -98,12 +100,14 @@ public:
   SchedulingWithBoostGraph() :
     mf(new HardCodedModuleFactory),
     sf(new SimpleMapModuleStateFactory),
-    matrixMathNetwork(mf, sf)
+    af(new HardCodedAlgorithmFactory),
+    matrixMathNetwork(mf, sf, af)
   {
   }
 protected:
   ModuleFactoryHandle mf;
   ModuleStateFactoryHandle sf;
+  AlgorithmFactoryHandle af;
   Network matrixMathNetwork;
   ModuleHandle receive, report;
   DenseMatrix expected;

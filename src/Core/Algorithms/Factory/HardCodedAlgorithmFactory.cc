@@ -30,14 +30,21 @@
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundary.h>
 
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
-AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name) const
+AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, LoggerHandle logger) const
 {
+  AlgorithmHandle h;
+
   if (name == "GetFieldBoundary")
-    return AlgorithmHandle(new GetFieldBoundaryAlgo);
-  return AlgorithmHandle();
+    h.reset(new GetFieldBoundaryAlgo);
+
+  if (h)
+    h->setLogger(logger);
+
+  return h;
 }

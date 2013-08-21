@@ -107,7 +107,7 @@ namespace Algorithms {
     Core::Logging::LoggerHandle defaultLogger_;
   };
 
-  //TODO
+  //TODO: integrate with logger type above
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:

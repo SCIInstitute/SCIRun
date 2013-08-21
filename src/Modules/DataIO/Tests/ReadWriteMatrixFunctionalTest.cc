@@ -40,6 +40,7 @@
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
@@ -57,7 +58,9 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
+
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -95,7 +98,8 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
 {
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  Network writeReadMatrixNetwork(mf, sf);
+  AlgorithmFactoryHandle af(new HardCodedAlgorithmFactory);
+  Network writeReadMatrixNetwork(mf, sf, af);
 
   ModuleHandle send = addModuleToNetwork(writeReadMatrixNetwork, "SendTestMatrix");
   ModuleHandle write = addModuleToNetwork(writeReadMatrixNetwork, "WriteMatrix");

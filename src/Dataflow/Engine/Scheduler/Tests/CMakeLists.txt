@@ -51,6 +51,7 @@ TARGET_LINK_LIBRARIES(Engine_Scheduler_Tests
   Dataflow_Network
   Dataflow_State
   Engine_Scheduler
+  Algorithms_Factory
   gtest_main
   gtest
   gmock
