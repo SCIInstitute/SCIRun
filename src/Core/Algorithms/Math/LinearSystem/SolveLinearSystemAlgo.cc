@@ -47,11 +47,10 @@ AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // For solver
   add_option("method","cg","jacobi|cg|bicg|minres");
   add_option("pre_conditioner","jacobi","none|jacobi");
-#endif
+  
   addParameter(TargetError(), 1e-6);
   addParameter(MaxIterations(), 300);
 
@@ -117,10 +116,7 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
   algo->set_handle("convergence", convergence);
 #endif
   
-  pre_conditioner_ = "jacobi";
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-    algo_->get_option("pre_conditioner");
-#endif
+  pre_conditioner_ = algo_->get_option("pre_conditioner");
 
   if(!start_parallel(matrices))
   {
@@ -1051,6 +1047,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
                            DenseColumnMatrixHandle& x,
                            DenseColumnMatrixHandle& convergence)
 {
+  ScopedAlgorithmStatusReporter ssr(this, "SolveLinearSystem");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "No matrix b is given");
 
@@ -1080,7 +1077,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     if (btmp.get_rep() == 0)
     {
       error("Matrix b is not a dense or column matrix");
-      algo_end(); return (false);
+      return (false);
     }
 #endif
   }
@@ -1126,10 +1123,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
-  std::string method = "cg";
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    get_option("method");
-#endif
+  std::string method = get_option("method");
   
   DenseColumnMatrixHandle conv;
   if (method == "cg")
@@ -1140,14 +1134,13 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
       BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Conjugate Gradient method failed"));
     }
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   else if (method == "bicg")
   {
     SolveLinearSystemBICGAlgo algo;
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
       error("BiConjugate Gradient method failed");
-      algo_end(); return (false);
+      return (false);
     }
   }
   else if (method == "jacobi")
@@ -1156,7 +1149,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
       error("Jacobi method failed");
-      algo_end(); return (false);
+      return (false);
     }
   }
   else if (method == "minres")
@@ -1165,10 +1158,9 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
       error("MINRES method failed");
-      algo_end(); return (false);
+      return (false);
     }
   }
-#endif
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (get_bool("build_convergence"))

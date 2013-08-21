@@ -132,7 +132,7 @@ namespace Algorithms {
     static UpdaterFunc defaultUpdaterFunc_;
   };
 
-  class SCISHARE ScopedAlgorithmStatusReporter
+  class SCISHARE ScopedAlgorithmStatusReporter : boost::noncopyable
   {
   public:
     ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag);

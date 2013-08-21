@@ -64,7 +64,6 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    //static AlgorithmParameterName TargetError1;
     static AlgorithmParameterName TargetError() { return AlgorithmParameterName("target error"); }
     static AlgorithmParameterName MaxIterations() { return AlgorithmParameterName("max iterations"); }
     static AlgorithmParameterName BuildConvergence;
