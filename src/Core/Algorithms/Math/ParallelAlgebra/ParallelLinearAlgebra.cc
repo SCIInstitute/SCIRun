@@ -651,8 +651,8 @@ void ParallelLinearAlgebra::mult(const ParallelMatrix& a, const ParallelVector& 
   for(size_t i=start_;i<end_;i++)
   {
     double sum = 0.0;
-    int row_idx=rows[i];
-    int next_idx=rows[i+1];
+    index_type row_idx = rows[i];
+    index_type next_idx = rows[i+1];
     for(size_t j=row_idx;j<next_idx;j++)
     {
 	    sum+=data[j]*idata[columns[j]];
