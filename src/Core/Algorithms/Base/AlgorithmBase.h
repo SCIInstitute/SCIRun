@@ -32,6 +32,7 @@
 #include <string>
 #include <set>
 #include <stdexcept>
+#include <iosfwd>
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/assign/list_of.hpp>
@@ -75,6 +76,9 @@ namespace Algorithms {
     std::string              option_;
     std::set<std::string> options_;
   };
+
+  SCISHARE bool operator==(const AlgoOption& lhs, const AlgoOption& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const AlgoOption& op);
 
   class SCISHARE Variable
   {

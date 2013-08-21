@@ -82,8 +82,8 @@ void SolveLinearSystemModule::execute()
   algo.set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
 
   //TODO: grab values from UI
-  algo.set_option("method", "cg");
-  algo.set_option("pre_conditioner", "jacobi");
+  algo.set_option(SolveLinearSystemAlgo::MethodOption, "cg");
+  algo.set_option(SolveLinearSystemAlgo::PreconditionerOption, "jacobi");
 
   DenseColumnMatrixHandle solution;
 

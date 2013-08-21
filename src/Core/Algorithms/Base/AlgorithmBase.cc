@@ -202,3 +202,13 @@ std::string AlgorithmParameterList::get_option(const AlgorithmParameterName& key
   get_option(key, value);
   return value;
 }
+
+bool SCIRun::Core::Algorithms::operator==(const AlgoOption& lhs, const AlgoOption& rhs)
+{
+  return lhs.option_ == rhs.option_ && lhs.options_ == rhs.options_;
+}
+
+std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const AlgoOption& op)
+{
+  return out << op.option_;
+}
