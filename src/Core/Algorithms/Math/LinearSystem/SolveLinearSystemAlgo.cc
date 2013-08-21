@@ -369,10 +369,10 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
   int    callback_step_cnt =0;
 
   // Create matrices and vectors that we need for this algorithm
-  if ( !PLA.add_matrix(matrix[0],A) ||
-       !PLA.add_vector(matrix[1],B) ||
-       !PLA.add_vector(matrix[2],X0) ||
-       !PLA.add_vector(matrix[3],XMIN) ||
+  if ( !PLA.add_matrix(matrices.A,A) ||
+       !PLA.add_vector(matrices.b,B) ||
+       !PLA.add_vector(matrices.x0,X0) ||
+       !PLA.add_vector(matrices.x,XMIN) ||
        !PLA.new_vector(X) ||
        !PLA.new_vector(DIAG) ||
        !PLA.new_vector(R) ||
@@ -507,7 +507,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
     error = PLA.norm(R)/bnorm;
     
     if (error < xmin) { PLA.copy(X,XMIN); xmin = error; }
-    if (PLA.first()) convergence_[niter] = xmin;
+    if (PLA.first()) (*convergence_)[niter] = xmin;
     
     niter++;
     
@@ -586,10 +586,10 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
   int    callback_step_cnt =0;
 
   // Create matrices and vectors that we need for this algorithm
-  if ( !PLA.add_matrix(matrix[0],A) ||
-       !PLA.add_vector(matrix[1],B) ||
-       !PLA.add_vector(matrix[2],X0) ||
-       !PLA.add_vector(matrix[3],XMIN) ||
+  if ( !PLA.add_matrix(matrices.A,A) ||
+       !PLA.add_vector(matrices.b,B) ||
+       !PLA.add_vector(matrices.x0,X0) ||
+       !PLA.add_vector(matrices.x,XMIN) ||
        !PLA.new_vector(X) ||
        !PLA.new_vector(R) ||
        !PLA.new_vector(DIAG) ||
@@ -697,8 +697,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
   
   PLA.scale_add(snprod*(sn/cs),M,X,XCG);
 
-  error = Abs(snprod);  
-  double errorcg = error/(Abs(cs)*bnorm);
+  error = std::fabs(snprod);  
+  double errorcg = error/(std::fabs(cs)*bnorm);
   
   int cnt = 0;
   int ucnt = 0;
@@ -858,7 +858,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
     }
     
     if (error < xmin) { PLA.copy(X,XMIN); xmin = error; }
-    if (PLA.first()) convergence_[niter] = xmin;
+    if (PLA.first()) (*convergence_)[niter] = xmin;
     
     niter++;
     
@@ -936,10 +936,10 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
   int    callback_step_cnt =0;
 
   // Create matrices and vectors that we need for this algorithm
-  if ( !PLA.add_matrix(matrix[0],A) ||
-       !PLA.add_vector(matrix[1],B) ||
-       !PLA.add_vector(matrix[2],X0) ||
-       !PLA.add_vector(matrix[3],XMIN) ||
+  if ( !PLA.add_matrix(matrices.A,A) ||
+       !PLA.add_vector(matrices.b,B) ||
+       !PLA.add_vector(matrices.x0,X0) ||
+       !PLA.add_vector(matrices.x,XMIN) ||
        !PLA.new_vector(X) ||
        !PLA.new_vector(DIAG) ||
        !PLA.new_vector(Z))
@@ -1020,7 +1020,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
     PLA.sub(Z,B,Z);
     error = PLA.norm(Z) / bnorm;
     if (error < xmin) { PLA.copy(X,XMIN); xmin = error; }
-    if (PLA.first()) convergence_[niter] = xmin;
+    if (PLA.first()) (*convergence_)[niter] = xmin;
     
     niter++;
     
