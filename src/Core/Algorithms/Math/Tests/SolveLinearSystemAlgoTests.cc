@@ -49,7 +49,7 @@ using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
 
-void CanSolveDarrellWithMethod(const std::string& method)
+void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
 {
   auto Afile = TestResources::rootDir() / "CGDarrell" / "A.mat";
   auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
@@ -97,21 +97,15 @@ void CanSolveDarrellWithMethod(const std::string& method)
   EXPECT_EQ(428931, solution->nrows());
   EXPECT_EQ(1, solution->ncols());
 
-  auto solutionFile = TestResources::rootDir() / "CGDarrell" / "scirun4solution.txt";
-  auto scirun4solution = matrix_cast::as_dense(reader.run(solutionFile.string()));
+  auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + method + ".mat");
+  auto scirun4solution = reader.run(solutionFile.string());
   ASSERT_TRUE(scirun4solution);
   DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
-  double solutionError;
-  //TODO: investigate this significant difference
-#ifdef WIN32
-  solutionError = 0.15;
-#else
-  solutionError = 0.23;
-#endif
+
   EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, solutionError);
 
   WriteMatrixAlgorithm writer;
-  auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / "portedSolution.txt";
+  auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / ("portedSolution_" + method + ".txt");
   writer.run(solution, portedSolutionFile.string());
 
   auto diff = *expected - *solution;
@@ -119,7 +113,35 @@ void CanSolveDarrellWithMethod(const std::string& method)
   std::cout << "max diff is: " << maxDiff << std::endl;
 }
 
-TEST(SolveLinearSystemTests, CanSolveDarrell)
+TEST(SolveLinearSystemTests, CanSolveDarrell_CG)
 {
-  CanSolveDarrellWithMethod("cg");
+  double solutionError;
+  //TODO: investigate this significant difference
+#ifdef WIN32
+  solutionError = 0.15;
+#else
+  solutionError = 0.23;
+#endif
+  CanSolveDarrellWithMethod("cg", solutionError);
 }
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_BICG)
+{
+  double solutionError = 0.001;
+  CanSolveDarrellWithMethod("bicg", solutionError);
+}
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_Jacobi)
+{
+  //TODO: doesn't converge for this system. Problem?
+  double solutionError = 105;
+  CanSolveDarrellWithMethod("jacobi", solutionError);
+}
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_MINRES)
+{
+  //TODO: converges but not as accurate.
+  double solutionError = 2.4;
+  CanSolveDarrellWithMethod("minres", solutionError);
+}
+
