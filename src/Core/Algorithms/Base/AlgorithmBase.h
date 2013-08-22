@@ -73,7 +73,7 @@ namespace Algorithms {
     AlgoOption(const std::string& option, const std::set<std::string>& options) 
       : option_(option), options_(options) {}
 
-    std::string              option_;
+    std::string option_;
     std::set<std::string> options_;
   };
 
