@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
+#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
 
@@ -48,6 +48,8 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
   connect(targetErrorLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushParametersToState()));
   connect(maxIterationsSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(pushParametersToState()));
+  connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
+  connect(preconditionerComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
 }
 
 void SolveLinearSystemDialog::pushParametersToState()
@@ -56,23 +58,26 @@ void SolveLinearSystemDialog::pushParametersToState()
   {
     //TODO: need pattern for this, to avoid silly recursion of push/pull.
     int max = maxIterationsSpinBox_->value();
-    if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
-      state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, max);
+    if (max != state_->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt())
+      state_->setValue(SolveLinearSystemAlgo::MaxIterations(), max);
 
     double error = targetErrorLineEdit_->text().toDouble();
-    if (error != state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble())
+    if (error != state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble())
     {
-      state_->setValue(SolveLinearSystemAlgorithm::Tolerance, error);
+      state_->setValue(SolveLinearSystemAlgo::TargetError(), error);
     }
+
+    QString method = methodComboBox_->currentText();
+    std::cout << "METHOD SELECTED: " << method.toStdString() << std::endl;
   }
 }
 
 void SolveLinearSystemDialog::pull()
 {
   Pulling p(this);
-  auto iterations = state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
+  auto iterations = state_->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
   
-  auto tolerance = state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
+  auto tolerance = state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
   maxIterationsSpinBox_->setValue(iterations);
   targetErrorLineEdit_->setText(QString::number(tolerance));
 }

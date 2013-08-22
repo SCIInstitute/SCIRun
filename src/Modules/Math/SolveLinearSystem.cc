@@ -30,7 +30,6 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
-#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -62,12 +61,8 @@ void SolveLinearSystemModule::execute()
   if (!rhsCol)
     rhsCol = matrix_convert::to_column(rhs);
 
-  auto tolerance = get_state()->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
-  auto maxIterations = get_state()->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
-
-  std::ostringstream ostr;
-  ostr << "Running algorithm Parallel CG Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
-  remark(ostr.str());
+  auto tolerance = get_state()->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
+  auto maxIterations = get_state()->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
 
   //TODO: this is next for algo factory
   SolveLinearSystemAlgo algo;
@@ -82,8 +77,14 @@ void SolveLinearSystemModule::execute()
   algo.set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
 
   //TODO: grab values from UI
-  algo.set_option(SolveLinearSystemAlgo::MethodOption(), "cg");
-  algo.set_option(SolveLinearSystemAlgo::PreconditionerOption, "jacobi");
+  auto method = get_state()->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
+  auto precond = get_state()->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
+  algo.set_option(SolveLinearSystemAlgo::MethodOption(), method);
+  algo.set_option(SolveLinearSystemAlgo::PreconditionerOption, precond);
+
+  std::ostringstream ostr;
+  ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
+  remark(ostr.str());
 
   DenseColumnMatrixHandle solution;
 
