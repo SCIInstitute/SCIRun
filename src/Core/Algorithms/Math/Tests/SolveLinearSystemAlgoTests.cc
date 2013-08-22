@@ -51,8 +51,8 @@ using namespace ::testing;
 
 TEST(SolveLinearSystemTests, CanSolveDarrell)
 {
-  auto Afile = TestResources::rootDir() / "CGDarrell" / "A_txt.mat";
-  auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS_text.mat";
+  auto Afile = TestResources::rootDir() / "CGDarrell" / "A.mat";
+  auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
   if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
   {
     FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
