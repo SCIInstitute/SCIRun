@@ -49,14 +49,14 @@ using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
 
-TEST(SolveLinearSystemTests, CanSolveDarrell)
+void CanSolveDarrellWithMethod(const std::string& method)
 {
   auto Afile = TestResources::rootDir() / "CGDarrell" / "A.mat";
   auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
   if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
   {
     FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
-          << "Once that issue is done however, this will be a user setup error." << std::endl;
+      << "Once that issue is done however, this will be a user setup error." << std::endl;
     return;
   }
 
@@ -85,6 +85,7 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   SolveLinearSystemAlgo algo;
   algo.set(SolveLinearSystemAlgo::MaxIterations(), 500);
   algo.set(SolveLinearSystemAlgo::TargetError(), 7e-4);
+  algo.set_option(SolveLinearSystemAlgo::MethodOption(), method);
   algo.setUpdaterFunc([](double x) {});
 
   DenseColumnMatrixHandle solution;
@@ -116,4 +117,9 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   auto diff = *expected - *solution;
   auto maxDiff = diff.maxCoeff();
   std::cout << "max diff is: " << maxDiff << std::endl;
+}
+
+TEST(SolveLinearSystemTests, CanSolveDarrell)
+{
+  CanSolveDarrellWithMethod("cg");
 }

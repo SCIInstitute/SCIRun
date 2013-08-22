@@ -44,13 +44,12 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
-AlgorithmParameterName SolveLinearSystemAlgo::MethodOption("Method");
 AlgorithmParameterName SolveLinearSystemAlgo::PreconditionerOption("Preconditioner");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
-  add_option(MethodOption,"cg","jacobi|cg|bicg|minres");
+  add_option(MethodOption(),"cg","jacobi|cg|bicg|minres");
   add_option(PreconditionerOption,"jacobi","none|jacobi");
   
   addParameter(TargetError(), 1e-6);
@@ -1162,8 +1161,10 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
-  std::string method = get_option(SolveLinearSystemAlgo::MethodOption);
+  std::string method = get_option(SolveLinearSystemAlgo::MethodOption());
   
+  //std::cout << "____________METHOD = " << method << std::endl;
+
   DenseColumnMatrixHandle conv;
   if (method == "cg")
   {
@@ -1178,8 +1179,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     SolveLinearSystemBICGAlgo algo;
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
-      error("BiConjugate Gradient method failed");
-      return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("BiConjugate Gradient method failed"));
     }
   }
   else if (method == "jacobi")
@@ -1187,8 +1187,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     SolveLinearSystemJACOBIAlgo algo;
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
-      error("Jacobi method failed");
-      return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Jacobi method failed"));
     }
   }
   else if (method == "minres")
@@ -1196,10 +1195,11 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     SolveLinearSystemMINRESAlgo algo;
     if(!(algo.run(this,A,b,x0,x,conv)))
     {
-      error("MINRES method failed");
-      return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("MINRES method failed"));
     }
   }
+  else
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Unknown solver method"));
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (get_bool("build_convergence"))
