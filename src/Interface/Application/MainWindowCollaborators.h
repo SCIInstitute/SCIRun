@@ -29,7 +29,7 @@
 #ifndef INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 #define INTERFACE_APPLICATION_MAINWINDOWCOLLABORATORS_H
 
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditor.h>  //TODO
 
 class QTextEdit;

@@ -26,20 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Core/Logging/LoggerInterface.h>
-#include <Core/Logging/ScopedTimeRemarker.h>
+#ifndef CORE_LOGGING_DIRECTLOGGER_H
+#define CORE_LOGGING_DIRECTLOGGER_H 
 
-using namespace SCIRun::Core::Logging;
+#include <Core/Logging/share.h>
 
-LoggerInterface::~LoggerInterface() {}
-
-ScopedTimeRemarker::ScopedTimeRemarker(LoggerInterface* log, const std::string& label) : log_(log), label_(label) 
-{}
-
-ScopedTimeRemarker::~ScopedTimeRemarker()
+namespace SCIRun 
 {
-  std::ostringstream perf;
-  perf << label_ <<  " took " << timer_.elapsed() << " seconds." << std::endl;
-  log_->remark(perf.str());
+  namespace Core
+  {
+    namespace Logging
+    {
+    }
+  }
 }
+
+
+#endif

@@ -30,7 +30,7 @@
 #ifndef CORE_LOGGING_CONSOLELOGGER_H
 #define CORE_LOGGING_CONSOLELOGGER_H 
 
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/share.h>
 
 namespace SCIRun 

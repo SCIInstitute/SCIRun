@@ -36,7 +36,7 @@
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/assign/list_of.hpp>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>

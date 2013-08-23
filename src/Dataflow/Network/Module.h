@@ -34,7 +34,7 @@
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <vector>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
