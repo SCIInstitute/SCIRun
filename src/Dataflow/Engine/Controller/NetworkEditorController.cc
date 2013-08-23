@@ -343,7 +343,7 @@ void NetworkEditorController::configureLoggingLibrary()
   appender2->setLayout(layout2);
 
   log4cpp::Category& root = log4cpp::Category::getRoot();
-  //root.setPriority(log4cpp::Priority::WARN);
+  //root.setPriority(log4cpp::Priority::DEBUG);
   root.addAppender(appender1);
   root.addAppender(appender2);
 }

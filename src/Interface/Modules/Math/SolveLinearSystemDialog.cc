@@ -31,6 +31,10 @@
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
 
+#include <log4cpp/Category.hh>
+#include <log4cpp/CategoryStream.hh>
+#include <log4cpp/Priority.hh>
+
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
@@ -43,6 +47,13 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
+  // set GUIVar defaults
+  targetErrorLineEdit_->setText("0.00001");
+  methodComboBox_->setCurrentIndex(0);
+  preconditionerComboBox_->setCurrentIndex(0);
+  maxIterationsSpinBox_->setValue(500);
+  // end defaults
+
   //TODO: clean these up...still getting circles of push/pull
   //TODO: need this connection ???
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
@@ -67,8 +78,40 @@ void SolveLinearSystemDialog::pushParametersToState()
       state_->setValue(SolveLinearSystemAlgo::TargetError(), error);
     }
 
-    QString method = methodComboBox_->currentText();
-    std::cout << "METHOD SELECTED: " << method.toStdString() << std::endl;
+    {
+      QString method = methodComboBox_->currentText();
+      log4cpp::Category::getRoot() << log4cpp::Priority::DEBUG << "GUI: METHOD SELECTED: " << method.toStdString();
+
+      std::string methodOption;
+      if (method == "Conjugate Gradient (SCI)")
+        methodOption = "cg";
+      else if (method == "BiConjugate Gradient (SCI)")
+        methodOption = "bicg";
+      else if (method == "Jacobi (SCI)")
+        methodOption = "jacobi";
+      else if (method == "MINRES (SCI)")
+        methodOption = "minres";
+
+      if (methodOption != state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString())
+      {
+        state_->setValue(SolveLinearSystemAlgo::MethodOption(),  methodOption);
+      }
+    }
+
+    {
+      QString precond = preconditionerComboBox_->currentText();
+      //std::cout << "GUI: precond SELECTED: " << precond.toStdString() << std::endl;
+      std::string precondOption;
+      if (precond == "Jacobi")
+        precondOption = "jacobi";
+      else 
+        precondOption = "None";
+
+      if (precondOption != state_->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString())
+      {
+        state_->setValue(SolveLinearSystemAlgo::PreconditionerOption,  precondOption);
+      }
+    }
   }
 }
 
