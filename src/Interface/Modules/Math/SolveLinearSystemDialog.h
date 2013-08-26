@@ -38,10 +38,7 @@
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
 class SCISHARE SolveLinearSystemDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::SolveLinearSystem
 {
 	Q_OBJECT
@@ -54,6 +51,8 @@ public:
 
 private Q_SLOTS:
   void pushParametersToState();
+private:
+  boost::shared_ptr<class SolveLinearSystemDialogImpl> impl_;
 };
 
 }

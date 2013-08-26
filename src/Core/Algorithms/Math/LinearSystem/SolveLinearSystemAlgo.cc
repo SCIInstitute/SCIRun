@@ -401,7 +401,6 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
   PLA.copy(X0,XMIN);
   
   // Build a preconditioner
-  // Build a preconditioner
   if (pre_conditioner_ == "jacobi")
   {
     PLA.absdiag(A,DIAG);
@@ -1163,7 +1162,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   
   std::string method = get_option(SolveLinearSystemAlgo::MethodOption());
   
-  //std::cout << "____________METHOD = " << method << std::endl;
+  //std::cout << "ALGO: METHOD = " << method << std::endl;
 
   DenseColumnMatrixHandle conv;
   if (method == "cg")

@@ -47,6 +47,8 @@ namespace Math {
     INPUT_PORT(0, Matrix, Matrix);
     INPUT_PORT(1, RHS, Matrix);
     OUTPUT_PORT(0, Solution, Matrix);
+  private:
+    void setDefaults();
   };
 
   struct SCISHARE LinearAlgebraError : virtual Core::ExceptionBase {};

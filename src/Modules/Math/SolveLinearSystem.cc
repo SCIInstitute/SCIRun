@@ -43,7 +43,19 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) {}
+SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) 
+{
+  setDefaults();
+}
+
+void SolveLinearSystemModule::setDefaults()
+{
+  auto state = get_state();
+  state->setValue(SolveLinearSystemAlgo::TargetError(), 0.00001);
+  state->setValue(SolveLinearSystemAlgo::MaxIterations(), 500);
+  state->setValue(SolveLinearSystemAlgo::MethodOption(), std::string("cg"));
+  state->setValue(SolveLinearSystemAlgo::PreconditionerOption, std::string("jacobi"));
+}
 
 void SolveLinearSystemModule::execute()
 {

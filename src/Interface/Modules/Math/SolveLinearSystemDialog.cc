@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
+#include <boost/bimap.hpp>
 
 #include <log4cpp/Category.hh>
 #include <log4cpp/CategoryStream.hh>
@@ -39,20 +40,30 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
 
+namespace SCIRun {
+  namespace Gui {
+    class SolveLinearSystemDialogImpl
+    {
+    public:
+      SolveLinearSystemDialogImpl()
+      {
+        typedef boost::bimap<std::string, std::string>::value_type strPair;
+        solverNameLookup_.insert(strPair("Conjugate Gradient (SCI)", "cg"));
+        solverNameLookup_.insert(strPair("BiConjugate Gradient (SCI)", "bicg"));
+        solverNameLookup_.insert(strPair("Jacobi (SCI)", "jacobi"));
+        solverNameLookup_.insert(strPair("MINRES (SCI)", "minres"));
+      }
+      boost::bimap<std::string, std::string> solverNameLookup_;
+    };
+  }}
+
 SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent), impl_(new SolveLinearSystemDialogImpl)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
-  // set GUIVar defaults
-  targetErrorLineEdit_->setText("0.00001");
-  methodComboBox_->setCurrentIndex(0);
-  preconditionerComboBox_->setCurrentIndex(0);
-  maxIterationsSpinBox_->setValue(500);
-  // end defaults
 
   //TODO: clean these up...still getting circles of push/pull
   //TODO: need this connection ???
@@ -79,18 +90,10 @@ void SolveLinearSystemDialog::pushParametersToState()
     }
 
     {
-      QString method = methodComboBox_->currentText();
-      log4cpp::Category::getRoot() << log4cpp::Priority::DEBUG << "GUI: METHOD SELECTED: " << method.toStdString();
+      auto method = methodComboBox_->currentText().toStdString();
+      log4cpp::Category::getRoot() << log4cpp::Priority::DEBUG << "GUI: METHOD SELECTED: " << method;
 
-      std::string methodOption;
-      if (method == "Conjugate Gradient (SCI)")
-        methodOption = "cg";
-      else if (method == "BiConjugate Gradient (SCI)")
-        methodOption = "bicg";
-      else if (method == "Jacobi (SCI)")
-        methodOption = "jacobi";
-      else if (method == "MINRES (SCI)")
-        methodOption = "minres";
+      std::string methodOption = impl_->solverNameLookup_.left.at(method);
 
       if (methodOption != state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString())
       {
@@ -100,7 +103,6 @@ void SolveLinearSystemDialog::pushParametersToState()
 
     {
       QString precond = preconditionerComboBox_->currentText();
-      //std::cout << "GUI: precond SELECTED: " << precond.toStdString() << std::endl;
       std::string precondOption;
       if (precond == "Jacobi")
         precondOption = "jacobi";
@@ -123,5 +125,15 @@ void SolveLinearSystemDialog::pull()
   auto tolerance = state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
   maxIterationsSpinBox_->setValue(iterations);
   targetErrorLineEdit_->setText(QString::number(tolerance));
+
+  auto method = state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
+  
+  auto it = impl_->solverNameLookup_.right.find(method);
+  if (it != impl_->solverNameLookup_.right.end())
+    methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
+  
+
+  auto precond = state_->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
+  preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
 }
 
