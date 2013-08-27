@@ -213,3 +213,16 @@ std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Algo
 {
   return out << op.option_;
 }
+
+AlgoInputBuilder::AlgoInputBuilder() {}
+
+AlgoInputBuilder& AlgoInputBuilder::operator()(const std::string& name, DatatypeHandle d)
+{
+  map_[Name(name)] = d;
+  return *this;
+}
+
+AlgorithmInput AlgoInputBuilder::build() const
+{
+  return AlgorithmInput(map_);
+}

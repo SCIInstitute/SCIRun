@@ -35,7 +35,7 @@
 #include <iosfwd>
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
-#include <boost/assign/list_of.hpp>
+#include <boost/noncopyable.hpp>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
@@ -205,6 +205,16 @@ namespace Algorithms {
     AlgorithmInput(const Map& m) : AlgorithmData(m) {}
   };
   
+  class SCISHARE AlgoInputBuilder
+  {
+  public:
+    AlgoInputBuilder();
+    AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgorithmInput build() const;
+  private:
+    AlgorithmData::Map map_;
+  };
+
   class SCISHARE AlgorithmOutput : public AlgorithmData {};
   
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
@@ -246,7 +256,7 @@ namespace Algorithms {
 
 }}}
 
-#define make_input(list) SCIRun::Core::Algorithms::AlgorithmInput(SCIRun::Core::Algorithms::AlgorithmData::Map(boost::assign::map_list_of list))
+#define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() ## list ## .build()
 #define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
 #define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
 

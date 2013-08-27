@@ -97,7 +97,8 @@ void SolveLinearSystemModule::execute()
     {
       ScopedTimeRemarker perf(this, "Linear solver");
       remark("Using preconditioner: " + precond);
-      auto output = algo_->run_generic(make_input((LHS, A)(RHS, rhsCol)));
+
+      auto output = algo_->run_generic(AlgoInputBuilder()(LHS, A)(RHS, rhsCol).build());
       solution = get_output(output, Solution, Matrix);
     }
 
