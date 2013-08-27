@@ -96,7 +96,7 @@ namespace Networks {
     virtual void status(const std::string& msg) const { getLogger()->status(msg); }
 
     virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
-    virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) { updaterFunc_ = func; }
+    virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func);
     virtual void setUiToggleFunc(UiToggleFunc func) { uiToggleFunc_ = func; }
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);

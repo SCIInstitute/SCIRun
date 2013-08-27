@@ -310,3 +310,10 @@ void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
   if (algo_)
     algo_->setLogger(log);
 }
+
+void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func)
+{ 
+  updaterFunc_ = func;
+  if (algo_)
+    algo_->setUpdaterFunc(func);
+}
