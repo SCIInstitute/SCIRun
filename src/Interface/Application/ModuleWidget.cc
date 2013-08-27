@@ -332,7 +332,6 @@ void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)
   {
-    //std::cout << "background-color: " << color.toStdString() << std::endl;
     setStyleSheet("background-color: " + color);
   }
 }

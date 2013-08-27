@@ -163,7 +163,8 @@ DatatypeHandle& AlgorithmData::operator[](const Name& name)
 void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
 {
   std::set<std::string> opts;
-  boost::split(opts, boost::to_lower_copy(options), boost::is_any_of("|"));
+  auto lower = boost::to_lower_copy(options);
+  boost::split(opts, lower, boost::is_any_of("|"));
   parameters_[key] = AlgorithmParameter(key, AlgoOption(defval, opts));
 }
 
