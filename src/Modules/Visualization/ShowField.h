@@ -58,6 +58,7 @@ namespace Visualization {
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
 
   private:
+    void setDefaults();
 
     /// Constructs a geometry object (essentially a spire object) from the given 
     /// field data.

@@ -46,8 +46,20 @@ using namespace SCIRun;
 ShowFieldModule::ShowFieldModule() : 
     Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun"))
 {
+  setDefaults();
 }
 
+void ShowFieldModule::setDefaults()
+{
+  auto state = get_state();
+  state->setValue(ShowNodes, false);
+  state->setValue(ShowEdges, true);
+  state->setValue(ShowFaces, true);
+  state->setValue(NodeTransparency, false);
+  state->setValue(EdgeTransparency, false);
+  state->setValue(FaceTransparency, false);
+  //state->setValue(DefaultMeshColor, std::string("white"));
+}
 
 void ShowFieldModule::execute()
 {
