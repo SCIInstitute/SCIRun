@@ -43,6 +43,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
 
   if (name == "GetFieldBoundary")
     h.reset(new GetFieldBoundaryAlgo);
+  else if (name == "SolveLinearSystem")
+    h.reset(new SolveLinearSystemAlgo);
 
   if (h && algoCollaborator)
   {

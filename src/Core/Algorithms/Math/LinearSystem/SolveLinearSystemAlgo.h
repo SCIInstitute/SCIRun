@@ -50,17 +50,16 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
   public:
     SolveLinearSystemAlgo();
   
-    //TODO: refactor to new algorithm::run standard signature
     bool run(Datatypes::SparseRowMatrixHandle A,
              Datatypes::DenseColumnMatrixHandle b,
              Datatypes::DenseColumnMatrixHandle x0, 
              Datatypes::DenseColumnMatrixHandle& x,
-             Datatypes::DenseColumnMatrixHandle& convergence);
+             Datatypes::DenseColumnMatrixHandle& convergence) const;
 
     bool run(Datatypes::SparseRowMatrixHandle A,
              Datatypes::DenseColumnMatrixHandle b,
              Datatypes::DenseColumnMatrixHandle x0, 
-             Datatypes::DenseColumnMatrixHandle& x);
+             Datatypes::DenseColumnMatrixHandle& x) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
@@ -70,6 +69,10 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
     static AlgorithmParameterName BuildConvergence;
     static AlgorithmParameterName MethodOption() { return AlgorithmParameterName("Method"); }
     static AlgorithmParameterName PreconditionerOption;
+
+    static AlgorithmInputName LHS;
+    static AlgorithmInputName RHS;
+    static AlgorithmOutputName Solution;
 };
 
 

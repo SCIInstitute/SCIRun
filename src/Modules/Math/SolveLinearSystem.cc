@@ -72,8 +72,6 @@ void SolveLinearSystemModule::execute()
     if (!matrix_is::sparse(A))
       THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
 
-    auto ASparse = matrix_cast::as_sparse(A);
-
     auto rhsCol = matrix_cast::as_column(rhs);
     if (!rhsCol)
       rhsCol = matrix_convert::to_column(rhs);
@@ -99,7 +97,7 @@ void SolveLinearSystemModule::execute()
     {
       ScopedTimeRemarker perf(this, "Linear solver");
       remark("Using preconditioner: " + precond);
-      auto output = algo_->run_generic(make_input((LHS, ASparse)(RHS, rhsCol)));
+      auto output = algo_->run_generic(make_input((LHS, A)(RHS, rhsCol)));
       solution = get_output(output, Solution, Matrix);
     }
 

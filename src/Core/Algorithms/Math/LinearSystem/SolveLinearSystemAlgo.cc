@@ -46,6 +46,10 @@ using namespace SCIRun::Core::Datatypes;
 AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
 AlgorithmParameterName SolveLinearSystemAlgo::PreconditionerOption("Preconditioner");
 
+AlgorithmInputName SolveLinearSystemAlgo::LHS("LHS");
+AlgorithmInputName SolveLinearSystemAlgo::RHS("RHS");
+AlgorithmOutputName SolveLinearSystemAlgo::Solution("Solution");
+
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
@@ -75,23 +79,27 @@ SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 class SolveLinearSystemParallelAlgo : public ParallelLinearAlgebraBase 
 {
 public:
-  SolveLinearSystemParallelAlgo() : algo_(0) {}
+  explicit SolveLinearSystemParallelAlgo(const AlgorithmBase* base);
 
-  bool run(AlgorithmBase* base, SparseRowMatrixHandle a, DenseColumnMatrixHandle b,
+  bool run(SparseRowMatrixHandle a, DenseColumnMatrixHandle b,
             DenseColumnMatrixHandle x0, DenseColumnMatrixHandle& x,
-            DenseColumnMatrixHandle& convergence);         
+            DenseColumnMatrixHandle& convergence) const;         
 protected: 
+  const AlgorithmBase* algo_;
   std::string pre_conditioner_;
   DenseColumnMatrixHandle convergence_;
-  AlgorithmBase* algo_;
 };
 
+SolveLinearSystemParallelAlgo::SolveLinearSystemParallelAlgo(const AlgorithmBase* base) : algo_(base),
+  pre_conditioner_(base->get_option(SolveLinearSystemAlgo::PreconditionerOption)),
+  convergence_(new DenseColumnMatrix(base->get(SolveLinearSystemAlgo::MaxIterations()).getInt()))
+{
+}
 
 bool
-SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo, 
-                                   SparseRowMatrixHandle a, DenseColumnMatrixHandle b, 
+SolveLinearSystemParallelAlgo::run(SparseRowMatrixHandle a, DenseColumnMatrixHandle b, 
                                    DenseColumnMatrixHandle x0, DenseColumnMatrixHandle& x, 
-                                   DenseColumnMatrixHandle& convergence) 
+                                   DenseColumnMatrixHandle& convergence) const
 {
   SolverInputs matrices;
   matrices.A = a; 
@@ -105,24 +113,18 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
   // Copy output matrix pointer
   matrices.x = x;
 
-  // Create convergence matrix
-  int num_iter = algo->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
-  convergence = boost::make_shared<DenseColumnMatrix>(num_iter);
-  convergence_ = convergence;
+  convergence = convergence_;
   
   // Set intermediate solution handle
-  algo_ = algo;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   algo->set_handle("solution", x);
   algo->set_handle("convergence", convergence);
 #endif
-  
-  pre_conditioner_ = algo_->get_option(SolveLinearSystemAlgo::PreconditionerOption);
 
   if(!start_parallel(matrices))
   {
     const std::string msg = "Encountered an error while running parallel linear algebra";
-    algo->error(msg);
+    algo_->error(msg);
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << SCIRun::Core::ErrorMessage(msg));
   }
 
@@ -135,10 +137,11 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
 class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo 
 {
   public:
-    virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices);
+    explicit SolveLinearSystemCGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
+    virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
 };
 
-bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
+bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
 {
   ParallelLinearAlgebra::ParallelMatrix A; 
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN, DIAG, R, Z, P;
@@ -346,13 +349,14 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo 
 {
   public:
+    explicit SolveLinearSystemBICGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
     virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          SolverInputs& matrices);
+                          SolverInputs& matrices) const;
 };
 
 bool
 SolveLinearSystemBICGAlgo::
-parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const 
 {
   // Algorithm
   
@@ -559,15 +563,15 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 
 class SolveLinearSystemMINRESAlgo : public SolveLinearSystemParallelAlgo 
 {
-  public:
-    virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          SolverInputs& matrices);
+public:
+  explicit SolveLinearSystemMINRESAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
 };
 
 
 bool
 SolveLinearSystemMINRESAlgo::
-parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
 {
   // Algorithm
   
@@ -911,15 +915,15 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 
 class SolveLinearSystemJACOBIAlgo : public SolveLinearSystemParallelAlgo 
 {
-  public:
-    virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          SolverInputs& matrices);
+public:
+  explicit SolveLinearSystemJACOBIAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
 };
 
 
 bool
 SolveLinearSystemJACOBIAlgo::
-parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
 {
   // Algorithm
   // Define matrices and vectors to be used in the algorithm
@@ -1072,7 +1076,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
 bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
                            DenseColumnMatrixHandle b,
                            DenseColumnMatrixHandle x0, 
-                           DenseColumnMatrixHandle& x)
+                           DenseColumnMatrixHandle& x) const
 {
   DenseColumnMatrixHandle convergence;
   return run(A,b,x0,x,convergence);
@@ -1082,7 +1086,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   DenseColumnMatrixHandle b,
                            DenseColumnMatrixHandle x0, 
                            DenseColumnMatrixHandle& x,
-                           DenseColumnMatrixHandle& convergence)
+                           DenseColumnMatrixHandle& convergence) const
 {
   ScopedAlgorithmStatusReporter ssr(this, "SolveLinearSystem");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
@@ -1167,32 +1171,32 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   DenseColumnMatrixHandle conv;
   if (method == "cg")
   {
-    SolveLinearSystemCGAlgo algo;
-    if(!algo.run(this,A,b,x0,x,conv))
+    SolveLinearSystemCGAlgo algo(this);
+    if(!algo.run(A,b,x0,x,conv))
     {
       BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Conjugate Gradient method failed"));
     }
   }
   else if (method == "bicg")
   {
-    SolveLinearSystemBICGAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    SolveLinearSystemBICGAlgo algo(this);
+    if(!(algo.run(A,b,x0,x,conv)))
     {
       BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("BiConjugate Gradient method failed"));
     }
   }
   else if (method == "jacobi")
   {
-    SolveLinearSystemJACOBIAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    SolveLinearSystemJACOBIAlgo algo(this);
+    if(!(algo.run(A,b,x0,x,conv)))
     {
       BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Jacobi method failed"));
     }
   }
   else if (method == "minres")
   {
-    SolveLinearSystemMINRESAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    SolveLinearSystemMINRESAlgo algo(this);
+    if(!(algo.run(A,b,x0,x,conv)))
     {
       BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("MINRES method failed"));
     }
@@ -1219,9 +1223,16 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
 AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) const
 {
-  bool success = run(ASparse, rhsCol, DenseColumnMatrixHandle(), solution);
+  auto lhs = input.get<SparseRowMatrix>(LHS);
+  auto rhs = input.get<DenseColumnMatrix>(RHS);
+
+  DenseColumnMatrixHandle solution;
+  bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
   if (!success)
   {
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
+  AlgorithmOutput output;
+  output[Solution] = solution;
+  return output;
 }

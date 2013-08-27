@@ -116,12 +116,12 @@ public:
   ParallelLinearAlgebraBase(); 
   virtual ~ParallelLinearAlgebraBase();
   
-  bool start_parallel(SolverInputs& matrices, int nproc = -1);
+  bool start_parallel(SolverInputs& matrices, int nproc = -1) const;
 
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) = 0;
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const = 0;
   
 private:
-  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc);
+  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc) const;
   SolverInputs imatrices_;
 };
 

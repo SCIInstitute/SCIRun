@@ -767,7 +767,7 @@ double ParallelLinearAlgebra::reduce_min(double val)
 
 
 
-bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc)
+bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc) const
 {
   size_t size = matrices.A->nrows();
   if (matrices.b->nrows() != size
@@ -794,7 +794,7 @@ bool ParallelLinearAlgebraBase::start_parallel(SolverInputs& matrices, int nproc
   return sharedData.success();
 }
 
-void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& data, int proc)
+void ParallelLinearAlgebraBase::run_parallel(ParallelLinearAlgebraSharedData& data, int proc) const
 {
   ParallelLinearAlgebra PLA(data,proc);
   data.setFlag(proc, parallel(PLA, data.inputs()));
