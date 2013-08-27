@@ -369,8 +369,7 @@ namespace Modules
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index> name;
 
-template <class X> std::string& getNameForPortInitialization(X& x) { return x.name_; }
-#define INITIALIZE_PORT(name) do{getNameForPortInitialization(name) = #name;}while(0);
+#define INITIALIZE_PORT(name) do{ name.name_ = #name;}while(0);
 
   //TODO: make metafunc for Input/Output
 
