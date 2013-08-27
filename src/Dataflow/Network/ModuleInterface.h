@@ -71,7 +71,7 @@ namespace Networks {
   typedef boost::function<void(bool)> UiToggleFunc;
 
   //TODO: interface is getting bloated, segregate it.
-  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject
+  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
   public:
     virtual ~ModuleInterface();
@@ -91,6 +91,7 @@ namespace Networks {
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
     
     //TODO functions
+    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 

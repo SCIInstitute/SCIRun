@@ -229,11 +229,19 @@ namespace Algorithms {
 
   };
   
+  class SCISHARE AlgorithmCollaborator
+  {
+  public:
+    virtual ~AlgorithmCollaborator() {}
+    virtual Logging::LoggerHandle getLogger() const = 0;
+    virtual AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
+  };
+
   class SCISHARE AlgorithmFactory
   {
   public:
     virtual ~AlgorithmFactory() {}
-    virtual AlgorithmHandle create(const std::string& name, Core::Logging::LoggerHandle logger) const = 0;
+    virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const = 0;
   };
 
 }}}

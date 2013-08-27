@@ -29,22 +29,26 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
+#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 
-using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Math;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
-AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, LoggerHandle logger) const
+AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
 {
   AlgorithmHandle h;
 
   if (name == "GetFieldBoundary")
     h.reset(new GetFieldBoundaryAlgo);
 
-  if (h)
-    h->setLogger(logger);
+  if (h && algoCollaborator)
+  {
+    h->setLogger(algoCollaborator->getLogger());
+    h->setUpdaterFunc(algoCollaborator->getUpdaterFunc());
+  }
 
   return h;
 }

@@ -74,7 +74,7 @@ Module::Module(const ModuleLookupInfo& info,
 
   if (algoFactory)
   {
-    algo_ = algoFactory->create(get_module_name(), getLogger());
+    algo_ = algoFactory->create(get_module_name(), this);
     if (algo_)
       root << log4cpp::Priority::INFO << "Module algorithm initialized: " << info.module_name_;
   }

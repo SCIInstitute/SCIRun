@@ -45,6 +45,9 @@ using namespace SCIRun::Core::Logging;
 
 SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) 
 {
+  INITIALIZE_PORT(LHS);
+  INITIALIZE_PORT(RHS);
+  INITIALIZE_PORT(Solution);
   setDefaults();
 }
 
@@ -59,57 +62,47 @@ void SolveLinearSystemModule::setDefaults()
 
 void SolveLinearSystemModule::execute()
 {
-  auto A = getRequiredInput(Matrix);
+  auto A = getRequiredInput(LHS);
   auto rhs = getRequiredInput(RHS);
 
-  if (rhs->ncols() != 1)
-    THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
-  if (!matrix_is::sparse(A))
-    THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
-
-  auto ASparse = matrix_cast::as_sparse(A);
-
-  auto rhsCol = matrix_cast::as_column(rhs);
-  if (!rhsCol)
-    rhsCol = matrix_convert::to_column(rhs);
-
-  auto tolerance = get_state()->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
-  auto maxIterations = get_state()->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
-
-  //TODO: this is next for algo factory
-  SolveLinearSystemAlgo algo;
-
-  
-  algo.setLogger(getLogger());
-  //TODO: need to set this in the factory as well!
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  // these stay here.
-  algo.set(SolveLinearSystemAlgo::TargetError(), tolerance);
-  algo.set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
-
-  //TODO: grab values from UI
-  auto method = get_state()->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
-  auto precond = get_state()->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
-  algo.set_option(SolveLinearSystemAlgo::MethodOption(), method);
-  algo.set_option(SolveLinearSystemAlgo::PreconditionerOption, precond);
-
-  std::ostringstream ostr;
-  ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
-  remark(ostr.str());
-
-  DenseColumnMatrixHandle solution;
-
-  bool success;
+  if (needToExecute())
   {
-    ScopedTimeRemarker perf(this, "Linear solver");
-    remark("Using Jacobi preconditioner");
-    success = algo.run(ASparse, rhsCol, DenseColumnMatrixHandle(), solution);
+    if (rhs->ncols() != 1)
+      THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
+    if (!matrix_is::sparse(A))
+      THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
+
+    auto ASparse = matrix_cast::as_sparse(A);
+
+    auto rhsCol = matrix_cast::as_column(rhs);
+    if (!rhsCol)
+      rhsCol = matrix_convert::to_column(rhs);
+
+    auto tolerance = get_state()->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
+    auto maxIterations = get_state()->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
+
+    algo_->set(SolveLinearSystemAlgo::TargetError(), tolerance);
+    algo_->set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
+
+    //TODO: grab values from UI
+    auto method = get_state()->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
+    auto precond = get_state()->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
+    algo_->set_option(SolveLinearSystemAlgo::MethodOption(), method);
+    algo_->set_option(SolveLinearSystemAlgo::PreconditionerOption, precond);
+
+    std::ostringstream ostr;
+    ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
+    remark(ostr.str());
+
+    MatrixHandle solution;
+
+    {
+      ScopedTimeRemarker perf(this, "Linear solver");
+      remark("Using preconditioner: " + precond);
+      auto output = algo_->run_generic(make_input((LHS, ASparse)(RHS, rhsCol)));
+      solution = get_output(output, Solution, Matrix);
+    }
+
+    sendOutput(Solution, solution);
   }
-  if (!success)
-  {
-    MODULE_ERROR_WITH_TYPE(LinearAlgebraError, "SLS Algo returned false--need to improve error conditions so it throws before returning.");
-  }
-  
-  sendOutput(Solution, solution);
 }

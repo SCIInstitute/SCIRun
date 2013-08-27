@@ -1219,5 +1219,9 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
 AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  bool success = run(ASparse, rhsCol, DenseColumnMatrixHandle(), solution);
+  if (!success)
+  {
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
+  }
 }

@@ -40,7 +40,7 @@ namespace SCIRun {
       {
       public:
         HardCodedAlgorithmFactory();
-        virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& name, Core::Logging::LoggerHandle logger) const;
+        virtual SCIRun::Core::Algorithms::AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const;
       };
 
     }
