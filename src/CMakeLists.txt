@@ -348,7 +348,7 @@ ExternalProject_Add(Spire_external
     $SPIRE_CMAKE_ARGS
 )
 
-# Custom build step to install shaders afetr the build has completed.
+# Custom build step to install shaders after the build has completed.
 ExternalProject_Add_Step(Spire_external e1
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${SPIRE_SOURCE_DIR}/Spire/Shaders ${CMAKE_CURRENT_BINARY_DIR}/Shaders
   COMMENT "Copies spire shaders to binary directory."
@@ -387,6 +387,9 @@ INCLUDE_DIRECTORIES(${SCI_SPIRE_INCLUDE})
 
 # OpenGL
 FIND_PACKAGE(OpenGL REQUIRED)
+
+#-----------------------------------------------------------------------
+# Configure Spire Extensions
 
 
 ########################################################################
