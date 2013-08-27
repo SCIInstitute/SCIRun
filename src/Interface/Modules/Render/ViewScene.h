@@ -39,9 +39,9 @@
 #include <Interface/Modules/Render/share.h>
 
 #include "Spire/Interface.h"
-#include "Spire/AppSpecific/SCIRun/SRInterface.h"
-#include "Spire/AppSpecific/SCIRun/SRCommonAttributes.h"
-#include "Spire/AppSpecific/SCIRun/SRCommonUniforms.h"
+#include "SpireExt/SCIRun/SRInterface.h"
+#include "SpireExt/SCIRun/SRCommonAttributes.h"
+#include "SpireExt/SCIRun/SRCommonUniforms.h"
 #include "GLWidget.h"
 
 //TODO: needs to inherit from ModuleWidget somehow
