@@ -82,7 +82,6 @@ void SolveLinearSystemModule::execute()
     algo_->set(SolveLinearSystemAlgo::TargetError(), tolerance);
     algo_->set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
 
-    //TODO: grab values from UI
     auto method = get_state()->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
     auto precond = get_state()->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
     algo_->set_option(SolveLinearSystemAlgo::MethodOption(), method);

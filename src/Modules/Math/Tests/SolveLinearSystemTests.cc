@@ -26,22 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Testing/Utils/ModuleTestBase.h>
+#include <Modules/Math/SolveLinearSystem.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::Mocks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-//TODO 
+class SolveLinearSystemModuleTest : public ModuleTest
+{
+};
+
+TEST_F(SolveLinearSystemModuleTest, ThrowsForNullMatrices)
+{
+  auto sls = makeModule("SolveLinearSystem");
+  MatrixHandle nullMatrix, nullColumnMatrix;
+  stubPortNWithThisData(sls, 0, nullMatrix);
+  stubPortNWithThisData(sls, 1, nullColumnMatrix);
+
+  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+}
+
+TEST_F(SolveLinearSystemModuleTest, ThrowsForNonsparseLHS)
+{
+  auto sls = makeModule("SolveLinearSystem");
+  MatrixHandle lhs(new DenseMatrix(DenseMatrix::Identity(3,3)));
+  MatrixHandle rhs(new DenseColumnMatrix(3));
+
+  stubPortNWithThisData(sls, 0, lhs);
+  stubPortNWithThisData(sls, 1, rhs);
+
+  EXPECT_THROW(sls->execute(), AlgorithmInputException);
+}
