@@ -69,16 +69,16 @@ namespace
   DenseMatrixHandle matrix1()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
   DenseMatrixHandle matrix2()
   {
     DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (size_t i = 0; i < m->rows(); ++i)
-      for (size_t j = 0; j < m->cols(); ++j)
+    for (int i = 0; i < m->rows(); ++i)
+      for (int j = 0; j < m->cols(); ++j)
         (*m)(i, j) = -2.0 * i + j;
     return m;
   }

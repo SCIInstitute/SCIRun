@@ -256,7 +256,7 @@ public:
       return edges_[4];
     }
     inline
-    unsigned edge5_index() const 
+    index_type edge5_index() const 
     {
       return edges_[5];
     }
