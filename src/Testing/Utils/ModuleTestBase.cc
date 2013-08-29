@@ -26,40 +26,54 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-
 #include <Testing/Utils/ModuleTestBase.h>
+#include <Dataflow/Network/Network.h>
+#include <Dataflow/Network/ConnectionId.h>
+#include <Dataflow/Network/Tests/MockNetwork.h>
 
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Dataflow/Network/Module.h>
+#include <Dataflow/Network/DataflowInterfaces.h>
+#include <boost/functional/factory.hpp>
 
 using namespace SCIRun;
-using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Networks::Mocks;
-//using ::testing::_;
-//using ::testing::NiceMock;
-//using ::testing::DefaultValue;
-//using ::testing::Return;
+using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Modules::Factory;
+using namespace SCIRun::Testing;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
+class StubbedDatatypeSink : public DatatypeSinkInterface
 {
+public:
+  virtual bool hasData() const { return true; }
+  virtual void setHasData(bool dataPresent) {}
+  virtual void waitForData() {}
 
+  virtual DatatypeHandleOption receive() { return data_; }
+
+  void setData(DatatypeHandleOption data) { data_ = data; }
+private:
+  DatatypeHandleOption data_;
 };
 
-TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
+ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
 {
-  const std::string name = "EvaluateLinearAlgebraUnary";
-  auto module = makeModule(name);
+  Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
+}
 
-  EXPECT_EQ(name, module->get_module_name());
+ModuleHandle ModuleTest::makeModule(const std::string& name)
+{
+  return CreateModuleFromUniqueName(*factory_, name);
+}
 
-  DenseMatrixHandle m(new DenseMatrix(2,2));
-
-  stubPortNWithThisData(module, 0, m);
-
-  //TODO: mock module state for passing to algorithm
-  //TODO: algorithm factory to provide mock algorithm
-  module->execute();
+void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
+{
+  module->get_input_port(portNum)->attach(0);
+  DatatypeHandleOption o = data;
+  dynamic_cast<StubbedDatatypeSink*>(module->get_input_port(portNum)->sink().get())->setData(o);
 }

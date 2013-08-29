@@ -29,12 +29,14 @@
 
 SET(Testing_Utils_HEADERS
   MatrixTestUtilities.h
+  ModuleTestBase.h
   SCIRunUnitTests.h
   share.h
 )
 
 SET(Testing_Utils_SRCS
   MatrixTestUtilities.cc
+  ModuleTestBase.cc
   SCIRunUnitTests.cc
 )
 
@@ -45,6 +47,9 @@ ADD_LIBRARY(Testing_Utils
 
 TARGET_LINK_LIBRARIES(Testing_Utils
   Core_Datatypes
+  Modules_Factory
+  gtest
+  gmock
   ${SCI_BOOST_LIBRARY}
 )
 

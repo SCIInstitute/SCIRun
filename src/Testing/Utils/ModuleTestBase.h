@@ -26,40 +26,27 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Testing/Utils/share.h>
 
-#include <Testing/Utils/ModuleTestBase.h>
-
-#include <Core/Datatypes/DenseMatrix.h>
-
-using namespace SCIRun;
-using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Networks::Mocks;
-//using ::testing::_;
-//using ::testing::NiceMock;
-//using ::testing::DefaultValue;
-//using ::testing::Return;
-
-class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
+namespace SCIRun 
 {
+  namespace Testing 
+  {
+    class SCISHARE ModuleTest : public ::testing::Test
+    {
+    protected:
+      ModuleTest();
 
-};
+      Dataflow::Networks::ModuleHandle makeModule(const std::string& name);
 
-TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
-{
-  const std::string name = "EvaluateLinearAlgebraUnary";
-  auto module = makeModule(name);
+      void stubPortNWithThisData(Dataflow::Networks::ModuleHandle module, size_t portNum, Core::Datatypes::DatatypeHandle data);
 
-  EXPECT_EQ(name, module->get_module_name());
-
-  DenseMatrixHandle m(new DenseMatrix(2,2));
-
-  stubPortNWithThisData(module, 0, m);
-
-  //TODO: mock module state for passing to algorithm
-  //TODO: algorithm factory to provide mock algorithm
-  module->execute();
+    private:
+      Dataflow::Networks::ModuleFactoryHandle factory_;
+    };
+  }
 }
