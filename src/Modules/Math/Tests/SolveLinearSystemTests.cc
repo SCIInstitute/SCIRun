@@ -30,6 +30,7 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::Modules::Math;
@@ -65,4 +66,18 @@ TEST_F(SolveLinearSystemModuleTest, ThrowsForNonsparseLHS)
   stubPortNWithThisData(sls, 1, rhs);
 
   EXPECT_THROW(sls->execute(), AlgorithmInputException);
+}
+
+TEST_F(SolveLinearSystemModuleTest, CanSolveSimple)
+{
+  auto sls = makeModule("SolveLinearSystem");
+  SparseRowMatrixHandle lhs(new SparseRowMatrix(3,3));
+  lhs->insert(0,0) = lhs->insert(1,1) = lhs->insert(2,2) = 1;
+  DenseColumnMatrixHandle rhs(new DenseColumnMatrix(3));
+  (*rhs)[0] = 1;
+
+  stubPortNWithThisData(sls, 0, lhs);
+  stubPortNWithThisData(sls, 1, rhs);
+
+  sls->execute();
 }

@@ -108,6 +108,8 @@ namespace Networks {
       return true; //TODO
     }
 
+    virtual void setDefaults() {} //TODO should be pure virtual
+
     template <class Type, size_t N>
     struct PortName
     {
