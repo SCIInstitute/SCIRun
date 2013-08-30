@@ -171,6 +171,8 @@ namespace Algorithms {
     bool get_option(const AlgorithmParameterName& key, std::string& value) const;
     std::string get_option(const AlgorithmParameterName& key) const;
 
+    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
+
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
     void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
@@ -220,11 +222,11 @@ namespace Algorithms {
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 
-  class SCISHARE AlgorithmBase : public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
+  class SCISHARE AlgorithmInterface 
   {
   public:
-    virtual ~AlgorithmBase();
-
+    virtual ~AlgorithmInterface() {}
+    
     /*
       TODO idea: make it mockable
   
@@ -236,7 +238,12 @@ namespace Algorithms {
     */
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
+  };
 
+  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
+  {
+  public:
+    virtual ~AlgorithmBase();
   };
   
   class SCISHARE AlgorithmCollaborator

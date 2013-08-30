@@ -124,7 +124,7 @@ void AlgorithmParameterList::set(const AlgorithmParameterName& key, const Algori
 {
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound());
+    keyNotFoundPolicy(key);
   iter->second.value_ = value;
 }
 
@@ -132,7 +132,7 @@ const AlgorithmParameter& AlgorithmParameterList::get(const AlgorithmParameterNa
 {
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage(key.name_));
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter with name " + key.name_));
   return iter->second;
 }
 
@@ -173,7 +173,7 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
   auto paramIt = parameters_.find(key);
 
   if (paramIt == parameters_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("option key \"" + key.name_ + "\" was not defined in algorithm"));
+    keyNotFoundPolicy(key);
   
   AlgoOption param = paramIt->second.getOption();
   std::string valueLower = boost::to_lower_copy(value);
@@ -184,6 +184,12 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
   param.option_ = valueLower;
   parameters_[key].value_ = param;
   return true;
+}
+
+void AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key)
+{
+  BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter/option with name " + key.name_));
+  //BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("option key \"" + key.name_ + "\" was not defined in algorithm"));
 }
 
 bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::string& value) const

@@ -31,12 +31,14 @@
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <boost/functional/factory.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
@@ -61,9 +63,32 @@ private:
   DatatypeHandleOption data_;
 };
 
+class MockAlgorithm : public AlgorithmBase
+{
+public:
+  MOCK_CONST_METHOD1(run_generic, AlgorithmOutput(const AlgorithmInput&));
+  MOCK_METHOD1(keyNotFoundPolicy, void(const AlgorithmParameterName&));
+  //MOCK_METHOD2(set, void(const AlgorithmParameterName&, const AlgorithmParameter::Value&));
+  //MOCK_CONST_METHOD1(get, const AlgorithmParameter&(const AlgorithmParameterName&));
+  //MOCK_METHOD2(set_option, void(const AlgorithmParameterName&, const std::string& value));
+  //MOCK_CONST_METHOD1(get_option, std::string(const AlgorithmParameterName&));
+};
+
+class MockAlgorithmFactory : public AlgorithmFactory
+{
+public:
+  virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
+  {
+    return AlgorithmHandle(new NiceMock<MockAlgorithm>);
+  }
+};
+
 ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
 {
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
+  Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
+  DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
 }
 
 ModuleHandle ModuleTest::makeModule(const std::string& name)
