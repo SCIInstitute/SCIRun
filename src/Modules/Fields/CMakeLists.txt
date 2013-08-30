@@ -28,14 +28,12 @@
 
 SET(Modules_Fields_SRCS
   CreateScalarFieldDataBasic.cc
-  CreateLatVolMesh.cc
   FieldToMesh.cc
   ReportFieldInfo.cc
 )
 
 SET(Modules_Fields_HEADERS
   CreateScalarFieldDataBasic.h
-  CreateLatVolMesh.h
   FieldToMesh.h
   ReportFieldInfo.h
   share.h

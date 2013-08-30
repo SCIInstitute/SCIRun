@@ -45,7 +45,6 @@
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
-#include <Modules/Fields/CreateLatVolMesh.h>
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
@@ -116,7 +115,6 @@ namespace SCIRun {
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
           addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
-          addModuleDesc<CreateLatVolMesh>("CreateLatVolMesh", "NewField", "SCIRun", "Can create lat vol meshes of arbitrary size.", "...");
           addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Math", "SCIRun", "...", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
           addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
