@@ -41,7 +41,7 @@ namespace SCIRun {
         public Has2OutputPorts<FieldPortTag, FieldPortTag>
       {
       public:
-        GetFieldBoundary();
+        CalculateSignedDistanceToField();
 
         virtual void execute();
 

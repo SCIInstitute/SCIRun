@@ -26,39 +26,22 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateSignedDistanceField.h>
-
-namespace ModelCreation {
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-class CalculateSignedDistanceToField : public Module {
-  public:
-    CalculateSignedDistanceToField(GuiContext*);
-    virtual ~CalculateSignedDistanceToField() {}
-    virtual void execute();
-    
-  private:
-    SCIRunAlgo::CalculateSignedDistanceFieldAlgo algo_;
-};
-
-
-DECLARE_MAKER(CalculateSignedDistanceToField)
-CalculateSignedDistanceToField::CalculateSignedDistanceToField(GuiContext* ctx)
-  : Module("CalculateSignedDistanceToField", ctx, Source, "ChangeFieldData", "SCIRun")
+CalculateSignedDistanceToField::CalculateSignedDistanceToField()
+  : Module(ModuleLookupInfo("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun"))
 {
-  algo_.set_progress_reporter(this);
 }
 
-
-void
-CalculateSignedDistanceToField::execute()
+void CalculateSignedDistanceToField::execute()
 {
   FieldHandle input, output, value;
   FieldHandle object;
@@ -88,8 +71,5 @@ CalculateSignedDistanceToField::execute()
     }
   }
 }
-
-
-} // End namespace ModelCreation
 
 
