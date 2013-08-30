@@ -31,6 +31,7 @@
 SET(Dataflow_Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
   GetFieldBoundary.h
+  CalculateSignedDistanceToField.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -127,7 +128,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #GenerateLinearSegments.cc
   #CalculateDistanceToField.cc
   #CalculateDistanceToFieldBoundary.cc
-  #CalculateSignedDistanceToField.cc
+  CalculateSignedDistanceToField.cc
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
   #ConvertIndicesToFieldData.cc
