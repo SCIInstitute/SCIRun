@@ -31,8 +31,8 @@
 #    [GIT_REPOSITORY repo]        # Same as ExternalProject_Add's GIT_REPOSITORY.
 #    [USE_STD_THREADS truth]      # Set to 'ON' if you want to use spire threads.
 #    [MODULE_DIR dir]             # Module directory. Preferably outside of where cleaning happens.
-#    [SHADER_DIR dir]             # Shader directory into which shaders will be copied. If present, shaders will be copied to this directory.
-#    [ASSET_DIR dir]              # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
+#    [SHADER_OUTPUT_DIR dir]      # Shader directory into which shaders will be copied. If present, shaders will be copied to this directory.
+#    [ASSET_OUTPUT_DIR dir]       # Asset directory into which assets will be copied. If present, assets will be copied to this directory.
 #    )
 #
 # Many of the ExternalProject settings are automatically generated for modules.
@@ -52,7 +52,13 @@
 #     <repo>                      # Required - Name of the package or git repo. Only git repos are supported for now.
 #     <version>                   # Required - Version of the package to be used.
 #     [SOURCE_DIR dir]            # Same as Spire_AddCore. Source directory which when specified disables git synchronization.
+#     [SHADER_DIR dir]            # Specifies the directory containing module's shaders.
+#     [ASSET_DIR dir]             # Specifies the asset directory containing all spire assets.
 #     )
+#
+# Note that if the SHADER_OUTPUT_DIR is not set during the Spire_AddCore
+# call, then shaders will not be copied (since it does not know the desired
+# output directory). Likewise for the ASSET_OUTPUT_DIR.
 #
 # TODO: Should have some transparent way of copying shaders and assets. Some function
 # that ends up copying all of the assets and shaders into the 'correct' output
@@ -331,6 +337,16 @@ function(Spire_AddCore name)
   set_target_properties(${name} PROPERTIES SPIRE_CORE_INCLUDE_DIRS "${SPIRE_INCLUDE_DIRS};${SPIRE_3RDPARTY_INCLUDE_DIRS}")
   set_target_properties(${name} PROPERTIES SPIRE_BASE_MODULE_SRC_DIR "${PREFIX}/module_src/SpireExt")
 
+  # Set output directory for assets if the user passed the variable in.
+  if (_SPM_ASSET_OUTPUT_DIR)
+    set_target_properties(${name} PROPERTIES ASSET_OUTPUT_DIR "${_SPM_ASSET_OUTPUT_DIR}")
+  endif()
+
+  # Set output directory for shaders if the user passed the variable in.
+  if (_SPM_SHADER_OUTPUT_DIR)
+    set_target_properties(${name} PROPERTIES SHADER_OUTPUT_DIR "${_SPM_SHADER_OUTPUT_DIR}")
+  endif()
+
 endfunction()
 
 # Module are built using the root CMakeLists.txt but the output
@@ -393,7 +409,27 @@ function (Spire_AddModule spire_core module_name repo version)
     set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIRS} ${MODULE_PREFIX} PARENT_SCOPE)
   endif()
 
+  if (_SPM_SHADER_DIR)
+    # Set appropriate shader variable in PARENT_SCOPE.
+    set(SPIRE_SHADER_DIRS ${SPIRE_SHADER_DIRS} ${_SPM_SHADER_DIR} PARENT_SCOPE)
+  endif()
+
+  if (_SPM_ASSET_DIR)
+    # Set appropriate asset variable in PARENT_SCOPE.
+    set(SPIRE_ASSET_DIRS ${SPIRE_ASSET_DIRS} ${_SPM_ASSET_DIR} PARENT_SCOPE)
+  endif()
+
   get_target_property(CORE_INCLUDE_DIRS ${spire_core} SPIRE_CORE_INCLUDE_DIRS)
+
+  get_target_property(OUTPUT_SHADER_DIR ${spire_core} SHADER_OUTPUT_DIR)
+  if(OUTPUT_SHADER_DIR STREQUAL "NOTFOUND")
+    set(OUTPUT_SHADER_DIR "")
+  endif()
+
+  get_target_property(OUTPUT_ASSET_DIR ${spire_core} ASSET_OUTPUT_DIR)
+  if(OUTPUT_ASSET_DIR STREQUAL "NOTFOUND")
+    set(OUTPUT_ASSET_DIR "")
+  endif()
 
   ExternalProject_Add(${target_name}
     "PREFIX;${MODULE_PREFIX}"
@@ -406,6 +442,8 @@ function (Spire_AddModule spire_core module_name repo version)
       -DSPIRE_OUTPUT_MODULE_NAME:STRING=${MODULE_STATIC_LIB_NAME}
       -DMOD_SPIRE_CMAKE_MODULE_PATH:STRING=${DIR_OF_SPIREPM}
       -DMOD_SPIRE_CORE_SRC:STRING=${SPIRE_CORE_SRC}
+      -DOUTPUT_SHADER_DIR:STRING=${OUTPUT_SHADER_DIR}
+      -DOUTPUT_ASSET_DIR:STRING=${OUTPUT_ASSET_DIR}
       ${_ep_spire_output_dirs}
     )
 
@@ -421,5 +459,25 @@ function (Spire_AddModule spire_core module_name repo version)
   # hence the dependency.
   add_dependencies(${target_name} ${spire_core})
 
+endfunction()
+
+function (Spire_CopyShaders src_shader_dir dest_shader_dir)
+  if (NOT dest_shader_dir STREQUAL "")
+    file(COPY ${src_shader_dir}/ DESTINATION ${dest_shader_dir}
+      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                            GROUP_READ
+                            WORLD_READ WORLD_EXECUTE)
+  endif()
+endfunction()
+
+function (Spire_CopyAssets src_asset_dir dest_asset_dir)
+  if (NOT dest_asset_dir STREQUAL "")
+    file(COPY ${src_asset_dir}/ DESTINATION ${dest_asset_dir}
+      FILE_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
+      DIRECTORY_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+                            GROUP_READ
+                            WORLD_READ WORLD_EXECUTE)
+  endif()
 endfunction()
 

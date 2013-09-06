@@ -40,15 +40,6 @@ SET(Modules_Visualization_HEADERS
 )
 
 FIND_PACKAGE(OpenGL REQUIRED)
-
-# Framework for spire
-if(UNIX)
-  if(APPLE)
-    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    set(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
-  endif()
-endif()
-
 ADD_LIBRARY(Modules_Visualization 
   ${Modules_Visualization_HEADERS}
   ${Modules_Visualization_SRCS}
@@ -60,8 +51,7 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Datatypes_Mesh
   Core_Datatypes_Legacy_Field
   ${OPENGL_LIBRARIES}
-  ${SCI_SPIRE_LIBRARY}
-  ${SCI_SPIRE_EXTRA_LIBRARIES}
+  ${SPIRE_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
