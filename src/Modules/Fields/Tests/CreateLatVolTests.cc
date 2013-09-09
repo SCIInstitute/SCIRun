@@ -26,15 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
+#include <Testing/Utils/ModuleTestBase.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Testing;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-//TODO DAN
+class CreateLatVolModuleTests : public ModuleTest
+{
+
+};

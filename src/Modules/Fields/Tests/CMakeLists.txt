@@ -28,11 +28,9 @@
 
 SET(Modules_Fields_Tests_SRCS
   CreateLatVolTests.cc
+  CalculateSignedDistanceToFieldTests.cc
+  GetFieldBoundaryTests.cc
 )
-
-#SET(Engine_Network_Tests_HEADERS
-#  NetworkEditorControllerTests_.h
-#)
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
   ${Modules_Fields_Tests_SRCS}

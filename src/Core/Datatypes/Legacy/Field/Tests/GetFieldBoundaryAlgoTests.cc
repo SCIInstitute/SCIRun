@@ -26,41 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-
-#include <Testing/Utils/ModuleTestBase.h>
-
-#include <Core/Datatypes/DenseMatrix.h>
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <boost/assign.hpp>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Networks::Mocks;
-//using ::testing::_;
-//using ::testing::NiceMock;
-//using ::testing::DefaultValue;
-//using ::testing::Return;
+using namespace SCIRun::Core::Geometry;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+using namespace boost::assign;
 
-class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
+class GetFieldBoundaryAlgoTests : public ::testing::Test
 {
+protected:
+  virtual void SetUp()
+  {
+    int basisOrder = 1;
+    FieldInformation lfi("LatVolMesh", basisOrder, "double");
+    int sizex,sizey,sizez;
+    sizex = sizey = sizez = 5;
+    Point minb(0,0,0);
+    Point maxb(1,1,1);
+    mesh_ = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+    field_ = CreateField(lfi, mesh_);
+  }
 
+  FieldHandle field_;
+  MeshHandle mesh_;
 };
 
-TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
+TEST_F(GetFieldBoundaryAlgoTests, Foo)
 {
-  const std::string name = "EvaluateLinearAlgebraUnary";
-  auto module = makeModule(name);
-
-  EXPECT_EQ(name, module->get_module_name());
-
-  DenseMatrixHandle m(new DenseMatrix(2,2));
-
-  stubPortNWithThisData(module, 0, m);
-
-  //TODO: mock module state for passing to algorithm
-  //TODO: algorithm factory to provide mock algorithm
-  //TODO: need algorithm parameters set up from algo ctor. Partial mock?
-  module->execute();
+  FAIL("Todo");
 }

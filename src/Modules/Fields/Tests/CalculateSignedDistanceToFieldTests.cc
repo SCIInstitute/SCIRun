@@ -26,41 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-
 #include <Testing/Utils/ModuleTestBase.h>
-
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Dataflow::Networks::Mocks;
-//using ::testing::_;
-//using ::testing::NiceMock;
-//using ::testing::DefaultValue;
-//using ::testing::Return;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
+class CalculateSignedDistanceToFieldModuleTests : public ModuleTest
 {
 
 };
-
-TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
-{
-  const std::string name = "EvaluateLinearAlgebraUnary";
-  auto module = makeModule(name);
-
-  EXPECT_EQ(name, module->get_module_name());
-
-  DenseMatrixHandle m(new DenseMatrix(2,2));
-
-  stubPortNWithThisData(module, 0, m);
-
-  //TODO: mock module state for passing to algorithm
-  //TODO: algorithm factory to provide mock algorithm
-  //TODO: need algorithm parameters set up from algo ctor. Partial mock?
-  module->execute();
-}
