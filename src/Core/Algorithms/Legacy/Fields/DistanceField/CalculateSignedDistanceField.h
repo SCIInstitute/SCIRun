@@ -44,10 +44,9 @@ class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase
     {
     }
 
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle object, FieldHandle& output) const;
 
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& distance,
-             FieldHandle& value);
+    bool run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const;
 
     static AlgorithmParameterName OutputValueField;
 
