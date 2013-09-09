@@ -27,10 +27,15 @@
 */
 
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Testing/Utils/ModuleTestBase.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -40,3 +45,13 @@ class GetFieldBoundaryModuleTests : public ModuleTest
 {
 
 };
+
+TEST_F(GetFieldBoundaryModuleTests, ThrowsForNullInput)
+{
+  auto csdf = makeModule("GetFieldBoundary");
+  FieldHandle nullField;
+  stubPortNWithThisData(csdf, 0, nullField);
+  stubPortNWithThisData(csdf, 1, nullField);
+
+  EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
+}

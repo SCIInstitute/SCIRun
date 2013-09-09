@@ -27,10 +27,15 @@
 */
 
 #include <Testing/Utils/ModuleTestBase.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
@@ -40,3 +45,13 @@ class CalculateSignedDistanceToFieldModuleTests : public ModuleTest
 {
 
 };
+
+TEST_F(CalculateSignedDistanceToFieldModuleTests, ThrowsForNullInput)
+{
+  auto csdf = makeModule("CalculateSignedDistanceToField");
+  FieldHandle nullField;
+  stubPortNWithThisData(csdf, 0, nullField);
+  stubPortNWithThisData(csdf, 1, nullField);
+
+  EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
+}

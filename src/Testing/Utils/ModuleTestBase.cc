@@ -98,7 +98,11 @@ ModuleHandle ModuleTest::makeModule(const std::string& name)
 
 void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
-  module->get_input_port(portNum)->attach(0);
-  DatatypeHandleOption o = data;
-  dynamic_cast<StubbedDatatypeSink*>(module->get_input_port(portNum)->sink().get())->setData(o);
+  if (portNum < module->num_input_ports())
+  {
+    auto iport = module->get_input_port(portNum);
+    iport->attach(0);
+    DatatypeHandleOption o = data;
+    dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
+  }
 }

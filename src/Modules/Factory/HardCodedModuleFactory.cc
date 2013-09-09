@@ -49,6 +49,7 @@
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
+#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -94,6 +95,7 @@ namespace SCIRun {
         ModuleDescriptionLookup()
         {
           //TODO: make EVEN MORE generic...macros? xml?
+          //TODO: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
 
           addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
@@ -122,6 +124,7 @@ namespace SCIRun {
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
+          addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
         }
 
         ModuleDescriptionMap descMap_;
