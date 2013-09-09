@@ -755,13 +755,13 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   if (!distance)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
 
   if (!value)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   } 
     
   VMesh* imesh = input->vmesh();
