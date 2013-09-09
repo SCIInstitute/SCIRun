@@ -110,6 +110,8 @@ namespace Networks {
 
     virtual void setDefaults() {} //TODO should be pure virtual
 
+    bool oport_connected(size_t portIndex) const;
+
     template <class Type, size_t N>
     struct PortName
     {

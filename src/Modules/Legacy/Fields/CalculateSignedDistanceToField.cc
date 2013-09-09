@@ -46,10 +46,12 @@ void CalculateSignedDistanceToField::execute()
   FieldHandle input = getRequiredInput(InputField);
   FieldHandle object = getRequiredInput(ObjectField);
  
-  bool value_connected = oport_connected("ValueField");
+  bool value_connected = oport_connected(ValueField);
    
-  if (inputs_changed_ || !oport_cached("SignedDistanceField") ||
-      (!oport_cached("ValueField") && value_connected))
+  /*if inputs_changed_ || !oport_cached("SignedDistanceField") ||
+  (!oport_cached("ValueField") && value_connected)
+  */
+  if (needToExecute())
   {
     update_state(Executing);
     
