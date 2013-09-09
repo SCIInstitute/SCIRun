@@ -317,3 +317,12 @@ void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::U
   if (algo_)
     algo_->setUpdaterFunc(func);
 }
+
+bool Module::oport_connected(size_t portIndex) const
+{
+  if (portIndex >= oports_.size())
+    return false;
+
+  auto port = oports_[portIndex];
+  return port->nconnections() > 0;
+}
