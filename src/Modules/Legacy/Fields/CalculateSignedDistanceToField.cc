@@ -27,7 +27,7 @@
 */
 
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
