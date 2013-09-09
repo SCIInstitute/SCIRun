@@ -38,16 +38,17 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 
 class CalculateSignedDistanceFieldP {
   public:
-    CalculateSignedDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, ProgressReporter* pr) :
+    CalculateSignedDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, const ProgressReporter* pr) :
       imesh(imesh), objmesh(objmesh), ofield(ofield), pr_(pr) {}
 
     CalculateSignedDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField* objfield,
-            VField*  ofield, VField* vfield, ProgressReporter* pr) :
+            VField*  ofield, VField* vfield, const ProgressReporter* pr) :
       imesh(imesh), objmesh(objmesh), objfield(objfield), ofield(ofield), vfield(vfield), pr_(pr) {}
             
     void parallel(int proc, int nproc)
@@ -642,7 +643,7 @@ class CalculateSignedDistanceFieldP {
     VField*  ofield;
     VField*  vfield;
 
-    ProgressReporter* pr_;
+    const ProgressReporter* pr_;
 };
 
 bool
@@ -703,8 +704,9 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output) const
 
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
 
-  CalculateSignedDistanceFieldP palgo(imesh,objmesh,ofield,get_progress_reporter());
-  Thread::parallel(&palgo,&CalculateSignedDistanceFieldP::parallel,Thread::numProcessors(),Thread::numProcessors());
+  CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
+  auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);
 }
@@ -791,8 +793,10 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
     return (false);
   }
 
-  CalculateSignedDistanceFieldP palgo(imesh,objmesh,objfield,dfield,vfield,get_progress_reporter());
-  Thread::parallel(&palgo,&CalculateSignedDistanceFieldP::parallel2,Thread::numProcessors(),Thread::numProcessors());
+  CalculateSignedDistanceFieldP palgo(imesh, objmesh, objfield, dfield, vfield, this);
+
+  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
 
   return (true);
 }
