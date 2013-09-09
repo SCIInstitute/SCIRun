@@ -38,7 +38,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
 CalculateSignedDistanceToField::CalculateSignedDistanceToField()
-  : Module(ModuleLookupInfo("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun"))
+  : Module(ModuleLookupInfo("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun"), false)
 {
 }
 
