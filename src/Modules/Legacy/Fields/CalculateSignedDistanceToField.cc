@@ -43,11 +43,8 @@ CalculateSignedDistanceToField::CalculateSignedDistanceToField()
 
 void CalculateSignedDistanceToField::execute()
 {
-  FieldHandle input, output, value;
-  FieldHandle object;
- 
-  get_input_handle("Field",input,true);
-  get_input_handle("ObjectField",object,true);
+  FieldHandle input = getRequiredInput(InputField);
+  FieldHandle object = getRequiredInput(ObjectField);
  
   bool value_connected = oport_connected("ValueField");
    
