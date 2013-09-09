@@ -26,19 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateSignedDistanceField.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Thread/Thread.h>
-#include <float.h>
-
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Thread/Parallel.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
-
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 class CalculateSignedDistanceFieldP {
   public:
@@ -644,10 +645,6 @@ class CalculateSignedDistanceFieldP {
     ProgressReporter* pr_;
 };
 
-
-
-
-
 bool
 CalculateSignedDistanceFieldAlgo::
 run(FieldHandle input, FieldHandle object, FieldHandle& output)
@@ -711,9 +708,6 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output)
 
   algo_end(); return (true);
 }
-
-
-
 
 bool
 CalculateSignedDistanceFieldAlgo::
@@ -803,4 +797,31 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   algo_end(); return (true);
 }
 
-} // end namespace SCIRunAlgo
+AlgorithmInputName CalculateSignedDistanceFieldAlgo::InputField("InputField");
+AlgorithmInputName CalculateSignedDistanceFieldAlgo::ObjectField("ObjectField");
+AlgorithmOutputName CalculateSignedDistanceFieldAlgo::DistanceField("DistanceField");
+AlgorithmOutputName CalculateSignedDistanceFieldAlgo::ValueField("ValueField");
+AlgorithmParameterName CalculateSignedDistanceFieldAlgo::OutputValueField("OutputValueField");
+
+AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(InputField);
+  auto objectField = input.get<Field>(ObjectField);
+
+  FieldHandle distance, value;
+  if (get(OutputValueField))
+  {
+    if (!run(inputField, objectField, distance, value))
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  }
+  else
+  {
+    if (!run(inputField, objectField, distance))
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  }
+
+  AlgorithmOutput output;
+  output[DistanceField] = distance;
+  output[ValueField] = value;
+  return output;
+}

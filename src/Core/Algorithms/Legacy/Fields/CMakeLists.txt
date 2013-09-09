@@ -63,7 +63,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DistanceField/CalculateDistanceField.cc
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
-  #DistanceField/CalculateSignedDistanceField.cc
+  DistanceField/CalculateSignedDistanceField.cc
   #DomainFields/GetDomainBoundary.cc
   #DomainFields/GetDomainStructure.cc
   #DomainFields/MatchDomainLabels.cc
