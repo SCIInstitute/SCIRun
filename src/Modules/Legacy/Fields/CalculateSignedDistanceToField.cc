@@ -33,6 +33,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
@@ -55,18 +56,18 @@ void CalculateSignedDistanceToField::execute()
   {
     update_state(Executing);
     
+    auto inputs = make_input((InputField, input)(ObjectField, object));
+
+    algo_->set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
+    auto output = algo_->run_generic(inputs);
+   
+    FieldHandle distance = get_output(output, SignedDistanceField, Field);
+    sendOutput(SignedDistanceField, distance); 
+
     if (value_connected)
     {
-      if(!(algo_.run(input,object,output,value))) return;
-   
-      send_output_handle("SignedDistanceField", output); 
-      send_output_handle("ValueField", value); 
-    }
-    else
-    {
-      if(!(algo_.run(input,object,output))) return;
-   
-      send_output_handle("SignedDistanceField", output);     
+      FieldHandle value = get_output(output, ValueField, Field);
+      sendOutput(ValueField, value); 
     }
   }
 }
