@@ -251,7 +251,7 @@ function(Spire_AddCore name)
   _spm_parse_arguments(Spire_AddCore _SPM_ "${ARGN}")
 
   # Setup any defaults that the user provided.
-  if (_SPM_PREFIX)
+  if (DEFINED _SPM_PREFIX)
     set(_ep_prefix "PREFIX" "${_SPM_PREFIX}")
   else()
     set(_ep_prefix "PREFIX" "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
@@ -259,30 +259,30 @@ function(Spire_AddCore name)
     set(_SPM_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/spire-core")
   endif()
 
-  if (_SPM_GIT_TAG)
+  if (DEFINED _SPM_GIT_TAG)
     set(_ep_git_tag "GIT_TAG" ${_SPM_GIT_TAG})
   else()
     set(_ep_git_tag "GIT_TAG" "master")
   endif()
 
-  if (_SPM_GIT_REPOSITORY)
+  if (DEFINED _SPM_GIT_REPOSITORY)
     set(_ep_git_repo "GIT_REPOSITORY" ${_SPM_GIT_REPOSITORY})
   else()
     set(_ep_git_repo "GIT_REPOSITORY" "https://github.com/SCIInstitute/spire.git")
   endif()
 
-  if (_SPM_SOURCE_DIR)
+  if (DEFINED _SPM_SOURCE_DIR)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
   endif()
 
-  if (_SPM_BINARY_DIR)
+  if (DEFINED _SPM_BINARY_DIR)
     set(_ep_bin_dir "BINARY_DIR" $_SPM_BINARY_DIR)
   endif()
 
-  if (_SPM_USE_STD_THREADS)
+  if (DEFINED _SPM_USE_STD_THREADS)
     set(_ep_spire_use_threads "-DUSE_STD_THREADS:BOOL=${_SPM_USE_STD_THREADS}")
   else()
     set(_ep_spire_use_threads "-DUSE_STD_THREADS:BOOL=ON")
@@ -338,12 +338,12 @@ function(Spire_AddCore name)
   set_target_properties(${name} PROPERTIES SPIRE_BASE_MODULE_SRC_DIR "${PREFIX}/module_src/SpireExt")
 
   # Set output directory for assets if the user passed the variable in.
-  if (_SPM_ASSET_OUTPUT_DIR)
+  if (DEFINED _SPM_ASSET_OUTPUT_DIR)
     set_target_properties(${name} PROPERTIES ASSET_OUTPUT_DIR "${_SPM_ASSET_OUTPUT_DIR}")
   endif()
 
   # Set output directory for shaders if the user passed the variable in.
-  if (_SPM_SHADER_OUTPUT_DIR)
+  if (DEFINED _SPM_SHADER_OUTPUT_DIR)
     set_target_properties(${name} PROPERTIES SHADER_OUTPUT_DIR "${_SPM_SHADER_OUTPUT_DIR}")
   endif()
 
@@ -386,7 +386,7 @@ function (Spire_AddModule spire_core module_name repo version)
 
   # If the user specified the source directory then don't automatically generate
   # it for them and wipe out all git / download info.
-  if (_SPM_SOURCE_DIR)
+  if (DEFINED _SPM_SOURCE_DIR)
     set(_ep_source_dir "SOURCE_DIR" "${_SPM_SOURCE_DIR}")
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
@@ -409,12 +409,12 @@ function (Spire_AddModule spire_core module_name repo version)
     set(SPIRE_MODULE_INCLUDE_DIRS ${SPIRE_MODULE_INCLUDE_DIRS} ${MODULE_PREFIX} PARENT_SCOPE)
   endif()
 
-  if (_SPM_SHADER_DIR)
+  if (DEFINED _SPM_SHADER_DIR)
     # Set appropriate shader variable in PARENT_SCOPE.
     set(SPIRE_SHADER_DIRS ${SPIRE_SHADER_DIRS} ${_SPM_SHADER_DIR} PARENT_SCOPE)
   endif()
 
-  if (_SPM_ASSET_DIR)
+  if (DEFINED _SPM_ASSET_DIR)
     # Set appropriate asset variable in PARENT_SCOPE.
     set(SPIRE_ASSET_DIRS ${SPIRE_ASSET_DIRS} ${_SPM_ASSET_DIR} PARENT_SCOPE)
   endif()
