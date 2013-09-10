@@ -86,11 +86,6 @@ GLWidget::GLWidget(QtGLContext* context) :
   mGraphics->addPersistentShader("UniformColor", shaderFiles);
 
   shaderFiles.clear();
-  shaderFiles.push_back(std::make_pair("ColorMap.vsh", Spire::Interface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("ColorMap.fsh", Spire::Interface::FRAGMENT_SHADER));
-  mGraphics->addPersistentShader("ColorMap", shaderFiles);
-
-  shaderFiles.clear();
   shaderFiles.push_back(std::make_pair("DirPhong.vsh", Spire::Interface::VERTEX_SHADER));
   shaderFiles.push_back(std::make_pair("DirPhong.fsh", Spire::Interface::FRAGMENT_SHADER));
   mGraphics->addPersistentShader("DirPhong", shaderFiles);
