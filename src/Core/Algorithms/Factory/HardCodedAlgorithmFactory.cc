@@ -29,6 +29,7 @@
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 
 using namespace SCIRun::Core::Algorithms;
@@ -45,6 +46,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new GetFieldBoundaryAlgo);
   else if (name == "SolveLinearSystem")
     h.reset(new SolveLinearSystemAlgo);
+  else if (name == "CalculateSignedDistanceToField")
+    h.reset(new CalculateSignedDistanceFieldAlgo);
 
   if (h && algoCollaborator)
   {

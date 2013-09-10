@@ -40,6 +40,10 @@ using namespace SCIRun::Modules::Fields;
 CalculateSignedDistanceToField::CalculateSignedDistanceToField()
   : Module(ModuleLookupInfo("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun"), false)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ObjectField);
+  INITIALIZE_PORT(SignedDistanceField);
+  INITIALIZE_PORT(ValueField);
 }
 
 void CalculateSignedDistanceToField::execute()

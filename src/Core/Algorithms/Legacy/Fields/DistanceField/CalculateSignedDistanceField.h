@@ -40,9 +40,7 @@ namespace SCIRun {
 class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase 
 {
   public:
-    CalculateSignedDistanceFieldAlgo()
-    {
-    }
+    CalculateSignedDistanceFieldAlgo();
 
     bool run(FieldHandle input, FieldHandle object, FieldHandle& output) const;
 
@@ -52,7 +50,7 @@ class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase
 
     static AlgorithmInputName InputField;
     static AlgorithmInputName ObjectField;
-    static AlgorithmOutputName DistanceField;
+    static AlgorithmOutputName SignedDistanceField;
     static AlgorithmOutputName ValueField;
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
