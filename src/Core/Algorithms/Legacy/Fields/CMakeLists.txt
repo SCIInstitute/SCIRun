@@ -27,18 +27,19 @@
 #
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
-  FieldData/CalculateFieldDataMetric.h         
-  FieldData/ConvertIndicesToFieldData.h
+  DistanceField/CalculateSignedDistanceField.h
+  #FieldData/CalculateFieldDataMetric.h         
+  #FieldData/ConvertIndicesToFieldData.h
   FieldData/CalculateGradients.h               
-  FieldData/CalculateVectorMagnitudes.h        
-  FieldData/ConvertMappingMatrixToFieldData.h
-  FieldData/ConvertFieldDataType.h             
-  FieldData/ConvertFieldBasisType.h            
-  FieldData/CalculateLatVolGradientsAtNodes.h  
-  FieldData/GetFieldData.h
-  FieldData/SetFieldData.h
-  FieldData/SetFieldDataToConstantValue.h
-  FieldData/SmoothVecFieldMedian.h
+  #FieldData/CalculateVectorMagnitudes.h        
+  #FieldData/ConvertMappingMatrixToFieldData.h
+  #FieldData/ConvertFieldDataType.h             
+  #FieldData/ConvertFieldBasisType.h            
+  #FieldData/CalculateLatVolGradientsAtNodes.h  
+  #FieldData/GetFieldData.h
+  #FieldData/SetFieldData.h
+  #FieldData/SetFieldDataToConstantValue.h
+  #FieldData/SmoothVecFieldMedian.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
 )
 
