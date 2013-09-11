@@ -276,6 +276,7 @@ function(Spire_AddCore name)
     # Clear git repo or git tag, if any.
     set(_ep_git_repo)
     set(_ep_git_tag)
+    set(_ep_update_command "UPDATE_COMMAND" "cmake .")
   endif()
 
   if (DEFINED _SPM_BINARY_DIR)
@@ -308,6 +309,15 @@ function(Spire_AddCore name)
       ${_ep_spire_use_threads}
       ${_ep_spire_output_dirs}
     )
+
+  if (DEFINED _SPM_SOURCE_DIR)
+    # Forces a build even though we are source only.
+    ExternalProject_Add_Step(${name} forcebuild
+      COMMAND ${CMAKE_COMMAND} -E echo
+      ALWAYS 1
+      DEPENDERS build
+      )
+  endif()
 
   # This target property is used to place compiled modules where they belong.
   set_target_properties(${name} PROPERTIES SPIRE_MODULE_OUTPUT_DIRECTORY "${_SPM_BASE_OUTPUT_DIR}")
@@ -446,6 +456,15 @@ function (Spire_AddModule spire_core module_name repo version)
       -DOUTPUT_ASSET_DIR:STRING=${OUTPUT_ASSET_DIR}
       ${_ep_spire_output_dirs}
     )
+
+  if (DEFINED _SPM_SOURCE_DIR)
+    # Forces a build even though we are source only.
+    ExternalProject_Add_Step(${target_name} forcebuild
+      COMMAND ${CMAKE_COMMAND} -E echo
+      ALWAYS 1
+      DEPENDERS build
+      )
+  endif()
 
   # We don't need to set SPIRE_INCLUDE_DIRS since it is assumed that the source
   # for our module has been placed in the appropriate location and we can
