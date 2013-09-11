@@ -42,6 +42,7 @@
 
 #include <boost/filesystem.hpp>
 #include <Core/Datatypes/String.h>
+#include <Core/Thread/Mutex.h>
 #include <Dataflow/Network/Module.h>
 
 namespace SCIRun {
@@ -73,6 +74,9 @@ protected:
   bool importing_;
 
   virtual bool call_importer(const std::string &filename, HType & handle);
+
+  static Core::Thread::Mutex fileCheckMutex_;
+  static bool file_exists(const std::string & filename);
 };
 
 
@@ -88,6 +92,8 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
 {
 }
 
+template <class HType, class PortTag> 
+Core::Thread::Mutex GenericReader<HType,PortTag>::fileCheckMutex_("GenericReader");
 
 template <class HType, class PortTag> 
 bool
@@ -97,6 +103,14 @@ GenericReader<HType, PortTag>::call_importer(const std::string &/*filename*/,
   return false;
 }
 
+template <class HType, class PortTag> 
+bool
+  GenericReader<HType, PortTag>::file_exists(const std::string & filename)
+{
+  //BOOST FILESYSTEM BUG: it is not thread-safe. TODO: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
+  Core::Thread::Guard guard(GenericReader<HType, PortTag>::fileCheckMutex_.get());
+  return boost::filesystem::exists(filename);
+}
 
 template <class HType, class PortTag> 
 void
@@ -133,7 +147,7 @@ GenericReader<HType, PortTag>::execute()
     error("No file has been selected.  Please choose a file.");
     return;
   } 
-  else if (!boost::filesystem::exists(filename_)) 
+  else if (!file_exists(filename_)) 
   {
     if (!importing_)
     {
