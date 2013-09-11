@@ -50,6 +50,7 @@
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
+#include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -125,6 +126,7 @@ namespace SCIRun {
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
           addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
+          addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...")
         }
 
         ModuleDescriptionMap descMap_;
