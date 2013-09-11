@@ -44,8 +44,7 @@ class SCISHARE CalculateGradientsAlgo : public AlgorithmBase
     {
     }
   
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle& output) const;
 
     static AlgorithmInputName ScalarField;
     static AlgorithmOutputName VectorField;

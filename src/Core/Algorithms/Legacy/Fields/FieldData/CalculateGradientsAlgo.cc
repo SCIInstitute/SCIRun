@@ -30,14 +30,16 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
 bool
-CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
+CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "CalculateGradients");
   if (!input)
@@ -96,4 +98,17 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
   }
 
   return (true);
+}
+
+AlgorithmOutput CalculateGradientsAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(ScalarField);
+
+  FieldHandle gradient;
+  if (!run(field, gradient))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[VectorField] = gradient;
+  return output;
 }

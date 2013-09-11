@@ -50,9 +50,7 @@ AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("MappingMatrix");
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  add_option("mapping","auto","auto|node|elem|none");
-#endif
+  add_option(AlgorithmParameterName("mapping"),"auto","auto|node|elem|none");
 }
 
 struct IndexHash {
