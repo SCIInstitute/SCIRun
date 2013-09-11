@@ -322,8 +322,17 @@ function(Spire_AddCore name)
   # This target property is used to place compiled modules where they belong.
   set_target_properties(${name} PROPERTIES SPIRE_MODULE_OUTPUT_DIRECTORY "${_SPM_BASE_OUTPUT_DIR}")
 
+  # Setup imported library.
+  set(spire_library_name Spire)
+  set(spire_library_target_name SpireCoreLibraryTarget)
+  set(spire_library_path 
+    "${_SPM_CORE_OUTPUT_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${spire_library_name}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  add_library(${spire_library_target_name} STATIC IMPORTED GLOBAL)
+  add_dependencies(${spire_library_target_name} ${name})
+  set_property(TARGET ${spire_library_target_name} PROPERTY IMPORTED_LOCATION "${spire_library_path}")
+
   # Library path for the core module.
-  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} Spire PARENT_SCOPE)
+  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} "${spire_library_target_name}" PARENT_SCOPE)
   set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${_SPM_CORE_OUTPUT_DIR}" PARENT_SCOPE)
 
   # Retrieving properties from external projects will retrieve their fully
@@ -340,7 +349,7 @@ function(Spire_AddCore name)
 
   Spire_BuildCoreThirdPartyIncludes(spire_third_party_dirs ${SOURCE_DIR})
   set(SPIRE_3RDPARTY_INCLUDE_DIRS ${spire_third_party_dirs})
-  set(SPIRE_3RDPARTY_INCLUDE_DIRS ${SPIRE_3RDPARTY_INCLUDE_DIRS} PARENT_SCOPE)
+  set(SPIRE_3RDPARTY_INCLUDE_DIRS "${SPIRE_3RDPARTY_INCLUDE_DIRS}" PARENT_SCOPE)
 
   # Also set a target property containing all of the includes needed for the
   # core spire library. This is used by modules in order.
@@ -470,8 +479,17 @@ function (Spire_AddModule spire_core module_name repo version)
   # for our module has been placed in the appropriate location and we can
   # lookup the results using SpireExt/{target_name}.
 
+  # Setup imported library.
+  set(spire_library_name ${MODULE_STATIC_LIB_NAME})
+  set(spire_library_target_name ${MODULE_STATIC_LIB_NAME})
+  set(spire_library_path 
+    "${MODULE_BIN_OUTPUT_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${spire_library_name}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  add_library(${spire_library_target_name} STATIC IMPORTED GLOBAL)
+  add_dependencies(${spire_library_target_name} ${target_name})
+  set_property(TARGET ${spire_library_target_name} PROPERTY IMPORTED_LOCATION "${spire_library_path}")
+
   # Ensure this module can be found during the linking process.
-  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} ${MODULE_STATIC_LIB_NAME} PARENT_SCOPE)
+  set(SPIRE_LIBRARIES ${SPIRE_LIBRARIES} "${MODULE_STATIC_LIB_NAME}" PARENT_SCOPE)
   set(SPIRE_LIBRARY_DIRS ${SPIRE_LIBRARY_DIRS} "${MODULE_BIN_OUTPUT_DIR}" PARENT_SCOPE)
 
   # We do depend on the spire source being available before we compile our,
