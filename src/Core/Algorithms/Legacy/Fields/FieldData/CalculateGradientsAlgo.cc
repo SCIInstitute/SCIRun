@@ -39,11 +39,11 @@ using namespace SCIRun::Core::Utility;
 bool
 CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
 {
-  algo_start("CalculateGradients");
-  if (input.get_rep() == 0)
+  ScopedAlgorithmStatusReporter asr(this, "CalculateGradients");
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
   
   FieldInformation fi(input);
@@ -51,29 +51,29 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
   if (fi.is_pointcloudmesh())
   {
     error("Cannot calculate gradients for a point cloud");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   if (fi.is_nodata())
   {
     error("Input field does not have data associated with it");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   if (!(fi.is_scalar()))
   {
     error("The data needs to be of scalar type to calculate gradients");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   fi.make_vector();
   fi.make_constantdata();
   output = CreateField(fi,input->mesh());
 
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);      
+    return (false);      
   }
 
   VField* ifield = input->vfield();
@@ -95,7 +95,5 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
     ofield->set_value(v,idx);  
   }
 
-  algo_end(); return (true);
+  return (true);
 }
-
-} // end namespace SCIRun
