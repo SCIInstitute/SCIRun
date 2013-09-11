@@ -55,8 +55,6 @@
 
 #include <Core/Thread/Mutex.h>
 #include <Core/Thread/ConditionVariable.h>
-//#include <Core/Thread/Guard.h>
-//#include <Core/Thread/Runnable.h>
 #include <boost/thread.hpp>
 #include <Core/Persistent/PersistentSTL.h>
 
@@ -254,9 +252,11 @@ public:
   class Synchronize //: public Runnable
   {
     public:
-      Synchronize(QuadSurfMesh<Basis>& mesh, mask_type sync) :
-        mesh_(mesh), sync_(sync) {}
-        
+      Synchronize(QuadSurfMesh<Basis>* mesh, mask_type sync) :
+        mesh_(mesh), sync_(sync) 
+      {
+      }
+
       void operator()()
       {
         run();
@@ -264,55 +264,57 @@ public:
 
       void run()
       {
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // block out all the tables that are already synchronized
-        sync_ &= ~(mesh_.synchronized_);
+        sync_ &= ~(mesh_->synchronized_);
         // block out all the tables that are already being computed
-        sync_ &= ~(mesh_.synchronizing_);
+        sync_ &= ~(mesh_->synchronizing_);
         // Now sync_ contains what this thread will synchronize
         // Denote what this thread will synchronize
-        mesh_.synchronizing_ |= sync_;
+        mesh_->synchronizing_ |= sync_;
         // Other threads now know what this tread will be doing
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_lock_.unlock();
         
         // Sync node neighbors
-        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_.compute_node_neighbors();
+        if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
         
-        if (sync_ & Mesh::EDGES_E) mesh_.compute_edges();
-        if (sync_ & Mesh::NORMALS_E) mesh_.compute_normals();
+        if (sync_ & Mesh::EDGES_E) mesh_->compute_edges();
+        if (sync_ & Mesh::NORMALS_E) mesh_->compute_normals();
         
-        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_.compute_bounding_box();
+        if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
         
         // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_.synchronize_lock_.lock();
-          Core::Thread::UniqueLock lock(mesh_.synchronize_lock_.get());
-          while(!(mesh_.synchronized_ & Mesh::BOUNDING_BOX_E)) 
-            mesh_.synchronize_cond_.wait(lock);
-          mesh_.synchronize_lock_.unlock();     
+          {
+            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+            while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
+            {
+              mesh_->synchronize_cond_.wait(lock);
+            }
+          }
           if (sync_ & Mesh::NODE_LOCATE_E) 
           {
-            mesh_.compute_node_grid();
+            mesh_->compute_node_grid();
           }
           if (sync_ & Mesh::ELEM_LOCATE_E) 
           {
-            mesh_.compute_elem_grid();
+            mesh_->compute_elem_grid();
           }
         }
         
-        mesh_.synchronize_lock_.lock();
+        mesh_->synchronize_lock_.lock();
         // Mark the ones that were just synchronized
-        mesh_.synchronized_ |= sync_;
+        mesh_->synchronized_ |= sync_;
         // Unmark the the ones that were done
-        mesh_.synchronizing_ &= ~(sync_);
+        mesh_->synchronizing_ &= ~(sync_);
+        mesh_->synchronize_lock_.unlock();
         //! Tell other threads we are done
-        mesh_.synchronize_cond_.conditionBroadcast();
-        mesh_.synchronize_lock_.unlock();
+        mesh_->synchronize_cond_.conditionBroadcast();
       }
 
     private:
-      QuadSurfMesh<Basis>& mesh_;
+      QuadSurfMesh<Basis>* mesh_;
       mask_type  sync_;
   };
 
@@ -1148,7 +1150,6 @@ public:
     
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
         "QuadSurfMesh::find_closest_elem requires synchronize(ELEM_LOCATE_E).")
-
     // get grid sizes
     const size_type ni = elem_grid_->get_ni()-1;
     const size_type nj = elem_grid_->get_nj()-1;
@@ -1283,7 +1284,7 @@ public:
     if (sz == 0) return (false);
 
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
-	      "TriSurfMesh::find_closest_elem requires synchronize(ELEM_LOCATE_E).")
+	      "QuadSurfMesh::find_closest_elem requires synchronize(ELEM_LOCATE_E).")
 
     // get grid sizes
     const size_type ni = elem_grid_->get_ni()-1;
@@ -2604,8 +2605,6 @@ QuadSurfMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   }
 }
 
-
-
 template <class Basis>
 bool
 QuadSurfMesh<Basis>::synchronize(mask_type sync)
@@ -2630,7 +2629,9 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
            Mesh::NODE_NEIGHBORS_E|Mesh::BOUNDING_BOX_E|
            Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E);
 
-  synchronize_lock_.lock();
+  {
+
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
 
   // Only sync what hasn't been synched
   sync &= (~synchronized_);
@@ -2638,13 +2639,12 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   
   if (sync == 0)
   {
-    synchronize_lock_.unlock();
     return (true);
   }
   
   if (sync == Mesh::EDGES_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2652,13 +2652,13 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::EDGES_E)
   {
     mask_type tosync = Mesh::EDGES_E;
-    Synchronize syncclass(*this,tosync);
+    Synchronize syncclass(this,tosync);
     boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NORMALS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2666,13 +2666,13 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NORMALS_E)
   {
     mask_type tosync = Mesh::NORMALS_E;
-    Synchronize syncclass(*this,tosync);
+    Synchronize syncclass(this,tosync);
     boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_NEIGHBORS_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2680,13 +2680,13 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_NEIGHBORS_E)
   {
     mask_type tosync = Mesh::NODE_NEIGHBORS_E;
-    Synchronize syncclass(*this,tosync);
+    Synchronize syncclass(this,tosync);
     boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::BOUNDING_BOX_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2694,13 +2694,13 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::BOUNDING_BOX_E)
   {
     mask_type tosync = Mesh::BOUNDING_BOX_E;
-    Synchronize syncclass(*this,tosync);
+    Synchronize syncclass(this,tosync);
     boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::NODE_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2708,13 +2708,13 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::NODE_LOCATE_E)
   {
     mask_type tosync = Mesh::NODE_LOCATE_E;
-    Synchronize syncclass(*this,tosync);
+    Synchronize syncclass(this,tosync);
     boost::thread syncthread(syncclass);
   }
 
   if (sync == Mesh::ELEM_LOCATE_E)
   {
-    Synchronize Synchronize(*this,sync);
+    Synchronize Synchronize(this,sync);
     synchronize_lock_.unlock();
     Synchronize.run();
     synchronize_lock_.lock();
@@ -2722,26 +2722,17 @@ QuadSurfMesh<Basis>::synchronize(mask_type sync)
   else if (sync & Mesh::ELEM_LOCATE_E)
   {
     mask_type tosync = Mesh::ELEM_LOCATE_E;
-    Synchronize syncclass(*this,tosync);
+    Synchronize syncclass(this,tosync);
     boost::thread syncthread(syncclass);
   }
 
-  //// Wait until threads are done
-  //while ((synchronized_ & sync) != sync)
-  //{
-  //  synchronize_cond_.wait(synchronize_lock_);
-  //}
-
   // Wait until threads are done
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
-  Core::Thread::UniqueLock lock(synchronize_lock_.get());
-  while ((synchronized_ & sync) != sync)
-  {
-    synchronize_cond_.wait(lock);
+    while ((synchronized_ & sync) != sync)
+    {
+      synchronize_cond_.wait(lock);
+    }
+  
   }
-#endif
-
-  synchronize_lock_.unlock();
 
   return (true);
 }

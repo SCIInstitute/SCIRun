@@ -53,8 +53,6 @@ class CalculateSignedDistanceFieldP {
             
     void parallel(int proc, int nproc)
     {
-      std::cout << "in parallel" << std::endl;
-      std::cout << 1 << std::endl;
       VMesh::size_type num_values = ofield->num_values();
       VMesh::size_type num_evalues = ofield->num_evalues();
 
@@ -64,7 +62,6 @@ class CalculateSignedDistanceFieldP {
 
       if (ofield->basis_order() == 0)
       {
-        std::cout << "basis order 0" << std::endl;
         VMesh::Elem::index_type fidx, fidx_n;
         VMesh::Node::array_type nodes;
         VMesh::DElem::array_type delems;
@@ -147,7 +144,6 @@ class CalculateSignedDistanceFieldP {
       }
       else if (ofield->basis_order() == 1)
       {
-        std::cout << "basis order 1" << std::endl;
         VMesh::Elem::index_type fidx, fidx_n;
         VMesh::Node::array_type nodes;
         VMesh::DElem::array_type delems;
@@ -230,7 +226,6 @@ class CalculateSignedDistanceFieldP {
       }
       else if (ofield->basis_order() > 1)
       {
-        std::cout << "basis order > 1" << std::endl;
         VMesh::Elem::index_type fidx, fidx_n;
         VMesh::Node::array_type nodes;
         VMesh::DElem::array_type delems;
@@ -713,12 +708,9 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output) const
   }
 
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
-  std::cout << "stating parallel" << std::endl;
   CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
-  palgo.parallel(0,1);
-  //auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
-  //Parallel::RunTasks(task_i, 1);
-  std::cout << "ending parallel" << std::endl;
+  auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
   return (true);
 }
 
@@ -835,8 +827,6 @@ AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInp
       THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
   }
 
-  if (!distance)
-    std::cout << "algo returning null field" << std::endl;
   AlgorithmOutput output;
   output[SignedDistanceField] = distance;
   output[ValueField] = value;
