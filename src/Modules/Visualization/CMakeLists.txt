@@ -51,7 +51,6 @@ TARGET_LINK_LIBRARIES(Modules_Visualization
   Core_Datatypes_Mesh
   Core_Datatypes_Legacy_Field
   ${OPENGL_LIBRARIES}
-  ${SPIRE_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
