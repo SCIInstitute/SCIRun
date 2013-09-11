@@ -31,6 +31,7 @@
 SET(Dataflow_Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
   GetFieldBoundary.h
+  CalculateGradients.h
   CalculateSignedDistanceToField.h
 )
 
@@ -88,7 +89,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #GetSliceFromStructuredFieldByIndices.cc
   #SubsampleStructuredFieldByIndices.cc
   #JoinFields.cc
-  #CalculateGradients.cc
+  CalculateGradients.cc
   #ConvertHexVolToTetVol.cc
   #MergeFields.cc
   #InsertHexVolSheetAlongSurface.cc

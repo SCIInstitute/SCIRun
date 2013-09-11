@@ -69,7 +69,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DomainFields/MatchDomainLabels.cc
   #DomainFields/SplitNodesByDomain.cc
   #DomainFields/SplitFieldByDomain.cc
-  #FieldData/CalculateGradients.cc
+  FieldData/CalculateGradients.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   #FieldData/CalculateVectorMagnitudes.cc
   #FieldData/CalculateFieldDataMetric.cc
