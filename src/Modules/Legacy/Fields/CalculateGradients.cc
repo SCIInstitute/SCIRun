@@ -26,35 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-//! Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/CalculateGradients.h>
-
-//! The module class
-#include <Dataflow/Network/Module.h>
-
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-
-
-namespace SCIRun {
-
-class CalculateGradients : public Module
-{
-  public:
-    CalculateGradients(GuiContext* ctx);
-    virtual ~CalculateGradients() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::CalculateGradientsAlgo algo_;
-};
-
-
-DECLARE_MAKER(CalculateGradients)
+#include <Modules/Legacy/Fields/CalculateGradients.h>
 
 CalculateGradients::CalculateGradients(GuiContext* ctx)
   : Module("CalculateGradients", ctx, Filter, "ChangeFieldData", "SCIRun")
@@ -81,5 +53,3 @@ CalculateGradients::execute()
     send_output_handle( "Field", output,true);
   }
 }
-
-} // End namespace SCIRun
