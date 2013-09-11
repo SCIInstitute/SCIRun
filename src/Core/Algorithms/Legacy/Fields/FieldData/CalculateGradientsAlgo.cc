@@ -29,10 +29,12 @@
 
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
 
 bool
 CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
