@@ -322,14 +322,14 @@ public:
         if (sync_ & Mesh::FACES_E) mesh_->compute_faces();
         if (sync_ & Mesh::BOUNDING_BOX_E) mesh_->compute_bounding_box();
         
-        // These depend on the boundign box being synchronized
+        // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_->synchronize_lock_.lock();
-          Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
-          while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
-            mesh_->synchronize_cond_.wait(lock);
-          mesh_->synchronize_lock_.unlock();          
+          {
+            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+            while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
+              mesh_->synchronize_cond_.wait(lock);
+          }
           if (sync_ & Mesh::NODE_LOCATE_E) mesh_->compute_node_grid();
           if (sync_ & Mesh::ELEM_LOCATE_E) mesh_->compute_elem_grid();
         }
@@ -3189,7 +3189,7 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
            Mesh::NODE_NEIGHBORS_E|Mesh::BOUNDING_BOX_E|
            Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E);
 
-  synchronize_lock_.lock();
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
 
   // Only sync was hasn't been synched
   sync &= (~synchronized_);
@@ -3279,14 +3279,10 @@ TetVolMesh<Basis>::synchronize(mask_type sync)
   }
 
   // Wait until threads are done
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
-  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
     synchronize_cond_.wait(lock);
   }
-#endif
-  synchronize_lock_.unlock();
 
   return (true);
 }
