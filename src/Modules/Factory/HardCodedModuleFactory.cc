@@ -114,7 +114,7 @@ namespace SCIRun {
           addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
           addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
           addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "One multithreaded algorithm available.", "...");
+          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multithreaded algorithm available.", "...");
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
           addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
@@ -126,7 +126,7 @@ namespace SCIRun {
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
           addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
-          addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...")
+          addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
         }
 
         ModuleDescriptionMap descMap_;
