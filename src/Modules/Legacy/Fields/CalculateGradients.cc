@@ -27,29 +27,29 @@
 */
 
 #include <Modules/Legacy/Fields/CalculateGradients.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-CalculateGradients::CalculateGradients(GuiContext* ctx)
-  : Module("CalculateGradients", ctx, Filter, "ChangeFieldData", "SCIRun")
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+
+CalculateGradients::CalculateGradients()
+  : Module(ModuleLookupInfo("CalculateGradients", "ChangeFieldData", "SCIRun"), false)
 {
-  //! Forward errors to the module
-  algo_.set_progress_reporter(this);
 }
 
-void
-CalculateGradients::execute()
+void CalculateGradients::execute()
 {
-  FieldHandle input;
-  FieldHandle output;
+  FieldHandle input = getRequiredInput(ScalarField);
 
-  get_input_handle( "Field", input, true );
-
-  if( inputs_changed_ || !oport_cached("Field") )
+  //inputs_changed_ || !oport_cached("Field")
+  if(needToExecute())
   {
     update_state(Executing);
-    //! Run algorithm
-    if (!(algo_.run(input,output))) return;
-  
-    //! Send the data downstream
-    send_output_handle( "Field", output,true);
+
+    auto output = algo_->run_generic(make_input((ScalarField, input)));
+
+    FieldHandle ofield = get_output(output, VectorField, Field);
+
+    sendOutput(VectorField, ofield);
   }
 }
