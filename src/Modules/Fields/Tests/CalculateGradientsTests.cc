@@ -26,40 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <boost/assign.hpp>
-#include <Core/Datatypes/Legacy/Field/VMesh.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Modules/Legacy/Fields/CalculateGradients.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Testing/Utils/ModuleTestBase.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
-using namespace boost::assign;
 
-class GetFieldBoundaryAlgoTests : public ::testing::Test
+class CalculateGradientsModuleTests : public ModuleTest
 {
-protected:
-  virtual void SetUp()
-  {
-    int basisOrder = 1;
-    FieldInformation lfi("LatVolMesh", basisOrder, "double");
-    int sizex,sizey,sizez;
-    sizex = sizey = sizez = 5;
-    Point minb(0,0,0);
-    Point maxb(1,1,1);
-    mesh_ = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
-    field_ = CreateField(lfi, mesh_);
-  }
 
-  FieldHandle field_;
-  MeshHandle mesh_;
 };
 
-TEST_F(GetFieldBoundaryAlgoTests, Foo)
+TEST_F(CalculateGradientsModuleTests, ThrowsForNullInput)
 {
-  FAIL() << "Todo";
+  auto cg = makeModule("CalculateGradients");
+  FieldHandle nullField;
+  stubPortNWithThisData(cg, 0, nullField);
+
+  EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }

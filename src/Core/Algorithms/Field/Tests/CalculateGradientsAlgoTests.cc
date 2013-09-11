@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-void runTest(int basis, const std::string& expectedBasisTypeTemplate, const std::string& expectedBasisString, int expectedNumData)
+void runTest(.../*int basis, const std::string& expectedBasisTypeTemplate, const std::string& expectedBasisString, int expectedNumData*/)
 {
   //FieldInformation lfi("LatVolMesh", basis, "double");
 
@@ -65,7 +65,7 @@ void runTest(int basis, const std::string& expectedBasisTypeTemplate, const std:
 
 TEST(CalculateGradientsAlgoTests, Foo)
 {
-  FAIL("TODO");
+  FAIL() << "TODO";
   runTest(-1, "NoDataBasis", "None (nodata basis)", 0);
   runTest(0, "ConstantBasis", "Cells (constant basis)", 24);
   runTest(1, "HexTrilinearLgn", "Nodes (linear basis)", 60);

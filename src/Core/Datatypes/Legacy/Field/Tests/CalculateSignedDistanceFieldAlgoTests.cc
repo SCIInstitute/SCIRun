@@ -54,5 +54,5 @@ protected:
 
 TEST_F(CalculateSignedDistanceFieldAlgoTests, Foo)
 {
-  FAIL("Todo");
+  FAIL() << "Todo";
 }
