@@ -100,6 +100,9 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
   return (true);
 }
 
+AlgorithmInputName CalculateGradientsAlgo::ScalarField("ScalarField");
+AlgorithmOutputName CalculateGradientsAlgo::VectorField("VectorField");
+
 AlgorithmOutput CalculateGradientsAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto field = input.get<Field>(ScalarField);
