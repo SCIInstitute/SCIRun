@@ -435,7 +435,7 @@
 			<item>
 				<moduleId1_>CreateLatVol:2</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>CalculateSignedDistanceToField:5</moduleId2_>
+				<moduleId2_>GetFieldBoundary:6</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 			<item>
@@ -447,7 +447,7 @@
 			<item>
 				<moduleId1_>CreateLatVol:3</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>GetFieldBoundary:6</moduleId2_>
+				<moduleId2_>CalculateSignedDistanceToField:5</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 			<item>
@@ -503,8 +503,8 @@
 		<item>
 			<first>GetFieldBoundary:6</first>
 			<second>
-				<first>-1318</first>
-				<second>-488</second>
+				<first>-1293</first>
+				<second>-552</second>
 			</second>
 		</item>
 		<item>
