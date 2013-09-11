@@ -47,14 +47,6 @@ SET(Interface_Modules_Render_SOURCES
 
 FIND_PACKAGE(OpenGL REQUIRED)
 
-# Framework for spire
-if(UNIX)
-  if(APPLE)
-    find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    set(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
-  endif()
-endif()
-
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})
 QT4_WRAP_CPP(Interface_Modules_Render_HEADERS_MOC ${Interface_Modules_Render_HEADERS})
 
