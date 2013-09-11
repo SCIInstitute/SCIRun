@@ -182,27 +182,4 @@ backwards_compat_HVFul("HexVolField<unsigned_long>", "Field",
 		       std::vector<unsigned long> >::maker);
 
 
-typedef HexTricubicHmt<double>             HTCdoubleBasis;
-
-typedef HexVolMesh<HexTricubicHmt<Point> > HVCubMesh;
-template class HexVolMesh<HexTricubicHmt<Point> >;
-
-template class GenericField<HVCubMesh, NDBasis, std::vector<double> >; 
-template class GenericField<HVCubMesh, HTCdoubleBasis, std::vector<double> >; 
-
-typedef HexTricubicHmtScaleFactors<double>             HTCSFdoubleBasis;
-typedef HexTricubicHmtScaleFactors<Vector>             HTCSFVectorBasis;
-
-typedef HexVolMesh<HexTricubicHmtScaleFactors<Point> > HVCubSFMesh;
-template class HexVolMesh<HexTricubicHmtScaleFactors<Point> >;
-
-template class GenericField<HVCubSFMesh, NDBasis, std::vector<double> >; 
-template class GenericField<HVCubSFMesh, HTCSFdoubleBasis, std::vector<double> >; 
-template class GenericField<HVCubSFMesh, HTCSFVectorBasis, std::vector<Vector> >; 
-
-typedef HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> > HVCubSFEMesh;
-template class HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> >;
-
-template class GenericField<HVCubSFEMesh, NDBasis, std::vector<double> >; 
-
 }
