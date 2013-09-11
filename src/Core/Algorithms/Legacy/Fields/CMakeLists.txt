@@ -30,7 +30,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateSignedDistanceField.h
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
-  FieldData/CalculateGradients.h               
+  FieldData/CalculateGradientsAlgo.h               
   #FieldData/CalculateVectorMagnitudes.h        
   #FieldData/ConvertMappingMatrixToFieldData.h
   #FieldData/ConvertFieldDataType.h             
@@ -70,7 +70,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DomainFields/MatchDomainLabels.cc
   #DomainFields/SplitNodesByDomain.cc
   #DomainFields/SplitFieldByDomain.cc
-  FieldData/CalculateGradients.cc
+  FieldData/CalculateGradientsAlgo.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   #FieldData/CalculateVectorMagnitudes.cc
   #FieldData/CalculateFieldDataMetric.cc

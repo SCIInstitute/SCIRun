@@ -27,7 +27,7 @@
 */
 
 
-#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradients.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 namespace SCIRunAlgo {
