@@ -305,11 +305,11 @@ public:
         // Sync node neighbors
         if (sync_ & (Mesh::NODE_NEIGHBORS_E))
         {
-          mesh_->synchronize_lock_.lock();
-          Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
-          while(!(mesh_->synchronized_&Mesh::EDGES_E)) 
-            mesh_->synchronize_cond_.wait(lock);
-          mesh_->synchronize_lock_.unlock();        
+          {
+            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+            while(!(mesh_->synchronized_&Mesh::EDGES_E)) 
+              mesh_->synchronize_cond_.wait(lock);
+          }
           if (sync_ & Mesh::NODE_NEIGHBORS_E) mesh_->compute_node_neighbors();
         }
         
@@ -320,11 +320,11 @@ public:
         // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_->synchronize_lock_.lock();
-          Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
-          while(!(mesh_->synchronized_&Mesh::BOUNDING_BOX_E)) 
-            mesh_->synchronize_cond_.wait(lock);
-          mesh_->synchronize_lock_.unlock();          
+          {
+            Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
+            while(!(mesh_->synchronized_&Mesh::BOUNDING_BOX_E)) 
+              mesh_->synchronize_cond_.wait(lock);
+          }
           if (sync_ & Mesh::NODE_LOCATE_E) mesh_->compute_node_grid();
           if (sync_ & Mesh::ELEM_LOCATE_E) mesh_->compute_elem_grid();
         }
@@ -3068,7 +3068,7 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
            Mesh::NODE_NEIGHBORS_E|Mesh::BOUNDING_BOX_E|
            Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E);
 
-  synchronize_lock_.lock();
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
 
   // Only sync was hasn't been synched
   sync &= (~synchronized_);
@@ -3158,14 +3158,10 @@ PrismVolMesh<Basis>::synchronize(mask_type sync)
   }
 
   // Wait until threads are done
-
-  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
     synchronize_cond_.wait(lock);
   }
-
-  synchronize_lock_.unlock();
 
   return (true);
 }
