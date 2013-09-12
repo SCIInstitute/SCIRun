@@ -60,6 +60,10 @@ public:
 
   std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const {return mGraphics;}
 
+  /// Required function for single threaded interfaces that have multiple
+  /// contexts running on the same thread.
+  void makeCurrent();
+
 protected:
   virtual void mousePressEvent(QMouseEvent* event);
   virtual void mouseMoveEvent(QMouseEvent* event);

@@ -161,6 +161,12 @@ void GLWidget::resizeGL(int width, int height)
 }
 
 //------------------------------------------------------------------------------
+void GLWidget::makeCurrent()
+{
+  mContext->makeCurrent();
+}
+
+//------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
   mContext->makeCurrent();    // Required on windows...

@@ -148,6 +148,14 @@ void ViewSceneDialog::moduleExecuted()
     if (spire == nullptr)
       return;
 
+#ifndef SPIRE_USE_STD_THREADS
+    // In single threaded environments we always need to ensure our context
+    // is current before attempting to make calls into spire. These function
+    // invokations may result in calls to OpenGL -- but ONLY in singlethreaded
+    // environments where we do not need to queue up our requests.
+    mGLWidget->makeCurrent();
+#endif
+
     // Remove ALL prior objects.
     spire->removeAllObjects();
 
