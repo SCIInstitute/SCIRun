@@ -125,6 +125,7 @@ ViewSceneDialog::~ViewSceneDialog()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
+  glLayout->removeWidget(mGLWidget);
 }
 
 //------------------------------------------------------------------------------

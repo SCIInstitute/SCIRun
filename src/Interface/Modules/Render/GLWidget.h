@@ -71,6 +71,7 @@ protected:
   virtual void wheelEvent(QWheelEvent* event);
   virtual void initializeGL();
   virtual void resizeGL(int width, int height);
+  void closeEvent(QCloseEvent *evt);
 
 public Q_SLOTS:
   // Only use when not using threading.

@@ -35,6 +35,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 #include <QTimer>
+#include <QtDebug>
 #include <Core/Application/Application.h>
 
 #include "GLWidget.h"
@@ -158,6 +159,19 @@ void GLWidget::resizeGL(int width, int height)
 {
   mGraphics->eventResize(static_cast<size_t>(width),
                          static_cast<size_t>(height));
+}
+
+//------------------------------------------------------------------------------
+void GLWidget::closeEvent(QCloseEvent *evt)
+{
+  qDebug() << "Close event for window.";
+  if (mGraphics != nullptr)
+  {
+    //std::cout << "Terminating spire." << std::endl;
+    mGraphics->terminate();
+    mGraphics.reset();
+  }
+  QGLWidget::closeEvent(evt);
 }
 
 //------------------------------------------------------------------------------
