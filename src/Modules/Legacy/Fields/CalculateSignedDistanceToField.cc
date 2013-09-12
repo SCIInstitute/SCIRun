@@ -65,13 +65,11 @@ void CalculateSignedDistanceToField::execute()
     algo_->set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
     auto output = algo_->run_generic(inputs);
    
-    FieldHandle distance = get_output(output, SignedDistanceField, Field);
-    sendOutput(SignedDistanceField, distance); 
+    sendOutputFromAlgorithm(SignedDistanceField, output); 
 
     if (value_connected)
     {
-      FieldHandle value = get_output(output, ValueField, Field);
-      sendOutput(ValueField, value); 
+      sendOutputFromAlgorithm(ValueField, output); 
     }
   }
 }

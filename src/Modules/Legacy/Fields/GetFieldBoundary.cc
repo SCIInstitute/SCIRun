@@ -62,10 +62,7 @@ GetFieldBoundary::execute()
 
     auto output = algo_->run_generic(make_input((InputField, field)));
 
-    FieldHandle ofield = get_output(output, BoundaryField, Field);
-    MatrixHandle mapping = get_output(output, Mapping, Matrix);
-    
-    sendOutput(BoundaryField, ofield);
-    sendOutput(Mapping, mapping);
+    sendOutputFromAlgorithm(BoundaryField, output);
+    sendOutputFromAlgorithm(Mapping, output);
   }
 }

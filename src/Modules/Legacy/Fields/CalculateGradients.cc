@@ -50,8 +50,6 @@ void CalculateGradients::execute()
 
     auto output = algo_->run_generic(make_input((ScalarField, input)));
 
-    FieldHandle ofield = get_output(output, VectorField, Field);
-
-    sendOutput(VectorField, ofield);
+    sendOutputFromAlgorithm(VectorField, output);
   }
 }

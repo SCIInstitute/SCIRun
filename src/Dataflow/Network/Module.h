@@ -137,6 +137,9 @@ namespace Networks {
     template <class T, class D, size_t N>
     void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data);
 
+    template <class T, size_t N>
+    void sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
+
     class SCISHARE Builder : boost::noncopyable
     {
     public:
@@ -263,6 +266,12 @@ namespace Networks {
     send_output_handle(static_cast<size_t>(port), data);
   }
   
+  template <class T, size_t N>
+  void Module::sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
+  {
+    sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
+  }
+
 }}
 
 
