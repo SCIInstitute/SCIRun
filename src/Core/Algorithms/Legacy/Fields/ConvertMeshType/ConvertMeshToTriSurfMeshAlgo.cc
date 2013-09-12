@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -38,7 +39,7 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output)
+bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToTriSurfMesh");
   
@@ -227,3 +228,18 @@ bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output)
   return (true);
 }
 
+AlgorithmInputName ConvertMeshToTriSurfMeshAlgo::QuadSurf("QuadSurf");
+AlgorithmOutputName ConvertMeshToTriSurfMeshAlgo::TriSurf("TriSurf");
+
+AlgorithmOutput ConvertMeshToTriSurfMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto quad = input.get<Field>(QuadSurf);
+
+  FieldHandle tri;
+  if (!run(quad, tri))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[TriSurf] = tri;
+  return output;
+}

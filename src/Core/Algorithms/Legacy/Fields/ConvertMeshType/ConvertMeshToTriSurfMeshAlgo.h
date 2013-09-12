@@ -44,7 +44,7 @@ class SCISHARE ConvertMeshToTriSurfMeshAlgo : public AlgorithmBase
     {
     }
 
-    bool run(FieldHandle input, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle& output) const;
 
     static AlgorithmInputName QuadSurf;
     static AlgorithmOutputName TriSurf;
