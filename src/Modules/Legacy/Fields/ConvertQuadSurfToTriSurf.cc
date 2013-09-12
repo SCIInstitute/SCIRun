@@ -26,60 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Include the algorithm
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTriSurfMesh.h>
+#include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-// Base class for the module
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-// Ports included in the module
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-// For Windows support
-#include <Dataflow/Modules/Fields/share.h>
-
-namespace SCIRun {
-
-class SCISHARE ConvertQuadSurfToTriSurf : public Module {
-  public:
-    ConvertQuadSurfToTriSurf(GuiContext*);
-    virtual ~ConvertQuadSurfToTriSurf() {}
-    virtual void execute();
-    
-  private:
-    SCIRunAlgo::ConvertMeshToTriSurfMeshAlgo algo_;  
-};
-
-
-DECLARE_MAKER(ConvertQuadSurfToTriSurf)
-ConvertQuadSurfToTriSurf::ConvertQuadSurfToTriSurf(GuiContext* ctx)
-  : Module("ConvertQuadSurfToTriSurf", ctx, Source, "ChangeMesh", "SCIRun")
+ConvertQuadSurfToTriSurf::ConvertQuadSurfToTriSurf()
+  : Module(ModuleLookupInfo("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun"))
 {
-  //! Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(QuadSurf);
+  INITIALIZE_PORT(TriSurf);
 }
 
-
-void
-ConvertQuadSurfToTriSurf::execute()
+void ConvertQuadSurfToTriSurf::execute()
 {
-  // Define fieldhandles
-  FieldHandle ifield, ofield;
+  FieldHandle ifield = getRequiredInput(QuadSurf);
   
-  // Get data from input port
-  get_input_handle("QuadSurf",ifield,true);
-  
-  // We only execute if something changed
-  if (inputs_changed_ || !oport_cached("TriSurf"))
+  // inputs_changed_ || !oport_cached("TriSurf")
+  if (needToExecute())
   {
     update_state(Executing);
     
-    // Run the algorithm
-    if (!(algo_.run(ifield,ofield))) return;
-    // Send to output to the output port
-    send_output_handle("TriSurf", ofield);
+    auto output = algo_->run_generic(make_input((QuadSurf, ifield)));
+
+    sendOutputFromAlgorithm(TriSurf, output);
   }
 }
-
-} // End namespace SCIRun
-

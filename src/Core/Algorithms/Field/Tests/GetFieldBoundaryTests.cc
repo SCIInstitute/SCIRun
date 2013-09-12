@@ -41,6 +41,8 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
+namespace 
+{
 void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const std::string& expectedMatrixString = "")
 {
   std::cout << "Basis # " << basis << std::endl;
@@ -125,7 +127,7 @@ const std::string matrixNodes =
   "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 \n"
   "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 \n"
   "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 \n";
-
+}
 
 TEST(GetFieldBoundaryTest, LatVolBoundary)
 {
