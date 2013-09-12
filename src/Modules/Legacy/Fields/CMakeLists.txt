@@ -33,6 +33,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetFieldBoundary.h
   CalculateGradients.h
   CalculateSignedDistanceToField.h
+  ConvertQuadSurfToTriSurf.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -101,7 +102,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #ConvertLatVolDataFromElemToNode.cc
   #ConvertLatVolDataFromNodeToElem.cc
   #CalculateLatVolGradientsAtNodes.cc
-  #ConvertQuadSurfToTriSurf.cc
+  ConvertQuadSurfToTriSurf.cc
   #TransformPlanarMesh.cc
   #BuildPointCloudToLatVolMappingMatrix.cc
   #GenerateSinglePointProbeFromField.cc

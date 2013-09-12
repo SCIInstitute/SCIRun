@@ -30,6 +30,7 @@ SET(Algorithms_Field_Tests_SRCS
   CalculateGradientsAlgoTests.cc
   GetFieldBoundaryTests.cc
   ReportFieldInfoTests.cc
+  ConvertMeshToTriSurfMeshAlgoTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests

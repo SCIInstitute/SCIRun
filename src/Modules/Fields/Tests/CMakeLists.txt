@@ -31,6 +31,7 @@ SET(Modules_Fields_Tests_SRCS
   CalculateGradientsTests.cc
   CalculateSignedDistanceToFieldTests.cc
   GetFieldBoundaryTests.cc
+  ConvertQuadSurfToTriSurfTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
@@ -40,7 +41,6 @@ SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
 TARGET_LINK_LIBRARIES(Modules_Fields_Tests
   Modules_Fields
   Modules_Factory
-  #Algorithms_Math
   Core_Datatypes
   Dataflow_Network
   Dataflow_State
