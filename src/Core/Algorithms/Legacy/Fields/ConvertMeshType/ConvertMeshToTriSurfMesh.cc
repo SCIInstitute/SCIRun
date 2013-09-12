@@ -26,15 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTriSurfMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-bool ConvertMeshToTriSurfMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
+bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output)
 {
   //! Mark start of algorithm and report that we will not report progress
   algo_start("ConvertMeshToTriSurfMesh");
@@ -222,6 +227,4 @@ run(FieldHandle input, FieldHandle& output)
   // Success:
   algo_end(); return (true);
 }
-
-} // End namespace SCIRunAlgo
 
