@@ -33,7 +33,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
 ConvertQuadSurfToTriSurf::ConvertQuadSurfToTriSurf()
-  : Module(ModuleLookupInfo("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun"))
+  : Module(ModuleLookupInfo("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun"), false)
 {
   INITIALIZE_PORT(QuadSurf);
   INITIALIZE_PORT(TriSurf);

@@ -31,6 +31,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 
 using namespace SCIRun::Core::Algorithms;
@@ -51,6 +52,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new CalculateSignedDistanceFieldAlgo);
   else if (name == "CalculateGradients")
     h.reset(new CalculateGradientsAlgo);
+  else if (name == "ConvertQuadSurfToTriSurf")
+    h.reset(new ConvertMeshToTriSurfMeshAlgo);
 
   if (h && algoCollaborator)
   {
