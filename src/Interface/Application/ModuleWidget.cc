@@ -285,7 +285,11 @@ ModuleWidget::~ModuleWidget()
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");
-  dialog_.reset();
+  if (dialog_ != nullptr)
+  {
+    dialog_->close();
+    dialog_.reset();
+  }
   theModule_->setLogger(LoggerHandle());
   delete logWindow_;
   delete noteEditor_;
