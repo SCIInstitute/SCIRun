@@ -49,14 +49,14 @@ using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
 
-TEST(SolveLinearSystemTests, CanSolveDarrell)
+void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
 {
-  auto Afile = TestResources::rootDir() / "CGDarrell" / "A_txt.mat";
-  auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS_text.mat";
+  auto Afile = TestResources::rootDir() / "CGDarrell" / "A.mat";
+  auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
   if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
   {
     FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
-          << "Once that issue is done however, this will be a user setup error." << std::endl;
+      << "Once that issue is done however, this will be a user setup error." << std::endl;
     return;
   }
 
@@ -85,6 +85,7 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   SolveLinearSystemAlgo algo;
   algo.set(SolveLinearSystemAlgo::MaxIterations(), 500);
   algo.set(SolveLinearSystemAlgo::TargetError(), 7e-4);
+  algo.set_option(SolveLinearSystemAlgo::MethodOption(), method);
   algo.setUpdaterFunc([](double x) {});
 
   DenseColumnMatrixHandle solution;
@@ -96,10 +97,24 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
   EXPECT_EQ(428931, solution->nrows());
   EXPECT_EQ(1, solution->ncols());
 
-  auto solutionFile = TestResources::rootDir() / "CGDarrell" / "scirun4solution.txt";
-  auto scirun4solution = matrix_cast::as_dense(reader.run(solutionFile.string()));
+  auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + method + ".mat");
+  auto scirun4solution = reader.run(solutionFile.string());
   ASSERT_TRUE(scirun4solution);
   DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
+
+  EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, solutionError);
+
+  WriteMatrixAlgorithm writer;
+  auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / ("portedSolution_" + method + ".txt");
+  writer.run(solution, portedSolutionFile.string());
+
+  auto diff = *expected - *solution;
+  auto maxDiff = diff.maxCoeff();
+  std::cout << "max diff is: " << maxDiff << std::endl;
+}
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_CG)
+{
   double solutionError;
   //TODO: investigate this significant difference
 #ifdef WIN32
@@ -107,13 +122,26 @@ TEST(SolveLinearSystemTests, CanSolveDarrell)
 #else
   solutionError = 0.23;
 #endif
-  EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, solutionError);
-
-  WriteMatrixAlgorithm writer;
-  auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / "portedSolution.txt";
-  writer.run(solution, portedSolutionFile.string());
-
-  auto diff = *expected - *solution;
-  auto maxDiff = diff.maxCoeff();
-  std::cout << "max diff is: " << maxDiff << std::endl;
+  CanSolveDarrellWithMethod("cg", solutionError);
 }
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_BICG)
+{
+  double solutionError = 0.001;
+  CanSolveDarrellWithMethod("bicg", solutionError);
+}
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_Jacobi)
+{
+  //TODO: doesn't converge for this system. Problem?
+  double solutionError = 105;
+  CanSolveDarrellWithMethod("jacobi", solutionError);
+}
+
+TEST(SolveLinearSystemTests, CanSolveDarrell_MINRES)
+{
+  //TODO: converges but not as accurate.
+  double solutionError = 2.4;
+  CanSolveDarrellWithMethod("minres", solutionError);
+}
+

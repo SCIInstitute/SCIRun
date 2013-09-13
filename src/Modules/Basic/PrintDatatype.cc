@@ -54,5 +54,5 @@ void PrintDatatypeModule::execute()
   else if (auto s = data->as<String>())
     get_state()->setValue(ReceivedValue, s->value());
   else
-    get_state()->setValue(ReceivedValue, "<complicated type>");
+    get_state()->setValue(ReceivedValue, std::string("<complicated type>"));
 }

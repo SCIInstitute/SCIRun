@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
 

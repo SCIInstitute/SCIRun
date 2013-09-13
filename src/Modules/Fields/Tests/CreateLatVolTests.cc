@@ -26,15 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-//#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Fields/CreateLatVolMesh.h>
+#include <Testing/Utils/ModuleTestBase.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/Fields/CreateLatVol.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-//TODO DAN
+class CreateLatVolModuleTests : public ModuleTest
+{
+
+};
+
+TEST_F(CreateLatVolModuleTests, ThrowsForNullInput)
+{
+  auto clv = makeModule("CreateLatVol");
+  FieldHandle nullField;
+  stubPortNWithThisData(clv, 0, nullField);
+  stubPortNWithThisData(clv, 1, nullField);
+
+  EXPECT_THROW(clv->execute(), NullHandleOnPortException);
+}

@@ -52,7 +52,7 @@
 #define ASSERTFAIL(string) \
    SCI_THROW(SCIRun::AssertionFailed(string, __FILE__, __LINE__));
 
-#define ASSERTMSG(condition,message) \
+#define ASSERTMSG_LEGACY(condition,message) \
    if(!(condition)){ \
       SCI_THROW(SCIRun::AssertionFailed(message, __FILE__, __LINE__)); \
    }

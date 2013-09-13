@@ -252,13 +252,12 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
     // special case, since this is essentially a 2D mesh with a single element,
     // the last edge value is not filled
     auto edges = node.edgeIndices();
-    edges[3] = 666666;
     ostr << "Node " << node.index() << " point=" << node.point().get_string() << " edges=[" << join(edges) << "]" << std::endl;
   }
   
-  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 2, 1, 666666]\n"
-            "Node 1 point=[1, 0, 0] edges=[0, 2, 1, 666666]\n"
-            "Node 2 point=[0.5, 1, 0] edges=[0, 2, 1, 666666]\n"
+  EXPECT_EQ("Node 0 point=[0, 0, 0] edges=[0, 2, 1]\n"
+            "Node 1 point=[1, 0, 0] edges=[0, 2, 1]\n"
+            "Node 2 point=[0.5, 1, 0] edges=[0, 2, 1]\n"
             ,ostr.str());
 }
 

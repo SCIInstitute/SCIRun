@@ -107,6 +107,13 @@ namespace Core
     SCIRun::Core::NotImplementedInfo::value_type( \
       std::string(message) )))
 
+  struct SCISHARE AssertionFailed : virtual ExceptionBase {};
+
+#define ASSERTMSG(condition,message) \
+  if(!(condition)){ \
+    BOOST_THROW_EXCEPTION(SCIRun::Core::AssertionFailed() << SCIRun::Core::ErrorMessage(message)); \
+  }
+
 }
 }
 

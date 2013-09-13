@@ -43,7 +43,7 @@
 #include <Interface/Application/MainWindowCollaborators.h>
 #include <Interface/Application/GuiCommandFactory.h>
 #include <Interface/Application/GuiCommands.h>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Interface/Application/NetworkEditorControllerGuiProxy.h>
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 #include <Dataflow/Network/NetworkFwd.h>

@@ -28,9 +28,44 @@
  
 #include <gtest/gtest.h>
 
-#include <fstream>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
+
+void runTest(int basis, const std::string& expectedBasisTypeTemplate, const std::string& expectedBasisString, int expectedNumData)
+{
+  FieldInformation lfi("LatVolMesh", basis, "double");
+
+  size_type sizex = 3, sizey = 4, sizez = 5;
+  Point minb(-1.0, -1.0, -1.0);
+  Point maxb(1.0, 1.0, 1.0);
+  MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+  FieldHandle ofh = CreateField(lfi,mesh);
+  ofh->vfield()->clear_all_values();
+
+  ReportFieldInfoAlgorithm algo;
+
+  auto info = algo.run(ofh);
+
+  EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ," + expectedBasisTypeTemplate + "<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
+  EXPECT_EQ(0, info.dataMin);
+  EXPECT_EQ(0, info.dataMax);
+  EXPECT_EQ(expectedNumData, info.numdata_);
+  EXPECT_EQ(sizex * sizey * sizez, info.numnodes_);
+  EXPECT_EQ((sizex-1) * (sizey-1) * (sizez-1), info.numelements_);
+  EXPECT_EQ(expectedBasisString, info.dataLocation);
+}
+
+TEST(ReportFieldInfoTest, CanDescribeLatVol)
+{
+  runTest(-1, "NoDataBasis", "None (nodata basis)", 0);
+  runTest(0, "ConstantBasis", "Cells (constant basis)", 24);
+  runTest(1, "HexTrilinearLgn", "Nodes (linear basis)", 60);
+}

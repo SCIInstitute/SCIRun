@@ -26,11 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/QuadSurfMesh.h>
-#include <Core/Datatypes/VUnstructuredMesh.h>
+#include <Core/Datatypes/Legacy/Field/QuadSurfMesh.h>
+#include <Core/Datatypes/Legacy/Field/VUnstructuredMesh.h>
 
 //! Only include this class if we included QuadSurf Support
 #if (SCIRUN_QUADSURF_SUPPORT > 0)
+
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Basis;
 
 namespace SCIRun {
 
@@ -41,7 +44,6 @@ class VQuadSurfMesh : public VUnstructuredMesh<MESH> {
 public:
   virtual bool is_quadsurfmesh()       { return (true); }
 
-  //! constructor and descructor
   VQuadSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VQuadSurfMesh")   

@@ -27,7 +27,7 @@
 */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Core::Algorithms;
@@ -67,4 +67,9 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
   }
 
   return result;
+}
+
+AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const AlgorithmInput& input) const
+{
+  throw 2;
 }

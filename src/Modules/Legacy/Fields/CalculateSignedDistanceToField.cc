@@ -26,70 +26,52 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Dataflow/Network/Module.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
+#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateSignedDistanceField.h>
-
-namespace ModelCreation {
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-class CalculateSignedDistanceToField : public Module {
-  public:
-    CalculateSignedDistanceToField(GuiContext*);
-    virtual ~CalculateSignedDistanceToField() {}
-    virtual void execute();
-    
-  private:
-    SCIRunAlgo::CalculateSignedDistanceFieldAlgo algo_;
-};
-
-
-DECLARE_MAKER(CalculateSignedDistanceToField)
-CalculateSignedDistanceToField::CalculateSignedDistanceToField(GuiContext* ctx)
-  : Module("CalculateSignedDistanceToField", ctx, Source, "ChangeFieldData", "SCIRun")
+CalculateSignedDistanceToField::CalculateSignedDistanceToField()
+  : Module(ModuleLookupInfo("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun"), false)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(ObjectField);
+  INITIALIZE_PORT(SignedDistanceField);
+  INITIALIZE_PORT(ValueField);
 }
 
-
-void
-CalculateSignedDistanceToField::execute()
+void CalculateSignedDistanceToField::execute()
 {
-  FieldHandle input, output, value;
-  FieldHandle object;
+  FieldHandle input = getRequiredInput(InputField);
+  FieldHandle object = getRequiredInput(ObjectField);
  
-  get_input_handle("Field",input,true);
-  get_input_handle("ObjectField",object,true);
- 
-  bool value_connected = oport_connected("ValueField");
+  bool value_connected = oport_connected(ValueField);
    
-  if (inputs_changed_ || !oport_cached("SignedDistanceField") ||
-      (!oport_cached("ValueField") && value_connected))
+  /*if inputs_changed_ || !oport_cached("SignedDistanceField") ||
+  (!oport_cached("ValueField") && value_connected)
+  */
+  if (needToExecute())
   {
     update_state(Executing);
     
+    auto inputs = make_input((InputField, input)(ObjectField, object));
+
+    algo_->set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
+    auto output = algo_->run_generic(inputs);
+   
+    sendOutputFromAlgorithm(SignedDistanceField, output); 
+
     if (value_connected)
     {
-      if(!(algo_.run(input,object,output,value))) return;
-   
-      send_output_handle("SignedDistanceField", output); 
-      send_output_handle("ValueField", value); 
-    }
-    else
-    {
-      if(!(algo_.run(input,object,output))) return;
-   
-      send_output_handle("SignedDistanceField", output);     
+      sendOutputFromAlgorithm(ValueField, output); 
     }
   }
 }
-
-
-} // End namespace ModelCreation
 
 

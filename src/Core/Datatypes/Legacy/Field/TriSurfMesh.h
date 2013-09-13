@@ -263,13 +263,11 @@ public:
         // These depend on the bounding box being synchronized
         if (sync_ & (Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E))
         {
-          mesh_->synchronize_lock_.lock();
           {
             Core::Thread::UniqueLock lock(mesh_->synchronize_lock_.get());
             while(!(mesh_->synchronized_ & Mesh::BOUNDING_BOX_E)) 
               mesh_->synchronize_cond_.wait(lock);
           }
-          mesh_->synchronize_lock_.unlock();     
           if (sync_ & Mesh::NODE_LOCATE_E) 
           {
             mesh_->compute_node_grid();
@@ -2376,7 +2374,7 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
            Mesh::ELEM_NEIGHBORS_E|
            Mesh::NODE_LOCATE_E|Mesh::ELEM_LOCATE_E);
 
-  synchronize_lock_.lock();
+  Core::Thread::UniqueLock lock(synchronize_lock_.get());
 
   // Only sync was hasn't been synched
   sync &= (~synchronized_);
@@ -2479,16 +2477,11 @@ TriSurfMesh<Basis>::synchronize(mask_type sync)
     boost::thread syncthread(syncclass);
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  //deadlock here, need to review usage.
   // Wait until threads are done
-  Core::Thread::UniqueLock lock(synchronize_lock_.get());
   while ((synchronized_ & sync) != sync)
   {
     synchronize_cond_.wait(lock);
   }
-#endif
-  synchronize_lock_.unlock();
-
 
   return (true);
 }

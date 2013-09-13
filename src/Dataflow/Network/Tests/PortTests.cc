@@ -63,7 +63,6 @@ TEST_F(PortTests, CtorThrowsWithEmptyArguments)
   ASSERT_THROW(InputPort(0,                  Port::ConstructionParams("Matrix",   "ForwardMatrix"), DatatypeSinkInterfaceHandle()),  NullPointerException);
   ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("",         "ForwardMatrix"), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
   ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   ""            ), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
-  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams("Matrix",   "ForwardMatrix"), DatatypeSinkInterfaceHandle()),            InvalidArgumentException);
 }
 
 TEST_F(PortTests, AggregatesConnections)

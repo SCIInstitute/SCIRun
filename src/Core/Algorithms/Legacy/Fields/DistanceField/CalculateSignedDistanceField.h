@@ -29,36 +29,33 @@
 #ifndef CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATESIGNEDDISTANCEFIELD_H
 #define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATESIGNEDDISTANCEFIELD_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgoBase 
+class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase 
 {
   public:
-    //! Set defaults
-    CalculateSignedDistanceFieldAlgo()
-    {
-    }
+    CalculateSignedDistanceFieldAlgo();
 
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle object, FieldHandle& output) const;
 
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& distance,
-             FieldHandle& value);
+    bool run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const;
 
+    static AlgorithmParameterName OutputValueField;
+
+    static AlgorithmInputName InputField;
+    static AlgorithmInputName ObjectField;
+    static AlgorithmOutputName SignedDistanceField;
+    static AlgorithmOutputName ValueField;
+
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif 

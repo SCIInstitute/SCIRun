@@ -35,6 +35,7 @@
 
 #include <iostream>
 
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
@@ -150,4 +151,9 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::run(const Inputs& in
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input field");
 
   return update_input_attributes(input);
+}
+
+AlgorithmOutput ReportFieldInfoAlgorithm::run_generic(const AlgorithmInput& input) const
+{
+  throw 2;
 }

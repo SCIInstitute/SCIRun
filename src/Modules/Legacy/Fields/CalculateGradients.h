@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_CREATE_LATVOLMESH_H
-#define INTERFACE_MODULES_CREATE_LATVOLMESH_H
+#ifndef MODULES_LEGACY_FIELDS_CALCULATEGRADIENTS_H__
+#define MODULES_LEGACY_FIELDS_CALCULATEGRADIENTS_H__
 
-#include "Interface/Modules/Fields/ui_CreateLatVolMesh.h"
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Gui {
-  
-class SCISHARE CreateLatVolMeshDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::CreateLatVolMesh
-{
-	Q_OBJECT
-	
-public:
-  CreateLatVolMeshDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
+  namespace Modules {
+    namespace Fields {
 
-private Q_SLOTS:
-  void push();
-};
+      class SCISHARE CalculateGradients : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CalculateGradients();
 
-}
+        virtual void execute();
+
+        INPUT_PORT(0, ScalarField, LegacyField);
+        OUTPUT_PORT(0, VectorField, LegacyField);
+      };
+
+    }
+  }
 }
 
 #endif

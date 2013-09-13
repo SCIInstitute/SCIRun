@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTMESHTOTRISURFMESH_H
-#define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTMESHTOTRISURFMESH_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <boost/assign.hpp>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+using namespace boost::assign;
 
-class SCISHARE ConvertMeshToTriSurfMeshAlgo : public AlgoBase
+class CalculateSignedDistanceFieldAlgoTests : public ::testing::Test
 {
-  public:
-    //! Set defaults
-    ConvertMeshToTriSurfMeshAlgo()
-    {
-    }
+protected:
+  virtual void SetUp()
+  {
+    //TODO: needs a surface, I know that much...
+  }
 
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+  FieldHandle field_;
+  MeshHandle mesh_;
 };
 
-} // end namespace SCIRunAlgo
-
-#endif 
-
+TEST_F(CalculateSignedDistanceFieldAlgoTests, Foo)
+{
+  FAIL() << "Todo";
+}

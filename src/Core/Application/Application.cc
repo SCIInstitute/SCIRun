@@ -32,6 +32,7 @@
 #include <Core/CommandLine/CommandLine.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
@@ -43,6 +44,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Core::Algorithms;
 
 namespace SCIRun
 {
@@ -92,7 +94,8 @@ NetworkEditorControllerHandle Application::controller()
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
-    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe));
+    AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
+    private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory));
   }
   return private_->controller_;
 }

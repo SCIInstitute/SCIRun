@@ -307,7 +307,7 @@ namespace Datatypes {
 
     if (!stream.block_io(this->data(), sizeof(T), this->nrows()))
     {
-      for (index_type i=0; i<this->nrows(); i++)
+      for (size_t i=0; i<this->nrows(); i++)
         stream.io(this->data()[i]);
     }
     stream.end_class();

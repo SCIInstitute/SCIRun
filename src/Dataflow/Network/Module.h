@@ -34,9 +34,10 @@
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
 #include <vector>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Datatypes/Mesh/FieldFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
@@ -53,6 +54,7 @@ namespace Networks {
   public:
     Module(const ModuleLookupInfo& info, 
       bool hasUi = true, 
+      Core::Algorithms::AlgorithmFactoryHandle algoFactory = defaultAlgoFactory_,
       ModuleStateFactoryHandle stateFactory = defaultStateFactory_,
       const std::string& version = "1.0");
     virtual ~Module();
@@ -86,25 +88,43 @@ namespace Networks {
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
   public:
-    virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) { log_ = log; }
+    virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log);
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const;
     virtual void error(const std::string& msg) const { errorSignal_(id_); getLogger()->error(msg); }
     virtual void warning(const std::string& msg) const { getLogger()->warning(msg); }
     virtual void remark(const std::string& msg) const { getLogger()->remark(msg); }
     virtual void status(const std::string& msg) const { getLogger()->status(msg); }
 
-    SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
-    virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) { updaterFunc_ = func; }
+    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const { return updaterFunc_; }
+    virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func);
     virtual void setUiToggleFunc(UiToggleFunc func) { uiToggleFunc_ = func; }
 
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
 
+    virtual bool needToExecute() const  
+    {
+      return true; //TODO
+    }
+
+    virtual void setDefaults() {} //TODO should be pure virtual
+
+    bool oport_connected(size_t portIndex) const;
+
     template <class Type, size_t N>
     struct PortName
     {
+      explicit PortName(const std::string& name = "") : name_(name) {}
       operator size_t() const { return N; }
+      operator std::string() const 
+      { 
+        if (name_.empty())
+          BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
+        return name_; 
+      }
+
+      std::string name_;
     };
 
     // Throws if input is not present or null.
@@ -116,6 +136,9 @@ namespace Networks {
 
     template <class T, class D, size_t N>
     void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data);
+
+    template <class T, size_t N>
+    void sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -140,10 +163,22 @@ namespace Networks {
 
     //TODO: yuck
     static ModuleStateFactoryHandle defaultStateFactory_;
+    static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
 
   protected:
     ModuleLookupInfo info_;
     ModuleId id_;
+
+    Core::Algorithms::AlgorithmHandle algo_;
+    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
+
+    enum State {
+      NeedData,
+      JustStarted,
+      Executing,
+      Completed
+    };
+    void update_state(State) { /*TODO*/ }
 
   private:
     template <class T>
@@ -170,12 +205,6 @@ namespace Networks {
     static int instanceCount_;
     static SCIRun::Core::Logging::LoggerHandle defaultLogger_;
   };
-
-  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
-  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
-  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
-  struct SCISHARE PortNotFoundException : virtual DataPortException {};
 
   template <class T>
   boost::shared_ptr<T> Module::getRequiredInputAtIndex(size_t idx)
@@ -237,6 +266,12 @@ namespace Networks {
     send_output_handle(static_cast<size_t>(port), data);
   }
   
+  template <class T, size_t N>
+  void Module::sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
+  {
+    sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
+  }
+
 }}
 
 
@@ -339,12 +374,15 @@ namespace Modules
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
+#define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
 
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index > name;
 
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
   PortName< ATTACH_NAMESPACE(type), index> name;
+
+#define INITIALIZE_PORT(name) do{ name.name_ = #name;}while(0);
 
   //TODO: make metafunc for Input/Output
 

@@ -27,21 +27,25 @@
 */
 
 
-#include <Core/Algorithms/Fields/FieldData/CalculateGradients.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
 bool
-CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
+CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
 {
-  algo_start("CalculateGradients");
-  if (input.get_rep() == 0)
+  ScopedAlgorithmStatusReporter asr(this, "CalculateGradients");
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
   
   FieldInformation fi(input);
@@ -49,29 +53,29 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
   if (fi.is_pointcloudmesh())
   {
     error("Cannot calculate gradients for a point cloud");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   if (fi.is_nodata())
   {
     error("Input field does not have data associated with it");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   if (!(fi.is_scalar()))
   {
     error("The data needs to be of scalar type to calculate gradients");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   fi.make_vector();
   fi.make_constantdata();
   output = CreateField(fi,input->mesh());
 
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not allocate output field");
-    algo_end(); return (false);      
+    return (false);      
   }
 
   VField* ifield = input->vfield();
@@ -93,7 +97,21 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output)
     ofield->set_value(v,idx);  
   }
 
-  algo_end(); return (true);
+  return (true);
 }
 
-} // end namespace SCIRun
+AlgorithmInputName CalculateGradientsAlgo::ScalarField("ScalarField");
+AlgorithmOutputName CalculateGradientsAlgo::VectorField("VectorField");
+
+AlgorithmOutput CalculateGradientsAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(ScalarField);
+
+  FieldHandle gradient;
+  if (!run(field, gradient))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[VectorField] = gradient;
+  return output;
+}

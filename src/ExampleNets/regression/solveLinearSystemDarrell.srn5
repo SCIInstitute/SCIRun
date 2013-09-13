@@ -88,7 +88,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>2</count>
+							<count>4</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -104,13 +104,37 @@
 							</item>
 							<item>
 								<first>
+									<name>Method</name>
+								</first>
+								<second>
+									<name>Method</name>
+									<value>
+										<which>2</which>
+										<value>cg</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>Preconditioner</name>
+								</first>
+								<second>
+									<name>Preconditioner</name>
+									<value>
+										<which>2</which>
+										<value>jacobi</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Tolerance</name>
 								</first>
 								<second>
 									<name>Tolerance</name>
 									<value>
 										<which>1</which>
-										<value>0.00069999999999999988</value>
+										<value>0.00069999999999999999</value>
 									</value>
 								</second>
 							</item>

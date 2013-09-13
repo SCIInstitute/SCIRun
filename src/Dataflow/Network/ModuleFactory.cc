@@ -27,7 +27,15 @@
 */
 
 #include <Dataflow/Network/ModuleFactory.h>
+#include <Dataflow/Network/ModuleDescription.h>
 
 using namespace SCIRun::Dataflow::Networks;
 
 ModuleFactory::~ModuleFactory() {}
+
+ModuleHandle SCIRun::Dataflow::Networks::CreateModuleFromUniqueName(ModuleFactory& factory, const std::string& moduleName)
+{
+  ModuleLookupInfo info;
+  info.module_name_ = moduleName;
+  return factory.create(factory.lookupDescription(info));
+}

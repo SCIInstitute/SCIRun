@@ -27,27 +27,51 @@
 */
 
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
+#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
+#include <boost/bimap.hpp>
+
+#include <log4cpp/Category.hh>
+#include <log4cpp/CategoryStream.hh>
+#include <log4cpp/Priority.hh>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
 
+namespace SCIRun {
+  namespace Gui {
+    class SolveLinearSystemDialogImpl
+    {
+    public:
+      SolveLinearSystemDialogImpl()
+      {
+        typedef boost::bimap<std::string, std::string>::value_type strPair;
+        solverNameLookup_.insert(strPair("Conjugate Gradient (SCI)", "cg"));
+        solverNameLookup_.insert(strPair("BiConjugate Gradient (SCI)", "bicg"));
+        solverNameLookup_.insert(strPair("Jacobi (SCI)", "jacobi"));
+        solverNameLookup_.insert(strPair("MINRES (SCI)", "minres"));
+      }
+      boost::bimap<std::string, std::string> solverNameLookup_;
+    };
+  }}
+
 SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent), impl_(new SolveLinearSystemDialogImpl)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  
+
   //TODO: clean these up...still getting circles of push/pull
   //TODO: need this connection ???
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
   connect(targetErrorLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushParametersToState()));
   connect(maxIterationsSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(pushParametersToState()));
+  connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
+  connect(preconditionerComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
 }
 
 void SolveLinearSystemDialog::pushParametersToState()
@@ -56,13 +80,39 @@ void SolveLinearSystemDialog::pushParametersToState()
   {
     //TODO: need pattern for this, to avoid silly recursion of push/pull.
     int max = maxIterationsSpinBox_->value();
-    if (max != state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt())
-      state_->setValue(SolveLinearSystemAlgorithm::MaxIterations, max);
+    if (max != state_->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt())
+      state_->setValue(SolveLinearSystemAlgo::MaxIterations(), max);
 
     double error = targetErrorLineEdit_->text().toDouble();
-    if (error != state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble())
+    if (error != state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble())
     {
-      state_->setValue(SolveLinearSystemAlgorithm::Tolerance, error);
+      state_->setValue(SolveLinearSystemAlgo::TargetError(), error);
+    }
+
+    {
+      auto method = methodComboBox_->currentText().toStdString();
+      log4cpp::Category::getRoot() << log4cpp::Priority::DEBUG << "GUI: METHOD SELECTED: " << method;
+
+      std::string methodOption = impl_->solverNameLookup_.left.at(method);
+
+      if (methodOption != state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString())
+      {
+        state_->setValue(SolveLinearSystemAlgo::MethodOption(),  methodOption);
+      }
+    }
+
+    {
+      QString precond = preconditionerComboBox_->currentText();
+      std::string precondOption;
+      if (precond == "Jacobi")
+        precondOption = "jacobi";
+      else 
+        precondOption = "None";
+
+      if (precondOption != state_->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString())
+      {
+        state_->setValue(SolveLinearSystemAlgo::PreconditionerOption,  precondOption);
+      }
     }
   }
 }
@@ -70,10 +120,20 @@ void SolveLinearSystemDialog::pushParametersToState()
 void SolveLinearSystemDialog::pull()
 {
   Pulling p(this);
-  auto iterations = state_->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
+  auto iterations = state_->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
   
-  auto tolerance = state_->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
+  auto tolerance = state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
   maxIterationsSpinBox_->setValue(iterations);
   targetErrorLineEdit_->setText(QString::number(tolerance));
+
+  auto method = state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
+  
+  auto it = impl_->solverNameLookup_.right.find(method);
+  if (it != impl_->solverNameLookup_.right.end())
+    methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
+  
+
+  auto precond = state_->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
+  preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
 }
 

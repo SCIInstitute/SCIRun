@@ -71,7 +71,7 @@ namespace Networks {
   typedef boost::function<void(bool)> UiToggleFunc;
 
   //TODO: interface is getting bloated, segregate it.
-  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject
+  class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
   public:
     virtual ~ModuleInterface();
@@ -91,6 +91,7 @@ namespace Networks {
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
     
     //TODO functions
+    virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
@@ -105,7 +106,17 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) = 0;
+
+    //TODO:
+    // need to hook up input ports for new data coming in, and output ports for cached state.
+    virtual bool needToExecute() const = 0;
   };
+
+  struct SCISHARE DataPortException : virtual Core::ExceptionBase {};
+  struct SCISHARE NoHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
+  struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
+  struct SCISHARE PortNotFoundException : virtual DataPortException {};
 
   #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 }}}

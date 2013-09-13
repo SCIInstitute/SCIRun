@@ -26,27 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DistanceField/CalculateSignedDistanceField.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Thread/Thread.h>
-#include <float.h>
-
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Thread/Parallel.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
-
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 class CalculateSignedDistanceFieldP {
   public:
-    CalculateSignedDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, ProgressReporter* pr) :
+    CalculateSignedDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField*  ofield, const ProgressReporter* pr) :
       imesh(imesh), objmesh(objmesh), ofield(ofield), pr_(pr) {}
 
     CalculateSignedDistanceFieldP(VMesh* imesh, VMesh* objmesh, VField* objfield,
-            VField*  ofield, VField* vfield, ProgressReporter* pr) :
+            VField*  ofield, VField* vfield, const ProgressReporter* pr) :
       imesh(imesh), objmesh(objmesh), objfield(objfield), ofield(ofield), vfield(vfield), pr_(pr) {}
             
     void parallel(int proc, int nproc)
@@ -641,35 +643,36 @@ class CalculateSignedDistanceFieldP {
     VField*  ofield;
     VField*  vfield;
 
-    ProgressReporter* pr_;
+    const ProgressReporter* pr_;
 };
 
-
-
-
+CalculateSignedDistanceFieldAlgo::CalculateSignedDistanceFieldAlgo()
+{
+  addParameter(OutputValueField, false);
+}
 
 bool
 CalculateSignedDistanceFieldAlgo::
-run(FieldHandle input, FieldHandle object, FieldHandle& output)
+run(FieldHandle input, FieldHandle object, FieldHandle& output) const
 {
-  algo_start("CalculateDistanceField");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateDistanceField");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (object.get_rep() == 0)
+  if (!object)
   {
     error("No object field");
-    algo_end(); return (false);
+    return (false);
   }
 
   if (!(object->vmesh()->is_surface()))
   {
     error("The object field needs to be surface");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   // Determine output type
@@ -679,10 +682,10 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output)
   
   output = CreateField(fo,input->mesh());
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   VMesh* imesh = input->vmesh();
@@ -692,7 +695,7 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output)
  
   if (ofield->basis_order() > 2)
   {
-    algo_end(); error("Cannot add distance data to field");
+    error("Cannot add distance data to field");
     return (false);
   }
  
@@ -701,42 +704,38 @@ run(FieldHandle input, FieldHandle object, FieldHandle& output)
     warning("Object Field does not contain any nodes, setting distance to maximum.");
     ofield->set_all_values(DBL_MAX);
     
-    algo_end(); return (true);
+    return (true);
   }
 
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
-
-  CalculateSignedDistanceFieldP palgo(imesh,objmesh,ofield,get_progress_reporter());
-  Thread::parallel(&palgo,&CalculateSignedDistanceFieldP::parallel,Thread::numProcessors(),Thread::numProcessors());
-
-  algo_end(); return (true);
+  CalculateSignedDistanceFieldP palgo(imesh, objmesh, ofield, this);
+  auto task_i = [&palgo,this](int i) { palgo.parallel(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
+  return (true);
 }
-
-
-
 
 bool
 CalculateSignedDistanceFieldAlgo::
-run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value)
+run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const
 {
-  algo_start("CalculateDistanceField");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateDistanceField");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (object.get_rep() == 0)
+  if (!object)
   {
     error("No object field");
-    algo_end(); return (false);
+    return (false);
   }
 
   if (!(object->vmesh()->is_surface()))
   {
     error("The object field needs to be surface");
-    algo_end(); return (false);    
+    return (false);    
   }
 
   // Determine output type
@@ -748,7 +747,7 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   if (fb.is_nodata())
   {
     error("Object field does not contain any values");
-    algo_end(); return (false);  
+    return (false);  
   }
   // Create Value mesh with same type as object type
 
@@ -758,16 +757,16 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   fo.make_double();
   distance = CreateField(fo,input->mesh());
   
-  if (distance.get_rep() == 0)
+  if (!distance)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  if (value.get_rep() == 0)
+  if (!value)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   } 
     
   VMesh* imesh = input->vmesh();
@@ -786,7 +785,7 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
     dfield->set_all_values(DBL_MAX);
     vfield->clear_all_values();
     
-    algo_end(); return (true);
+    return (true);
   }
   
   objmesh->synchronize(Mesh::FIND_CLOSEST_ELEM_E|Mesh::EDGES_E);
@@ -794,13 +793,42 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   if (distance->basis_order() > 2)
   {
     error("Cannot add distance data to field");
-    algo_end(); return (false);
+    return (false);
   }
 
-  CalculateSignedDistanceFieldP palgo(imesh,objmesh,objfield,dfield,vfield,get_progress_reporter());
-  Thread::parallel(&palgo,&CalculateSignedDistanceFieldP::parallel2,Thread::numProcessors(),Thread::numProcessors());
+  CalculateSignedDistanceFieldP palgo(imesh, objmesh, objfield, dfield, vfield, this);
 
-  algo_end(); return (true);
+  auto task_i = [&palgo,this](int i) { palgo.parallel2(i, Parallel::NumCores()); };
+  Parallel::RunTasks(task_i, Parallel::NumCores());
+
+  return (true);
 }
 
-} // end namespace SCIRunAlgo
+AlgorithmInputName CalculateSignedDistanceFieldAlgo::InputField("InputField");
+AlgorithmInputName CalculateSignedDistanceFieldAlgo::ObjectField("ObjectField");
+AlgorithmOutputName CalculateSignedDistanceFieldAlgo::SignedDistanceField("SignedDistanceField");
+AlgorithmOutputName CalculateSignedDistanceFieldAlgo::ValueField("ValueField");
+AlgorithmParameterName CalculateSignedDistanceFieldAlgo::OutputValueField("OutputValueField");
+
+AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(InputField);
+  auto objectField = input.get<Field>(ObjectField);
+
+  FieldHandle distance, value;
+  if (get(OutputValueField).getBool())
+  {
+    if (!run(inputField, objectField, distance, value))
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  }
+  else
+  {
+    if (!run(inputField, objectField, distance))
+      THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+  }
+
+  AlgorithmOutput output;
+  output[SignedDistanceField] = distance;
+  output[ValueField] = value;
+  return output;
+}

@@ -30,7 +30,6 @@
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
-#include <Core/Algorithms/Math/SolveLinearSystemWithEigen.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -44,49 +43,64 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
-SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) {}
+SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("SolveLinearSystem", "Math", "SCIRun")) 
+{
+  INITIALIZE_PORT(LHS);
+  INITIALIZE_PORT(RHS);
+  INITIALIZE_PORT(Solution);
+  setDefaults();
+}
+
+void SolveLinearSystemModule::setDefaults()
+{
+  auto state = get_state();
+  state->setValue(SolveLinearSystemAlgo::TargetError(), 0.00001);
+  state->setValue(SolveLinearSystemAlgo::MaxIterations(), 500);
+  state->setValue(SolveLinearSystemAlgo::MethodOption(), std::string("cg"));
+  state->setValue(SolveLinearSystemAlgo::PreconditionerOption, std::string("jacobi"));
+}
 
 void SolveLinearSystemModule::execute()
 {
-  auto A = getRequiredInput(Matrix);
+  auto A = getRequiredInput(LHS);
   auto rhs = getRequiredInput(RHS);
 
-  if (rhs->ncols() != 1)
-    THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
-  if (!matrix_is::sparse(A))
-    THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
-
-  auto ASparse = matrix_cast::as_sparse(A);
-
-  auto rhsCol = matrix_cast::as_column(rhs);
-  if (!rhsCol)
-    rhsCol = matrix_convert::to_column(rhs);
-
-  auto tolerance = get_state()->getValue(SolveLinearSystemAlgorithm::Tolerance).getDouble();
-  auto maxIterations = get_state()->getValue(SolveLinearSystemAlgorithm::MaxIterations).getInt();
-
-  std::ostringstream ostr;
-  ostr << "Running algorithm Parallel CG Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
-  remark(ostr.str());
-
-  SolveLinearSystemAlgo algo;
-  algo.set(SolveLinearSystemAlgo::TargetError(), tolerance);
-  algo.set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  DenseColumnMatrixHandle solution;
-
-  bool success;
+  if (needToExecute())
   {
-    ScopedTimeRemarker perf(this, "Linear solver");
-    remark("Using Jacobi preconditioner");
-    success = algo.run(ASparse, rhsCol, DenseColumnMatrixHandle(), solution);
+    if (rhs->ncols() != 1)
+      THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
+    if (!matrix_is::sparse(A))
+      THROW_ALGORITHM_INPUT_ERROR("Left-hand side matrix to solve must be sparse.");
+
+    auto rhsCol = matrix_cast::as_column(rhs);
+    if (!rhsCol)
+      rhsCol = matrix_convert::to_column(rhs);
+
+    auto tolerance = get_state()->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
+    auto maxIterations = get_state()->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
+
+    algo_->set(SolveLinearSystemAlgo::TargetError(), tolerance);
+    algo_->set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
+
+    auto method = get_state()->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
+    auto precond = get_state()->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
+    algo_->set_option(SolveLinearSystemAlgo::MethodOption(), method);
+    algo_->set_option(SolveLinearSystemAlgo::PreconditionerOption, precond);
+
+    std::ostringstream ostr;
+    ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
+    remark(ostr.str());
+
+    MatrixHandle solution;
+
+    {
+      ScopedTimeRemarker perf(this, "Linear solver");
+      remark("Using preconditioner: " + precond);
+
+      auto output = algo_->run_generic(AlgoInputBuilder()(LHS, A)(RHS, rhsCol).build());
+      solution = get_output(output, Solution, Matrix);
+    }
+
+    sendOutput(Solution, solution);
   }
-  if (!success)
-  {
-    MODULE_ERROR_WITH_TYPE(LinearAlgebraError, "SLS Algo returned false--need to improve error conditions so it throws before returning.");
-  }
-  
-  sendOutput(Solution, solution);
 }

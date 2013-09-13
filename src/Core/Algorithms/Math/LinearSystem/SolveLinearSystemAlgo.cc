@@ -44,14 +44,18 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
 AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
+AlgorithmParameterName SolveLinearSystemAlgo::PreconditionerOption("Preconditioner");
+
+AlgorithmInputName SolveLinearSystemAlgo::LHS("LHS");
+AlgorithmInputName SolveLinearSystemAlgo::RHS("RHS");
+AlgorithmOutputName SolveLinearSystemAlgo::Solution("Solution");
 
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // For solver
-  add_option("method","cg","jacobi|cg|bicg|minres");
-  add_option("pre_conditioner","jacobi","none|jacobi");
-#endif
+  add_option(MethodOption(),"cg","jacobi|cg|bicg|minres");
+  add_option(PreconditionerOption,"jacobi","none|jacobi");
+  
   addParameter(TargetError(), 1e-6);
   addParameter(MaxIterations(), 300);
 
@@ -75,23 +79,27 @@ SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 class SolveLinearSystemParallelAlgo : public ParallelLinearAlgebraBase 
 {
 public:
-  SolveLinearSystemParallelAlgo() : algo_(0) {}
+  explicit SolveLinearSystemParallelAlgo(const AlgorithmBase* base);
 
-  bool run(AlgorithmBase* base, SparseRowMatrixHandle a, DenseColumnMatrixHandle b,
+  bool run(SparseRowMatrixHandle a, DenseColumnMatrixHandle b,
             DenseColumnMatrixHandle x0, DenseColumnMatrixHandle& x,
-            DenseColumnMatrixHandle& convergence);         
+            DenseColumnMatrixHandle& convergence) const;         
 protected: 
+  const AlgorithmBase* algo_;
   std::string pre_conditioner_;
   DenseColumnMatrixHandle convergence_;
-  AlgorithmBase* algo_;
 };
 
+SolveLinearSystemParallelAlgo::SolveLinearSystemParallelAlgo(const AlgorithmBase* base) : algo_(base),
+  pre_conditioner_(base->get_option(SolveLinearSystemAlgo::PreconditionerOption)),
+  convergence_(new DenseColumnMatrix(base->get(SolveLinearSystemAlgo::MaxIterations()).getInt()))
+{
+}
 
 bool
-SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo, 
-                                   SparseRowMatrixHandle a, DenseColumnMatrixHandle b, 
+SolveLinearSystemParallelAlgo::run(SparseRowMatrixHandle a, DenseColumnMatrixHandle b, 
                                    DenseColumnMatrixHandle x0, DenseColumnMatrixHandle& x, 
-                                   DenseColumnMatrixHandle& convergence) 
+                                   DenseColumnMatrixHandle& convergence) const
 {
   SolverInputs matrices;
   matrices.A = a; 
@@ -105,27 +113,18 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
   // Copy output matrix pointer
   matrices.x = x;
 
-  // Create convergence matrix
-  int num_iter = algo->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
-  convergence = boost::make_shared<DenseColumnMatrix>(num_iter);
-  convergence_ = convergence;
+  convergence = convergence_;
   
   // Set intermediate solution handle
-  algo_ = algo;
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   algo->set_handle("solution", x);
   algo->set_handle("convergence", convergence);
-#endif
-  
-  pre_conditioner_ = "jacobi";
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-    algo_->get_option("pre_conditioner");
 #endif
 
   if(!start_parallel(matrices))
   {
     const std::string msg = "Encountered an error while running parallel linear algebra";
-    algo->error(msg);
+    algo_->error(msg);
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << SCIRun::Core::ErrorMessage(msg));
   }
 
@@ -138,10 +137,11 @@ SolveLinearSystemParallelAlgo::run(AlgorithmBase* algo,
 class SolveLinearSystemCGAlgo : public SolveLinearSystemParallelAlgo 
 {
   public:
-    virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices);
+    explicit SolveLinearSystemCGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
+    virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
 };
 
-bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices)
+bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
 {
   ParallelLinearAlgebra::ParallelMatrix A; 
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN, DIAG, R, Z, P;
@@ -344,19 +344,19 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
 }
 
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // BICG Solver with simple preconditioner
 class SolveLinearSystemBICGAlgo : public SolveLinearSystemParallelAlgo 
 {
   public:
+    explicit SolveLinearSystemBICGAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
     virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          std::vector<MatrixHandle>& matrix);
+                          SolverInputs& matrices) const;
 };
 
 bool
 SolveLinearSystemBICGAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const 
 {
   // Algorithm
   
@@ -365,17 +365,19 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN; 
   ParallelLinearAlgebra::ParallelVector DIAG, R, R1, Z, Z1, P, P1;
 
-  double tolerance =     algo_->get_scalar("target_error");
-  int    max_iter =      algo_->get_int("max_iterations");
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
+#endif
   int    niter = 0;
   int    callback_step_cnt =0;
 
   // Create matrices and vectors that we need for this algorithm
-  if ( !PLA.add_matrix(matrix[0],A) ||
-       !PLA.add_vector(matrix[1],B) ||
-       !PLA.add_vector(matrix[2],X0) ||
-       !PLA.add_vector(matrix[3],XMIN) ||
+  if ( !PLA.add_matrix(matrices.A,A) ||
+       !PLA.add_vector(matrices.b,B) ||
+       !PLA.add_vector(matrices.x0,X0) ||
+       !PLA.add_vector(matrices.x,XMIN) ||
        !PLA.new_vector(X) ||
        !PLA.new_vector(DIAG) ||
        !PLA.new_vector(R) ||
@@ -388,9 +390,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (PLA.first()) 
     {
       algo_->error("Could not allocate enough memory for algorithm");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",0.0);
       algo_->set_scalar("current_error",0.0);
       algo_->set_int("iteration",niter);
+#endif
     }
     PLA.wait();
 
@@ -400,7 +404,6 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   PLA.copy(X0,X);
   PLA.copy(X0,XMIN);
   
-  // Build a preconditioner
   // Build a preconditioner
   if (pre_conditioner_ == "jacobi")
   {
@@ -426,10 +429,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   {
     if (PLA.first())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",orig);
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
       if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
     }
     PLA.wait();
     return (true);
@@ -450,10 +455,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
       }
       PLA.wait();
       return (true);
@@ -468,9 +475,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
+#endif
       }
       PLA.wait();
       return (true);      
@@ -502,11 +511,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     error = PLA.norm(R)/bnorm;
     
     if (error < xmin) { PLA.copy(X,XMIN); xmin = error; }
-    if (PLA.first()) convergence_[niter] = xmin;
+    if (PLA.first()) (*convergence_)[niter] = xmin;
     
     niter++;
     
     callback_step_cnt++;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
@@ -525,6 +535,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         callback_step = algo_->get_int("callback_step");
       }
     }
+#endif
     cnt++;
     if (cnt == 20) 
     {
@@ -535,32 +546,32 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
   }
   PLA.wait();
   
   return (true);
 }
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 //------------------------------------------------------------------
 // BICG Solver with simple preconditioner
 
 class SolveLinearSystemMINRESAlgo : public SolveLinearSystemParallelAlgo 
 {
-  public:
-    virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          std::vector<MatrixHandle>& matrix);
+public:
+  explicit SolveLinearSystemMINRESAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
 };
 
 
 bool
 SolveLinearSystemMINRESAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
 {
   // Algorithm
   
@@ -570,17 +581,19 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   ParallelLinearAlgebra::ParallelVector DIAG, R, V, VOLD, VV;
   ParallelLinearAlgebra::ParallelVector VOLDER, M, MOLD, MOLDER, XCG;
 
-  double tolerance =     algo_->get_scalar("target_error");
-  int    max_iter =      algo_->get_int("max_iterations");
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
+#endif
   int    niter = 0;
   int    callback_step_cnt =0;
 
   // Create matrices and vectors that we need for this algorithm
-  if ( !PLA.add_matrix(matrix[0],A) ||
-       !PLA.add_vector(matrix[1],B) ||
-       !PLA.add_vector(matrix[2],X0) ||
-       !PLA.add_vector(matrix[3],XMIN) ||
+  if ( !PLA.add_matrix(matrices.A,A) ||
+       !PLA.add_vector(matrices.b,B) ||
+       !PLA.add_vector(matrices.x0,X0) ||
+       !PLA.add_vector(matrices.x,XMIN) ||
        !PLA.new_vector(X) ||
        !PLA.new_vector(R) ||
        !PLA.new_vector(DIAG) ||
@@ -596,9 +609,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (PLA.first()) 
     {
       algo_->error("Could not allocate enough memory for algorithm");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",0.0);
       algo_->set_scalar("current_error",0.0);
       algo_->set_int("iteration",niter);
+#endif
     }
     PLA.wait();
 
@@ -608,7 +623,6 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   PLA.copy(X0,X);
   PLA.copy(X0,XMIN);
   
-  // Build a preconditioner
   // Build a preconditioner
   if (pre_conditioner_ == "jacobi")
   {
@@ -634,10 +648,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   {
     if (PLA.first())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",orig);
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
       if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
     }
     PLA.wait();
     return (true);
@@ -685,8 +701,8 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   PLA.scale_add(snprod*(sn/cs),M,X,XCG);
 
-  error = Abs(snprod);  
-  double errorcg = error/(Abs(cs)*bnorm);
+  error = std::fabs(snprod);  
+  double errorcg = error/(std::fabs(cs)*bnorm);
   
   int cnt = 0;
   int ucnt = 0;
@@ -702,10 +718,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
       }
       PLA.wait();
       return (true);
@@ -779,9 +797,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         }
         if (PLA.first())
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
           algo_->set_scalar("original_error",orig);
           algo_->set_scalar("current_error",xmin);
           algo_->set_int("iteration",niter);
+#endif
         }
         PLA.wait();
         return (true);                
@@ -800,9 +820,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         }
         if (PLA.first())
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
           algo_->set_scalar("original_error",orig);
           algo_->set_scalar("current_error",xmin);
           algo_->set_int("iteration",niter);
+#endif
         }
         PLA.wait();
         return (true);       
@@ -828,9 +850,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         }
         if (PLA.first())
         {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
           algo_->set_scalar("original_error",orig);
           algo_->set_scalar("current_error",xmin);
           algo_->set_int("iteration",niter);
+#endif
         }
         PLA.wait();
         return (true);       
@@ -838,11 +862,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     }
     
     if (error < xmin) { PLA.copy(X,XMIN); xmin = error; }
-    if (PLA.first()) convergence_[niter] = xmin;
+    if (PLA.first()) (*convergence_)[niter] = xmin;
     
     niter++;
     
     callback_step_cnt++;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
@@ -861,6 +886,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         callback_step = algo_->get_int("callback_step");
       }
     }
+#endif
     ucnt++;
     if (ucnt == 20) 
     {
@@ -871,33 +897,33 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
   }
   PLA.wait();
   
   return (true);
 }
-#endif
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 //------------------------------------------------------------------
 // JACOBI Solver with simple preconditioner
 
-
 class SolveLinearSystemJACOBIAlgo : public SolveLinearSystemParallelAlgo 
 {
-  public:
-    virtual bool parallel(ParallelLinearAlgebra& PLA, 
-                          std::vector<MatrixHandle>& matrix);
+public:
+  explicit SolveLinearSystemJACOBIAlgo(const AlgorithmBase* base) : SolveLinearSystemParallelAlgo(base) {}
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const;
 };
 
 
 bool
 SolveLinearSystemJACOBIAlgo::
-parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
+parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
 {
   // Algorithm
   // Define matrices and vectors to be used in the algorithm
@@ -905,17 +931,19 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN; 
   ParallelLinearAlgebra::ParallelVector DIAG,Z;
 
-  double tolerance =     algo_->get_scalar("target_error");
-  int    max_iter =      algo_->get_int("max_iterations");
+  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
+  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
+#endif
   int    niter = 0;
   int    callback_step_cnt =0;
 
   // Create matrices and vectors that we need for this algorithm
-  if ( !PLA.add_matrix(matrix[0],A) ||
-       !PLA.add_vector(matrix[1],B) ||
-       !PLA.add_vector(matrix[2],X0) ||
-       !PLA.add_vector(matrix[3],XMIN) ||
+  if ( !PLA.add_matrix(matrices.A,A) ||
+       !PLA.add_vector(matrices.b,B) ||
+       !PLA.add_vector(matrices.x0,X0) ||
+       !PLA.add_vector(matrices.x,XMIN) ||
        !PLA.new_vector(X) ||
        !PLA.new_vector(DIAG) ||
        !PLA.new_vector(Z))
@@ -923,9 +951,11 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     if (PLA.first()) 
     {
       algo_->error("Could not allocate enough memory for algorithm");
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",0.0);
       algo_->set_scalar("current_error",0.0);
       algo_->set_int("iteration",niter);
+#endif
     }
     PLA.wait();
 
@@ -954,10 +984,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   {
     if (PLA.first())
     {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
       algo_->set_scalar("original_error",orig);
       algo_->set_scalar("current_error",xmin);
       algo_->set_int("iteration",niter);
       if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
     }
     PLA.wait();
     return (true);
@@ -974,10 +1006,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     {
       if (PLA.first())
       {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
         algo_->set_scalar("original_error",orig);
         algo_->set_scalar("current_error",xmin);
         algo_->set_int("iteration",niter);
         if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
       }
       PLA.wait();
       algo_->update_progress(1);
@@ -990,11 +1024,12 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
     PLA.sub(Z,B,Z);
     error = PLA.norm(Z) / bnorm;
     if (error < xmin) { PLA.copy(X,XMIN); xmin = error; }
-    if (PLA.first()) convergence_[niter] = xmin;
+    if (PLA.first()) (*convergence_)[niter] = xmin;
     
     niter++;
     
     callback_step_cnt++;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
@@ -1013,6 +1048,7 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
         callback_step = algo_->get_int("callback_step");
       }
     }
+#endif
     
     cnt++;
     if (cnt == 20) 
@@ -1024,22 +1060,23 @@ parallel(ParallelLinearAlgebra& PLA, std::vector<MatrixHandle>& matrix)
   
   if (PLA.first())
   {
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
     algo_->set_scalar("original_error",orig);
     algo_->set_scalar("current_error",xmin);
     algo_->set_int("iteration",niter);
     if (algo_->have_callbacks()) algo_->do_callbacks();
+#endif
   }
   PLA.wait();
   
   algo_->update_progress(1);
   return (true);
 }
-#endif
 
 bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
                            DenseColumnMatrixHandle b,
                            DenseColumnMatrixHandle x0, 
-                           DenseColumnMatrixHandle& x)
+                           DenseColumnMatrixHandle& x) const
 {
   DenseColumnMatrixHandle convergence;
   return run(A,b,x0,x,convergence);
@@ -1049,8 +1086,9 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   DenseColumnMatrixHandle b,
                            DenseColumnMatrixHandle x0, 
                            DenseColumnMatrixHandle& x,
-                           DenseColumnMatrixHandle& convergence)
+                           DenseColumnMatrixHandle& convergence) const
 {
+  ScopedAlgorithmStatusReporter ssr(this, "SolveLinearSystem");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "No matrix b is given");
 
@@ -1080,7 +1118,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     if (btmp.get_rep() == 0)
     {
       error("Matrix b is not a dense or column matrix");
-      algo_end(); return (false);
+      return (false);
     }
 #endif
   }
@@ -1126,49 +1164,45 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
-  std::string method = "cg";
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    get_option("method");
-#endif
+  std::string method = get_option(SolveLinearSystemAlgo::MethodOption());
   
+  //std::cout << "ALGO: METHOD = " << method << std::endl;
+
   DenseColumnMatrixHandle conv;
   if (method == "cg")
   {
-    SolveLinearSystemCGAlgo algo;
-    if(!algo.run(this,A,b,x0,x,conv))
+    SolveLinearSystemCGAlgo algo(this);
+    if(!algo.run(A,b,x0,x,conv))
     {
       BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Conjugate Gradient method failed"));
     }
   }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   else if (method == "bicg")
   {
-    SolveLinearSystemBICGAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    SolveLinearSystemBICGAlgo algo(this);
+    if(!(algo.run(A,b,x0,x,conv)))
     {
-      error("BiConjugate Gradient method failed");
-      algo_end(); return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("BiConjugate Gradient method failed"));
     }
   }
   else if (method == "jacobi")
   {
-    SolveLinearSystemJACOBIAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    SolveLinearSystemJACOBIAlgo algo(this);
+    if(!(algo.run(A,b,x0,x,conv)))
     {
-      error("Jacobi method failed");
-      algo_end(); return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Jacobi method failed"));
     }
   }
   else if (method == "minres")
   {
-    SolveLinearSystemMINRESAlgo algo;
-    if(!(algo.run(this,A,b,x0,x,conv)))
+    SolveLinearSystemMINRESAlgo algo(this);
+    if(!(algo.run(A,b,x0,x,conv)))
     {
-      error("MINRES method failed");
-      algo_end(); return (false);
+      BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("MINRES method failed"));
     }
   }
-#endif
+  else
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("Unknown solver method"));
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (get_bool("build_convergence"))
@@ -1185,4 +1219,20 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   }
 #endif
   return true;
+}
+
+AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto lhs = input.get<SparseRowMatrix>(LHS);
+  auto rhs = input.get<DenseColumnMatrix>(RHS);
+
+  DenseColumnMatrixHandle solution;
+  bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
+  if (!success)
+  {
+    BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
+  }
+  AlgorithmOutput output;
+  output[Solution] = solution;
+  return output;
 }

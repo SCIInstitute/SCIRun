@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <stdexcept>
@@ -71,4 +71,9 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
   }
 
   return result;
+}
+
+AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const AlgorithmInput& input) const
+{
+  throw 2;
 }

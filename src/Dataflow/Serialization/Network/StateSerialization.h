@@ -35,6 +35,7 @@
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/map.hpp>
+#include <boost/serialization/set.hpp>
 #include <boost/serialization/variant.hpp>
 #include <Dataflow/Serialization/Network/share.h>
 
@@ -74,6 +75,13 @@ namespace boost {
     {
       ar & boost::serialization::make_nvp("name", ap.name_.name_);
       ar & boost::serialization::make_nvp("value", ap.value_);
+    }
+
+    template<class Archive>
+    void serialize(Archive& ar, SCIRun::Core::Algorithms::AlgoOption& opt, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("option", opt.option_);
+      ar & boost::serialization::make_nvp("options", opt.options_);
     }
   }
 }

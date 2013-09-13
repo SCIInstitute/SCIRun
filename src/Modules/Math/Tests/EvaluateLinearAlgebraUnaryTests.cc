@@ -26,22 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Modules/Math/EvaluateLinearAlgebraUnary.h>
+
+#include <Testing/Utils/ModuleTestBase.h>
+
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+//using namespace SCIRun::Dataflow::Networks::Mocks;
+//using ::testing::_;
+//using ::testing::NiceMock;
+//using ::testing::DefaultValue;
+//using ::testing::Return;
 
+class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
+{
+
+};
+
+TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
+{
+  const std::string name = "EvaluateLinearAlgebraUnary";
+  auto module = makeModule(name);
+
+  EXPECT_EQ(name, module->get_module_name());
+
+  DenseMatrixHandle m(new DenseMatrix(2,2));
+
+  stubPortNWithThisData(module, 0, m);
+
+  //TODO: mock module state for passing to algorithm
+  //TODO: algorithm factory to provide mock algorithm
+  //TODO: need algorithm parameters set up from algo ctor. Partial mock?
+  module->execute();
+}

@@ -41,11 +41,10 @@
 #ifndef Core_Exceptions_Exception_h
 #define Core_Exceptions_Exception_h
 
-#if USE_SCI_THROW
-#define SCI_THROW(exc) do {SCIRun::Exception::sci_throw(exc);throw exc;} while(SCIRun::Exception::alwaysFalse())
-#else
-#define SCI_THROW(exc) throw exc
-#endif
+#include <string>
+#include <Core/Utils/Exception.h>
+#include <sci_defs/error_defs.h>
+#include <Core/Exceptions/share.h>
 
 #ifdef WIN32 //VS2010 doesn't understand this yet. VS2012 ought to.
 #define NOEXCEPT
@@ -53,13 +52,8 @@
 #define NOEXCEPT noexcept(true)
 #endif
 
-#include <string>
-
-#include <sci_defs/error_defs.h>
-#include <Core/Exceptions/share.h>
-
 namespace SCIRun {
-  class SCISHARE Exception : std::exception 
+  class SCISHARE Exception : public std::exception
   {
   public:
     Exception();
@@ -85,5 +79,12 @@ namespace SCIRun {
 
   SCISHARE std::string getStackTrace(void* context = 0);
 } // End namespace SCIRun
+
+
+#if USE_SCI_THROW
+#define SCI_THROW(exc) do {SCIRun::Exception::sci_throw(exc);throw exc;} while(SCIRun::Exception::alwaysFalse())
+#else
+#define SCI_THROW(exc) BOOST_THROW_EXCEPTION(exc)
+#endif
 
 #endif

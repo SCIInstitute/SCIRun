@@ -31,6 +31,7 @@
 #define CORE_SERIALIZATION_NETWORK_NETWORK_XML_SERIALIZER_H 
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Serialization/Network/share.h>
@@ -42,12 +43,13 @@ namespace Networks {
   class SCISHARE NetworkXMLConverter : boost::noncopyable
   {
   public:
-    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, ModulePositionEditor* mpg = 0);
+    NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory, ModulePositionEditor* mpg = 0);
     NetworkHandle from_xml_data(const NetworkXML& data);
     NetworkFileHandle to_xml_data(const NetworkHandle& network);
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
+    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
     ModulePositionEditor* mpg_;
   };
 

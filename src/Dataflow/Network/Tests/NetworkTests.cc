@@ -35,9 +35,11 @@
 #include <Dataflow/Network/Tests/MockModule.h>
 #include <Dataflow/Network/Tests/MockPorts.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Core::Algorithms;
 using namespace boost::assign;
 using ::testing::DefaultValue;
 using ::testing::NiceMock;
@@ -62,13 +64,15 @@ protected:
 
   ModuleFactoryHandle moduleFactory_;
   static ModuleStateFactoryHandle sf_;
+  static AlgorithmFactoryHandle af_;
 };
 
 ModuleStateFactoryHandle NetworkTests::sf_;
+AlgorithmFactoryHandle NetworkTests::af_;
 
 TEST_F(NetworkTests, CanAddAndRemoveModules)
 {
-  Network network(moduleFactory_, sf_);
+  Network network(moduleFactory_, sf_, af_);
  
   EXPECT_EQ(0, network.nmodules());
 
@@ -85,7 +89,7 @@ TEST_F(NetworkTests, CanAddAndRemoveModules)
 
 TEST_F(NetworkTests, CanAddAndRemoveConnections)
 {
-  Network network(moduleFactory_, sf_);
+  Network network(moduleFactory_, sf_, af_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -108,7 +112,7 @@ TEST_F(NetworkTests, CanAddAndRemoveConnections)
 
 TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 {
-  Network network(moduleFactory_, sf_);
+  Network network(moduleFactory_, sf_, af_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -137,7 +141,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 //TODO: this verification pushed up to higher layer.
 TEST_F(NetworkTests, DISABLED_ConnectionsMustHaveMatchingPortTypes)
 {
-  Network network(moduleFactory_, sf_);
+  Network network(moduleFactory_, sf_, af_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";
@@ -151,7 +155,7 @@ TEST_F(NetworkTests, DISABLED_ConnectionsMustHaveMatchingPortTypes)
 
 TEST_F(NetworkTests, CannotConnectNonExistentPorts)
 {
-  Network network(moduleFactory_, sf_);
+  Network network(moduleFactory_, sf_, af_);
 
   ModuleLookupInfo mli1;
   mli1.module_name_ = "Module1";

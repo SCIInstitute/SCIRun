@@ -49,6 +49,8 @@ namespace Math {
     typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params) const;
+
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 
 }}}}

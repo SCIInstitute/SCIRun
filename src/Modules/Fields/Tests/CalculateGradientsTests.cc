@@ -26,39 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
-#define ALGORITHMS_MATH_EVALUATELINEARALGEBRABINARY_H
+#include <Modules/Legacy/Fields/CalculateGradients.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Testing/Utils/ModuleTestBase.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Algorithms/Math/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace Math {
+class CalculateGradientsModuleTests : public ModuleTest
+{
 
-  class SCISHARE EvaluateLinearAlgebraBinaryAlgorithm : public AlgorithmBase
-  {
-  public:
-    enum Operator
-    {
-      ADD,
-      SUBTRACT,
-      MULTIPLY
-    };
-    static AlgorithmParameterName OperatorName;
+};
 
-    //TODO: idea (type, name)
-    // can generate a subclass of ModuleState with get/set for each.
-    //ALGORITHM_PARAMETER(Operator, OperatorName);
-        
-    typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
-    typedef Operator Parameters;
-    typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
+TEST_F(CalculateGradientsModuleTests, ThrowsForNullInput)
+{
+  auto cg = makeModule("CalculateGradients");
+  FieldHandle nullField;
+  stubPortNWithThisData(cg, 0, nullField);
 
-    Outputs run(const Inputs& inputs, const Parameters& params) const;
-  };
-}}}}
-
-#endif
+  EXPECT_THROW(cg->execute(), NullHandleOnPortException);
+}

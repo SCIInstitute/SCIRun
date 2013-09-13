@@ -59,6 +59,7 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
 
 void ShowFieldDialog::push()
 {
+  //TODO: idea: tell state_ directly, i'm in a scoped region of pushing/editing, don't signal while i edit. signal when done editing!
   if (!pulling_)
   {
     state_->setValue(ShowFieldModule::ShowNodes, showNodesCheckBox_->isChecked());

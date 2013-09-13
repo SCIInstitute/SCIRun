@@ -55,6 +55,13 @@ public:
   typedef boost::multi_array<T, 2> impl_type;
   typedef T value_type;
 
+  Array2() {}
+
+  Array2(size_t size1, size_t size2) 
+  {
+    resize(size1, size2);
+  }
+
   void resize(size_t size1, size_t size2)
   {
     typename impl_type::extent_gen extents;
@@ -74,6 +81,16 @@ public:
   const T& operator[](size_t idx) const
   {
     return impl_.origin()[idx];
+  }
+
+  inline const T& operator()(index_type d1, index_type d2) const
+  {
+    return impl_[d1][d2];
+  }
+
+  inline T& operator()(index_type d1, index_type d2)
+  {
+    return impl_[d1][d2];
   }
 
   //////////
@@ -133,7 +150,7 @@ void Pio(Piostream& stream, Array2<T>& data)
     {
       for(index_type j=0;j<data.dim2();j++)
       {
-        Pio(stream, data.objs(i,j));
+        Pio(stream, data.getImpl()[i][j]);
       }
     }
   }

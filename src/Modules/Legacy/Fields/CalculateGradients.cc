@@ -26,60 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CalculateGradients.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-//! Include the algorithm
-#include <Core/Algorithms/Fields/FieldData/CalculateGradients.h>
-
-//! The module class
-#include <Dataflow/Network/Module.h>
-
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-
-
-
-namespace SCIRun {
-
-class CalculateGradients : public Module
+CalculateGradients::CalculateGradients()
+  : Module(ModuleLookupInfo("CalculateGradients", "ChangeFieldData", "SCIRun"), false)
 {
-  public:
-    CalculateGradients(GuiContext* ctx);
-    virtual ~CalculateGradients() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::CalculateGradientsAlgo algo_;
-};
-
-
-DECLARE_MAKER(CalculateGradients)
-
-CalculateGradients::CalculateGradients(GuiContext* ctx)
-  : Module("CalculateGradients", ctx, Filter, "ChangeFieldData", "SCIRun")
-{
-  //! Forward errors to the module
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(ScalarField);
+  INITIALIZE_PORT(VectorField);
 }
 
-void
-CalculateGradients::execute()
+void CalculateGradients::execute()
 {
-  FieldHandle input;
-  FieldHandle output;
+  FieldHandle input = getRequiredInput(ScalarField);
 
-  get_input_handle( "Field", input, true );
-
-  if( inputs_changed_ || !oport_cached("Field") )
+  //inputs_changed_ || !oport_cached("Field")
+  if(needToExecute())
   {
     update_state(Executing);
-    //! Run algorithm
-    if (!(algo_.run(input,output))) return;
-  
-    //! Send the data downstream
-    send_output_handle( "Field", output,true);
+
+    auto output = algo_->run_generic(make_input((ScalarField, input)));
+
+    sendOutputFromAlgorithm(VectorField, output);
   }
 }
-
-} // End namespace SCIRun

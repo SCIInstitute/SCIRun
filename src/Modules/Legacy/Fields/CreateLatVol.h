@@ -68,6 +68,7 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
 
       private:
+        virtual void setDefaults();
         enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
       };
 

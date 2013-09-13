@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,41 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETFIELDBOUNDARY_H
-#define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_GETFIELDBOUNDARY_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <boost/assign.hpp>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+using namespace boost::assign;
 
-class SCISHARE GetFieldBoundaryAlgo : public AlgoBase
+class GetFieldBoundaryAlgoTests : public ::testing::Test
 {
-  public:
-    //! Set defaults
-  GetFieldBoundaryAlgo() 
+protected:
+  virtual void SetUp()
   {
-    add_option("mapping","auto","auto|node|elem|none");
+    int basisOrder = 1;
+    FieldInformation lfi("LatVolMesh", basisOrder, "double");
+    int sizex,sizey,sizez;
+    sizex = sizey = sizez = 5;
+    Point minb(0,0,0);
+    Point maxb(1,1,1);
+    mesh_ = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+    field_ = CreateField(lfi, mesh_);
   }
-  
-  //! With mapping
-  bool run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping);
-  //! Without mapping
-  bool run(FieldHandle input, FieldHandle& output);
 
+  FieldHandle field_;
+  MeshHandle mesh_;
 };
 
-} // end namespace SCIRunAlgo
-
-#endif 
+TEST_F(GetFieldBoundaryAlgoTests, Foo)
+{
+  FAIL() << "Todo";
+}

@@ -102,6 +102,9 @@ INCLUDE(CheckCXXSourceCompiles)
 INCLUDE(CheckCXXCompilerFlag)
 INCLUDE(ExternalProject)
 
+IF(WIN32)
+  ADD_DEFINITIONS("/wd4251 /wd4275 -D_CRT_SECURE_NO_WARNINGS") 
+ENDIF(WIN32)
 
 ########################################################################
 # Configure test support
@@ -497,6 +500,7 @@ SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
 SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Field_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
 
 SET_PROPERTY(TARGET Dataflow_Network         PROPERTY FOLDER "Dataflow")
@@ -577,9 +581,9 @@ SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visua
 SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
-SET_PROPERTY(TARGET Boost_external    PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET ${SPIRE_CORE}     PROPERTY FOLDER "Externals")
-#SET_PROPERTY(TARGET log4cpp PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET ${SPIRE_CORE}   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET log4cpp PROPERTY FOLDER "Externals")
 
 
 IF(BUILD_WITH_PYTHON)

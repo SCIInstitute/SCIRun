@@ -61,11 +61,13 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_info, const ModuleLookupInfo&());
           MOCK_METHOD1(setLogger, void(SCIRun::Core::Logging::LoggerHandle));
           MOCK_CONST_METHOD0(getLogger, SCIRun::Core::Logging::LoggerHandle());
+          MOCK_CONST_METHOD0(getUpdaterFunc, SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc());
           MOCK_METHOD1(setUpdaterFunc, void(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc));
           MOCK_METHOD1(setUiToggleFunc, void(UiToggleFunc));
           MOCK_METHOD1(connectExecuteBegins, boost::signals2::connection(const ExecuteBeginsSignalType::slot_type&));
           MOCK_METHOD1(connectExecuteEnds, boost::signals2::connection(const ExecuteEndsSignalType::slot_type&));
           MOCK_METHOD1(connectErrorListener, boost::signals2::connection(const ErrorSignalType::slot_type&));
+          MOCK_CONST_METHOD0(needToExecute, bool());
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;
@@ -77,6 +79,7 @@ namespace SCIRun {
           virtual ModuleDescription lookupDescription(const ModuleLookupInfo& info);
           virtual ModuleHandle create(const ModuleDescription& info);
           virtual void setStateFactory(ModuleStateFactoryHandle stateFactory);
+          virtual void setAlgorithmFactory(Core::Algorithms::AlgorithmFactoryHandle algoFactory);
           virtual const ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
         private:
           size_t moduleCounter_;

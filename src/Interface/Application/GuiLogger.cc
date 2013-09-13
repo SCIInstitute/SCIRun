@@ -28,7 +28,7 @@
 
 #include <iostream>
 #include <Interface/Application/GuiLogger.h>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Core::Logging;

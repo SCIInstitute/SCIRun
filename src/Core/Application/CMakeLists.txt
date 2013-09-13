@@ -46,6 +46,7 @@ TARGET_LINK_LIBRARIES(Core_Application
   Core_CommandLine
   Engine_Network
   Modules_Factory
+  Algorithms_Factory
   Dataflow_State
   ${SCI_BOOST_LIBRARY}
 )

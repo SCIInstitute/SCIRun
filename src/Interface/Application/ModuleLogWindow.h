@@ -31,7 +31,7 @@
 
 #include "ui_ModuleLogWindow.h"
 
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {

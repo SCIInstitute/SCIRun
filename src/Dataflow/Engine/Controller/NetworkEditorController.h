@@ -30,6 +30,7 @@
 #define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
@@ -52,7 +53,11 @@ namespace Engine {
   class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
   {
   public:
-    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, Networks::ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
+    explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, 
+      Networks::ModuleStateFactoryHandle sf, 
+      ExecutionStrategyFactoryHandle executorFactory, 
+      Core::Algorithms::AlgorithmFactoryHandle algoFactory,
+      Networks::ModulePositionEditor* mpg = 0);
     explicit NetworkEditorController(Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, Networks::ModulePositionEditor* mpg = 0);
 
 //////////////////////////////////////////////////////////////////////////
@@ -100,6 +105,7 @@ namespace Engine {
     Networks::NetworkHandle theNetwork_;
     Networks::ModuleFactoryHandle moduleFactory_;
     Networks::ModuleStateFactoryHandle stateFactory_;
+    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
     ExecutionStrategyHandle currentExecutor_;
     ExecutionStrategyFactoryHandle executorFactory_;
     Networks::ModulePositionEditor* modulePositionEditor_;
@@ -109,6 +115,8 @@ namespace Engine {
     ConnectionAddedSignalType connectionAdded_;
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
+
+    void configureLoggingLibrary();
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

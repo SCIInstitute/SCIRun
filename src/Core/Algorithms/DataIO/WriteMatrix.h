@@ -48,6 +48,8 @@ namespace SCIRun {
         static AlgorithmParameterName Filename;
 
         Outputs run(const Inputs& input, const Parameters& filename) const;
+
+        AlgorithmOutput run_generic(const AlgorithmInput& input) const;
       };
 }}}}
 

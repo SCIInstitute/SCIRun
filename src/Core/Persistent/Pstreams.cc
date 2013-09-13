@@ -43,7 +43,7 @@
  */
 
 #include <Core/Persistent/Pstreams.h>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Legacy/StringUtil.h>
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

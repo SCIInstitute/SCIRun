@@ -46,6 +46,8 @@ namespace Math {
     typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
     Outputs run(const Inputs& input, const Parameters& params = 0) const;
+
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 
 }}}}

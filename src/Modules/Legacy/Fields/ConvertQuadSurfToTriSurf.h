@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,61 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///////////////////////////
-// PORTED SCIRUN v4 CODE //
-///////////////////////////
-
-/*
- *  CreateLatVol.cc:  Make an LatVol that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
-
-#ifndef MODULES_FIELDS_CREATELATVOLMESH_H
-#define MODULES_FIELDS_CREATELATVOLMESH_H
+#ifndef MODULES_LEGACY_FIELDS_ConvertQuadSurfToTriSurf_H__
+#define MODULES_LEGACY_FIELDS_ConvertQuadSurfToTriSurf_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-class SCISHARE CreateLatVolMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has1OutputPort<MeshPortTag>,
-  public HasNoInputPorts
-{
-  public:
-    CreateLatVolMesh();
+      class SCISHARE ConvertQuadSurfToTriSurf : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ConvertQuadSurfToTriSurf();
 
-    virtual void execute();
+        virtual void execute();
 
-    OUTPUT_PORT(0, OutputSampleField, LegacyMesh);
+        INPUT_PORT(0, QuadSurf, LegacyField);
+        OUTPUT_PORT(0, TriSurf, LegacyField);
+      };
 
-    static Core::Algorithms::AlgorithmParameterName XSize;
-    static Core::Algorithms::AlgorithmParameterName YSize;
-    static Core::Algorithms::AlgorithmParameterName ZSize;
-    static Core::Algorithms::AlgorithmParameterName PadPercent;
-    static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
-
-  private:
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    GuiInt size_x_;
-    GuiInt size_y_;
-    GuiInt size_z_;
-    GuiDouble padpercent_;
-    GuiString data_at_;
-    GuiString element_size_;
-
-    enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
-#endif 
-};
-
-}}}
+    }
+  }
+}
 
 #endif

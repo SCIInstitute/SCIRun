@@ -44,8 +44,8 @@
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
@@ -63,6 +63,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
+using namespace SCIRun::Core::Algorithms;
 
 #include <stdexcept>
 #include <fstream>
@@ -165,8 +166,8 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
   serializer.save_xml(networkXML, ostr1);
 
-  ModuleFactoryHandle mf(new SCIRun::Modules::Factory::HardCodedModuleFactory);
-  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle());
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle());
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network);
   auto xml2 = converter.to_xml_data(network);
@@ -184,7 +185,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
-  NetworkEditorController controller(mf, sf, exe);
+  NetworkEditorController controller(mf, sf, exe, AlgorithmFactoryHandle());
   
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");
   ModuleHandle matrix2Send = controller.addModule("SendTestMatrix");
@@ -230,7 +231,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   XMLSerializer::save_xml(*xml, ostr, "network");
   std::cout << ostr.str() << std::endl;
 
-  NetworkEditorController controller2(mf, sf, exe);
+  NetworkEditorController controller2(mf, sf, exe, AlgorithmFactoryHandle());
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();

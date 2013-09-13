@@ -45,6 +45,7 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Algorithms;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -56,6 +57,7 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
+  AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
   const std::string& version)
   : info_(info), has_ui_(hasUi), 
@@ -69,6 +71,14 @@ Module::Module(const ModuleLookupInfo& info,
   log4cpp::Category& root = log4cpp::Category::getRoot();
 
   root << log4cpp::Priority::INFO << "Module created: " << info.module_name_ << " with id: " << id_;
+
+  if (algoFactory)
+  {
+    algo_ = algoFactory->create(get_module_name(), this);
+    if (algo_)
+      root << log4cpp::Priority::INFO << "Module algorithm initialized: " << info.module_name_;
+  }
+
 }
 
 Module::~Module()
@@ -77,6 +87,7 @@ Module::~Module()
 }
 
 ModuleStateFactoryHandle Module::defaultStateFactory_;
+AlgorithmFactoryHandle Module::defaultAlgoFactory_;
 
 LoggerHandle Module::getLogger() const { return log_ ? log_ : defaultLogger_; }
 
@@ -120,7 +131,7 @@ void Module::do_execute() throw()
   catch (Core::ExceptionBase& e)
   {
     //TODO: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    if (false)
+    //if (false)
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName();
@@ -291,4 +302,27 @@ void Module::setUiVisible(bool visible)
 {
   if (uiToggleFunc_)
     uiToggleFunc_(visible);
+}
+
+void Module::setLogger(SCIRun::Core::Logging::LoggerHandle log)
+{ 
+  log_ = log; 
+  if (algo_)
+    algo_->setLogger(log);
+}
+
+void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func)
+{ 
+  updaterFunc_ = func;
+  if (algo_)
+    algo_->setUpdaterFunc(func);
+}
+
+bool Module::oport_connected(size_t portIndex) const
+{
+  if (portIndex >= oports_.size())
+    return false;
+
+  auto port = oports_[portIndex];
+  return port->nconnections() > 0;
 }

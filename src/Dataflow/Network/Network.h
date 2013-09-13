@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_NETWORK_H 
 
 #include <boost/noncopyable.hpp>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/NetworkSettings.h>
@@ -46,7 +47,7 @@ namespace Networks {
     typedef std::map<ConnectionId, ConnectionHandle, OrderedByConnectionId> Connections;
     typedef std::vector<ModuleHandle> Modules;
 
-    Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory);
+    Network(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, Core::Algorithms::AlgorithmFactoryHandle algoFactory);
     ~Network();
 
     virtual ModuleHandle add_module(const ModuleLookupInfo& info);

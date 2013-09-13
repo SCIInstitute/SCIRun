@@ -1,0 +1,65 @@
+/*
+   For more information, please see: http://software.sci.utah.edu
+
+   The MIT License
+
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   University of Utah.
+
+   License for the specific language governing rights and limitations under
+   Permission is hereby granted, free of charge, to any person obtaining a
+   copy of this software and associated documentation files (the "Software"),
+   to deal in the Software without restriction, including without limitation
+   the rights to use, copy, modify, merge, publish, distribute, sublicense,
+   and/or sell copies of the Software, and to permit persons to whom the
+   Software is furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included
+   in all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE.
+*/
+
+#include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
+
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
+#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
+
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Math;
+
+HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
+
+AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
+{
+  AlgorithmHandle h;
+
+  if (name == "GetFieldBoundary")
+    h.reset(new GetFieldBoundaryAlgo);
+  else if (name == "SolveLinearSystem")
+    h.reset(new SolveLinearSystemAlgo);
+  else if (name == "CalculateSignedDistanceToField")
+    h.reset(new CalculateSignedDistanceFieldAlgo);
+  else if (name == "CalculateGradients")
+    h.reset(new CalculateGradientsAlgo);
+  else if (name == "ConvertQuadSurfToTriSurf")
+    h.reset(new ConvertMeshToTriSurfMeshAlgo);
+
+  if (h && algoCollaborator)
+  {
+    h->setLogger(algoCollaborator->getLogger());
+    h->setUpdaterFunc(algoCollaborator->getUpdaterFunc());
+  }
+
+  return h;
+}

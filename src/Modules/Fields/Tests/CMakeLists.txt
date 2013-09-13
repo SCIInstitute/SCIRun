@@ -28,11 +28,11 @@
 
 SET(Modules_Fields_Tests_SRCS
   CreateLatVolTests.cc
+  CalculateGradientsTests.cc
+  CalculateSignedDistanceToFieldTests.cc
+  GetFieldBoundaryTests.cc
+  ConvertQuadSurfToTriSurfTests.cc
 )
-
-#SET(Engine_Network_Tests_HEADERS
-#  NetworkEditorControllerTests_.h
-#)
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
   ${Modules_Fields_Tests_SRCS}
@@ -41,10 +41,10 @@ SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
 TARGET_LINK_LIBRARIES(Modules_Fields_Tests
   Modules_Fields
   Modules_Factory
-  #Algorithms_Math
   Core_Datatypes
   Dataflow_Network
   Dataflow_State
+  Testing_Utils
   gtest_main
   gtest
   gmock

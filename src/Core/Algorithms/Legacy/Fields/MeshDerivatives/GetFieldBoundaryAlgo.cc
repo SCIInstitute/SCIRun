@@ -26,14 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshDerivatives/GetFieldBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+
+#include <boost/unordered_map.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
+
+AlgorithmInputName GetFieldBoundaryAlgo::InputField("InputField");
+AlgorithmOutputName GetFieldBoundaryAlgo::BoundaryField("BoundaryField");
+AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("MappingMatrix");
+
+GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
+{
+  add_option(AlgorithmParameterName("mapping"),"auto","auto|node|elem|none");
+}
 
 struct IndexHash {
   static const size_t bucket_size = 4;
@@ -47,26 +65,21 @@ struct IndexHash {
 };
 
 bool 
-GetFieldBoundaryAlgo::
-run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
+GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping) const
 {
+  ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
+
   //! Define types we need for mapping
-#ifdef HAVE_HASH_MAP
-  typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
-#else
-  typedef std::map<index_type,index_type,IndexHash> hash_map_type;
-#endif
+  typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
 
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  algo_start("GetFieldBoundary");
-  
   //! Check whether we have an input field
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Figure out what the input type and output type have to be
@@ -77,7 +90,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Figure out which type of field the output is:
@@ -91,22 +104,22 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
   {
     remark("The field boundary of a point cloud is the same point cloud");
     output = input;
-    algo_end(); return (true);
+    return (true);
   }
   
   //! Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Create the output field
   output = CreateField(fo);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Get the virtual interfaces:
@@ -171,45 +184,59 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     ++be;
   }
   
-  mapping = 0;
+  mapping.reset();
   
   ofield->resize_fdata();
   
-  if (((ifield->basis_order() == 0)&&(check_option("mapping","auto")))||(check_option("mapping","elem")))
+  if (
+    (
+    (ifield->basis_order() == 0)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+      && check_option("mapping","auto")
+      )
+      ||
+       check_option("mapping","elem")
+#else
+    )
+#endif
+      )
   {
     VMesh::Elem::size_type isize;
     VMesh::Elem::size_type osize;
     imesh->size(isize);
     omesh->size(osize);
 
+
     size_type nrows = osize;
     size_type ncols = isize;
-    SparseRowMatrix::Data sparseData(nrows+1, nrows);
-    const SparseRowMatrix::Rows& rr = sparseData.rows();
-    const SparseRowMatrix::Columns& cc = sparseData.columns();
-    const SparseRowMatrix::Storage& d = sparseData.data();
 
-    for (index_type p = 0; p < nrows; p++)
-    {
-      cc[p] = 0;
-      rr[p] = p;
-      d[p] = 0.0;
-    }
-    rr[nrows] = nrows; // An extra entry goes on the end of rr.
+    typedef Eigen::Triplet<double> T;
+    std::vector<T> tripletList;
+    tripletList.reserve(nrows);
 
     hash_map_type::iterator it, it_end;
     it = elem_map.begin();
     it_end = elem_map.end();
-    
+
     while (it != it_end)
     {
-      cc[(*it).first] = (*it).second;
-      d[(*it).first] += 1.0;
+      tripletList.push_back(T(it->first, it->second, 1));
       ++it;
     }
-    mapping = new SparseRowMatrix(nrows, ncols, sparseData, nrows);
+    SparseRowMatrixHandle mat(new SparseRowMatrix(nrows, ncols));
+    mat->setFromTriplets(tripletList.begin(), tripletList.end());
+    mapping = mat;
   }
-  else if (((ifield->basis_order() == 1)&&(check_option("mapping","auto")))||(check_option("mapping","node")))
+  else if (
+    ((ifield->basis_order() == 1) 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    && check_option("mapping","auto"))
+    ||
+      check_option("mapping","node")
+#else
+    )
+#endif
+      )
   {
     VMesh::Node::size_type isize;
     VMesh::Node::size_type osize;
@@ -219,31 +246,23 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     size_type nrows = osize;
     size_type ncols = isize;
 
-    SparseRowMatrix::Data sparseData(nrows+1, nrows);
-    const SparseRowMatrix::Rows& rr = sparseData.rows();
-    const SparseRowMatrix::Columns& cc = sparseData.columns();
-    const SparseRowMatrix::Storage& d = sparseData.data();
-
-    for (index_type p = 0; p < nrows; p++)
-    {
-      cc[p] = 0;
-      rr[p] = p;
-      d[p] = 0.0;
-    }
-    rr[nrows] = nrows; // An extra entry goes on the end of rr.
+    typedef Eigen::Triplet<double> T;
+    std::vector<T> tripletList;
+    tripletList.reserve(nrows);
 
     hash_map_type::iterator it, it_end;
     it = node_map.begin();
     it_end = node_map.end();
-    
+
+    int row = 0;
     while (it != it_end)
     {
-      cc[(*it).second] = (*it).first;
-      d[(*it).second] += 1.0;
+      tripletList.push_back(T(it->second, it->first, 1));
       ++it;
     }
-    
-    mapping = new SparseRowMatrix(nrows, ncols, sparseData, nrows);
+    SparseRowMatrixHandle mat(new SparseRowMatrix(nrows, ncols));
+    mat->setFromTriplets(tripletList.begin(), tripletList.end());
+    mapping = mat;
   }
   
   if (ifield->basis_order() == 0)
@@ -277,10 +296,12 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
     }
   }
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // copy property manager
-	output->copy_properties(input.get_rep());
+	output->copy_properties(input);
+#endif
   
-  algo_end(); return (true);
+  return (true);
 }
 
 
@@ -289,25 +310,21 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 //! project nodes on.
 
 bool 
-GetFieldBoundaryAlgo::
-run(FieldHandle input, FieldHandle& output)
+GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 {
+  ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
+
   //! Define types we need for mapping
-#ifdef HAVE_HASH_MAP
-  typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
-#else
-  typedef std::map<index_type,index_type,IndexHash> hash_map_type;
-#endif
+  typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
+  
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  algo_start("GetFieldBoundary");
-  
   //! Check whether we have an input field
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Figure out what the input type and output type have to be
@@ -318,7 +335,7 @@ run(FieldHandle input, FieldHandle& output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Figure out which type of field the output is:
@@ -332,22 +349,22 @@ run(FieldHandle input, FieldHandle& output)
   {
     remark("The field boundary of a point cloud is the same point cloud");
     output = input;
-    algo_end(); return (true);
+    return (true);
   }
   
   //! Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    return (false);
   }
 
   //! Create the output field
   output = CreateField(fo);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   //! Get the virtual interfaces:
@@ -444,11 +461,25 @@ run(FieldHandle input, FieldHandle& output)
     }
   }
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // copy property manager
-	output->copy_properties(input.get_rep());
+	output->copy_properties(input);
+#endif
   
-  algo_end(); return (true);
+  return (true);
 }
 
+AlgorithmOutput GetFieldBoundaryAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(InputField);
 
-} // End namespace SCIRunAlgo
+  FieldHandle boundary;
+  MatrixHandle mapping;
+  if (!run(field, boundary, mapping))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[BoundaryField] = boundary;
+  output[MappingMatrix] = mapping;
+  return output;
+}

@@ -29,20 +29,17 @@
 
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
-  CreateLatVolMesh.ui
   ReportFieldInfoDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
-  CreateLatVolMeshDialog.h
   ReportFieldInfoDialog.h
   share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
-  CreateLatVolMeshDialog.cc
   ReportFieldInfoDialog.cc
 )
 

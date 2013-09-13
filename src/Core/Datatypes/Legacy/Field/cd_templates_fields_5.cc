@@ -27,18 +27,21 @@
 */
 
 #include <Core/Persistent/PersistentSTL.h>
-#include <Core/Geometry/Tensor.h>
-#include <Core/Geometry/Vector.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Basis/NoData.h>
 #include <Core/Basis/Constant.h>
 #include <Core/Basis/HexTricubicHmt.h>
 #include <Core/Basis/HexTricubicHmtScaleFactors.h>
 #include <Core/Basis/HexTricubicHmtScaleFactorsEdges.h>
 #include <Core/Basis/HexTrilinearLgn.h>
-#include <Core/Datatypes/HexVolMesh.h>
-#include <Core/Datatypes/GenericField.h>
+#include <Core/Datatypes/Legacy/Field/HexVolMesh.h>
+#include <Core/Datatypes/Legacy/Field/GenericField.h>
 
-using namespace SCIRun;
+using namespace SCIRun::Core::Basis;
+using namespace SCIRun::Core::Geometry;
+
+namespace SCIRun {
 
 //NoData
 typedef NoDataBasis<double>                NDBasis;
@@ -179,25 +182,4 @@ backwards_compat_HVFul("HexVolField<unsigned_long>", "Field",
 		       std::vector<unsigned long> >::maker);
 
 
-typedef HexTricubicHmt<double>             HTCdoubleBasis;
-
-typedef HexVolMesh<HexTricubicHmt<Point> > HVCubMesh;
-template class HexVolMesh<HexTricubicHmt<Point> >;
-
-template class GenericField<HVCubMesh, NDBasis, std::vector<double> >; 
-template class GenericField<HVCubMesh, HTCdoubleBasis, std::vector<double> >; 
-
-typedef HexTricubicHmtScaleFactors<double>             HTCSFdoubleBasis;
-typedef HexTricubicHmtScaleFactors<Vector>             HTCSFVectorBasis;
-
-typedef HexVolMesh<HexTricubicHmtScaleFactors<Point> > HVCubSFMesh;
-template class HexVolMesh<HexTricubicHmtScaleFactors<Point> >;
-
-template class GenericField<HVCubSFMesh, NDBasis, std::vector<double> >; 
-template class GenericField<HVCubSFMesh, HTCSFdoubleBasis, std::vector<double> >; 
-template class GenericField<HVCubSFMesh, HTCSFVectorBasis, std::vector<Vector> >; 
-
-typedef HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> > HVCubSFEMesh;
-template class HexVolMesh<HexTricubicHmtScaleFactorsEdges<Point> >;
-
-template class GenericField<HVCubSFEMesh, NDBasis, std::vector<double> >; 
+}

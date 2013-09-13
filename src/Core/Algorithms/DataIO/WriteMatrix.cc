@@ -68,3 +68,8 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
   if (!boost::filesystem::exists(filename))
     THROW_ALGORITHM_PROCESSING_ERROR("file failed to be written!");
 }
+
+AlgorithmOutput WriteMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
+{
+  throw 2;
+}

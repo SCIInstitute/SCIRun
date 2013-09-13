@@ -45,10 +45,13 @@
 #include <Modules/Math/AppendMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
-#include <Modules/Fields/CreateLatVolMesh.h>
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
+#include <Modules/Legacy/Fields/GetFieldBoundary.h>
+#include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
+#include <Modules/Legacy/Fields/CalculateGradients.h>
+#include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -94,6 +97,7 @@ namespace SCIRun {
         ModuleDescriptionLookup()
         {
           //TODO: make EVEN MORE generic...macros? xml?
+          //TODO: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
 
           addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
@@ -103,24 +107,28 @@ namespace SCIRun {
           addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
           addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-          //addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-          //addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
           addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
           addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
           addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
           addModuleDesc<EvaluateLinearAlgebraUnaryModule>("EvaluateLinearAlgebraUnary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
           addModuleDesc<EvaluateLinearAlgebraBinaryModule>("EvaluateLinearAlgebraBinary", "Math", "SCIRun", "Partially functional, needs GUI work.", "...");
           addModuleDesc<CreateMatrixModule>("CreateMatrix", "Math", "SCIRun", "Functional, needs GUI work.", "...");
-          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "One multithreaded algorithm available.", "...");
+          addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
           addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
-          addModuleDesc<CreateLatVolMesh>("CreateLatVolMesh", "NewField", "SCIRun", "Can create lat vol meshes of arbitrary size.", "...");
           addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Math", "SCIRun", "...", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
           addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
           addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "Set field data via python.", "...");
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
+
+          addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
+          addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
+          addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+          addModuleDesc<ConvertQuadSurfToTriSurf>("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
         }
 
         ModuleDescriptionMap descMap_;
@@ -182,6 +190,11 @@ void HardCodedModuleFactory::setStateFactory(SCIRun::Dataflow::Networks::ModuleS
 {
   stateFactory_ = stateFactory;
   Module::defaultStateFactory_ = stateFactory_;
+}
+
+void HardCodedModuleFactory::setAlgorithmFactory(SCIRun::Core::Algorithms::AlgorithmFactoryHandle algoFactory)
+{
+  Module::defaultAlgoFactory_ = algoFactory;
 }
 
 ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)

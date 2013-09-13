@@ -33,7 +33,8 @@ SET(Core_Logging_SRCS
 
 SET(Core_Logging_HEADERS
   ConsoleLogger.h
-  Logger.h
+  DirectLogger.h
+  LoggerInterface.h
   LoggerFwd.h
   ScopedTimeRemarker.h
   share.h

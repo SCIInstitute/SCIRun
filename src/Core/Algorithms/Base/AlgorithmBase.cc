@@ -27,14 +27,19 @@
 */
 
 #include <iostream>
+#include <vector>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Logging/ConsoleLogger.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName::AlgorithmParameterName(const std::string& name) : name_(name) 
+Name::Name(const std::string& name) : name_(name)
 {
   if (!std::all_of(name.begin(), name.end(), isalnum))
   {
@@ -68,6 +73,17 @@ bool AlgorithmParameter::getBool() const
 {
   const bool* v = boost::get<bool>(&value_);
   return v ? *v : (getInt() != 0);
+}
+
+AlgoOption AlgorithmParameter::getOption() const
+{
+  const AlgoOption* opt = boost::get<AlgoOption>(&value_);
+  return opt ? *opt : AlgoOption();
+}
+
+DatatypeHandle AlgorithmParameter::getDatatype() const
+{
+  return data_;
 }
 
 AlgorithmLogger::AlgorithmLogger() : defaultLogger_(new ConsoleLogger)
@@ -108,7 +124,7 @@ void AlgorithmParameterList::set(const AlgorithmParameterName& key, const Algori
 {
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound());
+    keyNotFoundPolicy(key);
   iter->second.value_ = value;
 }
 
@@ -116,7 +132,7 @@ const AlgorithmParameter& AlgorithmParameterList::get(const AlgorithmParameterNa
 {
   auto iter = parameters_.find(key);
   if (iter == parameters_.end())
-    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound());
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter with name " + key.name_));
   return iter->second;
 }
 
@@ -137,4 +153,82 @@ ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
 {
   if (asr_)
     asr_->report_end();
+}
+
+DatatypeHandle& AlgorithmData::operator[](const Name& name)
+{
+  return data_[name];
+}
+
+void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
+{
+  std::set<std::string> opts;
+  auto lower = boost::to_lower_copy(options);
+  boost::split(opts, lower, boost::is_any_of("|"));
+  parameters_[key] = AlgorithmParameter(key, AlgoOption(defval, opts));
+}
+
+bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const std::string& value)
+{
+  auto paramIt = parameters_.find(key);
+
+  if (paramIt == parameters_.end())
+    keyNotFoundPolicy(key);
+  
+  AlgoOption param = paramIt->second.getOption();
+  std::string valueLower = boost::to_lower_copy(value);
+
+  if (param.options_.find(valueLower) == param.options_.end())
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("parameter \"" + key.name_ + "\" has no option \"" + valueLower + "\""));
+
+  param.option_ = valueLower;
+  parameters_[key].value_ = param;
+  return true;
+}
+
+void AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key)
+{
+  BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter/option with name " + key.name_));
+  //BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("option key \"" + key.name_ + "\" was not defined in algorithm"));
+}
+
+bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::string& value) const
+{
+  auto paramIt = parameters_.find(key);
+
+  if (paramIt == parameters_.end())
+    BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("option key \"" + key.name_ + "\" was not defined in algorithm"));
+
+  value = paramIt->second.getOption().option_;
+  return true;
+}
+
+std::string AlgorithmParameterList::get_option(const AlgorithmParameterName& key) const
+{
+  std::string value;
+  get_option(key, value);
+  return value;
+}
+
+bool SCIRun::Core::Algorithms::operator==(const AlgoOption& lhs, const AlgoOption& rhs)
+{
+  return lhs.option_ == rhs.option_ && lhs.options_ == rhs.options_;
+}
+
+std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const AlgoOption& op)
+{
+  return out << op.option_;
+}
+
+AlgoInputBuilder::AlgoInputBuilder() {}
+
+AlgoInputBuilder& AlgoInputBuilder::operator()(const std::string& name, DatatypeHandle d)
+{
+  map_[Name(name)] = d;
+  return *this;
+}
+
+AlgorithmInput AlgoInputBuilder::build() const
+{
+  return AlgorithmInput(map_);
 }

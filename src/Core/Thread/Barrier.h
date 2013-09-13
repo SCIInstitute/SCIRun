@@ -42,7 +42,7 @@ namespace Core
     class SCISHARE Barrier : boost::noncopyable
     {
     public:
-      Barrier(const std::string& name, size_t numThreads);
+      Barrier(const std::string& name, unsigned int numThreads);
       void wait();
     private:
       std::string name_;

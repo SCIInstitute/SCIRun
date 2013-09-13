@@ -48,12 +48,19 @@ const char* ExceptionBase::what() const throw()
 
 std::string ExceptionBase::typeName() const
 {
-  //TODO very hacky.
-  std::string name = typeid(*this).name();
+  try
+  {
+    //TODO very hacky.
+    std::string name = typeid(*this).name();
 
-  static boost::regex r(".*class.*<.*struct (.+)>");
-  boost::smatch match;
-  if (boost::regex_match(name, match, r))
-    return (std::string)match[1];
-  return name;
+    static boost::regex r(".*class.*<.*struct (.+)>");
+    boost::smatch match;
+    if (boost::regex_match(name, match, r))
+      return (std::string)match[1];
+    return name;
+  }
+  catch (...)
+  {
+    return "<Unknown>";
+  }
 }

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CALCULATEGRADIENTS_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_CALCULATEGRADIENTS_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
+#include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Testing/Utils/ModuleTestBase.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-class SCISHARE CalculateGradientsAlgo : public AlgoBase
+class ConvertQuadSurfToTriSurfModuleTests : public ModuleTest
 {
-  public:
-    //! Set defaults
-    CalculateGradientsAlgo()
-    {
-    }
-  
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+
 };
 
-} // end namespace SCIRun
+TEST_F(ConvertQuadSurfToTriSurfModuleTests, ThrowsForNullInput)
+{
+  auto csdf = makeModule("ConvertQuadSurfToTriSurf");
+  FieldHandle nullField;
+  stubPortNWithThisData(csdf, 0, nullField);
+  stubPortNWithThisData(csdf, 1, nullField);
 
-#endif
+  EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
+}
+
+TEST_F(ConvertQuadSurfToTriSurfModuleTests, Foo)
+{
+  FAIL() << "TODO";
+}

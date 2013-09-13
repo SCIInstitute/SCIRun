@@ -116,12 +116,12 @@ public:
   ParallelLinearAlgebraBase(); 
   virtual ~ParallelLinearAlgebraBase();
   
-  bool start_parallel(SolverInputs& matrices, int nproc = -1);
+  bool start_parallel(SolverInputs& matrices, int nproc = -1) const;
 
-  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) = 0;
+  virtual bool parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const = 0;
   
 private:
-  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc);
+  void run_parallel(ParallelLinearAlgebraSharedData& data, int proc) const;
   SolverInputs imatrices_;
 };
 
@@ -161,7 +161,6 @@ public:
   // r = s*a + b;
   void scale_add(double s, const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   void add(const ParallelVector& a, const ParallelVector& b, ParallelVector& r);
 
   void scale(double s, ParallelVector& a, ParallelVector& r);
@@ -177,7 +176,6 @@ public:
 
   void diag(ParallelMatrix& a, ParallelVector& r);
   void zeros(ParallelVector& r);
-#endif
   
   void absthreshold_invert(const ParallelVector& a, ParallelVector& r, double threshold);
     

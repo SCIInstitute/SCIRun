@@ -30,11 +30,16 @@
 #define ALGORITHMS_BASE_ALGORITHMBASE_H
 
 #include <string>
+#include <set>
 #include <stdexcept>
+#include <iosfwd>
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
-#include <Core/Logging/Logger.h>
+#include <boost/noncopyable.hpp>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Utils/Exception.h>
+#include <Core/Algorithms/Base/AlgorithmFwd.h>
+#include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Utils/ProgressReporter.h>
 #include <Core/Algorithms/Base/share.h>
 
@@ -42,39 +47,68 @@ namespace SCIRun {
 namespace Core {
 namespace Algorithms {
 
-  struct SCISHARE AlgorithmParameterName
+  struct SCISHARE Name
   {
-    AlgorithmParameterName() : name_("_unspecified_") {}
-    explicit AlgorithmParameterName(const std::string& name);
+    Name() : name_("_unspecified_") {}
+    explicit Name(const std::string& name);
 
     std::string name1() const { return name_; }
     
-    bool operator<(const AlgorithmParameterName& rhs) const
+    bool operator<(const Name& rhs) const
     {
       return name_ < rhs.name_;
     }
 
     std::string name_;
   };
+    
+  typedef Name AlgorithmParameterName;
+  typedef Name AlgorithmInputName;
+  typedef Name AlgorithmOutputName;
 
-  class SCISHARE AlgorithmParameter
+  class SCISHARE AlgoOption 
+  {
+  public:
+    AlgoOption() {}
+    AlgoOption(const std::string& option, const std::set<std::string>& options) 
+      : option_(option), options_(options) {}
+
+    std::string option_;
+    std::set<std::string> options_;
+  };
+
+  SCISHARE bool operator==(const AlgoOption& lhs, const AlgoOption& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const AlgoOption& op);
+
+  class SCISHARE Variable
   {
   public:
     //TODO: expand this 
-    typedef boost::variant<int,double,std::string,bool> Value;
+    typedef boost::variant<
+      int,
+      double,
+      std::string,
+      bool,
+      AlgoOption
+    > Value;
 
-    AlgorithmParameter() {}
-    AlgorithmParameter(const AlgorithmParameterName& name, const Value& value) : name_(name), value_(value) {}
+    Variable() {}
+    Variable(const Name& name, const Value& value) : name_(name), value_(value) {}
+    Variable(const Name& name, const Datatypes::DatatypeHandle& value) : name_(name), data_(value) {}
 
-    AlgorithmParameterName name_;
+    Name name_;
     Value value_;
+    Datatypes::DatatypeHandle data_;
 
     int getInt() const;
     double getDouble() const;
     std::string getString() const;
     bool getBool() const;
-    //etc
+    Datatypes::DatatypeHandle getDatatype() const;
+    AlgoOption getOption() const;
   };
+  
+  typedef Variable AlgorithmParameter;
 
   class SCISHARE AlgorithmLogger : public Core::Logging::LoggerInterface
   {
@@ -93,7 +127,7 @@ namespace Algorithms {
     Core::Logging::LoggerHandle defaultLogger_;
   };
 
-  //TODO
+  //TODO: integrate with logger type above
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
@@ -116,7 +150,7 @@ namespace Algorithms {
     static UpdaterFunc defaultUpdaterFunc_;
   };
 
-  class SCISHARE ScopedAlgorithmStatusReporter
+  class SCISHARE ScopedAlgorithmStatusReporter : boost::noncopyable
   {
   public:
     ScopedAlgorithmStatusReporter(const AlgorithmStatusReporter* asr, const std::string& tag);
@@ -132,20 +166,67 @@ namespace Algorithms {
     AlgorithmParameterList();
     void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
     const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
+
+    bool set_option(const AlgorithmParameterName& key, const std::string& value);
+    bool get_option(const AlgorithmParameterName& key, std::string& value) const;
+    std::string get_option(const AlgorithmParameterName& key) const;
+
+    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
+
   protected:
     void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
+    void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
   private:
     std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
   };
 
-  
-
-  //template <class Input, class Output, class Parameters>
-  class SCISHARE AlgorithmBase : public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
+  class SCISHARE AlgorithmData
   {
   public:
-    virtual ~AlgorithmBase();
+    typedef std::map<Name, Datatypes::DatatypeHandle> Map;
+    AlgorithmData() {}
+    explicit AlgorithmData(const Map& m) : data_(m) {}
 
+    Datatypes::DatatypeHandle& operator[](const Name& name);
+
+    template <typename T>
+    boost::shared_ptr<T> get(const Name& name) const
+    {
+      auto it = data_.find(name);
+      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second);
+    }
+
+  private:
+    Map data_;
+  };
+  
+  class SCISHARE AlgorithmInput : public AlgorithmData 
+  {
+  public:
+    AlgorithmInput() {}
+    AlgorithmInput(const Map& m) : AlgorithmData(m) {}
+  };
+  
+  class SCISHARE AlgoInputBuilder
+  {
+  public:
+    AlgoInputBuilder();
+    AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgorithmInput build() const;
+  private:
+    AlgorithmData::Map map_;
+  };
+
+  class SCISHARE AlgorithmOutput : public AlgorithmData {};
+  
+  typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
+  typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
+
+  class SCISHARE AlgorithmInterface 
+  {
+  public:
+    virtual ~AlgorithmInterface() {}
+    
     /*
       TODO idea: make it mockable
   
@@ -156,10 +237,34 @@ namespace Algorithms {
       Output: tuple of Datatypes, possibly delay-executed
     */
 
-    //virtual Output run(const Input& input, const Parameters& params) const = 0;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
+  };
 
+  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
+  {
+  public:
+    virtual ~AlgorithmBase();
   };
   
+  class SCISHARE AlgorithmCollaborator
+  {
+  public:
+    virtual ~AlgorithmCollaborator() {}
+    virtual Logging::LoggerHandle getLogger() const = 0;
+    virtual AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
+  };
+
+  class SCISHARE AlgorithmFactory
+  {
+  public:
+    virtual ~AlgorithmFactory() {}
+    virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const = 0;
+  };
+
 }}}
+
+#define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()
+#define make_output(portName) SCIRun::Core::Algorithms::AlgorithmParameterName(#portName)
+#define get_output(outputObj, portName, type) boost::dynamic_pointer_cast<type>(outputObj[make_output(portName)]);
 
 #endif

@@ -27,7 +27,7 @@
 */
 
 #include <sstream>
-#include <Core/Logging/Logger.h>
+#include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/ScopedTimeRemarker.h>
 
 using namespace SCIRun::Core::Logging;

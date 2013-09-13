@@ -26,26 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTriSurfMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-bool ConvertMeshToTriSurfMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
+bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output) const
 {
-  //! Mark start of algorithm and report that we will not report progress
-  algo_start("ConvertMeshToTriSurfMesh");
+  ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToTriSurfMesh");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
-
-  // no precompiled version available, so compile one
 
   // Create information fields and fill them out with the data types of the input
   FieldInformation fi(input);
@@ -55,7 +57,7 @@ run(FieldHandle input, FieldHandle& output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return (false);
   }
 
   // In case it is already a trisurf skip algorithm
@@ -63,14 +65,14 @@ run(FieldHandle input, FieldHandle& output)
   {
     output = input;
     remark("Input is already a TriSurfMesh; just copying input to output");
-    algo_end(); return (true);
+    return (true);
   }
 
   // Only quads we know how to process, return an error for any other type
   if (!fi.is_quad_element())
   {
     error("This function has been defined for quadrilateral elements only");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Fill out the output type by altering the mesh type
@@ -81,10 +83,10 @@ run(FieldHandle input, FieldHandle& output)
   output = CreateField(fo);
 
   // If creation fails return an error to the user
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
   
   // Algorithm starts here
@@ -130,7 +132,8 @@ run(FieldHandle input, FieldHandle& output)
       imesh->get_nodes(nodes,i);
 
       // Figure out the red-black scheme
-      int jj = i/dim[1]; int ii = i%dim[1];
+      auto jj = i/dim[1]; 
+      auto ii = i%dim[1];
 
       if ((ii^jj)&1)
       {
@@ -216,12 +219,27 @@ run(FieldHandle input, FieldHandle& output)
     }
   }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // Copy properties in property manager
-	output->copy_properties(input.get_rep());
+	output->copy_properties(input);
+#endif
   
   // Success:
-  algo_end(); return (true);
+  return (true);
 }
 
-} // End namespace SCIRunAlgo
+AlgorithmInputName ConvertMeshToTriSurfMeshAlgo::QuadSurf("QuadSurf");
+AlgorithmOutputName ConvertMeshToTriSurfMeshAlgo::TriSurf("TriSurf");
 
+AlgorithmOutput ConvertMeshToTriSurfMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto quad = input.get<Field>(QuadSurf);
+
+  FieldHandle tri;
+  if (!run(quad, tri))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[TriSurf] = tri;
+  return output;
+}
