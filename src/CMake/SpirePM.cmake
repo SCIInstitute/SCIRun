@@ -262,7 +262,7 @@ function(Spire_AddCore name)
   if (DEFINED _SPM_GIT_TAG)
     set(_ep_git_tag "GIT_TAG" ${_SPM_GIT_TAG})
   else()
-    set(_ep_git_tag "GIT_TAG" "master")
+    set(_ep_git_tag "GIT_TAG" "origin/master")
   endif()
 
   if (DEFINED _SPM_GIT_REPOSITORY)
