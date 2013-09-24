@@ -28,9 +28,8 @@
 
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 
-namespace SCIRun {
-
 using namespace SCIRun;
+using namespace SCIRun::Modules::Fields;
 
 AlignMeshBoundingBoxes::AlignMeshBoundingBoxes(GuiContext* ctx) :
   Module("AlignMeshBoundingBoxes", ctx, Source, "ChangeMesh", "SCIRun")
@@ -62,7 +61,3 @@ AlignMeshBoundingBoxes::execute()
     send_output_handle("Transform", omatrix);
   }
 }
-
-} // End namespace SCIRun
-
-
