@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/GeometryPrimitives/Transform.h>
 
@@ -143,13 +144,13 @@ AlgorithmOutput AlignMeshBoundingBoxesAlgo::run_generic(const AlgorithmInput& in
   auto inputField = input.get<Field>(InputField);
   auto object = input.get<Field>(ObjectField);
 
-  FieldHandle output;
+  FieldHandle outputField;
   MatrixHandle transform;
-  if (!run(inputField, object, output, transform))
+  if (!run(inputField, object, outputField transform))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[OutputField] = output;
+  output[OutputField] = outputField;
   output[TransformMatrix] = transform;
   return output;
 }
