@@ -41,9 +41,11 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
+AlgorithmParameterName AlignMeshBoundingBoxesAlgo::RotateData("rotate_data");
+
 AlignMeshBoundingBoxesAlgo::AlignMeshBoundingBoxesAlgo()
 {
-  add_bool("rotate_data",true);
+  addParameter(RotateData, true);
 }
 
 bool 
