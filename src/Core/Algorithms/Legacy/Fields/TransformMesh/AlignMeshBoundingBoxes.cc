@@ -55,7 +55,7 @@ run(FieldHandle input, FieldHandle object,
 {
   ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
   
-  bool rotate_data = get_bool("rotate_data");
+  bool rotate_data = get(RotateData).getBool();
   // Step 0:
   // Safety test:
   // Test whether we received actually a field. A handle can point to no object.
