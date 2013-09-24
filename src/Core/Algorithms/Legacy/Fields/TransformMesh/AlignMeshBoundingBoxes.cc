@@ -74,9 +74,7 @@ run(FieldHandle input, FieldHandle object,
   }
 
   // Copy the field
-  output = input;
-  output.detach();
-  output->mesh_detach();
+  output.reset(input->deep_clone());
  
   BBox obbox = object->vmesh()->get_bounding_box();
   BBox ibbox = input->vmesh()->get_bounding_box();
@@ -96,7 +94,7 @@ run(FieldHandle input, FieldHandle object,
   VField* field = output->vfield();
   if (field->is_vector() || field->is_tensor())
   {
-    if (rotate_data == true)
+    if (rotate_data)
     {
       if (field->is_vector())
       {
