@@ -135,14 +135,16 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 
 AlgorithmOutput AlignMeshBoundingBoxesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  //get input values
+  auto inputField = input.get<Field>(InputField);
+  auto object = input.get<Field>(ObjectField);
 
   FieldHandle output;
   MatrixHandle transform;
-  if (!run(input, object, output, transform))
+  if (!run(inputField, object, output, transform))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  //set output values
+  output[OutputField] = output;
+  output[TransformMatrix] = transform;
   return output;
 }
