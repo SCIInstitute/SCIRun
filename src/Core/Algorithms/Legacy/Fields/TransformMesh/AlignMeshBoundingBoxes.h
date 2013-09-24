@@ -43,7 +43,7 @@ class SCISHARE AlignMeshBoundingBoxesAlgo : public AlgorithmBase
   public:
     AlignMeshBoundingBoxesAlgo();
 
-    bool run(FieldHandle input, FieldHandle object, FieldHandle& output, Datatypes::MatrixHandle& transform);
+    bool run(FieldHandle input, FieldHandle object, FieldHandle& output, Datatypes::MatrixHandle& transform) const;
 
     static AlgorithmParameterName RotateData;
     static AlgorithmInputName InputField;
