@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_DENSE_MATRIX_H 
 
 #include <Core/Datatypes/Matrix.h>
+#include <Core/GeometryPrimitives/Transform.h> //TODO
 #include <Eigen/Dense>
 
 namespace SCIRun {
@@ -54,6 +55,8 @@ namespace Datatypes {
     DenseMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
       : EigenBase(other)
     { }
+
+    explicit DenseMatrixGeneric(const Geometry::Transform& t);
 
     // This method allows you to assign Eigen expressions to DenseMatrixGeneric
     template<typename OtherDerived>
@@ -98,9 +101,6 @@ namespace Datatypes {
     }
   };
 
-  //template <typename T>
-  //PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrixGeneric<T>", "MatrixBase<T>", maker0);
-
   namespace
   {
     template <typename T>
@@ -118,6 +118,22 @@ namespace Datatypes {
 
   template <typename T>
   PersistentTypeID DenseMatrixGeneric<T>::type_id("DenseMatrix", "MatrixBase", DenseMatrixGeneric<T>::maker0);
+
+  template <typename T>
+  DenseMatrixGeneric<T>::DenseMatrixGeneric(const Geometry::Transform& t) : EigenBase(4, 4)
+  {
+    T data[16];
+    t.get(data);
+    T* ptr = data;
+
+    for (int i = 0; i < this->nrows(); ++i)
+    {
+      for (int j = 0; j < this->ncols(); ++j)
+      {
+        (*this)(i,j) = static_cast<T>(*ptr++);
+      }
+    }
+  }
   
 }}}
 

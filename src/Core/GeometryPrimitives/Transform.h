@@ -36,6 +36,7 @@
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/Plane.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Persistent/Persistent.h>
 
 #include <Core/GeometryPrimitives/share.h>
@@ -148,13 +149,11 @@ public:
     SCISHARE friend void Pio(Piostream&, Transform*&);
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 SCISHARE Point operator*(Transform &t, const Point &d);
 SCISHARE Vector operator*(Transform &t, const Vector &d);
 
-SCISHARE SCIRun::Tensor operator*(const SCIRun::Transform &t, const SCIRun::Tensor &d);
-SCISHARE SCIRun::Tensor operator*(const SCIRun::Tensor &d, const SCIRun::Transform &t);
-#endif
+SCISHARE Tensor operator*(const Transform &t, const Tensor &d);
+SCISHARE Tensor operator*(const Tensor &d, const Transform &t);
 
 SCISHARE void Pio(Piostream&, Transform*&);
 SCISHARE void Pio_old(Piostream&, Transform&);

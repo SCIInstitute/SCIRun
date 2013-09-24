@@ -27,18 +27,6 @@
 */
 
 
-
-/*
- *  Vector.h: ?
- *
- *  Written by:
- *   Author?
- *   Department of Computer Science
- *   University of Utah
- *   Date?
- *
- */
-
 #ifndef CORE_GEOMETRY_PLANE_H
 #define CORE_GEOMETRY_PLANE_H 1
 

@@ -35,8 +35,15 @@
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::TestUtils;
+using namespace SCIRun::Core::Geometry;
 
-#define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
+//#define DO_PRINTING
+
+#ifdef DO_PRINTING
+#define PRINT_MATRIX(x) std::cout << #x << " = \n" << (x) << std::endl
+#else
+#define PRINT_MATRIX(x)
+#endif
 
 TEST(DenseMatrixTest, CanCreateBasicMatrix)
 {
@@ -146,4 +153,18 @@ TEST(DenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
   std::cout << sum.rows() << std::endl;
   std::cout << sum.cols() << std::endl;
   PRINT_MATRIX(sum);
+}
+
+TEST(DenseMatrixTests, CanConstructFromTransform)
+{
+  Transform t;
+  t.set_mat_val(2,1,2);
+  t.set_mat_val(0,3,-1);
+  DenseMatrix m(t);
+  PRINT_MATRIX(m);
+  EXPECT_EQ(4, m.rows());
+  EXPECT_EQ(4, m.cols());
+  DenseMatrix expected(4,4);
+  expected << 1,0,0,-1,  0,1,0,0,  0,2,1,0,  0,0,0,1;
+  EXPECT_EQ(expected, m);
 }

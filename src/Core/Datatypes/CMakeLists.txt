@@ -71,6 +71,7 @@ ADD_LIBRARY(Core_Datatypes
 TARGET_LINK_LIBRARIES(Core_Datatypes
   Core_Persistent
   Core_Datatypes_Legacy_Base
+  Core_Geometry_Primitives
   ${OPENGL_LIBRARIES}
   ${SCI_SPIRE_LIBRARY}
   ${SCI_SPIRE_EXTRA_LIBRARIES}

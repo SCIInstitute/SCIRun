@@ -842,7 +842,6 @@ Transform::operator=(const Transform& copy)
   return *this;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Point
 operator*(Transform &t, const Point &d)
 {
@@ -870,7 +869,7 @@ operator*(Transform &t, const Point &d)
 Vector
 operator*(Transform &t, const Vector &d)
 {
-  float result[4], tmp[4];
+  double result[4], tmp[4];
   result[0] = result[1] = result[2] = result[3] = 0;
   tmp[0] = d.x();
   tmp[1] = d.y();
@@ -890,7 +889,7 @@ operator*(Transform &t, const Vector &d)
 
   return Vector(result[0], result[1], result[2]);
 }
-#endif
+
 const int TRANSFORM_VERSION = 1;
 
 void 
