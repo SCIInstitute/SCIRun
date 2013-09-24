@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_CALCULATEGRADIENTS_H__
-#define MODULES_LEGACY_FIELDS_CALCULATEGRADIENTS_H__
+#ifndef MODULES_LEGACY_FIELDS_ALIGNMESHBOUNDINGBOXES_H__
+#define MODULES_LEGACY_FIELDS_ALIGNMESHBOUNDINGBOXES_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
@@ -36,17 +36,19 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE CalculateGradients : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<FieldPortTag>
+      class SCISHARE AlignMeshBoundingBoxes : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
       {
       public:
-        CalculateGradients();
+        AlignMeshBoundingBoxes();
 
         virtual void execute();
 
-        INPUT_PORT(0, ScalarField, LegacyField);
-        OUTPUT_PORT(0, VectorField, LegacyField);
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, AlignmentField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(1, TransformMatrix, Matrix);
       };
 
     }
