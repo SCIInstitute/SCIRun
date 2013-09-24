@@ -37,16 +37,10 @@ AlignMeshBoundingBoxes::AlignMeshBoundingBoxes() :
 {
 }
 
-
-void
-AlignMeshBoundingBoxes::execute()
+void AlignMeshBoundingBoxes::execute()
 {
-  // Get input field.
-  FieldHandle ifield, ofield,objfield;
-  MatrixHandle omatrix;
-
-  get_input_handle("Input", ifield,true);
-  get_input_handle("AlignmentField", objfield,true);
+  FieldHandle ifield = getRequiredInput(InputField);
+  FieldHandle objfield = getRequiredInput(AlignmentField);
 
   if (inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform"))
   {
