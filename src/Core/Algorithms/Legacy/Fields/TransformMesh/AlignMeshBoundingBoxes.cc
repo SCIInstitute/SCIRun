@@ -64,11 +64,8 @@ run(FieldHandle input, FieldHandle object,
   // policy to check all incoming handles and to see whether they point to actual
   // objects.
   
-  // Handle: the function get_rep() returns the pointer contained in the handle
   if (!input)
   {
-    // If we encounter a null pointer we return an error message and return to
-    // the program to deal with this error. 
     error("No input field");
     return (false);
   }
