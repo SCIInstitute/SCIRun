@@ -133,6 +133,11 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
   return (true);
 }
 
+AlgorithmInputName AlignMeshBoundingBoxesAlgo::InputField("InputField");
+AlgorithmInputName AlignMeshBoundingBoxesAlgo::ObjectField("ObjectField");
+AlgorithmOutputName AlignMeshBoundingBoxesAlgo::OutputField("OutputField");
+AlgorithmOutputName AlignMeshBoundingBoxesAlgo::TransformMatrix("TransformMatrix");
+
 AlgorithmOutput AlignMeshBoundingBoxesAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(InputField);
