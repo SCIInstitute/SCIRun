@@ -42,7 +42,8 @@ void AlignMeshBoundingBoxes::execute()
   FieldHandle ifield = getRequiredInput(InputField);
   FieldHandle objfield = getRequiredInput(AlignmentField);
 
-  if (inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform"))
+  // inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform")
+  if (needToExecute())
   {
     // Inform module that execution started
     update_state(Executing);
