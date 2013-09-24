@@ -30,6 +30,7 @@
 
 #include <Core/GeometryPrimitives/Transform.h>
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -64,7 +65,7 @@ run(FieldHandle input, FieldHandle object,
   // objects.
   
   // Handle: the function get_rep() returns the pointer contained in the handle
-  if (input.get_rep() == 0)
+  if (!input)
   {
     // If we encounter a null pointer we return an error message and return to
     // the program to deal with this error. 
@@ -122,16 +123,16 @@ run(FieldHandle input, FieldHandle object,
     }
   }
 
-  transform_matrix = new DenseMatrix(transform);
+  transform_matrix.reset(new DenseMatrix(transform));
   
-  if (transform_matrix.get_rep() == 0)
+  if (!transform_matrix)
   {
     error("Could not allocate transform matrix");
     return (false);  
   }
   
   //! Copy properties of the property manager
-	output->copy_properties(input.get_rep());
+	output->copy_properties(input);
    
   // Success:
   return (true);
