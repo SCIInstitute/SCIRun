@@ -27,29 +27,28 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Testing_Utils_HEADERS
-  MatrixTestUtilities.h
-  SCIRunUnitTests.h
+SET(Testing_ModuleTestBase_HEADERS
+  ModuleTestBase.h
   share.h
 )
 
-SET(Testing_Utils_SRCS
-  MatrixTestUtilities.cc
-  SCIRunUnitTests.cc
+SET(Testing_ModuleTestBase_SRCS
+  ModuleTestBase.cc
 )
 
-ADD_LIBRARY(Testing_Utils 
-  ${Testing_Utils_HEADERS}
-  ${Testing_Utils_SRCS}
+ADD_LIBRARY(Testing_ModuleTestBase 
+  ${Testing_ModuleTestBase_HEADERS}
+  ${Testing_ModuleTestBase_SRCS}
 )
 
-TARGET_LINK_LIBRARIES(Testing_Utils
+TARGET_LINK_LIBRARIES(Testing_ModuleTestBase
   Core_Datatypes
+  Modules_Factory
   gtest
   gmock
   ${SCI_BOOST_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Testing_Utils)
+  ADD_DEFINITIONS(-DBUILD_Testing_ModuleTestBase)
 ENDIF(BUILD_SHARED_LIBS)
