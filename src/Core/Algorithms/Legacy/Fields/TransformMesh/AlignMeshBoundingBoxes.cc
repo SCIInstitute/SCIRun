@@ -53,8 +53,7 @@ AlignMeshBoundingBoxesAlgo::
 run(FieldHandle input, FieldHandle object, 
     FieldHandle& output, MatrixHandle& transform_matrix)
 {
-  // Mark that we are starting the algorithm, but do not report progress
-  algo_start("AlignMeshBoundingBoxes");
+  ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
   
   bool rotate_data = get_bool("rotate_data");
   // Step 0:
@@ -70,7 +69,7 @@ run(FieldHandle input, FieldHandle object,
     // If we encounter a null pointer we return an error message and return to
     // the program to deal with this error. 
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Copy the field
@@ -128,12 +127,12 @@ run(FieldHandle input, FieldHandle object,
   if (transform_matrix.get_rep() == 0)
   {
     error("Could not allocate transform matrix");
-    algo_end(); return (false);  
+    return (false);  
   }
   
   //! Copy properties of the property manager
 	output->copy_properties(input.get_rep());
    
   // Success:
-  algo_end(); return (true);
+  return (true);
 }
