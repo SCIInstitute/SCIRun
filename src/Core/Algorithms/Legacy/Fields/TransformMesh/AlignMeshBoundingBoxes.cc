@@ -50,9 +50,7 @@ AlignMeshBoundingBoxesAlgo::AlignMeshBoundingBoxesAlgo()
 }
 
 bool 
-AlignMeshBoundingBoxesAlgo::
-run(FieldHandle input, FieldHandle object, 
-    FieldHandle& output, MatrixHandle& transform_matrix)
+AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHandle& output, MatrixHandle& transform_matrix)
 {
   ScopedAlgorithmStatusReporter asr(this, "AlignMeshBoundingBoxes");
   
@@ -133,4 +131,18 @@ run(FieldHandle input, FieldHandle object,
    
   // Success:
   return (true);
+}
+
+AlgorithmOutput AlignMeshBoundingBoxesAlgo::run_generic(const AlgorithmInput& input) const
+{
+  //get input values
+
+  FieldHandle output;
+  MatrixHandle transform;
+  if (!run(input, object, output, transform))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  //set output values
+  return output;
 }
