@@ -81,12 +81,12 @@ run(FieldHandle input, FieldHandle object,
   BBox obbox = object->vmesh()->get_bounding_box();
   BBox ibbox = input->vmesh()->get_bounding_box();
   
-  SCIRun::Transform transform;
+  Transform transform;
  
   Vector iscale = ibbox.diagonal();
   Vector oscale = obbox.diagonal();
-  Vector itrans = -ibbox.min().asVector();
-  Vector otrans = obbox.min().asVector();
+  Vector itrans(-ibbox.min());
+  Vector otrans(obbox.min());
   transform.pre_translate(itrans);
   transform.pre_scale(Vector(oscale.x()/iscale.x(),oscale.y()/iscale.y(),oscale.z()/iscale.z()));
   transform.pre_translate(otrans);
