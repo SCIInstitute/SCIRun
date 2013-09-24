@@ -27,6 +27,8 @@
 */
 
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
@@ -52,11 +54,9 @@ void AlignMeshBoundingBoxes::execute()
     // Inform module that execution started
     update_state(Executing);
 
-    // Core algorithm of the module
-    if(!(algo_.run(ifield,objfield,ofield,omatrix))) return;    
+    auto output = algo_->run_generic(make_input((InputField, ifield)(AlignmentField, objfield)));
 
-    // Send output to output ports
-    send_output_handle("Output", ofield);
-    send_output_handle("Transform", omatrix);
+    sendOutputFromAlgorithm(OutputField, output);
+    sendOutputFromAlgorithm(TransformMatrix, output);
   }
 }
