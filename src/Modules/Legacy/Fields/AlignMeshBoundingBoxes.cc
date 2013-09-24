@@ -32,19 +32,6 @@ namespace SCIRun {
 
 using namespace SCIRun;
 
-class AlignMeshBoundingBoxes : public Module {
-  public:
-    AlignMeshBoundingBoxes(GuiContext*);
-    virtual ~AlignMeshBoundingBoxes() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::AlignMeshBoundingBoxesAlgo algo_;
-};
-
-
-DECLARE_MAKER(AlignMeshBoundingBoxes)
-
 AlignMeshBoundingBoxes::AlignMeshBoundingBoxes(GuiContext* ctx) :
   Module("AlignMeshBoundingBoxes", ctx, Source, "ChangeMesh", "SCIRun")
 {
