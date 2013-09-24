@@ -26,12 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
+#include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 
-#include <Core/Geometry/Transform.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
-#include <Core/Datatypes/VField.h>
-#include <Core/Datatypes/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 
