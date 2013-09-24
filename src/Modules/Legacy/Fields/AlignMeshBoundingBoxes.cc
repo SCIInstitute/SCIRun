@@ -30,11 +30,11 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-AlignMeshBoundingBoxes::AlignMeshBoundingBoxes(GuiContext* ctx) :
-  Module("AlignMeshBoundingBoxes", ctx, Source, "ChangeMesh", "SCIRun")
+AlignMeshBoundingBoxes::AlignMeshBoundingBoxes() :
+  Module(ModuleLookupInfo("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun"), false)
 {
-  algo_.set_progress_reporter(this);
 }
 
 
