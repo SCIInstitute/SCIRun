@@ -34,6 +34,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   CalculateGradients.h
   CalculateSignedDistanceToField.h
   ConvertQuadSurfToTriSurf.h
+  AlignMeshBoundingBoxes.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -53,7 +54,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CleanupTetMesh.cc
   #MatchDomainLabels.cc
   #SplitFieldByDomain.cc
-  #AlignMeshBoundingBoxes.cc
+  AlignMeshBoundingBoxes.cc
   #ProjectPointsOntoMesh.cc
   #GetMeshQualityField.cc
   #ApplyFilterToFieldData.cc

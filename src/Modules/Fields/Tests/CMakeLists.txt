@@ -32,6 +32,7 @@ SET(Modules_Fields_Tests_SRCS
   CalculateSignedDistanceToFieldTests.cc
   GetFieldBoundaryTests.cc
   ConvertQuadSurfToTriSurfTests.cc
+  AlignMeshBoundingBoxesTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests

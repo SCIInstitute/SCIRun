@@ -42,6 +42,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/SmoothVecFieldMedian.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
+  TransformMesh/AlignMeshBoundingBoxes.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -130,7 +131,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #SmoothMesh/FairMesh.cc
   #StreamLines/StreamLineIntegrators.cc
   #StreamLines/GenerateStreamLines.cc
-  #TransformMesh/AlignMeshBoundingBoxes.cc
+  TransformMesh/AlignMeshBoundingBoxes.cc
   #TransformMesh/TransformMeshWithTransform.cc
   #TransformMesh/ConvertMeshCoordinateSystem.cc
   #TransformMesh/ScaleFieldMeshAndData.cc
