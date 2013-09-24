@@ -26,12 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
-
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-
-#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 
 namespace SCIRun {
 
