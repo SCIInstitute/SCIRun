@@ -45,7 +45,9 @@ class SCISHARE Field: public Core::Datatypes::Datatype
     virtual ~Field();
     
     //! Clone field will generate a pointer to a new copy
-    virtual Field *clone() const = 0;
+    virtual Field* clone() const = 0;
+
+    virtual Field* deep_clone() const = 0;
 
     //! Get pointers to associated structures
     //! mesh -> handle to mesh

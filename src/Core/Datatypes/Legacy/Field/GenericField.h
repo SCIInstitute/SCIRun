@@ -80,6 +80,9 @@ public:
   //! Use mesh_detach() first to clone the complete field
   virtual GenericField<Mesh, Basis, FData> *clone() const;
 
+  //! Clone everything, field data and mesh.
+  virtual GenericField<Mesh, Basis, FData> *deep_clone() const;
+
   //! Obtain a Handle to the Mesh
   virtual MeshHandle mesh() const;
   virtual VMesh*  vmesh() const;
@@ -342,6 +345,16 @@ GenericField<Mesh, Basis, FData> *
 GenericField<Mesh, Basis, FData>::clone() const
 {
   return new GenericField<Mesh, Basis, FData>(*this);
+}
+
+template <class Mesh, class Basis, class FData>
+GenericField<Mesh, Basis, FData> *
+  GenericField<Mesh, Basis, FData>::deep_clone() const
+{
+  auto copy = new GenericField<Mesh, Basis, FData>(*this);
+  copy->mesh_.reset(mesh_->clone());
+  copy->vfield_->update_mesh_pointer(copy->mesh_.get());
+  return copy;
 }
 
 template <class Mesh, class Basis, class FData>

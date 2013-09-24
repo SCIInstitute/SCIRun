@@ -843,7 +843,7 @@ Transform::operator=(const Transform& copy)
 }
 
 Point
-operator*(Transform &t, const Point &d)
+SCIRun::Core::Geometry::operator*(Transform &t, const Point &d)
 {
   double result[4], tmp[4];
   result[0] = result[1] = result[2] = result[3] = 0;
@@ -867,7 +867,7 @@ operator*(Transform &t, const Point &d)
 }
 
 Vector
-operator*(Transform &t, const Vector &d)
+SCIRun::Core::Geometry::operator*(Transform &t, const Vector &d)
 {
   double result[4], tmp[4];
   result[0] = result[1] = result[2] = result[3] = 0;
@@ -995,7 +995,7 @@ get_type_description(Transform*)
 
 
 Tensor
-operator*(const Transform &t, const Tensor &d)
+SCIRun::Core::Geometry::operator*(const Transform &t, const Tensor &d)
 {
   double result[9];
   
@@ -1020,7 +1020,7 @@ operator*(const Transform &t, const Tensor &d)
 
 
 Tensor
-operator*(const Tensor &d, const Transform &t)
+SCIRun::Core::Geometry::operator*(const Tensor &d, const Transform &t)
 {
   double result[9];
   
