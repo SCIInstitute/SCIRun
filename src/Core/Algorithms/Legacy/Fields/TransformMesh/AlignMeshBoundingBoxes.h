@@ -33,9 +33,10 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
 class SCISHARE AlignMeshBoundingBoxesAlgo : public AlgoBase
 {
@@ -51,7 +52,7 @@ class SCISHARE AlignMeshBoundingBoxesAlgo : public AlgoBase
              FieldHandle& output, MatrixHandle& transform);
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif 
 

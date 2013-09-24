@@ -34,10 +34,11 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
-
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
 bool 
 AlignMeshBoundingBoxesAlgo::
@@ -128,5 +129,3 @@ run(FieldHandle input, FieldHandle object,
   // Success:
   algo_end(); return (true);
 }
-
-} // End namespace SCIRunAlgo
