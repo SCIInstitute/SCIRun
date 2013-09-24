@@ -41,10 +41,7 @@ namespace SCIRun {
 class SCISHARE AlignMeshBoundingBoxesAlgo : public AlgorithmBase
 {
   public:
-    AlignMeshBoundingBoxesAlgo()
-    {
-      add_bool("rotate_data",true);
-    }
+    AlignMeshBoundingBoxesAlgo();
 
     bool run(FieldHandle input, FieldHandle object, FieldHandle& output, Datatypes::MatrixHandle& transform);
 };

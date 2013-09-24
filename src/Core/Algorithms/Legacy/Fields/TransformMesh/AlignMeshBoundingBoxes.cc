@@ -35,10 +35,16 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
+
+AlignMeshBoundingBoxesAlgo::AlignMeshBoundingBoxesAlgo()
+{
+  add_bool("rotate_data",true);
+}
 
 bool 
 AlignMeshBoundingBoxesAlgo::
