@@ -131,8 +131,10 @@ run(FieldHandle input, FieldHandle object,
     return (false);  
   }
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Copy properties of the property manager
 	output->copy_properties(input);
+#endif
    
   // Success:
   return (true);
