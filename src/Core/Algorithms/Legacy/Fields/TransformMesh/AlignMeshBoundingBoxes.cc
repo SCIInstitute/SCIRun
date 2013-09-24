@@ -135,14 +135,14 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
 }
 
 AlgorithmInputName AlignMeshBoundingBoxesAlgo::InputField("InputField");
-AlgorithmInputName AlignMeshBoundingBoxesAlgo::ObjectField("ObjectField");
+AlgorithmInputName AlignMeshBoundingBoxesAlgo::AlignmentField("AlignmentField");
 AlgorithmOutputName AlignMeshBoundingBoxesAlgo::OutputField("OutputField");
 AlgorithmOutputName AlignMeshBoundingBoxesAlgo::TransformMatrix("TransformMatrix");
 
 AlgorithmOutput AlignMeshBoundingBoxesAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto inputField = input.get<Field>(InputField);
-  auto object = input.get<Field>(ObjectField);
+  auto object = input.get<Field>(AlignmentField);
 
   FieldHandle outputField;
   MatrixHandle transform;
