@@ -440,6 +440,7 @@ bool SCIRunMainWindow::okToContinue()
   return true;
 }
 
+//TODO: hook up to modules' state_changed_sig_t via GlobalStateManager
 void SCIRunMainWindow::networkModified()
 {
   setWindowModified(true);
@@ -578,6 +579,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
 }
 
+//TODO: group these into a list in the constructor, then just iterate over it.
 void SCIRunMainWindow::disableInputWidgets()
 {
   actionExecute_All_->setDisabled(true);
@@ -598,6 +600,7 @@ void SCIRunMainWindow::disableInputWidgets()
 #endif
 }
 
+//TODO: group these into a list in the constructor, then just iterate over it.
 void SCIRunMainWindow::enableInputWidgets()
 {
   actionExecute_All_->setEnabled(true);
