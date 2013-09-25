@@ -44,7 +44,7 @@ class SCISHARE SetMeshNodesAlgo : public AlgorithmBase
     SetMeshNodesAlgo()
     {}
     
-    bool run(FieldHandle& input, Datatypes::MatrixHandle& matrix, FieldHandle& output);
+    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& matrix, FieldHandle& output);
 };
 
 }}}}
