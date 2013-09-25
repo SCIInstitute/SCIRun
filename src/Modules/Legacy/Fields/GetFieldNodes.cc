@@ -26,39 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//! Include the algorithm
-#include <Core/Algorithms/Fields/MeshData/GetMeshNodes.h>
+#include <Modules/Legacy/Fields/GetFieldNodes.h>
 
-//! The module class
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-//! We need to define the ports used
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/NrrdPort.h>
+//    SCIRunAlgo::GetMeshNodesAlgo algo_;
 
-namespace SCIRun {
-
-class GetFieldNodes : public Module {
-  public:
-    //! constructor and execute function
-    GetFieldNodes(GuiContext*);
-    virtual ~GetFieldNodes() {}
-    virtual void execute();
-  
-  private:
-    //! Define algorithms needed
-    SCIRunAlgo::GetMeshNodesAlgo algo_;
-  
-};
-
-
-DECLARE_MAKER(GetFieldNodes)
-GetFieldNodes::GetFieldNodes(GuiContext* ctx)
-  : Module("GetFieldNodes", ctx, Source, "ChangeMesh", "SCIRun")
+GetFieldNodes::GetFieldNodes()
+  : Module(ModuleLookupInfo("GetFieldNodes", "ChangeMesh", "SCIRun"), false)
 {
-  //! Forward error messages;
-  algo_.set_progress_reporter(this);
 }
 
 void GetFieldNodes::execute()
@@ -83,6 +60,3 @@ void GetFieldNodes::execute()
     send_output_handle("Matrix Nodes", matrixdata);
   }
 }
-
-} // End namespace SCIRun
-

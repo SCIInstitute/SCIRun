@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,32 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/SetFieldNodes.h>
+#include <Modules/Legacy/Fields/GetFieldNodes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Testing;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-//    SCIRunAlgo::SetMeshNodesAlgo algo_;
-
-SetFieldNodes::SetFieldNodes()
-  : Module(ModuleLookupInfo("SetFieldNodes", "ChangeMesh", "SCIRun"), false)
+class GetFieldNodesModuleTests : public ModuleTest
 {
+
+};
+
+TEST_F(GetFieldNodesModuleTests, ThrowsForNullInput)
+{
+  auto cg = makeModule("GetFieldNodes");
+  FieldHandle nullField;
+  stubPortNWithThisData(cg, 0, nullField);
+
+  EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }
 
-void SetFieldNodes::execute()
+TEST_F(GetFieldNodesModuleTests, Foo)
 {
-  FieldHandle field_input_handle,field_output_handle;
-  if(!(get_input_handle("Field",field_input_handle,true))) return;
-
-  MatrixHandle matrix_input_handle;
-  get_input_handle("Matrix Nodes",matrix_input_handle,true);
-
-  if (inputs_changed_ ||
-      !oport_cached("Field"))
-  {
-    update_state(Executing);
-
-    if(!(algo_.run(field_input_handle,matrix_input_handle,field_output_handle))) return;
-    send_output_handle("Field", field_output_handle);
-  }
+  FAIL() << "TODO";
 }

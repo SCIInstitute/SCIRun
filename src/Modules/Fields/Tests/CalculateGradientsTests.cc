@@ -54,3 +54,8 @@ TEST_F(CalculateGradientsModuleTests, ThrowsForNullInput)
 
   EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }
+
+TEST_F(CalculateGradientsModuleTests, Foo)
+{
+  FAIL() << "TODO";
+}

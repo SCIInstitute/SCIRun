@@ -55,3 +55,8 @@ TEST_F(CalculateSignedDistanceToFieldModuleTests, ThrowsForNullInput)
 
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
+
+TEST_F(CalculateSignedDistanceToFieldModuleTests, Foo)
+{
+  FAIL() << "TODO";
+}
