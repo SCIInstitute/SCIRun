@@ -43,6 +43,8 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshDerivatives/GetFieldBoundaryAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   TransformMesh/AlignMeshBoundingBoxes.h
+  MeshData/SetMeshNodes.h
+  MeshData/GetMeshNodes.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -113,8 +115,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MedialAxis/MedialAxis2.cc
   #MergeFields/AppendFields.cc
   #MergeFields/JoinFields.cc
-  #MeshData/GetMeshNodes.cc
-  #MeshData/SetMeshNodes.cc
+  MeshData/GetMeshNodes.cc
+  MeshData/SetMeshNodes.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
   #MeshData/GetMeshQualityField.cc

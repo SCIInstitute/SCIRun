@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MeshData/GetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/FieldInformation.h>

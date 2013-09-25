@@ -32,6 +32,7 @@ SET(Algorithms_Field_Tests_SRCS
   ReportFieldInfoTests.cc
   ConvertMeshToTriSurfMeshAlgoTests.cc
   AlignMeshBoundingBoxesAlgoTests.cc
+  SetGetFieldNodesAlgoTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests

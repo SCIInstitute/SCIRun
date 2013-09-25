@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,28 +25,30 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+ 
+#include <gtest/gtest.h>
 
-#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_SETFIELDNODES_H
-#define CORE_ALGORITHMS_FIELDS_MESHDATA_SETFIELDNODES_H 1
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::TestUtils;
 
-namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-
-class SCISHARE SetMeshNodesAlgo : public AlgorithmBase 
+TEST(SetFieldNodesAlgoTests, Foo)
 {
+  SetMeshNodesAlgo algo;
+  FAIL() << "TODO"; 
+}
 
-  public:
-    SetMeshNodesAlgo()
-    {}
-    
-    bool run(FieldHandle& input, Datatypes::MatrixHandle& matrix, FieldHandle& output);
-};
-
-}}}}
-
-#endif
+TEST(GetFieldNodesAlgoTests, Foo)
+{
+  GetMeshNodesAlgo algo;
+  FAIL() << "TODO"; 
+}

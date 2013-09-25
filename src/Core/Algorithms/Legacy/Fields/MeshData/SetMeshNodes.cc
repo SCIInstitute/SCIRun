@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Algorithms/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 
 
