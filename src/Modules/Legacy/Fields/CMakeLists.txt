@@ -35,6 +35,8 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   CalculateSignedDistanceToField.h
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
+  SetFieldNodes.h
+  GetFieldNodes.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -138,8 +140,8 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc
-  #GetFieldNodes.cc
-  #SetFieldNodes.cc
+  GetFieldNodes.cc
+  SetFieldNodes.cc
   #MapFieldDataFromElemToNode.cc
   #MapFieldDataFromNodeToElem.cc
   #MapFieldDataOntoNodesRadialbasis.cc
