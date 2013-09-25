@@ -554,6 +554,7 @@ SET_PROPERTY(TARGET gmock_main   PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET gtest         PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET gtest_main   PROPERTY FOLDER "Testing Support")
 SET_PROPERTY(TARGET Testing_Utils PROPERTY FOLDER "Testing Support")
+SET_PROPERTY(TARGET Testing_ModuleTestBase PROPERTY FOLDER "Testing Support")
 
 SET_PROPERTY(TARGET Interface_Modules_Base   PROPERTY FOLDER "Interface/Modules")
 SET_PROPERTY(TARGET Interface_Modules_DataIO   PROPERTY FOLDER "Interface/Modules")
@@ -585,6 +586,7 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SPIRE_CORE}   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET spire_spm_SCIRun   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET log4cpp PROPERTY FOLDER "Externals")
 
 

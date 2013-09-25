@@ -55,3 +55,8 @@ TEST_F(AlignMeshBoundingBoxesModuleTest, ThrowsForNullInput)
 
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
+
+TEST_F(AlignMeshBoundingBoxesModuleTest, Foo)
+{
+  FAIL() << "TODO";
+}
