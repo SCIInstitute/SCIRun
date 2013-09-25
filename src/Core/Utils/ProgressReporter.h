@@ -63,7 +63,8 @@ namespace SCIRun {
           // Execution time progress.
           // Percent is number between 0.0-1.0
           virtual void update_progress(double percent) const = 0;
-          inline void update_progress(int current, int max) const { update_progress(((double)current) / max); }
+          template <typename T1, typename T2>
+          inline void update_progress_max(T1 current, T2 max) const { update_progress(((double)current) / max); }
 
         protected:
           //TODO: replace with C++11 atomic<int>?

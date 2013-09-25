@@ -140,7 +140,7 @@ namespace Algorithms {
     virtual void report_start(const std::string& tag) const {}
     virtual void report_end() const {}
 
-    void update_progress(double percent) const { updaterFunc_(percent); }
+    virtual void update_progress(double percent) const { updaterFunc_(percent); }
 
     typedef boost::function<void(double)> UpdaterFunc;
     void setUpdaterFunc(UpdaterFunc func) { updaterFunc_ = func; }

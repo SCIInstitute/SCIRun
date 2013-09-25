@@ -139,7 +139,7 @@ class CalculateSignedDistanceFieldP {
             }
           }
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() == 1)
@@ -221,7 +221,7 @@ class CalculateSignedDistanceFieldP {
             }
           }
           ofield->set_value(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() > 1)
@@ -303,7 +303,7 @@ class CalculateSignedDistanceFieldP {
             }
           }
           ofield->set_evalue(val,idx);
-          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
     }   
@@ -417,7 +417,7 @@ class CalculateSignedDistanceFieldP {
             objfield->interpolate(val,coords,fidx);
             vfield->set_value(val,idx);
           }          
-          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() == 1)
@@ -519,7 +519,7 @@ class CalculateSignedDistanceFieldP {
             objfield->interpolate(val,coords,fidx);
             vfield->set_value(val,idx);
           }
-          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
       else if (ofield->basis_order() > 1)
@@ -620,7 +620,7 @@ class CalculateSignedDistanceFieldP {
             objfield->interpolate(val,coords,fidx);
             vfield->set_value(val,idx);
           }
-          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress(idx,end); cnt = 0; } }
+          if (proc == 0) { cnt++; if (cnt == 100) { pr_->update_progress_max(idx,end); cnt = 0; } }
         }
       }
     }     

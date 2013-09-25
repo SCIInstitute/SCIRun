@@ -30,24 +30,19 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOIRREGULARMESH_H
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOIRREGULARMESH_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 //! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-using namespace SCIRun;
-
-class SCISHARE ConvertMeshToIrregularMeshAlgo : public AlgoBase
+class SCISHARE ConvertMeshToIrregularMeshAlgo : public AlgorithmBase
 {
   public:
-    //! Set defaults
     ConvertMeshToIrregularMeshAlgo()
     {
     }
@@ -56,7 +51,7 @@ class SCISHARE ConvertMeshToIrregularMeshAlgo : public AlgoBase
     bool run(FieldHandle input, FieldHandle& output);
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif 
 
