@@ -27,31 +27,35 @@
 */
 
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
 //    SCIRunAlgo::SetMeshNodesAlgo algo_;
 
 SetFieldNodes::SetFieldNodes()
   : Module(ModuleLookupInfo("SetFieldNodes", "ChangeMesh", "SCIRun"), false)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(MatrixNodes);
+  INITIALIZE_PORT(OutputField);
 }
 
 void SetFieldNodes::execute()
 {
-  FieldHandle field_input_handle,field_output_handle;
-  if(!(get_input_handle("Field",field_input_handle,true))) return;
+  FieldHandle field = getRequiredInput(InputField);
+  MatrixHandle matrix = getRequiredInput(MatrixNodes);
 
-  MatrixHandle matrix_input_handle;
-  get_input_handle("Matrix Nodes",matrix_input_handle,true);
-
-  if (inputs_changed_ ||
-      !oport_cached("Field"))
+  //inputs_changed_ ||  !oport_cached("Field")
+  if (needToExecute())
   {
     update_state(Executing);
 
-    if(!(algo_.run(field_input_handle,matrix_input_handle,field_output_handle))) return;
-    send_output_handle("Field", field_output_handle);
+    auto output = algo_->run_generic(make_input((InputField, field)(MatrixNodes, matrix)));
+
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }

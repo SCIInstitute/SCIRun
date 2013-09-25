@@ -27,9 +27,12 @@
 */
 
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
 //    SCIRunAlgo::GetMeshNodesAlgo algo_;
 
@@ -40,23 +43,15 @@ GetFieldNodes::GetFieldNodes()
 
 void GetFieldNodes::execute()
 {
-  //! Define dataflow handles:
-  FieldHandle input;
-  MatrixHandle matrixdata(0);
+  FieldHandle input = getRequiredInput(InputField);
   
-  //! Get data from port:
-  if(!(get_input_handle("Field",input,true))) return;
-
-  //! Only do work if needed:
-  if (inputs_changed_ || !oport_cached("Matrix Nodes"))
+  //inputs_changed_ || !oport_cached("Matrix Nodes")
+  if (needToExecute())
   {    
     update_state(Executing);
 
-    //! Run algorithm
-    if(!(algo_.run(input,matrixdata))) return;
+    auto output = algo_->run_generic(make_input((InputField, input)));
 
-    //! If port is not connected at time of execute, send down a null handle
-    //! send data downstream:
-    send_output_handle("Matrix Nodes", matrixdata);
+    sendOutputFromAlgorithm(MatrixNodes, output);
   }
 }
