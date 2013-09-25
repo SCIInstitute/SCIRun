@@ -52,6 +52,7 @@
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
+#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
