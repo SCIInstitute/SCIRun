@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetFieldBoundary.h>
+#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Testing/Utils/ModuleTestBase.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
@@ -41,14 +41,14 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-class GetFieldBoundaryModuleTests : public ModuleTest
+class AlignMeshBoundingBoxesModuleTest : public ModuleTest
 {
 
 };
 
-TEST_F(GetFieldBoundaryModuleTests, ThrowsForNullInput)
+TEST_F(AlignMeshBoundingBoxesModuleTest, ThrowsForNullInput)
 {
-  auto csdf = makeModule("GetFieldBoundary");
+  auto csdf = makeModule("AlignMeshBoundingBoxes");
   FieldHandle nullField;
   stubPortNWithThisData(csdf, 0, nullField);
   stubPortNWithThisData(csdf, 1, nullField);

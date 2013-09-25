@@ -46,6 +46,7 @@ TARGET_LINK_LIBRARIES(Modules_Fields_Tests
   Dataflow_Network
   Dataflow_State
   Testing_Utils
+  Testing_ModuleTestBase
   gtest_main
   gtest
   gmock

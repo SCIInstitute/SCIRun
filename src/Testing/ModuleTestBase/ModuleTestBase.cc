@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Testing/Utils/ModuleTestBase.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Dataflow/Network/Network.h>
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>

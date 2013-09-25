@@ -30,7 +30,7 @@
 #include <gmock/gmock.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
-#include <Testing/Utils/share.h>
+#include <Testing/ModuleTestBase/share.h>
 
 namespace SCIRun 
 {

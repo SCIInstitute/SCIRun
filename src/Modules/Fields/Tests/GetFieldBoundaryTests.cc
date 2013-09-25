@@ -28,7 +28,7 @@
 
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Testing/Utils/ModuleTestBase.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;

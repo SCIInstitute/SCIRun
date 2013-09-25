@@ -28,7 +28,7 @@
 
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 
-#include <Testing/Utils/ModuleTestBase.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 

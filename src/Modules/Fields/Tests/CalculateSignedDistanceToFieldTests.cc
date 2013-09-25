@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Testing/Utils/ModuleTestBase.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 
