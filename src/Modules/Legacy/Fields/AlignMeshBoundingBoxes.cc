@@ -51,7 +51,6 @@ void AlignMeshBoundingBoxes::execute()
   // inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform")
   if (needToExecute())
   {
-    // Inform module that execution started
     update_state(Executing);
 
     auto output = algo_->run_generic(make_input((InputField, ifield)(AlignmentField, objfield)));
