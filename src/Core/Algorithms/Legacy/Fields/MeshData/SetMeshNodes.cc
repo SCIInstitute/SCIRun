@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -81,9 +82,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
     output.reset(input->deep_clone());
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  output->copy_properties(input);
-#endif
+  CopyProperties(*input, *output);
 
   VMesh* mesh = output->vmesh();
   VMesh::size_type size = mesh->num_nodes();
