@@ -26,19 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
-
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
 bool 
-ConvertMeshToIrregularMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
+ConvertMeshToIrregularMeshAlgo::run(FieldHandle input, FieldHandle& output) const
 {
   // Mark that we are starting the algorithm, but do not report progress
-  algo_start("ConvertMeshToIrregularMesh");
+  ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToIrregularMesh");
   // Step 0:
   // Safety test:
   // Test whether we received actually a field. A handle can point to no object.
@@ -46,13 +51,12 @@ run(FieldHandle input, FieldHandle& output)
   // policy to check all incoming handles and to see whether they point to actual
   // objects.
   
-  // Handle: the function get_rep() returns the pointer contained in the handle
-  if (input.get_rep() == 0)
+  if (!input)
   {
     // If we encounter a null pointer we return an error message and return to
     // the program to deal with this error. 
     error("No input field");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Step 1: determine the type of the input fields and determine what type the
@@ -84,7 +88,7 @@ run(FieldHandle input, FieldHandle& output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements yet");
-    algo_end(); return (false);
+    return (false);
   }
 
   // If the mesh is already irregular, we only need to copy the input to the
@@ -95,14 +99,14 @@ run(FieldHandle input, FieldHandle& output)
     remark("The input mesh already is irregular; copying input to output");
     // Copy input to output (output is a reference to the input)
     output = input;
-    algo_end(); return (true);
+    return (true);
   }
 
   // If mesh is unstructured we have no good method to make it structured again
   if (fi.is_unstructuredmesh())
   {
     error("Cannot convert an unstructured mesh into a structured mesh");
-    algo_end(); return (false);
+    return (false);
   }
 
   // Depending on the element figure out what the output type needs to be
@@ -121,7 +125,7 @@ run(FieldHandle input, FieldHandle& output)
   else
   {
     error("No method available for mesh: " + fi.get_mesh_type());
-    algo_end(); return (false);
+    return (false);
   }
 
   VField* ifield = input->vfield();
@@ -132,18 +136,17 @@ run(FieldHandle input, FieldHandle& output)
   imesh->get_dimensions(dims);
   
   MeshHandle outputmesh = CreateMesh(fo,dims);  
-  if (outputmesh.get_rep() == 0)
+  if (!outputmesh)
   {
     error("Could not create output mesh");
-    algo_end(); return (false); 
+    return (false); 
   }
  
- 
   output = CreateField(fo,outputmesh);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false); 
+    return (false); 
   }
   
   VField* ofield = output->vfield();
@@ -177,11 +180,27 @@ run(FieldHandle input, FieldHandle& output)
   // Copy data whether it is on the node or the element.
   if (ifield->basis_order() != -1) ofield->copy_values(ifield);
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Copy properties of the property manager
 	output->copy_properties(input.get_rep());
+#endif
    
   // Success:
-  algo_end(); return (true);
+  return (true);
 }
 
-} // End namespace SCIRunAlgo
+AlgorithmInputName ConvertMeshToIrregularMeshAlgo::InputField("InputField");
+AlgorithmOutputName ConvertMeshToIrregularMeshAlgo::OutputField("OutputField");
+
+AlgorithmOutput ConvertMeshToIrregularMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto ifield = input.get<Field>(InputField);
+
+  FieldHandle ofield;
+  if (!run(ifield, ofield))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[OutputField] = ofield;
+  return output;
+}

@@ -42,6 +42,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/SmoothVecFieldMedian.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
+  ConvertMeshType/ConvertMeshToIrregularMesh.h
   TransformMesh/AlignMeshBoundingBoxes.h
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
@@ -59,7 +60,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
-  #ConvertMeshType/ConvertMeshToIrregularMesh.cc
+  ConvertMeshType/ConvertMeshToIrregularMesh.cc
   #ConvertMeshType/ConvertLatVolDataFromElemToNode.cc
   #ConvertMeshType/ConvertLatVolDataFromNodeToElem.cc
   #CompareFields/CompareFields.cc

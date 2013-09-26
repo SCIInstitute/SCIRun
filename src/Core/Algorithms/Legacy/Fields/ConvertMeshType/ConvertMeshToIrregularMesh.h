@@ -47,8 +47,12 @@ class SCISHARE ConvertMeshToIrregularMeshAlgo : public AlgorithmBase
     {
     }
 
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+    bool run(FieldHandle input, FieldHandle& output) const;
+
+    static AlgorithmInputName InputField;
+    static AlgorithmOutputName OutputField;
+
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };
 
 }}}}

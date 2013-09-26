@@ -30,6 +30,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
@@ -40,7 +41,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 
 bool 
-SetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& matrix, FieldHandle& output)
+SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "SetMeshNodes");
 
@@ -69,9 +70,11 @@ SetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& matrix, FieldHandle
   FieldInformation fi(input);
   if (fi.is_regularmesh())
   {
+    //TODO: worth separating out into factory call for mocking purposes? probably not, just keep the concrete dependence
     ConvertMeshToIrregularMeshAlgo algo;
-    algo.set_progress_reporter(get_progress_reporter());
-    if(!(algo.run(input,output))) return (false);
+    algo.setUpdaterFunc(getUpdaterFunc());
+    if(!(algo.run(input,output))) 
+      return (false);
   }
   else
   {
@@ -100,4 +103,22 @@ SetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& matrix, FieldHandle
   }
 
   return (true);
+}
+
+AlgorithmInputName SetMeshNodesAlgo::InputField("InputField");
+AlgorithmInputName SetMeshNodesAlgo::MatrixNodes("MatrixNodes");
+AlgorithmOutputName SetMeshNodesAlgo::OutputField("OutputField");
+
+AlgorithmOutput SetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(InputField);
+  auto nodes = input.get<DenseMatrix>(MatrixNodes);
+
+  FieldHandle outputField;
+  if (!run(inputField, nodes, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[OutputField] = outputField;
+  return output;
 }

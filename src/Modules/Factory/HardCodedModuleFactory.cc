@@ -53,6 +53,8 @@
 #include <Modules/Legacy/Fields/CalculateGradients.h>
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
+#include <Modules/Legacy/Fields/GetFieldNodes.h>
+#include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -131,6 +133,8 @@ namespace SCIRun {
           addModuleDesc<CalculateGradients>("CalculateGradients", "ChangeFieldData", "SCIRun", "Real ported module", "...");
           addModuleDesc<ConvertQuadSurfToTriSurf>("ConvertQuadSurfToTriSurf", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
+          addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
+          addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
         }
 
         ModuleDescriptionMap descMap_;

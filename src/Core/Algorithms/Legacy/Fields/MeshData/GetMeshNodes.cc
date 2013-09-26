@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -39,7 +40,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
-bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output)
+bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "GetMeshNodes");
 
@@ -108,4 +109,20 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output)
   }
   
   return (true);
+}
+//
+AlgorithmInputName GetMeshNodesAlgo::InputField("InputField");
+AlgorithmOutputName GetMeshNodesAlgo::MatrixNodes("MatrixNodes");
+
+AlgorithmOutput GetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(InputField);
+
+  DenseMatrixHandle nodes;
+  if (!run(inputField, nodes))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[MatrixNodes] = nodes;
+  return output;
 }

@@ -39,12 +39,16 @@ namespace SCIRun {
 
 class SCISHARE SetMeshNodesAlgo : public AlgorithmBase 
 {
-
   public:
     SetMeshNodesAlgo()
     {}
     
-    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& matrix, FieldHandle& output);
+    bool run(FieldHandle input, Datatypes::DenseMatrixHandle matrix, FieldHandle& output) const;
+
+    static AlgorithmInputName InputField;
+    static AlgorithmInputName MatrixNodes;
+    static AlgorithmOutputName OutputField;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };
 
 }}}}

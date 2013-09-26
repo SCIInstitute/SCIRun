@@ -33,6 +33,8 @@
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 
 using namespace SCIRun::Core::Algorithms;
@@ -57,6 +59,10 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new ConvertMeshToTriSurfMeshAlgo);
   else if (name == "AlignMeshBoundingBoxes")
     h.reset(new AlignMeshBoundingBoxesAlgo);
+  else if (name == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+    h.reset(new GetMeshNodesAlgo);
+  else if (name == "SetFieldNodes")
+    h.reset(new SetMeshNodesAlgo);
 
   if (h && algoCollaborator)
   {
