@@ -33,11 +33,12 @@
 
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
  
-class SCISHARE Field: public Core::Datatypes::Datatype
+class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes::HasPropertyManager
 {
   public:
     Field();

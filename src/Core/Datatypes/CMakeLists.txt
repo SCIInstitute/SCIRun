@@ -32,6 +32,7 @@ SET(Core_Datatypes_SRCS
   Geometry.cc
   Matrix.cc
   MatrixTypeConversions.cc
+  PropertyManagerExtensions.cc
   Scalar.cc
   String.cc
 )
@@ -48,6 +49,7 @@ SET(Core_Datatypes_HEADERS
   MatrixFwd.h
   MatrixIO.h
   MatrixTypeConversions.h
+  PropertyManagerExtensions.h
   Scalar.h
   share.h
   SparseRowMatrix.h
