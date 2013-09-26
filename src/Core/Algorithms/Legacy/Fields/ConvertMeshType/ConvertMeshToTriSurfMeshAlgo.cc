@@ -32,6 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -219,10 +220,7 @@ bool ConvertMeshToTriSurfMeshAlgo::run(FieldHandle input, FieldHandle& output) c
     }
   }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // Copy properties in property manager
-	output->copy_properties(input);
-#endif
+  CopyProperties(*input, *output);
   
   // Success:
   return (true);

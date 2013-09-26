@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 
 #include <boost/unordered_map.hpp>
 
@@ -296,10 +297,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     }
   }
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // copy property manager
-	output->copy_properties(input);
-#endif
+  CopyProperties(*input, *output);
   
   return (true);
 }
@@ -461,10 +459,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
     }
   }
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  // copy property manager
-	output->copy_properties(input);
-#endif
+  CopyProperties(*input, *output);
   
   return (true);
 }

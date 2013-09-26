@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -125,10 +126,7 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
     return (false);  
   }
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  //! Copy properties of the property manager
-	output->copy_properties(input);
-#endif
+  CopyProperties(*input, *output);
    
   // Success:
   return (true);

@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -180,10 +181,7 @@ ConvertMeshToIrregularMeshAlgo::run(FieldHandle input, FieldHandle& output) cons
   // Copy data whether it is on the node or the element.
   if (ifield->basis_order() != -1) ofield->copy_values(ifield);
   
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  //! Copy properties of the property manager
-	output->copy_properties(input.get_rep());
-#endif
+  CopyProperties(*input, *output);
    
   // Success:
   return (true);
