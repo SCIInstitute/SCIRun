@@ -51,7 +51,7 @@ public:
   
     //! Collect general information on mesh type. These are constants and should
     //! be accessible down the road by inline function calls. The latter 
-    //! construction was choosen to improve performance and reduce the need for
+    //! construction was chosen to improve performance and reduce the need for
     //! for virtual function calls
     
     
@@ -65,13 +65,13 @@ public:
     has_normals_   = mesh_->has_normals();   
     //! cache whether we have node points defined or whether we derive them
     //! implicitly. 
-    is_regular_    = static_cast<bool>(mesh_->topology_geometry()&Mesh::REGULAR);
+    is_regular_    = (mesh_->topology_geometry()&Mesh::REGULAR) != 0;
     //! cache whether we  have connectivity defined or whether we assume the data
     //! to be structured enough so we can derive it implicitly
-    is_structured_ = static_cast<bool>(mesh_->topology_geometry()&Mesh::STRUCTURED);
+    is_structured_ = (mesh_->topology_geometry()&Mesh::STRUCTURED) != 0;
 
     //! Store topology information on the mesh:
-    //! This section converts the relavant data out of the underlying older data
+    //! This section converts the relevant data out of the underlying older data
     //! structures.
     
     //! Number of nodes in one element
