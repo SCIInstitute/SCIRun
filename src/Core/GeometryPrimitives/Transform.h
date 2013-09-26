@@ -33,17 +33,20 @@
 #ifndef CORE_GEOMETRY_TRANSFORM_H
 #define CORE_GEOMETRY_TRANSFORM_H 1
 
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Plane.h>
-#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Persistent/Persistent.h>
 
 #include <Core/GeometryPrimitives/share.h>
 
 namespace SCIRun {
+  class TypeDescription; 
+
 namespace Core {
 namespace Geometry {
+
+  class Point;
+  class Vector;
+  class Plane;
+  class Tensor;
 
 class SCISHARE Transform : public Persistent
 {
@@ -55,9 +58,7 @@ class SCISHARE Transform : public Persistent
     void install_mat(double[4][4]);
     void build_permute(double m[4][4], int, int, int, int pre);
     void build_rotate(double m[4][4], double, const Vector&);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     void build_shear(double mat[4][4], const Vector&, const Plane&);
-#endif
     void build_scale(double m[4][4], const Vector&);
     void build_translate(double m[4][4], const Vector&);
     void pre_mulmat(const double[4][4]);

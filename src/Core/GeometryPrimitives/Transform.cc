@@ -28,7 +28,11 @@
 
 #include <cmath>
 #include <cstring>
+#include <iostream>
 
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Plane.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/Transform.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -203,8 +207,6 @@ Transform::post_scale(const Vector& v)
   inverse_valid = false;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 // rotate into a new frame (z=shear-fixed-plane, y=projected shear vector),
 //    shear in y (based on value of z), rotate back to original frame
 void
@@ -263,7 +265,6 @@ Transform::post_shear(const Vector& s, const Plane& p)
   post_mulmat(m);
   inverse_valid = false;
 }
-#endif
 
 void
 Transform::build_translate(double m[4][4], const Vector& v)
@@ -669,7 +670,7 @@ Transform::load_identity(double m[4][4])
   m[2][0] = 0.0; m[2][1] = 0.0; m[2][2] = 1.0; m[2][3] = 0.0;
   m[3][0] = 0.0; m[3][1] = 0.0; m[3][2] = 0.0; m[3][3] = 1.0;
 }
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 void
 Transform::invert()
 {
@@ -683,7 +684,7 @@ Transform::invert()
       imat[i][j]=tmp;
     }
 }
-#endif
+
 void
 Transform::compute_imat() const
 {
