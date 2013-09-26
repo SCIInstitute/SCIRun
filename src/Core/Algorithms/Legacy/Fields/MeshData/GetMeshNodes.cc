@@ -106,7 +106,7 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
   
   return (true);
 }
-//
+
 AlgorithmInputName GetMeshNodesAlgo::InputField("InputField");
 AlgorithmOutputName GetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 
