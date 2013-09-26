@@ -67,15 +67,13 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
   if (fi.is_regularmesh())
   {
     Point p;
-    index_type k = 0;
     int cnt = 0;
     for (VMesh::Node::index_type i=0; i<size; ++i)
     {
       vmesh->get_center(p,i);
-      (*output)(k, 0) = p.x();
-      (*output)(k, 1) = p.y();
-      (*output)(k, 2) = p.z();
-      k += 3;
+      (*output)(i, 0) = p.x();
+      (*output)(i, 1) = p.y();
+      (*output)(i, 2) = p.z();
       cnt++; 
       if (cnt == 400) 
       {
@@ -90,15 +88,13 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
     Point*  points  = vmesh->get_points_pointer();
 
     Point p;
-    index_type k = 0;
     int cnt = 0;
     for (VMesh::Node::index_type i=0; i<size; ++i)
     {
       p = points[i];
-      (*output)(k, 0) = p.x();
-      (*output)(k, 1) = p.y();
-      (*output)(k, 2) = p.z();
-      k += 3;
+      (*output)(i, 0) = p.x();
+      (*output)(i, 1) = p.y();
+      (*output)(i, 2) = p.z();
       cnt++; 
       if (cnt == 400) 
       {

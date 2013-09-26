@@ -89,14 +89,12 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
   VMesh::size_type size = mesh->num_nodes();
   
   Point p;
-  index_type k = 0;
   int cnt =0;
   for (VMesh::Node::index_type i=0; i<size; ++i)
   {
-    p.x( (*matrix)(k, 0) );
-    p.y( (*matrix)(k, 1) );
-    p.z( (*matrix)(k, 2) );
-    k += 3;
+    p.x( (*matrix)(i, 0) );
+    p.y( (*matrix)(i, 1) );
+    p.z( (*matrix)(i, 2) );
 
     mesh->set_point(p,i);
     cnt++; if (cnt == 400) {cnt=0; update_progress_max(i,size); }

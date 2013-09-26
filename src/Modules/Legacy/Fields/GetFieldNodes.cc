@@ -39,6 +39,8 @@ using namespace SCIRun::Core::Datatypes;
 GetFieldNodes::GetFieldNodes()
   : Module(ModuleLookupInfo("GetFieldNodes", "ChangeMesh", "SCIRun"), false)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(MatrixNodes);
 }
 
 void GetFieldNodes::execute()
