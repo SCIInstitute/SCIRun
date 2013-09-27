@@ -43,7 +43,7 @@ namespace Math {
   public:
     AppendMatrixModule();
     virtual void execute();
-    virtual void setDefaults();
+    virtual void setStateDefaults();
     INPUT_PORT(0, FirstMatrix, DenseMatrix);
     INPUT_PORT(1, SecondMatrix, DenseMatrix);
     OUTPUT_PORT(0, ResultMatrix, DenseMatrix);

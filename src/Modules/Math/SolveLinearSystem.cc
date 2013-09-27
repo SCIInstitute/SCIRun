@@ -50,7 +50,7 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
   INITIALIZE_PORT(Solution);
 }
 
-void SolveLinearSystemModule::setDefaults()
+void SolveLinearSystemModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(SolveLinearSystemAlgo::TargetError(), 0.00001);

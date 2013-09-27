@@ -43,7 +43,7 @@ namespace SCIRun {
       public:
         ReceiveScalarModule();
         virtual void execute();
-        virtual void setDefaults() {}
+        virtual void setStateDefaults() {}
 
         double latestReceivedValue() const { return latestValue_; }
 

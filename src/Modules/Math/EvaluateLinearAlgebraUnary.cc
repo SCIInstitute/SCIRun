@@ -43,7 +43,7 @@ EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
 {
 }
 
-void EvaluateLinearAlgebraUnaryModule::setDefaults()
+void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, 0);

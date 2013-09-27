@@ -48,7 +48,7 @@ ShowFieldModule::ShowFieldModule() :
 {
 }
 
-void ShowFieldModule::setDefaults()
+void ShowFieldModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(ShowNodes, false);

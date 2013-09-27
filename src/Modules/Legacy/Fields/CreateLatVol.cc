@@ -65,7 +65,7 @@ CreateLatVol::CreateLatVol()
   : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
 {}
 
-void CreateLatVol::setDefaults()
+void CreateLatVol::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(XSize, 16);

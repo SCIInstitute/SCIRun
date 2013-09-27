@@ -40,7 +40,7 @@ Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 {
 }
 
-void EvaluateLinearAlgebraBinaryModule::setDefaults()
+void EvaluateLinearAlgebraBinaryModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, 0);

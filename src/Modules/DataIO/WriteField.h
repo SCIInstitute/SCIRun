@@ -44,7 +44,7 @@ namespace SCIRun {
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         WriteFieldModule();
         virtual void execute();
-        virtual void setDefaults() {}
+        virtual void setStateDefaults() {}
 
         INPUT_PORT(0, FieldToWrite, LegacyField);
 

@@ -40,7 +40,7 @@ AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix
 {
 }
 
-void AppendMatrixModule::setDefaults()
+void AppendMatrixModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(AppendMatrixAlgorithm::OptionName, 0);

@@ -43,7 +43,7 @@ namespace DataIO {
   public:
     ReadMatrixModule();
     virtual void execute();
-    virtual void setDefaults() {}
+    virtual void setStateDefaults() {}
     INPUT_PORT(0, Filename, String);
     OUTPUT_PORT(0, Matrix, Matrix);
     OUTPUT_PORT(1, FileLoaded, String);

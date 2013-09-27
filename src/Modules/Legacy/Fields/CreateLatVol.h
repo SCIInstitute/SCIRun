@@ -55,6 +55,7 @@ namespace SCIRun {
         CreateLatVol();
 
         virtual void execute();
+        virtual void setStateDefaults();
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, LatVolSize, DenseMatrix);
@@ -68,7 +69,6 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName ElementSizeNormalized;
 
       private:
-        virtual void setDefaults();
         enum DataTypeEnum { SCALAR, VECTOR, TENSOR };
       };
 
