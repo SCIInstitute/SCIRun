@@ -28,6 +28,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <ios>
 #include <string>
 #include <vector>
 
@@ -445,7 +446,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
   catch(std::ifstream::failure& e)
   {
     std::ostringstream oss;
-    oss << "Parsing triangle surface points file " << filename << " failed with error code " << e.code() << ".\n" << e.what();
+    oss << "Parsing triangle surface points file " << filename << " failed.\n" << e.what();
     error(oss.str());
   }
   catch(AlgorithmInputException& e)
