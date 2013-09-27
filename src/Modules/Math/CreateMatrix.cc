@@ -41,6 +41,12 @@ SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("
 
 CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) {}
 
+void CreateMatrixModule::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(TextEntry, std::string());
+}
+
 void CreateMatrixModule::execute()
 {
   DenseMatrixHandle matrix(boost::make_shared<DenseMatrix>());
