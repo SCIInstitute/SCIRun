@@ -255,7 +255,6 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     it = node_map.begin();
     it_end = node_map.end();
 
-    int row = 0;
     while (it != it_end)
     {
       tripletList.push_back(T(it->second, it->first, 1));
