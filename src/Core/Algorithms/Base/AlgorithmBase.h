@@ -61,6 +61,9 @@ namespace Algorithms {
 
     std::string name_;
   };
+
+  SCISHARE bool operator==(const Name& lhs, const Name& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Name& name);
     
   typedef Name AlgorithmParameterName;
   typedef Name AlgorithmInputName;
@@ -159,27 +162,6 @@ namespace Algorithms {
     const AlgorithmStatusReporter* asr_;
   };
 
-  //TODO: link this to ModuleState via meeting discussion
-  class SCISHARE AlgorithmParameterList
-  {
-  public:
-    AlgorithmParameterList();
-    void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
-    const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
-
-    bool set_option(const AlgorithmParameterName& key, const std::string& value);
-    bool get_option(const AlgorithmParameterName& key, std::string& value) const;
-    std::string get_option(const AlgorithmParameterName& key) const;
-
-    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
-
-  protected:
-    void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
-    void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
-  private:
-    std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
-  };
-
   class SCISHARE AlgorithmData
   {
   public:
@@ -199,26 +181,16 @@ namespace Algorithms {
   private:
     Map data_;
   };
-  
+
   class SCISHARE AlgorithmInput : public AlgorithmData 
   {
   public:
     AlgorithmInput() {}
     AlgorithmInput(const Map& m) : AlgorithmData(m) {}
   };
-  
-  class SCISHARE AlgoInputBuilder
-  {
-  public:
-    AlgoInputBuilder();
-    AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
-    AlgorithmInput build() const;
-  private:
-    AlgorithmData::Map map_;
-  };
 
   class SCISHARE AlgorithmOutput : public AlgorithmData {};
-  
+
   typedef boost::shared_ptr<AlgorithmInput> AlgorithmInputHandle;
   typedef boost::shared_ptr<AlgorithmOutput> AlgorithmOutputHandle;
 
@@ -238,9 +210,42 @@ namespace Algorithms {
     */
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const = 0;
+    virtual void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value) = 0;
+    virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
-  class SCISHARE AlgorithmBase : public AlgorithmInterface, public AlgorithmLogger, public AlgorithmStatusReporter, public AlgorithmParameterList
+  //TODO: link this to ModuleState via meeting discussion
+  class SCISHARE AlgorithmParameterList : public AlgorithmInterface
+  {
+  public:
+    AlgorithmParameterList();
+    void set(const AlgorithmParameterName& key, const AlgorithmParameter::Value& value);
+    const AlgorithmParameter& get(const AlgorithmParameterName& key) const;
+
+    bool set_option(const AlgorithmParameterName& key, const std::string& value);
+    bool get_option(const AlgorithmParameterName& key, std::string& value) const;
+    std::string get_option(const AlgorithmParameterName& key) const;
+
+    virtual void keyNotFoundPolicy(const AlgorithmParameterName& key);
+
+  protected:
+    void addParameter(const AlgorithmParameterName& key, const AlgorithmParameter::Value& defaultValue);
+    void add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options);
+  private:
+    std::map<AlgorithmParameterName, AlgorithmParameter> parameters_;
+  };
+
+  class SCISHARE AlgoInputBuilder
+  {
+  public:
+    AlgoInputBuilder();
+    AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgorithmInput build() const;
+  private:
+    AlgorithmData::Map map_;
+  };
+
+  class SCISHARE AlgorithmBase : public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
   {
   public:
     virtual ~AlgorithmBase();

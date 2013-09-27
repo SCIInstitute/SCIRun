@@ -232,3 +232,13 @@ AlgorithmInput AlgoInputBuilder::build() const
 {
   return AlgorithmInput(map_);
 }
+
+bool SCIRun::Core::Algorithms::operator==(const Name& lhs, const Name& rhs)
+{
+  return lhs.name_ == rhs.name_;
+}
+
+std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Name& name)
+{
+  return out << name.name_;
+}

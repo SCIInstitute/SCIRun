@@ -29,17 +29,20 @@
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
+using ::testing::Mock;
 
 class CalculateSignedDistanceToFieldModuleTests : public ModuleTest
 {
@@ -59,4 +62,23 @@ TEST_F(CalculateSignedDistanceToFieldModuleTests, ThrowsForNullInput)
 TEST_F(CalculateSignedDistanceToFieldModuleTests, Foo)
 {
   FAIL() << "TODO";
+}
+
+TEST_F(CalculateSignedDistanceToFieldModuleTests, MakesAlgoDecisionBasedOnValuePortConnection)
+{
+  auto csdf = makeModule("CalculateSignedDistanceToField");
+  stubPortNWithThisData(csdf, 0, CreateEmptyLatVol());
+  stubPortNWithThisData(csdf, 1, CreateEmptyLatVol());
+
+  AlgorithmParameter::Value connected = false;
+  auto mockAlgo = boost::dynamic_pointer_cast<MockAlgorithmPtr::value_type>(csdf->getAlgorithm());
+  //EXPECT_CALL(*mockAlgo, set(CalculateSignedDistanceFieldAlgo::OutputValueField, connected));
+  csdf->execute();
+  EXPECT_TRUE(Mock::VerifyAndClearExpectations(mockAlgo.get()));
+
+  connectDummyOutputConnection(csdf, 1);
+  connected = true;
+  //EXPECT_CALL(*mockAlgo, set(CalculateSignedDistanceFieldAlgo::OutputValueField, connected));
+  csdf->execute();
+  EXPECT_TRUE(Mock::VerifyAndClearExpectations(mockAlgo.get()));
 }

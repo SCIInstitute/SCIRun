@@ -112,6 +112,8 @@ namespace Networks {
     virtual bool needToExecute() const = 0;
 
     virtual void setStateDefaults() = 0;
+
+    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

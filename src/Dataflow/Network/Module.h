@@ -103,6 +103,8 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
 
+    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
+
     virtual bool needToExecute() const  
     {
       return true; //TODO
@@ -169,7 +171,6 @@ namespace Networks {
     ModuleId id_;
 
     Core::Algorithms::AlgorithmHandle algo_;
-    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
 
     enum State {
       NeedData,
