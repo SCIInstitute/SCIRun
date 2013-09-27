@@ -43,6 +43,8 @@ namespace SCIRun {
       public:
         ReceiveScalarModule();
         virtual void execute();
+        virtual void setDefaults() {}
+
         double latestReceivedValue() const { return latestValue_; }
 
         INPUT_PORT(0, Input, Double);

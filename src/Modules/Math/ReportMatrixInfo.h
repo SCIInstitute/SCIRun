@@ -43,6 +43,7 @@ namespace Math {
   public:
     ReportMatrixInfoModule();
     virtual void execute();
+    virtual void setDefaults() {}
     INPUT_PORT(0, Input, Matrix);
   };
 }}}

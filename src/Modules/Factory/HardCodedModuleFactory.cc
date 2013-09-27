@@ -208,7 +208,7 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   Module::Builder builder;
   
   if (desc.maker_)
-    builder.using_func(desc.maker_);
+    builder.using_func(desc.maker_).setStateDefaults();
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 

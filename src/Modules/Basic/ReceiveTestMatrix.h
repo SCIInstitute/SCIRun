@@ -43,6 +43,7 @@ namespace SCIRun {
       public:
         ReceiveTestMatrixModule();
         virtual void execute();
+        virtual void setDefaults() {}
         SCIRun::Core::Datatypes::DenseMatrixHandle latestReceivedMatrix() const { return latestValue_; }
         INPUT_PORT(0, Input, DenseMatrix);
       private:

@@ -45,6 +45,7 @@ namespace DataIO {
     ReadMeshModule();
 
     virtual void execute();
+    virtual void setDefaults() {}
 
     INPUT_PORT(0, Filename, String);
     OUTPUT_PORT(0, OutputSampleField, LegacyMesh);

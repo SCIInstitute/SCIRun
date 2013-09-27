@@ -43,6 +43,7 @@ namespace Fields {
   public:
     ReportFieldInfoModule();
     virtual void execute();
+    virtual void setDefaults() {}
     INPUT_PORT(0, Input, LegacyField);
     OUTPUT_PORT(0, FieldType, String);
     OUTPUT_PORT(1, NumNodes, Int32);

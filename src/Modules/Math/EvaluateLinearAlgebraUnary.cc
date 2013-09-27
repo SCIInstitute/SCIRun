@@ -41,7 +41,13 @@ using namespace SCIRun::Dataflow::Networks;
 EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
   Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
 {
+}
 
+void EvaluateLinearAlgebraUnaryModule::setDefaults()
+{
+  auto state = get_state();
+  state->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, 0);
+  state->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 0);
 }
 
 void EvaluateLinearAlgebraUnaryModule::execute()

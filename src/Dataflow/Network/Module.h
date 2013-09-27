@@ -108,8 +108,6 @@ namespace Networks {
       return true; //TODO
     }
 
-    virtual void setDefaults() {} //TODO should be pure virtual
-
     bool oport_connected(size_t portIndex) const;
 
     template <class Type, size_t N>
@@ -149,6 +147,7 @@ namespace Networks {
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
       Builder& disable_ui();
+      Builder& setStateDefaults();
       ModuleHandle build();
 
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSinkInterface*()> SinkMaker;

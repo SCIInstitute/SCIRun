@@ -230,6 +230,7 @@ public:
     ostr << "Module " << get_module_name() << " executing for " << 3.14 << " seconds." << std::endl;
     status(ostr.str());
   }
+  virtual void setDefaults() {}
 };
 
 Module::Builder& Module::Builder::with_name(const std::string& name)
@@ -247,6 +248,13 @@ Module::Builder& Module::Builder::using_func(ModuleMaker create)
 {
   if (!module_)
     module_.reset(create());
+  return *this;
+}
+
+Module::Builder& Module::Builder::setStateDefaults()
+{
+  if (module_)
+    module_->setDefaults();
   return *this;
 }
 

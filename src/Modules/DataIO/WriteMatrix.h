@@ -43,6 +43,7 @@ namespace SCIRun {
       public:
         WriteMatrixModule();
         virtual void execute();
+        virtual void setDefaults() {}
         INPUT_PORT(0, MatrixToWrite, Matrix);
         INPUT_PORT(1, Filename, String);
       private:

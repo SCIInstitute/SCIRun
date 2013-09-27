@@ -48,7 +48,6 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
   INITIALIZE_PORT(Solution);
-  setDefaults();
 }
 
 void SolveLinearSystemModule::setDefaults()
