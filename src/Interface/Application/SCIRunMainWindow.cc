@@ -152,6 +152,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionLoad_, SIGNAL(triggered()), this, SLOT(loadNetwork()));
   connect(actionQuit_, SIGNAL(triggered()), this, SLOT(close()));
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
+  connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
   actionQuit_->setShortcut(QKeySequence::Quit);
 
 #ifndef BUILD_WITH_PYTHON
@@ -781,9 +782,6 @@ void SCIRunMainWindow::makeModulesSmallSize()
 }
 
 namespace {
-
-
-
 
 void fillTreeWidget(QTreeWidget* tree, const ModuleDescriptionMap& moduleMap)
 {

@@ -150,7 +150,8 @@ Q_SIGNALS:
     virtual void clear();
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
-    
+    void selectAll();
+
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
