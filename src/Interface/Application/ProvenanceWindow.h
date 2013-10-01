@@ -34,7 +34,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
 #include <Dataflow/Serialization/Network/ModulePositionGetter.h>
-#include <Dataflow/Engine/Controller/ProvenanceItem.h>
+#include <Dataflow/Engine/Controller/ProvenanceManager.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -64,6 +64,7 @@ Q_SIGNALS:
 private:
   SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
   int lastUndoRow_;
+  const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::value_type::IOType* networkEditor_;
   
   void setUndoEnabled(bool enable);
   void setRedoEnabled(bool enable);

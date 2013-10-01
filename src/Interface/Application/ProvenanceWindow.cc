@@ -44,6 +44,7 @@ using namespace SCIRun::Dataflow::Engine;
 ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QWidget* parent /* = 0 */) : 
   provenanceManager_(provenanceManager),
   lastUndoRow_(-1),
+  networkEditor_(provenanceManager->networkIO()),
   QDockWidget(parent) 
 {
   setupUi(this);
@@ -55,6 +56,7 @@ ProvenanceWindow::ProvenanceWindow(ProvenanceManagerHandle provenanceManager, QW
   connect(redoButton_, SIGNAL(clicked()), this, SLOT(redo()));
   connect(undoAllButton_, SIGNAL(clicked()), this, SLOT(undoAll()));
   connect(redoAllButton_, SIGNAL(clicked()), this, SLOT(redoAll()));
+  connect(clearButton_, SIGNAL(clicked()), this, SLOT(clear()));
   setUndoEnabled(false);
   setRedoEnabled(false);
 }
@@ -141,6 +143,7 @@ void ProvenanceWindow::displayInfo(QListWidgetItem* item)
 
 void ProvenanceWindow::clear()
 {
+  provenanceManager_->setInitialState(networkEditor_->saveNetwork());
   provenanceListWidget_->clear();
   provenanceManager_->clearAll();
   lastUndoRow_ = -1;

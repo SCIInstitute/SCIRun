@@ -369,6 +369,7 @@ bool SCIRunMainWindow::newNetwork()
   if (okToContinue())
   {
     networkEditor_->clear();
+    provenanceWindow_->clear();
     setCurrentFile("");
     return true;
   }
