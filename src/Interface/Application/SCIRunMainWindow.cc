@@ -30,6 +30,8 @@
 #include <algorithm>
 #include <functional>
 #include <boost/bind.hpp>
+#include <boost/assign.hpp>
+#include <boost/assign/std/vector.hpp>
 #include <Core/Utils/Legacy/MemoryUtil.h>
 #include <Interface/Application/GuiLogger.h>
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -193,6 +195,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(networkEditor_, SIGNAL(sceneChanged(const QList<QRectF>&)), this, SLOT(updateMiniView()));
   connect(networkEditor_->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
   connect(networkEditor_->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(updateMiniView()));
+
+  setupInputWidgets();
 }
 
 void SCIRunMainWindow::initialize()
@@ -227,6 +231,23 @@ void SCIRunMainWindow::postConstructionSignalHookup()
   connect(provenanceWindow_, SIGNAL(modifyingNetwork(bool)), commandConverter_.get(), SLOT(networkBeingModifiedByProvenanceManager(bool)));
 
   prefs_->setRegressionTestDataDir();
+}
+
+void SCIRunMainWindow::setupInputWidgets()
+{
+  using namespace boost::assign;
+  inputWidgets_ += actionExecute_All_,
+    actionSave_,
+    actionLoad_,
+    actionSave_As_,
+    actionNew_,
+    moduleSelectorTreeWidget_,
+    actionRunScript_;
+  std::copy(recentFileActions_.begin(), recentFileActions_.end(), std::back_inserter(inputWidgets_));
+
+#ifdef BUILD_WITH_PYTHON
+  inputWidgets_ += pythonConsole_;
+#endif
 }
 
 SCIRunMainWindow* SCIRunMainWindow::instance_ = 0;
@@ -579,46 +600,37 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
 }
 
-//TODO: group these into a list in the constructor, then just iterate over it.
-void SCIRunMainWindow::disableInputWidgets()
+namespace
 {
-  actionExecute_All_->setDisabled(true);
-  actionSave_->setDisabled(true);
-  actionLoad_->setDisabled(true);
-  actionSave_As_->setDisabled(true);
-  actionNew_->setDisabled(true);
-  moduleSelectorTreeWidget_->setDisabled(true);
-  actionRunScript_->setDisabled(true);
-  networkEditor_->disableInputWidgets();
-  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::NoContextMenu);
-  
-  Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
-    action->setDisabled(true);
+  template <bool Flag>
+  class SetDisableFlag : public boost::static_visitor<>
+  {
+  public:
+    template <typename T>
+    void operator()( T* widget ) const
+    {
+      widget->setDisabled(Flag);
+    }
+  };
 
-#ifdef BUILD_WITH_PYTHON
-  pythonConsole_->setDisabled(true);
-#endif
+  //TODO: VS2010 compiler can't handle this function; check 2012 and clang
+  template <bool Flag>
+  void setWidgetsDisableFlag(std::vector<SCIRunMainWindow::InputWidget>& widgets)
+  {
+    std::for_each(widgets.begin(), widgets.end(), [](SCIRunMainWindow::InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
+  }
 }
 
-//TODO: group these into a list in the constructor, then just iterate over it.
+void SCIRunMainWindow::disableInputWidgets()
+{
+  networkEditor_->disableInputWidgets();
+  std::for_each(inputWidgets_.begin(), inputWidgets_.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<true>(), v); });
+}
+
 void SCIRunMainWindow::enableInputWidgets()
 {
-  actionExecute_All_->setEnabled(true);
-  actionSave_->setEnabled(true);
-  actionLoad_->setEnabled(true);
-  actionSave_As_->setEnabled(true);
-  actionNew_->setEnabled(true);
-  moduleSelectorTreeWidget_->setEnabled(true);
-  actionRunScript_->setEnabled(true);
   networkEditor_->enableInputWidgets();
-  //scrollAreaWidgetContents_->setContextMenuPolicy(Qt::ActionsContextMenu);
-
-  Q_FOREACH(QAction* action, recentNetworksMenu_->actions())
-    action->setEnabled(true);
-
-#ifdef BUILD_WITH_PYTHON
-  pythonConsole_->setDisabled(false);
-#endif
+  std::for_each(inputWidgets_.begin(), inputWidgets_.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<false>(), v); });
 }
 
 void SCIRunMainWindow::chooseBackgroundColor()
