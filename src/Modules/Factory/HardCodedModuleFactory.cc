@@ -68,7 +68,7 @@
 #include <Modules/Render/ViewScene.h>
 
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
-#include <Modules/Factory/Share.h>
+#include <Modules/Factory/share.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
