@@ -31,7 +31,7 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
-TDCSSimulatorModule::TDCSSimulatorModule() : Module(ModuleLookupInfo("TDCSSimulatorModule", "FiniteElements", "SCIRun"))
+TDCSSimulatorModule::TDCSSimulatorModule() : Module(ModuleLookupInfo("tDCSSimulator", "FiniteElements", "SCIRun"))
 {
 }
 

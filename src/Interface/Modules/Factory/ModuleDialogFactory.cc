@@ -100,7 +100,7 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new SolveLinearSystemDialog(moduleId, state, parentToUse_);
   if (moduleId.find("CreateLatVol") != std::string::npos)
     return new CreateLatVolDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("TDCSSimulator") != std::string::npos)
+  if (moduleId.find("tDCSSimulator") != std::string::npos)
     return new TDCSSimulatorDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
