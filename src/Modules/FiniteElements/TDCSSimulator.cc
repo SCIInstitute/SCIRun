@@ -35,6 +35,11 @@ TDCSSimulatorModule::TDCSSimulatorModule() : Module(ModuleLookupInfo("TDCSSimula
 {
 }
 
+void TDCSSimulatorModule::setStateDefaults()
+{
+  //TODO
+}
+
 void TDCSSimulatorModule::execute()
 {
   

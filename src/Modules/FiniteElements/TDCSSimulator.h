@@ -44,6 +44,7 @@ class SCISHARE TDCSSimulatorModule : public SCIRun::Dataflow::Networks::Module,
     TDCSSimulatorModule();
 
     virtual void execute();
+    virtual void setStateDefaults();
 
     INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
