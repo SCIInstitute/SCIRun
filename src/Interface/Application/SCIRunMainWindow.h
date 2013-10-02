@@ -32,6 +32,7 @@
 #include <QDialog>
 #include <QDir>
 #include <boost/shared_ptr.hpp>
+#include <boost/variant.hpp>
 #include <Interface/Application/Note.h>
 #include "ui_SCIRunMainWindow.h"
 
@@ -66,6 +67,8 @@ public:
   void quit();
   void runPythonScript(const QString& scriptFileName);
 
+  typedef boost::variant<QAction*, QWidget*> InputWidget;
+
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
@@ -96,6 +99,7 @@ private:
   void setupPreferencesWindow();
   void setupPythonConsole();
   void fillModuleSelector();
+  void setupInputWidgets();
   enum { MaxRecentFiles = 5 }; //TODO: could be a user setting
   std::vector<QAction*> recentFileActions_;
   QStringList recentFiles_;
@@ -105,6 +109,7 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+  std::vector<InputWidget> inputWidgets_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();
   void defaultNotePositionChanged(NotePosition position);

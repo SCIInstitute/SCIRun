@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
-#define MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/FiniteElements/TDCSSimulator.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+using ::testing::Mock;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
-
-class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<FieldPortTag>,
-  public Has1OutputPort<FieldPortTag>
+class TDCSSimulatorModuleTests : public ModuleTest
 {
-public:
-  CreateScalarFieldDataBasic();
 
-  virtual void execute();
-  virtual void setStateDefaults();
-
-  INPUT_PORT(0, InputField, LegacyField);
-  OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
-  
-  static Core::Algorithms::AlgorithmParameterName ValueFunc;
-  static Core::Algorithms::AlgorithmParameterName ValueFuncParam1;
 };
 
-}}}
+TEST_F(TDCSSimulatorModuleTests, ThrowsForNullInput)
+{
+  auto tdcs = makeModule("TDCSSimulator");
+  ASSERT_TRUE(tdcs);
+  FieldHandle nullField;
+  stubPortNWithThisData(tdcs, 0, nullField);
+  stubPortNWithThisData(tdcs, 1, nullField);
 
-#endif
+  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
+}
+
+TEST_F(TDCSSimulatorModuleTests, Foo)
+{
+  FAIL() << "TODO";
+}

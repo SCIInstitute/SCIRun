@@ -1,4 +1,3 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -27,41 +26,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Interface_Modules_Factory_HEADERS
-  ModuleDialogFactory.h
-  share.h
+SET(Modules_FiniteElements_Tests_SRCS
+  TDCSSimulatorTests.cc
 )
 
-SET(Interface_Modules_Factory_SOURCES 
-  ModuleDialogFactory.cc
+SCIRUN_ADD_UNIT_TEST(Modules_FiniteElements_Tests
+  ${Modules_FiniteElements_Tests_SRCS}
 )
 
-#QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
-#QT4_WRAP_CPP(Interface_Modules_HEADERS_MOC ${Interface_Modules_HEADERS})
-
-ADD_LIBRARY(Interface_Modules_Factory 
-  ${Interface_Modules_Factory_HEADERS}
-#${Interface_Modules_FORMS_HEADERS}
-#${Interface_Modules_HEADERS_MOC}
-  ${Interface_Modules_Factory_SOURCES}
+TARGET_LINK_LIBRARIES(Modules_FiniteElements_Tests
+  Modules_FiniteElements
+  Modules_Factory
+  Core_Datatypes
+  Dataflow_Network
+  Dataflow_State
+  Testing_Utils
+  Testing_ModuleTestBase
+  gtest_main
+  gtest
+  gmock
 )
-
-TARGET_LINK_LIBRARIES(Interface_Modules_Factory 
-  Interface_Modules_Base
-  Interface_Modules_DataIO
-  Interface_Modules_Math
-  Interface_Modules_Fields
-  Interface_Modules_FiniteElements
-  Interface_Modules_Render
-  Interface_Modules_String
-  Interface_Modules_Testing
-  Interface_Modules_Visualization
-  ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
-ENDIF(BUILD_SHARED_LIBS)
-  
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

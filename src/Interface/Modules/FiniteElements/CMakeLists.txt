@@ -27,41 +27,40 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Interface_Modules_Factory_HEADERS
-  ModuleDialogFactory.h
+SET(Interface_Modules_FiniteElements_FORMS
+  TDCSSimulatorDialog.ui
+)
+
+SET(Interface_Modules_FiniteElements_HEADERS
+  TDCSSimulatorDialog.h
   share.h
 )
 
-SET(Interface_Modules_Factory_SOURCES 
-  ModuleDialogFactory.cc
+SET(Interface_Modules_FiniteElements_SOURCES 
+  TDCSSimulatorDialog.cc
 )
 
-#QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
-#QT4_WRAP_CPP(Interface_Modules_HEADERS_MOC ${Interface_Modules_HEADERS})
+QT4_WRAP_UI(Interface_Modules_FiniteElements_FORMS_HEADERS ${Interface_Modules_FiniteElements_FORMS})
+QT4_WRAP_CPP(Interface_Modules_FiniteElements_HEADERS_MOC ${Interface_Modules_FiniteElements_HEADERS})
 
-ADD_LIBRARY(Interface_Modules_Factory 
-  ${Interface_Modules_Factory_HEADERS}
-#${Interface_Modules_FORMS_HEADERS}
-#${Interface_Modules_HEADERS_MOC}
-  ${Interface_Modules_Factory_SOURCES}
+ADD_LIBRARY(Interface_Modules_FiniteElements
+  ${Interface_Modules_FiniteElements_HEADERS}
+  ${Interface_Modules_FiniteElements_FORMS_HEADERS}
+  ${Interface_Modules_FiniteElements_HEADERS_MOC}
+  ${Interface_Modules_FiniteElements_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Factory 
+TARGET_LINK_LIBRARIES(Interface_Modules_FiniteElements 
+  Algorithms_Field
+#  Modules_FiniteElements
   Interface_Modules_Base
-  Interface_Modules_DataIO
-  Interface_Modules_Math
-  Interface_Modules_Fields
-  Interface_Modules_FiniteElements
-  Interface_Modules_Render
-  Interface_Modules_String
-  Interface_Modules_Testing
-  Interface_Modules_Visualization
+#  Dataflow_Modules_Legacy_FiniteElements
   ${SCI_BOOST_LIBRARY}
   ${QT_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_FiniteElements)
 ENDIF(BUILD_SHARED_LIBS)
   
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

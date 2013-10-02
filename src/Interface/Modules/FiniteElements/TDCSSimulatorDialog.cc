@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,33 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
-#define MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
+#include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
+//#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Fields;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
 
-class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<FieldPortTag>,
-  public Has1OutputPort<FieldPortTag>
+TDCSSimulatorDialog::TDCSSimulatorDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-public:
-  CreateScalarFieldDataBasic();
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+}
 
-  virtual void execute();
-  virtual void setStateDefaults();
+void TDCSSimulatorDialog::pull()
+{
+  //TODO
+}
 
-  INPUT_PORT(0, InputField, LegacyField);
-  OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
-  
-  static Core::Algorithms::AlgorithmParameterName ValueFunc;
-  static Core::Algorithms::AlgorithmParameterName ValueFuncParam1;
-};
-
-}}}
-
-#endif

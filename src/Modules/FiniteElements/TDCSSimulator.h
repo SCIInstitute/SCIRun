@@ -26,31 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
-#define MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
+#ifndef MODULES_FINITEELEMENTS_TDCSSIMULATOR_H
+#define MODULES_FINITEELEMENTS_TDCSSIMULATOR_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
+#include <Modules/FiniteElements/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace Fields {
+    namespace FiniteElements {
 
-class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::Module,
+class SCISHARE TDCSSimulatorModule : public SCIRun::Dataflow::Networks::Module,
   public Has1InputPort<FieldPortTag>,
   public Has1OutputPort<FieldPortTag>
 {
-public:
-  CreateScalarFieldDataBasic();
+  public:
+    TDCSSimulatorModule();
 
-  virtual void execute();
-  virtual void setStateDefaults();
+    virtual void execute();
+    virtual void setStateDefaults();
 
-  INPUT_PORT(0, InputField, LegacyField);
-  OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
-  
-  static Core::Algorithms::AlgorithmParameterName ValueFunc;
-  static Core::Algorithms::AlgorithmParameterName ValueFuncParam1;
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
 };
 
 }}}

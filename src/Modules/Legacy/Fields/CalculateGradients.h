@@ -44,6 +44,7 @@ namespace SCIRun {
         CalculateGradients();
 
         virtual void execute();
+        virtual void setStateDefaults() {}
 
         INPUT_PORT(0, ScalarField, LegacyField);
         OUTPUT_PORT(0, VectorField, LegacyField);

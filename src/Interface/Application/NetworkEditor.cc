@@ -626,6 +626,15 @@ QPixmap NetworkEditor::sceneGrab()
   return QPixmap::grabWidget(this);
 }
 
+void NetworkEditor::selectAll()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
+      mpw->setSelected(true);
+  }
+}
+
 NetworkEditor::~NetworkEditor()
 {
   clear();

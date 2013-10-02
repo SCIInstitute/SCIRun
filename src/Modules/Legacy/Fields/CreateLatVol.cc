@@ -63,11 +63,9 @@ AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalize
 
 CreateLatVol::CreateLatVol()
   : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
-{
-  setDefaults();
-}
+{}
 
-void CreateLatVol::setDefaults()
+void CreateLatVol::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(XSize, 16);
@@ -77,7 +75,6 @@ void CreateLatVol::setDefaults()
   state->setValue(DataAtLocation, std::string("Nodes"));
   state->setValue(ElementSizeNormalized, true);
 }
-
 
 void
 CreateLatVol::execute()
@@ -91,10 +88,7 @@ CreateLatVol::execute()
       element_size_.changed() || !oport_cached("Output Sample Field") )
 #endif
   {
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     update_state(Executing);
-#endif
-    
     
     if (sizeOption)
     {

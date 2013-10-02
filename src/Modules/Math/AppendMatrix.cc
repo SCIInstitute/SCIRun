@@ -36,7 +36,15 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
-AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun")) {}
+AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun")) 
+{
+}
+
+void AppendMatrixModule::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(AppendMatrixAlgorithm::OptionName, 0);
+}
 
 void AppendMatrixModule::execute()
 {

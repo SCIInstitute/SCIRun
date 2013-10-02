@@ -103,12 +103,12 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
 
+    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
+
     virtual bool needToExecute() const  
     {
       return true; //TODO
     }
-
-    virtual void setDefaults() {} //TODO should be pure virtual
 
     bool oport_connected(size_t portIndex) const;
 
@@ -149,6 +149,7 @@ namespace Networks {
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
       Builder& disable_ui();
+      Builder& setStateDefaults();
       ModuleHandle build();
 
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSinkInterface*()> SinkMaker;
@@ -170,7 +171,6 @@ namespace Networks {
     ModuleId id_;
 
     Core::Algorithms::AlgorithmHandle algo_;
-    Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
 
     enum State {
       NeedData,

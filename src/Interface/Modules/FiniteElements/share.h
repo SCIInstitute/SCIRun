@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,33 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
-#define MODULES_FIELDS_CREATESCALARFIELDDATABASIC_H
+#undef SCISHARE
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
-
-class SCISHARE CreateScalarFieldDataBasic : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<FieldPortTag>,
-  public Has1OutputPort<FieldPortTag>
-{
-public:
-  CreateScalarFieldDataBasic();
-
-  virtual void execute();
-  virtual void setStateDefaults();
-
-  INPUT_PORT(0, InputField, LegacyField);
-  OUTPUT_PORT(0, OutputFieldWithData, LegacyField);
-  
-  static Core::Algorithms::AlgorithmParameterName ValueFunc;
-  static Core::Algorithms::AlgorithmParameterName ValueFuncParam1;
-};
-
-}}}
-
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Interface_Modules_FiniteElements
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
 #endif
