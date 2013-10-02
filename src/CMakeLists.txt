@@ -363,6 +363,14 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 
 ########################################################################
+# Find and configure dl library
+
+IF(UNIX)
+  FIND_LIBRARY(DL_LIBRARY dl)
+ENDIF()
+
+
+########################################################################
 # Includes
 
 SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
