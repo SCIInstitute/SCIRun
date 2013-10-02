@@ -26,13 +26,32 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Legacy)
+SET(Modules_FiniteElements_SRCS
+  TDCSSimulator.cc
+)
+
+SET(Modules_FiniteElements_HEADERS
+  TDCSSimulator.h
+  share.h
+)
+
+ADD_LIBRARY(Modules_FiniteElements 
+  ${Modules_FiniteElements_HEADERS}
+  ${Modules_FiniteElements_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_FiniteElements
+  Dataflow_Network
+  Core_Datatypes
+  Core_Datatypes_Mesh
+  Algorithms_Field
+  Core_Datatypes_Legacy_Field
+  #Algorithms_FiniteElements
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_FiniteElements)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_SUBDIRECTORY(Tests)
+

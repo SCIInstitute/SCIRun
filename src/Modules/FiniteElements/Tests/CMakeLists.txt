@@ -26,13 +26,23 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Basic)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Visualization)
-ADD_SUBDIRECTORY(Legacy)
+SET(Modules_FiniteElements_Tests_SRCS
+  TDCSSimulatorTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Modules_FiniteElements_Tests
+  ${Modules_FiniteElements_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Modules_FiniteElements_Tests
+  Modules_FiniteElements
+  Modules_Factory
+  Core_Datatypes
+  Dataflow_Network
+  Dataflow_State
+  Testing_Utils
+  Testing_ModuleTestBase
+  gtest_main
+  gtest
+  gmock
+)
