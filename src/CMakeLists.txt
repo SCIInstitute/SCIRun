@@ -257,7 +257,7 @@ SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}$
 SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # Fixes Mac build for now, without extra boost/python cmake magic.
-SET(boost_GIT_TAG "origin/master")
+SET(boost_GIT_TAG "origin/boost_1_54_0")
 
 # TODO: fix install step
 #
@@ -304,7 +304,6 @@ ELSE() # IDEs: Xcode, VS, others...
   )
 ENDIF()
 
-INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 
 ########################################################################
 # Configure Spire external project
@@ -366,20 +365,22 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ########################################################################
 # Includes
 
-INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
+SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
 INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun5Prototype_SOURCE_DIR}/
   ${SCIRun5Prototype_SOURCE_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
-  ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
   # TODO: set up include variable in log4cpp project
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
 )
+
+INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
