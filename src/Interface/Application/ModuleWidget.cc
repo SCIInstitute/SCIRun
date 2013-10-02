@@ -72,7 +72,7 @@ namespace Gui {
   class ModuleActionsMenu
   {
   public:
-    ModuleActionsMenu(ModuleWidget* parent, const std::string& moduleId)
+    ModuleActionsMenu(QWidget* parent, const std::string& moduleId)
     {
       menu_ = new QMenu("Actions", parent);
 
@@ -209,7 +209,7 @@ void ModuleWidget::resetProgressBar()
 
 void ModuleWidget::setupModuleActions()
 {
-  actionsMenu_.reset(new ModuleActionsMenu(this, moduleId_));
+  actionsMenu_.reset(new ModuleActionsMenu(moduleActionButton_, moduleId_));
 
   moduleActionButton_->setMenu(actionsMenu_->getMenu());
 }
