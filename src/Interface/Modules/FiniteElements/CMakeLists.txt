@@ -27,13 +27,40 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(Fields)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(Render)
-ADD_SUBDIRECTORY(String)
-ADD_SUBDIRECTORY(Testing)
-ADD_SUBDIRECTORY(Visualization)
+SET(Interface_Modules_FiniteElements_FORMS
+  TDCSSimulatorDialog.ui
+)
+
+SET(Interface_Modules_FiniteElements_HEADERS
+  TDCSSimulatorDialog.h
+  share.h
+)
+
+SET(Interface_Modules_FiniteElements_SOURCES 
+  TDCSSimulatorDialog.cc
+)
+
+QT4_WRAP_UI(Interface_Modules_FiniteElements_FORMS_HEADERS ${Interface_Modules_FiniteElements_FORMS})
+QT4_WRAP_CPP(Interface_Modules_FiniteElements_HEADERS_MOC ${Interface_Modules_FiniteElements_HEADERS})
+
+ADD_LIBRARY(Interface_Modules_FiniteElements
+  ${Interface_Modules_FiniteElements_HEADERS}
+  ${Interface_Modules_FiniteElements_FORMS_HEADERS}
+  ${Interface_Modules_FiniteElements_HEADERS_MOC}
+  ${Interface_Modules_FiniteElements_SOURCES}
+)
+
+TARGET_LINK_LIBRARIES(Interface_Modules_FiniteElements 
+  Algorithms_Field
+#  Modules_FiniteElements
+  Interface_Modules_Base
+#  Dataflow_Modules_Legacy_FiniteElements
+  ${SCI_BOOST_LIBRARY}
+  ${QT_LIBRARIES}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_FiniteElements)
+ENDIF(BUILD_SHARED_LIBS)
+  
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
