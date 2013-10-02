@@ -757,11 +757,14 @@ Persistent::add_field_class(const std::string& type,
   add_class(type,"Field",maker,bc_maker1,bc_maker2);
 }
 
-bool Persistent::is_base_of(const std::string& parent, const std::string& type)
+bool
+Persistent::is_base_of(const std::string& parent, const std::string& type)
 {
   if (parent == type)
     return true;
-  return find_derived(type, parent);
+  
+  PersistentTypeIDPtr found_pid = find_derived(type, parent);
+  return found_pid.get() != 0;
 }
 
 
