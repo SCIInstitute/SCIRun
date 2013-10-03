@@ -51,8 +51,8 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
-  boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
-  module_->setPositionObject(pp);
+  //boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
+  //module_->setPositionObject(pp);
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));

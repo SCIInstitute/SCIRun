@@ -258,31 +258,50 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
+namespace
+{
+  const int PORT_SPACING = 3;
+}
+
 void ModuleWidget::addPort(OutputPortWidget* port)
 {
+  std::cout << "MW::addOutputPort 1 " << port->pos() << std::endl;
   if (!outputPortLayout_)
   {
     //TODO--extract method
     outputPortLayout_ = new QHBoxLayout;
-    outputPortLayout_->setSpacing(3);
+    outputPortLayout_->setSpacing(PORT_SPACING);
     outputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(-1, outputPortLayout_);
   }
   outputPortLayout_->addWidget(port);
+  std::cout << "MW::addOutputPort 2 " << port->pos() << std::endl;
   outputPorts_.push_back(port);
 }
 
 void ModuleWidget::addPort(InputPortWidget* port)
 {
+  std::cout << "MW::addInputPort 1 " << port->pos() << std::endl;
   if (!inputPortLayout_)
   {
     inputPortLayout_ = new QHBoxLayout;
-    inputPortLayout_->setSpacing(3);
+    inputPortLayout_->setSpacing(PORT_SPACING);
     inputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(0, inputPortLayout_);
   }
   inputPortLayout_->addWidget(port);
+  std::cout << "MW::addInputPort 2 " << port->pos() << std::endl;
   inputPorts_.push_back(port);
+}
+
+void ModuleWidget::printPortPositions() const
+{
+  std::cout << "Port positions for module " << moduleId_ << std::endl;
+  Q_FOREACH(PortWidget* p, boost::join(getInputPorts(), getOutputPorts()))
+  {
+    std::cout << "\t" << p->pos();
+  }
+  std::cout << std::endl;
 }
 
 ModuleWidget::~ModuleWidget()
@@ -309,19 +328,19 @@ void ModuleWidget::trackConnections()
     p->trackConnections();
 }
 
-QPointF ModuleWidget::inputPortPosition() const 
-{
-  if (positionProvider_)
-    return positionProvider_->currentPosition() + QPointF(20,10);
-  return pos();
-}
-
-QPointF ModuleWidget::outputPortPosition() const 
-{
-  if (positionProvider_)
-    return positionProvider_->currentPosition() + QPointF(20, height() - 10);
-  return pos();
-}
+//QPointF ModuleWidget::inputPortPosition() const 
+//{
+//  if (positionProvider_)
+//    return positionProvider_->currentPosition() + QPointF(20,10);
+//  return pos();
+//}
+//
+//QPointF ModuleWidget::outputPortPosition() const 
+//{
+//  if (positionProvider_)
+//    return positionProvider_->currentPosition() + QPointF(20, height() - 10);
+//  return pos();
+//}
 
 void ModuleWidget::execute()
 {

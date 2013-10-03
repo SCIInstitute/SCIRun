@@ -363,7 +363,7 @@ QPointF PortWidget::position() const
 {
   if (positionProvider_)
   {
-    std::cout << "PortWidget positionProvider returning: " << positionProvider_->currentPosition() << std::endl;
+    std::cout << "PortWidget positionProvider returning: " << positionProvider_->currentPosition() << " , actual pos() = " << pos() << std::endl;
     return positionProvider_->currentPosition();
   }
   return pos();

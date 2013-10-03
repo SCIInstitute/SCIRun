@@ -51,7 +51,8 @@ class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
 
-class ModuleWidget : public QFrame, public NeedsScenePositionProvider, public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
+class ModuleWidget : public QFrame, //public NeedsScenePositionProvider, 
+  public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
 {
 	Q_OBJECT
 	
@@ -60,8 +61,8 @@ public:
   ~ModuleWidget();
 
   void trackConnections();
-  QPointF inputPortPosition() const;
-  QPointF outputPortPosition() const;
+  //QPointF inputPortPosition() const;
+  //QPointF outputPortPosition() const;
 
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
@@ -82,6 +83,8 @@ public:
   void setColorAsWaiting();
   void setColorSelected();
   void setColorUnselected();
+
+  void printPortPositions() const;
 
 public Q_SLOTS:
   virtual void execute();
