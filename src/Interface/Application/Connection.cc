@@ -72,10 +72,6 @@ public:
   }
 };
 
-std::ostream& operator<<(std::ostream& o, const QPointF& p)
-{
-  return o << "[" << p.x() << "," << p.y() << "]";
-}
 
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
@@ -110,6 +106,7 @@ public:
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer)
 {
+  std::cout << "Creating connection line: " << id.id_ << " from " << fromPort->position() << " to " << toPort->position() << std::endl;
   if (fromPort_)
   {
     fromPort_->addConnection(this);

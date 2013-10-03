@@ -52,6 +52,11 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
 
+ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset) 
+{
+  std::cout << "PWP(): offset_ = " << offset_ << std::endl;
+}
+
 QPointF ProxyWidgetPosition::currentPosition() const
 {
   return widget_->pos() + offset_;
