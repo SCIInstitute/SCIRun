@@ -72,11 +72,17 @@ public:
   }
 };
 
+std::ostream& operator<<(std::ostream& o, const QPointF& p)
+{
+  return o << "[" << p.x() << "," << p.y() << "]";
+}
+
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
   void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
+    std::cout << "Drawing connection: " << item << " from " << from << " to " << to << std::endl;
     QPainterPath path;
     path.moveTo(from);
     const int case1Threshold = 15;
