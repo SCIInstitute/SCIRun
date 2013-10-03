@@ -176,9 +176,7 @@ void ModuleProxyWidget::createPortPositionProviders()
   {
     if (firstPortXPos < 0)
       firstPortXPos = p->pos().x();
-    QPoint realPosition(firstPortXPos + (p->getIndex() * (11 + 3)), p->pos().y());
-#error need to extract magic numbers
-    //std::cout << "Creating Port PP. p->pos() = " << p->pos() << " realPosition = " << realPosition << " + offset [5,5]" << std::endl;
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
     
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);

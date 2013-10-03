@@ -86,6 +86,8 @@ public:
 
   void printPortPositions() const;
 
+  static const int PORT_SPACING = 3;
+
 public Q_SLOTS:
   virtual void execute();
   void showOptionsDialog();

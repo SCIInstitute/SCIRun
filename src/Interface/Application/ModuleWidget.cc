@@ -257,11 +257,6 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
-namespace
-{
-  const int PORT_SPACING = 3;
-}
-
 void ModuleWidget::addPort(OutputPortWidget* port)
 {
   if (!outputPortLayout_)

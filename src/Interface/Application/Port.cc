@@ -150,7 +150,7 @@ PortWidget::~PortWidget()
 
 QSize PortWidget::sizeHint() const
 {
-  const int width = 11;
+  const int width = WIDTH;
   const int coloredHeight = isInput() ? 5 : 4;
   const int blackHeight = 2;
   return QSize(width, coloredHeight + blackHeight);
