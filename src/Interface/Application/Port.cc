@@ -140,7 +140,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this))
 {
-  std::cout << "Creating port widget at " << pos() << std::endl;
+  std::cout << "Creating port widget at " << pos() << " index is " << index << std::endl;
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(name_);
@@ -363,7 +363,7 @@ QPointF PortWidget::position() const
 {
   if (positionProvider_)
   {
-    std::cout << "PortWidget positionProvider returning: " << positionProvider_->currentPosition() << " , actual pos() = " << pos() << std::endl;
+    //std::cout << "PortWidget positionProvider returning: " << positionProvider_->currentPosition() << " , actual pos() = " << pos() << std::endl;
     return positionProvider_->currentPosition();
   }
   return pos();

@@ -173,10 +173,15 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
+  int firstPortXPos = -1;
   Q_FOREACH(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
   {
-    std::cout << "Creating Port PP. p->pos() = " << p->pos() << " - module->pos() = " << module_->pos() << " + offset [5,5]" << std::endl;
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(5,5)));
+    if (firstPortXPos < 0)
+      firstPortXPos = p->pos().x();
+    QPoint realPosition(firstPortXPos + (p->getIndex() * (11 + 3)), p->pos().y());
+    std::cout << "Creating Port PP. p->pos() = " << p->pos() << " realPosition = " << realPosition << " + offset [5,5]" << std::endl;
+    
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);
   }
 }
