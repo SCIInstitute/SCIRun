@@ -51,8 +51,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
-  //boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
-  //module_->setPositionObject(pp);
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
@@ -179,7 +177,8 @@ void ModuleProxyWidget::createPortPositionProviders()
     if (firstPortXPos < 0)
       firstPortXPos = p->pos().x();
     QPoint realPosition(firstPortXPos + (p->getIndex() * (11 + 3)), p->pos().y());
-    std::cout << "Creating Port PP. p->pos() = " << p->pos() << " realPosition = " << realPosition << " + offset [5,5]" << std::endl;
+#error need to extract magic numbers
+    //std::cout << "Creating Port PP. p->pos() = " << p->pos() << " realPosition = " << realPosition << " + offset [5,5]" << std::endl;
     
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);

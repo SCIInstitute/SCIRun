@@ -78,7 +78,6 @@ class ManhattanDrawStrategy : public ConnectionDrawStrategy
 public:
   void draw(QGraphicsPathItem* item, const QPointF& from, const QPointF& to)
   {
-    std::cout << "Drawing connection: " << item << " from " << from << " to " << to << std::endl;
     QPainterPath path;
     path.moveTo(from);
     const int case1Threshold = 15;
@@ -106,7 +105,6 @@ public:
 ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer)
   : fromPort_(fromPort), toPort_(toPort), id_(id), destroyed_(false), drawer_(drawer)
 {
-  std::cout << "Creating connection line: " << id.id_ << " from " << fromPort->position() << " to " << toPort->position() << std::endl;
   if (fromPort_)
   {
     fromPort_->addConnection(this);

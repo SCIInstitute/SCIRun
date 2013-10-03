@@ -54,7 +54,6 @@ using namespace SCIRun::Core::Logging;
 
 ProxyWidgetPosition::ProxyWidgetPosition(QGraphicsProxyWidget* widget, const QPointF& offset/* = QPointF()*/) : widget_(widget), offset_(offset) 
 {
-  std::cout << "PWP(): offset_ = " << offset_ << std::endl;
 }
 
 QPointF ProxyWidgetPosition::currentPosition() const
@@ -265,7 +264,6 @@ namespace
 
 void ModuleWidget::addPort(OutputPortWidget* port)
 {
-  std::cout << "MW::addOutputPort 1 " << port->pos() << std::endl;
   if (!outputPortLayout_)
   {
     //TODO--extract method
@@ -275,13 +273,11 @@ void ModuleWidget::addPort(OutputPortWidget* port)
     verticalLayout->insertLayout(-1, outputPortLayout_);
   }
   outputPortLayout_->addWidget(port);
-  std::cout << "MW::addOutputPort 2 " << port->pos() << std::endl;
   outputPorts_.push_back(port);
 }
 
 void ModuleWidget::addPort(InputPortWidget* port)
 {
-  std::cout << "MW::addInputPort 1 " << port->pos() << std::endl;
   if (!inputPortLayout_)
   {
     inputPortLayout_ = new QHBoxLayout;
@@ -290,7 +286,6 @@ void ModuleWidget::addPort(InputPortWidget* port)
     verticalLayout->insertLayout(0, inputPortLayout_);
   }
   inputPortLayout_->addWidget(port);
-  std::cout << "MW::addInputPort 2 " << port->pos() << std::endl;
   inputPorts_.push_back(port);
 }
 
@@ -327,20 +322,6 @@ void ModuleWidget::trackConnections()
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->trackConnections();
 }
-
-//QPointF ModuleWidget::inputPortPosition() const 
-//{
-//  if (positionProvider_)
-//    return positionProvider_->currentPosition() + QPointF(20,10);
-//  return pos();
-//}
-//
-//QPointF ModuleWidget::outputPortPosition() const 
-//{
-//  if (positionProvider_)
-//    return positionProvider_->currentPosition() + QPointF(20, height() - 10);
-//  return pos();
-//}
 
 void ModuleWidget::execute()
 {

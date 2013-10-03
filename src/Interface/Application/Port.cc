@@ -124,12 +124,6 @@ namespace SCIRun {
 
 std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
 
-
-std::ostream& operator<<(std::ostream& o, const QPoint& p)
-{
-  return o << "[" << p.x() << "," << p.y() << "]";
-}
-
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId, size_t index,
   bool isInput, 
   boost::shared_ptr<ConnectionFactory> connectionFactory,
@@ -140,7 +134,6 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this))
 {
-  std::cout << "Creating port widget at " << pos() << " index is " << index << std::endl;
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
   setToolTip(name_);
@@ -188,11 +181,8 @@ void PortWidget::paintEvent(QPaintEvent* event)
   painter.fillRect(QRect(lightStart, QSize(size.width(), 2)), lightColor);
 }
 
-
-
 void PortWidget::mousePressEvent(QMouseEvent* event)
 {
-  std::cout << "PortWidget mouse press: " << event->pos() << std::endl;
   doMousePress(event->button(), event->pos());
 }
 
@@ -208,7 +198,6 @@ void PortWidget::doMousePress(Qt::MouseButton button, const QPointF& pos)
 
 void PortWidget::mouseMoveEvent(QMouseEvent* event)
 {
-  std::cout << "PortWidget mouse move: " << event->pos() << std::endl;
   doMouseMove(event->buttons(), event->pos());
 }
 
@@ -224,7 +213,6 @@ void PortWidget::doMouseMove(Qt::MouseButtons buttons, const QPointF& pos)
 
 void PortWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  std::cout << "PortWidget mouse release: " << event->pos() << std::endl;
   doMouseRelease(event->button(), event->pos());
 }
 
@@ -363,7 +351,6 @@ QPointF PortWidget::position() const
 {
   if (positionProvider_)
   {
-    //std::cout << "PortWidget positionProvider returning: " << positionProvider_->currentPosition() << " , actual pos() = " << pos() << std::endl;
     return positionProvider_->currentPosition();
   }
   return pos();

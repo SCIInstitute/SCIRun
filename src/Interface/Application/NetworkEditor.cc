@@ -175,11 +175,8 @@ namespace
 
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
-  module->printPortPositions();
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
 
-  std::cout << "~~~SHOULD CHANGE NOW I THINK ~~~" << std::endl;
-  module->printPortPositions();
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
@@ -196,15 +193,11 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
   
-  module->printPortPositions();
-
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetLogButtonColor()));
   connect(this, SIGNAL(networkExecuted()), module, SLOT(resetProgressBar()));
 
   proxy->setZValue(zLevelManager_->max());
-  std::cout << "~~OR MAYBE HERE ~~" << std::endl;
   proxy->setVisible(true);
-  module->printPortPositions();
   proxy->setSelected(true);
   proxy->setPos(lastModulePosition_);
   lastModulePosition_ += moduleAddIncrement;
@@ -216,18 +209,12 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
-  std::cout << "~~AFTER CreatePPP~~~" << std::endl;
-  module->printPortPositions();
   
   scene_->addItem(proxy);
-
-  module->printPortPositions();
 
   scene_->clearSelection();
   proxy->setSelected(true);
   bringToFront();
-
-  module->printPortPositions();
 
   GuiLogger::Instance().log("Module added.");
 }
