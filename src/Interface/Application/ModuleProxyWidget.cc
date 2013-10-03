@@ -175,6 +175,7 @@ void ModuleProxyWidget::createPortPositionProviders()
 {
   Q_FOREACH(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
   {
+    std::cout << "Creating Port PP. p->pos() = " << p->pos() << " - module->pos() = " << module_->pos() << " + offset [5,5]" << std::endl;
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(5,5)));
     p->setPositionObject(pp);
   }
