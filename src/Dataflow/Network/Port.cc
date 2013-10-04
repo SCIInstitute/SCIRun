@@ -136,5 +136,8 @@ void OutputPort::sendData(DatatypeHandle data)
   if (0 == nconnections())
     return;
   BOOST_FOREACH(Connection* c, connections_)
-    source_->send(c->iport_->sink(), data);
+  {
+    if (c && c->iport_)
+      source_->send(c->iport_->sink(), data);
+  }
 }

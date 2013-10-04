@@ -48,10 +48,9 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
   INITIALIZE_PORT(LHS);
   INITIALIZE_PORT(RHS);
   INITIALIZE_PORT(Solution);
-  setDefaults();
 }
 
-void SolveLinearSystemModule::setDefaults()
+void SolveLinearSystemModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(SolveLinearSystemAlgo::TargetError(), 0.00001);

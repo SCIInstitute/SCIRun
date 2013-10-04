@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Testing/ModuleTestBase/share.h>
 
 namespace SCIRun 
@@ -44,9 +45,24 @@ namespace SCIRun
       Dataflow::Networks::ModuleHandle makeModule(const std::string& name);
 
       void stubPortNWithThisData(Dataflow::Networks::ModuleHandle module, size_t portNum, Core::Datatypes::DatatypeHandle data);
-
+      void connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum);
     private:
       Dataflow::Networks::ModuleFactoryHandle factory_;
     };
+
+    SCISHARE FieldHandle CreateEmptyLatVol();
+
+    class SCISHARE MockAlgorithm : public SCIRun::Core::Algorithms::AlgorithmBase
+    {
+    public:
+      MOCK_CONST_METHOD1(run_generic, SCIRun::Core::Algorithms::AlgorithmOutput(const SCIRun::Core::Algorithms::AlgorithmInput&));
+      MOCK_METHOD1(keyNotFoundPolicy, void(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
+      MOCK_METHOD2(set, void(const SCIRun::Core::Algorithms::AlgorithmParameterName&, const SCIRun::Core::Algorithms::AlgorithmParameter::Value&));
+      MOCK_CONST_METHOD1(get, const SCIRun::Core::Algorithms::AlgorithmParameter&(const SCIRun::Core::Algorithms::AlgorithmParameterName&));
+      //MOCK_METHOD2(set_option, void(const AlgorithmParameterName&, const std::string& value));
+      //MOCK_CONST_METHOD1(get_option, std::string(const AlgorithmParameterName&));
+    };
+
+    typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
   }
 }

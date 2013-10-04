@@ -87,7 +87,6 @@
     <addaction name="actionSave_"/>
     <addaction name="actionSave_As_"/>
     <addaction name="separator"/>
-    <addaction name="actionSelect_All_"/>
     <addaction name="actionExecute_All_"/>
     <addaction name="separator"/>
     <addaction name="actionCreate_Module_Skeleton_"/>
@@ -810,14 +809,6 @@
     <string>Save As...</string>
    </property>
   </action>
-  <action name="actionSelect_All_">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Select All</string>
-   </property>
-  </action>
   <action name="actionExecute_All_">
    <property name="text">
     <string>&amp;Execute All</string>
@@ -995,10 +986,13 @@
   </action>
   <action name="actionSelectAll_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
   <action name="actionDevConsole_">

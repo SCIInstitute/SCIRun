@@ -39,6 +39,12 @@ ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun"
 {
 }
 
+void ViewScene::setStateDefaults()
+{
+  auto state = get_state();
+  //none yet, but LOTS to come...
+}
+
 void ViewScene::preExecutionInitialization()
 {
   // TODO: Detect if we are running headless; if so, cerate a system-specifc

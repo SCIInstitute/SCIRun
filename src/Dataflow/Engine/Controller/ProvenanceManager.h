@@ -47,8 +47,9 @@ namespace Engine {
     typedef typename Item::Handle ItemHandle;
     typedef std::stack<ItemHandle> Stack;
     typedef typename Stack::container_type List;
+    typedef Engine::NetworkIOInterface<Memento> IOType;
 
-    explicit ProvenanceManager(Engine::NetworkIOInterface<Memento>* networkIO);
+    explicit ProvenanceManager(IOType* networkIO);
     void setInitialState(const Memento& initialState);
     void addItem(ItemHandle item);
     ItemHandle undo();
@@ -62,10 +63,12 @@ namespace Engine {
     size_t undoSize() const;
     size_t redoSize() const;
 
+    const IOType* networkIO() const;
+
   private:
     ItemHandle undo(bool restore);
     ItemHandle redo(bool restore);
-    Engine::NetworkIOInterface<Memento>* networkIO_;
+    IOType* networkIO_;
     Stack undo_, redo_;
     boost::optional<Memento> initialState_;
   };
@@ -73,7 +76,7 @@ namespace Engine {
 
 
   template <class Memento>
-  ProvenanceManager<Memento>::ProvenanceManager(NetworkIOInterface<Memento>* networkIO) : networkIO_(networkIO) {}
+  ProvenanceManager<Memento>::ProvenanceManager(IOType* networkIO) : networkIO_(networkIO) {}
 
   template <class Memento>
   void ProvenanceManager<Memento>::setInitialState(const Memento& initialState)
@@ -187,8 +190,11 @@ namespace Engine {
     return redone;
   }
 
-
-
+  template <class Memento>
+  const typename ProvenanceManager<Memento>::IOType* ProvenanceManager<Memento>::networkIO() const
+  {
+    return networkIO_;
+  }
 
 
 }
