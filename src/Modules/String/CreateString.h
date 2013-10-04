@@ -43,6 +43,7 @@ namespace StringProcessing {
   public:
     CreateStringModule();
     virtual void execute();
+    virtual void setStateDefaults();
     OUTPUT_PORT(0, NewString, String);
     static Core::Algorithms::AlgorithmParameterName InputString;
   private:

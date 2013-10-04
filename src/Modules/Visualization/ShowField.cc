@@ -46,10 +46,9 @@ using namespace SCIRun;
 ShowFieldModule::ShowFieldModule() : 
     Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun"))
 {
-  setDefaults();
 }
 
-void ShowFieldModule::setDefaults()
+void ShowFieldModule::setStateDefaults()
 {
   auto state = get_state();
   state->setValue(ShowNodes, false);

@@ -65,6 +65,7 @@
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/MatrixAsVectorField.h>
+#include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
@@ -76,6 +77,7 @@ using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
@@ -122,10 +124,10 @@ namespace SCIRun {
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
           addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
-          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Math", "SCIRun", "...", "...");
+          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
-          addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "NewField", "SCIRun", "Set field data via python.", "...");
+          //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
+          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
@@ -135,6 +137,7 @@ namespace SCIRun {
           addModuleDesc<AlignMeshBoundingBoxes>("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
+          addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
         }
 
         ModuleDescriptionMap descMap_;
@@ -208,7 +211,7 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
   Module::Builder builder;
   
   if (desc.maker_)
-    builder.using_func(desc.maker_);
+    builder.using_func(desc.maker_).setStateDefaults();
   else
     builder.with_name(desc.lookupInfo_.module_name_);
 

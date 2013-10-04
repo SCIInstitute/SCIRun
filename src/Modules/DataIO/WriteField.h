@@ -44,6 +44,8 @@ namespace SCIRun {
         typedef GenericWriter<FieldHandle, FieldPortTag> my_base;
         WriteFieldModule();
         virtual void execute();
+        virtual void setStateDefaults() {}
+
         INPUT_PORT(0, FieldToWrite, LegacyField);
 
         static Core::Algorithms::AlgorithmParameterName Filename;

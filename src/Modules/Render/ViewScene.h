@@ -43,6 +43,7 @@ namespace Render {
   public:
     ViewScene();
     virtual void execute();
+    virtual void setStateDefaults();
 
     /// Used to initialize spire with the context given in the Transient state.
     virtual void preExecutionInitialization();

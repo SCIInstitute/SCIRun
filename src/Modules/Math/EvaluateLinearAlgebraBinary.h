@@ -43,6 +43,7 @@ namespace SCIRun {
       public:
         EvaluateLinearAlgebraBinaryModule();
         virtual void execute();
+        virtual void setStateDefaults();
 
         INPUT_PORT(0, InputLHS, DenseMatrix);
         INPUT_PORT(1, InputRHS, DenseMatrix);

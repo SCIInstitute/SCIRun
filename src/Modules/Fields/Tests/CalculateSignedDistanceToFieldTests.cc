@@ -29,17 +29,20 @@
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
+#include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
+using ::testing::Mock;
 
 class CalculateSignedDistanceToFieldModuleTests : public ModuleTest
 {
@@ -59,4 +62,45 @@ TEST_F(CalculateSignedDistanceToFieldModuleTests, ThrowsForNullInput)
 TEST_F(CalculateSignedDistanceToFieldModuleTests, Foo)
 {
   FAIL() << "TODO";
+}
+
+TEST_F(CalculateSignedDistanceToFieldModuleTests, MakesAlgoDecisionBasedOnValuePortConnection)
+{
+  {
+    auto csdf = makeModule("CalculateSignedDistanceToField");
+    stubPortNWithThisData(csdf, 0, CreateEmptyLatVol());
+    stubPortNWithThisData(csdf, 1, CreateEmptyLatVol());
+
+    AlgorithmParameter::Value connected = false;
+    {
+      //std::cout << "0ref count of algo ptr: " << csdf->getAlgorithm().use_count() << std::endl;
+      auto mockAlgo = boost::static_pointer_cast<MockAlgorithmPtr::value_type>(csdf->getAlgorithm());
+      //TODO: must remove this line. Getting strange leaking behavior without, haven't tracked it down yet.
+      //this test correctly tests the oport_connected-based decision. I'll open another issue to figure out this weird fake leak.
+      Mock::AllowLeak(mockAlgo.get());
+      //std::cout << "1ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+      {
+        EXPECT_CALL(*mockAlgo, set(CalculateSignedDistanceFieldAlgo::OutputValueField, connected));
+        //std::cout << "2ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+        csdf->execute();
+        //std::cout << "3ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+        EXPECT_TRUE(Mock::VerifyAndClearExpectations(mockAlgo.get()));
+        //std::cout << "4ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+      }
+
+      {
+        //std::cout << "5ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+        connectDummyOutputConnection(csdf, 1);
+        connected = true;
+        //std::cout << "6ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+        EXPECT_CALL(*mockAlgo, set(CalculateSignedDistanceFieldAlgo::OutputValueField, connected));
+        //std::cout << "7ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+        csdf->execute();
+        //std::cout << "8ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+        EXPECT_TRUE(Mock::VerifyAndClearExpectations(mockAlgo.get()));
+        //std::cout << "9ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+      }
+      //std::cout << "10ref count of algo ptr: " << mockAlgo.use_count() << std::endl;
+    }
+  }
 }
