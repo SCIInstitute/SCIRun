@@ -38,35 +38,58 @@ OCD=`pwd`
 
 cd ${MACOS_DIR}/lib
 
-# TODO: check return values!
-
 SCIRUN_LIBS=`ls -1 *.dylib`
 echo ${SCIRUN_LIBS}
 for library_file in ${SCIRUN_LIBS}; do
   COMMAND=`otool -L $library_file | @SED@ -n 's:@SCIRUN_CORE_BINARY_DIR@/lib/:& :p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1$2" "$2" " lib }'`
- # echo "${COMMAND}"
+  echo "${COMMAND}"
   sh -c "${COMMAND}"
+  if (( $? != 0 )); then
+    echo "${COMMAND} failed. Quitting."
+    exit 255
+  fi
 
-  COMMAND=`otool -L $library_file | @SED@ -n 's:@SPIRE_LIBRARY_DIR@/:& :p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1$2" "$2" " lib }'`
+  #COMMAND=`otool -L $library_file | @SED@ -n 's:@SPIRE_LIBRARY_DIR@/:& :p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1$2" "$2" " lib }'`
  # echo "${COMMAND}"
-  sh -c "${COMMAND}"
+  #sh -c "${COMMAND}"
+  #echo "$?"
 
   COMMAND=`otool -L $library_file | @SED@ -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | @AWK@ -v lib=$library_file '{print "install_name_tool -change "$1" @executable_path/lib/"$1" " lib }'`
- # echo "${COMMAND}"
+  echo "${COMMAND}"
   sh -c "${COMMAND}"
+  if (( $? != 0 )); then
+    echo "${COMMAND} failed. Quitting."
+    exit 255
+  fi
 
   # TODO: this works, but should be filtered to see if Qt libraries are actually in list returned by otool -L
- # echo "install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${library_file}"
+  echo "install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${library_file}"
   install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${library_file}
+  if (( $? != 0 )); then
+    echo "${COMMAND} failed. Quitting."
+    exit 255
+  fi
 
   echo "install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${library_file}"
   install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${library_file}
+  if (( $? != 0 )); then
+    echo "${COMMAND} failed. Quitting."
+    exit 255
+  fi
 
   echo "install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${library_file}"
   install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${library_file}
+  if (( $? != 0 )); then
+    echo "${COMMAND} failed. Quitting."
+    exit 255
+  fi
 
   echo "install_name_tool -id @executable_path/lib/${library_file} ${library_file}"
   install_name_tool -id "@executable_path/lib/${library_file}" ${library_file}
+  if (( $? != 0 )); then
+    echo "${COMMAND} failed. Quitting."
+    exit 255
+  fi
 done
 
 cd $OCD
@@ -75,14 +98,26 @@ cd ${MACOS_DIR}
 COMMAND=`otool -L $EXECUTABLE_APP_NAME | @SED@ -n 's:@SCIRUN_CORE_BINARY_DIR@/lib/:& :p' | @AWK@ -v lib=$EXECUTABLE_APP_NAME '{print "install_name_tool -change "$1$2" "$2" " lib }'`
 echo "${COMMAND}"
 sh -c "${COMMAND}"
+if (( $? != 0 )); then
+  echo "${COMMAND} failed. Quitting."
+  exit 255
+fi
 
 COMMAND=`otool -L $EXECUTABLE_APP_NAME | @SED@ -n 's:@SPIRE_LIBRARY_DIR@/:& :p' | @AWK@ -v lib=$EXECUTABLE_APP_NAME '{print "install_name_tool -change "$1$2" "$2" " lib }'`
 echo "${COMMAND}"
 sh -c "${COMMAND}"
+if (( $? != 0 )); then
+  echo "${COMMAND} failed. Quitting."
+  exit 255
+fi
 
 COMMAND=`otool -L $EXECUTABLE_APP_NAME | @SED@ -n 's:[^/][^/]*lib[A-z0-9_.]*.dylib:&:p' | @AWK@ -v lib=$EXECUTABLE_APP_NAME '{print "install_name_tool -change "$1" @executable_path/lib/"$1" " lib }'`
 echo "${COMMAND}"
 sh -c "${COMMAND}"
+if (( $? != 0 )); then
+  echo "${COMMAND} failed. Quitting."
+  exit 255
+fi
 
 #echo "install_name_tool -id @executable_path/lib/${library_file} ${library_file}"
 #install_name_tool -id "@executable_path/lib/${library_file}" ${library_file}
