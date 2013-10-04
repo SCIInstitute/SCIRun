@@ -18,6 +18,14 @@ set(
   ON)
 option(gmock_build_tests "Build all of Google Mock's own tests." OFF)
 
+########################################################################
+# Enable PIC for 64-bit Linux if necessary
+
+if(UNIX AND NOT APPLE AND NOT CYGWIN)
+  set(ENABLE_PIC ON)
+endif()
+
+
 # A directory to find Google Test sources.
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/gtest/CMakeLists.txt")
   set(gtest_dir gtest)
@@ -84,6 +92,17 @@ target_link_libraries(gmock gtest)
 
 cxx_library(gmock_main "${cxx_strict}" src/gmock_main.cc)
 target_link_libraries(gmock_main gmock)
+
+if(ENABLE_PIC)
+  set_target_properties(gmock
+      PROPERTIES
+        COMPILE_FLAGS "-fPIC"
+    )
+  set_target_properties(gmock_main
+      PROPERTIES
+        COMPILE_FLAGS "-fPIC"
+    )
+endif()
 
 ########################################################################
 #
