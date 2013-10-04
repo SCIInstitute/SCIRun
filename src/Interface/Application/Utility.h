@@ -91,6 +91,12 @@ namespace Gui
     action->setEnabled(false);
     return action;
   }
+
+
+  inline std::ostream& operator<<(std::ostream& o, const QPointF& p)
+  {
+    return o << "[" << p.x() << "," << p.y() << "]";
+  }
 }
 
 }

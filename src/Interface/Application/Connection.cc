@@ -72,6 +72,7 @@ public:
   }
 };
 
+
 class ManhattanDrawStrategy : public ConnectionDrawStrategy
 {
 public:
