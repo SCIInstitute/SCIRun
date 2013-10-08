@@ -63,6 +63,6 @@ namespace SCIRun
       //MOCK_CONST_METHOD1(get_option, std::string(const AlgorithmParameterName&));
     };
 
-    typedef boost::shared_ptr<::testing::NiceMock<MockAlgorithm>> MockAlgorithmPtr;
+    typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
   }
 }
