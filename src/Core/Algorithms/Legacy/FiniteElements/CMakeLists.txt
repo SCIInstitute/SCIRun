@@ -26,15 +26,20 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
+# Headers of Core/Algorithms/Fields_classes
+SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
+  BuildMatrix/BuildTDCSMatrix.h
+)
+
 # Sources of Core/Algorithms/Fields classes
-SET(Core_Algorithms_FiniteElements_SRCS
-  Periodic/DefinePeriodicBoundaries.cc
-  Mapping/BuildFEGridMapping.cc
-  Mapping/BuildNodeLink.cc
-  BuildMatrix/BuildFEMatrix.cc
+SET(Core_Algorithms_Legacy_FiniteElements_SRCS
+  #Periodic/DefinePeriodicBoundaries.cc
+  #Mapping/BuildFEGridMapping.cc
+  #Mapping/BuildNodeLink.cc
+  #BuildMatrix/BuildFEMatrix.cc
   BuildMatrix/BuildTDCSMatrix.cc
-  BuildRHS/BuildFEVolRHS.cc
-  BuildRHS/BuildFESurfRHS.cc
+  #BuildRHS/BuildFEVolRHS.cc
+  #BuildRHS/BuildFESurfRHS.cc
 )
 
 SCIRUN_ADD_LIBRARY(Core_Algorithms_FiniteElements ${Core_Algorithms_FiniteElements_SRCS})

@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
+#  in all copies or substantial portions of the Software. 
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,49 +26,20 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Dataflow/Modules/FiniteElements
-
-SET(Dataflow_odules_Legacy_FiniteElements_HEADERS
-  BuildTDCSMatrix.h
+SET(Algorithms_FiniteElements_Tests_SRCS
+  BuildTDCSMatrixTests.cc
 )
 
-SET(Dataflow_Modules_FiniteElements_SRCS
-  #DefinePeriodicBoundaries.cc
-  #BuildFEGridMapping.cc
-  #BuildFEGridMappingByDomain.cc
-  #BuildFEMatrix.cc
-  BuildTDCSMatrix.cc
-  #BuildFESurfRHS.cc
-  #BuildFEVolRHS.cc
-)
-    
-SCIRUN_ADD_LIBRARY(Dataflow_Modules_FiniteElements ${Dataflow_Modules_FiniteElements_SRCS})
-
-TARGET_LINK_LIBRARIES(Dataflow_Modules_FiniteElements
-  Dataflow_Network
-  Dataflow_Widgets
-  Core_Algorithms_FiniteElements
-  Core_Algorithms_Fields
-  Core_Algorithms_Util
-  Core_Algorithms_Geometry
-  Core_Basis
-  Core_Datatypes
-  Core_Exceptions
-  Core_Geom
-  Core_Geometry
-  Core_GeomInterface
-  Dataflow_GuiInterface
-  Core_ImportExport
-  Core_Math
-  Core_Persistent
-  Core_Thread
-  Dataflow_TkExtensions
-  Core_Util
-  ${TK_LIBRARY}
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
-  ${THREAD_LIBRARY}
-  ${SCI_TEEM_LIBRARY}
+SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
+  ${Algorithms_Field_Tests_SRCS}
 )
 
-
+TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
+  Algorithms_Field
+  Core_Datatypes_Legacy_Field
+  Core_Algorithms_Legacy_Fields
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
+)
