@@ -26,6 +26,20 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Fields)
-#ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(FiniteElements)
+SET(Algorithms_FiniteElements_Tests_SRCS
+  BuildTDCSMatrixTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Algorithms_FiniteElements_Tests
+  ${Algorithms_FiniteElements_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_FiniteElements_Tests
+  Algorithms_Field
+  Core_Datatypes_Legacy_Field
+  Core_Algorithms_Legacy_Fields
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
+)

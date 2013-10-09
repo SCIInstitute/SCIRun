@@ -26,34 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_ALIGNMESHBOUNDINGBOXES_H__
+#define MODULES_LEGACY_FIELDS_ALIGNMESHBOUNDINGBOXES_H__
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
+  namespace Modules {
+    namespace Fields {
 
-class SCISHARE BuildTDCSMatrix : public AlgorithmBase
-{
-  public:
-  BuildTDCSMatrix();
-  ~BuildTDCSMatrix();
-  bool run(MatrixHandle stiff, FieldHandle mesh, MatrixHandle ElectrodeElements, MatrixHandle ElectrodeElementType, MatrixHandle ElectrodeElementDefinition, MatrixHandle contactimpedance, MatrixHandle& output);
-}; // end namespace SCIRun
+      class SCISHARE AlignMeshBoundingBoxes : public Dataflow::Networks::Module,
+        public Has2InputPorts<FieldPortTag, FieldPortTag>,
+        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+      {
+      public:
+        AlignMeshBoundingBoxes();
 
-			}}}}
-#endif 
+        virtual void execute();
+
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, AlignmentField, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+        OUTPUT_PORT(1, TransformMatrix, Matrix);
+      };
+
+    }
+  }
+}
+
+#endif

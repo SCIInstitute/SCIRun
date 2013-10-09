@@ -28,13 +28,15 @@
 
 SET(Modules_FiniteElements_Tests_SRCS
   TDCSSimulatorTests.cc
+  BuildTDCSMatrixTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_FiniteElements_Tests
   ${Modules_FiniteElements_Tests_SRCS}
 )
-
+ 
 TARGET_LINK_LIBRARIES(Modules_FiniteElements_Tests
+  Modules_Fields
   Modules_FiniteElements
   Modules_Factory
   Core_Datatypes

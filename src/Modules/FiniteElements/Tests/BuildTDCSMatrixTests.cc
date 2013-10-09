@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
-
-//! Datatypes that the algorithm uses
+#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
-//! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
-
-class SCISHARE BuildTDCSMatrix : public AlgorithmBase
+class AlignMeshBoundingBoxesModuleTest : public ModuleTest
 {
-  public:
-  BuildTDCSMatrix();
-  ~BuildTDCSMatrix();
-  bool run(MatrixHandle stiff, FieldHandle mesh, MatrixHandle ElectrodeElements, MatrixHandle ElectrodeElementType, MatrixHandle ElectrodeElementDefinition, MatrixHandle contactimpedance, MatrixHandle& output);
-}; // end namespace SCIRun
 
-			}}}}
-#endif 
+};
+
+TEST_F(AlignMeshBoundingBoxesModuleTest, ThrowsForNullInput)
+{
+  auto csdf = makeModule("AlignMeshBoundingBoxes");
+  FieldHandle nullField;
+  stubPortNWithThisData(csdf, 0, nullField);
+  stubPortNWithThisData(csdf, 1, nullField);
+
+  EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
+}
+
+TEST_F(AlignMeshBoundingBoxesModuleTest, Foo)
+{
+  FAIL() << "TODO";
+}
