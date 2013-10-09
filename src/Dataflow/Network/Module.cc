@@ -60,8 +60,9 @@ Module::Module(const ModuleLookupInfo& info,
   AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
   const std::string& version)
-  : info_(info), has_ui_(hasUi), 
+  : info_(info), 
   id_(info_.module_name_, instanceCount_++),
+  has_ui_(hasUi), 
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
 {
   iports_.set_module(this);
