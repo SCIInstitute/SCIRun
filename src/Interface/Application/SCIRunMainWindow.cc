@@ -154,6 +154,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
   connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
   actionQuit_->setShortcut(QKeySequence::Quit);
+  connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
+  actionDelete_->setShortcut(QKeySequence::Delete);
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);

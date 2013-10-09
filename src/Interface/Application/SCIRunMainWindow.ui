@@ -937,6 +937,9 @@
    </property>
   </action>
   <action name="actionUndo_">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -978,10 +981,13 @@
   </action>
   <action name="actionDelete_">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Delete</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
   <action name="actionSelectAll_">

@@ -151,6 +151,7 @@ Q_SIGNALS:
     void setConnectionPipelineType(int type);
     void addModuleViaDoubleClickedTreeItem();
     void selectAll();
+    void del();
 
   Q_SIGNALS:
     void addConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&);
@@ -163,7 +164,6 @@ Q_SIGNALS:
     void defaultNotePositionChanged(NotePosition position);
     void sceneChanged(const QList<QRectF>& region);
   private Q_SLOTS:
-    void del();
     void cut();
     void copy();
     void paste();

@@ -405,7 +405,6 @@ void NetworkEditor::createActions()
 
   deleteAction_ = new QAction(tr("&Delete selected objects"), this);
   deleteAction_->setIcon(QIcon(":/images/delete.png"));
-  deleteAction_->setShortcut(Qt::Key_Delete);
   connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
 
   //cutAction_ = new QAction(tr("Cu&t"), this);
@@ -597,13 +596,11 @@ void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle modu
 void NetworkEditor::disableInputWidgets()
 {
   deleteAction_->setDisabled(true);
-  deleteAction_->setShortcut(QKeySequence());
 }
 
 void NetworkEditor::enableInputWidgets()
 {
   deleteAction_->setEnabled(true);
-  deleteAction_->setShortcut(Qt::Key_Delete);
 }
 
 void NetworkEditor::setRegressionTestDataDir(const QString& dir)
