@@ -31,30 +31,30 @@
 
 
 
-#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 
-#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/SparseRowMatrixFromMap.h>
+#include <Core/Datatypes/Legacy/Matrix/MatrixOperations.h>
+#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrixFromMap.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Tensor.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+
 
 class TDCSMatrixBuilder
 {
 public:
-  TDCSMatrixBuilder(AlgoBase* algo) :
+  TDCSMatrixBuilder(AlgorithmBase* algo) :
   ref_cnt(0),
   algo_(algo),
   electrodes_(1)

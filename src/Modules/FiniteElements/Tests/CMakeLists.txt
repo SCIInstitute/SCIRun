@@ -31,7 +31,7 @@ SET(Modules_FiniteElements_Tests_SRCS
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
-  ${Modules_Fields_Tests_SRCS}
+  ${Modules_FiniteElements_Tests_SRCS}
 )
 
 TARGET_LINK_LIBRARIES(Modules_Fields_Tests

@@ -26,12 +26,12 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Headers of Core/Algorithms/Fields_classes
+# Headers of Core/Algorithms/Legacy/FiniteElements classes
 SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
   BuildMatrix/BuildTDCSMatrix.h
 )
 
-# Sources of Core/Algorithms/Fields classes
+# Sources of Core/Algorithms/Legacy/FiniteElements classes
 SET(Core_Algorithms_Legacy_FiniteElements_SRCS
   #Periodic/DefinePeriodicBoundaries.cc
   #Mapping/BuildFEGridMapping.cc
@@ -42,9 +42,12 @@ SET(Core_Algorithms_Legacy_FiniteElements_SRCS
   #BuildRHS/BuildFESurfRHS.cc
 )
 
-SCIRUN_ADD_LIBRARY(Core_Algorithms_FiniteElements ${Core_Algorithms_FiniteElements_SRCS})
+ADD_LIBRARY(Core_Algorithms_Legacy_FiniteElements       
+${Core_Algorithms_Legacy_FiniteElements_HEADERS}
+  ${Core_Algorithms_Legacy_FiniteElements_SRCS}
+)
 
-TARGET_LINK_LIBRARIES(Core_Algorithms_FiniteElements 
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_FiniteElements 
   Core_Datatypes 
   Core_Util 
   Core_Exceptions 
@@ -58,6 +61,6 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_FiniteElements
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_FiniteElements)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_FiniteElements)
 ENDIF(BUILD_SHARED_LIBS)
 

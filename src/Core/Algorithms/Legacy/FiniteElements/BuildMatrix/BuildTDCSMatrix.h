@@ -31,26 +31,23 @@
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
 
 //! Datatypes that the algorithm uses
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/MatrixFwd.h>
 #include <cmath>
 #include <Core/Math/MiscMath.h>
 //! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 //! for Windows support
-#include <Core/Algorithms/FiniteElements/share.h>
+#include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
-namespace SCIRunAlgo {
-using namespace SCIRun;
-}
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace FiniteElements {
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE BuildTDCSMatrix : public AlgoBase
+class SCISHARE BuildTDCSMatrix : public AlgorithmBase
 {
   public:
   BuildTDCSMatrix();
@@ -58,5 +55,5 @@ class SCISHARE BuildTDCSMatrix : public AlgoBase
   bool run(MatrixHandle stiff, FieldHandle mesh, MatrixHandle ElectrodeElements, MatrixHandle ElectrodeElementType, MatrixHandle ElectrodeElementDefinition, MatrixHandle contactimpedance, MatrixHandle& output);
 }; // end namespace SCIRun
 
-}
+			}}}}
 #endif 
