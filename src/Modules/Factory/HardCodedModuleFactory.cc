@@ -66,6 +66,7 @@
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/MatrixAsVectorField.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
+#include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Render/ViewScene.h>
 
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
@@ -138,6 +139,7 @@ namespace SCIRun {
           addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
+          addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
         }
 
         ModuleDescriptionMap descMap_;

@@ -28,11 +28,11 @@
 
 # CMakeLists.txt for Dataflow/Modules/FiniteElements
 
-SET(Dataflow_odules_Legacy_FiniteElements_HEADERS
+SET(Dataflow_Modules_Legacy_FiniteElements_HEADERS
   BuildTDCSMatrix.h
 )
 
-SET(Dataflow_Modules_FiniteElements_SRCS
+SET(Dataflow_Modules_Legacy_FiniteElements_SRCS
   #DefinePeriodicBoundaries.cc
   #BuildFEGridMapping.cc
   #BuildFEGridMappingByDomain.cc
@@ -42,9 +42,9 @@ SET(Dataflow_Modules_FiniteElements_SRCS
   #BuildFEVolRHS.cc
 )
     
-ADD_LIBRARY(Dataflow_Modules_FiniteElements ${Dataflow_Modules_FiniteElements_SRCS})
+ADD_LIBRARY(Dataflow_Modules_Legacy_FiniteElements ${Dataflow_Modules_Legacy_FiniteElements_SRCS})
 
-TARGET_LINK_LIBRARIES(Dataflow_Modules_FiniteElements
+TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_FiniteElements
  Dataflow_Network
  Core_Algorithms_Legacy_FiniteElements
  Algorithms_Base
