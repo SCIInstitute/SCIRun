@@ -516,7 +516,7 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
     niter++;
     
     callback_step_cnt++;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     if (callback_step_cnt == callback_step)
     {
       callback_step_cnt = 0;
