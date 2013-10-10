@@ -33,8 +33,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName AppendMatrixAlgorithm::OptionName("RowsOrColumns");
-
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
 {
   DenseMatrixConstHandle lhsPtr = input.get<0>();
@@ -77,5 +75,13 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
 
 AlgorithmOutput AppendMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
+  auto matrix = input.get<Matrix>(InputMatrix);
+  auto matrix = input.get<Matrix>(InputMatrix);
+
+  auto outputs = run(matrix);
+
+  AlgorithmOutput output;
+  output.setTransient(outputs); //[MatrixInfo] = outputs;
+  return output;
   throw 2;
 }

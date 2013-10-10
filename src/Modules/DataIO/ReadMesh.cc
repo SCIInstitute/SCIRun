@@ -32,7 +32,6 @@
 
 #include <boost/filesystem.hpp>
 
-#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 

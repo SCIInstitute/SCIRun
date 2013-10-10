@@ -26,36 +26,25 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Math/AppendMatrix.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#ifndef ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
+#define ALGORITHMS_BASE_ALGORITHMVARIABLENAMES_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Dataflow::Networks;
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Base/share.h>
 
-AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun")) 
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+
+class SCISHARE Variables 
 {
-  INITIALIZE_PORT(FirstMatrix);
-  INITIALIZE_PORT(SecondMatrix);
-  INITIALIZE_PORT(ResultMatrix);
-}
+public:
+  static const AlgorithmParameterName AppendMatrixOption;
+  static const AlgorithmInputName InputMatrix;
+  static const AlgorithmOutputName MatrixInfo;
 
-void AppendMatrixModule::setStateDefaults()
-{
-  auto state = get_state();
-  state->setValue(Variables::AppendMatrixOption, 0);
-}
+};
 
-void AppendMatrixModule::execute()
-{
-  auto matrixLHS = getRequiredInput(FirstMatrix);
-  auto matrixRHS = getRequiredInput(SecondMatrix);
-  auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+}}}
 
-  algo_->set(Variables::AppendMatrixOption, param);
-  auto output = algo_->run_generic(make_input((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
-
-  sendOutputFromAlgorithm(ResultMatrix, output);
-}
+#endif

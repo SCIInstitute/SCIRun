@@ -36,6 +36,8 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
+#include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -63,6 +65,10 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new GetMeshNodesAlgo);
   else if (name == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
+  else if (name == "ReportFieldInfo")
+    h.reset(new ReportFieldInfoAlgorithm);
+  else if (name == "ReportMatrixInfo")
+    h.reset(new ReportMatrixInfoAlgorithm);
 
   if (h && algoCollaborator)
   {

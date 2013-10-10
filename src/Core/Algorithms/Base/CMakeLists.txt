@@ -28,12 +28,14 @@
 
 SET(Algorithms_Base_SRCS
   AlgorithmBase.cc
+  AlgorithmVariableNames.cc
 )
 
 SET(Algorithms_Base_HEADERS
   AlgorithmBase.h
   AlgorithmFwd.h
   AlgorithmPreconditions.h
+  AlgorithmVariableNames.h
   share.h
 )
 

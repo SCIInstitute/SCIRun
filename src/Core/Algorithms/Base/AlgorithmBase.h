@@ -52,7 +52,7 @@ namespace Algorithms {
     Name() : name_("_unspecified_") {}
     explicit Name(const std::string& name);
 
-    std::string name1() const { return name_; }
+    std::string name() const { return name_; }
     
     bool operator<(const Name& rhs) const
     {
@@ -178,8 +178,13 @@ namespace Algorithms {
       return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second);
     }
 
+    //TODO: lame
+    void setTransient(boost::any t) { transient_ = t; }
+    boost::any getTransient() const { return transient_; }
+
   private:
     Map data_;
+    boost::any transient_;
   };
 
   class SCISHARE AlgorithmInput : public AlgorithmData 

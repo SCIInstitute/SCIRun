@@ -26,14 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Modules/Math/ReportMatrixInfo.h>
-#include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
 
 ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
@@ -42,7 +38,6 @@ void ReportMatrixInfoModule::execute()
 {
   auto matrix = getRequiredInput(Input);
 
-  ReportMatrixInfoAlgorithm algo;
-  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  get_state()->setTransientValue("ReportedInfo", output);
+  auto output = algo_->run_generic(make_input((Input, matrix)));
+  get_state()->setTransientValue("ReportedInfo", output.getTransient());
 }
