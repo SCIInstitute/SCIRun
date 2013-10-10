@@ -42,7 +42,8 @@ public:
   static const AlgorithmParameterName AppendMatrixOption;
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmOutputName MatrixInfo;
-
+  static const AlgorithmInputName FirstMatrix;
+  static const AlgorithmInputName SecondMatrix;
 };
 
 }}}

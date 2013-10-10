@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
@@ -75,13 +76,11 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
 
 AlgorithmOutput AppendMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto matrix = input.get<Matrix>(InputMatrix);
-  auto matrix = input.get<Matrix>(InputMatrix);
+  auto lhs = input.get<DenseMatrix>(Variables::FirstMatrix);
+  auto rhs = input.get<DenseMatrix>(Variables::SecondMatrix);
 
-  auto outputs = run(matrix);
+  auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
 
   AlgorithmOutput output;
-  output.setTransient(outputs); //[MatrixInfo] = outputs;
   return output;
-  throw 2;
 }
