@@ -48,24 +48,24 @@
 namespace SCIRun {
 
 
-SCISHARE MatrixHandle operator+(MatrixHandle A, MatrixHandle B);
-SCISHARE ColumnMatrix operator+(const ColumnMatrix& A, const ColumnMatrix& B);
-SCISHARE ColumnMatrix operator-(const ColumnMatrix& A, const ColumnMatrix& B);
+SCISHARE Core::Datatypes::MatrixHandle operator+(Core::Datatypes::MatrixHandle A, Core::Datatypes::MatrixHandle B);
+SCISHARE Core::Datatypes::DenseColumnMatrix operator+(const Core::Datatypes::DenseColumnMatrix& A, const Core::Datatypes::DenseColumnMatrix& B);
+SCISHARE Core::Datatypes::DenseColumnMatrix operator-(const Core::Datatypes::DenseColumnMatrix& A, const Core::Datatypes::DenseColumnMatrix& B);
 
-SCISHARE MatrixHandle operator-(MatrixHandle A, MatrixHandle B);
-SCISHARE MatrixHandle operator-(MatrixHandle A);
-SCISHARE ColumnMatrix operator-(const ColumnMatrix& A);
+SCISHARE Core::Datatypes::MatrixHandle operator-(Core::Datatypes::MatrixHandle A, Core::Datatypes::MatrixHandle B);
+SCISHARE Core::Datatypes::MatrixHandle operator-(Core::Datatypes::MatrixHandle A);
+SCISHARE Core::Datatypes::DenseColumnMatrix operator-(const Core::Datatypes::DenseColumnMatrix& A);
 
-SCISHARE MatrixHandle operator*(MatrixHandle A, MatrixHandle B);
-SCISHARE ColumnMatrix operator*(const DenseMatrix& A, const ColumnMatrix& B);
-SCISHARE DenseMatrix operator*(const DenseMatrix& A, const DenseMatrix& B);
-SCISHARE MatrixHandle operator*(double a, MatrixHandle B);
-SCISHARE MatrixHandle operator*(MatrixHandle A, double b);
-SCISHARE ColumnMatrix operator*(double a, const ColumnMatrix& B);
-SCISHARE ColumnMatrix operator*(const ColumnMatrix& A, double b);
-SCISHARE SparseRowMatrix operator*(double a, const SparseRowMatrix& B);
-SCISHARE SparseRowMatrix operator*(const SparseRowMatrix& A, double b);
-SCISHARE MatrixHandle inv(MatrixHandle A);
+SCISHARE Core::Datatypes::MatrixHandle operator*(Core::Datatypes::MatrixHandle A, Core::Datatypes::MatrixHandle B);
+SCISHARE Core::Datatypes::DenseColumnMatrix operator*(const Core::Datatypes::DenseMatrix& A, const Core::Datatypes::DenseColumnMatrix& B);
+SCISHARE Core::Datatypes::DenseMatrix operator*(const Core::Datatypes::DenseMatrix& A, const Core::Datatypes::DenseMatrix& B);
+SCISHARE Core::Datatypes::MatrixHandle operator*(double a, Core::Datatypes::MatrixHandle B);
+SCISHARE Core::Datatypes::MatrixHandle operator*(Core::Datatypes::MatrixHandle A, double b);
+SCISHARE Core::Datatypes::DenseColumnMatrix operator*(double a, const Core::Datatypes::DenseColumnMatrix& B);
+SCISHARE Core::Datatypes::DenseColumnMatrix operator*(const Core::Datatypes::DenseColumnMatrix& A, double b);
+SCISHARE Core::Datatypes::SparseRowMatrix operator*(double a, Core::Datatypes::SparseRowMatrix& B);
+SCISHARE Core::Datatypes::SparseRowMatrix operator*(Core::Datatypes::SparseRowMatrix& A, double b);
+SCISHARE Core::Datatypes::MatrixHandle inv(Core::Datatypes::MatrixHandle A);
 
 
 } // End namespace SCIRun

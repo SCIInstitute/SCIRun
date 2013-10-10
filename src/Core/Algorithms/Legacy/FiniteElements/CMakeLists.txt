@@ -49,15 +49,15 @@ ${Core_Algorithms_Legacy_FiniteElements_HEADERS}
 
 TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_FiniteElements 
   Core_Datatypes 
-  Core_Util 
-  Core_Exceptions 
-  Core_Thread 
-  Core_Geometry 
-  Core_Algorithms_Fields
-  Core_Algorithms_Util 
-  Core_Persistent 
-  Core_Basis 
-  ${SCI_TEEM_LIBRARY}
+#  Core_Util 
+#  Core_Exceptions 
+#  Core_Thread 
+   Core_Geometry_Primitives 
+#  Core_Algorithms_Fields
+#  Core_Algorithms_Util 
+#  Core_Persistent 
+#  Core_Basis 
+#  ${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

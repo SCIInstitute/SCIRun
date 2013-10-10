@@ -42,33 +42,44 @@ SET(Dataflow_Modules_FiniteElements_SRCS
   #BuildFEVolRHS.cc
 )
     
-SCIRUN_ADD_LIBRARY(Dataflow_Modules_FiniteElements ${Dataflow_Modules_FiniteElements_SRCS})
+ADD_LIBRARY(Dataflow_Modules_FiniteElements ${Dataflow_Modules_FiniteElements_SRCS})
 
 TARGET_LINK_LIBRARIES(Dataflow_Modules_FiniteElements
-  Dataflow_Network
-  Dataflow_Widgets
-  Core_Algorithms_FiniteElements
-  Core_Algorithms_Fields
-  Core_Algorithms_Util
-  Core_Algorithms_Geometry
-  Core_Basis
-  Core_Datatypes
-  Core_Exceptions
-  Core_Geom
-  Core_Geometry
-  Core_GeomInterface
-  Dataflow_GuiInterface
-  Core_ImportExport
-  Core_Math
-  Core_Persistent
-  Core_Thread
-  Dataflow_TkExtensions
-  Core_Util
-  ${TK_LIBRARY}
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
-  ${THREAD_LIBRARY}
-  ${SCI_TEEM_LIBRARY}
+ Dataflow_Network
+ Core_Algorithms_Legacy_FiniteElements
+ Algorithms_Base
+ Core_Basis
+ Core_Datatypes
+ Core_Exceptions_Legacy
+ Core_Geometry_Primitives
+ Core_Math
+ Core_Util_Legacy
+#  Dataflow_Network
+#  Dataflow_Widgets
+#  Core_Algorithms_FiniteElements
+#  Core_Algorithms_Fields
+#  Core_Algorithms_Util
+#  Core_Algorithms_Geometry
+#  Core_Basis
+#  Core_Datatypes
+#  Core_Exceptions
+#  Core_Geom
+#  Core_Geometry
+#  Core_GeomInterface
+#  Dataflow_GuiInterface
+#  Core_ImportExport
+#  Core_Math
+#  Core_Persistent
+#  Core_Thread
+#  Dataflow_TkExtensions
+#  Core_Util
+#  ${TK_LIBRARY}
+#  ${GL_LIBRARY}
+#  ${M_LIBRARY}
+#  ${THREAD_LIBRARY}
+#  ${SCI_TEEM_LIBRARY}
 )
 
-
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Dataflow_Modules_Legacy_FiniteElements)
+ENDIF(BUILD_SHARED_LIBS)

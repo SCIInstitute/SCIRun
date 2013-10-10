@@ -29,14 +29,9 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+//#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 
 
 namespace SCIRun {
@@ -49,7 +44,7 @@ class BuildTDCSMatrix : public Module {
     virtual void execute();
   
    private:
-    SCIRunAlgo::BuildTDCSMatrix algo_;
+   // SCIRunAlgo::BuildTDCSMatrix algo_;
 
 };
 
@@ -59,7 +54,7 @@ DECLARE_MAKER(BuildTDCSMatrix)
 BuildTDCSMatrix::BuildTDCSMatrix(GuiContext* ctx)
   : Module("BuildTDCSMatrix", ctx, Source, "FiniteElements", "SCIRun")
 {
-  algo_.set_progress_reporter(this);
+  //algo_.set_progress_reporter(this);
 }
 
 
@@ -73,16 +68,16 @@ void BuildTDCSMatrix::execute()
   MatrixHandle ContactImpedance;
   MatrixHandle TDCSMatrix;  
 
-  if (!(get_input_handle("FEM Stiffness",Stiffness,true))) return;
-  if (!(get_input_handle("Mesh",Mesh,true))) return;
-  if (!(get_input_handle("Electrode Element",ElectrodeElements,true))) return; 
-  if (!(get_input_handle("Electrode Element Type",ElectrodeElementType,true))) return; 
-  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
-  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
+//  if (!(get_input_handle("FEM Stiffness",Stiffness,true))) return;
+//  if (!(get_input_handle("Mesh",Mesh,true))) return;
+//  if (!(get_input_handle("Electrode Element",ElectrodeElements,true))) return; 
+//  if (!(get_input_handle("Electrode Element Type",ElectrodeElementType,true))) return; 
+//  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
+//  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
  
-  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
+//  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
 
-  send_output_handle("TDCS Matrix", TDCSMatrix);
+//  send_output_handle("TDCS Matrix", TDCSMatrix);
   
 }
 

@@ -26,29 +26,28 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_ALIGNMESHBOUNDINGBOXES_H__
-#define MODULES_LEGACY_FIELDS_ALIGNMESHBOUNDINGBOXES_H__
+#ifndef MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
+#define MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Fields/share.h>
+#include <Modules/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace Fields {
+    namespace FiniteElements {
 
-      class SCISHARE AlignMeshBoundingBoxes : public Dataflow::Networks::Module,
-        public Has2InputPorts<FieldPortTag, FieldPortTag>,
-        public Has2OutputPorts<FieldPortTag, MatrixPortTag>
+      class SCISHARE BuildTDCSMatrix : public Dataflow::Networks::Module,
+        public Has2InputPorts<MatrixPortTag, FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
       {
       public:
-        AlignMeshBoundingBoxes();
-
+        BuildTDCSMatrix();
+        virtual void setStateDefaults() {}
         virtual void execute();
 
-        INPUT_PORT(0, InputField, LegacyField);
-        INPUT_PORT(1, AlignmentField, LegacyField);
-        OUTPUT_PORT(0, OutputField, LegacyField);
-        OUTPUT_PORT(1, TransformMatrix, Matrix);
+        INPUT_PORT(0, FEM_Stiffness_Matrix, Matrix);
+        INPUT_PORT(1, FEM_Mesh, LegacyField);
+        OUTPUT_PORT(0, TDCSMatrix, Matrix);
       };
 
     }
