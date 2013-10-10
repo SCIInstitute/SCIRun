@@ -30,31 +30,22 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-
+#include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 //#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 
-
-namespace SCIRun {
-
-class BuildTDCSMatrix : public Module {
-  public:
-    BuildTDCSMatrix(GuiContext*);
-    virtual ~BuildTDCSMatrix() {}
-
-    virtual void execute();
-  
-   private:
-   // SCIRunAlgo::BuildTDCSMatrix algo_;
-
-};
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
 
-DECLARE_MAKER(BuildTDCSMatrix)
 
-BuildTDCSMatrix::BuildTDCSMatrix(GuiContext* ctx)
-  : Module("BuildTDCSMatrix", ctx, Source, "FiniteElements", "SCIRun")
+BuildTDCSMatrix::BuildTDCSMatrix()
+  : Module(ModuleLookupInfo("BuildTDCSMatrix","FiniteElements", "SCIRun"), false)
 {
-  //algo_.set_progress_reporter(this);
+ INITIALIZE_PORT(FEM_Stiffness_Matrix);
+ INITIALIZE_PORT(FEM_Mesh);
+ INITIALIZE_PORT(TDCSMatrix);
 }
 
 
@@ -81,7 +72,6 @@ void BuildTDCSMatrix::execute()
   
 }
 
-} // End namespace SCIRun
 
 
 
