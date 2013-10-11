@@ -31,16 +31,16 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::TestUtils;
 
-TEST(AlignMeshBoundingBoxesAlgoTests, Foo)
+TEST(BuildTDCSMatrixAlgoTests, Foo)
 {
-  AlignMeshBoundingBoxesAlgo algo;
-  FAIL() << "TODO"; 
+  BuildTDCSMatrixAlgo algo;
+  FAIL() << "Insert code here for the most basic test cases !"; 
 }

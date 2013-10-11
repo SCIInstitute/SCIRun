@@ -49,7 +49,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
-
+using namespace SCIRun::Core::Algorithms;
 
 class TDCSMatrixBuilder
 {
@@ -673,7 +673,7 @@ bool TDCSMatrixBuilder::build_matrix(SCIRun::Core::Datatypes::MatrixHandle& outp
   return singlethread();
 }
 
-bool BuildTDCSMatrix::run(SCIRun::Core::Datatypes::MatrixHandle stiff, FieldHandle mesh, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output)
+bool BuildTDCSMatrixAlgo::run(SCIRun::Core::Datatypes::MatrixHandle stiff, FieldHandle mesh, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output)
 {
 ///  algo_start("TDCSMatrixBuilder");
 ///    
@@ -747,7 +747,12 @@ bool BuildTDCSMatrix::run(SCIRun::Core::Datatypes::MatrixHandle stiff, FieldHand
  return (true);
 }
 
-BuildTDCSMatrix::BuildTDCSMatrix() {}
-BuildTDCSMatrix::~BuildTDCSMatrix() {}
+AlgorithmOutput BuildTDCSMatrixAlgo::run_generic(const AlgorithmInput &) const
+{
+ throw "not implemented";
+}
+
+BuildTDCSMatrixAlgo::BuildTDCSMatrixAlgo() {}
+BuildTDCSMatrixAlgo::~BuildTDCSMatrixAlgo() {}
 
 //} // end namespace SCIRun

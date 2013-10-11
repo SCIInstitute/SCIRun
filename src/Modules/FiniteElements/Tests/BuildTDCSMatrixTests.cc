@@ -26,13 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
+#include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Testing;
-using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
@@ -41,14 +41,14 @@ using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
 
-class AlignMeshBoundingBoxesModuleTest : public ModuleTest
+class BuildTDCSMatrixTests : public ModuleTest
 {
 
 };
 
-TEST_F(AlignMeshBoundingBoxesModuleTest, ThrowsForNullInput)
+TEST_F(BuildTDCSMatrixTests, ThrowsForNullInput)
 {
-  auto csdf = makeModule("AlignMeshBoundingBoxes");
+  auto csdf = makeModule("BuildTDCSMatrix");
   FieldHandle nullField;
   stubPortNWithThisData(csdf, 0, nullField);
   stubPortNWithThisData(csdf, 1, nullField);
@@ -56,7 +56,7 @@ TEST_F(AlignMeshBoundingBoxesModuleTest, ThrowsForNullInput)
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
 
-TEST_F(AlignMeshBoundingBoxesModuleTest, Foo)
+TEST_F(BuildTDCSMatrixTests, Foo)
 {
   FAIL() << "TODO";
 }

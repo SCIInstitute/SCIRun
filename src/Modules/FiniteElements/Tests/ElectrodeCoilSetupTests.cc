@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
-
-//! Datatypes that the algorithm uses
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Modules/FiniteElements/ElectrodeCoilSetup.h>
 
-//! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+using ::testing::Mock;
 
-namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
-
-class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
+class ElectrodeCoilSetupTests : public ModuleTest
 {
-  public:
-  BuildTDCSMatrixAlgo();
-  ~BuildTDCSMatrixAlgo();
-  bool run(Datatypes::MatrixHandle stiff, FieldHandle mesh, Datatypes::MatrixHandle ElectrodeElements, Datatypes::MatrixHandle ElectrodeElementType, Datatypes::MatrixHandle ElectrodeElementDefinition, Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output);
-  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-}; // end namespace SCIRun
 
-			}}}}
-#endif 
+};
+
+TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
+{
+  auto tdcs = makeModule("ElectrodeCoilSetup");
+  ASSERT_TRUE(tdcs);
+  FieldHandle nullField;
+  stubPortNWithThisData(tdcs, 0, nullField);
+  stubPortNWithThisData(tdcs, 1, nullField);
+
+  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
+}
+
+TEST_F(ElectrodeCoilSetupTests, Foo)
+{
+  FAIL() << "TODO";
+}

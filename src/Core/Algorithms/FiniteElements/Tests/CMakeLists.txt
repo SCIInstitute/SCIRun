@@ -37,7 +37,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_FiniteElements_Tests
 TARGET_LINK_LIBRARIES(Algorithms_FiniteElements_Tests
   Algorithms_Field
   Core_Datatypes_Legacy_Field
-  Core_Algorithms_Legacy_Fields
+  Core_Algorithms_Legacy_FiniteElements
   Testing_Utils
   gtest_main
   gtest

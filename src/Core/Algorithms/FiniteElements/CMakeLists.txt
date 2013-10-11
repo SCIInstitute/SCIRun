@@ -26,34 +26,5 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Modules_FiniteElements_SRCS
-  TDCSSimulator.cc
-  ElectrodeCoilSetup.cc
-)
-
-SET(Modules_FiniteElements_HEADERS
-  TDCSSimulator.h
-  ElectrodeCoilSetup.h
-  share.h
-)
-
-ADD_LIBRARY(Modules_FiniteElements 
-  ${Modules_FiniteElements_HEADERS}
-  ${Modules_FiniteElements_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Modules_FiniteElements
-  Dataflow_Network
-  Core_Datatypes
-  Core_Datatypes_Mesh
-  Algorithms_Field
-  Core_Datatypes_Legacy_Field
-  #Algorithms_FiniteElements
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_FiniteElements)
-ENDIF(BUILD_SHARED_LIBS)
-
 ADD_SUBDIRECTORY(Tests)
 

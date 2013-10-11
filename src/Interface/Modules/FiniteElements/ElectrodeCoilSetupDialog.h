@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_ElectrodeCoilSetupDialog_H
+#define INTERFACE_MODULES_ElectrodeCoilSetupDialog_H
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+#include "Interface/Modules/FiniteElements/ui_ElectrodeCoilSetupDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/FiniteElements/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
-
-class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
+namespace Gui {
+  
+class SCISHARE ElectrodeCoilSetupDialog : public ModuleDialogGeneric, 
+  public Ui::ElectrodeCoilSetupDialog
 {
-  public:
-  BuildTDCSMatrixAlgo();
-  ~BuildTDCSMatrixAlgo();
-  bool run(Datatypes::MatrixHandle stiff, FieldHandle mesh, Datatypes::MatrixHandle ElectrodeElements, Datatypes::MatrixHandle ElectrodeElementType, Datatypes::MatrixHandle ElectrodeElementDefinition, Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output);
-  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-}; // end namespace SCIRun
+	Q_OBJECT
+	
+public:
+  ElectrodeCoilSetupDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  //virtual void moduleExecuted() { pullAndDisplayInfo(); }
+  virtual void pull();
+};
 
-			}}}}
-#endif 
+}
+}
+
+#endif

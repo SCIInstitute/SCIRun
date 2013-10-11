@@ -50,7 +50,7 @@ class TDCSSimulatorModuleTests : public ModuleTest
 
 TEST_F(TDCSSimulatorModuleTests, ThrowsForNullInput)
 {
-  auto tdcs = makeModule("TDCSSimulator");
+  auto tdcs = makeModule("tDCSSimulator");
   ASSERT_TRUE(tdcs);
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);

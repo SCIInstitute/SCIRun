@@ -26,35 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_FINITEELEMENTS_ElectrodeCoilSetup_H
+#define MODULES_FINITEELEMENTS_ElectrodeCoilSetup_H
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
-
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/FiniteElements/share.h>
 
 namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
+  namespace Modules {
+    namespace FiniteElements {
 
-class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
+class SCISHARE ElectrodeCoilSetup : public SCIRun::Dataflow::Networks::Module,
+  public Has1InputPort<FieldPortTag>,
+  public Has1OutputPort<FieldPortTag>
 {
   public:
-  BuildTDCSMatrixAlgo();
-  ~BuildTDCSMatrixAlgo();
-  bool run(Datatypes::MatrixHandle stiff, FieldHandle mesh, Datatypes::MatrixHandle ElectrodeElements, Datatypes::MatrixHandle ElectrodeElementType, Datatypes::MatrixHandle ElectrodeElementDefinition, Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output);
-  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-}; // end namespace SCIRun
+    ElectrodeCoilSetup();
 
-			}}}}
-#endif 
+    virtual void execute();
+    virtual void setStateDefaults();
+
+    INPUT_PORT(0, InputField, LegacyField);
+    OUTPUT_PORT(0, OutputField, LegacyField);
+};
+
+}}}
+
+#endif

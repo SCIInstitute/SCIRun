@@ -29,15 +29,18 @@
 
 SET(Interface_Modules_FiniteElements_FORMS
   TDCSSimulatorDialog.ui
+  ElectrodeCoilSetupDialog.ui
 )
 
 SET(Interface_Modules_FiniteElements_HEADERS
   TDCSSimulatorDialog.h
+  ElectrodeCoilSetupDialog.h 
   share.h
 )
 
 SET(Interface_Modules_FiniteElements_SOURCES 
   TDCSSimulatorDialog.cc
+  ElectrodeCoilSetupDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_FiniteElements_FORMS_HEADERS ${Interface_Modules_FiniteElements_FORMS})

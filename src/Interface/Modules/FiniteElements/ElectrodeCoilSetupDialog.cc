@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,35 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Interface/Modules/FiniteElements/ElectrodeCoilSetupDialog.h>
+//#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
-#define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Core::Algorithms::Fields;
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
-
-namespace SCIRun {
-	namespace Core {
-		namespace Algorithms {
-			namespace FiniteElements {
-
-class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
+ElectrodeCoilSetupDialog::ElectrodeCoilSetupDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
 {
-  public:
-  BuildTDCSMatrixAlgo();
-  ~BuildTDCSMatrixAlgo();
-  bool run(Datatypes::MatrixHandle stiff, FieldHandle mesh, Datatypes::MatrixHandle ElectrodeElements, Datatypes::MatrixHandle ElectrodeElementType, Datatypes::MatrixHandle ElectrodeElementDefinition, Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output);
-  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-}; // end namespace SCIRun
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+}
 
-			}}}}
-#endif 
+void ElectrodeCoilSetupDialog::pull()
+{
+  //TODO
+}
+
