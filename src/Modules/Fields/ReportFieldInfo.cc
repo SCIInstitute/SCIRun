@@ -36,7 +36,10 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("ReportFieldInfo", "MiscField", "SCIRun")) {}
+ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("ReportFieldInfo", "MiscField", "SCIRun"))
+{
+  INITIALIZE_PORT(Input);
+}
 
 void ReportFieldInfoModule::execute()
 {
