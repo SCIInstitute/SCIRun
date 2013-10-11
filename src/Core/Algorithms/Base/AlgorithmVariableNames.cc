@@ -31,5 +31,16 @@
 using namespace SCIRun::Core::Algorithms;
 
 const AlgorithmParameterName Variables::AppendMatrixOption("AppendMatrixOption");
+const AlgorithmParameterName Variables::OperatorName("OperatorName");
+const AlgorithmParameterName Variables::ScalarValue("ScalarValue");
+const AlgorithmParameterName Variables::TargetError("TargetError");
+const AlgorithmParameterName Variables::MaxIterations("MaxIterations");
+const AlgorithmParameterName Variables::MethodOption("MethodOption");
+const AlgorithmParameterName Variables::PreconditionerOption("PreconditionerOption");
+const AlgorithmParameterName Variables::Filename("Filename");
+
 const AlgorithmInputName Variables::InputMatrix("InputMatrix");
+const AlgorithmInputName Variables::FirstMatrix("FirstMatrix");
+const AlgorithmInputName Variables::SecondMatrix("SecondMatrix");
+
 const AlgorithmOutputName Variables::MatrixInfo("MatrixInfo");

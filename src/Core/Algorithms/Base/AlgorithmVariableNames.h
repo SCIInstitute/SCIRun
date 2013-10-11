@@ -40,6 +40,13 @@ class SCISHARE Variables
 {
 public:
   static const AlgorithmParameterName AppendMatrixOption;
+  static const AlgorithmParameterName OperatorName;
+  static const AlgorithmParameterName ScalarValue;
+  static const AlgorithmParameterName TargetError;
+  static const AlgorithmParameterName MaxIterations;
+  static const AlgorithmParameterName MethodOption;
+  static const AlgorithmParameterName PreconditionerOption;
+  static const AlgorithmParameterName Filename;
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmInputName FirstMatrix;

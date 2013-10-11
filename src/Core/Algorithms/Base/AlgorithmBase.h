@@ -250,6 +250,8 @@ namespace Algorithms {
     AlgorithmData::Map map_;
   };
 
+  SCISHARE AlgorithmInput makeNullInput();
+
   class SCISHARE AlgorithmBase : public AlgorithmParameterList, public AlgorithmLogger, public AlgorithmStatusReporter
   {
   public:

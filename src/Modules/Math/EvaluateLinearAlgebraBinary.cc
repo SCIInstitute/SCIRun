@@ -27,21 +27,26 @@
 */
 
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
 Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 {
+  INITIALIZE_PORT(InputLHS);
+  INITIALIZE_PORT(InputRHS);
+  INITIALIZE_PORT(Result);
 }
 
 void EvaluateLinearAlgebraBinaryModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, 0);
+  state->setValue(Variables::OperatorName, 0);
 }
 
 void EvaluateLinearAlgebraBinaryModule::execute()
@@ -49,20 +54,11 @@ void EvaluateLinearAlgebraBinaryModule::execute()
   auto lhs = getRequiredInput(InputLHS);
   auto rhs = getRequiredInput(InputRHS);
 
-  ModuleStateHandle state = get_state();
-  EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = (EvaluateLinearAlgebraBinaryAlgorithm::Parameters)
-    state->getValue
-    (EvaluateLinearAlgebraBinaryAlgorithm::OperatorName).getInt();
+  auto state = get_state();
+  auto oper = state->getValue(Variables::OperatorName).getInt();
 
-  //psuedo-code
-  //this line will
-  // 1. get the current value in the appropriate type
-  // 2. 
-  //EvaluateLinearAlgebraBinaryAlgorithm::Parameters oper = state->getOperatorName();
+  algo_->set(Variables::OperatorName, oper);
+  auto output = algo_->run_generic(make_input((InputLHS, lhs)(InputRHS, rhs))); 
 
-
-  EvaluateLinearAlgebraBinaryAlgorithm algo; //TODO inject
-  DenseMatrixHandle output = algo.run(EvaluateLinearAlgebraBinaryAlgorithm::Inputs(lhs, rhs), oper); 
-
-  sendOutput(Result, output);
+  sendOutputFromAlgorithm(Result, output);
 }

@@ -242,3 +242,8 @@ std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Name
 {
   return out << name.name_;
 }
+
+AlgorithmInput SCIRun::Core::Algorithms::makeNullInput()
+{
+  return AlgorithmInput();
+}
