@@ -46,6 +46,8 @@ void ReportFieldInfoModule::execute()
 
   get_state()->setTransientValue("ReportedInfo", output);
 
-  sendOutput(FieldType, boost::make_shared<String>(output.type));
-  sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
+  //TODO: requires knowledge of algorithm type
+//  auto outputObj = any_cast_or_default<
+//  sendOutput(FieldType, boost::make_shared<String>(output.type));
+//  sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
 }
