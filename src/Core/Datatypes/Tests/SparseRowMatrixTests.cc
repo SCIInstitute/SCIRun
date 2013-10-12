@@ -61,6 +61,33 @@ namespace
     m.insert(2,2) = 1;
     return m;
   }
+  SparseRowMatrix matrixTdcsGood()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(1,1) = 1;
+    m.insert(2,3) = 0.5;
+    return m;
+  }
+  SparseRowMatrix matrixTdcsBad1()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(2,2) = 1;
+    m.insert(2,1) = 0.5;
+    return m;
+  }
+  SparseRowMatrix matrixTdcsBad2()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(2,2) = 1;
+    m.insert(1,2) = 0.5;
+    return m;
+  }
+  SparseRowMatrix matrixTdcsBad3()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(2,2) = 1.1;
+    return m;
+  }
 }
 
 #define PRINT_MATRIX(x) //std::cout << #x << " = \n" << (x) << std::endl
@@ -229,4 +256,36 @@ TEST(SparseRowMatrixTest, CheckingInternalArrays2)
   EXPECT_THAT(columns, ElementsAre(0,1,2));
   std::vector<double> rows(mat.outerIndexPtr(), mat.outerIndexPtr() + mat.outerSize());
   EXPECT_THAT(rows, ElementsAre(0,1,2));
+}
+
+
+bool passesTdcsTest(const SparseRowMatrix& matrix)
+{
+  for (int k=0; k < matrix.outerSize(); ++k)
+  {
+    for (SparseMatrix<double>::InnerIterator it(mat,k); it; ++it)
+    {
+      //if (it.value() == 1
+    
+    
+      it.value();
+      it.row();   // row index
+      it.col();   // col index (here it is equal to k)
+    
+    }
+  }
+  return false;
+}
+
+TEST(SparseRowMatrixTest, SearchingForSingleNonzeroInRowAndColumnOnTheDiagonal)
+{
+  EXPECT_TRUE(passesTdcsTest(id3()));
+  EXPECT_TRUE(passesTdcsTest(matrixTdcsGood()));
+  
+  EXPECT_FALSE(passesTdcsTest(Zero()));
+  
+  EXPECT_FALSE(passesTdcsTest(matrixTdcsBad1()));
+  EXPECT_FALSE(passesTdcsTest(matrixTdcsBad2()));
+  EXPECT_FALSE(passesTdcsTest(matrixTdcsBad3()));
+  
 }
