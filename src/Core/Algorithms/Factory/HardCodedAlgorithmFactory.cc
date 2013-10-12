@@ -37,6 +37,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
@@ -69,6 +70,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new ReportFieldInfoAlgorithm);
   else if (name == "ReportMatrixInfo")
     h.reset(new ReportMatrixInfoAlgorithm);
+  else if (name == "AppendMatrix")
+    h.reset(new AppendMatrixAlgorithm);
 
   if (h && algoCollaborator)
   {

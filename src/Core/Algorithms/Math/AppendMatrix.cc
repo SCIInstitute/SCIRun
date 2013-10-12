@@ -82,5 +82,6 @@ AlgorithmOutput AppendMatrixAlgorithm::run_generic(const AlgorithmInput& input) 
   auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
 
   AlgorithmOutput output;
+  output[Variables::ResultMatrix] = outputs;
   return output;
 }

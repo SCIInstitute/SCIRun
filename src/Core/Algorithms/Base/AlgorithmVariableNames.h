@@ -47,10 +47,13 @@ public:
   static const AlgorithmParameterName MethodOption;
   static const AlgorithmParameterName PreconditionerOption;
   static const AlgorithmParameterName Filename;
+  
   static const AlgorithmInputName InputMatrix;
-  static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmInputName FirstMatrix;
   static const AlgorithmInputName SecondMatrix;
+
+  static const AlgorithmOutputName MatrixInfo;
+  static const AlgorithmOutputName ResultMatrix;
 };
 
 }}}
