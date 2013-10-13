@@ -25,21 +25,48 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
- 
-#include <gtest/gtest.h>
 
-#include <Core/Datatypes/Legacy/Field/VField.h>
-#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Testing/Utils/SCIRunUnitTests.h>
+#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
 
-using namespace SCIRun;
-using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
-using namespace SCIRun::TestUtils;
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/AlgorithmFwd.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Field/share.h>
 
-TEST(BuildTDCSMatrixAlgorithm, Foo)
-{
-  BuildTDCSMatrixAlgorithm algo;
-  FAIL() << "Insert code here for the most basic test cases !"; 
-}
+namespace SCIRun {
+namespace Core {
+namespace Algorithms {
+namespace BrainStimulator {
+  
+  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
+  {
+  public:
+    typedef SCIRun::FieldHandle Inputs;
+    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
+
+    struct SCISHARE Outputs
+    {
+      Outputs();
+      std::string type;
+      Geometry::Point center;
+      Geometry::Vector size, dims;
+      double dataMin, dataMax;
+      size_t numdata_, numnodes_, numelements_;
+      std::string dataLocation;
+      double geometricSize;
+    };
+
+    Outputs run(const Inputs& input, const Parameters& params = 0) const;
+
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+
+  private:
+    Outputs update_input_attributes(SCIRun::FieldHandle f) const;
+  };
+
+}}}}
+
+#endif

@@ -25,22 +25,40 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+#include <iostream>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Scalar.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
+#include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
-using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::BrainStimulator;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
+using namespace SCIRun::Dataflow::Networks;
 
-ElectrodeCoilSetup::ElectrodeCoilSetup() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
+ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
 {
+ INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
+ INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
+ INITIALIZE_PORT(ELECTRODES_FIELD);
+ INITIALIZE_PORT(COILS_FIELD);
 }
 
-void ElectrodeCoilSetup::setStateDefaults()
+void ElectrodeCoilSetupModule::setStateDefaults()
 {
   //TODO
 }
 
-void ElectrodeCoilSetup::execute()
+void ElectrodeCoilSetupModule::execute()
 {
-  
+  auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
+  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
+  //ElectrodeCoilSetupAlgorithm algo;
+  //ReportFieldInfoAlgorithm algo;
+  //auto output = algo.run(field);
+  //get_state()->setTransientValue("ReportedInfo", output);
+  //sendOutput(FieldType, boost::make_shared<String>(output.type));
+  //sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
 }

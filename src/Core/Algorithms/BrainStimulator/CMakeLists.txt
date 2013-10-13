@@ -26,11 +26,29 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(BrainStimulator)
+SET(Algorithms_BrainStimulator_SRCS
+  ElectrodeCoilSetupAlgorithm.cc
+)
+
+SET(Algorithms_BrainStimulator_HEADERS
+  ElectrodeCoilSetupAlgorithm.h
+  share.h
+)
+
+ADD_LIBRARY(Algorithms_BrainStimulator 
+  ${Algorithms_BrainStimulator_HEADERS}
+  ${Algorithms_BrainStimulator_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_BrainStimulator
+  Core_Datatypes
+#  Core_Datatypes_Legacy_BrainStimulator
+  Algorithms_Base
+  ${SCI_BOOST_LIBRARY}
+)
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Algorithms_BrainStimulator)
+ENDIF(BUILD_SHARED_LIBS)
+
+#ADD_SUBDIRECTORY(Tests)

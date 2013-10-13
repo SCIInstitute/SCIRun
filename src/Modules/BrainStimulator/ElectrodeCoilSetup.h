@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_BrainStimulator_ElectrodeCoilSetup_H
-#define MODULES_BrainStimulator_ElectrodeCoilSetup_H
+#ifndef MODULES_BRAINSTIMULATOR_ELECTRODECOILSETUP_H
+#define MODULES_BRAINSTIMULATOR_ELECTRODECOILSETUP_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/BrainStimulator/share.h>
@@ -36,18 +36,20 @@ namespace SCIRun {
   namespace Modules {
     namespace BrainStimulator {
 
-class SCISHARE ElectrodeCoilSetup : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<FieldPortTag>,
-  public Has1OutputPort<FieldPortTag>
+class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Module,
+  public Has2InputPorts<FieldPortTag, FieldPortTag>,
+  public Has2OutputPorts<FieldPortTag, FieldPortTag>
 {
   public:
-    ElectrodeCoilSetup();
+    ElectrodeCoilSetupModule();
 
     virtual void execute();
     virtual void setStateDefaults();
 
-    INPUT_PORT(0, InputField, LegacyField);
-    OUTPUT_PORT(0, OutputField, LegacyField);
+    INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, Matrix);
+    INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
+    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
+    OUTPUT_PORT(1, COILS_FIELD, LegacyField);
 };
 
 }}}

@@ -26,11 +26,19 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-ADD_SUBDIRECTORY(Base)
-ADD_SUBDIRECTORY(Factory)
-ADD_SUBDIRECTORY(Field)
-ADD_SUBDIRECTORY(Math)
-ADD_SUBDIRECTORY(DataIO)
-ADD_SUBDIRECTORY(Legacy)
-ADD_SUBDIRECTORY(FiniteElements)
-ADD_SUBDIRECTORY(BrainStimulator)
+SET(Algorithms_ElectrodeCoilSetup_Tests_SRCS
+  ElectrodeCoilSetupAlgorithmTests.cc
+)
+
+SCIRUN_ADD_UNIT_TEST(Algorithms_ElectrodeCoilSetup_Tests
+  ${Algorithms_ElectrodeCoilSetup_Tests_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Algorithms_ElectrodeCoilSetup_Tests
+  Algorithms_ElectrodeCoilSetup
+  Core_Datatypes_Legacy_Field
+  Testing_Utils
+  gtest_main
+  gtest
+  gmock
+)

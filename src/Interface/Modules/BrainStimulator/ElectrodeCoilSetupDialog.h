@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_ElectrodeCoilSetupDialog_H
-#define INTERFACE_MODULES_ElectrodeCoilSetupDialog_H
+#ifndef INTERFACE_MODULES_ELECTRODECOILSETUPDIALOG_H
+#define INTERFACE_MODULES_ELECTRODECOILSETUPDIALOG_H
 
 #include "Interface/Modules/BrainStimulator/ui_ElectrodeCoilSetupDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>

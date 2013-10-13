@@ -31,15 +31,16 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
-using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 
-TEST(BuildTDCSMatrixAlgorithm, Foo)
+TEST(ElectrodeCoilSetupAlgorithm, Foo)
 {
-  BuildTDCSMatrixAlgorithm algo;
+  ElectrodeCoilSetupAlgorithm algo;
   FAIL() << "Insert code here for the most basic test cases !"; 
 }
