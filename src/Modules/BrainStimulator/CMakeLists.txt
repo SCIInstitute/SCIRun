@@ -1,4 +1,3 @@
-
 #
 #  For more information, please see: http://software.sci.utah.edu
 # 
@@ -27,42 +26,32 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Interface_Modules_Factory_HEADERS
-  ModuleDialogFactory.h
+SET(Modules_BrainStimulator_SRCS
+  ElectrodeCoilSetup.cc
+)
+
+SET(Modules_BrainStimulator_HEADERS
+  ElectrodeCoilSetup.h
   share.h
 )
 
-SET(Interface_Modules_Factory_SOURCES 
-  ModuleDialogFactory.cc
+ADD_LIBRARY(Modules_BrainStimulator 
+  ${Modules_BrainStimulator_HEADERS}
+  ${Modules_BrainStimulator_SRCS}
 )
 
-#QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
-#QT4_WRAP_CPP(Interface_Modules_HEADERS_MOC ${Interface_Modules_HEADERS})
-
-ADD_LIBRARY(Interface_Modules_Factory 
-  ${Interface_Modules_Factory_HEADERS}
-#${Interface_Modules_FORMS_HEADERS}
-#${Interface_Modules_HEADERS_MOC}
-  ${Interface_Modules_Factory_SOURCES}
-)
-
-TARGET_LINK_LIBRARIES(Interface_Modules_Factory 
-  Interface_Modules_Base
-  Interface_Modules_DataIO
-  Interface_Modules_Math
-  Interface_Modules_Fields
-  Interface_Modules_FiniteElements
-  Interface_Modules_BrainStimulator
-  Interface_Modules_Render
-  Interface_Modules_String
-  Interface_Modules_Testing
-  Interface_Modules_Visualization
-  ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES}
+TARGET_LINK_LIBRARIES(Modules_BrainStimulator
+  Dataflow_Network
+  Core_Datatypes
+  Core_Datatypes_Mesh
+  Algorithms_Field
+  Core_Datatypes_Legacy_Field
+  #Algorithms_BrainStimulator
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
+  ADD_DEFINITIONS(-DBUILD_Modules_BrainStimulator)
 ENDIF(BUILD_SHARED_LIBS)
-  
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+ADD_SUBDIRECTORY(Tests)
+

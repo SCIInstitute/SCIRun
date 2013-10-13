@@ -66,7 +66,7 @@
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/MatrixAsVectorField.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
-#include <Modules/FiniteElements/ElectrodeCoilSetup.h>
+#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Render/ViewScene.h>
 
@@ -80,6 +80,7 @@ using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::Visualization;
@@ -141,7 +142,7 @@ namespace SCIRun {
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
           addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
-	  addModuleDesc<ElectrodeCoilSetup>("ElectrodeCoilSetup", "FiniteElements", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
+	  addModuleDesc<ElectrodeCoilSetup>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
         }
 
         ModuleDescriptionMap descMap_;

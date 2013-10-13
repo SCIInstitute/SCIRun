@@ -32,7 +32,8 @@
 
 
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
-
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -48,15 +49,14 @@
 #include <algorithm>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms;
 
 class TDCSMatrixBuilder
 {
 public:
-  TDCSMatrixBuilder(SCIRun::Core::Algorithms::AlgorithmBase* algo) :
-  ref_cnt(0),
-  //algo_(algo),
+  TDCSMatrixBuilder() :
   electrodes_(1)
   {
       
@@ -66,11 +66,9 @@ public:
   bool initialize_inputs(SCIRun::Core::Datatypes::MatrixHandle stiff, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance);
   bool build_matrix(SCIRun::Core::Datatypes::MatrixHandle& output);
   bool singlethread();
-  int ref_cnt;
 
 private:
   VMesh *mesh_;
-  //AlgoBase* algo_;
 
   std::vector<unsigned int> electrodes_;
   
@@ -86,7 +84,7 @@ private:
 void TDCSMatrixBuilder::initialize_mesh(FieldHandle mesh)
 {
   mesh_ = mesh->vmesh(); 
-  /// mesh_nrnodes_=static_cast<unsigned int>(mesh_->num_nodes());
+  mesh_nrnodes_=static_cast<unsigned int>(mesh_->num_nodes());
   number_electrodes_=0; 
 }
 
@@ -675,58 +673,58 @@ bool TDCSMatrixBuilder::build_matrix(SCIRun::Core::Datatypes::MatrixHandle& outp
 
 bool BuildTDCSMatrixAlgo::run(SCIRun::Core::Datatypes::MatrixHandle stiff, FieldHandle mesh, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output)
 {
-///  algo_start("TDCSMatrixBuilder");
-///    
-///  if (! mesh.get_rep())
-///  {
-///    error(" Without a mesh there is nothing to do !");
-///    algo_end();
-///    return (false);   
-///  }
-/// 
-///  if (! ElectrodeElements.get_rep()) //get electrode definition
-///  {
-///    error("ElectrodeElements object not available....");
-///    algo_end();
-///    return false;
-///  }   
-///   
-///  if (! ElectrodeElementType.get_rep()) //get electrode definition
-///  {
-///    error("ElectrodeElements object not available....");
-///    algo_end();
-///    return false;
-///  }  
-///   
-///  if (! ElectrodeElementDefinition.get_rep()) //get electrode definition
-///  {
-///    error("ElectrodeElements object not available....");
-///    algo_end();
-///    return false;
-///  }  
-/// 
-///  Handle<TDCSMatrixBuilder> builder = new TDCSMatrixBuilder(this);
+ ScopedAlgorithmStatusReporter asc(this, "Name");
+   
+ if (! mesh)
+ {
+   error(" Without a mesh there is nothing to do !");
+   
+   return (false);   
+ }
+
+ if (! ElectrodeElements) //get electrode definition
+ {
+   error("ElectrodeElements object not available....");
+   
+   return false;
+ }   
+  
+ if (! ElectrodeElementType) //get electrode definition
+ {
+   error("ElectrodeElements object not available....");
+   
+   return false;
+ }  
+  
+ if (! ElectrodeElementDefinition) //get electrode definition
+ {
+   error("ElectrodeElements object not available....");
+   
+   return false;
+ }  
+
+ TDCSMatrixBuilder builder;
 ///
-///  builder->initialize_mesh(mesh); //set mesh 
+ builder.initialize_mesh(mesh); //set mesh 
 ///
-///  if (! builder->initialize_inputs(stiff, ElectrodeElements, ElectrodeElementType, ElectrodeElementDefinition, contactimpedance) ) // set other inputs
-///  {
-///    algo_end();
-///    return false;
-///  }
+ if (! builder.initialize_inputs(stiff, ElectrodeElements, ElectrodeElementType, ElectrodeElementDefinition, contactimpedance) ) // set other inputs
+ {
+   
+   return false;
+ }
 ///
-///  if (! builder->build_matrix(output))
-///  {
-///    algo_end();
-///    return false;
-///  }
+ if (! builder.build_matrix(output))
+ {
+   
+   return false;
+ }
 ///
-///  output=builder->getOutput();
-///  
-///  SparseRowMatrix *tdcs=output->sparse();
-///  
+ 
+ SparseRowMatrixHandle tdcs=builder.getOutput();
+ output = tdcs;
+ 
 ///  bool found_reference_node=false;
-///
+/// ///
 ///  for(index_type i = 0; i<tdcs->nrows()-1; i++) //find reference node 
 ///  {
 ///    index_type ps = (*tdcs).get_row(i);
@@ -735,15 +733,15 @@ bool BuildTDCSMatrixAlgo::run(SCIRun::Core::Datatypes::MatrixHandle stiff, Field
 ///       {
 ///        if (static_cast<double>((*tdcs).get_value(ps))==1.0)
 ///        found_reference_node=true;
-///	break;
+/// 	break;
 ///       }
 ///  }
 ///   
 ///  if(!found_reference_node) 
 ///      remark("The TDCS output matrix is not referenced yet !!! Please set the Potential of at least one node to 0 ! You can do that by setting one row and the corresponding column explicitely to 0 except for the diagonal element which should be 1 !");
-///
-/// algo_end(); 
-  
+/// ///
+///  
+///   
  return (true);
 }
 

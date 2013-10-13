@@ -29,7 +29,6 @@
 SET(Modules_FiniteElements_Tests_SRCS
   TDCSSimulatorTests.cc
   BuildTDCSMatrixTests.cc
-  ElectrodeCoilSetupTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_FiniteElements_Tests

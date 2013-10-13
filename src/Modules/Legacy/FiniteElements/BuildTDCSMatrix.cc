@@ -56,9 +56,10 @@ void BuildTDCSMatrix::execute()
   MatrixHandle ElectrodeElements;
   MatrixHandle ElectrodeElementType;
   MatrixHandle ElectrodeElementDefinition;
-  MatrixHandle ContactImpedance;
-  MatrixHandle TDCSMatrix;  
+  MatrixHandle ContactImpedance; 
 
+  Stiffness=getRequiredInput(FEM_Stiffness_Matrix);
+  Mesh=getRequiredInput(FEM_Mesh);
 //  if (!(get_input_handle("FEM Stiffness",Stiffness,true))) return;
 //  if (!(get_input_handle("Mesh",Mesh,true))) return;
 //  if (!(get_input_handle("Electrode Element",ElectrodeElements,true))) return; 
@@ -66,10 +67,11 @@ void BuildTDCSMatrix::execute()
 //  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
 //  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
  
+  auto output = algo_->run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)));
 //  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
 
 //  send_output_handle("TDCS Matrix", TDCSMatrix);
-  
+  sendOutputFromAlgorithm(TDCSMatrix,output);
 }
 
 

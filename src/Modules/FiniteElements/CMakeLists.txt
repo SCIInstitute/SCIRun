@@ -28,12 +28,10 @@
 
 SET(Modules_FiniteElements_SRCS
   TDCSSimulator.cc
-  ElectrodeCoilSetup.cc
 )
 
 SET(Modules_FiniteElements_HEADERS
   TDCSSimulator.h
-  ElectrodeCoilSetup.h
   share.h
 )
 

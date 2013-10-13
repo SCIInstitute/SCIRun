@@ -47,6 +47,7 @@ ADD_LIBRARY(Dataflow_Modules_Legacy_FiniteElements ${Dataflow_Modules_Legacy_Fin
 TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_FiniteElements
  Dataflow_Network
  Core_Algorithms_Legacy_FiniteElements
+ Core_Datatypes_Legacy_Field
  Algorithms_Base
  Core_Basis
  Core_Datatypes

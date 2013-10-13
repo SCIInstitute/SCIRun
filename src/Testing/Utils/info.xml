@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="9">
+<moduleInfo class_id="0" tracking_level="0" version="0">
+	<package_name_>SCIRun</package_name_>
+	<category_name_>Math</category_name_>
+	<module_name_>ComputeSVD</module_name_>
+</moduleInfo>
+</boost_serialization>
+
