@@ -46,7 +46,7 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
     virtual void execute();
     virtual void setStateDefaults();
 
-    INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, Matrix);
+    INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, LegacyField);
     INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
     OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
     OUTPUT_PORT(1, COILS_FIELD, LegacyField);
