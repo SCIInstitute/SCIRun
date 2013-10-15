@@ -39,121 +39,27 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
-
-ElectrodeCoilSetupAlgorithm::Outputs ElectrodeCoilSetupAlgorithm::update_input_attributes(FieldHandle f) const
-{
-  VField* vfield = f->vfield();
-  VMesh*  vmesh  = f->vmesh();
-  
-  ElectrodeCoilSetupAlgorithm::Outputs output;
-
-  if (vfield)
-  {
-    // Get name of field
-    //std::string fldname;
-    //if (f->get_property("name",fldname))
-    //{
-    //  gui_fldname_.set(fldname);
-    //}
-    //else
-    //{
-    //  gui_fldname_.set("--- Name Not Assigned ---");
-    //}
     
-    // Generation
-    //gui_generation_.set(to_string(f->generation));
-    
-    // Typename
-    //auto td = f->get_type_description();
-//    if (td)
-//    {
-//      const std::string &tname = td->get_name();
-//      output.type = tname;
-//    }
-//    else
-//      output.type = "Null";
-//    
-//    // Basis
-//    static const char *at_table[4] = { "Nodes", "Edges", "Faces", "Cells" };
-//    switch(f->basis_order())
-//    {
-//      case 3:
-//        output.dataLocation = "Nodes (cubic basis)";
-//        break;
-//      case 2:
-//        output.dataLocation = "Nodes (quadratic basis)";
-//        break;
-//      case 1:
-//        output.dataLocation = "Nodes (linear basis)";
-//        break;
-//      case 0:
-//        output.dataLocation = at_table[f->vmesh()->dimensionality()] +
-//                        std::string(" (constant basis)");
-//        break;
-//      case -1:
-//        output.dataLocation = "None (nodata basis)";
-//        break;
-//    }
-//    
-//    Point center;
-//    Vector size;
-//    
-//    const BBox bbox = vmesh->get_bounding_box();
-//    if (bbox.valid())
-//    {
-//      size = bbox.diagonal();
-//      center = bbox.center();
-//      output.center = center;
-//      output.size = size;
-//    }
-//    else
-//    {
-//      warning("Input Field is empty.");
-//      
-//      const double nan = std::numeric_limits<double>::quiet_NaN();
-//      output.center = Point(nan,nan,nan);
-//      output.size = Vector(nan, nan, nan);
-//
-//    }
-//    
-//    double min, max;
-//    vfield->minmax(min,max);
-//    output.dataMin = min;
-//    output.dataMax = max;
-//    
-//    output.numdata_ = vfield->num_values();
-//    output.numnodes_ = vmesh->num_nodes();
-//    output.numelements_ = vmesh->num_elems();
-//    
-//    VMesh::dimension_type dim;
-//    vmesh->get_dimensions(dim);
-//    output.dims = Vector(1.0,1.0,1.0);
-//    for (size_t p=0; p < dim.size(); p++) 
-//      output.dims[p] = static_cast<double>(dim[p]);
-//        
-//    output.geometricSize = 0.0;
-//    for (VMesh::Elem::index_type idx=0; idx< output.numelements_; idx++)
-//    {
-//      output.geometricSize += vmesh->get_size(idx);
-//    }
-// 
-  }
-  return output;
-}
+const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
+const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
+const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
+const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
 
-ElectrodeCoilSetupAlgorithm::Outputs::Outputs()
-  : dataMin(0), dataMax(0), numdata_(0), numnodes_(0), numelements_(0), geometricSize(0)
-{
-}
-
-ElectrodeCoilSetupAlgorithm::Outputs ElectrodeCoilSetupAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
-{
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input field");
-
-  return update_input_attributes(input);
-}
 
 AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto elc = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
+  auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);
+
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(elc, "ELECTRODE_COIL_POSITIONS_AND_NORMAL input field");
+  ENSURE_ALGORITHM_INPUT_NOT_NULL(tri, "ELECTRODE_TRIANGULATION input field");
+  //old-style run call, just put algorithm code here
+  //auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::AppendMatrixOption).getInt()));
+  // CODE HERE
+  FieldHandle out1,out2;
+
+  AlgorithmOutput output;
+  output[ELECTRODES_FIELD] = out1;
+  output[COILS_FIELD] = out2;
+  return output;
 }

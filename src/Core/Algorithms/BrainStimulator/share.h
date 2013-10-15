@@ -29,7 +29,7 @@
 #undef SCISHARE
 
 #if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
-#ifdef BUILD_Algorithms_ElectrodeCoilSetup
+#ifdef BUILD_Algorithms_BrainStimulator
 #define SCISHARE __declspec(dllexport)
 #else
 #define SCISHARE __declspec(dllimport)

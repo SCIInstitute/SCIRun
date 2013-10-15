@@ -31,10 +31,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/GeometryPrimitives/Vector.h>
-#include <Core/GeometryPrimitives/Point.h>
-#include <Core/Datatypes/DatatypeFwd.h>
-#include <Core/Algorithms/Field/share.h>
+#include <Core/Algorithms/BrainStimulator/share.h>
 
 namespace SCIRun {
 namespace Core {
@@ -44,27 +41,18 @@ namespace BrainStimulator {
   class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
   {
   public:
-    typedef SCIRun::FieldHandle Inputs;
-    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
-
-    struct SCISHARE Outputs
-    {
-      Outputs();
-      std::string type;
-      Geometry::Point center;
-      Geometry::Vector size, dims;
-      double dataMin, dataMax;
-      size_t numdata_, numnodes_, numelements_;
-      std::string dataLocation;
-      double geometricSize;
-    };
-
-    Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
+    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
+    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
+    static const AlgorithmOutputName ELECTRODES_FIELD;
+    static const AlgorithmOutputName COILS_FIELD;
+
   private:
-    Outputs update_input_attributes(SCIRun::FieldHandle f) const;
+  
+    
   };
 
 }}}}

@@ -55,10 +55,16 @@ void ElectrodeCoilSetupModule::execute()
 {
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
-  //ElectrodeCoilSetupAlgorithm algo;
-  //ReportFieldInfoAlgorithm algo;
-  //auto output = algo.run(field);
-  //get_state()->setTransientValue("ReportedInfo", output);
-  //sendOutput(FieldType, boost::make_shared<String>(output.type));
-  //sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
+   // UI input
+  //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+
+  //algorithm parameter
+  //algo_->set(Variables::AppendMatrixOption, param);
+ 
+  //algorithm input and run
+  auto output = algo_->run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
+
+  //algorithm output
+  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
+  sendOutputFromAlgorithm(COILS_FIELD, output);
 }
