@@ -175,6 +175,7 @@ namespace Algorithms {
     boost::shared_ptr<T> get(const Name& name) const
     {
       auto it = data_.find(name);
+      //TODO: log incorrect type if present but wrong type
       return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second);
     }
 

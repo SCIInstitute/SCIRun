@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace FiniteElements {
 
 class SCISHARE TDCSSimulatorModule : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<FieldPortTag>,
+  public Has6InputPorts<MatrixPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
   public Has1OutputPort<FieldPortTag>
 {
   public:
@@ -46,7 +46,12 @@ class SCISHARE TDCSSimulatorModule : public SCIRun::Dataflow::Networks::Module,
     virtual void execute();
     virtual void setStateDefaults();
 
-    INPUT_PORT(0, InputField, LegacyField);
+    INPUT_PORT(0, I0, Matrix);
+    INPUT_PORT(1, I1, LegacyField);
+    INPUT_PORT(2, I2, Matrix);
+    INPUT_PORT(3, I3, Matrix);
+    INPUT_PORT(4, I4, Matrix);
+    INPUT_PORT(5, I5, Matrix);
     OUTPUT_PORT(0, OutputField, LegacyField);
 };
 
