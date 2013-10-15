@@ -26,31 +26,5 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Algorithms_Factory_SRCS
-  HardCodedAlgorithmFactory.cc
-)
-
-SET(Algorithms_Factory_HEADERS
-  HardCodedAlgorithmFactory.h
-  share.h
-)
-
-ADD_LIBRARY(Algorithms_Factory 
-  ${Algorithms_Factory_HEADERS}
-  ${Algorithms_Factory_SRCS}
-)
-
-TARGET_LINK_LIBRARIES(Algorithms_Factory
-  Algorithms_Base
-  Algorithms_BrainStimulator
-  Core_Algorithms_Legacy_Fields
-  Algorithms_Math
-  ${SCI_BOOST_LIBRARY}
-)
-
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Algorithms_Factory)
-ENDIF(BUILD_SHARED_LIBS)
-
 ADD_SUBDIRECTORY(Tests)
 

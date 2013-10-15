@@ -36,10 +36,12 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
+#include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
@@ -60,7 +62,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
   else if (name == "AlignMeshBoundingBoxes")
     h.reset(new AlignMeshBoundingBoxesAlgo);
   else if (name == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-    h.reset(new GetMeshNodesAlgo);
+    h.reset(new GetMeshNodesAlgo);    
+  else if (name == "ElectrodeCoilSetup")
+    h.reset(new ElectrodeCoilSetupAlgorithm);   
   else if (name == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
 
