@@ -39,7 +39,6 @@ SET(Modules_Visualization_HEADERS
   share.h
 )
 
-FIND_PACKAGE(OpenGL REQUIRED)
 ADD_LIBRARY(Modules_Visualization 
   ${Modules_Visualization_HEADERS}
   ${Modules_Visualization_SRCS}

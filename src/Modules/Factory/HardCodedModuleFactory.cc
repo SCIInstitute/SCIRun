@@ -71,7 +71,7 @@
 #include <Modules/Render/ViewScene.h>
 
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
-#include <Modules/Factory/Share.h>
+#include <Modules/Factory/share.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules;
@@ -111,12 +111,7 @@ namespace SCIRun {
           addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
           addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-          addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-          addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-          addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
           addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-          addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-          addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
           addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
           addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
           addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
@@ -127,10 +122,8 @@ namespace SCIRun {
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
           addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
-          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
           //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
@@ -141,6 +134,17 @@ namespace SCIRun {
           addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
+
+          //TODO: possibly use different build setting for these.
+#ifdef DEBUG
+          addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+          addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
+          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
+#endif
           addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
 	  addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
         }

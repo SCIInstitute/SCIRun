@@ -94,6 +94,9 @@ public:
   void doMousePress(Qt::MouseButton button, const QPointF& pos);
   void doMouseMove(Qt::MouseButtons buttons, const QPointF& pos);
   void doMouseRelease(Qt::MouseButton button, const QPointF& pos);
+
+  static const int WIDTH = 11;
+
 public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();

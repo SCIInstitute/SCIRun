@@ -82,10 +82,12 @@ private:
   std::string colorName_;
 };
 
-//TODO: discuss this interface design
+#ifdef WIN32
 #pragma warning (push)
 #pragma warning (disable : 4250)
+#endif
 
+//TODO: discuss this interface design
 class SCISHARE InputPort : public Port, public InputPortInterface
 {
 public:
@@ -113,7 +115,9 @@ private:
   DatatypeSourceInterfaceHandle source_;
 };
 
+#ifdef WIN32
 #pragma warning (pop)
+#endif
 
 }}}
 

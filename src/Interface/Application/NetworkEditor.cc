@@ -176,6 +176,7 @@ namespace
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
+
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
@@ -208,7 +209,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
-
+  
   scene_->addItem(proxy);
 
   scene_->clearSelection();
@@ -404,7 +405,6 @@ void NetworkEditor::createActions()
 
   deleteAction_ = new QAction(tr("&Delete selected objects"), this);
   deleteAction_->setIcon(QIcon(":/images/delete.png"));
-  deleteAction_->setShortcut(Qt::Key_Delete);
   connect(deleteAction_, SIGNAL(triggered()), this, SLOT(del()));
 
   //cutAction_ = new QAction(tr("Cu&t"), this);
@@ -596,13 +596,11 @@ void ModuleEventProxy::trackModule(SCIRun::Dataflow::Networks::ModuleHandle modu
 void NetworkEditor::disableInputWidgets()
 {
   deleteAction_->setDisabled(true);
-  deleteAction_->setShortcut(QKeySequence());
 }
 
 void NetworkEditor::enableInputWidgets()
 {
   deleteAction_->setEnabled(true);
-  deleteAction_->setShortcut(Qt::Key_Delete);
 }
 
 void NetworkEditor::setRegressionTestDataDir(const QString& dir)

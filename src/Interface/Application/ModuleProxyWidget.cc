@@ -51,8 +51,6 @@ ModuleProxyWidget::ModuleProxyWidget(ModuleWidget* module, QGraphicsItem* parent
 {
   setWidget(module);
   setFlags(ItemIsMovable | ItemIsSelectable | ItemSendsGeometryChanges);
-  boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this));
-  module_->setPositionObject(pp);
   setAcceptDrops(true);
 
   connect(module, SIGNAL(noteUpdated(const Note&)), this, SLOT(updateNote(const Note&)));
@@ -173,9 +171,14 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
+  int firstPortXPos = -1;
   Q_FOREACH(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
   {
-    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, p->pos() - module_->pos() + QPointF(5,5)));
+    if (firstPortXPos < 0)
+      firstPortXPos = p->pos().x();
+    QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
+    
+    boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));
     p->setPositionObject(pp);
   }
 }

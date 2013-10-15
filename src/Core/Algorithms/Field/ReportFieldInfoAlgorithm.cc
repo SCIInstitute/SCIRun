@@ -47,7 +47,7 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::update_input_attribu
   
   ReportFieldInfoAlgorithm::Outputs output;
 
-  if (vfield)
+  if (vfield && vmesh)
   {
     // Get name of field
     //std::string fldname;
