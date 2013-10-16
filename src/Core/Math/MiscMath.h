@@ -545,7 +545,6 @@ inline bool IsFinite(double val)
   return boost::math::isfinite(val);
 }
 
-// TODO: replace with boost
 inline bool IsInfinite(double val)
 {
   return boost::math::isinf(val);

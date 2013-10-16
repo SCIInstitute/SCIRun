@@ -26,13 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/SparseRowMatrixFromMap.h>
+#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrixFromMap.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <numeric>
 #include <stdexcept>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
+#if 0
 SparseRowMatrixHandle SparseRowMatrixFromMap::make(size_type rows, size_type cols, const SparseRowMatrixFromMap::Values& data)
 {
   size_type nnz = get_nnz(data);
@@ -98,12 +100,17 @@ const SparseRowMatrixFromMap::Values& SparseRowMatrixFromMap::SymmetricValues::g
 {
   return values_;
 }
+#endif
 
 SparseRowMatrixHandle SparseRowMatrixFromMap::appendToSparseMatrix(size_type rows, size_type cols, const SparseRowMatrix& sparse, const Values& additionalValues)
 {
+  //TODO : change to boost exception
   if (rows < sparse.nrows() || cols < sparse.ncols())
     throw std::invalid_argument("new matrix needs to be at least the size of old matrix");
 
+  return SparseRowMatrixHandle();
+
+#if 0
   const size_type nnz = get_nnz(additionalValues) + sparse.get_nnz();
   SparseRowMatrix::Data newSparseData(rows + 1, nnz);
 
@@ -156,4 +163,5 @@ SparseRowMatrixHandle SparseRowMatrixFromMap::appendToSparseMatrix(size_type row
 
   SparseRowMatrixHandle matrix(new SparseRowMatrix(rows, cols, newSparseData, nnz));
   return matrix;
+#endif
 }
