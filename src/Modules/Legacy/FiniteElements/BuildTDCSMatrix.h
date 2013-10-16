@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace FiniteElements {
 
       class SCISHARE BuildTDCSMatrix : public Dataflow::Networks::Module,
-        public Has2InputPorts<MatrixPortTag, FieldPortTag>,
+        public Has6InputPorts<MatrixPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
         public Has1OutputPort<MatrixPortTag>
       {
       public:
@@ -45,8 +45,12 @@ namespace SCIRun {
         virtual void setStateDefaults() {}
         virtual void execute();
 
-        INPUT_PORT(0, FEM_Stiffness_Matrix, Matrix);
+        INPUT_PORT(0, FEM_Stiffness_Matrix, SparseRowMatrix);
         INPUT_PORT(1, FEM_Mesh, LegacyField);
+	INPUT_PORT(2, Eletrode_Element, DenseMatrix);
+        INPUT_PORT(3, Electrode_Element_Type, DenseMatrix);
+	INPUT_PORT(4, Electrode_Element_Definition, DenseMatrix);
+        INPUT_PORT(5, Contact_Impedance, DenseMatrix);
         OUTPUT_PORT(0, TDCSMatrix, Matrix);
       };
 
