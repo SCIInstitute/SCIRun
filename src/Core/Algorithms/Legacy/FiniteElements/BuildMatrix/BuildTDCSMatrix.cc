@@ -671,7 +671,7 @@ bool TDCSMatrixBuilder::build_matrix(SCIRun::Core::Datatypes::MatrixHandle& outp
   return singlethread();
 }
 
-bool BuildTDCSMatrixAlgo::run(SCIRun::Core::Datatypes::MatrixHandle stiff, FieldHandle mesh, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance, Datatypes::MatrixHandle& output)
+bool BuildTDCSMatrixAlgo::run(MatrixHandle stiff, FieldHandle mesh, MatrixHandle ElectrodeElements, MatrixHandle ElectrodeElementType, MatrixHandle ElectrodeElementDefinition, MatrixHandle contactimpedance, MatrixHandle& output)
 {
  ScopedAlgorithmStatusReporter asc(this, "Name");
    
