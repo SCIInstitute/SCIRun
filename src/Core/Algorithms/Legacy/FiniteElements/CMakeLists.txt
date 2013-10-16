@@ -57,6 +57,7 @@ TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_FiniteElements
 #  Core_Algorithms_Util 
 #  Core_Persistent 
 #  Core_Basis 
+   Core_Datatypes_Legacy_Field
 #  ${SCI_TEEM_LIBRARY}
 )
 
