@@ -39,7 +39,7 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Matrix/MatrixOperations.h>
 #include <Core/Datatypes/Legacy/Matrix/SparseRowMatrixFromMap.h>
-
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 
@@ -61,10 +61,10 @@ public:
   {
       
   }
-  SCIRun::Core::Datatypes::SparseRowMatrixHandle getOutput();
+  SparseRowMatrixHandle getOutput();
   void initialize_mesh(FieldHandle mesh);
-  bool initialize_inputs(SCIRun::Core::Datatypes::MatrixHandle stiff, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance);
-  bool build_matrix(SCIRun::Core::Datatypes::MatrixHandle& output);
+  bool initialize_inputs(SparseRowMatrixHandle stiff, DenseMatrixHandle ElectrodeElements, DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefinition, DenseMatrixHandle contactimpedance);
+  bool build_matrix(SparseRowMatrixHandle& output);
   bool singlethread();
 
 private:
@@ -109,15 +109,15 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///    {
 ///      surface_impedance=contactImpedanceInformation_->get(i,0);
 ///      if (surface_impedance<=0){
-///       algo_->error("Contact surface impedance is negative or zero !");
-///       return false;
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zero !");
+///       
 ///      }
 ///      tmp2=1.0/surface_impedance;
 ///      tmp1=tmp2/2.0;
 ///      p1=static_cast<unsigned int>(electrodeElementDefinition_->get(i,0));
 ///      tmp=stiffnessMatrix_->get(p1,p1);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
 ///      }
 ///
 ///      if (tmp==0) 
@@ -153,15 +153,15 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      triangle_area=0.5 * sqrt(tmp*tmp+tmp1*tmp1+tmp2*tmp2);
 ///
 ///      if(triangle_area<=0) { 
-///       algo_->error(" Triangle area should be positive! "); 
-///       return false;
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Triangle area should be positive! "); 
+///       
 ///      }
 ///      
 ///      surface_impedance=contactImpedanceInformation_->get(i,0);
 ///      if (surface_impedance<=0)
 ///      {
-///       algo_->error("Contact surface impedance is negative or zeros !");
-///       return false;
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zeros !");
+///       
 ///      }
 ///      tmp1 = (2.0*triangle_area) / surface_impedance;
 ///      
@@ -185,8 +185,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      tmp=tmp1/12.0;
 ///      tmp2=stiffnessMatrix_->get(p1,p1);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value "); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value "); 
+///        
 ///      }
 ///      if (tmp2==0) {
 ///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
@@ -196,8 +196,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///
 ///      tmp2=stiffnessMatrix_->get(p2,p2);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 ///    //   std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p2 << ")" << std::endl;  
@@ -207,8 +207,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp2=stiffnessMatrix_->get(p3,p3);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 ///    //   std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p3 << ")" << std::endl;  
@@ -219,8 +219,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      tmp=tmp1/24.0;
 ///      tmp2=stiffnessMatrix_->get(p1,p2);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 ///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p2 << ")" << std::endl;  
@@ -230,8 +230,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp2=stiffnessMatrix_->get(p1,p3);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p3 << ")" << std::endl;  
@@ -241,8 +241,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp2=stiffnessMatrix_->get(p2,p1);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 ///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p1 << ")" << std::endl;  
@@ -252,8 +252,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp2=stiffnessMatrix_->get(p2,p3);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 ///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p3 << ")" << std::endl;  
@@ -263,8 +263,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp2=stiffnessMatrix_->get(p3,p1);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -275,8 +275,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp2=stiffnessMatrix_->get(p3,p2);
 ///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p2 << ")" << std::endl;  
@@ -306,8 +306,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      if (detJ<=0)
 ///      {
 ///        tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///        algo_->error("Mesh has elements with negative/zero jacobians, check the order of the nodes that define an element");
-///        return false;
+///        THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Mesh has elements with negative/zero jacobians, check the order of the nodes that define an element");
+///        
 ///      }
 ///      volume=1.0/6.0*detJ; volume1_4 =volume/4.0; volume1_10=volume/10.0; volume1_20=volume/20.0;
 ///      
@@ -315,8 +315,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      if (surface_impedance<=0)
 ///      {
 ///        tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///        algo_->error("Contact surface impedance is negative or zeros !");
-///        return false;
+///        THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zeros !");
+///        
 ///      }
 ///      
 ///      p1=static_cast<unsigned int>(electrodeElementDefinition_->get(i,0));
@@ -343,8 +343,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      //A
 ///      tmp=stiffnessMatrix_->get(p1,p1);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
@@ -354,8 +354,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p2,p2);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -366,8 +366,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p3,p3);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -378,7 +378,7 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p4,p4);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -389,8 +389,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p1,p2);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -401,8 +401,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p2,p1);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p1 << ")" << std::endl;  
@@ -412,8 +412,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p1,p3);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -424,8 +424,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      tmp=stiffnessMatrix_->get(p3,p1);
 ///      
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -436,8 +436,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p1,p4);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      
 ///      if (tmp2==0) {
@@ -448,8 +448,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p4,p1);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /////       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p1 << ")" << std::endl;  
@@ -459,8 +459,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p2,p3);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p3 << ")" << std::endl;  
@@ -470,8 +470,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p3,p2);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p2 << ")" << std::endl;  
@@ -481,8 +481,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p2,p4);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }      
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p4 << ")" << std::endl;  
@@ -492,8 +492,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p4,p2);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p2 << ")" << std::endl;  
@@ -503,8 +503,8 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///            
 ///      tmp=stiffnessMatrix_->get(p3,p4);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); 
-///       return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+///        
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p4 << ")" << std::endl;  
@@ -514,7 +514,7 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///      
 ///      tmp=stiffnessMatrix_->get(p4,p3);
 ///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       algo_->error(" No valid value in stiffnessmatrix !"); return false; 
+///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
 ///      }
 ///      if (tmp2==0) {
 /// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p3 << ")" << std::endl;  
@@ -527,7 +527,7 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///    } else
 ///   {
 ///    tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///    algo_->error(" This Electrode-type is not implemented, a electrode only consist of points(1), triangles(2) and tetrahedral elements(3)."); return false;
+///    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" This Electrode-type is not implemented, a electrode only consist of points(1), triangles(2) and tetrahedral elements(3)."); 
 ///  }
 ///  }
 ///  tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
@@ -535,143 +535,131 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
   return true;
 }  
     
-SCIRun::Core::Datatypes::SparseRowMatrixHandle TDCSMatrixBuilder::getOutput()
+SparseRowMatrixHandle TDCSMatrixBuilder::getOutput()
 {
   return tdcs_;  
 }
 
-bool TDCSMatrixBuilder::initialize_inputs(SCIRun::Core::Datatypes::MatrixHandle stiff, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElements, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementType, SCIRun::Core::Datatypes::MatrixHandle ElectrodeElementDefinition, SCIRun::Core::Datatypes::MatrixHandle contactimpedance)
+bool TDCSMatrixBuilder::initialize_inputs(SparseRowMatrixHandle stiff, DenseMatrixHandle ElectrodeElements,
+DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle ElectrodeElementDefinition, DenseMatrixHandle contactimpedance)
 {
-///  electrodeElements_=(ElectrodeElements)->dense();
-///  electrodeElementType_=(ElectrodeElementType)->dense();
-///  electrodeElementDefinition_=(ElectrodeElementDefinition)->dense();
-///  
-///  //check matrices dimensions
-///  electrodeElementsRows_=static_cast<unsigned int>(electrodeElements_->nrows());
-///  electrodeElementTypeRows_=static_cast<unsigned int>(electrodeElementType_->nrows());
-///  electrodeElementDefinitionRows_=static_cast<unsigned int>(electrodeElementDefinition_->nrows());
-///  electrodeElementsCols_=static_cast<unsigned int>(electrodeElements_->ncols());
-///  electrodeElementTypeCols_=static_cast<unsigned int>(electrodeElementType_->ncols());
-///  electrodeElementDefinitionCols_=static_cast<unsigned int>(electrodeElementDefinition_->ncols());
-///
-///  if( !((electrodeElementsRows_==electrodeElementTypeRows_) && (electrodeElementTypeRows_==electrodeElementDefinitionRows_)) ) {
-///    algo_->error("Number of Matrix-rows of Matrices for Electrode-Definition should be the same!");
-///    return (false);
-///  }
-///  
-///  if( !((electrodeElementsCols_==1) && (electrodeElementTypeCols_==1) && (electrodeElementDefinitionCols_>=1 && electrodeElementDefinitionCols_<=4) ) ) {
-///    algo_->error(" Number of Matrix-columns of Matrices in Electrode-Definition should be: ElectrodeElementType=1, ElectrodeElementDefinition=1,ElectrodeElementDefinition=4 !");
-///    return (false);
-///  }
-///  
-///  if (electrodeElementsRows_>mesh_nrnodes_) {
-///    algo_->error(" Number of Electrode-Definition Nodes can not excced number of input mesh (since it refers to that) !");
-///    return (false);
-///  } 
-/// 
-///  if ( electrodeElementsRows_==0 ) {
-///    algo_->error(" Number of Electrode-Definition Nodes = 0 !");
-///    return (false);
-///  }
-///
-///  //check matrices content
-///  electrodes_.push_back(electrodeElements_->get(0,0));
-///  number_electrodes_=1; bool numbering_ok=false;
-///  for (unsigned int i=0;i<electrodeElementsRows_;i++)
-///  {
-///    bool found = false;
-///    if (static_cast<unsigned int>(electrodeElements_->get(0,0))==0)  {
-///      numbering_ok=true;
-///    }
-///    
-///    unsigned int tmp=static_cast<unsigned int>(electrodeElements_->get(i,0));
-///    if( (tmp<0) || (tmp>=mesh_nrnodes_) ) {
-///      algo_->error(" Specified ElectrodeElement node out of range (0..#inputmeshnodes-1) !");
-///      return (false);
-///    }
-///    
-///    unsigned int tmp1=static_cast<unsigned int>(electrodeElementType_->get(i,0));
-///    if ( !(tmp1>=1 && tmp1<=3) ) {
-///      algo_->error(" Specified ElectrodeElementType out of range, allowed range: 1 (point), 2 (triangle), 3 (tetrahedra) !");
-///      return (false);
-///    }
-///    
-///    for(unsigned int j=0;j<electrodeElementDefinitionCols_;j++)
-///    {
-///      unsigned int tmp2=static_cast<unsigned int>(electrodeElementDefinition_->get(i,j));
-///      if ( (tmp2<0) || (tmp2>=mesh_nrnodes_) ) {
-///        algo_->error(" Specified ElectrodeElementDefinition is out of range (> mesh nodes-1) - allowed range is (allowed range: 0..#meshnodes-1) !");
-///        return (false);
-///      }  
-///    }
-///    
-///    for (unsigned int j=0;j<electrodes_.size();j++)
-///    {
-///      if (electrodes_[j]==tmp)
-///      {
-///        found = true;
-///        break;
-///      }
-///    }
-///
-///    if (! found)
-///    {
-///      electrodes_.push_back(electrodeElements_->get(i,0));
-///      number_electrodes_++;
-///    }
-///  }
-///  
-///  if (!numbering_ok)
-///  {
-///   algo_->error(" The electrode numbering should should start at 0 (allowed range: 0..#meshnodes-1) !");
-///   return (false);
-///  }
-///  
-///   // get surface impedance
-///  if(contactimpedance.get_rep())
-///  {
-///    contactImpedanceInformation_ = contactimpedance->dense();
-///    if(static_cast<unsigned int>(contactImpedanceInformation_->nrows())!=electrodeElementsRows_) {
-///     algo_->error(" Contact surface impedance vector and electrode definition does not fit !"); 
-///     return (false);
-///    }
-///  }
-///  else 
-///  { 
-///    contactImpedanceInformation_=new DenseMatrix(electrodeElementsRows_,1);  
-///    for(unsigned int i=0;i<electrodeElementsRows_;i++) 
-///      contactImpedanceInformation_->put(i,0,1); 
-///  }
-///
-///  if (  !( (contactImpedanceInformation_->nrows()==electrodeElementsRows_) && (contactImpedanceInformation_->ncols()==1))  ) {
-///    algo_->error(" ContactImpedanceMatrix should have matrix dimensions: #electrodeselementsx1 !");
-///    return (false);
-///  } 
-///  
-///  stiffnessMatrix_ = stiff->sparse();
-///  if ( !( (stiffnessMatrix_->nrows()>0) && (stiffnessMatrix_->nrows()==stiffnessMatrix_->ncols()))) {
-///    algo_->error(" StiffnessMatrix should be square and non-empty !");
-///    return (false);
-///  }
-///  if ( !( stiffnessMatrix_->nrows()==mesh_nrnodes_  ) ) {
-///    algo_->error(" StiffnessMatrix should have the same number of nodes as inputmesh !");
-///    return (false);
-///  }
-///  if (! stiffnessMatrix_->validate()) {
-///    algo_->error(" StiffnessMatrix is broken  !"); 
-///    return (false);
-///  }
-///  
+  electrodeElements_=(ElectrodeElements);
+  electrodeElementType_=(ElectrodeElementType);
+  electrodeElementDefinition_=(ElectrodeElementDefinition);
+  
+  //check matrices dimensions
+  electrodeElementsRows_=static_cast<unsigned int>(electrodeElements_->nrows());
+  electrodeElementTypeRows_=static_cast<unsigned int>(electrodeElementType_->nrows());
+  electrodeElementDefinitionRows_=static_cast<unsigned int>(electrodeElementDefinition_->nrows());
+  electrodeElementsCols_=static_cast<unsigned int>(electrodeElements_->ncols());
+  electrodeElementTypeCols_=static_cast<unsigned int>(electrodeElementType_->ncols());
+  electrodeElementDefinitionCols_=static_cast<unsigned int>(electrodeElementDefinition_->ncols());
+
+  if( !((electrodeElementsRows_==electrodeElementTypeRows_) && (electrodeElementTypeRows_==electrodeElementDefinitionRows_)) ) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Number of Matrix-rows of Matrices for Electrode-Definition should be the same!");   
+  }
+  
+  if( !((electrodeElementsCols_==1) && (electrodeElementTypeCols_==1) && (electrodeElementDefinitionCols_>=1 && electrodeElementDefinitionCols_<=4) ) ) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Number of Matrix-columns of Matrices in Electrode-Definition should be: ElectrodeElementType=1, ElectrodeElementDefinition=1,ElectrodeElementDefinition=4 !");   
+  }
+  
+  if (electrodeElementsRows_>mesh_nrnodes_) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Number of Electrode-Definition Nodes can not excced number of input mesh (since it refers to that) !");    
+  } 
+ 
+  if ( electrodeElementsRows_==0 ) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Number of Electrode-Definition Nodes = 0 !");    
+  }
+
+  //check matrices content
+  electrodes_.push_back(static_cast<unsigned int>((*electrodeElements_)(0,0)));
+  number_electrodes_=1; bool numbering_ok=false;
+  for (unsigned int i=0;i<electrodeElementsRows_;i++)
+  {
+    bool found = false;
+    if (static_cast<unsigned int>((*electrodeElements_)(0,0))==0)  {
+      numbering_ok=true;
+    }
+    
+    unsigned int tmp=static_cast<unsigned int>((*electrodeElements_)(i,0));
+    if( tmp>=mesh_nrnodes_ ) {
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Specified ElectrodeElement node out of range (0..#inputmeshnodes-1) !");     
+    }
+    
+    unsigned int tmp1=static_cast<unsigned int>((*electrodeElementType_)(i,0));
+    if ( !(tmp1>=1 && tmp1<=3) ) {
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Specified ElectrodeElementType out of range, allowed range: 1 (point), 2 (triangle), 3 (tetrahedra) !");     
+    }
+    
+    for(unsigned int j=0;j<electrodeElementDefinitionCols_;j++)
+    {
+      unsigned int tmp2=static_cast<unsigned int>((*electrodeElementDefinition_)(i,j));
+      if ( tmp2>=mesh_nrnodes_ ) {
+        THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Specified ElectrodeElementDefinition is out of range (> mesh nodes-1) - allowed range is (allowed range: 0..#meshnodes-1) !");     
+      }  
+    }
+    
+    for (unsigned int j=0;j<electrodes_.size();j++)
+    {
+      if (electrodes_[j]==tmp)
+      {
+        found = true;
+        break;
+      }
+    }
+
+    if (! found)
+    {
+      electrodes_.push_back((*electrodeElements_)(i,0));
+      number_electrodes_++;
+    }
+  }
+  
+  if (!numbering_ok)
+  {
+   THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" The electrode numbering should should start at 0 (allowed range: 0..#meshnodes-1) !");  
+  }
+  
+   // get surface impedance
+  if(contactimpedance)
+  {
+    contactImpedanceInformation_ = contactimpedance;
+    if(static_cast<unsigned int>(contactImpedanceInformation_->nrows())!=electrodeElementsRows_) {
+     THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Contact surface impedance vector and electrode definition does not fit !");     
+    }
+  }
+  else 
+  { 
+    contactImpedanceInformation_.reset(new DenseMatrix(electrodeElementsRows_,1));  
+    for(unsigned int i=0;i<electrodeElementsRows_;i++) 
+      (*contactImpedanceInformation_)(i,0)=1; 
+  }
+
+  if (  !( (contactImpedanceInformation_->nrows()==electrodeElementsRows_) && (contactImpedanceInformation_->ncols()==1))  ) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" ContactImpedanceMatrix should have matrix dimensions: #electrodeselementsx1 !");   
+  } 
+  
+  stiffnessMatrix_ = stiff;
+  if ( !( (stiffnessMatrix_->nrows()>0) && (stiffnessMatrix_->nrows()==stiffnessMatrix_->ncols()))) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" StiffnessMatrix should be square and non-empty !");    
+  }
+  if ( !( stiffnessMatrix_->nrows()==mesh_nrnodes_  ) ) {
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" StiffnessMatrix should have the same number of nodes as inputmesh !");    
+  }
+
+  stiffnessMatrix_->makeCompressed();
+
   return true;
 }
   
 
-bool TDCSMatrixBuilder::build_matrix(SCIRun::Core::Datatypes::MatrixHandle& output)
+bool TDCSMatrixBuilder::build_matrix(SparseRowMatrixHandle& output)
 {
   return singlethread();
 }
 
-bool BuildTDCSMatrixAlgo::run(MatrixHandle stiff, FieldHandle mesh, MatrixHandle ElectrodeElements, MatrixHandle ElectrodeElementType, MatrixHandle ElectrodeElementDefinition, MatrixHandle contactimpedance, MatrixHandle& output)
+bool BuildTDCSMatrixAlgo::run(SparseRowMatrixHandle stiff, FieldHandle mesh, DenseMatrixHandle ElectrodeElements, DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle
+ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixHandle& output)
 {
  ScopedAlgorithmStatusReporter asc(this, "Name");
    
