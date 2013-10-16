@@ -37,9 +37,9 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/Legacy/Matrix/MatrixOperations.h>
 #include <Core/Datatypes/Legacy/Matrix/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
 
@@ -52,6 +52,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 
 class TDCSMatrixBuilder
 {
@@ -94,443 +95,444 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 ///  //the stiffness-matrix updates are written into SparseRowMatrixFromMap::Values additionalData
 ///  //the additional matrices B,C are written into a efficient tree structure (SparseRowMatrixFromMap, thanks to Dan White) and later on added to the modified stiffness matrix to the resulting "tdcs_" - matrix
 ///  //the final tdcs outputmatrix takes the original input stiffness and overwrites it with additionalData
-///  size_type m = static_cast<size_type>(mesh_nrnodes_);
-///  size_type n = static_cast<size_type>(mesh_nrnodes_);
-///  SparseRowMatrixFromMap::Values additionalData;
-///      
-///  unsigned int p1=0,p2=0,p3=0,p4=0;
-///  Point pos; VMesh::Elem::index_type idx; double detJ=0.0;
-///  double volume=0.0, volume1_4=0.0, volume1_10=0.0, volume1_20=0.0, elc=0.0, surface_impedance=0.0, v_14_imp=0.0, v_110_imp=0.0, v_120_imp=0.0;
-///  double x1=0.0,x2=0.0,x3=0.0,x4=0.0,y1=0.0,y2=0.0,y3=0.0,y4=0.0,z1=0.0,z2=0.0,z3=0.0,z4=0.0,tmp=0.0,tmp1=0.0,tmp2=0.0,triangle_area=0.0;
+  size_type m = static_cast<size_type>(mesh_nrnodes_);
+  size_type n = static_cast<size_type>(mesh_nrnodes_);
+  SparseRowMatrixFromMap::Values additionalData;
+        
+  unsigned int p1=0,p2=0,p3=0,p4=0;
+  Point pos; VMesh::Elem::index_type idx; double detJ=0.0;
+  double volume=0.0, volume1_4=0.0, volume1_10=0.0, volume1_20=0.0, elc=0.0, surface_impedance=0.0, v_14_imp=0.0, v_110_imp=0.0, v_120_imp=0.0;
+  double x1=0.0,x2=0.0,x3=0.0,x4=0.0,y1=0.0,y2=0.0,y3=0.0,y4=0.0,z1=0.0,z2=0.0,z3=0.0,z4=0.0,tmp=0.0,tmp1=0.0,tmp2=0.0,triangle_area=0.0;
 ///
-/// for(index_type i = 0; i<electrodeElementDefinitionRows_; i++)
-///  {
-///    if(electrodeElementType_->get(i,0)==1) //point electrodes
-///    {
-///      surface_impedance=contactImpedanceInformation_->get(i,0);
-///      if (surface_impedance<=0){
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zero !");
-///       
-///      }
-///      tmp2=1.0/surface_impedance;
-///      tmp1=tmp2/2.0;
-///      p1=static_cast<unsigned int>(electrodeElementDefinition_->get(i,0));
-///      tmp=stiffnessMatrix_->get(p1,p1);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
-///      }
+  for(index_type i = 0; i<electrodeElementDefinitionRows_; i++)
+  {
+    if((*electrodeElementType_)(i,0)==1) //point electrodes
+    {
+      surface_impedance=(*contactImpedanceInformation_)(i,0);
+      if (surface_impedance<=0){
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zero !");
+       
+      }
+      tmp2=1.0/surface_impedance;
+      tmp1=tmp2/2.0;
+      p1=static_cast<unsigned int>((*electrodeElementDefinition_)(i,0));
+      tmp=((*stiffnessMatrix_).coeff(p1,p1));
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
+      }
+
+//     if (tmp==0) 
+//      { 
+//       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+//      }
+
+      tmp+=tmp1; additionalData[p1][p1]+=tmp;      
+      elc=((*electrodeElements_)(i,0))+mesh_nrnodes_;
+      SparseRowMatrixFromMap::Row& rowElc = additionalData[elc];
+      rowElc[p1] -= tmp1;
+      additionalData[p1][elc] -= tmp1;
+      rowElc[elc] += tmp2*0.5;
+    } 
+   else
+   if(electrodeElementType_->coeff(i,0)==2) //electrode made of triangles
+   {
+     // compute triangle surface area
+     mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,0)));
+     x1=pos.x(); y1=pos.y(); z1=pos.z();
+     
+     mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,1)));
+     x2=pos.x(); y2=pos.y(); z2=pos.z();
+     
+     mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,2)));
+     x3=pos.x(); y3=pos.y(); z3=pos.z();
+     
+     //compute triangle area in 3D
+     tmp =y1*z2+z1*y3+y2*z3-z2*y3-z1*y2-y1*z3;
+     tmp1=z1*x2+x1*z3+z2*x3-x2*z3-x1*z2-z1*x3;
+     tmp2=x1*y2+y1*x3+x2*y3-y2*x3-y1*x2-x1*y3;
+     
+     triangle_area=0.5 * sqrt(tmp*tmp+tmp1*tmp1+tmp2*tmp2);
 ///
-///      if (tmp==0) 
-///      { 
-/////       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
+     if(triangle_area<=0) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Triangle area should be positive! "); 
+      
+     }
+     
+     surface_impedance=contactImpedanceInformation_->coeff(i,0);
+     if (surface_impedance<=0)
+     {
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zeros !");
+      
+     }
+     tmp1 = (2.0*triangle_area) / surface_impedance;
+     
+     p1=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,0));
+     p2=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,1));
+     p3=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,2));
+     tmp=tmp1/6.0; //prepare value for B and Bt
+     
+     elc=electrodeElements_->coeff(i,0)+mesh_nrnodes_;
+     SparseRowMatrixFromMap::Row& rowElc = additionalData[elc];
+     //Bt
+     rowElc[p1] -= tmp;
+     rowElc[p2] -= tmp;
+     rowElc[p3] -= tmp;
+     
+     //B
+     additionalData[p1][elc] = rowElc[p1];
+     additionalData[p2][elc] = rowElc[p2];
+     additionalData[p3][elc] = rowElc[p3];
 ///
-///      tmp+=tmp1; additionalData[p1][p1]+=tmp;      
-///      elc=electrodeElements_->get(i,0)+mesh_nrnodes_;
-///      SparseRowMatrixFromMap::Row& rowElc = additionalData[elc];
-///      rowElc[p1] -= tmp1;
-///      additionalData[p1][elc] -= tmp1;
-///      rowElc[elc] += tmp2*0.5;
-///    } else
-///    if(electrodeElementType_->get(i,0)==2) //electrode made of triangles
-///    {
-///      // compute triangle surface area
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,0)));
-///      x1=pos.x(); y1=pos.y(); z1=pos.z();
-///      
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,1)));
-///      x2=pos.x(); y2=pos.y(); z2=pos.z();
-///      
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,2)));
-///      x3=pos.x(); y3=pos.y(); z3=pos.z();
-///      
-///      //compute triangle area in 3D
-///      tmp =y1*z2+z1*y3+y2*z3-z2*y3-z1*y2-y1*z3;
-///      tmp1=z1*x2+x1*z3+z2*x3-x2*z3-x1*z2-z1*x3;
-///      tmp2=x1*y2+y1*x3+x2*y3-y2*x3-y1*x2-x1*y3;
-///      
-///      triangle_area=0.5 * sqrt(tmp*tmp+tmp1*tmp1+tmp2*tmp2);
+     tmp=tmp1/12.0;
+     tmp2=stiffnessMatrix_->coeff(p1,p1);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value "); 
+       
+     }
+     if (tmp2==0) {
+ //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
+ //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p1][p1]=tmp2;
 ///
-///      if(triangle_area<=0) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" Triangle area should be positive! "); 
-///       
-///      }
-///      
-///      surface_impedance=contactImpedanceInformation_->get(i,0);
-///      if (surface_impedance<=0)
-///      {
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zeros !");
-///       
-///      }
-///      tmp1 = (2.0*triangle_area) / surface_impedance;
-///      
-///      p1=static_cast<unsigned int>(electrodeElementDefinition_->get(i,0));
-///      p2=static_cast<unsigned int>(electrodeElementDefinition_->get(i,1));
-///      p3=static_cast<unsigned int>(electrodeElementDefinition_->get(i,2));
-///      tmp=tmp1/6.0; //prepare value for B and Bt
-///      
-///      elc=electrodeElements_->get(i,0)+mesh_nrnodes_;
-///      SparseRowMatrixFromMap::Row& rowElc = additionalData[elc];
-///      //Bt
-///      rowElc[p1] -= tmp;
-///      rowElc[p2] -= tmp;
-///      rowElc[p3] -= tmp;
-///      
-///      //B
-///      additionalData[p1][elc] = rowElc[p1];
-///      additionalData[p2][elc] = rowElc[p2];
-///      additionalData[p3][elc] = rowElc[p3];
-///
-///      tmp=tmp1/12.0;
-///      tmp2=stiffnessMatrix_->get(p1,p1);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value "); 
-///        
-///      }
-///      if (tmp2==0) {
-///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
-///  //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p1][p1]=tmp2;
-///
-///      tmp2=stiffnessMatrix_->get(p2,p2);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-///    //   std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p2 << ")" << std::endl;  
-///    //   algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }     
-///      tmp2+=tmp; additionalData[p2][p2]=tmp2;
-///      
-///      tmp2=stiffnessMatrix_->get(p3,p3);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-///    //   std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p3 << ")" << std::endl;  
-///    //   algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p3][p3]=tmp2;
-///      
-///      tmp=tmp1/24.0;
-///      tmp2=stiffnessMatrix_->get(p1,p2);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p2 << ")" << std::endl;  
-///  //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p1][p2]=tmp2;
-///      
-///      tmp2=stiffnessMatrix_->get(p1,p3);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p3 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p1][p3]=tmp2;
-///      
-///      tmp2=stiffnessMatrix_->get(p2,p1);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p1 << ")" << std::endl;  
-///  //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p2][p1]=tmp2;
-///      
-///      tmp2=stiffnessMatrix_->get(p2,p3);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p3 << ")" << std::endl;  
-///  //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p2][p3]=tmp2;
-///      
-///      tmp2=stiffnessMatrix_->get(p3,p1);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p1 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p3][p1]=tmp2;
-///      
-///      tmp2=stiffnessMatrix_->get(p3,p2);
-///      if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p2 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp2+=tmp; additionalData[p3][p2]=tmp2;
-///     
-///      additionalData[elc][elc] += 0.5*tmp1;      
-///    } else
-///    if(electrodeElementType_->get(i,0)==3)  //electrode made of tetrahedral elements
-///    {
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,0)));
-///      x1=pos.x(); y1=pos.y(); z1=pos.z();
-///        
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,1)));
-///      x2=pos.x(); y2=pos.y(); z2=pos.z();
-///        
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,2)));
-///      x3=pos.x(); y3=pos.y(); z3=pos.z();
-///       
-///      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->get(i,3)));
-///      x4=pos.x(); y4=pos.y(); z4=pos.z();
-///        
-///      //  compute determinant of jacobian which is needed for volume of tet	
-///      detJ=(x3*(y2*z1-y1*z2)+ x2*(y1*z3-y3*z1) - x1*(y2*z3-y3*z2))+(-x4*(y2*z1-y1*z2)-x2* ( y1*z4 - y4*z1)+x1* ( y2*z4 - y4*z2))-(-x4*(y3*z1-y1*z3)-x3*(y1*z4-y4*z1)+x1*( y3*z4-y4*z3))+(-x4* (y3*z2-y2*z3)-x3* ( y2*z4-y4*z2)+x2* (y3*z4-y4*z3));      
-///      
-///      if (detJ<=0)
-///      {
-///        tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///        THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Mesh has elements with negative/zero jacobians, check the order of the nodes that define an element");
-///        
-///      }
-///      volume=1.0/6.0*detJ; volume1_4 =volume/4.0; volume1_10=volume/10.0; volume1_20=volume/20.0;
-///      
-///      surface_impedance=contactImpedanceInformation_->get(i,0);
-///      if (surface_impedance<=0)
-///      {
-///        tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///        THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zeros !");
-///        
-///      }
-///      
-///      p1=static_cast<unsigned int>(electrodeElementDefinition_->get(i,0));
-///      p2=static_cast<unsigned int>(electrodeElementDefinition_->get(i,1));
-///      p3=static_cast<unsigned int>(electrodeElementDefinition_->get(i,2));
-///      p4=static_cast<unsigned int>(electrodeElementDefinition_->get(i,3));
-///      elc=electrodeElements_->get(i,0)+mesh_nrnodes_;
-///      v_14_imp=static_cast<double>(-volume1_4/surface_impedance);
-///      v_110_imp=static_cast<double>(volume1_10/surface_impedance);
-///      v_120_imp=static_cast<double>(volume1_20/surface_impedance);
-///      
-///      // B///t
-///      SparseRowMatrixFromMap::Row& rowElc = additionalData[elc];
-///      rowElc[p1] += v_14_imp;
-///      rowElc[p2] += v_14_imp;
-///      rowElc[p3] += v_14_imp;
-///      rowElc[p4] += v_14_imp;
-///      // B
-///      additionalData[p1][elc] = rowElc[p1];
-///      additionalData[p2][elc] = rowElc[p2];
-///      additionalData[p3][elc] = rowElc[p3];
-///      additionalData[p4][elc] = rowElc[p4];
-///      
-///      //A
-///      tmp=stiffnessMatrix_->get(p1,p1);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      } 
-///      tmp+=v_110_imp; additionalData[p1][p1]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p2,p2);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p2 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_110_imp; additionalData[p2][p2]=tmp;   
-///      
-///      tmp=stiffnessMatrix_->get(p3,p3);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-///  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p3 << ")" << std::endl;  
-///  //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_110_imp; additionalData[p3][p3]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p4,p4);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
-///      }
-///      
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p4 << ")" << std::endl; 
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      } 
-///      tmp+=v_110_imp; additionalData[p4][p4]=tmp; 
-///      
-///      tmp=stiffnessMatrix_->get(p1,p2);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p2 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p1][p2]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p2,p1);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p1 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p2][p1]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p1,p3);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-/////       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p3 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p1][p3]=tmp;
-///      tmp=stiffnessMatrix_->get(p3,p1);
-///      
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-/////       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p1 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p3][p1]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p1,p4);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p4 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      } 
-///      tmp+=v_120_imp; additionalData[p1][p4]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p4,p1);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/////       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p1 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p4][p1]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p2,p3);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p3 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p2][p3]=tmp;      
-///      
-///      tmp=stiffnessMatrix_->get(p3,p2);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p2 << ")" << std::endl;  
-/////       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p3][p2]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p2,p4);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }      
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p4 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p2][p4]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p4,p2);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p2 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p4][p2]=tmp;
-///            
-///      tmp=stiffnessMatrix_->get(p3,p4);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
-///        
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p4 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p3][p4]=tmp;
-///      
-///      tmp=stiffnessMatrix_->get(p4,p3);
-///      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
-///       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
-///      }
-///      if (tmp2==0) {
-/// //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p3 << ")" << std::endl;  
-/// //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
-///      }
-///      tmp+=v_120_imp; additionalData[p4][p3]=tmp;
-///      
-///      //C
-///      rowElc[elc] += volume/surface_impedance;
-///    } else
-///   {
-///    tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" This Electrode-type is not implemented, a electrode only consist of points(1), triangles(2) and tetrahedral elements(3)."); 
-///  }
-///  }
-///  tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
+     tmp2=stiffnessMatrix_->coeff(p2,p2);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+   //   std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p2 << ")" << std::endl;  
+   //   algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }     
+     tmp2+=tmp; additionalData[p2][p2]=tmp2;
+     
+     tmp2=stiffnessMatrix_->coeff(p3,p3);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+   //   std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p3 << ")" << std::endl;  
+   //   algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p3][p3]=tmp2;
+     
+     tmp=tmp1/24.0;
+     tmp2=stiffnessMatrix_->coeff(p1,p2);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+ //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p2 << ")" << std::endl;  
+ //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p1][p2]=tmp2;
+     
+     tmp2=stiffnessMatrix_->coeff(p1,p3);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+//      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p3 << ")" << std::endl;  
+//      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p1][p3]=tmp2;
+     
+     tmp2=stiffnessMatrix_->coeff(p2,p1);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+ //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p1 << ")" << std::endl;  
+ //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p2][p1]=tmp2;
+     
+     tmp2=stiffnessMatrix_->coeff(p2,p3);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+ //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p3 << ")" << std::endl;  
+ //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p2][p3]=tmp2;
+     
+     tmp2=stiffnessMatrix_->coeff(p3,p1);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     
+     if (tmp2==0) {
+//      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p1 << ")" << std::endl;  
+//      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p3][p1]=tmp2;
+     
+     tmp2=stiffnessMatrix_->coeff(p3,p2);
+     if(IsNan(tmp2) || !IsFinite(tmp2) || IsInfinite(tmp2)) { 
+      THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+       
+     }
+     if (tmp2==0) {
+//      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p2 << ")" << std::endl;  
+//      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+     }
+     tmp2+=tmp; additionalData[p3][p2]=tmp2;
+    
+     additionalData[elc][elc] += 0.5*tmp1;      
+   } else
+    if(electrodeElementType_->coeff(i,0)==3)  //electrode made of tetrahedral elements
+    {
+      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,0)));
+      x1=pos.x(); y1=pos.y(); z1=pos.z();
+        
+      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,1)));
+      x2=pos.x(); y2=pos.y(); z2=pos.z();
+        
+      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,2)));
+      x3=pos.x(); y3=pos.y(); z3=pos.z();
+       
+      mesh_->get_point(pos, VMesh::Node::index_type(electrodeElementDefinition_->coeff(i,3)));
+      x4=pos.x(); y4=pos.y(); z4=pos.z();
+        
+      //  compute determinant of jacobian which is needed for volume of tet	
+      detJ=(x3*(y2*z1-y1*z2)+ x2*(y1*z3-y3*z1) - x1*(y2*z3-y3*z2))+(-x4*(y2*z1-y1*z2)-x2* ( y1*z4 - y4*z1)+x1* ( y2*z4 - y4*z2))-(-x4*(y3*z1-y1*z3)-x3*(y1*z4-y4*z1)+x1*( y3*z4-y4*z3))+(-x4* (y3*z2-y2*z3)-x3* ( y2*z4-y4*z2)+x2* (y3*z4-y4*z3));      
+      
+      if (detJ<=0)
+      {
+        tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
+        THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Mesh has elements with negative/zero jacobians, check the order of the nodes that define an element");
+        
+      }
+      volume=1.0/6.0*detJ; volume1_4 =volume/4.0; volume1_10=volume/10.0; volume1_20=volume/20.0;
+      
+      surface_impedance=contactImpedanceInformation_->coeff(i,0);
+      if (surface_impedance<=0)
+      {
+        tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
+        THROW_ALGORITHM_INPUT_ERROR_SIMPLE("Contact surface impedance is negative or zeros !");
+        
+      }
+      
+      p1=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,0));
+      p2=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,1));
+      p3=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,2));
+      p4=static_cast<unsigned int>(electrodeElementDefinition_->coeff(i,3));
+      elc=electrodeElements_->coeff(i,0)+mesh_nrnodes_;
+      v_14_imp=static_cast<double>(-volume1_4/surface_impedance);
+      v_110_imp=static_cast<double>(volume1_10/surface_impedance);
+      v_120_imp=static_cast<double>(volume1_20/surface_impedance);
+      
+      // Bt
+      SparseRowMatrixFromMap::Row& rowElc = additionalData[elc];
+      rowElc[p1] += v_14_imp;
+      rowElc[p2] += v_14_imp;
+      rowElc[p3] += v_14_imp;
+      rowElc[p4] += v_14_imp;
+      // B
+      additionalData[p1][elc] = rowElc[p1];
+      additionalData[p2][elc] = rowElc[p2];
+      additionalData[p3][elc] = rowElc[p3];
+      additionalData[p4][elc] = rowElc[p4];
+      
+      //A
+      tmp=stiffnessMatrix_->coeff(p1,p1);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p1 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      } 
+      tmp+=v_110_imp; additionalData[p1][p1]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p2,p2);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p2 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_110_imp; additionalData[p2][p2]=tmp;   
+      
+      tmp=stiffnessMatrix_->coeff(p3,p3);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      
+      if (tmp2==0) {
+  //     std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p3 << ")" << std::endl;  
+  //     algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_110_imp; additionalData[p3][p3]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p4,p4);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
+      }
+      
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p4 << ")" << std::endl; 
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      } 
+      tmp+=v_110_imp; additionalData[p4][p4]=tmp; 
+      
+      tmp=stiffnessMatrix_->coeff(p1,p2);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p2 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p1][p2]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p2,p1);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p1 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p2][p1]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p1,p3);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      
+      if (tmp2==0) {
+//       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p3 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p1][p3]=tmp;
+      tmp=stiffnessMatrix_->coeff(p3,p1);
+      
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      
+      if (tmp2==0) {
+//       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p1 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p3][p1]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p1,p4);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p1 << "," << p4 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      } 
+      tmp+=v_120_imp; additionalData[p1][p4]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p4,p1);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+//       std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p1 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p4][p1]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p2,p3);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p3 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p2][p3]=tmp;      
+      
+      tmp=stiffnessMatrix_->coeff(p3,p2);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p2 << ")" << std::endl;  
+//       algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p3][p2]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p2,p4);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }      
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p2 << "," << p4 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p2][p4]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p4,p2);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p2 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p4][p2]=tmp;
+            
+      tmp=stiffnessMatrix_->coeff(p3,p4);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !"); 
+        
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p3 << "," << p4 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p3][p4]=tmp;
+      
+      tmp=stiffnessMatrix_->coeff(p4,p3);
+      if(IsNan(tmp) || !IsFinite(tmp) || IsInfinite(tmp)) { 
+       THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" No valid value in stiffnessmatrix !");  
+      }
+      if (tmp2==0) {
+ //      std::cout<<"Unexpected zero entry in stiffness matrix at ("<< p4 << "," << p3 << ")" << std::endl;  
+ //      algo_->remark("At least one entry in the stiffness matrix for an element (see console output) is zero. Please review the used units (conductivity, mesh location) and scale them up.");
+      }
+      tmp+=v_120_imp; additionalData[p4][p3]=tmp;
+      
+      //C
+      rowElc[elc] += volume/surface_impedance;
+    } else
+   {
+    tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
+    THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" This Electrode-type is not implemented, a electrode only consist of points(1), triangles(2) and tetrahedral elements(3)."); 
+  }
+    }
+//  tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
 ///    
   return true;
 }  
