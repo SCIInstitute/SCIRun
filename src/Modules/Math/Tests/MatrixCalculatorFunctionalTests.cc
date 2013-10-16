@@ -234,6 +234,4 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   EXPECT_EQ(9, reportOutput.get<3>());
   EXPECT_EQ(22, reportOutput.get<4>());
   EXPECT_EQ(186, reportOutput.get<5>());
-
-  //EXPECT_TRUE(false);
 }

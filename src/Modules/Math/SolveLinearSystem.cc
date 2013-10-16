@@ -29,7 +29,7 @@
 #include <iostream>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
@@ -38,7 +38,6 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Logging;
@@ -53,10 +52,10 @@ SolveLinearSystemModule::SolveLinearSystemModule() : Module(ModuleLookupInfo("So
 void SolveLinearSystemModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(SolveLinearSystemAlgo::TargetError(), 0.00001);
-  state->setValue(SolveLinearSystemAlgo::MaxIterations(), 500);
-  state->setValue(SolveLinearSystemAlgo::MethodOption(), std::string("cg"));
-  state->setValue(SolveLinearSystemAlgo::PreconditionerOption, std::string("jacobi"));
+  state->setValue(Variables::TargetError, 0.00001);
+  state->setValue(Variables::MaxIterations, 500);
+  state->setValue(Variables::MethodOption, std::string("cg"));
+  state->setValue(Variables::PreconditionerOption, std::string("jacobi"));
 }
 
 void SolveLinearSystemModule::execute()
@@ -75,16 +74,16 @@ void SolveLinearSystemModule::execute()
     if (!rhsCol)
       rhsCol = matrix_convert::to_column(rhs);
 
-    auto tolerance = get_state()->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
-    auto maxIterations = get_state()->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
+    auto tolerance = get_state()->getValue(Variables::TargetError).getDouble();
+    auto maxIterations = get_state()->getValue(Variables::MaxIterations).getInt();
 
-    algo_->set(SolveLinearSystemAlgo::TargetError(), tolerance);
-    algo_->set(SolveLinearSystemAlgo::MaxIterations(), maxIterations);
+    algo_->set(Variables::TargetError, tolerance);
+    algo_->set(Variables::MaxIterations, maxIterations);
 
-    auto method = get_state()->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
-    auto precond = get_state()->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
-    algo_->set_option(SolveLinearSystemAlgo::MethodOption(), method);
-    algo_->set_option(SolveLinearSystemAlgo::PreconditionerOption, precond);
+    auto method = get_state()->getValue(Variables::MethodOption).getString();
+    auto precond = get_state()->getValue(Variables::PreconditionerOption).getString();
+    algo_->set_option(Variables::MethodOption, method);
+    algo_->set_option(Variables::PreconditionerOption, precond);
 
     std::ostringstream ostr;
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
@@ -96,7 +95,7 @@ void SolveLinearSystemModule::execute()
       ScopedTimeRemarker perf(this, "Linear solver");
       remark("Using preconditioner: " + precond);
 
-      auto output = algo_->run_generic(AlgoInputBuilder()(LHS, A)(RHS, rhsCol).build());
+      auto output = algo_->run_generic(make_input((LHS, A)(RHS, rhsCol)));
       solution = get_output(output, Solution, Matrix);
     }
 

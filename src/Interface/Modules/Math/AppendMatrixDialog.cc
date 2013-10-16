@@ -28,10 +28,12 @@
 
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 
 AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandle state,
@@ -49,17 +51,17 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
 
 void AppendMatrixDialog::isRows()
 {
-  state_->setValue(AppendMatrixAlgorithm::OptionName, AppendMatrixAlgorithm::ROWS);
+  state_->setValue(Variables::AppendMatrixOption, AppendMatrixAlgorithm::ROWS);
 }
 
 void AppendMatrixDialog::isCols()
 {
-  state_->setValue(AppendMatrixAlgorithm::OptionName, AppendMatrixAlgorithm::COLUMNS);
+  state_->setValue(Variables::AppendMatrixOption, AppendMatrixAlgorithm::COLUMNS);
 }
 
 void AppendMatrixDialog::pull()
 {
-  if (AppendMatrixAlgorithm::ROWS == state_->getValue(AppendMatrixAlgorithm::OptionName).getInt())
+  if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::AppendMatrixOption).getInt())
     appendRowsButton_->setChecked(true);
   else
     appendColumnsButton_->setChecked(true);

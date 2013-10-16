@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -114,7 +115,7 @@ struct MaximumCoefficient : MatrixVisitor
   }
 };
 
-ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
+ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& input) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input matrix");
 
@@ -138,5 +139,11 @@ ReportMatrixInfoAlgorithm::Outputs ReportMatrixInfoAlgorithm::run(const Inputs& 
 
 AlgorithmOutput ReportMatrixInfoAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto matrix = input.get<Matrix>(Variables::InputMatrix);
+
+  auto outputs = run(matrix);
+
+  AlgorithmOutput output;
+  output.setTransient(outputs); //[MatrixInfo] = outputs;
+  return output;
 }
