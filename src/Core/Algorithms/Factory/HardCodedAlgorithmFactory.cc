@@ -35,12 +35,14 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 
@@ -85,6 +87,10 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new EvaluateLinearAlgebraUnaryAlgorithm);
   else if (name == "EvaluateLinearAlgebraBinary")
     h.reset(new EvaluateLinearAlgebraBinaryAlgorithm);
+  else if (name == "ConvertMeshToIrregularMesh")
+    h.reset(new ConvertMeshToIrregularMeshAlgo);
+  else if (name == "ReadMesh")
+    h.reset(new TextToTriSurfFieldAlgorithm);
 
   if (h && algoCollaborator)
   {
