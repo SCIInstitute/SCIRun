@@ -42,7 +42,6 @@ namespace Math {
   {
   public:
     enum Option { ROWS, COLUMNS };
-    static AlgorithmParameterName OptionName;
 
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
     typedef Option Parameters;  

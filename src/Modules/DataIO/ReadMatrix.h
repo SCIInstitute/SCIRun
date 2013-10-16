@@ -45,7 +45,7 @@ namespace DataIO {
     virtual void execute();
     virtual void setStateDefaults() {}
     INPUT_PORT(0, Filename, String);
-    OUTPUT_PORT(0, Matrix, Matrix);
+    OUTPUT_PORT(0, MatrixLoaded, Matrix);
     OUTPUT_PORT(1, FileLoaded, String);
   private:
     std::string filename_;

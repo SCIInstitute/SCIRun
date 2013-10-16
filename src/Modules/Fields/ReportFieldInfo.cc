@@ -26,27 +26,31 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Fields/ReportFieldInfo.h>
-#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
-ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("ReportFieldInfo", "MiscField", "SCIRun")) {}
+ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("ReportFieldInfo", "MiscField", "SCIRun"))
+{
+  INITIALIZE_PORT(Input);
+}
 
 void ReportFieldInfoModule::execute()
 {
   auto field = getRequiredInput(Input);
 
-  ReportFieldInfoAlgorithm algo;
-  auto output = algo.run(field);
+  auto output = algo_->run_generic(make_input((Input, field)));
+
   get_state()->setTransientValue("ReportedInfo", output);
-  sendOutput(FieldType, boost::make_shared<String>(output.type));
-  sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
+
+  //TODO: requires knowledge of algorithm type
+//  auto outputObj = any_cast_or_default<
+//  sendOutput(FieldType, boost::make_shared<String>(output.type));
+//  sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
 }
