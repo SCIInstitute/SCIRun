@@ -37,7 +37,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::DataIO;
 
-WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun")) {}
+WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun"))
+{
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(MatrixToWrite);
+}
 
 //TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void WriteMatrixModule::execute()

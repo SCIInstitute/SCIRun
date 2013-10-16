@@ -43,5 +43,8 @@ const AlgorithmInputName Variables::InputMatrix("InputMatrix");
 const AlgorithmInputName Variables::FirstMatrix("FirstMatrix");
 const AlgorithmInputName Variables::SecondMatrix("SecondMatrix");
 
-const AlgorithmOutputName Variables::MatrixInfo("MatrixInfo");
-const AlgorithmOutputName Variables::ResultMatrix("ResultMatrix");
+#define OUTPUT(name) const AlgorithmOutputName Variables::name(#name);
+
+OUTPUT(MatrixInfo)
+OUTPUT(ResultMatrix)
+OUTPUT(MatrixLoaded)

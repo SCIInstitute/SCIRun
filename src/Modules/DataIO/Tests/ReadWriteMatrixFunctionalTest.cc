@@ -45,6 +45,7 @@
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
 #include <Dataflow/State/SimpleMapModuleState.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <boost/filesystem.hpp>
 
 using namespace SCIRun;
@@ -76,14 +77,7 @@ namespace
         (*m)(i, j) = 3.0 * i + j;
     return m;
   }
-  DenseMatrixHandle matrix2()
-  {
-    DenseMatrixHandle m(new DenseMatrix(3, 3));
-    for (int i = 0; i < m->rows(); ++i)
-      for (int j = 0; j < m->cols(); ++j)
-        (*m)(i, j) = -2.0 * i + j;
-    return m;
-  }
+
   const DenseMatrix Zero(DenseMatrix::Zero(3,3));
 
   ModuleHandle addModuleToNetwork(Network& network, const std::string& moduleName)
@@ -119,10 +113,10 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
   auto filename = TestResources::rootDir() / "moduleTestMatrix.txt";
   boost::filesystem::remove(filename);
 
-  write->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename.string());
+  write->get_state()->setValue(Variables::Filename, filename.string());
   WriteMatrixModule* writeModule = dynamic_cast<WriteMatrixModule*>(write.get());
   ASSERT_TRUE(writeModule != 0);
-  read->get_state()->setValue(WriteMatrixAlgorithm::Filename, filename.string());
+  read->get_state()->setValue(Variables::Filename, filename.string());
   ReadMatrixModule* readModule = dynamic_cast<ReadMatrixModule*>(read.get());
   ASSERT_TRUE(readModule != 0);
 

@@ -34,14 +34,13 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Datatypes;
-
-AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
 namespace SCIRun {
   namespace Core {
@@ -56,6 +55,11 @@ namespace SCIRun {
 
         boost::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
       }}}}
+
+ReadMatrixAlgorithm::ReadMatrixAlgorithm()
+{
+  addParameter(Variables::Filename, std::string(""));
+}
 
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
@@ -96,5 +100,9 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 
 AlgorithmOutput ReadMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto filename = get(Variables::Filename).getString();
+  auto file = run(filename);
+  AlgorithmOutput output;
+  output[Variables::MatrixLoaded] = file;
+  return output;
 }

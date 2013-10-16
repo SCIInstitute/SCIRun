@@ -45,8 +45,8 @@ namespace SCIRun {
         typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
         typedef std::string Parameters; 
         typedef void Outputs;
-        static AlgorithmParameterName Filename;
 
+        WriteMatrixAlgorithm();
         Outputs run(const Inputs& input, const Parameters& filename) const;
 
         AlgorithmOutput run_generic(const AlgorithmInput& input) const;

@@ -54,6 +54,7 @@ public:
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName ResultMatrix;
+  static const AlgorithmOutputName MatrixLoaded;
 };
 
 }}}
