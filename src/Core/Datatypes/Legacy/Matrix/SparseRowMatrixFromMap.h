@@ -31,6 +31,7 @@
 
 #include <map>
 #include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun
