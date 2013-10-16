@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
-#include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
 #include <boost/bimap.hpp>
@@ -38,7 +38,7 @@
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 namespace SCIRun {
   namespace Gui {
@@ -80,13 +80,13 @@ void SolveLinearSystemDialog::pushParametersToState()
   {
     //TODO: need pattern for this, to avoid silly recursion of push/pull.
     int max = maxIterationsSpinBox_->value();
-    if (max != state_->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt())
-      state_->setValue(SolveLinearSystemAlgo::MaxIterations(), max);
+    if (max != state_->getValue(Variables::MaxIterations).getInt())
+      state_->setValue(Variables::MaxIterations, max);
 
     double error = targetErrorLineEdit_->text().toDouble();
-    if (error != state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble())
+    if (error != state_->getValue(Variables::TargetError).getDouble())
     {
-      state_->setValue(SolveLinearSystemAlgo::TargetError(), error);
+      state_->setValue(Variables::TargetError, error);
     }
 
     {
@@ -95,9 +95,9 @@ void SolveLinearSystemDialog::pushParametersToState()
 
       std::string methodOption = impl_->solverNameLookup_.left.at(method);
 
-      if (methodOption != state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString())
+      if (methodOption != state_->getValue(Variables::MethodOption).getString())
       {
-        state_->setValue(SolveLinearSystemAlgo::MethodOption(),  methodOption);
+        state_->setValue(Variables::MethodOption, methodOption);
       }
     }
 
@@ -109,9 +109,9 @@ void SolveLinearSystemDialog::pushParametersToState()
       else 
         precondOption = "None";
 
-      if (precondOption != state_->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString())
+      if (precondOption != state_->getValue(Variables::PreconditionerOption).getString())
       {
-        state_->setValue(SolveLinearSystemAlgo::PreconditionerOption,  precondOption);
+        state_->setValue(Variables::PreconditionerOption, precondOption);
       }
     }
   }
@@ -120,20 +120,20 @@ void SolveLinearSystemDialog::pushParametersToState()
 void SolveLinearSystemDialog::pull()
 {
   Pulling p(this);
-  auto iterations = state_->getValue(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  auto iterations = state_->getValue(Variables::MaxIterations).getInt();
   
-  auto tolerance = state_->getValue(SolveLinearSystemAlgo::TargetError()).getDouble();
+  auto tolerance = state_->getValue(Variables::TargetError).getDouble();
   maxIterationsSpinBox_->setValue(iterations);
   targetErrorLineEdit_->setText(QString::number(tolerance));
 
-  auto method = state_->getValue(SolveLinearSystemAlgo::MethodOption()).getString();
+  auto method = state_->getValue(Variables::MethodOption).getString();
   
   auto it = impl_->solverNameLookup_.right.find(method);
   if (it != impl_->solverNameLookup_.right.end())
     methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
   
 
-  auto precond = state_->getValue(SolveLinearSystemAlgo::PreconditionerOption).getString();
+  auto precond = state_->getValue(Variables::PreconditionerOption).getString();
   preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
 }
 

@@ -89,16 +89,14 @@ void SolveLinearSystemModule::execute()
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
     remark(ostr.str());
 
-    MatrixHandle solution;
-
     {
       ScopedTimeRemarker perf(this, "Linear solver");
       remark("Using preconditioner: " + precond);
 
       auto output = algo_->run_generic(make_input((LHS, A)(RHS, rhsCol)));
-      solution = get_output(output, Solution, Matrix);
+      sendOutputFromAlgorithm(Solution, output);
     }
 
-    sendOutput(Solution, solution);
+  
   }
 }

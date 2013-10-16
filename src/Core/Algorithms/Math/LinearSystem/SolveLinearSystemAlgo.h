@@ -63,12 +63,7 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    //TODO: these are functions since they don't link properly in the unit test executable. Don't understand why they work with the main executable as static variables.
-    static AlgorithmParameterName TargetError() { return AlgorithmParameterName("Tolerance"); }
-    static AlgorithmParameterName MaxIterations() { return AlgorithmParameterName("MaxIterations"); }
     static AlgorithmParameterName BuildConvergence;
-    static AlgorithmParameterName MethodOption() { return AlgorithmParameterName("Method"); }
-    static AlgorithmParameterName PreconditionerOption;
 
     static AlgorithmInputName LHS;
     static AlgorithmInputName RHS;
