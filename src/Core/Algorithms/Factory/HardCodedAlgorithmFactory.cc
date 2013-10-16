@@ -38,10 +38,15 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/DataIO/WriteMatrix.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
@@ -72,6 +77,14 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new ReportMatrixInfoAlgorithm);
   else if (name == "AppendMatrix")
     h.reset(new AppendMatrixAlgorithm);
+  else if (name == "ReadMatrix")
+    h.reset(new ReadMatrixAlgorithm);
+  else if (name == "WriteMatrix")
+    h.reset(new WriteMatrixAlgorithm);
+  else if (name == "EvaluateLinearAlgebraUnary")
+    h.reset(new EvaluateLinearAlgebraUnaryAlgorithm);
+  else if (name == "EvaluateLinearAlgebraBinary")
+    h.reset(new EvaluateLinearAlgebraBinaryAlgorithm);
 
   if (h && algoCollaborator)
   {

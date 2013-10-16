@@ -101,6 +101,10 @@ namespace SCIRun {
       public:
         ModuleDescriptionLookup() : includeTestingModules_(false)
         {
+          //TODO: is BUILD_TESTING off when we build releases?
+        #ifdef BUILD_TESTING
+          includeTestingModules_ = true;
+        #endif
           //TODO: make EVEN MORE generic...macros? xml?
           //TODO: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
 
