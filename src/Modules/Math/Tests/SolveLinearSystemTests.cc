@@ -70,6 +70,8 @@ TEST_F(SolveLinearSystemModuleTest, ThrowsForNonsparseLHS)
 
 TEST_F(SolveLinearSystemModuleTest, CanSolveSimple)
 {
+  UseRealAlgorithmFactory f;
+
   auto sls = makeModule("SolveLinearSystem");
   SparseRowMatrixHandle lhs(new SparseRowMatrix(3,3));
   lhs->insert(0,0) = lhs->insert(1,1) = lhs->insert(2,2) = 1;
