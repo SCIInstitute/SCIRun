@@ -48,7 +48,7 @@ EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
 void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Variables::OperatorName, 0);
+  state->setValue(Variables::Operator, 0);
   state->setValue(Variables::ScalarValue, 0);
 }
 
@@ -58,10 +58,10 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 
   auto state = get_state();
   
-  auto oper = state->getValue(Variables::OperatorName).getInt();
+  auto oper = state->getValue(Variables::Operator).getInt();
   double scalar = state->getValue(Variables::ScalarValue).getDouble();
 
-  algo_->set(Variables::OperatorName, oper);
+  algo_->set(Variables::Operator, oper);
   algo_->set(Variables::ScalarValue, scalar);
   auto output = algo_->run_generic(make_input((InputMatrix, denseInput)));
   sendOutputFromAlgorithm(Result, output);

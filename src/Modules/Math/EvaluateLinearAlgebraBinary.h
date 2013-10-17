@@ -45,8 +45,8 @@ namespace SCIRun {
         virtual void execute();
         virtual void setStateDefaults();
 
-        INPUT_PORT(0, InputLHS, DenseMatrix);
-        INPUT_PORT(1, InputRHS, DenseMatrix);
+        INPUT_PORT(0, LHS, DenseMatrix);
+        INPUT_PORT(1, RHS, DenseMatrix);
         OUTPUT_PORT(0, Result, DenseMatrix);
       };
 }

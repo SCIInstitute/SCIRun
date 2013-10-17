@@ -38,27 +38,27 @@ using namespace SCIRun::Core::Algorithms;
 EvaluateLinearAlgebraBinaryModule::EvaluateLinearAlgebraBinaryModule() :
 Module(ModuleLookupInfo("EvaluateLinearAlgebraBinary", "Math", "SCIRun"))
 {
-  INITIALIZE_PORT(InputLHS);
-  INITIALIZE_PORT(InputRHS);
+  INITIALIZE_PORT(LHS);
+  INITIALIZE_PORT(RHS);
   INITIALIZE_PORT(Result);
 }
 
 void EvaluateLinearAlgebraBinaryModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Variables::OperatorName, 0);
+  state->setValue(Variables::Operator, 0);
 }
 
 void EvaluateLinearAlgebraBinaryModule::execute()
 {
-  auto lhs = getRequiredInput(InputLHS);
-  auto rhs = getRequiredInput(InputRHS);
+  auto lhs = getRequiredInput(LHS);
+  auto rhs = getRequiredInput(RHS);
 
   auto state = get_state();
-  auto oper = state->getValue(Variables::OperatorName).getInt();
+  auto oper = state->getValue(Variables::Operator).getInt();
 
-  algo_->set(Variables::OperatorName, oper);
-  auto output = algo_->run_generic(make_input((InputLHS, lhs)(InputRHS, rhs))); 
+  algo_->set(Variables::Operator, oper);
+  auto output = algo_->run_generic(make_input((LHS, lhs)(RHS, rhs))); 
 
   sendOutputFromAlgorithm(Result, output);
 }

@@ -39,8 +39,8 @@ namespace Algorithms {
 class SCISHARE Variables 
 {
 public:
-  static const AlgorithmParameterName AppendMatrixOption;
-  static const AlgorithmParameterName OperatorName;
+  static const AlgorithmParameterName RowsOrColumns;
+  static const AlgorithmParameterName Operator;
   static const AlgorithmParameterName ScalarValue;
   static const AlgorithmParameterName TargetError;
   static const AlgorithmParameterName MaxIterations;
@@ -57,6 +57,7 @@ public:
   static const AlgorithmInputName MatrixToWrite;
 
   static const AlgorithmOutputName MatrixInfo;
+  static const AlgorithmOutputName Result;
   static const AlgorithmOutputName ResultMatrix;
   static const AlgorithmOutputName MatrixLoaded;
   static const AlgorithmOutputName Solution;

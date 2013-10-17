@@ -199,12 +199,12 @@ protected:
     //Set module parameters.
     matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
     matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
-    transpose->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-    negate->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-    scalar->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+    transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+    negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+    scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
     scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-    multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-    add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+    multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+    add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
   }
 };
 
@@ -248,9 +248,9 @@ TEST_F(SchedulingWithBoostGraph, CanDetectConnectionCycles)
   EXPECT_EQ(2, matrixMathNetwork.nconnections());
 
   //Set module parameters.
-  negate->get_state()->setValue(Variables::OperatorName,
+  negate->get_state()->setValue(Variables::Operator,
     EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  scalar->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
 
   BoostGraphSerialScheduler scheduler;

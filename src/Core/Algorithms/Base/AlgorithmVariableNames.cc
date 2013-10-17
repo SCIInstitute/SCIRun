@@ -34,8 +34,8 @@ using namespace SCIRun::Core::Algorithms;
 #define INPUT(name) const AlgorithmInputName Variables::name(#name);
 #define OUTPUT(name) const AlgorithmOutputName Variables::name(#name);
 
-PARAMETER(AppendMatrixOption)
-PARAMETER(OperatorName)
+PARAMETER(RowsOrColumns)
+PARAMETER(Operator)
 PARAMETER(ScalarValue)
 PARAMETER(TargetError)
 PARAMETER(MaxIterations)
@@ -52,6 +52,7 @@ INPUT(RHS)
 INPUT(MatrixToWrite)
 
 OUTPUT(MatrixInfo)
+OUTPUT(Result)
 OUTPUT(ResultMatrix)
 OUTPUT(MatrixLoaded)
 OUTPUT(Solution)

@@ -117,7 +117,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
   DenseMatrixHandle input = matrix1();
   sendModule->get_state()->setTransientValue("MatrixToSend", input);
 
-  process->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
   //manually execute the network, in the correct order.
   send->execute();
   process->execute();
@@ -129,12 +129,12 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
-  process->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
   process->execute();
   receive->execute();
   EXPECT_EQ(input->transpose(), *receiveModule->latestReceivedMatrix());
 
-  process->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  process->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   process->get_state()->setValue(Variables::ScalarValue, 2.0);
   process->execute();
   receive->execute();
@@ -203,12 +203,12 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   //Set module parameters.
   matrix1Send->get_state()->setTransientValue("MatrixToSend", matrix1());
   matrix2Send->get_state()->setTransientValue("MatrixToSend", matrix2());
-  transpose->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
-  negate->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
-  scalar->get_state()->setValue(Variables::OperatorName, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
+  transpose->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE);
+  negate->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::NEGATE);
+  scalar->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraUnaryAlgorithm::SCALAR_MULTIPLY);
   scalar->get_state()->setValue(Variables::ScalarValue, 4.0);
-  multiply->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
-  add->get_state()->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
+  multiply->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::MULTIPLY);
+  add->get_state()->setValue(Variables::Operator, EvaluateLinearAlgebraBinaryAlgorithm::ADD);
   
   //execute all manually, in order
   matrix1Send->execute();

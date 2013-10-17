@@ -30,14 +30,14 @@
 // TODO: only TriSurf meshes supported currently
 // There should be a common interface for all field importers that provide the
 // required algorithm parameters...
-#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 #include <iostream>
 
 #include <QFileDialog>
 
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -57,12 +57,12 @@ ReadMeshDialog::ReadMeshDialog(const std::string& name, ModuleStateHandle state,
 
 void ReadMeshDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(TextToTriSurfFieldAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
 }
 
 void ReadMeshDialog::pushFileNameToState() 
 {
-  state_->setValue(TextToTriSurfFieldAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void ReadMeshDialog::openFile()

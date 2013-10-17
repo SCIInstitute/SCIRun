@@ -38,7 +38,7 @@ using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
 {
-  addParameter(Variables::OperatorName, 0);
+  addParameter(Variables::Operator, 0);
   addParameter(Variables::ScalarValue, 0);
 }
 
@@ -79,5 +79,12 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 
 AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 21;
+  auto matrix = input.get<DenseMatrix>(Variables::InputMatrix);
+
+  auto scalar = boost::make_optional(get(Variables::ScalarValue).getDouble());
+  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).getInt()), scalar));
+
+  AlgorithmOutput output;
+  output[Variables::Result] = result;
+  return output;
 }

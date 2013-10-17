@@ -73,9 +73,6 @@ namespace
   };
 }
 
-AlgorithmParameterName SolveLinearSystemAlgorithm::Tolerance("Tolerance");
-AlgorithmParameterName SolveLinearSystemAlgorithm::MaxIterations("MaxIterations");
-
 SolveLinearSystemAlgorithm::Outputs SolveLinearSystemAlgorithm::run(const Inputs& input, const Parameters& params) const
 {
   auto A = input.get<0>();
