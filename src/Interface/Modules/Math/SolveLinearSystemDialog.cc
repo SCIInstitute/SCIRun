@@ -95,9 +95,9 @@ void SolveLinearSystemDialog::pushParametersToState()
 
       std::string methodOption = impl_->solverNameLookup_.left.at(method);
 
-      if (methodOption != state_->getValue(Variables::MethodOption).getString())
+      if (methodOption != state_->getValue(Variables::Method).getString())
       {
-        state_->setValue(Variables::MethodOption, methodOption);
+        state_->setValue(Variables::Method, methodOption);
       }
     }
 
@@ -109,9 +109,9 @@ void SolveLinearSystemDialog::pushParametersToState()
       else 
         precondOption = "None";
 
-      if (precondOption != state_->getValue(Variables::PreconditionerOption).getString())
+      if (precondOption != state_->getValue(Variables::Preconditioner).getString())
       {
-        state_->setValue(Variables::PreconditionerOption, precondOption);
+        state_->setValue(Variables::Preconditioner, precondOption);
       }
     }
   }
@@ -126,14 +126,14 @@ void SolveLinearSystemDialog::pull()
   maxIterationsSpinBox_->setValue(iterations);
   targetErrorLineEdit_->setText(QString::number(tolerance));
 
-  auto method = state_->getValue(Variables::MethodOption).getString();
+  auto method = state_->getValue(Variables::Method).getString();
   
   auto it = impl_->solverNameLookup_.right.find(method);
   if (it != impl_->solverNameLookup_.right.end())
     methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
   
 
-  auto precond = state_->getValue(Variables::PreconditionerOption).getString();
+  auto precond = state_->getValue(Variables::Preconditioner).getString();
   preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);
 }
 

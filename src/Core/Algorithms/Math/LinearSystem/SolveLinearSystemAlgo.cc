@@ -53,8 +53,8 @@ AlgorithmOutputName SolveLinearSystemAlgo::Solution("Solution");
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
-  add_option(Variables::MethodOption,"cg","jacobi|cg|bicg|minres");
-  add_option(Variables::PreconditionerOption,"jacobi","none|jacobi");
+  add_option(Variables::Method,"cg","jacobi|cg|bicg|minres");
+  add_option(Variables::Preconditioner,"jacobi","none|jacobi");
   
   addParameter(Variables::TargetError, 1e-6);
   addParameter(Variables::MaxIterations, 300);
@@ -91,7 +91,7 @@ protected:
 };
 
 SolveLinearSystemParallelAlgo::SolveLinearSystemParallelAlgo(const AlgorithmBase* base) : algo_(base),
-  pre_conditioner_(base->get_option(Variables::PreconditionerOption)),
+  pre_conditioner_(base->get_option(Variables::Preconditioner)),
   convergence_(new DenseColumnMatrix(base->get(Variables::MaxIterations).getInt()))
 {
 }
@@ -1134,14 +1134,6 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   if (!matrix_is::dense(x0) && !matrix_is::column(x0))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    MatrixHandle x0tmp = x0->column();
-    if (x0tmp.get_rep() == 0)
-    {
-      error("Matrix x0 is not a dense or column matrix");
-      algo_end(); return (false);
-    }
-#endif
   }
   
   if ((x0->ncols() != 1) || (b->ncols() != 1))
@@ -1164,7 +1156,7 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
-  std::string method = get_option(Variables::MethodOption);
+  std::string method = get_option(Variables::Method);
   
   DenseColumnMatrixHandle conv;
   if (method == "cg")

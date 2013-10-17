@@ -32,7 +32,10 @@
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
+ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
+{
+  INITIALIZE_PORT(Input);
+}
 
 void ReportMatrixInfoModule::execute()
 {

@@ -35,8 +35,8 @@ const AlgorithmParameterName Variables::OperatorName("OperatorName");
 const AlgorithmParameterName Variables::ScalarValue("ScalarValue");
 const AlgorithmParameterName Variables::TargetError("TargetError");
 const AlgorithmParameterName Variables::MaxIterations("MaxIterations");
-const AlgorithmParameterName Variables::MethodOption("MethodOption");
-const AlgorithmParameterName Variables::PreconditionerOption("PreconditionerOption");
+const AlgorithmParameterName Variables::Method("Method");
+const AlgorithmParameterName Variables::Preconditioner("Preconditioner");
 const AlgorithmParameterName Variables::Filename("Filename");
 
 const AlgorithmInputName Variables::InputMatrix("InputMatrix");

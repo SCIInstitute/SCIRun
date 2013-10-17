@@ -44,8 +44,8 @@ public:
   static const AlgorithmParameterName ScalarValue;
   static const AlgorithmParameterName TargetError;
   static const AlgorithmParameterName MaxIterations;
-  static const AlgorithmParameterName MethodOption;
-  static const AlgorithmParameterName PreconditionerOption;
+  static const AlgorithmParameterName Method;
+  static const AlgorithmParameterName Preconditioner;
   static const AlgorithmParameterName Filename;
   
   static const AlgorithmInputName InputMatrix;

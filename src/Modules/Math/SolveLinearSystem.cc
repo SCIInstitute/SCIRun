@@ -54,8 +54,8 @@ void SolveLinearSystemModule::setStateDefaults()
   auto state = get_state();
   state->setValue(Variables::TargetError, 0.00001);
   state->setValue(Variables::MaxIterations, 500);
-  state->setValue(Variables::MethodOption, std::string("cg"));
-  state->setValue(Variables::PreconditionerOption, std::string("jacobi"));
+  state->setValue(Variables::Method, std::string("cg"));
+  state->setValue(Variables::Preconditioner, std::string("jacobi"));
 }
 
 void SolveLinearSystemModule::execute()
@@ -80,10 +80,10 @@ void SolveLinearSystemModule::execute()
     algo_->set(Variables::TargetError, tolerance);
     algo_->set(Variables::MaxIterations, maxIterations);
 
-    auto method = get_state()->getValue(Variables::MethodOption).getString();
-    auto precond = get_state()->getValue(Variables::PreconditionerOption).getString();
-    algo_->set_option(Variables::MethodOption, method);
-    algo_->set_option(Variables::PreconditionerOption, precond);
+    auto method = get_state()->getValue(Variables::Method).getString();
+    auto precond = get_state()->getValue(Variables::Preconditioner).getString();
+    algo_->set_option(Variables::Method, method);
+    algo_->set_option(Variables::Preconditioner, precond);
 
     std::ostringstream ostr;
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
