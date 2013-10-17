@@ -48,7 +48,6 @@ class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase
 
     static AlgorithmParameterName OutputValueField;
 
-    static AlgorithmInputName InputField;
     static AlgorithmInputName ObjectField;
     static AlgorithmOutputName SignedDistanceField;
     static AlgorithmOutputName ValueField;

@@ -55,6 +55,7 @@ public:
   static const AlgorithmInputName LHS;
   static const AlgorithmInputName RHS;
   static const AlgorithmInputName MatrixToWrite;
+  static const AlgorithmInputName InputField;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName Result;

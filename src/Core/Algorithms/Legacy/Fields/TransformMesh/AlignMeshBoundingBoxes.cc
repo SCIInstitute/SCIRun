@@ -28,7 +28,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Transform.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -132,14 +132,13 @@ AlignMeshBoundingBoxesAlgo::run(FieldHandle input, FieldHandle object, FieldHand
   return (true);
 }
 
-AlgorithmInputName AlignMeshBoundingBoxesAlgo::InputField("InputField");
 AlgorithmInputName AlignMeshBoundingBoxesAlgo::AlignmentField("AlignmentField");
 AlgorithmOutputName AlignMeshBoundingBoxesAlgo::OutputField("OutputField");
 AlgorithmOutputName AlignMeshBoundingBoxesAlgo::TransformMatrix("TransformMatrix");
 
 AlgorithmOutput AlignMeshBoundingBoxesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
   auto object = input.get<Field>(AlignmentField);
 
   FieldHandle outputField;

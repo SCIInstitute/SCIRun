@@ -27,7 +27,7 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
-
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -804,7 +804,6 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   return (true);
 }
 
-AlgorithmInputName CalculateSignedDistanceFieldAlgo::InputField("InputField");
 AlgorithmInputName CalculateSignedDistanceFieldAlgo::ObjectField("ObjectField");
 AlgorithmOutputName CalculateSignedDistanceFieldAlgo::SignedDistanceField("SignedDistanceField");
 AlgorithmOutputName CalculateSignedDistanceFieldAlgo::ValueField("ValueField");
@@ -812,7 +811,7 @@ AlgorithmParameterName CalculateSignedDistanceFieldAlgo::OutputValueField("Outpu
 
 AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
   auto objectField = input.get<Field>(ObjectField);
 
   FieldHandle distance, value;

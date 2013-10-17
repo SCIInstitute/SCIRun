@@ -27,7 +27,7 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
-
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -45,7 +45,6 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-AlgorithmInputName GetFieldBoundaryAlgo::InputField("InputField");
 AlgorithmOutputName GetFieldBoundaryAlgo::BoundaryField("BoundaryField");
 AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("MappingMatrix");
 
@@ -465,7 +464,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 
 AlgorithmOutput GetFieldBoundaryAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto field = input.get<Field>(InputField);
+  auto field = input.get<Field>(Variables::InputField);
 
   FieldHandle boundary;
   MatrixHandle mapping;

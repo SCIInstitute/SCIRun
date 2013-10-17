@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 
 using namespace SCIRun;
@@ -187,12 +188,11 @@ ConvertMeshToIrregularMeshAlgo::run(FieldHandle input, FieldHandle& output) cons
   return (true);
 }
 
-AlgorithmInputName ConvertMeshToIrregularMeshAlgo::InputField("InputField");
 AlgorithmOutputName ConvertMeshToIrregularMeshAlgo::OutputField("OutputField");
 
 AlgorithmOutput ConvertMeshToIrregularMeshAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto ifield = input.get<Field>(InputField);
+  auto ifield = input.get<Field>(Variables::InputField);
 
   FieldHandle ofield;
   if (!run(ifield, ofield))

@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -146,7 +147,7 @@ ReportFieldInfoAlgorithm::Outputs::Outputs()
 {
 }
 
-ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::run(const Inputs& input, const Parameters& params /* = 0 */) const
+ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::run(const Inputs& input) const
 {
   ENSURE_ALGORITHM_INPUT_NOT_NULL(input, "Null input field");
 
@@ -155,5 +156,11 @@ ReportFieldInfoAlgorithm::Outputs ReportFieldInfoAlgorithm::run(const Inputs& in
 
 AlgorithmOutput ReportFieldInfoAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto field = input.get<Field>(Variables::InputField);
+
+  auto info = run(field);
+
+  AlgorithmOutput output;
+  output.setTransient(info);
+  return output;
 }

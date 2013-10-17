@@ -50,6 +50,7 @@ INPUT(SecondMatrix)
 INPUT(LHS)
 INPUT(RHS)
 INPUT(MatrixToWrite)
+INPUT(InputField)
 
 OUTPUT(MatrixInfo)
 OUTPUT(Result)
