@@ -65,6 +65,7 @@ void SolveLinearSystemModule::execute()
 
   if (needToExecute())
   {
+    //TODO: why aren't these checks in the algo class?
     if (rhs->ncols() != 1)
       THROW_ALGORITHM_INPUT_ERROR("Right-hand side matrix must contain only one column.");
     if (!matrix_is::sparse(A))
@@ -96,7 +97,5 @@ void SolveLinearSystemModule::execute()
       auto output = algo_->run_generic(make_input((LHS, A)(RHS, rhsCol)));
       sendOutputFromAlgorithm(Solution, output);
     }
-
-  
   }
 }

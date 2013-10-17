@@ -34,13 +34,13 @@ using namespace SCIRun::Dataflow::Networks;
 
 ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
 {
-  INITIALIZE_PORT(Input);
+  INITIALIZE_PORT(InputMatrix);
 }
 
 void ReportMatrixInfoModule::execute()
 {
-  auto matrix = getRequiredInput(Input);
+  auto matrix = getRequiredInput(InputMatrix);
 
-  auto output = algo_->run_generic(make_input((Input, matrix)));
+  auto output = algo_->run_generic(make_input((InputMatrix, matrix)));
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 }

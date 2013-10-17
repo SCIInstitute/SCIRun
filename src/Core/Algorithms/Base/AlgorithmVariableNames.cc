@@ -30,21 +30,28 @@
 
 using namespace SCIRun::Core::Algorithms;
 
-const AlgorithmParameterName Variables::AppendMatrixOption("AppendMatrixOption");
-const AlgorithmParameterName Variables::OperatorName("OperatorName");
-const AlgorithmParameterName Variables::ScalarValue("ScalarValue");
-const AlgorithmParameterName Variables::TargetError("TargetError");
-const AlgorithmParameterName Variables::MaxIterations("MaxIterations");
-const AlgorithmParameterName Variables::Method("Method");
-const AlgorithmParameterName Variables::Preconditioner("Preconditioner");
-const AlgorithmParameterName Variables::Filename("Filename");
-
-const AlgorithmInputName Variables::InputMatrix("InputMatrix");
-const AlgorithmInputName Variables::FirstMatrix("FirstMatrix");
-const AlgorithmInputName Variables::SecondMatrix("SecondMatrix");
-
+#define PARAMETER(name) const AlgorithmParameterName Variables::name(#name);
+#define INPUT(name) const AlgorithmInputName Variables::name(#name);
 #define OUTPUT(name) const AlgorithmOutputName Variables::name(#name);
+
+PARAMETER(AppendMatrixOption)
+PARAMETER(OperatorName)
+PARAMETER(ScalarValue)
+PARAMETER(TargetError)
+PARAMETER(MaxIterations)
+PARAMETER(Method)
+PARAMETER(Preconditioner)
+PARAMETER(Filename)
+PARAMETER(BuildConvergence)
+
+INPUT(InputMatrix)
+INPUT(FirstMatrix)
+INPUT(SecondMatrix)
+INPUT(LHS)
+INPUT(RHS)
+INPUT(MatrixToWrite)
 
 OUTPUT(MatrixInfo)
 OUTPUT(ResultMatrix)
 OUTPUT(MatrixLoaded)
+OUTPUT(Solution)

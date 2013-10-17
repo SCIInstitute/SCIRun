@@ -47,14 +47,20 @@ public:
   static const AlgorithmParameterName Method;
   static const AlgorithmParameterName Preconditioner;
   static const AlgorithmParameterName Filename;
+  static const AlgorithmParameterName BuildConvergence;
   
   static const AlgorithmInputName InputMatrix;
   static const AlgorithmInputName FirstMatrix;
   static const AlgorithmInputName SecondMatrix;
+  static const AlgorithmInputName LHS;
+  static const AlgorithmInputName RHS;
+  static const AlgorithmInputName MatrixToWrite;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName ResultMatrix;
   static const AlgorithmOutputName MatrixLoaded;
+  static const AlgorithmOutputName Solution;
+
 };
 
 }}}

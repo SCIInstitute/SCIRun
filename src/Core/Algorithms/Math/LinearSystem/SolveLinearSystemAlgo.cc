@@ -44,12 +44,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
-
-AlgorithmInputName SolveLinearSystemAlgo::LHS("LHS");
-AlgorithmInputName SolveLinearSystemAlgo::RHS("RHS");
-AlgorithmOutputName SolveLinearSystemAlgo::Solution("Solution");
-
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
@@ -59,7 +53,7 @@ SolveLinearSystemAlgo::SolveLinearSystemAlgo()
   addParameter(Variables::TargetError, 1e-6);
   addParameter(Variables::MaxIterations, 300);
 
-  addParameter(BuildConvergence, true);
+  addParameter(Variables::BuildConvergence, true);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // for callback
@@ -1213,8 +1207,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
 AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto lhs = input.get<SparseRowMatrix>(LHS);
-  auto rhs = input.get<DenseColumnMatrix>(RHS);
+  auto lhs = input.get<SparseRowMatrix>(Variables::LHS);
+  auto rhs = input.get<DenseColumnMatrix>(Variables::RHS);
 
   DenseColumnMatrixHandle solution;
   bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
@@ -1223,6 +1217,6 @@ AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) 
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
   AlgorithmOutput output;
-  output[Solution] = solution;
+  output[Variables::Solution] = solution;
   return output;
 }

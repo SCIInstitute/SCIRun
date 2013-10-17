@@ -62,12 +62,6 @@ class SCISHARE SolveLinearSystemAlgo : public AlgorithmBase
              Datatypes::DenseColumnMatrixHandle& x) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static AlgorithmParameterName BuildConvergence;
-
-    static AlgorithmInputName LHS;
-    static AlgorithmInputName RHS;
-    static AlgorithmOutputName Solution;
 };
 
 

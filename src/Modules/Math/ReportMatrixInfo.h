@@ -44,7 +44,7 @@ namespace Math {
     ReportMatrixInfoModule();
     virtual void execute();
     virtual void setStateDefaults() {}
-    INPUT_PORT(0, Input, Matrix);
+    INPUT_PORT(0, InputMatrix, Matrix);
   };
 }}}
 
