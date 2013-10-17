@@ -26,38 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#ifndef INTERFACE_MODULES_SETCONDUCTIVITIESTOTETMESHDIALOG_H
+#define INTERFACE_MODULES_SETCONDUCTIVITIESTOTETMESHDIALOG_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+#include "Interface/Modules/BrainStimulator/ui_SetConductivitiesToTetMeshDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
+namespace Gui {
   
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
-  {
-  public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+class SCISHARE SetConductivitiesToTetMeshDialog : public ModuleDialogGeneric, 
+  public Ui::SetConductivitiesToTetMeshDialog
+{
+	Q_OBJECT
+	
+public:
+  SetConductivitiesToTetMeshDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  //virtual void moduleExecuted() { pullAndDisplayInfo(); }
+  virtual void pull();
+};
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
-    
-  };
-
-}}}}
+}
+}
 
 #endif

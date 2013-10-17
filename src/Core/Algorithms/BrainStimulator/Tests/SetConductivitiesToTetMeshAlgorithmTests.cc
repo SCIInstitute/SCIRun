@@ -25,39 +25,22 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+ 
+#include <gtest/gtest.h>
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
+#include <Testing/Utils/SCIRunUnitTests.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
+using namespace SCIRun::TestUtils;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
-  
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
-  {
-  public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
-    
-  };
-
-}}}}
-
-#endif
+TEST(SetConductivitiesToTetMeshAlgorithm, Foo)
+{
+  SetConductivitiesToTetMeshAlgorithm algo;
+  FAIL() << "Insert code here for the most basic test cases !"; 
+}

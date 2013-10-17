@@ -28,8 +28,8 @@
 #include <iostream>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
-#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
-#include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
+#include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
-ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
+SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(ModuleLookupInfo("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun"))
 {
  INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
  INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
@@ -50,12 +50,12 @@ ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("
  INITIALIZE_PORT(COILS_FIELD);
 }
 
-void ElectrodeCoilSetupModule::setStateDefaults()
+void SetConductivitiesToTetMeshModule::setStateDefaults()
 {
   //TODO
 }
 
-void ElectrodeCoilSetupModule::execute()
+void SetConductivitiesToTetMeshModule::execute()
 {
   auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);

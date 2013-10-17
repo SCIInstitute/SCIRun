@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#ifndef MODULES_BRAINSTIMULATOR_SetConductivitiesToTetMesh_H
+#define MODULES_BRAINSTIMULATOR_SetConductivitiesToTetMesh_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
-  
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
-  {
+  namespace Modules {
+    namespace BrainStimulator {
+
+class SCISHARE SetConductivitiesToTetMeshModule : public SCIRun::Dataflow::Networks::Module,
+  public Has5InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>,
+  public Has2OutputPorts<FieldPortTag, FieldPortTag>
+{
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    SetConductivitiesToTetMeshModule();
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+    virtual void execute();
+    virtual void setStateDefaults();
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
+    INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, LegacyField);
+    INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
+    INPUT_PORT(2, ELECTRODE_TRIANGULATION2, LegacyField);
+    INPUT_PORT(3, COIL, LegacyField);
+    INPUT_PORT(4, COIL2, LegacyField);
     
-  };
+    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
+    OUTPUT_PORT(1, COILS_FIELD, LegacyField);
+};
 
-}}}}
+}}}
 
 #endif

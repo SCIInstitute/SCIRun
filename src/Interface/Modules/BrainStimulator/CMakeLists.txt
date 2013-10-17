@@ -29,15 +29,18 @@
 
 SET(Interface_Modules_BrainStimulator_FORMS
   ElectrodeCoilSetupDialog.ui
+  SetConductivitiesToTetMeshDialog.ui
 )
 
 SET(Interface_Modules_BrainStimulator_HEADERS
   ElectrodeCoilSetupDialog.h
+  SetConductivitiesToTetMeshDialog.h
   share.h
 )
 
 SET(Interface_Modules_BrainStimulator_SOURCES 
   ElectrodeCoilSetupDialog.cc
+  SetConductivitiesToTetMeshDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_BrainStimulator_FORMS_HEADERS ${Interface_Modules_BrainStimulator_FORMS})

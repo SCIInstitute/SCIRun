@@ -40,6 +40,7 @@
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -67,7 +68,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
   else if (name == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new GetMeshNodesAlgo);    
   else if (name == "ElectrodeCoilSetup")
-    h.reset(new ElectrodeCoilSetupAlgorithm);   
+    h.reset(new ElectrodeCoilSetupAlgorithm);     
+  else if (name == "SetConductivitiesToTetMesh")
+    h.reset(new SetConductivitiesToTetMeshAlgorithm);   
   else if (name == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
   else if (name == "ReportFieldInfo")

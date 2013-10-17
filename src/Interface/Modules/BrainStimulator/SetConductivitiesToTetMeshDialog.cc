@@ -26,38 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
+#include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
-  
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
-  {
-  public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+SetConductivitiesToTetMeshDialog::SetConductivitiesToTetMeshDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
+}
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
+void SetConductivitiesToTetMeshDialog::pull()
+{
+  //TODO
+}
 
-  private:
-  
-    
-  };
-
-}}}}
-
-#endif

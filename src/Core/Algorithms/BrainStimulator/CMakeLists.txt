@@ -28,10 +28,12 @@
 
 SET(Algorithms_BrainStimulator_SRCS
   ElectrodeCoilSetupAlgorithm.cc
+  SetConductivitiesToTetMeshAlgorithm.cc
 )
 
 SET(Algorithms_BrainStimulator_HEADERS
   ElectrodeCoilSetupAlgorithm.h
+  SetConductivitiesToTetMeshAlgorithm.h
   share.h
 )
 

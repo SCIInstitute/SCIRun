@@ -46,6 +46,7 @@
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
+#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
@@ -104,7 +105,10 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("tDCSSimulator") != std::string::npos)
     return new TDCSSimulatorDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ElectrodeCoilSetup") != std::string::npos)
-    return new ElectrodeCoilSetupDialog(moduleId, state, parentToUse_);   
+    return new ElectrodeCoilSetupDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SetConductivitiesToTetMesh") != std::string::npos)
+    return new SetConductivitiesToTetMeshDialog(moduleId, state, parentToUse_); 
+       
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

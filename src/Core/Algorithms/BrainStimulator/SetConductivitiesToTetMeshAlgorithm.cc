@@ -27,7 +27,7 @@
 */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
@@ -40,16 +40,16 @@ using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun;
     
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::COIL("COIL");
-const AlgorithmInputName ElectrodeCoilSetupAlgorithm::COIL2("COIL2");
-const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
-const AlgorithmOutputName ElectrodeCoilSetupAlgorithm::COILS_FIELD("COILS_FIELD");
+const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::ELECTRODE_COIL_POSITIONS_AND_NORMAL("ELECTRODE_COIL_POSITIONS_AND_NORMAL");
+const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::ELECTRODE_TRIANGULATION("ELECTRODE_TRIANGULATION");
+const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::ELECTRODE_TRIANGULATION2("ELECTRODE_TRIANGULATION2");
+const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::COIL("COIL");
+const AlgorithmInputName SetConductivitiesToTetMeshAlgorithm::COIL2("COIL2");
+const AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::ELECTRODES_FIELD("ELECTRODES_FIELD");
+const AlgorithmOutputName SetConductivitiesToTetMeshAlgorithm::COILS_FIELD("COILS_FIELD");
 
 
-AlgorithmOutput ElectrodeCoilSetupAlgorithm::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput SetConductivitiesToTetMeshAlgorithm::run_generic(const AlgorithmInput& input) const
 {
   auto pos_orient = input.get<Field>(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
   auto tri = input.get<Field>(ELECTRODE_TRIANGULATION);

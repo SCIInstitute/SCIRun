@@ -26,38 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::BrainStimulator;
+using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
+using ::testing::Mock;
 
-namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
-  
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
-  {
-  public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+class SetConductivitiesToTetMeshTests : public ModuleTest
+{
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+};
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
+TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
+{
+  auto tdcs = makeModule("SetConductivitiesToTetMesh");
+  ASSERT_TRUE(tdcs);
+  FieldHandle nullField;
+  stubPortNWithThisData(tdcs, 0, nullField);
+  stubPortNWithThisData(tdcs, 1, nullField);
 
-  private:
-  
-    
-  };
+  EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
+}
 
-}}}}
-
-#endif
+TEST_F(SetConductivitiesToTetMeshTests, Foo)
+{
+  FAIL() << "TODO";
+}

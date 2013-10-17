@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#ifndef ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
+#define ALGORITHMS_MATH_SETCONDUCTIVITIESTOTETMESHALGORITHM_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
@@ -38,7 +38,7 @@ namespace Core {
 namespace Algorithms {
 namespace BrainStimulator {
   
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
+  class SCISHARE SetConductivitiesToTetMeshAlgorithm : public AlgorithmBase
   {
   public:
     //Outputs run(const Inputs& input, const Parameters& params = 0) const;

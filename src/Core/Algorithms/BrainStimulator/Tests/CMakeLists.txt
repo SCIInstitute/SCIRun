@@ -28,6 +28,7 @@
 
 SET(Algorithms_ElectrodeCoilSetup_Tests_SRCS
   ElectrodeCoilSetupAlgorithmTests.cc
+  SetConductivitiesToTetMeshAlgorithmTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_ElectrodeCoilSetup_Tests
@@ -36,6 +37,8 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_ElectrodeCoilSetup_Tests
 
 TARGET_LINK_LIBRARIES(Algorithms_ElectrodeCoilSetup_Tests
   Algorithms_ElectrodeCoilSetup
+  Algorithms_SetConductivitiesToTetMesh
+  Algorithms_SetConductivitiesToTetMesh_Tests
   Core_Datatypes_Legacy_Field
   Testing_Utils
   gtest_main

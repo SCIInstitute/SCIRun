@@ -67,6 +67,7 @@
 #include <Modules/Visualization/MatrixAsVectorField.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
+#include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Render/ViewScene.h>
 
@@ -137,7 +138,7 @@ namespace SCIRun {
           
 	  addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
 	  addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
-
+          addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
           {

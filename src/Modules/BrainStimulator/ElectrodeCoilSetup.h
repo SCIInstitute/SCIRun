@@ -37,7 +37,7 @@ namespace SCIRun {
     namespace BrainStimulator {
 
 class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Module,
-  public Has2InputPorts<FieldPortTag, FieldPortTag>,
+  public Has5InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>,
   public Has2OutputPorts<FieldPortTag, FieldPortTag>
 {
   public:
@@ -48,6 +48,10 @@ class SCISHARE ElectrodeCoilSetupModule : public SCIRun::Dataflow::Networks::Mod
 
     INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, LegacyField);
     INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
+    INPUT_PORT(2, ELECTRODE_TRIANGULATION2, LegacyField);
+    INPUT_PORT(3, COIL, LegacyField);
+    INPUT_PORT(4, COIL2, LegacyField);
+    
     OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
     OUTPUT_PORT(1, COILS_FIELD, LegacyField);
 };
