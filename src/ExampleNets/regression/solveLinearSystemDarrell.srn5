@@ -88,7 +88,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>4</count>
+							<count>5</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -128,13 +128,25 @@
 							</item>
 							<item>
 								<first>
+									<name>TargetError</name>
+								</first>
+								<second>
+									<name>TargetError</name>
+									<value>
+										<which>1</which>
+										<value>0.00069999999999999999</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
 									<name>Tolerance</name>
 								</first>
 								<second>
 									<name>Tolerance</name>
 									<value>
 										<which>1</which>
-										<value>0.00069999999999999999</value>
+										<value>0.00069999999999999988</value>
 									</value>
 								</second>
 							</item>

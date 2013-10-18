@@ -34,14 +34,13 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Algorithms/DataIO/EigenMatrixFromScirunAsciiFormatConverter.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Datatypes;
-
-AlgorithmParameterName ReadMatrixAlgorithm::Filename("Filename");
 
 namespace SCIRun {
   namespace Core {
@@ -57,9 +56,15 @@ namespace SCIRun {
         boost::mutex ReadMatrixAlgorithmPrivate::fileCheckMutex_;
       }}}}
 
+ReadMatrixAlgorithm::ReadMatrixAlgorithm()
+{
+  addParameter(Variables::Filename, std::string(""));
+}
+
 ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm::Parameters& filename) const
 {
   {
+    std::cout << "locking mutex " << filename << std::endl; //TODO: I think putting this here avoids a deadlock/crash...but it will be moot once boost is upgraded.
     //BOOST FILESYSTEM BUG: it is not thread-safe. TODO: need to meld this locking code into the ENSURE_FILE_EXISTS macro.
     boost::lock_guard<boost::mutex> guard(ReadMatrixAlgorithmPrivate::fileCheckMutex_);
     ENSURE_FILE_EXISTS(filename);
@@ -96,5 +101,9 @@ ReadMatrixAlgorithm::Outputs ReadMatrixAlgorithm::run(const ReadMatrixAlgorithm:
 
 AlgorithmOutput ReadMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto filename = get(Variables::Filename).getString();
+  auto file = run(filename);
+  AlgorithmOutput output;
+  output[Variables::MatrixLoaded] = file;
+  return output;
 }

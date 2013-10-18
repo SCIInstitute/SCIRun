@@ -28,12 +28,14 @@
 
 #include <Interface/Modules/Math/EvaluateLinearAlgebraUnaryDialog.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraUnaryDialog::EvaluateLinearAlgebraUnaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -84,14 +86,14 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState(const QString& str)
 {
   EvaluateLinearAlgebraUnaryAlgorithm::Operator op = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) getSelectedOperator();
 
-  if (state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt() != op)
-    state_->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, op);
+  if (state_->getValue(Variables::Operator).getInt() != op)
+    state_->setValue(Variables::Operator, op);
   
   bool ok;
   double value = str.toDouble(&ok);
-  if (ok && state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue).getDouble() != value)
+  if (ok && state_->getValue(Variables::ScalarValue).getDouble() != value)
   {
-    state_->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, value);
+    state_->setValue(Variables::ScalarValue, value);
   }
 }
 
@@ -102,6 +104,6 @@ void EvaluateLinearAlgebraUnaryDialog::pushOperationToState()
 
 void EvaluateLinearAlgebraUnaryDialog::pull()
 {
-  setSelectedOperator(state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());
-  scalarLineEdit_->setText(QString::number(state_->getValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue).getDouble()));
+  setSelectedOperator(state_->getValue(Variables::Operator).getInt());
+  scalarLineEdit_->setText(QString::number(state_->getValue(Variables::ScalarValue).getDouble()));
 }

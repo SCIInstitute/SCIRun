@@ -31,6 +31,7 @@
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
 
@@ -103,13 +104,12 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
   return (true);
 }
 
-AlgorithmInputName SetMeshNodesAlgo::InputField("InputField");
 AlgorithmInputName SetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 AlgorithmOutputName SetMeshNodesAlgo::OutputField("OutputField");
 
 AlgorithmOutput SetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
   auto nodes = input.get<DenseMatrix>(MatrixNodes);
 
   FieldHandle outputField;

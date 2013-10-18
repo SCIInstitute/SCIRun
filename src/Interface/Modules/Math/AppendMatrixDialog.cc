@@ -51,17 +51,17 @@ AppendMatrixDialog::AppendMatrixDialog(const std::string& name, ModuleStateHandl
 
 void AppendMatrixDialog::isRows()
 {
-  state_->setValue(Variables::AppendMatrixOption, AppendMatrixAlgorithm::ROWS);
+  state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::ROWS);
 }
 
 void AppendMatrixDialog::isCols()
 {
-  state_->setValue(Variables::AppendMatrixOption, AppendMatrixAlgorithm::COLUMNS);
+  state_->setValue(Variables::RowsOrColumns, AppendMatrixAlgorithm::COLUMNS);
 }
 
 void AppendMatrixDialog::pull()
 {
-  if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::AppendMatrixOption).getInt())
+  if (AppendMatrixAlgorithm::ROWS == state_->getValue(Variables::RowsOrColumns).getInt())
     appendRowsButton_->setChecked(true);
   else
     appendColumnsButton_->setChecked(true);

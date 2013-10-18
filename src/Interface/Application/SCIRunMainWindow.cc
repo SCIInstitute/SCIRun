@@ -244,6 +244,7 @@ void SCIRunMainWindow::setupInputWidgets()
     actionLoad_,
     actionSave_As_,
     actionNew_,
+    actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
   std::copy(recentFileActions_.begin(), recentFileActions_.end(), std::back_inserter(inputWidgets_));

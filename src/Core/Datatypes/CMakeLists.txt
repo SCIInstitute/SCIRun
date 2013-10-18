@@ -34,6 +34,7 @@ SET(Core_Datatypes_SRCS
   MatrixTypeConversions.cc
   PropertyManagerExtensions.cc
   Scalar.cc
+  SparseRowMatrixFromMap.cc
   String.cc
   Legacy/Matrix/SparseRowMatrixFromMap.cc
 )
@@ -54,6 +55,7 @@ SET(Core_Datatypes_HEADERS
   Scalar.h
   share.h
   SparseRowMatrix.h
+  SparseRowMatrixFromMap.h
   String.h
   Legacy/Matrix/SparseRowMatrixFromMap.h
 )

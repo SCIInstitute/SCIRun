@@ -36,29 +36,37 @@
 
 namespace SCIRun
 {
-  class SCISHARE SparseRowMatrixFromMap
+  namespace Core 
   {
-  public:
-    typedef std::map<index_type, double> Row;
-    typedef std::map<index_type, Row> Values;
-  
-    class SCISHARE SymmetricValues
+    namespace Datatypes
     {
-    public:
-      void operator()(size_t row, size_t col, double value);
-      const Values& getFullValues() const;
-    private:
-      Values values_;
-    };
+      //TODO: refactor with some OO, please...
+      class SCISHARE SparseRowMatrixFromMap
+      {
+      public:
+        typedef std::map<index_type, double> Row;
+        typedef std::map<index_type, Row> Values;
 
-    static Core::Datatypes::SparseRowMatrixHandle make(size_type rows, size_type cols, const Values& values);
-    static Core::Datatypes::SparseRowMatrixHandle make(size_type rows, size_type cols, const SymmetricValues& values);
-    static Core::Datatypes::SparseRowMatrixHandle appendToSparseMatrix(size_type rows, size_type cols, const Core::Datatypes::SparseRowMatrix& sparse, const Values& additionalValues);
-  private:
-    //Core::Datatypes::SparseRowMatrixFromMap();
+        class SCISHARE SymmetricValues
+        {
+        public:
+          void operator()(size_t row, size_t col, double value);
+          const Values& getFullValues() const;
+        private:
+          Values values_;
+        };
 
-    static size_type get_nnz(const Values& data);
-  };
+        static SparseRowMatrixHandle make(size_type rows, size_type cols, const Values& values);
+        static SparseRowMatrixHandle make(size_type rows, size_type cols, const SymmetricValues& values);
+        static SparseRowMatrixHandle appendToSparseMatrix(size_type rows, size_type cols, const SparseRowMatrix& sparse, const Values& additionalValues);
+        static SparseRowMatrixHandle appendToSparseMatrixSumming(size_type rows, size_type cols, const SparseRowMatrix& sparse, const Values& additionalValues);
+      private:
+        SparseRowMatrixFromMap();
+
+        static size_type get_nnz(const Values& data);
+      };
+    }
+  }
 }
 
 #endif

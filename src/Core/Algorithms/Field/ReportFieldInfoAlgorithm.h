@@ -45,7 +45,6 @@ namespace Fields {
   {
   public:
     typedef SCIRun::FieldHandle Inputs;
-    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
     
     struct SCISHARE Outputs
     {
@@ -59,7 +58,7 @@ namespace Fields {
       double geometricSize;
     };
 
-    Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    Outputs run(const Inputs& input) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 

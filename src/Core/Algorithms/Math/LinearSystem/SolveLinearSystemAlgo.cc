@@ -33,6 +33,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -43,23 +44,16 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName SolveLinearSystemAlgo::BuildConvergence("BuildConvergence");
-AlgorithmParameterName SolveLinearSystemAlgo::PreconditionerOption("Preconditioner");
-
-AlgorithmInputName SolveLinearSystemAlgo::LHS("LHS");
-AlgorithmInputName SolveLinearSystemAlgo::RHS("RHS");
-AlgorithmOutputName SolveLinearSystemAlgo::Solution("Solution");
-
 SolveLinearSystemAlgo::SolveLinearSystemAlgo()
 {
   // For solver
-  add_option(MethodOption(),"cg","jacobi|cg|bicg|minres");
-  add_option(PreconditionerOption,"jacobi","none|jacobi");
+  add_option(Variables::Method,"cg","jacobi|cg|bicg|minres");
+  add_option(Variables::Preconditioner,"jacobi","none|jacobi");
   
-  addParameter(TargetError(), 1e-6);
-  addParameter(MaxIterations(), 300);
+  addParameter(Variables::TargetError, 1e-6);
+  addParameter(Variables::MaxIterations, 300);
 
-  addParameter(BuildConvergence, true);
+  addParameter(Variables::BuildConvergence, true);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   // for callback
@@ -91,8 +85,8 @@ protected:
 };
 
 SolveLinearSystemParallelAlgo::SolveLinearSystemParallelAlgo(const AlgorithmBase* base) : algo_(base),
-  pre_conditioner_(base->get_option(SolveLinearSystemAlgo::PreconditionerOption)),
-  convergence_(new DenseColumnMatrix(base->get(SolveLinearSystemAlgo::MaxIterations()).getInt()))
+  pre_conditioner_(base->get_option(Variables::Preconditioner)),
+  convergence_(new DenseColumnMatrix(base->get(Variables::MaxIterations).getInt()))
 {
 }
 
@@ -146,14 +140,14 @@ bool SolveLinearSystemCGAlgo::parallel(ParallelLinearAlgebra& PLA, SolverInputs&
   ParallelLinearAlgebra::ParallelMatrix A; 
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN, DIAG, R, Z, P;
 
-  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
-  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).getDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get("callback_step");
+  int    callback_step_cnt =0;
 #endif
   int    niter = 0;
-  int    callback_step_cnt =0;
 
   if ( !PLA.add_matrix(matrices.A, A) ||
        !PLA.add_vector(matrices.b, B) ||
@@ -365,8 +359,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN; 
   ParallelLinearAlgebra::ParallelVector DIAG, R, R1, Z, Z1, P, P1;
 
-  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
-  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).getDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
 #endif
@@ -581,8 +575,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   ParallelLinearAlgebra::ParallelVector DIAG, R, V, VOLD, VV;
   ParallelLinearAlgebra::ParallelVector VOLDER, M, MOLD, MOLDER, XCG;
 
-  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
-  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).getDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
 #endif
@@ -931,8 +925,8 @@ parallel(ParallelLinearAlgebra& PLA, SolverInputs& matrices) const
   ParallelLinearAlgebra::ParallelVector B, X, X0, XMIN; 
   ParallelLinearAlgebra::ParallelVector DIAG,Z;
 
-  double tolerance =     algo_->get(SolveLinearSystemAlgo::TargetError()).getDouble();
-  int    max_iter =      algo_->get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  double tolerance =     algo_->get(Variables::TargetError).getDouble();
+  int    max_iter =      algo_->get(Variables::MaxIterations).getInt();
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
   int    callback_step = algo_->get_int("callback_step");
 #endif
@@ -1092,8 +1086,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   ENSURE_ALGORITHM_INPUT_NOT_NULL(A, "No matrix A is given");
   ENSURE_ALGORITHM_INPUT_NOT_NULL(b, "No matrix b is given");
 
-  double tolerance = get(SolveLinearSystemAlgo::TargetError()).getDouble();
-  int maxIterations = get(SolveLinearSystemAlgo::MaxIterations()).getInt();
+  double tolerance = get(Variables::TargetError).getDouble();
+  int maxIterations = get(Variables::MaxIterations).getInt();
   ENSURE_POSITIVE_DOUBLE(tolerance, "Tolerance out of range!");
   ENSURE_POSITIVE_INT(maxIterations, "Max iterations out of range!");
 
@@ -1134,14 +1128,6 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
   if (!matrix_is::dense(x0) && !matrix_is::column(x0))
   {
     THROW_ALGORITHM_INPUT_ERROR("Matrix x0 is not a dense or column matrix");
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    MatrixHandle x0tmp = x0->column();
-    if (x0tmp.get_rep() == 0)
-    {
-      error("Matrix x0 is not a dense or column matrix");
-      algo_end(); return (false);
-    }
-#endif
   }
   
   if ((x0->ncols() != 1) || (b->ncols() != 1))
@@ -1164,10 +1150,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
     THROW_ALGORITHM_INPUT_ERROR("Matrix A and x0 do not have the same number of rows");
   }
   
-  std::string method = get_option(SolveLinearSystemAlgo::MethodOption());
+  std::string method = get_option(Variables::Method);
   
-  //std::cout << "ALGO: METHOD = " << method << std::endl;
-
   DenseColumnMatrixHandle conv;
   if (method == "cg")
   {
@@ -1223,8 +1207,8 @@ bool SolveLinearSystemAlgo::run(SparseRowMatrixHandle A,
 
 AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto lhs = input.get<SparseRowMatrix>(LHS);
-  auto rhs = input.get<DenseColumnMatrix>(RHS);
+  auto lhs = input.get<SparseRowMatrix>(Variables::LHS);
+  auto rhs = input.get<DenseColumnMatrix>(Variables::RHS);
 
   DenseColumnMatrixHandle solution;
   bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
@@ -1233,6 +1217,6 @@ AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) 
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
   AlgorithmOutput output;
-  output[Solution] = solution;
+  output[Variables::Solution] = solution;
   return output;
 }

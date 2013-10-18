@@ -30,18 +30,30 @@
 
 using namespace SCIRun::Core::Algorithms;
 
-const AlgorithmParameterName Variables::AppendMatrixOption("AppendMatrixOption");
-const AlgorithmParameterName Variables::OperatorName("OperatorName");
-const AlgorithmParameterName Variables::ScalarValue("ScalarValue");
-const AlgorithmParameterName Variables::TargetError("TargetError");
-const AlgorithmParameterName Variables::MaxIterations("MaxIterations");
-const AlgorithmParameterName Variables::MethodOption("MethodOption");
-const AlgorithmParameterName Variables::PreconditionerOption("PreconditionerOption");
-const AlgorithmParameterName Variables::Filename("Filename");
+#define PARAMETER(name) const AlgorithmParameterName Variables::name(#name);
+#define INPUT(name) const AlgorithmInputName Variables::name(#name);
+#define OUTPUT(name) const AlgorithmOutputName Variables::name(#name);
 
-const AlgorithmInputName Variables::InputMatrix("InputMatrix");
-const AlgorithmInputName Variables::FirstMatrix("FirstMatrix");
-const AlgorithmInputName Variables::SecondMatrix("SecondMatrix");
+PARAMETER(RowsOrColumns)
+PARAMETER(Operator)
+PARAMETER(ScalarValue)
+PARAMETER(TargetError)
+PARAMETER(MaxIterations)
+PARAMETER(Method)
+PARAMETER(Preconditioner)
+PARAMETER(Filename)
+PARAMETER(BuildConvergence)
 
-const AlgorithmOutputName Variables::MatrixInfo("MatrixInfo");
-const AlgorithmOutputName Variables::ResultMatrix("ResultMatrix");
+INPUT(InputMatrix)
+INPUT(FirstMatrix)
+INPUT(SecondMatrix)
+INPUT(LHS)
+INPUT(RHS)
+INPUT(MatrixToWrite)
+INPUT(InputField)
+
+OUTPUT(MatrixInfo)
+OUTPUT(Result)
+OUTPUT(ResultMatrix)
+OUTPUT(MatrixLoaded)
+OUTPUT(Solution)

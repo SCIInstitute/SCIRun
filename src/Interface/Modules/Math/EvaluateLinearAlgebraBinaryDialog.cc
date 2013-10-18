@@ -27,12 +27,14 @@
 */
 
 #include <Interface/Modules/Math/EvaluateLinearAlgebraBinaryDialog.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h> //TODO
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 
 EvaluateLinearAlgebraBinaryDialog::EvaluateLinearAlgebraBinaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -78,12 +80,12 @@ void EvaluateLinearAlgebraBinaryDialog::setSelectedOperator(int op)
 
 void EvaluateLinearAlgebraBinaryDialog::pushOperationToState() 
 {
-  EvaluateLinearAlgebraBinaryAlgorithm::Operator op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
+  auto op = (EvaluateLinearAlgebraBinaryAlgorithm::Operator) getSelectedOperator();
 
-  state_->setValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName, op);
+  state_->setValue(Variables::Operator, op);
 }
 
 void EvaluateLinearAlgebraBinaryDialog::pull()
 {
-  setSelectedOperator(state_->getValue(EvaluateLinearAlgebraBinaryAlgorithm::OperatorName).getInt());
+  setSelectedOperator(state_->getValue(Variables::Operator).getInt());
 }

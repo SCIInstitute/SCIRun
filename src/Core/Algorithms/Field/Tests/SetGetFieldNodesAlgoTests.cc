@@ -41,13 +41,13 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
 
-TEST(SetFieldNodesAlgoTests, Foo)
+TEST(SetFieldNodesAlgoTests, DISABLED_Foo)
 {
   SetMeshNodesAlgo algo;
   FAIL() << "TODO"; 
 }
 
-TEST(GetFieldNodesAlgoTests, Foo)
+TEST(GetFieldNodesAlgoTests, DISABLED_Foo)
 {
   GetMeshNodesAlgo algo;
   FAIL() << "TODO"; 

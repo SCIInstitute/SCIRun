@@ -36,7 +36,12 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
+ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun"))
+{
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FileLoaded);
+  INITIALIZE_PORT(MatrixLoaded);
+}
 
 //TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void ReadMatrixModule::execute()

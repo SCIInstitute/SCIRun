@@ -79,7 +79,7 @@ namespace
   }
 }
 
-TEST(ConvertMeshToTriSurfAlgoTests, Foo)
+TEST(ConvertMeshToTriSurfAlgoTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
   /*

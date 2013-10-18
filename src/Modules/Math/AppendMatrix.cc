@@ -45,16 +45,16 @@ AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix
 void AppendMatrixModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(Variables::AppendMatrixOption, 0);
+  state->setValue(Variables::RowsOrColumns, 0);
 }
 
 void AppendMatrixModule::execute()
 {
   auto matrixLHS = getRequiredInput(FirstMatrix);
   auto matrixRHS = getRequiredInput(SecondMatrix);
-  auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
+  auto param = get_state()->getValue(Variables::RowsOrColumns).getInt();
 
-  algo_->set(Variables::AppendMatrixOption, param);
+  algo_->set(Variables::RowsOrColumns, param);
   auto output = algo_->run_generic(make_input((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
 
   sendOutputFromAlgorithm(ResultMatrix, output);

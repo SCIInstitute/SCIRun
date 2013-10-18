@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::TestUtils;
 
-TEST(AlignMeshBoundingBoxesAlgoTests, Foo)
+TEST(AlignMeshBoundingBoxesAlgoTests, DISABLED_Foo)
 {
   AlignMeshBoundingBoxesAlgo algo;
   FAIL() << "TODO"; 

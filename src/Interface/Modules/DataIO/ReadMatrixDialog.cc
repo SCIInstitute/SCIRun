@@ -27,12 +27,12 @@
 */
 
 #include <Interface/Modules/DataIO/ReadMatrixDialog.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
 
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -52,12 +52,12 @@ ReadMatrixDialog::ReadMatrixDialog(const std::string& name, ModuleStateHandle st
 
 void ReadMatrixDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadMatrixAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
 }
 
 void ReadMatrixDialog::pushFileNameToState() 
 {
-  state_->setValue(ReadMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void ReadMatrixDialog::openFile()

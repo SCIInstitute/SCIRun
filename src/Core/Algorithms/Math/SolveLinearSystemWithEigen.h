@@ -44,9 +44,6 @@ namespace Math {
   class SCISHARE SolveLinearSystemAlgorithm : public AlgorithmBase
   {
   public:
-    static AlgorithmParameterName Tolerance;
-    static AlgorithmParameterName MaxIterations;
-
     typedef boost::tuple<SCIRun::Core::Datatypes::MatrixHandle, SCIRun::Core::Datatypes::DenseColumnMatrixHandle> Inputs;
     typedef boost::tuple<double, int> Parameters;  
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseColumnMatrixHandle, double, int> Outputs;

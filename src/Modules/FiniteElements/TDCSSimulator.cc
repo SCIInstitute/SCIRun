@@ -27,12 +27,14 @@
 */
 
 #include <Modules/FiniteElements/TDCSSimulator.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::FiniteElements;
 
 TDCSSimulatorModule::TDCSSimulatorModule() : Module(ModuleLookupInfo("tDCSSimulator", "FiniteElements", "SCIRun"))
 {
+  INITIALIZE_PORT(I1);
 }
 
 void TDCSSimulatorModule::setStateDefaults()
@@ -42,5 +44,5 @@ void TDCSSimulatorModule::setStateDefaults()
 
 void TDCSSimulatorModule::execute()
 {
-  
+  getRequiredInput(I1);
 }
