@@ -55,7 +55,7 @@ TEST_F(SetFieldNodesModuleTests, ThrowsForNullInput)
   EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }
 
-TEST_F(SetFieldNodesModuleTests, Foo)
+TEST_F(SetFieldNodesModuleTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }

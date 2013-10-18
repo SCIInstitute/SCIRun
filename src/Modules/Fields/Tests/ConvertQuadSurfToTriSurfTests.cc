@@ -56,7 +56,7 @@ TEST_F(ConvertQuadSurfToTriSurfModuleTests, ThrowsForNullInput)
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
 
-TEST_F(ConvertQuadSurfToTriSurfModuleTests, Foo)
+TEST_F(ConvertQuadSurfToTriSurfModuleTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }
