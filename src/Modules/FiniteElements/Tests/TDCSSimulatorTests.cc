@@ -50,7 +50,7 @@ class TDCSSimulatorModuleTests : public ModuleTest
 
 TEST_F(TDCSSimulatorModuleTests, ThrowsForNullInput)
 {
-  auto tdcs = makeModule("TDCSSimulator");
+  auto tdcs = makeModule("tDCSSimulator");
   ASSERT_TRUE(tdcs);
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);
@@ -59,7 +59,7 @@ TEST_F(TDCSSimulatorModuleTests, ThrowsForNullInput)
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
 
-TEST_F(TDCSSimulatorModuleTests, Foo)
+TEST_F(TDCSSimulatorModuleTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }
