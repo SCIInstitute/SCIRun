@@ -46,7 +46,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
 AlgorithmOutputName GetFieldBoundaryAlgo::BoundaryField("BoundaryField");
-AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("MappingMatrix");
+AlgorithmOutputName GetFieldBoundaryAlgo::MappingMatrix("Mapping");
 
 GetFieldBoundaryAlgo::GetFieldBoundaryAlgo() 
 {
