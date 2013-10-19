@@ -38,16 +38,16 @@ using namespace SCIRun::Dataflow::Networks;
 
 ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("ReportFieldInfo", "MiscField", "SCIRun"))
 {
-  INITIALIZE_PORT(Input);
+  INITIALIZE_PORT(InputField);
 }
 
 void ReportFieldInfoModule::execute()
 {
-  auto field = getRequiredInput(Input);
+  auto field = getRequiredInput(InputField);
 
-  auto output = algo_->run_generic(make_input((Input, field)));
+  auto output = algo_->run_generic(make_input((InputField, field)));
 
-  get_state()->setTransientValue("ReportedInfo", output);
+  get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
   //TODO: requires knowledge of algorithm type
 //  auto outputObj = any_cast_or_default<
