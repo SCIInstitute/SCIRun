@@ -37,7 +37,7 @@
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/Legacy/Matrix/SparseRowMatrixFromMap.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 #include <Core/GeometryPrimitives/Point.h>
