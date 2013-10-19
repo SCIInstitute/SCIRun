@@ -661,7 +661,7 @@ bool TDCSMatrixBuilder::build_matrix(SparseRowMatrixHandle& output)
 }
 
 bool BuildTDCSMatrixAlgo::run(SparseRowMatrixHandle stiff, FieldHandle mesh, DenseMatrixHandle ElectrodeElements, DenseMatrixHandle ElectrodeElementType, DenseMatrixHandle
-ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixHandle& output)
+ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixHandle& output) const
 {
  ScopedAlgorithmStatusReporter asc(this, "Name");
    
@@ -735,9 +735,31 @@ ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixH
  return (true);
 }
 
-AlgorithmOutput BuildTDCSMatrixAlgo::run_generic(const AlgorithmInput &) const
+AlgorithmInputName BuildTDCSMatrixAlgo::FEM_Stiffness_Matrix("FEM_Stiffness_Matrix");
+AlgorithmInputName BuildTDCSMatrixAlgo::FEM_Mesh("FEM_Mesh");
+AlgorithmInputName BuildTDCSMatrixAlgo::Eletrode_Element("Eletrode_Element");
+AlgorithmInputName BuildTDCSMatrixAlgo::Electrode_Element_Type("Electrode_Element_Type");
+AlgorithmInputName BuildTDCSMatrixAlgo::Electrode_Element_Definition("Electrode_Element_Definition");
+AlgorithmInputName BuildTDCSMatrixAlgo::Contact_Impedance("Contact_Impedance");
+AlgorithmOutputName BuildTDCSMatrixAlgo::TDCSMatrix("TDCSMatrix");
+
+//(FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Eletrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance))
+AlgorithmOutput BuildTDCSMatrixAlgo::run_generic(const AlgorithmInput & input) const
 {
- throw "not implemented";
+  auto a = input.get<SparseRowMatrix>(FEM_Stiffness_Matrix);
+  auto b = input.get<Field>(FEM_Mesh);
+  auto c = input.get<DenseMatrix>(Eletrode_Element);
+  auto d = input.get<DenseMatrix>(Electrode_Element_Type);
+  auto e = input.get<DenseMatrix>(Electrode_Element_Definition);
+  auto f = input.get<DenseMatrix>(Contact_Impedance);
+
+  SparseRowMatrixHandle tdcs;
+  if (!run(a,b,c,d,e,f,tdcs))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[TDCSMatrix] = tdcs;
+  return output;
 }
 
 BuildTDCSMatrixAlgo::BuildTDCSMatrixAlgo() {}
