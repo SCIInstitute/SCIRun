@@ -50,9 +50,19 @@ namespace SCIRun {
 class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
 {
   public:
+
+    static AlgorithmInputName FEM_Stiffness_Matrix;
+    static AlgorithmInputName FEM_Mesh;
+    static AlgorithmInputName Eletrode_Element;
+    static AlgorithmInputName Electrode_Element_Type;
+    static AlgorithmInputName Electrode_Element_Definition;
+    static AlgorithmInputName Contact_Impedance;
+    static AlgorithmOutputName TDCSMatrix;
+
+
   BuildTDCSMatrixAlgo();
   ~BuildTDCSMatrixAlgo();
-  bool run(Datatypes::SparseRowMatrixHandle stiff, FieldHandle mesh, Datatypes::DenseMatrixHandle ElectrodeElements, Datatypes::DenseMatrixHandle ElectrodeElementType, Datatypes::DenseMatrixHandle  ElectrodeElementDefinition, Datatypes::DenseMatrixHandle contactimpedance, Datatypes::SparseRowMatrixHandle& output);
+  bool run(Datatypes::SparseRowMatrixHandle stiff, FieldHandle mesh, Datatypes::DenseMatrixHandle ElectrodeElements, Datatypes::DenseMatrixHandle ElectrodeElementType, Datatypes::DenseMatrixHandle  ElectrodeElementDefinition, Datatypes::DenseMatrixHandle contactimpedance, Datatypes::SparseRowMatrixHandle& output) const;
   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 }; // end namespace SCIRun
 
