@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
-#define MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
+#ifndef ALGORITHMS_MATH_SETUPRHSFORTDCSANDTMSALGORITHM_H
+#define ALGORITHMS_MATH_SETUPRHSFORTDCSANDTMSALGORITHM_H
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/FiniteElements/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Math/AlgorithmFwd.h>
+#include <Core/Algorithms/BrainStimulator/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace FiniteElements {
+namespace Core {
+namespace Algorithms {
+namespace BrainStimulator {
+  
+  class SCISHARE SetupRHSforTDCSandTMSAlgorithm : public AlgorithmBase
+  {
+  public:
+    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
 
-      class SCISHARE BuildTDCSMatrix : public Dataflow::Networks::Module,
-        public Has6InputPorts<MatrixPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildTDCSMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-        INPUT_PORT(0, FEM_Stiffness_Matrix, SparseRowMatrix);
-        INPUT_PORT(1, FEM_Mesh, LegacyField);
-	INPUT_PORT(2, Electrode_Element, DenseMatrix);
-        INPUT_PORT(3, Electrode_Element_Type, DenseMatrix);
-	INPUT_PORT(4, Electrode_Element_Definition, DenseMatrix);
-        INPUT_PORT(5, Contact_Impedance, DenseMatrix);
-        OUTPUT_PORT(0, TDCSMatrix, Matrix);
-	
-      };
+    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
+    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
+    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
+    static const AlgorithmInputName COIL;
+    static const AlgorithmInputName COIL2;
+    static const AlgorithmOutputName ELECTRODES_FIELD;
+    static const AlgorithmOutputName COILS_FIELD;
 
-    }
-  }
-}
+  private:
+  
+    
+  };
+
+}}}}
 
 #endif

@@ -47,6 +47,8 @@
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -77,7 +79,11 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
   else if (name == "ElectrodeCoilSetup")
     h.reset(new ElectrodeCoilSetupAlgorithm);     
   else if (name == "SetConductivitiesToTetMesh")
-    h.reset(new SetConductivitiesToTetMeshAlgorithm);   
+    h.reset(new SetConductivitiesToTetMeshAlgorithm); 
+  else if (name == "SetupRHSforTDCSandTMS")
+    h.reset(new SetupRHSforTDCSandTMSAlgorithm);   
+  else if (name == "GenerateROIStatistics")
+    h.reset(new GenerateROIStatisticsAlgorithm);        
   else if (name == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
   else if (name == "ReportFieldInfo")

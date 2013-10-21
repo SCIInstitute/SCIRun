@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,37 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
-#define MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
+#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
+#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/FiniteElements/share.h>
+using namespace SCIRun::Gui;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
 
-namespace SCIRun {
-  namespace Modules {
-    namespace FiniteElements {
 
-      class SCISHARE BuildTDCSMatrix : public Dataflow::Networks::Module,
-        public Has6InputPorts<MatrixPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildTDCSMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
-
-        INPUT_PORT(0, FEM_Stiffness_Matrix, SparseRowMatrix);
-        INPUT_PORT(1, FEM_Mesh, LegacyField);
-	INPUT_PORT(2, Electrode_Element, DenseMatrix);
-        INPUT_PORT(3, Electrode_Element_Type, DenseMatrix);
-	INPUT_PORT(4, Electrode_Element_Definition, DenseMatrix);
-        INPUT_PORT(5, Contact_Impedance, DenseMatrix);
-        OUTPUT_PORT(0, TDCSMatrix, Matrix);
-	
-      };
-
-    }
-  }
+GenerateROIStatisticsDialog::GenerateROIStatisticsDialog(const std::string& name, ModuleStateHandle state,
+  QWidget* parent /* = 0 */)
+  : ModuleDialogGeneric(state, parent)
+{
+  setupUi(this);
+  setWindowTitle(QString::fromStdString(name));
+  fixSize();
 }
 
-#endif
+void GenerateROIStatisticsDialog::pull()
+{
+  //TODO
+}
+

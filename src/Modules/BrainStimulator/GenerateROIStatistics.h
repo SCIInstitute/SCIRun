@@ -26,37 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
-#define MODULES_LEGACY_FINITEELEMENTS_BUILDTDCSMATRIX_H__
+#ifndef MODULES_BRAINSTIMULATOR_GenerateROIStatistics_H
+#define MODULES_BRAINSTIMULATOR_GenerateROIStatistics_H
 
 #include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/FiniteElements/share.h>
+#include <Modules/BrainStimulator/share.h>
 
 namespace SCIRun {
   namespace Modules {
-    namespace FiniteElements {
+    namespace BrainStimulator {
 
-      class SCISHARE BuildTDCSMatrix : public Dataflow::Networks::Module,
-        public Has6InputPorts<MatrixPortTag, FieldPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has1OutputPort<MatrixPortTag>
-      {
-      public:
-        BuildTDCSMatrix();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+class SCISHARE GenerateROIStatisticsModule : public SCIRun::Dataflow::Networks::Module,
+  public Has5InputPorts<FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag, FieldPortTag>,
+  public Has2OutputPorts<FieldPortTag, FieldPortTag>
+{
+  public:
+    GenerateROIStatisticsModule();
 
-        INPUT_PORT(0, FEM_Stiffness_Matrix, SparseRowMatrix);
-        INPUT_PORT(1, FEM_Mesh, LegacyField);
-	INPUT_PORT(2, Electrode_Element, DenseMatrix);
-        INPUT_PORT(3, Electrode_Element_Type, DenseMatrix);
-	INPUT_PORT(4, Electrode_Element_Definition, DenseMatrix);
-        INPUT_PORT(5, Contact_Impedance, DenseMatrix);
-        OUTPUT_PORT(0, TDCSMatrix, Matrix);
-	
-      };
+    virtual void execute();
+    virtual void setStateDefaults();
 
-    }
-  }
-}
+    INPUT_PORT(0, ELECTRODE_COIL_POSITIONS_AND_NORMAL, LegacyField);
+    INPUT_PORT(1, ELECTRODE_TRIANGULATION, LegacyField);
+    INPUT_PORT(2, ELECTRODE_TRIANGULATION2, LegacyField);
+    INPUT_PORT(3, COIL, LegacyField);
+    INPUT_PORT(4, COIL2, LegacyField);
+    
+    OUTPUT_PORT(0, ELECTRODES_FIELD, LegacyField);
+    OUTPUT_PORT(1, COILS_FIELD, LegacyField);
+};
+
+}}}
 
 #endif

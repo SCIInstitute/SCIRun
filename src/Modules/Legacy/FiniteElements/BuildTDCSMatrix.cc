@@ -31,7 +31,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
-//#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Dataflow::Networks;
@@ -39,13 +39,12 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 
-
 BuildTDCSMatrix::BuildTDCSMatrix()
   : Module(ModuleLookupInfo("BuildTDCSMatrix","FiniteElements", "SCIRun"), false)
 {
  INITIALIZE_PORT(FEM_Stiffness_Matrix);
  INITIALIZE_PORT(FEM_Mesh);
- INITIALIZE_PORT(Eletrode_Element);
+ INITIALIZE_PORT(Electrode_Element);
  INITIALIZE_PORT(Electrode_Element_Type);
  INITIALIZE_PORT(Electrode_Element_Definition);
  INITIALIZE_PORT(Contact_Impedance);
@@ -61,10 +60,10 @@ void BuildTDCSMatrix::execute()
   DenseMatrixHandle ElectrodeElementType;
   DenseMatrixHandle ElectrodeElementDefinition;
   DenseMatrixHandle ContactImpedance; 
-
+  std::cout <<"1"<< std::endl;
   Stiffness=getRequiredInput(FEM_Stiffness_Matrix);
   Mesh=getRequiredInput(FEM_Mesh);
-  ElectrodeElements=getRequiredInput(Eletrode_Element);
+  ElectrodeElements=getRequiredInput(Electrode_Element);
   ElectrodeElementType=getRequiredInput(Electrode_Element_Type);
   ElectrodeElementDefinition=getRequiredInput(Electrode_Element_Definition);
   ContactImpedance=getRequiredInput(Contact_Impedance);
@@ -74,8 +73,8 @@ void BuildTDCSMatrix::execute()
 //  if (!(get_input_handle("Electrode Element Type",ElectrodeElementType,true))) return; 
 //  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
 //  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
- 
-  auto output = algo_->run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Eletrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
+  auto output = algo_->run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)
+  (Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
 //  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
 
 //  send_output_handle("TDCS Matrix", TDCSMatrix);

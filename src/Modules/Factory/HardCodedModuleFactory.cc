@@ -68,9 +68,10 @@
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
 #include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
+#include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
+#include <Modules/BrainStimulator/GenerateROIStatistics.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Render/ViewScene.h>
-
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
 
@@ -143,7 +144,10 @@ namespace SCIRun {
 	  addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
 	  addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
           addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
-          //TODO: possibly use different build setting for these.
+          addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
+	  addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
+	  
+	  //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
           {
             addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");

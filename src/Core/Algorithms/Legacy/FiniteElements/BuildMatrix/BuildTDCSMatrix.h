@@ -53,7 +53,7 @@ class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
 
     static AlgorithmInputName FEM_Stiffness_Matrix;
     static AlgorithmInputName FEM_Mesh;
-    static AlgorithmInputName Eletrode_Element;
+    static AlgorithmInputName Electrode_Element;
     static AlgorithmInputName Electrode_Element_Type;
     static AlgorithmInputName Electrode_Element_Definition;
     static AlgorithmInputName Contact_Impedance;
