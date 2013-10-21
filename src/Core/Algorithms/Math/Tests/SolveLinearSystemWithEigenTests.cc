@@ -79,8 +79,8 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystemWith
   cg.setTolerance(1e-15);
   x = cg.solve(rhs);
 
-  #if 0
-cg.setMaxIterations(1);
+#if 0
+  cg.setMaxIterations(1);
   int i = 0;
   do {
     x = cg.solveWithGuess(rhs, x);
@@ -116,9 +116,10 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallDenseSystem)
   SolveLinearSystemAlgorithm algo;
 
   auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10));
+  DenseColumnMatrixHandle solution = x.get<0>();
 
-  ASSERT_TRUE(x.get<0>());
-  EXPECT_EQ(v, *x.get<0>());
+  ASSERT_TRUE(solution.get() != 0);
+  EXPECT_EQ(v, *solution);
 }
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallSparseSystem)
@@ -142,14 +143,14 @@ TEST(SolveLinearSystemWithEigenAlgorithmTests, CanSolveBasicSmallSparseSystem)
   SolveLinearSystemAlgorithm algo;
 
   auto x = algo.run(boost::make_tuple(A, rhs), boost::make_tuple(1e-15, 10));
+  DenseColumnMatrixHandle solution = x.get<0>();
 
-  ASSERT_TRUE(x.get<0>());
-  EXPECT_EQ(v, *x.get<0>());
+  ASSERT_TRUE(solution.get() != 0);
+  EXPECT_EQ(v, *solution);
 }
 
 TEST(SolveLinearSystemWithEigenAlgorithmTests, ThrowsOnNullMatrix)
 {
-  int n = 3;
   DenseMatrixHandle A;
 
   DenseColumnMatrixHandle rhs(new DenseColumnMatrix(3));
@@ -251,7 +252,7 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
   EXPECT_THAT(data.get<5>(), ElementsAre(1.0, 3.5, -1.0, 2.0));
 
   auto mat = converter.makeSparse(file.string());
-  ASSERT_TRUE(mat);
+  ASSERT_TRUE(mat.get() != 0);
   EXPECT_EQ(2, mat->rows());
   EXPECT_EQ(3, mat->cols());
 
@@ -293,7 +294,7 @@ TEST(SparseMatrixReadTest, DISABLED_CanReadInBigMatrix)
   auto file = TestResources::rootDir() / "CGDarrell" / "A_txt.mat ";
   EigenMatrixFromScirunAsciiFormatConverter converter;
   auto mat = converter.makeSparse(file.string());
-  ASSERT_TRUE(mat);
+  ASSERT_TRUE(mat.get() != 0);
   EXPECT_EQ(428931, mat->rows());
   EXPECT_EQ(428931, mat->cols());
 }
@@ -304,7 +305,7 @@ TEST(SparseMatrixReadTest, DISABLED_CanReadInBigVector)
   auto file = TestResources::rootDir() / "CGDarrell" / "RHS_text.txt";
   EigenMatrixFromScirunAsciiFormatConverter converter;
   auto mat = converter.makeDense(file.string());
-  ASSERT_TRUE(mat);
+  ASSERT_TRUE(mat.get() != 0);
   EXPECT_EQ(428931, mat->rows());
   EXPECT_EQ(1, mat->cols());
 }
@@ -315,12 +316,12 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
   auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS_text.txt";
   EigenMatrixFromScirunAsciiFormatConverter converter;
   auto A = converter.make(AFile.string());
-  ASSERT_TRUE(A);
+  ASSERT_TRUE(A.get() != 0);
 
   std::cout << A->nrows() << " x " << A->ncols() << std::endl;
 
   auto b = converter.make(rhsFile.string()); 
-  ASSERT_TRUE(b);
+  ASSERT_TRUE(b.get() != 0);
   std::cout << b->nrows() << " x " << b->ncols() << std::endl;
   auto bCol = matrix_convert::to_column(b);
   
@@ -330,8 +331,9 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
     SolveLinearSystemAlgorithm algo;
 
     x = algo.run(boost::make_tuple(A, bCol), boost::make_tuple(1e-20, 4000));
+    MatrixHandle solution = x.get<0>();
 
-    ASSERT_TRUE(x.get<0>());
+    ASSERT_TRUE(solution.get() != 0);
     std::cout << "error: " << x.get<1>() << std::endl;
     std::cout << "iterations: " << x.get<2>() << std::endl;
   }
@@ -345,7 +347,7 @@ TEST(EigenSparseSolverTest, DISABLED_CanSolveBigSystem)
 
     auto xFileScirun = TestResources::rootDir() / "CGDarrell" / "xScirunColumn.mat";
     auto xExpected = converter.makeColumn(xFileScirun.string());
-    ASSERT_TRUE(xExpected);
+    ASSERT_TRUE(xExpected.get() != 0);
     EXPECT_EQ(428931, xExpected->nrows());
     EXPECT_EQ(1, xExpected->ncols());
 

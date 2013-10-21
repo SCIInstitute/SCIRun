@@ -94,7 +94,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
 
   ReadMatrixAlgorithm read;
   DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
-  ASSERT_TRUE(roundTrip);
+  ASSERT_TRUE(roundTrip.get() != 0);
 
   EXPECT_EQ(*m1, *roundTrip);
 }
@@ -109,7 +109,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFile)
 
   ReadMatrixAlgorithm read;
   DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
-  ASSERT_TRUE(roundTrip);
+  ASSERT_TRUE(roundTrip.get() != 0);
 
   EXPECT_EQ(*m1, *roundTrip);
 }
