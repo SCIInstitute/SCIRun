@@ -134,7 +134,7 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != 0);
-  ASSERT_TRUE(receiveModule->latestReceivedMatrix());
+  ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != 0);
 
   EXPECT_EQ(*input, *receiveModule->latestReceivedMatrix());
 }

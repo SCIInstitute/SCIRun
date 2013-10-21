@@ -149,7 +149,7 @@ TEST(SerializeNetworkTest, RoundTripData)
 
   std::istringstream istr(xml1);
   NetworkXMLHandle readIn = serializer.load_xml(istr);
-  ASSERT_TRUE(readIn);
+  ASSERT_TRUE(readIn.get() != 0);
   std::ostringstream ostr2;
   serializer.save_xml(*readIn, ostr2);
   const std::string xml2 = ostr2.str();
@@ -169,9 +169,9 @@ TEST(SerializeNetworkTest, RoundTripObject)
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle());
   NetworkHandle network = converter.from_xml_data(networkXML);
-  ASSERT_TRUE(network);
+  ASSERT_TRUE(network.get() != 0);
   auto xml2 = converter.to_xml_data(network);
-  ASSERT_TRUE(xml2);
+  ASSERT_TRUE(xml2.get() != 0);
 
   std::ostringstream ostr2;
   serializer.save_xml(xml2->network, ostr2);
@@ -235,14 +235,14 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();
-  ASSERT_TRUE(deserialized);
+  ASSERT_TRUE(deserialized.get() != 0);
 
   EXPECT_EQ(9, deserialized->nconnections());
   EXPECT_EQ(9, deserialized->nmodules());
   EXPECT_NE(matrixMathNetwork.get(), deserialized.get());
 
   ModuleHandle trans2 = deserialized->lookupModule(ModuleId("EvaluateLinearAlgebraUnary", 2));
-  ASSERT_TRUE(trans2);
+  ASSERT_TRUE(trans2.get() != 0);
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
   EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt());
 }

@@ -126,7 +126,7 @@ TEST(EvaluateLinearAlgebraUnaryFunctionalTest, CanExecuteManuallyWithChoiceOfOpe
 
   ReceiveTestMatrixModule* receiveModule = dynamic_cast<ReceiveTestMatrixModule*>(receive.get());
   ASSERT_TRUE(receiveModule != 0);
-  ASSERT_TRUE(receiveModule->latestReceivedMatrix());
+  ASSERT_TRUE(receiveModule->latestReceivedMatrix().get() != 0);
 
   EXPECT_EQ(-*input, *receiveModule->latestReceivedMatrix());
 
@@ -226,7 +226,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   ReportMatrixInfoAlgorithm::Outputs reportOutput = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
   DenseMatrixHandle receivedMatrix = any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
-  ASSERT_TRUE(receivedMatrix);
+  ASSERT_TRUE(receivedMatrix.get() != 0);
   //verify results
   EXPECT_EQ(expected, *receivedMatrix);
   EXPECT_EQ(3, reportOutput.get<1>());
