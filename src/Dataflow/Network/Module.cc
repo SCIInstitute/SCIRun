@@ -177,6 +177,15 @@ void Module::set_state(ModuleStateHandle state)
   state_ = state;
 }
 
+AlgorithmBase& Module::algorithm()
+{
+  if (!algo_)
+    error("Null algorithm object, make sure AlgorithmFactory knows about this module's algorithm types.");
+  ENSURE_NOT_NULL(algo_, "Null algorithm!");
+
+  return *algo_;
+}
+
 size_t Module::add_input_port(InputPortHandle h)
 {
   iports_.add(h);
