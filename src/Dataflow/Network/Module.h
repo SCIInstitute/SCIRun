@@ -170,8 +170,12 @@ namespace Networks {
     ModuleLookupInfo info_;
     ModuleId id_;
 
+    Core::Algorithms::AlgorithmBase& algorithm();
+
+  //private:
     Core::Algorithms::AlgorithmHandle algo_;
 
+  protected:
     enum State {
       NeedData,
       JustStarted,
