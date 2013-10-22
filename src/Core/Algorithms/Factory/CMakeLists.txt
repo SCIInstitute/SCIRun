@@ -47,6 +47,7 @@ TARGET_LINK_LIBRARIES(Algorithms_Factory
   Algorithms_Math
   Algorithms_DataIO
   Algorithms_Field
+  Core_Algorithms_Legacy_FiniteElements
   ${SCI_BOOST_LIBRARY}
 )
 
