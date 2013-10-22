@@ -109,21 +109,25 @@ struct TryRegister
   int id_;
 };
 
+// This test will generate duplicate type exists warnings, since there are
+// multiple attempts to insert the same key. This is OK.
 TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
 {
   TypeIDTable<Dummy> table;
 
   int trueCount = 0;
   int tryCount = 50;
-  std::vector<boost::thread> threads;
+  std::vector< boost::shared_ptr<boost::thread> > threads;
+
   for (int i = 0; i < tryCount; ++i)
   {
     TryRegister tr(table, trueCount, i);
-    threads.push_back(boost::thread(tr));
+    threads.push_back( boost::shared_ptr<boost::thread>(new boost::thread(tr)) );
   }
+
   for (int i = 0; i < tryCount; ++i)
   {
-    threads[i].join();
+    threads[i]->join();
   }
 
   EXPECT_EQ(1, trueCount);
