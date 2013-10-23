@@ -81,7 +81,7 @@ namespace
 
 TEST_F(LatticeVolumeMeshFacadeTests, BasicCubeTest)
 {
-  ASSERT_TRUE(mesh_.get() != 0);
+  ASSERT_TRUE(mesh_.get() != nullptr);
   
   auto facade(mesh_->getFacade());
 

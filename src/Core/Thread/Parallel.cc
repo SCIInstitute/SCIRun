@@ -34,18 +34,30 @@
 using namespace SCIRun::Core::Thread;
 
 void Parallel::RunTasks(IndexedTask task, int numProcs)
+//void Parallel::RunTasks(int numProcs)
 {
-  std::vector<boost::thread> threads;
+  std::vector<boost::thread*> threads;
 
   for (int i = 0; i < numProcs; ++i)
   {
-    threads.push_back(boost::thread(task, i));
+    threads.push_back(new boost::thread(task, i));
   }
 
-  BOOST_FOREACH(boost::thread& t, threads)
+//  BOOST_FOREACH(boost::thread& t, threads)
+  BOOST_FOREACH(boost::thread* t, threads)
   {
-    t.join();
+    t->join();
   }
+//  for(int i = 0; i < numProcs; ++i)
+//  {
+//    boost::thread* t = new boost::thread();
+//    threads.push_back(t);
+//  }
+//
+//  for(int i = 0; i < numProcs; ++i)
+//  {
+//    threads[i]->join();
+//  }
 }
 
 unsigned int Parallel::NumCores()

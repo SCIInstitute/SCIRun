@@ -29,7 +29,9 @@
 #ifndef CORE_THREAD_PARLLEL_H
 #define CORE_THREAD_PARLLEL_H
 
+#include <boost/noncopyable.hpp>
 #include <boost/function.hpp>
+//#include <functional>
 #include <Core/Thread/share.h>
 
 namespace SCIRun 
@@ -38,14 +40,15 @@ namespace Core
 {
 namespace Thread
 {
-  class SCISHARE Parallel
+  class SCISHARE Parallel : public boost::noncopyable
   {
   public:
     typedef boost::function<void(int)> IndexedTask;
     static void RunTasks(IndexedTask task, int numProcs);
+//    static void RunTasks(int numProcs);
+//    typedef std::function<void(int)> IndexedTask;
+//    static void RunTasks(IndexedTask task, int numProcs);
     static unsigned int NumCores();
-  private:
-    Parallel();
   };
 
 }}}

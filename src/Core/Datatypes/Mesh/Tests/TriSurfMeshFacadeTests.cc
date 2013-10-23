@@ -169,7 +169,7 @@ namespace
 
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleTest)
 {
-  ASSERT_TRUE(basicTriangleMesh_.get() != 0);
+  ASSERT_TRUE(basicTriangleMesh_.get() != nullptr);
   
   auto facade(basicTriangleMesh_->getFacade());
   
@@ -181,7 +181,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleTest)
 
 TEST_F(TriSurfMeshFacadeTests, CubeTest)
 {
-  ASSERT_TRUE(cubeMesh_.get() != 0);
+  ASSERT_TRUE(cubeMesh_.get() != nullptr);
   
   auto facade(cubeMesh_->getFacade());
   
@@ -193,7 +193,7 @@ TEST_F(TriSurfMeshFacadeTests, CubeTest)
 
 TEST_F(TriSurfMeshFacadeTests, TetrahedronTest)
 {
-  ASSERT_TRUE(tetrahedronMesh_.get() != 0);
+  ASSERT_TRUE(tetrahedronMesh_.get() != nullptr);
   
   auto facade(tetrahedronMesh_->getFacade());
   
@@ -226,7 +226,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleEdgeIterationTest)
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
 {
   auto facade(basicTriangleMesh_->getFacade());
-  ASSERT_TRUE(facade.get() != 0);
+  ASSERT_TRUE(facade.get() != nullptr);
   std::ostringstream ostr;
   BOOST_FOREACH(const FaceInfo<VMesh>& face, facade->faces())
   {
@@ -245,7 +245,7 @@ TEST_F(TriSurfMeshFacadeTests, BasicTriangleFaceIterationTest)
 TEST_F(TriSurfMeshFacadeTests, BasicTriangleNodeIterationTest)
 {
   auto facade(basicTriangleMesh_->getFacade());
-  ASSERT_TRUE(facade.get() != 0);
+  ASSERT_TRUE(facade.get() != nullptr);
   std::ostringstream ostr;
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {

@@ -224,7 +224,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   ReportMatrixInfoAlgorithm::Outputs reportOutput = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
   DenseMatrixHandle receivedMatrix = any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
-  ASSERT_TRUE(receivedMatrix.get() != 0);
+  ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results
   EXPECT_EQ(expected, *receivedMatrix);
   EXPECT_EQ(3, reportOutput.get<1>());
@@ -278,7 +278,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   ReportMatrixInfoAlgorithm::Outputs reportOutput = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(report->get_state()->getTransientValue("ReportedInfo"));
   DenseMatrixHandle receivedMatrix = any_cast_or_default<DenseMatrixHandle>(receive->get_state()->getTransientValue("ReceivedMatrix"));
 
-  ASSERT_TRUE(receivedMatrix.get() != 0);
+  ASSERT_TRUE(receivedMatrix.get() != nullptr);
   //verify results
   EXPECT_EQ(expected, *receivedMatrix);
   EXPECT_EQ(3, reportOutput.get<1>());

@@ -764,7 +764,7 @@ Persistent::is_base_of(const std::string& parent, const std::string& type)
     return true;
   
   PersistentTypeIDPtr found_pid = find_derived(type, parent);
-  return found_pid.get() != 0;
+  return found_pid.get() != nullptr;
 }
 
 
