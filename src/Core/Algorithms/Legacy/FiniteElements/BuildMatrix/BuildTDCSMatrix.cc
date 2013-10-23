@@ -532,8 +532,9 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
     THROW_ALGORITHM_INPUT_ERROR_SIMPLE(" This Electrode-type is not implemented, a electrode only consist of points(1), triangles(2) and tetrahedral elements(3)."); 
   }
     }
-//  tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
-///    
+
+  tdcs_ = SparseRowMatrixFromMap::appendToSparseMatrix(m+number_electrodes_, n+number_electrodes_, *stiffnessMatrix_, additionalData);
+
   return true;
 }  
     
