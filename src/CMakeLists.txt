@@ -305,6 +305,7 @@ ELSE() # IDEs: Xcode, VS, others...
 ENDIF()
 
 
+
 ########################################################################
 # Configure Spire external project
 
@@ -336,7 +337,18 @@ include_directories(${SPIRE_INCLUDE_DIR})
 include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
 include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
 
-# OpenGL
+# Spire related includes (required for linking on windows)
+IF(UNIX)
+  IF(APPLE)
+    FIND_LIBRARY(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+    SET(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
+  ENDIF()
+ENDIF()
+
+
+########################################################################
+# Find and configure OpenGL
+
 FIND_PACKAGE(OpenGL REQUIRED)
 
 ########################################################################
@@ -348,7 +360,6 @@ FIND_PACKAGE(Qt4 REQUIRED)
 SET(QT_USE_QTOPENGL TRUE)
 
 IF(QT_FOUND)
-  # TODO: configure Qt OpenGL?
   # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
   # build issues haven't been corrected in CMake 2.8.7 and newer
 
@@ -599,7 +610,7 @@ SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SPIRE_CORE}   PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET spire_spm_SCIRun   PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET log4cpp PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 
 
 IF(BUILD_WITH_PYTHON)

@@ -26,23 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
-#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 
-ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) {}
+ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
+{
+  INITIALIZE_PORT(InputMatrix);
+}
 
 void ReportMatrixInfoModule::execute()
 {
-  auto matrix = getRequiredInput(Input);
+  auto matrix = getRequiredInput(InputMatrix);
 
-  ReportMatrixInfoAlgorithm algo;
-  ReportMatrixInfoAlgorithm::Outputs output = algo.run(matrix);
-  get_state()->setTransientValue("ReportedInfo", output);
+  auto output = algo_->run_generic(make_input((InputMatrix, matrix)));
+  get_state()->setTransientValue("ReportedInfo", output.getTransient());
+
+  auto info = any_cast_or_default<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());
+  //TODO: requires knowledge of algorithm type
+  sendOutput(NumRows, boost::make_shared<Int32>(info.get<1>()));
+  sendOutput(NumCols, boost::make_shared<Int32>(info.get<2>()));
+  sendOutput(NumElements, boost::make_shared<Int32>(info.get<3>()));
 }

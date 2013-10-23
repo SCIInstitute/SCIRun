@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <stdexcept>
 
@@ -35,8 +36,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 
-AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::OperatorName("Operator");
-AlgorithmParameterName EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue("Scalar");
+EvaluateLinearAlgebraUnaryAlgorithm::EvaluateLinearAlgebraUnaryAlgorithm()
+{
+  addParameter(Variables::Operator, 0);
+  addParameter(Variables::ScalarValue, 0);
+}
 
 EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm::run(const EvaluateLinearAlgebraUnaryAlgorithm::Inputs& matrix, const EvaluateLinearAlgebraUnaryAlgorithm::Parameters& params) const
 {
@@ -75,5 +79,12 @@ EvaluateLinearAlgebraUnaryAlgorithm::Outputs EvaluateLinearAlgebraUnaryAlgorithm
 
 AlgorithmOutput EvaluateLinearAlgebraUnaryAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto matrix = input.get<DenseMatrix>(Variables::InputMatrix);
+
+  auto scalar = boost::make_optional(get(Variables::ScalarValue).getDouble());
+  auto result = run(matrix, boost::make_tuple(Operator(get(Variables::Operator).getInt()), scalar));
+
+  AlgorithmOutput output;
+  output[Variables::Result] = result;
+  return output;
 }

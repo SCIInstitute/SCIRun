@@ -27,17 +27,21 @@
 */
 
 #include <Modules/DataIO/WriteMatrix.h>
-#include <Core/Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::DataIO;
 
-WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun")) {}
+WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", "DataIO", "SCIRun"))
+{
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(MatrixToWrite);
+}
 
 //TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void WriteMatrixModule::execute()
@@ -46,10 +50,10 @@ void WriteMatrixModule::execute()
 
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
-    filename_ = get_state()->getValue(WriteMatrixAlgorithm::Filename).getString();
+    filename_ = get_state()->getValue(Variables::Filename).getString();
   else
     filename_ = (*fileOption)->value();
 
-  WriteMatrixAlgorithm algo;
-  algo.run(matrix, filename_);
+  algo_->set(Variables::Filename, filename_);
+  algo_->run_generic(make_input((MatrixToWrite, matrix)));
 }

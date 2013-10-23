@@ -50,6 +50,11 @@ namespace Datatypes {
     //DenseMatrixGeneric() : Base() {}
     DenseMatrixGeneric(size_t nrows = 0, size_t ncols = 0) : EigenBase(nrows, ncols) {}
 
+    DenseMatrixGeneric(size_t nrows, size_t ncols, const T& val) : EigenBase(nrows, ncols) 
+    {
+      this->fill(val);
+    }
+
     // This constructor allows you to construct DenseMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     DenseMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)

@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
@@ -34,7 +35,10 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 
-AlgorithmParameterName EvaluateLinearAlgebraBinaryAlgorithm::OperatorName("Operator");
+EvaluateLinearAlgebraBinaryAlgorithm::EvaluateLinearAlgebraBinaryAlgorithm()
+{
+  addParameter(Variables::Operator, 0);
+}
 
 EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorithm::run(const EvaluateLinearAlgebraBinaryAlgorithm::Inputs& inputs, const EvaluateLinearAlgebraBinaryAlgorithm::Parameters& params) const
 {
@@ -71,5 +75,12 @@ EvaluateLinearAlgebraBinaryAlgorithm::Outputs EvaluateLinearAlgebraBinaryAlgorit
 
 AlgorithmOutput EvaluateLinearAlgebraBinaryAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto LHS = input.get<DenseMatrix>(Variables::LHS);
+  auto RHS = input.get<DenseMatrix>(Variables::RHS);
+
+  auto result = run(boost::make_tuple(LHS, RHS), Operator(get(Variables::Operator).getInt()));
+
+  AlgorithmOutput output;
+  output[Variables::Result] = result;
+  return output;
 }

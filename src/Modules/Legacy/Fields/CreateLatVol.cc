@@ -76,17 +76,18 @@ void CreateLatVol::setStateDefaults()
   state->setValue(ElementSizeNormalized, true);
 }
 
+//TODO: extract algorithm class!!!!!!!!!!!!!!!!!!!!
+
 void
 CreateLatVol::execute()
 {
   auto ifieldhandleOption = getOptionalInput(InputField);
   auto sizeOption = getOptionalInput(LatVolSize);
 	
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  if (inputs_changed_ || size_x_.changed() || size_y_.changed() ||
-      size_z_.changed() || padpercent_.changed() || data_at_.changed() ||
-      element_size_.changed() || !oport_cached("Output Sample Field") )
-#endif
+  //if (inputs_changed_ || size_x_.changed() || size_y_.changed() ||
+  //    size_z_.changed() || padpercent_.changed() || data_at_.changed() ||
+  //    element_size_.changed() || !oport_cached("Output Sample Field") )
+  if (needToExecute())
   {
     update_state(Executing);
     

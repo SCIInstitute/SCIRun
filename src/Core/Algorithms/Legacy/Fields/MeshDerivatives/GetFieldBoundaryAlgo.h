@@ -45,7 +45,6 @@ class SCISHARE GetFieldBoundaryAlgo : public AlgorithmBase
 public:
   GetFieldBoundaryAlgo();
   
-  static AlgorithmInputName InputField;
   static AlgorithmOutputName BoundaryField;
   static AlgorithmOutputName MappingMatrix;
 

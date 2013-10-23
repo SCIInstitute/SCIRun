@@ -64,5 +64,12 @@ namespace SCIRun
     };
 
     typedef boost::shared_ptr< ::testing::NiceMock<MockAlgorithm> > MockAlgorithmPtr;
+
+    class SCISHARE UseRealAlgorithmFactory
+    {
+    public:
+      UseRealAlgorithmFactory();
+      ~UseRealAlgorithmFactory();
+    };
   }
 }

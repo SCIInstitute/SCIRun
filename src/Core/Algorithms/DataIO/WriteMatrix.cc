@@ -30,6 +30,7 @@
 #include <boost/filesystem.hpp>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 
@@ -37,7 +38,10 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName WriteMatrixAlgorithm::Filename("Filename");
+WriteMatrixAlgorithm::WriteMatrixAlgorithm()
+{
+  addParameter(Variables::Filename, std::string(""));
+}
 
 WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorithm::Inputs& inputMatrix, const WriteMatrixAlgorithm::Parameters& filename) const
 {
@@ -71,5 +75,7 @@ WriteMatrixAlgorithm::Outputs WriteMatrixAlgorithm::run(const WriteMatrixAlgorit
 
 AlgorithmOutput WriteMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto filename = get(Variables::Filename).getString();
+  run(input.get<Matrix>(Variables::MatrixToWrite), filename);
+  return AlgorithmOutput();
 }

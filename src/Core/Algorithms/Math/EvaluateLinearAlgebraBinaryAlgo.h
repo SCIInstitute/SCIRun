@@ -47,12 +47,12 @@ namespace Math {
       SUBTRACT,
       MULTIPLY
     };
-    static AlgorithmParameterName OperatorName;
 
     //TODO: idea (type, name)
     // can generate a subclass of ModuleState with get/set for each.
     //ALGORITHM_PARAMETER(Operator, OperatorName);
-        
+
+    EvaluateLinearAlgebraBinaryAlgorithm();
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
     typedef Operator Parameters;
     typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;

@@ -60,9 +60,10 @@ Module::Module(const ModuleLookupInfo& info,
   AlgorithmFactoryHandle algoFactory,
   ModuleStateFactoryHandle stateFactory,
   const std::string& version)
-  : info_(info), has_ui_(hasUi), 
-  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
-  id_(info_.module_name_, instanceCount_++)
+  : info_(info), 
+  id_(info_.module_name_, instanceCount_++),
+  has_ui_(hasUi), 
+  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -174,6 +175,15 @@ ModuleStateHandle Module::get_state()
 void Module::set_state(ModuleStateHandle state) 
 {
   state_ = state;
+}
+
+AlgorithmBase& Module::algorithm()
+{
+  if (!algo_)
+    error("Null algorithm object, make sure AlgorithmFactory knows about this module's algorithm types.");
+  ENSURE_NOT_NULL(algo_, "Null algorithm!");
+
+  return *algo_;
 }
 
 size_t Module::add_input_port(InputPortHandle h)

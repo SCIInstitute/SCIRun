@@ -170,8 +170,12 @@ namespace Networks {
     ModuleLookupInfo info_;
     ModuleId id_;
 
+    Core::Algorithms::AlgorithmBase& algorithm();
+
+  //private:
     Core::Algorithms::AlgorithmHandle algo_;
 
+  protected:
     enum State {
       NeedData,
       JustStarted,
@@ -301,6 +305,7 @@ namespace Modules
   struct HasNoInputPorts : NumInputPorts<0> {};
   struct HasNoOutputPorts : NumOutputPorts<0> {};
   
+  //MEGA TODO: these will become variadic templates in VS2013
   template <class PortTypeTag>
   class Has1InputPort : public NumInputPorts<1>
   {
@@ -321,7 +326,54 @@ namespace Modules
     }
   };
 
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2>
+  class Has3InputPorts : public NumInputPorts<3>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name)
+    {
+      auto ports = Has2InputPorts<PortTypeTag0, PortTypeTag1>::inputPortDescription(port0Name, port1Name);
+      ports.push_back(Has1InputPort<PortTypeTag2>::inputPortDescription(port2Name)[0]);
+      return ports;
+    }
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3>
+  class Has4InputPorts : public NumInputPorts<4>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name)
+    {
+      auto ports = Has3InputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2>::inputPortDescription(port0Name, port1Name, port2Name);
+      ports.push_back(Has1InputPort<PortTypeTag3>::inputPortDescription(port3Name)[0]);
+      return ports;
+    }
+  };
   
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4>
+  class Has5InputPorts : public NumInputPorts<5>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name)
+    {
+      auto ports = Has4InputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3>::inputPortDescription(port0Name, port1Name, port2Name, port3Name);
+      ports.push_back(Has1InputPort<PortTypeTag4>::inputPortDescription(port4Name)[0]);
+      return ports;
+    }
+  };
+  
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4, class PortTypeTag5>
+  class Has6InputPorts : public NumInputPorts<6>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name, const std::string& port5Name)
+    {
+      auto ports = Has5InputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3, PortTypeTag4>::inputPortDescription(port0Name, port1Name, port2Name, port3Name, port4Name);
+      ports.push_back(Has1InputPort<PortTypeTag5>::inputPortDescription(port5Name)[0]);
+      return ports;
+    }
+  };
+
   template <class PortTypeTag>
   class Has1OutputPort : public NumOutputPorts<1>
   {
@@ -338,6 +390,54 @@ namespace Modules
       //TODO: use move semantics
       auto ports = Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name);
       ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name)[0]);
+      return ports;
+    }
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2>
+  class Has3OutputPorts : public NumOutputPorts<3>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name)
+    {
+      auto ports = Has2OutputPorts<PortTypeTag0, PortTypeTag1>::outputPortDescription(port0Name, port1Name);
+      ports.push_back(Has1OutputPort<PortTypeTag2>::outputPortDescription(port2Name)[0]);
+      return ports;
+    }
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3>
+  class Has4OutputPorts : public NumOutputPorts<4>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name)
+    {
+      auto ports = Has3OutputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2>::outputPortDescription(port0Name, port1Name, port2Name);
+      ports.push_back(Has1OutputPort<PortTypeTag3>::outputPortDescription(port3Name)[0]);
+      return ports;
+    }
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4>
+  class Has5OutputPorts : public NumOutputPorts<5>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name)
+    {
+      auto ports = Has4OutputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3>::outputPortDescription(port0Name, port1Name, port2Name, port3Name);
+      ports.push_back(Has1OutputPort<PortTypeTag4>::outputPortDescription(port4Name)[0]);
+      return ports;
+    }
+  };
+
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4, class PortTypeTag5>
+  class Has6OutputPorts : public NumOutputPorts<6>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name, const std::string& port5Name)
+    {
+      auto ports = Has5OutputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3, PortTypeTag4>::outputPortDescription(port0Name, port1Name, port2Name, port3Name, port4Name);
+      ports.push_back(Has1OutputPort<PortTypeTag5>::outputPortDescription(port5Name)[0]);
       return ports;
     }
   };
@@ -413,6 +513,42 @@ namespace Modules
     }
   };
 
+  template <class ModuleType>
+  struct IPortDescriber<3, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct IPortDescriber<4, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name());
+    }
+  };
+  
+  template <class ModuleType>
+  struct IPortDescriber<5, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name());
+    }
+  };
+  
+  template <class ModuleType>
+  struct IPortDescriber<6, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name(), ModuleType::inputPort5Name());
+    }
+  };
+
   template <size_t numPorts, class ModuleType>
   struct OPortDescriber
   {
@@ -437,6 +573,42 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
     {
       return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<3, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<4, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<5, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<6, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name());
     }
   };
 

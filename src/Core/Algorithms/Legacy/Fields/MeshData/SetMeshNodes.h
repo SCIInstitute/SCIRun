@@ -45,7 +45,6 @@ class SCISHARE SetMeshNodesAlgo : public AlgorithmBase
     
     bool run(FieldHandle input, Datatypes::DenseMatrixHandle matrix, FieldHandle& output) const;
 
-    static AlgorithmInputName InputField;
     static AlgorithmInputName MatrixNodes;
     static AlgorithmOutputName OutputField;
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 

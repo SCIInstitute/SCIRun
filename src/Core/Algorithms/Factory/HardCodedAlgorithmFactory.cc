@@ -35,10 +35,20 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
+#include <Core/Algorithms/Math/ReportMatrixInfo.h>
+#include <Core/Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
+#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
+#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/DataIO/TextToTriSurfField.h>
+#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/DataIO/WriteMatrix.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
@@ -63,6 +73,24 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new GetMeshNodesAlgo);
   else if (name == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
+  else if (name == "ReportFieldInfo")
+    h.reset(new ReportFieldInfoAlgorithm);
+  else if (name == "ReportMatrixInfo")
+    h.reset(new ReportMatrixInfoAlgorithm);
+  else if (name == "AppendMatrix")
+    h.reset(new AppendMatrixAlgorithm);
+  else if (name == "ReadMatrix")
+    h.reset(new ReadMatrixAlgorithm);
+  else if (name == "WriteMatrix")
+    h.reset(new WriteMatrixAlgorithm);
+  else if (name == "EvaluateLinearAlgebraUnary")
+    h.reset(new EvaluateLinearAlgebraUnaryAlgorithm);
+  else if (name == "EvaluateLinearAlgebraBinary")
+    h.reset(new EvaluateLinearAlgebraBinaryAlgorithm);
+  else if (name == "ConvertMeshToIrregularMesh")
+    h.reset(new ConvertMeshToIrregularMeshAlgo);
+  else if (name == "ReadMesh")
+    h.reset(new TextToTriSurfFieldAlgorithm);
 
   if (h && algoCollaborator)
   {

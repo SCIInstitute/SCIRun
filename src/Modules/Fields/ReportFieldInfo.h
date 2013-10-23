@@ -38,15 +38,19 @@ namespace Fields {
   
   class SCISHARE ReportFieldInfoModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<FieldPortTag>,
-    public Has2OutputPorts<StringPortTag, ScalarPortTag>
+    public Has6OutputPorts<StringPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
     ReportFieldInfoModule();
     virtual void execute();
     virtual void setStateDefaults() {}
-    INPUT_PORT(0, Input, LegacyField);
+    INPUT_PORT(0, InputField, LegacyField);
     OUTPUT_PORT(0, FieldType, String);
     OUTPUT_PORT(1, NumNodes, Int32);
+    OUTPUT_PORT(2, NumElements, Int32);
+    OUTPUT_PORT(3, NumData, Int32);
+    OUTPUT_PORT(4, DataMin, Double);
+    OUTPUT_PORT(5, DataMax, Double);
   };
 }}}
 

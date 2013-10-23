@@ -88,14 +88,11 @@ namespace Math {
       SCALAR_MULTIPLY
     };
 
-    //TODO: remove "Name" from identifier
-    static AlgorithmParameterName OperatorName;
-    static AlgorithmParameterName ScalarValue;
-
     typedef SCIRun::Core::Datatypes::DenseMatrixConstHandle Inputs;
     typedef boost::tuple<Operator, boost::optional<double> > Parameters;
     typedef SCIRun::Core::Datatypes::DenseMatrixHandle Outputs;
 
+    EvaluateLinearAlgebraUnaryAlgorithm();
     Outputs run(const Inputs& matrix, const Parameters& params) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;

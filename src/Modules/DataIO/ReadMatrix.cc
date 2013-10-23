@@ -27,16 +27,21 @@
 */
 
 #include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/String.h>
 
 using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun")) {}
+ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun"))
+{
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FileLoaded);
+  INITIALIZE_PORT(MatrixLoaded);
+}
 
 //TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void ReadMatrixModule::execute()
@@ -44,15 +49,12 @@ void ReadMatrixModule::execute()
   //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
-    filename_ = get_state()->getValue(ReadMatrixAlgorithm::Filename).getString();
+    filename_ = get_state()->getValue(Variables::Filename).getString();
   else
     filename_ = (*fileOption)->value();
 
-  ReadMatrixAlgorithm algo;
-  algo.setLogger(getLogger());
-  algo.setUpdaterFunc(getUpdaterFunc());
-
-  ReadMatrixAlgorithm::Outputs matrix = algo.run(filename_);
-  sendOutput(Matrix, matrix);
+  algo_->set(Variables::Filename, filename_);
+  auto output = algo_->run_generic(makeNullInput());
+  sendOutputFromAlgorithm(MatrixLoaded, output);
   sendOutput(FileLoaded, boost::make_shared<String>(filename_));
 }

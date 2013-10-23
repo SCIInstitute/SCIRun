@@ -39,6 +39,7 @@
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/MatrixIO.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun::Core::Datatypes;
@@ -83,9 +84,9 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
   ASSERT_FALSE(x0); // algo object will initialize x0 to the zero vector
 
   SolveLinearSystemAlgo algo;
-  algo.set(SolveLinearSystemAlgo::MaxIterations(), 500);
-  algo.set(SolveLinearSystemAlgo::TargetError(), 7e-4);
-  algo.set_option(SolveLinearSystemAlgo::MethodOption(), method);
+  algo.set(Variables::MaxIterations, 500);
+  algo.set(Variables::TargetError, 7e-4);
+  algo.set_option(Variables::Method, method);
   algo.setUpdaterFunc([](double x) {});
 
   DenseColumnMatrixHandle solution;

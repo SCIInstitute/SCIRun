@@ -55,8 +55,6 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 
-const AlgorithmParameterName DataIO::TextToTriSurfFieldAlgorithm::Filename("Filename");
-
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {

@@ -32,6 +32,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::TestUtils;
@@ -167,4 +168,15 @@ TEST(DenseMatrixTests, CanConstructFromTransform)
   DenseMatrix expected(4,4);
   expected << 1,0,0,-1,  0,1,0,0,  0,2,1,0,  0,0,0,1;
   EXPECT_EQ(expected, m);
+}
+
+TEST(DenseMatrixTests, OldMacroStillWorks)
+{
+  DenseMatrix actual = MAKE_DENSE_MATRIX(
+    (1,0,0)
+    (0,0,0)
+    (0,2,0));
+  DenseMatrix expected(3,3);
+  expected << 1,0,0,  0,0,0,  0,2,0;
+  EXPECT_EQ(expected, actual);
 }

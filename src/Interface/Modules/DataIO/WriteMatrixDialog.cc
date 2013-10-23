@@ -27,13 +27,13 @@
 */
 
 #include <Interface/Modules/DataIO/WriteMatrixDialog.h>
-#include <Core/Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
 
 using namespace SCIRun::Gui;
-using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle state,
@@ -52,12 +52,12 @@ WriteMatrixDialog::WriteMatrixDialog(const std::string& name, ModuleStateHandle 
 
 void WriteMatrixDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(WriteMatrixAlgorithm::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
 }
 
 void WriteMatrixDialog::pushFileNameToState() 
 {
-  state_->setValue(WriteMatrixAlgorithm::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void WriteMatrixDialog::saveFile()

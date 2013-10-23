@@ -28,6 +28,7 @@
 
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -107,12 +108,11 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
   return (true);
 }
 
-AlgorithmInputName GetMeshNodesAlgo::InputField("InputField");
 AlgorithmOutputName GetMeshNodesAlgo::MatrixNodes("MatrixNodes");
 
 AlgorithmOutput GetMeshNodesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto inputField = input.get<Field>(InputField);
+  auto inputField = input.get<Field>(Variables::InputField);
 
   DenseMatrixHandle nodes;
   if (!run(inputField, nodes))

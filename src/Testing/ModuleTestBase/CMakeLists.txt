@@ -44,6 +44,7 @@ ADD_LIBRARY(Testing_ModuleTestBase
 TARGET_LINK_LIBRARIES(Testing_ModuleTestBase
   Core_Datatypes
   Modules_Factory
+  Algorithms_Factory
   gtest
   gmock
   ${SCI_BOOST_LIBRARY}

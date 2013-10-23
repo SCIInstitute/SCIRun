@@ -39,6 +39,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
+  //TODO: use Eigen's Visitor type?
   template <typename T>
   struct MatrixVisitorGeneric
   {

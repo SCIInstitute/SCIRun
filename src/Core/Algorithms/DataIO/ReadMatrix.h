@@ -46,8 +46,7 @@ namespace DataIO {
         typedef std::string Parameters; 
         typedef SCIRun::Core::Datatypes::MatrixHandle Outputs;
 
-        static AlgorithmParameterName Filename;
-
+        ReadMatrixAlgorithm();
         Outputs run(const Parameters& filename) const;
       
         AlgorithmOutput run_generic(const AlgorithmInput& input) const;

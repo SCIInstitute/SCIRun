@@ -1286,14 +1286,14 @@ LatVolMesh<Basis>::get_bounding_box() const
   Core::Geometry::Point p7(min_i_,         min_j_ + nj_-1, min_k_ + nk_-1);
 
   Core::Geometry::BBox result;
-  result.extend(transform_.project(p0));
-  result.extend(transform_.project(p1));
-  result.extend(transform_.project(p2));
-  result.extend(transform_.project(p3));
-  result.extend(transform_.project(p4));
-  result.extend(transform_.project(p5));
-  result.extend(transform_.project(p6));
-  result.extend(transform_.project(p7));
+  result.extend(transform_.project(p0))
+    .extend(transform_.project(p1))
+    .extend(transform_.project(p2))
+    .extend(transform_.project(p3))
+    .extend(transform_.project(p4))
+    .extend(transform_.project(p5))
+    .extend(transform_.project(p6))
+    .extend(transform_.project(p7));
   return result;
 }
 

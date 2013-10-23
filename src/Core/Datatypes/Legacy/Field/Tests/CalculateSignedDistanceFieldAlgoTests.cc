@@ -52,7 +52,7 @@ protected:
   MeshHandle mesh_;
 };
 
-TEST_F(CalculateSignedDistanceFieldAlgoTests, Foo)
+TEST_F(CalculateSignedDistanceFieldAlgoTests, DISABLED_Foo)
 {
   FAIL() << "Todo";
 }

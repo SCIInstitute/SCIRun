@@ -42,10 +42,9 @@ namespace Math {
   {
   public:
     typedef SCIRun::Core::Datatypes::MatrixHandle Inputs;
-    typedef void* Parameters;  //TODO: should remove, make "parameter-less" algorithm interface?
     typedef boost::tuple<std::string, size_t, size_t, size_t, double, double> Outputs;
 
-    Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    Outputs run(const Inputs& input) const;
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };

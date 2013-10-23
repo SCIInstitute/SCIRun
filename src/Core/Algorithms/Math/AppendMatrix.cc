@@ -28,12 +28,16 @@
 
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Datatypes;
 
-AlgorithmParameterName AppendMatrixAlgorithm::OptionName("RowsOrColumns");
+AppendMatrixAlgorithm::AppendMatrixAlgorithm()
+{
+  addParameter(Variables::RowsOrColumns, 0);
+}
 
 AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgorithm::Inputs& input, const AppendMatrixAlgorithm::Parameters& params) const
 {
@@ -77,5 +81,12 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
 
 AlgorithmOutput AppendMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  throw 2;
+  auto lhs = input.get<DenseMatrix>(Variables::FirstMatrix);
+  auto rhs = input.get<DenseMatrix>(Variables::SecondMatrix);
+
+  auto outputs = run(boost::make_tuple(lhs, rhs), Option(get(Variables::RowsOrColumns).getInt()));
+
+  AlgorithmOutput output;
+  output[Variables::ResultMatrix] = outputs;
+  return output;
 }

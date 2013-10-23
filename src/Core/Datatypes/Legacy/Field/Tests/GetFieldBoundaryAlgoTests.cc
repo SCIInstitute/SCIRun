@@ -59,7 +59,7 @@ protected:
   MeshHandle mesh_;
 };
 
-TEST_F(GetFieldBoundaryAlgoTests, Foo)
+TEST_F(GetFieldBoundaryAlgoTests, DISABLED_Foo)
 {
   FAIL() << "Todo";
 }

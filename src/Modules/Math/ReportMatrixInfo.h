@@ -38,13 +38,16 @@ namespace Math {
   
   class SCISHARE ReportMatrixInfoModule : public SCIRun::Dataflow::Networks::Module,
     public Has1InputPort<MatrixPortTag>,
-    public HasNoOutputPorts
+    public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
     ReportMatrixInfoModule();
     virtual void execute();
     virtual void setStateDefaults() {}
-    INPUT_PORT(0, Input, Matrix);
+    INPUT_PORT(0, InputMatrix, Matrix);
+    OUTPUT_PORT(0, NumRows, Int32);
+    OUTPUT_PORT(1, NumCols, Int32);
+    OUTPUT_PORT(2, NumElements, Int32);
   };
 }}}
 

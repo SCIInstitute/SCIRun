@@ -29,41 +29,41 @@
 #include <iostream>
 #include <stdexcept>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
-#include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/DenseMatrix.h> //TODO: try to remove this--now it's needed to convert pointers, but actually this module shouldn't need the full def of DenseMatrix.
 
 using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 EvaluateLinearAlgebraUnaryModule::EvaluateLinearAlgebraUnaryModule() :
   Module(ModuleLookupInfo("EvaluateLinearAlgebraUnary", "Math", "SCIRun"))
 {
+  INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(Result);
 }
 
 void EvaluateLinearAlgebraUnaryModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName, 0);
-  state->setValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue, 0);
+  state->setValue(Variables::Operator, 0);
+  state->setValue(Variables::ScalarValue, 0);
 }
 
 void EvaluateLinearAlgebraUnaryModule::execute()
 {
-  auto denseInput = getRequiredInput(Input);
+  auto denseInput = getRequiredInput(InputMatrix);
 
-  ModuleStateHandle state = get_state();
+  auto state = get_state();
   
-  EvaluateLinearAlgebraUnaryAlgorithm::Operator oper = (EvaluateLinearAlgebraUnaryAlgorithm::Operator) 
-    state->getValue(EvaluateLinearAlgebraUnaryAlgorithm::OperatorName).getInt();
-  double scalar = state->getValue(EvaluateLinearAlgebraUnaryAlgorithm::ScalarValue).getDouble();
+  auto oper = state->getValue(Variables::Operator).getInt();
+  double scalar = state->getValue(Variables::ScalarValue).getDouble();
 
-  EvaluateLinearAlgebraUnaryAlgorithm::Parameters params(oper, scalar);
-  EvaluateLinearAlgebraUnaryAlgorithm algo; //TODO inject
-  algo.setLogger(getLogger()); //TODO
-  DenseMatrixHandle output = algo.run(denseInput, params);  //TODO
-  sendOutput(Result, output);
+  algo_->set(Variables::Operator, oper);
+  algo_->set(Variables::ScalarValue, scalar);
+  auto output = algo_->run_generic(make_input((InputMatrix, denseInput)));
+  sendOutputFromAlgorithm(Result, output);
 }
 

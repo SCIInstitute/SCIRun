@@ -63,7 +63,7 @@ void runTest(.../*int basis, const std::string& expectedBasisTypeTemplate, const
   //EXPECT_EQ(expectedBasisString, info.dataLocation);
 }
 
-TEST(CalculateGradientsAlgoTests, Foo)
+TEST(CalculateGradientsAlgoTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
   runTest(-1, "NoDataBasis", "None (nodata basis)", 0);

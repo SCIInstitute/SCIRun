@@ -93,7 +93,7 @@ class BBox {
     inline void reset() { is_valid_ = false; }
 
     //! Expand the bounding box to include point p
-    inline void extend(const Point& p)
+    inline BBox& extend(const Point& p)
     {
       if(is_valid_)
       {
@@ -106,6 +106,7 @@ class BBox {
         cmax_=p;
         is_valid_ = true;
       }
+      return *this;
     }
 
     //! Extend the bounding box on all sides by a margin

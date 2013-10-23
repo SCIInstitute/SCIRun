@@ -154,6 +154,8 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   connect(actionRunScript_, SIGNAL(triggered()), this, SLOT(runScript()));
   connect(actionSelectAll_, SIGNAL(triggered()), networkEditor_, SLOT(selectAll()));
   actionQuit_->setShortcut(QKeySequence::Quit);
+  connect(actionDelete_, SIGNAL(triggered()), networkEditor_, SLOT(del()));
+  actionDelete_->setShortcut(QKeySequence::Delete);
 
 #ifndef BUILD_WITH_PYTHON
   actionRunScript_->setEnabled(false);
@@ -242,6 +244,7 @@ void SCIRunMainWindow::setupInputWidgets()
     actionLoad_,
     actionSave_As_,
     actionNew_,
+    actionDelete_,
     moduleSelectorTreeWidget_,
     actionRunScript_;
   std::copy(recentFileActions_.begin(), recentFileActions_.end(), std::back_inserter(inputWidgets_));

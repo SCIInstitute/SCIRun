@@ -42,7 +42,6 @@ namespace Math {
   {
   public:
     enum Option { ROWS, COLUMNS };
-    static AlgorithmParameterName OptionName;
 
     typedef boost::tuple<SCIRun::Core::Datatypes::DenseMatrixConstHandle, SCIRun::Core::Datatypes::DenseMatrixConstHandle> Inputs;
     typedef Option Parameters;  
@@ -50,6 +49,7 @@ namespace Math {
 
     Outputs run(const Inputs& input, const Parameters& params) const;
 
+    AppendMatrixAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
   };
 

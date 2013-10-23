@@ -99,8 +99,12 @@ namespace SCIRun {
       class ModuleDescriptionLookup
       {
       public:
-        ModuleDescriptionLookup()
+        ModuleDescriptionLookup() : includeTestingModules_(false)
         {
+          //TODO: is BUILD_TESTING off when we build releases?
+        #ifdef BUILD_TESTING
+          includeTestingModules_ = true;
+        #endif
           //TODO: make EVEN MORE generic...macros? xml?
           //TODO: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
 
@@ -108,12 +112,7 @@ namespace SCIRun {
           addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
           addModuleDesc<ReadFieldModule>("ReadField", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<WriteFieldModule>("WriteField", "DataIO", "SCIRun", "Functional, outputs binary .fld only.", "...");
-          addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-          addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
-          addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
           addModuleDesc<PrintDatatypeModule>("PrintDatatype", "String", "SCIRun", "...", "...");
-          addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
-          addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
           addModuleDesc<ReportMatrixInfoModule>("ReportMatrixInfo", "Math", "SCIRun", "Functional, needs GUI work.", "...");
           addModuleDesc<ReportFieldInfoModule>("ReportFieldInfo", "MiscField", "SCIRun", "Same as v4", "...");
           addModuleDesc<AppendMatrixModule>("AppendMatrix", "Math", "SCIRun", "Fully functional.", "...");
@@ -124,10 +123,8 @@ namespace SCIRun {
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
           addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
-          addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
           //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-          addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
           addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
@@ -138,6 +135,18 @@ namespace SCIRun {
           addModuleDesc<GetFieldNodes>("GetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
+
+          //TODO: possibly use different build setting for these.
+          if (includeTestingModules_)
+          {
+            addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+            addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
+            addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
+            addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
+            addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
+            addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
+            addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
+          }
         }
 
         ModuleDescriptionMap descMap_;
@@ -157,6 +166,7 @@ namespace SCIRun {
       private:
         typedef std::map<ModuleLookupInfo, ModuleDescription, ModuleLookupInfoLess> Lookup;
         Lookup lookup_;
+        bool includeTestingModules_;
 
         template <class ModuleType>
         void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)

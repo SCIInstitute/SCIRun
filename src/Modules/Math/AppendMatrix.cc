@@ -26,34 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
 #include <Modules/Math/AppendMatrix.h>
-#include <Core/Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix", "Math", "SCIRun")) 
 {
+  INITIALIZE_PORT(FirstMatrix);
+  INITIALIZE_PORT(SecondMatrix);
+  INITIALIZE_PORT(ResultMatrix);
 }
 
 void AppendMatrixModule::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(AppendMatrixAlgorithm::OptionName, 0);
+  state->setValue(Variables::RowsOrColumns, 0);
 }
 
 void AppendMatrixModule::execute()
 {
   auto matrixLHS = getRequiredInput(FirstMatrix);
   auto matrixRHS = getRequiredInput(SecondMatrix);
-  auto param = (AppendMatrixAlgorithm::Parameters) get_state()->getValue(AppendMatrixAlgorithm::OptionName).getInt();
+  auto param = get_state()->getValue(Variables::RowsOrColumns).getInt();
 
-  AppendMatrixAlgorithm algo;
-  AppendMatrixAlgorithm::Outputs output = algo.run(AppendMatrixAlgorithm::Inputs(matrixLHS, matrixRHS), param);
+  algo_->set(Variables::RowsOrColumns, param);
+  auto output = algo_->run_generic(make_input((FirstMatrix, matrixLHS)(SecondMatrix, matrixRHS)));
 
-  sendOutput(ResultMatrix, output);
+  sendOutputFromAlgorithm(ResultMatrix, output);
 }
