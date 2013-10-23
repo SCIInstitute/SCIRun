@@ -250,13 +250,11 @@ namespace Datatypes {
       Pio_size(stream, c);
       auto n = this->nonZeros();
       Pio_size(stream, n);
-      this->resize(r,c);
-      this->resizeNonZeros(n);
-    }
-
-    if (stream.reading())
-    {
-      //resizing done above 
+      if (stream.reading())
+      {
+        this->resize(r,c);
+        this->resizeNonZeros(n);
+      }
     }
 
     stream.begin_cheap_delim();  
