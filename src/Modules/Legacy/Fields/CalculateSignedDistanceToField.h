@@ -44,6 +44,7 @@ namespace SCIRun {
         CalculateSignedDistanceToField();
 
         virtual void execute();
+        virtual void setStateDefaults() {}
 
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, ObjectField, LegacyField);

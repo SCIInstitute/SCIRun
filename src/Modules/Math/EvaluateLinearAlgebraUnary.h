@@ -44,6 +44,7 @@ namespace Math {
   public:
     EvaluateLinearAlgebraUnaryModule();
     virtual void execute();
+    virtual void setStateDefaults();
     INPUT_PORT(0, Input, DenseMatrix);
     OUTPUT_PORT(0, Result, DenseMatrix);
   };

@@ -1,4 +1,4 @@
-//TODO: this class will be reborn as "Note"
+//TODO: not sure if anything useful left here. need to take another look
 
 //#include <QtGui>
 //

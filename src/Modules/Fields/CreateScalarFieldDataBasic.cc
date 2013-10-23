@@ -42,8 +42,14 @@ AlgorithmParameterName CreateScalarFieldDataBasic::ValueFunc("ValueFunc");
 AlgorithmParameterName CreateScalarFieldDataBasic::ValueFuncParam1("ValueFuncParam1");
 
 CreateScalarFieldDataBasic::CreateScalarFieldDataBasic()
-  : Module(ModuleLookupInfo("CreateScalarFieldDataBasic", "NewField", "SCIRun"), false)
+  : Module(ModuleLookupInfo("CreateScalarFieldDataBasic", "Testing", "SCIRun"), false)
 {
+}
+
+void CreateScalarFieldDataBasic::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(ValueFunc, std::string());
 }
 
 //TODO: expand this module and then move it to test module category. then it can be used with python to regression test many combinations of latvol visualization!

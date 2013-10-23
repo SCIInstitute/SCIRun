@@ -44,6 +44,7 @@ namespace SCIRun {
         GetFieldNodes();
 
         virtual void execute();
+        virtual void setStateDefaults() {}
 
         INPUT_PORT(0, InputField, LegacyField);
         OUTPUT_PORT(0, MatrixNodes, Matrix);

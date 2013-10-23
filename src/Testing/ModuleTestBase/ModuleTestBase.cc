@@ -31,15 +31,22 @@
 #include <Dataflow/Network/ConnectionId.h>
 #include <Dataflow/Network/Tests/MockNetwork.h>
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
+
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <boost/functional/factory.hpp>
 
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/GeometryPrimitives/Point.h>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
 using namespace SCIRun::Modules::Factory;
@@ -63,22 +70,12 @@ private:
   DatatypeHandleOption data_;
 };
 
-class MockAlgorithm : public AlgorithmBase
-{
-public:
-  MOCK_CONST_METHOD1(run_generic, AlgorithmOutput(const AlgorithmInput&));
-  MOCK_METHOD1(keyNotFoundPolicy, void(const AlgorithmParameterName&));
-  //MOCK_METHOD2(set, void(const AlgorithmParameterName&, const AlgorithmParameter::Value&));
-  //MOCK_CONST_METHOD1(get, const AlgorithmParameter&(const AlgorithmParameterName&));
-  //MOCK_METHOD2(set_option, void(const AlgorithmParameterName&, const std::string& value));
-  //MOCK_CONST_METHOD1(get_option, std::string(const AlgorithmParameterName&));
-};
-
 class MockAlgorithmFactory : public AlgorithmFactory
 {
 public:
   virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
   {
+    std::cout << "Creating mock algorithm named: " << name << std::endl;
     return AlgorithmHandle(new NiceMock<MockAlgorithm>);
   }
 };
@@ -105,4 +102,26 @@ void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, Data
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
   }
+}
+
+void ModuleTest::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
+{
+  if (portNum < module->num_output_ports())
+  {
+    auto oport = module->get_output_port(portNum);
+    oport->attach(0);
+  }
+}
+
+FieldHandle SCIRun::Testing::CreateEmptyLatVol()
+{
+  FieldInformation lfi("LatVolMesh", 1, "double");
+
+  size_type sizex = 3, sizey = 4, sizez = 5;
+  Point minb(-1.0, -1.0, -1.0);
+  Point maxb(1.0, 1.0, 1.0);
+  MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+  FieldHandle ofh = CreateField(lfi,mesh);
+  ofh->vfield()->clear_all_values();
+  return ofh;
 }

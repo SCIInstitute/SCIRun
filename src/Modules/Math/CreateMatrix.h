@@ -43,6 +43,7 @@ namespace Math {
   public:
     CreateMatrixModule();
     virtual void execute();
+    virtual void setStateDefaults();
     OUTPUT_PORT(0, EnteredMatrix, DenseMatrix);
     static Core::Algorithms::AlgorithmParameterName TextEntry;
   };

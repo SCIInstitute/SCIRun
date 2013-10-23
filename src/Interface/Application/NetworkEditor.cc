@@ -176,6 +176,7 @@ namespace
 void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 {
   ModuleProxyWidget* proxy = new ModuleProxyWidget(module);
+
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), controller_.get(), SLOT(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)));
   connect(module, SIGNAL(removeModule(const SCIRun::Dataflow::Networks::ModuleId&)), this, SIGNAL(modified()));
   connect(module, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
@@ -208,7 +209,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(this, SIGNAL(defaultNotePositionChanged(NotePosition)), proxy, SLOT(setDefaultNotePosition(NotePosition)));
   proxy->setDefaultNotePosition(defaultNotePositionGetter_->position());
   proxy->createPortPositionProviders();
-
+  
   scene_->addItem(proxy);
 
   scene_->clearSelection();
@@ -624,6 +625,15 @@ QPixmap NetworkEditor::sceneGrab()
 {
   //TODO: this approach may not be able to show the hidden parts of the network.
   return QPixmap::grabWidget(this);
+}
+
+void NetworkEditor::selectAll()
+{
+  Q_FOREACH(QGraphicsItem* item, scene_->items())
+  {
+    if (ModuleProxyWidget* mpw = dynamic_cast<ModuleProxyWidget*>(item))
+      mpw->setSelected(true);
+  }
 }
 
 NetworkEditor::~NetworkEditor()

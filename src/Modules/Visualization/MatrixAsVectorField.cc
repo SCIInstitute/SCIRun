@@ -35,7 +35,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-MatrixAsVectorFieldModule::MatrixAsVectorFieldModule() : Module(ModuleLookupInfo("MatrixAsVectorFieldModule", "Visualization", "SCIRun")) {}
+MatrixAsVectorFieldModule::MatrixAsVectorFieldModule() : Module(ModuleLookupInfo("MatrixAsVectorFieldModule", "Testing", "SCIRun"), false) {}
 
 void MatrixAsVectorFieldModule::execute()
 {

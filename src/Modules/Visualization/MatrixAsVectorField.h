@@ -43,6 +43,7 @@ namespace Visualization {
   public:
     MatrixAsVectorFieldModule();
     virtual void execute();
+    virtual void setStateDefaults() {}
     INPUT_PORT(0, Matrix, DenseMatrix);
     OUTPUT_PORT(0, RenderedMatrix, GeometryObject);
   };

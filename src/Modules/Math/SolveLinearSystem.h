@@ -43,12 +43,12 @@ namespace Math {
   public:
     SolveLinearSystemModule();
     virtual void execute();
+    virtual void setStateDefaults();
 
     INPUT_PORT(0, LHS, Matrix);
     INPUT_PORT(1, RHS, Matrix);
     OUTPUT_PORT(0, Solution, Matrix);
-  private:
-    void setDefaults();
+    
   };
 
 }}}

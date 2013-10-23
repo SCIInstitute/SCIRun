@@ -110,6 +110,10 @@ namespace Networks {
     //TODO:
     // need to hook up input ports for new data coming in, and output ports for cached state.
     virtual bool needToExecute() const = 0;
+
+    virtual void setStateDefaults() = 0;
+
+    virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

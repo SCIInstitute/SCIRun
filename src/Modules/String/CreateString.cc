@@ -42,6 +42,12 @@ CreateStringModule::CreateStringModule() : Module(ModuleLookupInfo("CreateString
   INITIALIZE_PORT(NewString);
 }
 
+void CreateStringModule::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(InputString, std::string());
+}
+
 void CreateStringModule::execute()
 {
   stringValue_ = get_state()->getValue(InputString).getString();

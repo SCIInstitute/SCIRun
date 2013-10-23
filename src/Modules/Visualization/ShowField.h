@@ -56,10 +56,9 @@ namespace Visualization {
 
     INPUT_PORT(0, Field, LegacyField);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
-
+  
+    virtual void setStateDefaults();
   private:
-    void setDefaults();
-
     /// Constructs a geometry object (essentially a spire object) from the given 
     /// field data.
     /// \param field    Field from which to construct geometry.
