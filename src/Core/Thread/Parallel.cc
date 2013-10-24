@@ -27,37 +27,29 @@
  */
 
 #include <Core/Thread/Parallel.h>
+
 #include <boost/foreach.hpp>
 #include <boost/thread/thread.hpp>
 #include <vector>
 
 using namespace SCIRun::Core::Thread;
 
-void Parallel::RunTasks(IndexedTask task, int numProcs)
-//void Parallel::RunTasks(int numProcs)
-{
-  std::vector<boost::thread*> threads;
+typedef boost::shared_ptr<boost::thread> threadPointer;
 
+void Parallel::RunTasks(IndexedTask task, int numProcs)
+{
+  std::vector<threadPointer> threads;
+  
   for (int i = 0; i < numProcs; ++i)
   {
-    threads.push_back(new boost::thread(task, i));
+    threadPointer t(new boost::thread(task, i));
+    threads.push_back(t);
   }
-
-//  BOOST_FOREACH(boost::thread& t, threads)
-  BOOST_FOREACH(boost::thread* t, threads)
+  
+  BOOST_FOREACH(threadPointer& t, threads)
   {
     t->join();
   }
-//  for(int i = 0; i < numProcs; ++i)
-//  {
-//    boost::thread* t = new boost::thread();
-//    threads.push_back(t);
-//  }
-//
-//  for(int i = 0; i < numProcs; ++i)
-//  {
-//    threads[i]->join();
-//  }
 }
 
 unsigned int Parallel::NumCores()

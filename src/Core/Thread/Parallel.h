@@ -45,9 +45,6 @@ namespace Thread
   public:
     typedef boost::function<void(int)> IndexedTask;
     static void RunTasks(IndexedTask task, int numProcs);
-//    static void RunTasks(int numProcs);
-//    typedef std::function<void(int)> IndexedTask;
-//    static void RunTasks(IndexedTask task, int numProcs);
     static unsigned int NumCores();
   };
 
