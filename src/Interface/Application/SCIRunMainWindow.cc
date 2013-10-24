@@ -829,4 +829,5 @@ void SCIRunMainWindow::fillModuleSelector()
   moduleSelectorTreeWidget_->expandAll();
   moduleSelectorTreeWidget_->resizeColumnToContents(0);
   moduleSelectorTreeWidget_->resizeColumnToContents(1);
+  moduleSelectorTreeWidget_->sortByColumn(0, Qt::AscendingOrder);
 }
