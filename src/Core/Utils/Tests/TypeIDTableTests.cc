@@ -122,7 +122,8 @@ TEST(TypeIDTableTests, MultithreadedAccessIsSafe)
   for (int i = 0; i < tryCount; ++i)
   {
     TryRegister tr(table, trueCount, i);
-    threads.push_back( boost::shared_ptr<boost::thread>(new boost::thread(tr)) );
+    boost::shared_ptr<boost::thread> t(new boost::thread(tr));
+    threads.push_back(t);
   }
 
   for (int i = 0; i < tryCount; ++i)

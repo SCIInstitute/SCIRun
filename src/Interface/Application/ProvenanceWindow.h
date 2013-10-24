@@ -64,7 +64,7 @@ Q_SIGNALS:
 private:
   SCIRun::Dataflow::Engine::ProvenanceManagerHandle provenanceManager_;
   int lastUndoRow_;
-  const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::value_type::IOType* networkEditor_;
+  const SCIRun::Dataflow::Engine::ProvenanceManagerHandle::element_type::IOType* networkEditor_;
   
   void setUndoEnabled(bool enable);
   void setRedoEnabled(bool enable);
