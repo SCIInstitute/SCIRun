@@ -50,25 +50,8 @@
  */
 
 #include <Core/Math/Mat.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Module.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
 
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <iostream>
-#include <sstream>
-#include <math.h>
-
-namespace SCIRun {
-
-class SolveMinNormLeastSqSystem : public Module {
-public:
-  SolveMinNormLeastSqSystem(GuiContext* ctx);
-  virtual ~SolveMinNormLeastSqSystem();
-  virtual void execute();
-};
-
-DECLARE_MAKER(SolveMinNormLeastSqSystem)
 SolveMinNormLeastSqSystem::SolveMinNormLeastSqSystem(GuiContext* ctx)
 : Module("SolveMinNormLeastSqSystem", ctx, Filter, "Math", "SCIRun")
 {
