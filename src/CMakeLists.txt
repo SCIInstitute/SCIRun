@@ -582,6 +582,7 @@ SET_PROPERTY(TARGET Interface_Application   PROPERTY FOLDER "Interface/Applicati
 SET_PROPERTY(TARGET Modules_Basic   PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Basic_Tests   PROPERTY FOLDER "Modules/Basic")
 SET_PROPERTY(TARGET Modules_Math   PROPERTY FOLDER "Modules/Math")
+SET_PROPERTY(TARGET Modules_Legacy_Math   PROPERTY FOLDER "Modules/Math")
 SET_PROPERTY(TARGET Modules_Math_Tests   PROPERTY FOLDER "Modules/Math")
 SET_PROPERTY(TARGET Modules_Fields   PROPERTY FOLDER "Modules/Fields")
 SET_PROPERTY(TARGET Modules_Fields_Tests   PROPERTY FOLDER "Modules/Fields")
