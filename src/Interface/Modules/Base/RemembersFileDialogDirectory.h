@@ -26,35 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_WRITE_MATRIX_H
-#define INTERFACE_MODULES_WRITE_MATRIX_H
+#ifndef INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
+#define INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
 
-#include "Interface/Modules/DataIO/ui_WriteMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
-#include <Interface/Modules/DataIO/share.h>
+#include <QDir>
+#include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
-class SCISHARE WriteMatrixDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
-  public Ui::WriteMatrix, public RemembersFileDialogDirectory<WriteMatrixDialog>
-{
-	Q_OBJECT
-	
-public:
-  WriteMatrixDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
 
-private Q_SLOTS:
-  void pushFileNameToState();
-  void saveFile();
-};
+  template <class Base>
+  class RemembersFileDialogDirectory
+  {
+  protected:
+    QString dialogDirectory() const
+    {
+      return currentDirectory_;
+    }
+    void updateRecentFile(const QString& recentFile)
+    {
+      currentDirectory_ = QDir(recentFile).absolutePath();
+    }
+  private:
+    static QString currentDirectory_;
+  };
+
+  template <class Base>
+  QString RemembersFileDialogDirectory<Base>::currentDirectory_(".");
 
 }
 }
