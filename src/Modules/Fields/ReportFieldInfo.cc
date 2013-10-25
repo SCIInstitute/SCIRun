@@ -31,6 +31,7 @@
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
 
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
@@ -39,6 +40,8 @@ using namespace SCIRun::Dataflow::Networks;
 ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("ReportFieldInfo", "MiscField", "SCIRun"))
 {
   INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(FieldType);
+  INITIALIZE_PORT(NumNodes);
 }
 
 void ReportFieldInfoModule::execute()
@@ -49,8 +52,12 @@ void ReportFieldInfoModule::execute()
 
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
+  auto info = any_cast_or_default<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
   //TODO: requires knowledge of algorithm type
-//  auto outputObj = any_cast_or_default<
-//  sendOutput(FieldType, boost::make_shared<String>(output.type));
-//  sendOutput(NumNodes, boost::make_shared<Int32>(output.numnodes_));
+  sendOutput(FieldType, boost::make_shared<String>(info.type));
+  sendOutput(NumNodes, boost::make_shared<Int32>(info.numnodes_));
+  sendOutput(NumElements, boost::make_shared<Int32>(info.numelements_));
+  sendOutput(NumData, boost::make_shared<Int32>(info.numdata_));
+  sendOutput(DataMin, boost::make_shared<Double>(info.dataMin));
+  sendOutput(DataMax, boost::make_shared<Double>(info.dataMax));
 }

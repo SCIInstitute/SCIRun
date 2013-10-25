@@ -173,7 +173,6 @@ const TypeDescription* get_type_description(CellIndex<T>*)
   return td;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #define FIELDINDEXBASE_VERSION 1
 
 template<class T>
@@ -181,7 +180,6 @@ void Pio(Piostream& stream, FieldIndexBase<T>& data)
 {
   Pio(stream, data.index_);
 }
-#endif
 
 template <class T> const std::string find_type_name(NodeIndex<T> *)
 {

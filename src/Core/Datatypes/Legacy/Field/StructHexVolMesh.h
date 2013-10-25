@@ -765,11 +765,9 @@ public:
   virtual bool unsynchronize(mask_type);
   bool clear_synchronization();
     
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! Export this class using the old Pio system
   virtual void io(Piostream&);
   static PersistentTypeID structhexvol_typeid;
-#endif
   //! Core functionality for getting the name of a templated mesh class  
   static  const std::string type_name(int n = -1);
 
@@ -783,10 +781,8 @@ public:
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   //! This function returns a maker for Pio.
   static Persistent *maker() { return new StructHexVolMesh<Basis>(); }
-#endif
   //! This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker()  { return boost::make_shared<StructHexVolMesh<Basis>>(); }
   //! This function returns a handle for the virtual interface.
@@ -1076,12 +1072,10 @@ private:
   double                              epsilon3_; //! for volumetric comparison
 };
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class Basis>
 PersistentTypeID
 StructHexVolMesh<Basis>::structhexvol_typeid(StructHexVolMesh<Basis>::type_name(-1),
                                  "Mesh", maker);
-#endif
 
 template <class Basis>
 StructHexVolMesh<Basis>::StructHexVolMesh():
@@ -1867,8 +1861,6 @@ StructHexVolMesh<Basis>::compute_epsilon(Core::Geometry::BBox& bb)
   synchronized_ |= Mesh::EPSILON_E;
 }
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-
 #define STRUCT_HEX_VOL_MESH_VERSION 2
 
 template <class Basis>
@@ -1902,9 +1894,8 @@ StructHexVolMesh<Basis>::io(Piostream& stream)
   stream.end_class();
 
   if (stream.reading())
-    this->vmesh_ = CreateVStructHexVolMesh(this);
+    this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
-#endif
 
 template <class Basis>
 const std::string

@@ -330,7 +330,7 @@ set(SPIRE_CORE "Spire_Core_EP")
 Spire_AddCore(${SPIRE_CORE}
   ${SPIRE_OPTIONS}
   GIT_TAG "v0.5.0")
-Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "origin/master")
+Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "e58de83865ed03927ddfb16ab73ff8ff146160b1")
 
 # Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
 link_directories(${SPIRE_LIBRARY_DIRS})
