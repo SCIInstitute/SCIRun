@@ -42,10 +42,10 @@
  * Given four input ColumnMatrices (v0,v1,v2,b),
  *  find the three coefficients (w0,w1,w2) that minimize:
  *  | (w0v0 + w1v1 + w2v2) - b |.
- * If more than one minimum exisits (the system is under-determined),
+ * If more than one minimum exists (the system is under-determined),
  *  choose the coefficients such that (w0,w1,w2) has minimum norm.
  * We output the vector (w0,w1,w2) as a row-matrix,
- *  and we ouput the ColumnMatrix (called x), which is: | w0v0 + w1v1 + w2v2 |.
+ *  and we output the ColumnMatrix (called x), which is: | w0v0 + w1v1 + w2v2 |.
  *
  */
 

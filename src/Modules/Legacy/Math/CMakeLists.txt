@@ -98,6 +98,7 @@ SET(Modules_Legacy_Math_HEADERS
   #ReorderMatrixByReverseCuthillMcKee.h
   #ResizeMatrix.h
   #SelectSubMatrix.h
+  share.h
 )
 
 ADD_LIBRARY(Modules_Legacy_Math ${Modules_Legacy_Math_HEADERS} ${Modules_Legacy_Math_SRCS})
