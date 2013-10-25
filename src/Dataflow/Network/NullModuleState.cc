@@ -55,9 +55,9 @@ ModuleStateHandle NullModuleState::clone() const
   return boost::make_shared<NullModuleState>();
 }
 
-boost::signals::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+boost::signals2::connection NullModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
 {
-  return boost::signals::connection();
+  return boost::signals2::connection();
 }
 
 const NullModuleState::TransientValue NullModuleState::getTransientValue(const std::string& name) const

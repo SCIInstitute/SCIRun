@@ -31,7 +31,7 @@
 
 #include <string>
 #include <iostream>
-#include <boost/signal.hpp>
+#include <boost/signals2/signal.hpp>
 #include <boost/any.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -62,9 +62,9 @@ namespace Networks {
     virtual const TransientValue getTransientValue(const std::string& name) const = 0;
     virtual void setTransientValue(const std::string& name, const TransientValue& value) = 0;
 
-    typedef boost::signal<void()> state_changed_sig_t;
+    typedef boost::signals2::signal<void()> state_changed_sig_t;
 
-    virtual boost::signals::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber) = 0;
+    virtual boost::signals2::connection connect_state_changed(state_changed_sig_t::slot_function_type subscriber) = 0;
   };
 
   class SCISHARE ModuleStateInterfaceFactory

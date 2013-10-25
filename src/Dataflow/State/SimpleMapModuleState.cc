@@ -85,7 +85,7 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   }
 }
 
-boost::signals::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
+boost::signals2::connection SimpleMapModuleState::connect_state_changed(state_changed_sig_t::slot_function_type subscriber)
 {
   return stateChangedSignal_.connect(subscriber);
 }
