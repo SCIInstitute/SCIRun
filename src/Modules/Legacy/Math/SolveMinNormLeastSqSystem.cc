@@ -60,7 +60,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
 SolveMinNormLeastSqSystem::SolveMinNormLeastSqSystem()
-: Module(ModuleLookupInfo("SolveMinNormLeastSqSystem", "Math", "SCIRun"))
+: Module(ModuleLookupInfo("SolveMinNormLeastSqSystem", "Math", "SCIRun"), false)
 {
 }
 

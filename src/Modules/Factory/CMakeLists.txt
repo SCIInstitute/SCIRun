@@ -50,6 +50,7 @@ TARGET_LINK_LIBRARIES(Modules_Factory
   Modules_String
   Modules_Render
   Modules_Visualization
+  Modules_Legacy_Math
   Dataflow_Modules_Legacy_Fields
 )
 
