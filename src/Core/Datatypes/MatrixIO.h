@@ -117,8 +117,6 @@ namespace Datatypes {
       stream.io(nrows);
       stream.io(ncols);
       this->resize(nrows, ncols);
-      //this->nrows_ = static_cast<size_type>(nrows);
-      //this->ncols_ = static_cast<size_type>(ncols);
     }
     else
     {
@@ -126,24 +124,12 @@ namespace Datatypes {
       long long ncols = static_cast<long long>(this->cols());
       stream.io(nrows);
       stream.io(ncols);
-      this->resize(nrows, ncols);
-      //this->nrows_ = static_cast<size_type>(nrows);
-      //this->ncols_ = static_cast<size_type>(ncols);
+      if(stream.reading())
+      {
+        this->resize(nrows, ncols);
+      }
     }
 
-    if(stream.reading())
-    {
-      //already resized above
-
-      //data = new double*[this->rows()];
-      //double* tmp = new double[this->rows() * this->cols()];
-      //dataptr_=tmp;
-      //for (index_type i = 0; i < this->rows(); i++)
-      //{
-      //  data[i] = tmp;
-      //  tmp += this->cols();
-      //}
-    }
     stream.begin_cheap_delim();
 
     int split;
@@ -295,12 +281,10 @@ namespace Datatypes {
     {
       long long nrows= static_cast<long long>(this->nrows());
       stream.io(nrows);
-      this->resize(static_cast<size_type>(nrows), 1);
-    }
-
-    if (stream.reading())
-    {
-      //data_ = new T[this->nrows_];
+      if (stream.reading())
+      {
+        this->resize(static_cast<size_type>(nrows), 1);
+      }
     }
 
     if (!stream.block_io(this->data(), sizeof(T), this->nrows()))
