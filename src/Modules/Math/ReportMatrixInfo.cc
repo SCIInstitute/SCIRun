@@ -44,7 +44,7 @@ void ReportMatrixInfoModule::execute()
 {
   auto matrix = getRequiredInput(InputMatrix);
 
-  auto output = algo_->run_generic(make_input((InputMatrix, matrix)));
+  auto output = algo().run_generic(make_input((InputMatrix, matrix)));
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
   auto info = any_cast_or_default<SCIRun::Core::Algorithms::Math::ReportMatrixInfoAlgorithm::Outputs>(output.getTransient());

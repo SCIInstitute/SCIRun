@@ -62,8 +62,8 @@ void CalculateSignedDistanceToField::execute()
     
     auto inputs = make_input((InputField, input)(ObjectField, object));
 
-    algo_->set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
-    auto output = algo_->run_generic(inputs);
+    algo().set(CalculateSignedDistanceFieldAlgo::OutputValueField, value_connected);
+    auto output = algo().run_generic(inputs);
    
     sendOutputFromAlgorithm(SignedDistanceField, output); 
 
