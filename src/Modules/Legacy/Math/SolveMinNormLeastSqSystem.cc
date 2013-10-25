@@ -53,6 +53,7 @@
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Math/Mat.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/MatrixIO.h>
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Core::Datatypes;

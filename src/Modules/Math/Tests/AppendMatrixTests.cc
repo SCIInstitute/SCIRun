@@ -26,16 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Modules/Math/AppendMatrix.h>
 
 using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
 class AppendMatrixModuleTest : public ModuleTest
 {

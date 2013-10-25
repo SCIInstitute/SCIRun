@@ -27,10 +27,14 @@
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 
 using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
 
-class SolveMinNormLeastSqSystemTests : public ModuleTestBase
+class SolveMinNormLeastSqSystemTests : public ModuleTest
 {
 
 };
