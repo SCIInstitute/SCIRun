@@ -298,7 +298,7 @@ bool passesTdcsTest(const SparseRowMatrix& matrix)
   return false;
 }
 
-TEST(SparseRowMatrixTest, SearchingForSingleNonzeroInRowAndColumnOnTheDiagonal)
+TEST(SparseRowMatrixTest, DISABLED_SearchingForSingleNonzeroInRowAndColumnOnTheDiagonal)
 {
   EXPECT_TRUE(passesTdcsTest(id3()));
   EXPECT_TRUE(passesTdcsTest(matrixTdcsGood()));
