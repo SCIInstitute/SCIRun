@@ -27,11 +27,13 @@
 */
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 
 using namespace SCIRun::Testing;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Dataflow::Networks;
 
 class SolveMinNormLeastSqSystemTests : public ModuleTest
@@ -46,4 +48,46 @@ TEST_F(SolveMinNormLeastSqSystemTests, ThrowsOnNullInput)
   stubPortNWithThisData(sls, 0, nullMatrix);
 
   EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+}
+
+TEST_F(SolveMinNormLeastSqSystemTests, BasicTest)
+{
+  //TODO: when algo is extracted, this test needs the real factory:
+  //UseRealAlgorithmFactory f;
+
+  auto sls = makeModule("SolveMinNormLeastSqSystem");
+  DenseColumnMatrixHandle v1(new DenseColumnMatrix(3));
+  DenseColumnMatrixHandle v2(new DenseColumnMatrix(3));
+  DenseColumnMatrixHandle v3(new DenseColumnMatrix(3));
+  DenseColumnMatrixHandle target(new DenseColumnMatrix(3));
+  stubPortNWithThisData(sls, 0, v1);
+  stubPortNWithThisData(sls, 1, v2);
+  stubPortNWithThisData(sls, 2, v3);
+  stubPortNWithThisData(sls, 3, target);
+
+  sls->execute();
+
+  //TODO: waiting on getData() to enable
+  if (false)
+  {
+    auto weight = getDataOnThisOutputPort(sls, 0);
+    ASSERT_TRUE(weight);
+    auto result = getDataOnThisOutputPort(sls, 1);
+    ASSERT_TRUE(result);
+  }
+}
+
+TEST_F(SolveMinNormLeastSqSystemTests, SizesMustMatch)
+{
+  auto sls = makeModule("SolveMinNormLeastSqSystem");
+  DenseColumnMatrixHandle v1(new DenseColumnMatrix(3));
+  DenseColumnMatrixHandle v2(new DenseColumnMatrix(3));
+  DenseColumnMatrixHandle v3(new DenseColumnMatrix(2));
+  DenseColumnMatrixHandle target(new DenseColumnMatrix(3));
+  stubPortNWithThisData(sls, 0, v1);
+  stubPortNWithThisData(sls, 1, v2);
+  stubPortNWithThisData(sls, 2, v3);
+  stubPortNWithThisData(sls, 3, target);
+
+  EXPECT_THROW(sls->execute(), AlgorithmInputException);
 }
