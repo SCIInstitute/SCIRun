@@ -98,10 +98,10 @@ ModuleStateInterface::Keys SimpleMapModuleState::getKeys() const
   return keys;
 }
 
-const SimpleMapModuleState::TransientValue SimpleMapModuleState::getTransientValue(const std::string& name) const
+SimpleMapModuleState::TransientValueOption SimpleMapModuleState::getTransientValue(const std::string& name) const
 {
   TransientStateMap::const_iterator i = transientStateMap_.find(name);
-  return i != transientStateMap_.end() ? i->second : TransientValue();
+  return i != transientStateMap_.end() ? boost::make_optional(i->second) : TransientValueOption();
 }
 
 void SimpleMapModuleState::setTransientValue(const std::string& name, const TransientValue& value)

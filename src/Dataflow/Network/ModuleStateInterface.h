@@ -32,6 +32,7 @@
 #include <string>
 #include <iostream>
 #include <boost/signals2/signal.hpp>
+#include <boost/optional.hpp>
 #include <boost/any.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/NetworkFwd.h>
@@ -59,7 +60,8 @@ namespace Networks {
 
     //non-serialized state: algorithm output needing to be pushed, for instance--TODO: make classes instead of raw string/any
     typedef boost::any TransientValue;
-    virtual const TransientValue getTransientValue(const std::string& name) const = 0;
+    typedef boost::optional<TransientValue> TransientValueOption;
+    virtual TransientValueOption getTransientValue(const std::string& name) const = 0;
     virtual void setTransientValue(const std::string& name, const TransientValue& value) = 0;
 
     typedef boost::signals2::signal<void()> state_changed_sig_t;
@@ -76,7 +78,7 @@ namespace Networks {
 
   //TODO split
   template <class T>
-  T any_cast_or_default(const boost::any& x)
+  T any_cast_or_default_(const boost::any& x)
   {
     try
     {
@@ -88,6 +90,13 @@ namespace Networks {
       //std::cout << "Attempted any_cast failed, returning default value." << std::endl;
       return T();
     }
+  }
+
+  template <class T>
+  T optional_any_cast_or_default(const boost::optional<boost::any>& x)
+  {
+    return x ? any_cast_or_default_<T>(*x) : T();
+
   }
 
 }}}

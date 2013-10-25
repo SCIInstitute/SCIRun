@@ -60,9 +60,9 @@ boost::signals2::connection NullModuleState::connect_state_changed(state_changed
   return boost::signals2::connection();
 }
 
-const NullModuleState::TransientValue NullModuleState::getTransientValue(const std::string& name) const
+NullModuleState::TransientValueOption NullModuleState::getTransientValue(const std::string& name) const
 {
-  return TransientValue();
+  return TransientValueOption();
 }
 
 void NullModuleState::setTransientValue(const std::string& name, const TransientValue& value)
