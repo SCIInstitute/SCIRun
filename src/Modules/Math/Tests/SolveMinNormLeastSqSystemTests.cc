@@ -26,24 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <Dataflow/Network/Network.h>
-#include <Dataflow/Network/ModuleInterface.h>
-#include <Dataflow/Network/ConnectionId.h>
-#include <Dataflow/Network/Tests/MockNetwork.h>
-#include <Modules/Basic/ReceiveScalar.h>
-#include <Modules/Basic/SendScalar.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
 using namespace SCIRun::Testing;
 
-class ReportMatrixInfoModuleTest : public ModuleTest
+class SolveMinNormLeastSqSystemTests : public ModuleTestBase
 {
+
 };
 
-TEST_F(ReportMatrixInfoModuleTest, ThrowsForNullMatrices)
+TEST_F(SolveMinNormLeastSqSystemTests, ThrowsOnNullInput)
 {
-  auto sls = makeModule("ReportMatrixInfo");
+  auto sls = makeModule("SolveMinNormLeastSqSystem");
   MatrixHandle nullMatrix;
   stubPortNWithThisData(sls, 0, nullMatrix);
 

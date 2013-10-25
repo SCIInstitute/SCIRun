@@ -35,13 +35,18 @@
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Basic;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Dataflow::Networks::Mocks;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+using namespace SCIRun::Testing;
 
-//TODO DAN
+class AppendMatrixModuleTest : public ModuleTest
+{
+};
+
+TEST_F(AppendMatrixModuleTest, ThrowsForNullMatrices)
+{
+  auto sls = makeModule("AppendMatrix");
+  MatrixHandle nullMatrix, nullColumnMatrix;
+  stubPortNWithThisData(sls, 0, nullMatrix);
+  stubPortNWithThisData(sls, 1, nullColumnMatrix);
+
+  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+}
