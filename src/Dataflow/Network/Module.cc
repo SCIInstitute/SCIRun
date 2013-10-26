@@ -177,7 +177,7 @@ void Module::set_state(ModuleStateHandle state)
   state_ = state;
 }
 
-AlgorithmBase& Module::algorithm()
+AlgorithmBase& Module::algo()
 {
   if (!algo_)
     error("Null algorithm object, make sure AlgorithmFactory knows about this module's algorithm types.");

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -26,36 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#undef SCISHARE
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-
-AlignMeshBoundingBoxes::AlignMeshBoundingBoxes() :
-  Module(ModuleLookupInfo("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(AlignmentField);
-  INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(TransformMatrix);
-}
-
-void AlignMeshBoundingBoxes::execute()
-{
-  FieldHandle ifield = getRequiredInput(InputField);
-  FieldHandle objfield = getRequiredInput(AlignmentField);
-
-  // inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform")
-  if (needToExecute())
-  {
-    update_state(Executing);
-
-    auto output = algo().run_generic(make_input((InputField, ifield)(AlignmentField, objfield)));
-
-    sendOutputFromAlgorithm(OutputField, output);
-    sendOutputFromAlgorithm(TransformMatrix, output);
-  }
-}
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Modules_Legacy_Math
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

@@ -48,7 +48,7 @@ ReportMatrixInfoDialog::ReportMatrixInfoDialog(const std::string& name, ModuleSt
 
 void ReportMatrixInfoDialog::pullAndDisplayInfo() 
 {
-  ReportMatrixInfoAlgorithm::Outputs info = any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
+  ReportMatrixInfoAlgorithm::Outputs info = optional_any_cast_or_default<ReportMatrixInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
   std::ostringstream ostr;
   ostr << "Type:\t" << info.get<0>() << "\n"
     << "# Rows:\t" << info.get<1>() << "\n"

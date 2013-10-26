@@ -26,35 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMatrix.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/String.h>
+#ifndef INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
+#define INTERFACE_APPLICATION_REMEMBERSFILEDIALOGDIRECTORY_H
 
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <QDir>
+#include <Interface/Modules/Base/share.h>
 
-ReadMatrixModule::ReadMatrixModule() : Module(ModuleLookupInfo("ReadMatrix", "DataIO", "SCIRun"))
-{
-  INITIALIZE_PORT(Filename);
-  INITIALIZE_PORT(FileLoaded);
-  INITIALIZE_PORT(MatrixLoaded);
+namespace SCIRun {
+namespace Gui {
+
+  template <class Base>
+  class RemembersFileDialogDirectory
+  {
+  protected:
+    QString dialogDirectory() const
+    {
+      return currentDirectory_;
+    }
+    void updateRecentFile(const QString& recentFile)
+    {
+      currentDirectory_ = QDir(recentFile).absolutePath();
+    }
+  private:
+    static QString currentDirectory_;
+  };
+
+  template <class Base>
+  QString RemembersFileDialogDirectory<Base>::currentDirectory_(".");
+
+}
 }
 
-//TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
-void ReadMatrixModule::execute()
-{
-  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
-  auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(Variables::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
-
-  algo().set(Variables::Filename, filename_);
-  auto output = algo().run_generic(makeNullInput());
-  sendOutputFromAlgorithm(MatrixLoaded, output);
-  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
-}
+#endif

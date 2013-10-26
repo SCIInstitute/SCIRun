@@ -48,7 +48,7 @@ void CalculateGradients::execute()
   {
     update_state(Executing);
 
-    auto output = algo_->run_generic(make_input((ScalarField, input)));
+    auto output = algo().run_generic(make_input((ScalarField, input)));
 
     sendOutputFromAlgorithm(VectorField, output);
   }

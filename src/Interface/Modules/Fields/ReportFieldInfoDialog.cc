@@ -48,7 +48,7 @@ ReportFieldInfoDialog::ReportFieldInfoDialog(const std::string& name, ModuleStat
 
 void ReportFieldInfoDialog::pullAndDisplayInfo() 
 {
-  auto info = any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
+  auto info = optional_any_cast_or_default<ReportFieldInfoAlgorithm::Outputs>(state_->getTransientValue("ReportedInfo"));
 
   std::ostringstream ostr;
   ostr << "Type: " << info.type << std::endl;

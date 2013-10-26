@@ -36,6 +36,7 @@
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Testing/Utils/MatrixTestUtilities.h>
 
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Datatypes;
@@ -156,4 +157,60 @@ TEST(WriteMatrixTest, CanPrintColumnMatrix)
   std::ostringstream ostr;
   ostr << m;
   EXPECT_EQ("1\n2\n0", ostr.str());
+}
+
+namespace 
+{
+  SparseRowMatrixHandle readSparseMatrixFile(const boost::filesystem::path& filename)
+  {
+    std::cout << "Reading file: " << filename << std::endl;
+    ReadMatrixAlgorithm read;
+    return matrix_cast::as_sparse(read.run(filename.string()));
+  }
+
+  DenseMatrixHandle readDenseMatrixFile(const boost::filesystem::path& filename)
+  {
+    std::cout << "Reading file: " << filename << std::endl;
+    ReadMatrixAlgorithm read;
+    return matrix_cast::as_dense(read.run(filename.string()));
+  }
+
+  void writeMatrixToFile(const MatrixHandle& matrix, const boost::filesystem::path& filename)
+  {
+    std::cout << "Writing file: " << filename << std::endl;
+    WriteMatrixAlgorithm write;
+    write.run(matrix, filename.string());
+  }
+}
+
+TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
+{
+  auto sparse4 = readSparseMatrixFile("E:\\sparse_v4.mat");
+  ASSERT_TRUE(sparse4);
+  EXPECT_EQ(5, sparse4->nrows());
+  EXPECT_EQ(6, sparse4->ncols());
+  
+  auto v5file = "E:\\sparse_v5.mat";
+  writeMatrixToFile(sparse4, v5file);
+
+  auto sparse5 = readSparseMatrixFile(v5file);
+
+  ASSERT_TRUE(sparse5);
+  EXPECT_EQ(*sparse4, *sparse5);
+}
+
+TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileDense)
+{
+  auto dense4 = readDenseMatrixFile("E:\\dense_v4.mat");
+  ASSERT_TRUE(dense4);
+  EXPECT_EQ(5, dense4->nrows());
+  EXPECT_EQ(6, dense4->ncols());
+  
+  auto v5file = "E:\\dense_v5.mat";
+  writeMatrixToFile(dense4, v5file);
+
+  auto dense5 = readDenseMatrixFile(v5file);
+
+  ASSERT_TRUE(dense5);
+  EXPECT_EQ(*dense4, *dense5);
 }

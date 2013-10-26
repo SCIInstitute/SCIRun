@@ -61,9 +61,9 @@ void EvaluateLinearAlgebraUnaryModule::execute()
   auto oper = state->getValue(Variables::Operator).getInt();
   double scalar = state->getValue(Variables::ScalarValue).getDouble();
 
-  algo_->set(Variables::Operator, oper);
-  algo_->set(Variables::ScalarValue, scalar);
-  auto output = algo_->run_generic(make_input((InputMatrix, denseInput)));
+  algo().set(Variables::Operator, oper);
+  algo().set(Variables::ScalarValue, scalar);
+  auto output = algo().run_generic(make_input((InputMatrix, denseInput)));
   sendOutputFromAlgorithm(Result, output);
 }
 

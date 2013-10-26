@@ -78,13 +78,13 @@ void SolveLinearSystemModule::execute()
     auto tolerance = get_state()->getValue(Variables::TargetError).getDouble();
     auto maxIterations = get_state()->getValue(Variables::MaxIterations).getInt();
 
-    algo_->set(Variables::TargetError, tolerance);
-    algo_->set(Variables::MaxIterations, maxIterations);
+    algo().set(Variables::TargetError, tolerance);
+    algo().set(Variables::MaxIterations, maxIterations);
 
     auto method = get_state()->getValue(Variables::Method).getString();
     auto precond = get_state()->getValue(Variables::Preconditioner).getString();
-    algo_->set_option(Variables::Method, method);
-    algo_->set_option(Variables::Preconditioner, precond);
+    algo().set_option(Variables::Method, method);
+    algo().set_option(Variables::Preconditioner, precond);
 
     std::ostringstream ostr;
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
@@ -94,7 +94,7 @@ void SolveLinearSystemModule::execute()
       ScopedTimeRemarker perf(this, "Linear solver");
       remark("Using preconditioner: " + precond);
 
-      auto output = algo_->run_generic(make_input((LHS, A)(RHS, rhsCol)));
+      auto output = algo().run_generic(make_input((LHS, A)(RHS, rhsCol)));
       sendOutputFromAlgorithm(Solution, output);
     }
   }
