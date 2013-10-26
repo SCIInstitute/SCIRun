@@ -71,9 +71,9 @@ TEST_F(SolveMinNormLeastSqSystemTests, BasicTest)
   if (false)
   {
     auto weight = getDataOnThisOutputPort(sls, 0);
-    ASSERT_TRUE(weight);
+    ASSERT_TRUE(weight.get() != nullptr);
     auto result = getDataOnThisOutputPort(sls, 1);
-    ASSERT_TRUE(result);
+    ASSERT_TRUE(result.get() != nullptr);
   }
 }
 
