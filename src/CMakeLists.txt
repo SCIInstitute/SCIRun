@@ -308,43 +308,84 @@ INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 
 
 ########################################################################
-# Configure Spire external project
+# Configure CPM and Spire - http://github.com/iauns/cpm
 
-# Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
-include(SpirePM)
+# CPM Setup.
+set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/cpm-packages" CACHE TYPE STRING)
+find_package(Git)
+if(NOT GIT_FOUND)
+  message(FATAL_ERROR "CPM requires Git.")
+endif()
+if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
+  execute_process(
+    COMMAND "${GIT_EXECUTABLE}" clone https://github.com/iauns/cpm ${CPM_DIR}
+    RESULT_VARIABLE error_code
+    OUTPUT_VARIABLE head_sha
+    )
+  if(error_code)
+    message(FATAL_ERROR "CPM failed to get the hash for HEAD")
+  endif()
+endif()
+include(${CPM_DIR}/CPM.cmake)
 
-set(SPIRE_OPTIONS)
+# ++ MODULE: Spire
 IF(WIN32)
-  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
+  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
 ELSE()
-  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;ON")
-  add_definitions("-DSPIRE_USE_STD_THREADS")
+  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
 ENDIF()
+CPM_AddModule("spire"
+  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
+  GIT_TAG "origin/concurrent")
 
-set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "SHADER_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Shaders")
-set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "ASSET_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Assets")
+# ++ MODULE: Spire SCIRun interface
+# TODO: Place this module in SCIInstitute.
+set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+set(OUTPUT_ASSET_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
+CPM_AddModule("spire_scirun"
+  GIT_REPOSITORY "https://github.com/iauns/spire-scirun"
+  GIT_TAG "origin/master")
 
-# Add core spire library. Either download it or use a local version.
-set(SPIRE_CORE "Spire_Core_EP")
-Spire_AddCore(${SPIRE_CORE}
-  ${SPIRE_OPTIONS}
-  GIT_TAG "v0.5.0")
-Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "e58de83865ed03927ddfb16ab73ff8ff146160b1")
+CPM_Finish()
 
-# Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
-link_directories(${SPIRE_LIBRARY_DIRS})
-include_directories(${SPIRE_INCLUDE_DIR})
-include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
-include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
-
-# Spire related includes (required for linking on windows)
-IF(UNIX)
-  IF(APPLE)
-    FIND_LIBRARY(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
-    SET(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
-  ENDIF()
-ENDIF()
+#########################################################################
+## Configure Spire external project
+#
+## Ensure CMAKE_MODULE_PATH includes path to Spire's SpirePM.cmake.
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
+#include(SpirePM)
+#
+#set(SPIRE_OPTIONS)
+#IF(WIN32)
+#  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;OFF")
+#ELSE()
+#  set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "USE_STD_THREADS;ON")
+#  add_definitions("-DSPIRE_USE_STD_THREADS")
+#ENDIF()
+#
+#set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "SHADER_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Shaders")
+#set(SPIRE_OPTIONS ${SPIRE_OPTIONS} "ASSET_OUTPUT_DIR;${CMAKE_CURRENT_BINARY_DIR}/Assets")
+#
+## Add core spire library. Either download it or use a local version.
+#set(SPIRE_CORE "Spire_Core_EP")
+#Spire_AddCore(${SPIRE_CORE}
+#  ${SPIRE_OPTIONS}
+#  GIT_TAG "v0.5.0")
+#Spire_AddModule(${SPIRE_CORE} SCIRun "https://github.com/iauns/spire-scirun" "e58de83865ed03927ddfb16ab73ff8ff146160b1")
+#
+## Include / library directories placed in-scope by Spire_AddCore and Spire_AddModule.
+#link_directories(${SPIRE_LIBRARY_DIRS})
+#include_directories(${SPIRE_INCLUDE_DIR})
+#include_directories(${SPIRE_MODULE_INCLUDE_DIRS})
+#include_directories(SYSTEM ${SPIRE_3RDPARTY_INCLUDE_DIRS})
+#
+## Spire related includes (required for linking on windows)
+#IF(UNIX)
+#  IF(APPLE)
+#    FIND_LIBRARY(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+#    SET(SCI_SPIRE_EXTRA_LIBRARIES ${CORE_FOUNDATION_FRAMEWORK})
+#  ENDIF()
+#ENDIF()
 
 
 ########################################################################
@@ -600,8 +641,7 @@ SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fiel
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")
 
 SET_PROPERTY(TARGET Boost_external   PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET ${SPIRE_CORE}   PROPERTY FOLDER "Externals")
-SET_PROPERTY(TARGET spire_spm_SCIRun   PROPERTY FOLDER "Externals")
+SET_PROPERTY(TARGET ${CPM_LIBRARIES} PROPERTY FOLDER "Externals")
 SET_PROPERTY(TARGET ${SCI_LOG4CPP_LIBRARY} PROPERTY FOLDER "Externals")
 
 
