@@ -46,6 +46,7 @@
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
@@ -108,7 +109,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new TextToTriSurfFieldAlgorithm);
   else if (name == "BuildTDCSMatrix")
     h.reset(new BuildTDCSMatrixAlgo);
-
+  else if (name == "AddKnownsToLinearSystem")
+    h.reset(new AddKnownsToLinearSystemAlgo); 
+    
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

@@ -75,7 +75,7 @@ void BuildTDCSMatrix::execute()
 //  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
 //  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
  
-  auto output = algorithm().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Eletrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
+  auto output = algorithm().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
 //  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
 
 //  send_output_handle("TDCS Matrix", TDCSMatrix);

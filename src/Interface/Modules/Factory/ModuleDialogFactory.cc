@@ -46,6 +46,7 @@
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
+//#include <Interface/Modules/FiniteElements/AddKnownsToLinearSystemDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
 #include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
@@ -113,7 +114,9 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("GenerateROIStatistics") != std::string::npos)
     return new GenerateROIStatisticsDialog(moduleId, state, parentToUse_); 
   if (moduleId.find("SetupRHSforTDCSandTMS") != std::string::npos)
-    return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);       
+    return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);  
+ // if (moduleId.find("AddKnownsToLinearSystem") != std::string::npos)
+ //   return new AddKnownsToLinearSystemDialog(moduleId, state, parentToUse_);       
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

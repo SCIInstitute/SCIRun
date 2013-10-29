@@ -30,6 +30,7 @@
 
 SET(Modules_Legacy_FiniteElements_HEADERS
   BuildTDCSMatrix.h
+  AddKnownsToLinearSystem.h
 )
 
 SET(Modules_Legacy_FiniteElements_SRCS
@@ -38,6 +39,7 @@ SET(Modules_Legacy_FiniteElements_SRCS
   #BuildFEGridMappingByDomain.cc
   #BuildFEMatrix.cc
   BuildTDCSMatrix.cc
+  AddKnownsToLinearSystem.cc
   #BuildFESurfRHS.cc
   #BuildFEVolRHS.cc
 )

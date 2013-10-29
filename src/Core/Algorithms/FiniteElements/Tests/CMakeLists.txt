@@ -28,6 +28,7 @@
 
 SET(Algorithms_FiniteElements_Tests_SRCS
   BuildTDCSMatrixTests.cc
+  AddKnownsToLinearSystemTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_FiniteElements_Tests

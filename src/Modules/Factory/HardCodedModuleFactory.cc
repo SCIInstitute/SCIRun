@@ -71,6 +71,7 @@
 #include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
+#include <Modules/Legacy/FiniteElements/AddKnownsToLinearSystem.h>
 #include <Modules/Render/ViewScene.h>
 #include <Dataflow/Network/Tests/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
@@ -146,7 +147,7 @@ namespace SCIRun {
           addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
           addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
 	  addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
-	  
+	  addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "FiniteElements", "SCIRun", " in progress ", " set fem voltage source ");
 	  //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
           {
