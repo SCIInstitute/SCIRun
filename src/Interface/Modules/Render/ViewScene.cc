@@ -132,19 +132,13 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 void ViewSceneDialog::moduleExecuted()
 {
   // Grab the geomData transient value.
-  boost::any geomDataTransient = state_->getTransientValue("geomData");
-  if (!geomDataTransient.empty())
+  auto geomDataTransient = state_->getTransientValue("geomData");
+  if (geomDataTransient && !geomDataTransient->empty())
   {
-    boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>> geomData; // Whoa...
-    try
-    {
-      geomData = boost::any_cast<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
-    }
-    catch (const boost::bad_any_cast&)
-    {
-      //error("Unable to cast boost::any transient value to spire pointer.");
+    auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
+    if (!geomData)
       return;
-    }
+
     std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
