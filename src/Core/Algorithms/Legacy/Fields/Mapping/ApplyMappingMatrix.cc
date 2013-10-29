@@ -51,6 +51,7 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
                     VField* input, VField* output,
                     SparseRowMatrix* mapping)
 {
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   double* vals = mapping->get_vals();
   index_type* rows = mapping->get_rows();
   index_type* columns = mapping->get_cols();
@@ -70,6 +71,7 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
   
   //! Algorithm succeeded
   algo->algo_end(); return (true);
+  #endif
 }
 
 
@@ -79,6 +81,7 @@ bool
 ApplyMappingMatrixAlgo::
 run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& output)
 {
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("ApplyMappingMatrix");
   
   //! safety check
@@ -207,6 +210,7 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
 
   error("Encountered an unknown data type");
   algo_end(); return (false);
+  #endif
 }
 
 } // namespace SCIRunAlgo
