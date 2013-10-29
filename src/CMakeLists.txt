@@ -336,7 +336,7 @@ ELSE()
 ENDIF()
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/concurrent")
+  GIT_TAG "v0.6.0")
 
 # ++ MODULE: Spire SCIRun interface
 # TODO: Place this module in SCIInstitute.
@@ -344,7 +344,7 @@ set(OUTPUT_SHADER_DIR ${CMAKE_CURRENT_BINARY_DIR}/Shaders)
 set(OUTPUT_ASSET_DIR ${CMAKE_CURRENT_BINARY_DIR}/Assets)
 CPM_AddModule("spire_scirun"
   GIT_REPOSITORY "https://github.com/iauns/spire-scirun"
-  GIT_TAG "origin/master")
+  GIT_TAG "v0.6.0")
 
 CPM_Finish()
 
