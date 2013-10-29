@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,36 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Matrix.h>
+/// \author James Hughes
+/// \date   October 2013
 
-using namespace SCIRun;
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
+#ifndef __SCIRUN_SPIRE_NAMESPACES_H
+#define __SCIRUN_SPIRE_NAMESPACES_H
 
-AlignMeshBoundingBoxes::AlignMeshBoundingBoxes() :
-  Module(ModuleLookupInfo("AlignMeshBoundingBoxes", "ChangeMesh", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(AlignmentField);
-  INITIALIZE_PORT(OutputField);
-  INITIALIZE_PORT(TransformMatrix);
-}
+// 'Forward declaration' of namespaces.
+namespace CPM_SPIRE_NS {}
+namespace CPM_SPIRE_SCIRUN_NS {}
 
-void AlignMeshBoundingBoxes::execute()
-{
-  FieldHandle ifield = getRequiredInput(InputField);
-  FieldHandle objfield = getRequiredInput(AlignmentField);
+// Renaming namespaces in our top level.
+namespace spire = CPM_SPIRE_NS;
+namespace spire_sr = CPM_SPIRE_SCIRUN_NS;
 
-  // inputs_changed_ || !oport_cached("Output") || !oport_cached("Transform")
-  if (needToExecute())
-  {
-    update_state(Executing);
+#endif 
 
-    auto output = algo().run_generic(make_input((InputField, ifield)(AlignmentField, objfield)));
-
-    sendOutputFromAlgorithm(OutputField, output);
-    sendOutputFromAlgorithm(TransformMatrix, output);
-  }
-}

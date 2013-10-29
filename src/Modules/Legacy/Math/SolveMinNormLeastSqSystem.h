@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2103 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -49,50 +49,31 @@
  *
  */
 
-#include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
-#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Math/Mat.h>
-#include <Core/Datatypes/DenseColumnMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
+#ifndef MODULES_LEGACY_MATH_SOLVEMINNORMLEASTSQSYSTEM_H
+#define MODULES_LEGACY_MATH_SOLVEMINNORMLEASTSQSYSTEM_H
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Math/share.h>
 
-SolveMinNormLeastSqSystem::SolveMinNormLeastSqSystem()
-: Module(ModuleLookupInfo("SolveMinNormLeastSqSystem", "Math", "SCIRun"), false)
-{
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Math {
 
-void SolveMinNormLeastSqSystem::execute()
-{
-  const int numInputs = 4;
-  std::vector<DenseColumnMatrixHandle> in(numInputs);
-  in[0] = getRequiredInput(BasisVector1);
-  in[1] = getRequiredInput(BasisVector2);
-  in[2] = getRequiredInput(BasisVector3);
-  in[3] = getRequiredInput(TargetVector);
+      class SCISHARE SolveMinNormLeastSqSystem : public SCIRun::Dataflow::Networks::Module,
+        public Has4InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+        public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
+      {
+      public:
+        SolveMinNormLeastSqSystem();
+        virtual void execute();
+        virtual void setStateDefaults() {}
+        INPUT_PORT(0, BasisVector1, DenseColumnMatrix);
+        INPUT_PORT(1, BasisVector2, DenseColumnMatrix);
+        INPUT_PORT(2, BasisVector3, DenseColumnMatrix);
+        INPUT_PORT(3, TargetVector, DenseColumnMatrix);
+        OUTPUT_PORT(0, WeightVector, DenseColumnMatrix);
+        OUTPUT_PORT(1, ResultVector, DenseColumnMatrix);
+      };
+}}}
 
-  int size = in[0]->rows();
-  for (int i = 1; i < numInputs; i++) 
-  {
-    if ( in[i]->rows() != size ) 
-    {
-      THROW_ALGORITHM_INPUT_ERROR("ColumnMatrices are different sizes");
-    }
-  }
-
-  double *A[3];
-  for (int i = 0; i < 3; i++) 
-  {
-    A[i] = in[i]->data();
-  }
-  auto b = in[3]->data();
-  DenseColumnMatrixHandle bprime(new DenseColumnMatrix(size));
-  DenseColumnMatrixHandle x(new DenseColumnMatrix(3));
-
-  min_norm_least_sq_3(A, b, x->data(), bprime->data(), size);
-   
-  sendOutput(WeightVector, x);
-  sendOutput(ResultVector, bprime);
-}    
+#endif

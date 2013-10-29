@@ -33,13 +33,14 @@
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
 #include <Interface/Modules/DataIO/share.h>
 
 namespace SCIRun {
 namespace Gui {
-  
+
 class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
-  public Ui::ReadFieldDialog
+  public Ui::ReadFieldDialog, public RemembersFileDialogDirectory<ReadFieldDialog>
 {
 	Q_OBJECT
 	

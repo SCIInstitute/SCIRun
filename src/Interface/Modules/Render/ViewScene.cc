@@ -38,23 +38,23 @@ using namespace SCIRun::Core::Datatypes;
 
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(Spire::ObjectLambdaInterface& iface, 
-                                  std::list<Spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface, 
+                                  std::list<::spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
 {
   // Cache object to world transform.
-  Spire::M44 objToWorld = iface.getObjectMetadata<Spire::M44>(
-      std::get<0>(Spire::SRCommonAttributes::getObjectToWorldTrafo()));
+  ::spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(
+      std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()));
 
-  std::string objectTrafoName = std::get<0>(Spire::SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(Spire::SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(Spire::SRCommonUniforms::getObjectToCameraToProjection());
+  std::string objectTrafoName = std::get<0>(spire_sr::SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(spire_sr::SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(spire_sr::SRCommonUniforms::getObjectToCameraToProjection());
 
   // Loop through the unsatisfied uniforms and see if we can provide any.
   for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
   {
     if (it->uniformName == objectTrafoName)
     {
-      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
                                                      it->shaderLocation, objToWorld);
 
       it = unsatisfiedUniforms.erase(it);
@@ -62,18 +62,18 @@ static void lambdaUniformObjTrafs(Spire::ObjectLambdaInterface& iface,
     else if (it->uniformName == objectToViewName)
     {
       // Grab the inverse view transform.
-      Spire::M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<Spire::M44>(std::get<0>(Spire::SRCommonUniforms::getCameraToWorld())));
-      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+      ::spire::M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<::spire::M44>(std::get<0>(::spire_sr::SRCommonUniforms::getCameraToWorld())));
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
                                               it->shaderLocation, inverseView * objToWorld);
 
       it = unsatisfiedUniforms.erase(it);
     }
     else if (it->uniformName == objectToCamProjName)
     {
-      Spire::M44 inverseViewProjection = iface.getGlobalUniform<Spire::M44>(
-          std::get<0>(Spire::SRCommonUniforms::getToCameraToProjection()));
-      Spire::LambdaInterface::setUniform<Spire::M44>(it->uniformType, it->uniformName,
+      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
+          std::get<0>(::spire_sr::SRCommonUniforms::getToCameraToProjection()));
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseViewProjection * objToWorld);
 
       it = unsatisfiedUniforms.erase(it);
@@ -108,7 +108,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     glLayout->update();
 
     // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<Spire::SCIRun::SRInterface>(mGLWidget->getSpire());
+    mSpire = std::weak_ptr<spire_sr::SRInterface>(mGLWidget->getSpire());
   }
   else
   {
@@ -132,20 +132,13 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 void ViewSceneDialog::moduleExecuted()
 {
   // Grab the geomData transient value.
-  boost::any geomDataTransient = state_->getTransientValue("geomData");
-  if (!geomDataTransient.empty())
+  auto geomDataTransient = state_->getTransientValue("geomData");
+  if (geomDataTransient && !geomDataTransient->empty())
   {
-    boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>> geomData; // Whoa...
-    try
-    {
-      geomData = boost::any_cast<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
-    }
-    catch (const boost::bad_any_cast&)
-    {
-      //error("Unable to cast boost::any transient value to spire pointer.");
+    auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
+    if (!geomData)
       return;
-    }
-    std::shared_ptr<Spire::SCIRun::SRInterface> spire = mSpire.lock();
+    std::shared_ptr<spire_sr::SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
 
@@ -161,7 +154,7 @@ void ViewSceneDialog::moduleExecuted()
     spire->removeAllObjects();
 
     // Set directional light source (in world space).
-    spire->addGlobalUniform("uLightDirWorld", Spire::V3(1.0f, 0.0f, 0.0f));
+    spire->addGlobalUniform("uLightDirWorld", ::spire::V3(1.0f, 0.0f, 0.0f));
 
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
@@ -197,23 +190,23 @@ void ViewSceneDialog::moduleExecuted()
       for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
       {
         const GeometryObject::SpireIBO& ibo = *it;
-        Spire::Interface::IBO_TYPE type;
+        ::spire::Interface::IBO_TYPE type;
         switch (ibo.indexSize)
         {
           case 1: // 8-bit
-            type = Spire::Interface::IBO_8BIT;
+            type = ::spire::Interface::IBO_8BIT;
             break;
 
           case 2: // 16-bit
-            type = Spire::Interface::IBO_16BIT;
+            type = ::spire::Interface::IBO_16BIT;
             break;
 
           case 4: // 32-bit
-            type = Spire::Interface::IBO_32BIT;
+            type = ::spire::Interface::IBO_32BIT;
             break;
 
           default:
-            type = Spire::Interface::IBO_32BIT;
+            type = ::spire::Interface::IBO_32BIT;
             throw std::invalid_argument("Unable to determine index buffer depth.");
             break;
         }
@@ -232,7 +225,7 @@ void ViewSceneDialog::moduleExecuted()
         for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
         {
           std::string uniformName = std::get<0>(*it);
-          std::shared_ptr<Spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+          std::shared_ptr<::spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
 
           // Be sure to always include the pass name as we are updating a
           // subpass of SPIRE_DEFAULT_PASS.
@@ -252,10 +245,10 @@ void ViewSceneDialog::moduleExecuted()
 
       // Add default identity transform to the object globally (instead of
       // per-pass).
-      Spire::M44 xform;
-      xform[3] = Spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
+      ::spire::M44 xform;
+      xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
       spire->addObjectGlobalMetadata(
-        obj->objectName, std::get<0>(Spire::SRCommonAttributes::getObjectToWorldTrafo()), xform);
+        obj->objectName, std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
       // This must come *after* adding the passes.
 

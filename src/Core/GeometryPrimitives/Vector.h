@@ -34,6 +34,7 @@
 #define CORE_GEOMETRY_VECTOR_H 
 
 #include <cmath>
+#include <algorithm>
 #include <Core/Persistent/PersistentFwd.h>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/GeometryPrimitives/share.h>

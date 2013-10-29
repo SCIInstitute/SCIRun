@@ -68,7 +68,6 @@ TARGET_LINK_LIBRARIES(Core_Datatypes
   Core_Datatypes_Legacy_Base
   Core_Geometry_Primitives
   ${OPENGL_LIBRARIES}
-  ${SCI_SPIRE_EXTRA_LIBRARIES}
 )
 
 IF(BUILD_SHARED_LIBS)

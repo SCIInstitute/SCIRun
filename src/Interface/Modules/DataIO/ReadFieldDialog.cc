@@ -62,6 +62,9 @@ void ReadFieldDialog::pushFileNameToState()
 
 void ReadFieldDialog::openFile()
 {
-  fileNameLineEdit_->setText(QFileDialog::getOpenFileName(this, "Open Field File", ".", "SCIRun Field File (*.fld)"));
+  auto file = QFileDialog::getOpenFileName(this, "Open Field File", dialogDirectory(), "SCIRun Field File (*.fld)");
+  fileNameLineEdit_->setText(file);
+  updateRecentFile(file);
+  
   pushFileNameToState();
 }
