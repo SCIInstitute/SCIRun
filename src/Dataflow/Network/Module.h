@@ -113,9 +113,9 @@ namespace Networks {
     bool oport_connected(size_t portIndex) const;
 
     template <class Type, size_t N>
-    struct PortName
+    struct PortNameBase
     {
-      explicit PortName(const std::string& name = "") : name_(name) {}
+      explicit PortNameBase(const std::string& name) : name_(name) {}
       operator size_t() const { return N; }
       operator std::string() const 
       { 
@@ -126,19 +126,34 @@ namespace Networks {
 
       std::string name_;
     };
+    
+    template <class Type, size_t N>
+    struct StaticPortName : PortNameBase<Type,N>
+    {
+      explicit StaticPortName(const std::string& name = "") : PortNameBase<Type,N>(name) {}
+    };
+
+    template <class Type, size_t N>
+    struct DynamicPortName : PortNameBase<Type,N>
+    {
+      explicit DynamicPortName(const std::string& name = "") : PortNameBase<Type,N>(name) {}
+    };
 
     // Throws if input is not present or null.
     template <class T, size_t N>
-    boost::shared_ptr<T> getRequiredInput(const PortName<T,N>& port);
+    boost::shared_ptr<T> getRequiredInput(const StaticPortName<T,N>& port);
 
     template <class T, size_t N>
-    boost::optional<boost::shared_ptr<T>> getOptionalInput(const PortName<T,N>& port);
+    boost::optional<boost::shared_ptr<T>> getOptionalInput(const StaticPortName<T,N>& port);
+
+    template <class T, size_t N>
+    std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
 
     template <class T, class D, size_t N>
-    void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data);
+    void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
 
     template <class T, size_t N>
-    void sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
+    void sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -230,7 +245,7 @@ namespace Networks {
   }
   
   template <class T, size_t N>
-  boost::shared_ptr<T> Module::getRequiredInput(const PortName<T,N>& port)
+  boost::shared_ptr<T> Module::getRequiredInput(const StaticPortName<T,N>& port)
   {
     return getRequiredInputAtIndex<T>(static_cast<size_t>(port));
   }
@@ -256,13 +271,13 @@ namespace Networks {
   }
 
   template <class T, size_t N>
-  boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const PortName<T,N>& port)
+  boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const StaticPortName<T,N>& port)
   {
     return getOptionalInputAtIndex<T>(static_cast<size_t>(port));
   }
 
   template <class T, class D, size_t N>
-  void Module::sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data)
+  void Module::sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data)
   {
     const bool datatypeForThisPortMustBeCompatible = boost::is_base_of<T,D>::value;
     BOOST_STATIC_ASSERT(datatypeForThisPortMustBeCompatible);
@@ -270,7 +285,7 @@ namespace Networks {
   }
   
   template <class T, size_t N>
-  void Module::sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
+  void Module::sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
   {
     sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
   }
@@ -288,6 +303,12 @@ namespace Modules
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE DatatypePortTag {};
+
+  template <typename Base>
+  struct DynamicPortTag : Base 
+  {
+    typedef typename Base type;
+  };
   
   template <size_t N>
   struct NumInputPorts
@@ -470,16 +491,20 @@ namespace Modules
   PORT_SPEC(Field);
   PORT_SPEC(Mesh);  //TODO temporary
   PORT_SPEC(Geometry);
+  //PORT_SPEC(DynamicPortTag<Geometry>::type);
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 #define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
 
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
-  PortName< ATTACH_NAMESPACE(type), index > name;
+  StaticPortName< ATTACH_NAMESPACE(type), index > name;
+
+#define INPUT_PORT_DYNAMIC(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
+  DynamicPortName< ATTACH_NAMESPACE(type), index > name;
 
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
-  PortName< ATTACH_NAMESPACE(type), index> name;
+  StaticPortName< ATTACH_NAMESPACE(type), index> name;
 
 #define INITIALIZE_PORT(name) do{ name.name_ = #name;}while(0);
 
