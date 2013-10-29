@@ -108,7 +108,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new TextToTriSurfFieldAlgorithm);
   else if (name == "BuildTDCSMatrix")
     h.reset(new BuildTDCSMatrixAlgo);
-
+    
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());
