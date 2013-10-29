@@ -27,27 +27,18 @@
 */
 
 /// \author James Hughes
-/// \date   March 2013
+/// \date   October 2013
 
-#ifndef INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
-#define INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
+#ifndef __SCIRUN_SPIRE_NAMESPACES_H
+#define __SCIRUN_SPIRE_NAMESPACES_H
 
-#include <QtOpenGL/QGLWidget>
+// 'Forward declaration' of namespaces.
+namespace CPM_SPIRE_NS {}
+namespace CPM_SPIRE_SCIRUN_NS {}
 
-namespace SCIRun {
-namespace Gui {
-
-/// 
-class QtGLContext : public QGLContext
-{
-public:
-  QtGLContext(const QGLFormat& format);
-  virtual ~QtGLContext();
-
-private:
-};
-
-} // namespace Gui
-} // SCIRun
+// Renaming namespaces in our top level.
+namespace spire = CPM_SPIRE_NS;
+namespace spire_sr = CPM_SPIRE_SCIRUN_NS;
 
 #endif 
+

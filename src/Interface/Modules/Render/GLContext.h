@@ -38,15 +38,16 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include <QtOpenGL/QGLWidget>
+#include "spire/Interface.h"
+#include "namespaces.h"
 
-#include "Spire/Interface.h"
+#include <QtOpenGL/QGLWidget>
 
 namespace SCIRun {
 namespace Gui {
 
 /// Context that will be sent to spire.
-class GLContext : public Spire::Context
+class GLContext : public spire::Context
 {
 public:
   GLContext(QGLWidget* glWidget);

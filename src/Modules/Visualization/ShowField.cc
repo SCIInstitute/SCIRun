@@ -189,18 +189,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass = 
         GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
-                                     "UniformColor", Spire::Interface::LINES);
+                                     "UniformColor", spire::Interface::LINES);
 
-    Spire::GPUState gpuState;
+    spire::GPUState gpuState;
     gpuState.mLineWidth = 2.5f;
     pass.addGPUState(gpuState);
 
     bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
     // Add appropriate uniforms to the pass (in this case, uColor).
     if (edgeTransparency)
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
     else
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
@@ -224,12 +224,12 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     {
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
-                                       "DirPhong", Spire::Interface::TRIANGLES);
+                                       "DirPhong", spire::Interface::TRIANGLES);
 
       // Add common uniforms.
-      pass.addUniform("uAmbientColor", Spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
-      pass.addUniform("uDiffuseColor", Spire::V4(0.8f, 0.8f, 0.8f, 1.0f));
-      pass.addUniform("uSpecularColor", Spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+      pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
+      pass.addUniform("uDiffuseColor", spire::V4(0.8f, 0.8f, 0.8f, 1.0f));
+      pass.addUniform("uSpecularColor", spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
       pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
     }
@@ -238,13 +238,13 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       // No normals present in the model, construct a uniform pass
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName,
-                                       "UniformColor", Spire::Interface::TRIANGLES);
+                                       "UniformColor", spire::Interface::TRIANGLES);
 
       // Apply misc user settings.
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.2f;
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, transparency));
+      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, transparency));
       geom->mPasses.emplace_back(pass);
     }
   }
@@ -261,14 +261,14 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass = 
         GeometryObject::SpireSubPass("nodesPass", primVBOName, iboName,
-                                     "UniformColor", Spire::Interface::POINTS);
+                                     "UniformColor", spire::Interface::POINTS);
 
     // Add appropriate uniforms to the pass (in this case, uColor).
     bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
     if (nodeTransparency)
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
     else
-      pass.addUniform("uColor", Spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
