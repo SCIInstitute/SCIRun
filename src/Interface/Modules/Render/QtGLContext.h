@@ -33,12 +33,9 @@
 #define INTERFACE_MODULES_RENDER_QTGLCONTEXT_H
 
 #include <QtOpenGL/QGLWidget>
-#include "GLWidget.h"
 
 namespace SCIRun {
 namespace Gui {
-
-class GLWidget;
 
 /// 
 class QtGLContext : public QGLContext
