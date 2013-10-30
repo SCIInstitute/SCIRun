@@ -104,13 +104,18 @@ DatatypeSinkInterfaceHandle InputPort::sink() const
   return sink_;
 }
 
-DatatypeHandleOption InputPort::getData() const
+DatatypeHandleOption InputPort::getData1() const
 {
   if (0 == nconnections())
     return DatatypeHandleOption();
 
   sink_->waitForData();
   return sink_->receive();
+}
+
+std::vector<DatatypeHandleOption> InputPort::getData() const
+{
+  return std::vector<DatatypeHandleOption>();
 }
 
 void InputPort::attach(Connection* conn)

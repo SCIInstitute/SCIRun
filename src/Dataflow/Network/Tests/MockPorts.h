@@ -63,7 +63,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_METHOD0(reset, void());
           MOCK_METHOD0(finish, void());
-          MOCK_CONST_METHOD0(getData, Core::Datatypes::DatatypeHandleOption());
+          MOCK_CONST_METHOD0(getData1, Core::Datatypes::DatatypeHandleOption());
+          MOCK_CONST_METHOD0(getData, std::vector<Core::Datatypes::DatatypeHandleOption>());
           MOCK_CONST_METHOD0(sink, DatatypeSinkInterfaceHandle());
           MOCK_CONST_METHOD0(isInput, bool());
           MOCK_CONST_METHOD0(isDynamic, bool());

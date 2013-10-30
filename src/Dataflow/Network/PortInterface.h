@@ -31,6 +31,7 @@
 #define DATAFLOW_NETWORK_PORT_INTERFACE_H 
 
 #include <string>
+#include <vector>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Dataflow/Network/share.h>
@@ -62,13 +63,25 @@ namespace Networks {
     virtual void setIndex(size_t index) = 0;
   };
   
-  class SCISHARE InputPortInterface : virtual public PortInterface
+  class SCISHARE GenericInputPortInterface : virtual public PortInterface
+  {
+  public:
+    virtual ~GenericInputPortInterface();
+    virtual std::vector<Core::Datatypes::DatatypeHandleOption> getData() const = 0;
+    virtual DatatypeSinkInterfaceHandle sink() const = 0;
+  };
+  
+  class SCISHARE DynamicInputPortInterface : public GenericInputPortInterface
+  {
+  public:
+  virtual ~DynamicInputPortInterface();
+  };
+  
+  class SCISHARE InputPortInterface : public GenericInputPortInterface
   {
   public:
     virtual ~InputPortInterface();
-    bool hasData() const;
-    virtual Core::Datatypes::DatatypeHandleOption getData() const = 0;
-    virtual DatatypeSinkInterfaceHandle sink() const = 0;
+    virtual Core::Datatypes::DatatypeHandleOption getData1() const = 0;
   };
   
   class SCISHARE OutputPortInterface : virtual public PortInterface

@@ -312,7 +312,7 @@ namespace Modules
   template <typename Base>
   struct DynamicPortTag : Base 
   {
-    typedef typename Base type;
+    typedef Base type;
   };
   
   template <size_t N>

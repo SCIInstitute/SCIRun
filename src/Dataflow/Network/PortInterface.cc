@@ -45,6 +45,14 @@ InputPortInterface::~InputPortInterface()
 {
 }
 
+GenericInputPortInterface::~GenericInputPortInterface()
+{
+}
+
+DynamicInputPortInterface::~DynamicInputPortInterface()
+{
+}
+
 OutputPortInterface::~OutputPortInterface()
 {
 }
