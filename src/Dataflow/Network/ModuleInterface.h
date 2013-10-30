@@ -85,6 +85,7 @@ namespace Networks {
     virtual void set_state(ModuleStateHandle state) = 0;
 
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
+    virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(size_t idx) = 0;
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
@@ -121,6 +122,7 @@ namespace Networks {
   struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
   struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
   struct SCISHARE PortNotFoundException : virtual DataPortException {};
+  struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
 
   #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 }}}

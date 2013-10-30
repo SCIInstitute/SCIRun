@@ -85,6 +85,7 @@ namespace Networks {
 
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
+    virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(size_t idx);
     virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
 
   public:

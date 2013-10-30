@@ -206,6 +206,22 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t id
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
   }
 
+  if (iports_[idx]->isDynamic())
+  {
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port # " + boost::lexical_cast<std::string>(idx) + " is dynamic, get_dynamic_input_handles must be called."));
+  }
+
+  return iports_[idx]->getData();
+}
+
+std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_input_handles(size_t idx)
+{
+  //TODO test...
+  if (idx >= iports_.size())
+  {
+    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
+  }
+
   return iports_[idx]->getData();
 }
 
