@@ -26,26 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef DATAFLOW_NETWORK_SIMPLESOURCESINK_H
-#define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
+#include <Dataflow/Network/SimpleSourceSink.h>
 
-#include <Dataflow/Network/DataflowInterfaces.h>
-#include <Dataflow/Network/share.h>
+using namespace SCIRun::Dataflow::Networks;
 
-namespace SCIRun
-{
-  namespace Dataflow
-  {
-    namespace Networks
-    {
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
       public:
-        virtual void waitForData();
-        virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
+        virtual void SimpleSink::waitForData()
+        {
+          //do nothing
+        }
+
+        virtual SCIRun::Core::Datatypes::DatatypeHandleOption SimpleSink::receive()
+        {
+          return data_;
+        }
+
         virtual bool hasData() const { return hasData_; }
-        virtual void setHasData(bool dataPresent);
-        void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
+        virtual void setHasData(bool dataPresent) 
+        { 
+          hasData_ = dataPresent; 
+          if (!hasData_)
+            data_.reset();
+        }
+
+        void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
+        {
+          data_ = data;
+          setHasData(true);
+        }
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         bool hasData_;
@@ -100,7 +110,13 @@ namespace SCIRun
       class SCISHARE SimpleSource : public DatatypeSourceInterface
       {
       public:
-        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data);
+        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)
+        {
+          SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
+          if (!sink)
+            THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
+          sink->setData(data);
+        }
       };
     }
   }
