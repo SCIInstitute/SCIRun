@@ -29,7 +29,6 @@
 #ifndef DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
-#include <stdexcept>
 #include <Dataflow/Network/DataflowInterfaces.h>
 
 namespace SCIRun
@@ -69,6 +68,37 @@ namespace SCIRun
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         bool hasData_;
       };
+    
+    class SimpleDynamicSink : public DatatypeSinkInterface
+    {
+    public:
+    virtual void waitForData()
+    {
+    //do nothing
+    }
+    
+    virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandle> receive()
+    {
+    return data_;
+    }
+    
+    virtual bool hasData() const { return hasData_; }
+    virtual void setHasData(bool dataPresent)
+    {
+      hasData_ = dataPresent;
+      if (!hasData_)
+        data_.clear();
+    }
+    
+    void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
+    {
+      data_.push_back(data);
+      setHasData(true);
+    }
+    private:
+      std::vector<SCIRun::Core::Datatypes::DatatypeHandle> data_;
+      bool hasData_;
+    };
 
 
       /*
