@@ -271,6 +271,12 @@ namespace Networks {
   }
 
   template <class T, size_t N>
+  std::vector<boost::shared_ptr<T>> Module::getRequiredDynamicInputs(const DynamicPortName<T,N>& port)
+  {
+    throw "not implemented";
+  }
+
+  template <class T, size_t N>
   boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const StaticPortName<T,N>& port)
   {
     return getOptionalInputAtIndex<T>(static_cast<size_t>(port));
@@ -480,6 +486,17 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      return ports;\
+    }\
+  };\
+  template <>\
+  class Has1InputPort<DynamicPortTag<type ## PortTag>> : public NumInputPorts<1>\
+  {\
+  public:\
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
+    {\
+      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
       ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
       return ports;\
     }\

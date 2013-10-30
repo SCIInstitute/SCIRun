@@ -65,7 +65,7 @@ public:
 protected:
   std::string filename_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  PortName<typename HType::element_type, 0> objectPortName_;
+  StaticPortName<typename HType::element_type, 0> objectPortName_;
   //GuiFilename gui_filename_;
   //GuiString gui_from_env_;
 

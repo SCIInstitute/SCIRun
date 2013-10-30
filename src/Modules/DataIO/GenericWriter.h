@@ -65,7 +65,7 @@ protected:
   HType       handle_;
   std::string filename_, filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  PortName<typename HType::element_type, 0> objectPortName_;
+  StaticPortName<typename HType::element_type, 0> objectPortName_;
 
   //GuiFilename filename_;
   //GuiString   filetype_;
