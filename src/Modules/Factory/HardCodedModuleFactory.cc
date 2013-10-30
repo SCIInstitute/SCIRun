@@ -69,7 +69,7 @@
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 
-#include <Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
 
 using namespace SCIRun::Dataflow::Networks;

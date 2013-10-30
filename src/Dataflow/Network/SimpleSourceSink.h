@@ -30,6 +30,7 @@
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun
 {
@@ -37,8 +38,7 @@ namespace SCIRun
   {
     namespace Networks
     {
-      //TODO move to production...
-      class SimpleSink : public DatatypeSinkInterface
+      class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
       public:
         virtual void waitForData()
@@ -69,36 +69,36 @@ namespace SCIRun
         bool hasData_;
       };
     
-    class SimpleDynamicSink : public DatatypeSinkInterface
-    {
-    public:
-    virtual void waitForData()
-    {
-    //do nothing
-    }
-    
-    virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandle> receive()
-    {
-    return data_;
-    }
-    
-    virtual bool hasData() const { return hasData_; }
-    virtual void setHasData(bool dataPresent)
-    {
-      hasData_ = dataPresent;
-      if (!hasData_)
-        data_.clear();
-    }
-    
-    void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
-    {
-      data_.push_back(data);
-      setHasData(true);
-    }
-    private:
-      std::vector<SCIRun::Core::Datatypes::DatatypeHandle> data_;
-      bool hasData_;
-    };
+      //class SCISHARE SimpleDynamicSink : public DatatypeSinkInterface
+      //{
+      //public:
+      //  virtual void waitForData()
+      //  {
+      //    //do nothing
+      //  }
+
+      //  virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandle> receive()
+      //  {
+      //    return data_;
+      //  }
+
+      //  virtual bool hasData() const { return hasData_; }
+      //  virtual void setHasData(bool dataPresent)
+      //  {
+      //    hasData_ = dataPresent;
+      //    if (!hasData_)
+      //      data_.clear();
+      //  }
+
+      //  void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
+      //  {
+      //    data_.push_back(data);
+      //    setHasData(true);
+      //  }
+      //private:
+      //  std::vector<SCIRun::Core::Datatypes::DatatypeHandle> data_;
+      //  bool hasData_;
+      //};
 
 
       /*
@@ -115,7 +115,7 @@ namespace SCIRun
       
       */
 
-      class SimpleSource : public DatatypeSourceInterface
+      class SCISHARE SimpleSource : public DatatypeSourceInterface
       {
       public:
         virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)

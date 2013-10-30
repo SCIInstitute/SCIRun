@@ -60,6 +60,7 @@ SET(Dataflow_Network_HEADERS
   PortInterface.h
   PortManager.h
   share.h
+  SimpleSourceSink.h
 )
 
 ADD_LIBRARY(Dataflow_Network 

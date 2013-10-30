@@ -30,7 +30,7 @@
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Tests/MockModule.h>
 #include <Dataflow/Network/Tests/MockPorts.h>
-#include <Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Dataflow/Network/SimpleSourceSink.h>
 #include <Core/Datatypes/Scalar.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
