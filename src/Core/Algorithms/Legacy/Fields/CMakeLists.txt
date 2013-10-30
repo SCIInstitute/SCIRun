@@ -28,6 +28,7 @@
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateSignedDistanceField.h
+  Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
   FieldData/CalculateGradientsAlgo.h               
@@ -49,6 +50,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
+  Mapping/ApplyMappingMatrix.cc
   #RegisterWithCorrespondences.cc
   #MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc

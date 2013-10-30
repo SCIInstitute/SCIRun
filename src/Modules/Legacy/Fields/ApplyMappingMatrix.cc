@@ -26,12 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
+//#include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
 
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
+
+ApplyMappingMatrix::ApplyMappingMatrix()
+  : Module(ModuleLookupInfo("ApplyMappingMatrix","Fields", "SCIRun"), false)
+{
+ INITIALIZE_PORT(Source);
+ INITIALIZE_PORT(Destination);
+ INITIALIZE_PORT(Mapping);
+ INITIALIZE_PORT(Output);
+}
+
+void ApplyMappingMatrix::execute()
+{
+}
+
+
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 namespace SCIRun {
 
 class ApplyMappingMatrix : public Module
@@ -84,3 +107,4 @@ ApplyMappingMatrix::execute()
 
 
 } // namespace SCIRun
+  #endif

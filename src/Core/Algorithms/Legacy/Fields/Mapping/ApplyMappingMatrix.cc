@@ -26,17 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
 
-namespace SCIRunAlgo {
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+//namespace SCIRunAlgo {
 
 using namespace SCIRun;
-
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Geometry;
 //! Internal function to this algorithm: no need for this function to be
 //! public. It is called from the algorithm class only.
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 template <class DATA> 
 bool 
 ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
@@ -44,14 +60,12 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
                     SparseRowMatrix* mapping);
 
 //! This is the basic algorithm behind the mapping algorithm
-
 template <class DATA> 
 bool 
 ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
                     VField* input, VField* output,
                     SparseRowMatrix* mapping)
 {
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   double* vals = mapping->get_vals();
   index_type* rows = mapping->get_rows();
   index_type* columns = mapping->get_cols();
@@ -71,15 +85,14 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
   
   //! Algorithm succeeded
   algo->algo_end(); return (true);
-  #endif
 }
-
+ #endif
 
 //! Actual Algorithm class
 
 bool 
 ApplyMappingMatrixAlgo::
-run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& output)
+run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping, FieldHandle& output) const
 {
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("ApplyMappingMatrix");
@@ -211,6 +224,21 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
   error("Encountered an unknown data type");
   algo_end(); return (false);
   #endif
+  return true;
 }
 
-} // namespace SCIRunAlgo
+
+AlgorithmInputName ApplyMappingMatrixAlgo::Source("Source");
+AlgorithmInputName ApplyMappingMatrixAlgo::Destination("Destination");
+AlgorithmInputName ApplyMappingMatrixAlgo::Mapping("Mapping");
+AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
+
+AlgorithmOutput ApplyMappingMatrixAlgo::run_generic(const AlgorithmInput & input) const
+{
+ AlgorithmOutput output;
+ return output;
+}
+
+ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo() {}
+ApplyMappingMatrixAlgo::~ApplyMappingMatrixAlgo() {}
+//} // namespace SCIRunAlgo

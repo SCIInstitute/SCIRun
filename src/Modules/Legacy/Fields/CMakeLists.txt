@@ -37,6 +37,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
   GetFieldNodes.h
+  ApplyMappingMatrix.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
