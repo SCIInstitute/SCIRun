@@ -70,7 +70,6 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_METHOD1(setIndex, void(size_t));
-          MOCK_CONST_METHOD0(hasData, bool());
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;

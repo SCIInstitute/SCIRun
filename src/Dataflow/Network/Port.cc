@@ -115,7 +115,7 @@ DatatypeHandleOption InputPort::getData() const
 
 void InputPort::attach(Connection* conn)
 {
-  if (!isDynamic_ && connections_.size() > 0)
+  if (!isDynamic() && connections_.size() > 0)
     THROW_INVALID_ARGUMENT("static input ports accept at most one connection");
   Port::attach(conn);
 }

@@ -110,6 +110,31 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
   EXPECT_THROW(Connection c(outputModule, 2, inputModule, 2, "test"), InvalidArgumentException);
 }
 
+TEST_F(PortTests, DynamicInputPortTakesMultipleConnections)
+{
+  Port::ConstructionParams pcp("ForwardMatrix", "Matrix", true);
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
+  OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
+  EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
+  EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
+
+  ASSERT_EQ(0, inputPort->nconnections());
+  ASSERT_EQ(0, outputPort->nconnections());
+  Connection c(outputModule, 1, inputModule, 2, "test");
+  ASSERT_EQ(1, inputPort->nconnections());
+  ASSERT_EQ(1, outputPort->nconnections());
+
+  Connection c2(outputModule, 1, inputModule, 2, "test");
+  ASSERT_EQ(2, inputPort->nconnections());
+  ASSERT_EQ(2, outputPort->nconnections());
+
+  OutputPortHandle outputPort2(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
+  EXPECT_CALL(*outputModule, get_output_port(2)).WillRepeatedly(Return(outputPort2));
+
+  Connection c3(outputModule, 2, inputModule, 2, "test");
+  ASSERT_EQ(3, inputPort->nconnections());
+}
+
 //TODO: this verification pushed up to higher layer.
 TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
 {
