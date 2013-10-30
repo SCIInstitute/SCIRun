@@ -45,6 +45,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_typename, std::string());
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
         };
@@ -65,6 +66,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getData, Core::Datatypes::DatatypeHandleOption());
           MOCK_CONST_METHOD0(sink, DatatypeSinkInterfaceHandle());
           MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_METHOD1(setIndex, void(size_t));
@@ -86,6 +88,7 @@ namespace SCIRun {
           MOCK_METHOD0(finish, void());
           MOCK_METHOD1(sendData, void(Core::Datatypes::DatatypeHandle));
           MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_METHOD1(setIndex, void(size_t));

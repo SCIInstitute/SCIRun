@@ -47,6 +47,7 @@ namespace Networks {
     virtual std::string get_typename() const = 0;
     virtual std::string get_portname() const = 0;
     virtual bool isInput() const = 0;
+    virtual bool isDynamic() const = 0;
     virtual ModuleId getUnderlyingModuleId() const = 0;
     virtual size_t getIndex() const = 0;
   };
@@ -59,9 +60,6 @@ namespace Networks {
     virtual void detach(Connection* conn) = 0;
     virtual const Connection* connection(size_t) const = 0;
     virtual void setIndex(size_t index) = 0;
-
-    virtual void reset() = 0;
-    virtual void finish() = 0;
   };
   
   class SCISHARE InputPortInterface : virtual public PortInterface

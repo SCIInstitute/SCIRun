@@ -89,7 +89,7 @@ size_t Port::getIndex() const
 }
 
 InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
-  : Port(module, params), sink_(sink)
+  : Port(module, params), sink_(sink), isDynamic_(params.isDynamic_)
 {
 
 }
@@ -115,8 +115,8 @@ DatatypeHandleOption InputPort::getData() const
 
 void InputPort::attach(Connection* conn)
 {
-  if (connections_.size() > 0)
-    THROW_INVALID_ARGUMENT("input ports accept at most one connection");
+  if (!isDynamic_ && connections_.size() > 0)
+    THROW_INVALID_ARGUMENT("static input ports accept at most one connection");
   Port::attach(conn);
 }
 

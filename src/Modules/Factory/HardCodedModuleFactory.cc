@@ -229,16 +229,12 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
   {
-    builder.add_input_port(Port::ConstructionParams(input.name, input.datatype));
+    builder.add_input_port(Port::ConstructionParams(input.name, input.datatype, input.isDynamic));
   }
   BOOST_FOREACH(const OutputPortDescription& output, desc.output_ports_)
   {
-    builder.add_output_port(Port::ConstructionParams(output.name, output.datatype));
+    builder.add_output_port(Port::ConstructionParams(output.name, output.datatype, output.isDynamic));
   }
-
-  //TODO: eliminate
-  if (desc.lookupInfo_.module_name_.find("ComputeSVD") != std::string::npos)
-    builder.disable_ui();
 
   ModuleHandle module = builder.build();
 

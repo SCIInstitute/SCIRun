@@ -290,12 +290,6 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   return *this;
 }
 
-Module::Builder& Module::Builder::disable_ui()
-{
-  module_->has_ui_ = false;
-  return *this;
-}
-
 ModuleHandle Module::Builder::build()
 {
   return module_;

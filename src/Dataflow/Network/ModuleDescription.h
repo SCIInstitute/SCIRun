@@ -43,10 +43,11 @@ namespace Networks {
 
   struct SCISHARE PortDescription
   {
-    PortDescription(const std::string& n, const std::string& d) : 
-  name(n), datatype(d) {}
+    PortDescription(const std::string& n, const std::string& d, bool dyn) : 
+  name(n), datatype(d), isDynamic(dyn) {}
     std::string name;
     std::string datatype;
+    bool isDynamic;
   };
 
   class SCISHARE PortColorLookup

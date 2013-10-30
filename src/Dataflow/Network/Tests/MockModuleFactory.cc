@@ -45,8 +45,8 @@ ModuleDescription MockModuleFactory::lookupDescription(const ModuleLookupInfo& i
 {
   ModuleDescription d;
   d.lookupInfo_ = info;
-  d.output_ports_ += OutputPortDescription("o1", "d1");
-  d.input_ports_ += InputPortDescription("i1", "d1"), InputPortDescription("i2", "d1"), InputPortDescription("i3", "d2");
+  d.output_ports_ += OutputPortDescription("o1", "d1", false);
+  d.input_ports_ += InputPortDescription("i1", "d1", false), InputPortDescription("i2", "d1", false), InputPortDescription("i3", "d2", false);
   return d;
 }
 

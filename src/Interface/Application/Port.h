@@ -56,7 +56,7 @@ class PortWidget : public QPushButton, public NeedsScenePositionProvider, public
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, 
+  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
   ~PortWidget();
@@ -64,6 +64,7 @@ public:
   QString name() const { return name_; }
   QColor color() const { return color_; }
   virtual bool isInput() const { return isInput_; }
+  virtual bool isDynamic() const { return isDynamic_; }
   bool isConnected() const { return isConnected_; }
   void setConnected(bool connected) { isConnected_ = connected; }
 
@@ -123,6 +124,7 @@ private:
   const QColor color_;
   const std::string typename_;
   const bool isInput_;
+  const bool isDynamic_;
   bool isConnected_;
   bool lightOn_;
   QPointF startPos_;
@@ -141,7 +143,7 @@ private:
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
+  InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);
@@ -150,7 +152,7 @@ public:
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, 
+  OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isDynamic, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);

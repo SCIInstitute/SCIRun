@@ -46,8 +46,9 @@ public:
   struct ConstructionParams
   {
     std::string type_name, port_name;
-    ConstructionParams(const std::string& name, const std::string& type)
-      : type_name(type), port_name(name) {}
+    bool isDynamic_;
+    ConstructionParams(const std::string& name, const std::string& type, bool isDynamic)
+      : type_name(type), port_name(name), isDynamic_(isDynamic) {}
   };
   Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();
@@ -61,9 +62,6 @@ public:
 
   virtual void attach(Connection* conn);
   virtual void detach(Connection* conn);
-
-  virtual void reset() {}
-  virtual void finish() {}
 
   virtual ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
@@ -97,9 +95,11 @@ public:
   virtual void attach(Connection* conn);
   virtual DatatypeSinkInterfaceHandle sink() const;
   virtual bool isInput() const { return true; } //boo
+  virtual bool isDynamic() const { return isDynamic_; }
   virtual void setIndex(size_t index) { index_ = index; }
 private:
   DatatypeSinkInterfaceHandle sink_;
+  bool isDynamic_;
 };
 
 
@@ -110,6 +110,7 @@ public:
   virtual ~OutputPort();
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
   virtual bool isInput() const { return false; } //boo
+  virtual bool isDynamic() const { return false; } //TODO: design dynamic output ports
   virtual void setIndex(size_t index) { index_ = index; }
 private:
   DatatypeSourceInterfaceHandle source_;

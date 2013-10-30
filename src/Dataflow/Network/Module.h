@@ -163,7 +163,6 @@ namespace Networks {
       Builder& using_func(ModuleMaker create);
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
-      Builder& disable_ui();
       Builder& setStateDefaults();
       ModuleHandle build();
 
@@ -201,6 +200,9 @@ namespace Networks {
     boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
     template <class T>
     boost::optional<boost::shared_ptr<T>> getOptionalInputAtIndex(size_t idx);
+    template <class T>
+    boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, size_t idx);
+
 
     friend class Builder;
     size_t add_input_port(InputPortHandle);
@@ -231,17 +233,7 @@ namespace Networks {
     if (!inputOpt)
       MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port #" + boost::lexical_cast<std::string>(idx));
 
-    if (!*inputOpt)
-      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
-
-    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
-    if (!data)
-    {
-      std::ostringstream ostr;
-      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
-      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
-    }
-    return data;
+    return checkInput<T>(inputOpt, idx);
   }
   
   template <class T, size_t N>
@@ -257,23 +249,13 @@ namespace Networks {
     if (!inputOpt)
       return boost::optional<boost::shared_ptr<T>>();
 
-    if (!*inputOpt)
-      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
-
-    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
-    if (!data)
-    {
-      std::ostringstream ostr;
-      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
-      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
-    }
-    return data;
+    return checkInput<T>(inputOpt, idx);
   }
 
   template <class T, size_t N>
   std::vector<boost::shared_ptr<T>> Module::getRequiredDynamicInputs(const DynamicPortName<T,N>& port)
   {
-    throw "not implemented";
+    return std::vector<boost::shared_ptr<T>>();
   }
 
   template <class T, size_t N>
@@ -294,6 +276,22 @@ namespace Networks {
   void Module::sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
   {
     sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
+  }
+
+  template <class T>
+  boost::shared_ptr<T> Module::checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, size_t idx)
+  {
+    if (!*inputOpt)
+      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
+
+    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
+    if (!data)
+    {
+      std::ostringstream ostr;
+      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
+      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
+    }
+    return data;
   }
 
 }}
@@ -475,7 +473,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, false)); \
       return ports;\
     }\
   };\
@@ -486,7 +484,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, false)); \
       return ports;\
     }\
   };\
@@ -497,7 +495,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, true)); \
       return ports;\
     }\
   }\
