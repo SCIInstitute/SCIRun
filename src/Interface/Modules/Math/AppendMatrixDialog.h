@@ -30,18 +30,13 @@
 #define INTERFACE_MODULES_APPEND_MATRIX_H
 
 #include "Interface/Modules/Math/ui_AppendMatrix.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Math/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  //TODO DAN
-
 class SCISHARE AppendMatrixDialog : public ModuleDialogGeneric, 
-  //public SCIRun::State::SendScalarState, 
   public Ui::AppendMatrix
 {
 	Q_OBJECT
