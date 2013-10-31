@@ -28,7 +28,7 @@
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   DistanceField/CalculateSignedDistanceField.h
-  Mapping/ApplyMappingMatrix.h
+  #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
   FieldData/CalculateGradientsAlgo.h               
