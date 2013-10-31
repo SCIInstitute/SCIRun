@@ -39,6 +39,7 @@ SET(Dataflow_Network_SRCS
   NullModuleState.cc
   Port.cc
   PortInterface.cc
+  SimpleSourceSink.cc
 )
 
 SET(Dataflow_Network_HEADERS
