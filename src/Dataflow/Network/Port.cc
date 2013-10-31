@@ -104,7 +104,7 @@ DatatypeSinkInterfaceHandle InputPort::sink() const
   return sink_;
 }
 
-DatatypeHandleOption InputPort::getData1() const
+DatatypeHandleOption InputPort::getData() const
 {
   if (0 == nconnections())
     return DatatypeHandleOption();
@@ -113,14 +113,9 @@ DatatypeHandleOption InputPort::getData1() const
   return sink_->receive();
 }
 
-std::vector<DatatypeHandleOption> InputPort::getData() const
-{
-  return std::vector<DatatypeHandleOption>();
-}
-
 void InputPort::attach(Connection* conn)
 {
-  if (!isDynamic() && connections_.size() > 0)
+  if (connections_.size() > 0)
     THROW_INVALID_ARGUMENT("static input ports accept at most one connection");
   Port::attach(conn);
 }

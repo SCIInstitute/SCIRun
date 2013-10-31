@@ -91,10 +91,9 @@ class SCISHARE InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual Core::Datatypes::DatatypeHandleOption getData1() const;
   virtual void attach(Connection* conn);
   virtual DatatypeSinkInterfaceHandle sink() const;
-  virtual std::vector<Core::Datatypes::DatatypeHandleOption> getData() const;
+  virtual Core::Datatypes::DatatypeHandleOption getData() const;
   virtual bool isInput() const { return true; } //boo
   virtual bool isDynamic() const { return isDynamic_; }
   virtual void setIndex(size_t index) { index_ = index; }

@@ -211,7 +211,7 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t id
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port # " + boost::lexical_cast<std::string>(idx) + " is dynamic, get_dynamic_input_handles must be called."));
   }
 
-  return iports_[idx]->getData1();
+  return iports_[idx]->getData();
 }
 
 std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_input_handles(size_t idx)
@@ -227,7 +227,8 @@ std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_i
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port # " + boost::lexical_cast<std::string>(idx) + " is static, get_input_handle must be called."));
   }
 
-  return iports_[idx]->getData();
+  throw "not implemented";
+  //return iports_[idx]->getData();
 }
 
 void Module::send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data)

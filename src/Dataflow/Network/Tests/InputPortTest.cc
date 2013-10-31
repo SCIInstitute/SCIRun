@@ -72,7 +72,7 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
   //no connection hooked up, so should exit before going to the sink.
   EXPECT_CALL(*sink, waitForData()).Times(0);
   EXPECT_CALL(*sink, receive()).Times(0);
-  DatatypeHandleOption data = inputPort->getData1();
+  DatatypeHandleOption data = inputPort->getData();
   EXPECT_FALSE(data);
 }
 
@@ -96,7 +96,7 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   DatatypeHandle dataToPush(new Int32(dataValue));
   outputPort->sendData(dataToPush);
   
-  DatatypeHandleOption data = inputPort->getData1();
+  DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
   EXPECT_EQ(dataValue, (*data)->as<Int32>()->value());
 }

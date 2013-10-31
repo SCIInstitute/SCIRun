@@ -45,14 +45,6 @@ InputPortInterface::~InputPortInterface()
 {
 }
 
-GenericInputPortInterface::~GenericInputPortInterface()
-{
-}
-
-DynamicInputPortInterface::~DynamicInputPortInterface()
-{
-}
-
 OutputPortInterface::~OutputPortInterface()
 {
 }
@@ -61,7 +53,7 @@ namespace
 {
   bool isFullInputPort(const PortDescriptionInterface& port)
   {
-    return port.isInput() && !port.isDynamic() && port.nconnections() == 1;
+    return port.isInput() && port.nconnections() == 1;
   }
 
   bool sharesParentModule(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2)
