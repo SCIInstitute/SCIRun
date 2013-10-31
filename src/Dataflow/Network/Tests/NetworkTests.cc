@@ -35,6 +35,7 @@
 #include <Dataflow/Network/Tests/MockModule.h>
 #include <Dataflow/Network/Tests/MockPorts.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 
 using namespace SCIRun::Dataflow::Networks;

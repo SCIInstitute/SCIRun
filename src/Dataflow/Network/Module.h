@@ -167,11 +167,16 @@ namespace Networks {
       Builder& setStateDefaults();
       ModuleHandle build();
 
+      //TODO: these don't quite belong here, think about extracting
+      void cloneInputPort(ModuleHandle module, size_t index);
+      void removeInputPort(ModuleHandle module, size_t index);
+
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSinkInterface*()> SinkMaker;
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSourceInterface*()> SourceMaker;
       static void use_sink_type(SinkMaker func);
       static void use_source_type(SourceMaker func);
     private:
+      void addInputPortImpl(Module& module, const Port::ConstructionParams& params);
       boost::shared_ptr<Module> module_;
       static SinkMaker sink_maker_;
       static SourceMaker source_maker_;

@@ -120,6 +120,12 @@ void InputPort::attach(Connection* conn)
   Port::attach(conn);
 }
 
+InputPortInterface* InputPort::clone() const
+{
+  DatatypeSinkInterfaceHandle sink(sink_->clone());
+  return new InputPort(module_, ConstructionParams(portName_, typeName_, isDynamic_), sink);
+}
+
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
   : Port(module, params), source_(source)
 {

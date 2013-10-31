@@ -123,10 +123,10 @@ namespace SCIRun {
           addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
-          addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
+          addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
           //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-          addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
+          addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
           addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
@@ -170,14 +170,17 @@ namespace SCIRun {
         Lookup lookup_;
         bool includeTestingModules_;
 
+        //TODO: remove this function and use static MLI from each module
         template <class ModuleType>
         void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)
         {
-          ModuleLookupInfo info;
-          info.module_name_ = name;
-          info.package_name_ = package;
-          info.category_name_ = category;
+          ModuleLookupInfo info(name, category, package);
+          addModuleDesc<ModuleType>(info, status, desc);
+        }
 
+        template <class ModuleType>
+        void addModuleDesc(const ModuleLookupInfo& info, const std::string& status, const std::string& desc)
+        {
           ModuleDescription description;
           description.lookupInfo_ = info;
 
@@ -190,6 +193,12 @@ namespace SCIRun {
           lookup_[info] = description;
 
           descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
+        }
+
+        template <class ModuleType>
+        void addModuleDesc(const std::string& status, const std::string& desc)
+        {
+          addModuleDesc<ModuleType>(ModuleType::staticInfo_, status, desc);
         }
       };
 

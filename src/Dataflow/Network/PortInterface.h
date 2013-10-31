@@ -83,6 +83,7 @@ namespace Networks {
     virtual ~InputPortInterface();
     virtual Core::Datatypes::DatatypeHandleOption getData() const = 0;
     virtual DatatypeSinkInterfaceHandle sink() const = 0;
+    virtual InputPortInterface* clone() const = 0;
   };
   
   class SCISHARE OutputPortInterface : virtual public PortInterface

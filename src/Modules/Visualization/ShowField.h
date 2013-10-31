@@ -57,6 +57,8 @@ namespace Visualization {
     INPUT_PORT(0, Field, LegacyField);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
   
+    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
     virtual void setStateDefaults();
   private:
     /// Constructs a geometry object (essentially a spire object) from the given 

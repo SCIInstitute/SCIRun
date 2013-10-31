@@ -294,11 +294,16 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
 {
   if (module_)
   {
-    DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
-    InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
-    port->setIndex(module_->add_input_port(port));
+    addInputPortImpl(*module_, params);
   }
   return *this;
+}
+
+void Module::Builder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
+{
+  DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
+  InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
+  port->setIndex(module_->add_input_port(port));
 }
 
 Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams& params)
@@ -310,6 +315,21 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
     port->setIndex(module_->add_output_port(port));
   }
   return *this;
+}
+
+void Module::Builder::cloneInputPort(ModuleHandle module, size_t index)
+{
+  Module* m = dynamic_cast<Module*>(module.get());
+  if (m)
+  {
+    InputPortHandle newPort(m->get_input_port(index)->clone());
+    newPort->setIndex(m->add_input_port(newPort));
+  }
+}
+
+void Module::Builder::removeInputPort(ModuleHandle module, size_t index)
+{
+  //TODO
 }
 
 ModuleHandle Module::Builder::build()

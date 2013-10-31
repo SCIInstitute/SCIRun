@@ -64,6 +64,7 @@ public:
   virtual void waitForData() {}
 
   virtual DatatypeHandleOption receive() { return data_; }
+  virtual DatatypeSinkInterface* clone() const { return new StubbedDatatypeSink; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
 private:

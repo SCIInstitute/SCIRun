@@ -41,10 +41,12 @@ namespace SCIRun
       class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
       public:
+        SimpleSink();
         virtual void waitForData();
         virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
         virtual bool hasData() const { return hasData_; }
         virtual void setHasData(bool dataPresent);
+        virtual DatatypeSinkInterface* clone() const;
         void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;

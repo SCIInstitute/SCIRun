@@ -30,6 +30,10 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Dataflow::Networks;
 
+SimpleSink::SimpleSink() : hasData_(false)
+{
+}
+
 void SimpleSink::waitForData()
 {
   //do nothing
@@ -53,6 +57,10 @@ void SimpleSink::setData(SCIRun::Core::Datatypes::DatatypeHandle data)
   setHasData(true);
 }
 
+DatatypeSinkInterface* SimpleSink::clone() const
+{
+  return new SimpleSink;
+}
 
 void SimpleSource::send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)
 {

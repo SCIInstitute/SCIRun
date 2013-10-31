@@ -74,10 +74,9 @@ protected:
   std::vector<Connection*> connections_;
   size_t index_;
 
-private:
-  std::string typeName_;
-  std::string portName_;
-  std::string colorName_;
+  const std::string typeName_;
+  const std::string portName_;
+  const std::string colorName_;
 };
 
 #ifdef WIN32
@@ -97,6 +96,7 @@ public:
   virtual bool isInput() const { return true; } //boo
   virtual bool isDynamic() const { return isDynamic_; }
   virtual void setIndex(size_t index) { index_ = index; }
+  virtual InputPortInterface* clone() const;
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;

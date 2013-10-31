@@ -45,6 +45,8 @@ namespace Render {
     virtual void execute();
     virtual void setStateDefaults();
 
+    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
     /// Used to initialize spire with the context given in the Transient state.
     virtual void preExecutionInitialization();
 

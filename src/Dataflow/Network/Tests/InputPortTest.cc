@@ -100,3 +100,24 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   EXPECT_TRUE(data);
   EXPECT_EQ(dataValue, (*data)->as<Int32>()->value());
 }
+
+TEST_F(InputPortTest, CanClone)
+{
+  Port::ConstructionParams pcp("ForwardMatrix", "Matrix", false);
+
+  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
+
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
+
+  ASSERT_TRUE(inputPort != nullptr);
+
+  InputPortHandle clone(inputPort->clone());
+  
+  ASSERT_TRUE(clone != nullptr);
+  ASSERT_NE(clone, inputPort);
+  EXPECT_EQ(inputPort->get_portname(), clone->get_portname());
+  EXPECT_EQ(inputPort->get_typename(), clone->get_typename());
+  EXPECT_EQ(inputPort->isInput(), clone->isInput());
+  EXPECT_EQ(inputPort->isDynamic(), clone->isDynamic());
+  //EXPECT_EQ(inputPort->getUnderlyingModuleId(), clone->getUnderlyingModuleId());
+}

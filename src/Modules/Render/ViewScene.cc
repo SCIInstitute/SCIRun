@@ -35,7 +35,9 @@ using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun"))
+ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+
+ViewScene::ViewScene() : Module(staticInfo_)
 {
 }
 
