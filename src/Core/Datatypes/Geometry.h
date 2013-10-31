@@ -35,17 +35,20 @@
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/share.h>
-#include <Spire/Interface.h>
-#include <Spire/Core/GPUStateManager.h>
-#include <SpireExt/SCIRun/SRInterface.h>
+#include <spire/Interface.h>
+#include <spire/src/GPUStateManager.h>
+#include <spire_scirun/SRInterface.h>
 
 // The following include contains AbstractUniformStateItem which allows
 // us to store uniforms to be passed, at a later time, to spire.
-#include <Spire/Core/ShaderUniformStateManTemplates.h>
+#include <spire/src/ShaderUniformStateManTemplates.h>
+
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
+
+  namespace spire = CPM_SPIRE_NS;
 
   class SCISHARE GeometryObject : public Datatype
   {
@@ -97,7 +100,7 @@ namespace Datatypes {
     {
       SpireSubPass(const std::string& name, const std::string& vbo, 
                    const std::string& ibo, const std::string& program,
-                   Spire::Interface::PRIMITIVE_TYPES primType) :
+                   spire::Interface::PRIMITIVE_TYPES primType) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
@@ -110,20 +113,20 @@ namespace Datatypes {
       std::string   vboName;
       std::string   iboName;
       std::string   programName;
-      Spire::Interface::PRIMITIVE_TYPES type;
+      spire::Interface::PRIMITIVE_TYPES type;
       // Want Boost::optional here...
       bool            hasGPUState;
-      Spire::GPUState gpuState;
+      spire::GPUState gpuState;
 
       template <typename T>
       void addUniform(const std::string& uniformName, T uniformData)
       {
         uniforms.push_back(
-            std::make_pair(uniformName, std::shared_ptr<Spire::AbstractUniformStateItem>(
-                new Spire::UniformStateItem<T>(uniformData))));
+            std::make_pair(uniformName, std::shared_ptr<spire::AbstractUniformStateItem>(
+                new spire::UniformStateItem<T>(uniformData))));
       }
 
-      void addGPUState(const Spire::GPUState& state)
+      void addGPUState(const spire::GPUState& state)
       {
         hasGPUState = true;
         gpuState = state;
@@ -131,7 +134,7 @@ namespace Datatypes {
 
       // Tuple containing the name of the uniform and its contents.
       std::list<std::tuple<
-          std::string, std::shared_ptr<Spire::AbstractUniformStateItem>>> uniforms;
+          std::string, std::shared_ptr<spire::AbstractUniformStateItem>>> uniforms;
     };
 
     /// List of passes to setup.
