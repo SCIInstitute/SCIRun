@@ -420,3 +420,13 @@ void ModuleWidget::connectNewModule(const SCIRun::Dataflow::Networks::PortDescri
 {
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
 }
+
+void ModuleWidget::addDynamicInputPortWidget(size_t index)
+{
+  std::cout << "adding dynamic port at index " << index << std::endl;
+}
+
+void ModuleWidget::removeDynamicInputPortWidget(size_t index)
+{
+  std::cout << "removing dynamic port at index " << index << std::endl;
+}
