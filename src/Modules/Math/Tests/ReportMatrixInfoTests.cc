@@ -86,8 +86,9 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   DynamicPortManager dpm(addedSignal, removeSignal, &network);
 
   auto oport = input1->get_output_port(0);
-  auto iport = hasDynamic->get_input_port(0);
+  
   {
+    auto iport = hasDynamic->get_input_port(0);
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
 
@@ -105,8 +106,45 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     removeSignal(ConnectionId::create(desc));
   }
 
-  EXPECT_EQ(0, iport->nconnections());
+  ASSERT_EQ(1, hasDynamic->num_input_ports());
+  EXPECT_EQ(0, hasDynamic->get_input_port(0)->nconnections());
   EXPECT_EQ(0, oport->nconnections());
 
-  EXPECT_EQ(1, hasDynamic->num_input_ports());
+  {
+    std::cout << 1 << std::endl;
+    auto iport = hasDynamic->get_input_port(0);
+    EXPECT_EQ(0, oport->nconnections());
+    EXPECT_EQ(0, iport->nconnections());
+    std::cout << 1.01 << std::endl;
+    Connection c1(input1, 0, hasDynamic, 0, "test");
+    std::cout << 1.02 << std::endl;
+    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->getIndex()));
+    std::cout << 1.03 << std::endl;
+    addedSignal(desc1);
+    std::cout << 1.1 << std::endl;
+    EXPECT_EQ(1, iport->nconnections());
+    EXPECT_EQ(1, oport->nconnections());
+
+    EXPECT_EQ(2, hasDynamic->num_input_ports());
+
+    std::cout << 1.11 << std::endl;
+    Connection c2(input1, 0, hasDynamic, 1, "test");
+    std::cout << 1.12 << std::endl;
+    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->get_input_port(1)->getIndex()));
+    std::cout << 1.13 << std::endl;
+    addedSignal(desc2);
+    std::cout << 1.2 << std::endl;
+    EXPECT_EQ(2, oport->nconnections());
+    EXPECT_EQ(3, hasDynamic->num_input_ports());
+
+    removeSignal(ConnectionId::create(desc1));
+    removeSignal(ConnectionId::create(desc2));
+    std::cout << 2 << std::endl;
+  }
+
+  ASSERT_EQ(1, hasDynamic->num_input_ports());
+  EXPECT_EQ(0, hasDynamic->get_input_port(0)->nconnections());
+  EXPECT_EQ(0, oport->nconnections());
 }

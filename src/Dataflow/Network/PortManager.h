@@ -34,11 +34,9 @@
 #include <Core/Utils/Exception.h>
 
 #include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
 #include <string>
-#include <vector>
+#include <deque>
 #include <map>
 
 namespace SCIRun {
@@ -49,7 +47,7 @@ template<class T>
 class PortManager : boost::noncopyable
 {
 private:
-  std::vector<T> ports_;
+  std::deque<T> ports_;
   ModuleInterface* module_;
   std::string lastportname_;
   

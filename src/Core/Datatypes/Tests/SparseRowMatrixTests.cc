@@ -310,3 +310,11 @@ TEST(SparseRowMatrixTest, DISABLED_SearchingForSingleNonzeroInRowAndColumnOnTheD
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad3()));
   
 }
+
+TEST(SparseRowMatrixTest, GetRow)
+{
+  SparseRowMatrix m(matrix1());
+
+  Eigen::SparseVector<double> r1 = m.row(1);
+  std::cout << r1 << std::endl;
+}
