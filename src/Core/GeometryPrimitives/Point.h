@@ -35,6 +35,7 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Persistent/PersistentFwd.h>
 #include <Core/GeometryPrimitives/share.h>

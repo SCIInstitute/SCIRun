@@ -38,10 +38,11 @@
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/share.h>
 
-#include "Spire/Interface.h"
-#include "SpireExt/SCIRun/SRInterface.h"
-#include "SpireExt/SCIRun/SRCommonAttributes.h"
-#include "SpireExt/SCIRun/SRCommonUniforms.h"
+#include "spire/Interface.h"
+#include "spire_scirun/SRInterface.h"
+#include "spire_scirun/SRCommonAttributes.h"
+#include "spire_scirun/SRCommonUniforms.h"
+#include "namespaces.h"
 #include "GLWidget.h"
 
 //TODO: needs to inherit from ModuleWidget somehow
@@ -66,8 +67,8 @@ protected:
   virtual void closeEvent(QCloseEvent *evt) override;
 private:
   void addToolBar();
-  GLWidget*                                   mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<Spire::SCIRun::SRInterface>   mSpire;     ///< Instance of Spire.
+  GLWidget*                              mGLWidget;  ///< GL widget containing context.
+  std::weak_ptr<spire_sr::SRInterface>   mSpire;     ///< Instance of Spire.
 
 };
 

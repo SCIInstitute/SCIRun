@@ -38,12 +38,13 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include <QtOpenGL/QGLWidget>
-
 #include "GLContext.h"
 #include "QtGLContext.h"
-#include "Spire/Interface.h"
-#include "SpireExt/SCIRun/SRInterface.h"
+#include "spire/Interface.h"
+#include "spire_scirun/SRInterface.h"
+#include "namespaces.h"
+
+#include <QtOpenGL/QGLWidget>
 
 namespace SCIRun {
 namespace Gui {
@@ -58,7 +59,7 @@ public:
   GLWidget(QtGLContext* context);
   ~GLWidget();
 
-  std::shared_ptr<Spire::SCIRun::SRInterface> getSpire() const {return mGraphics;}
+  std::shared_ptr<spire_sr::SRInterface> getSpire() const {return mGraphics;}
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
@@ -80,10 +81,10 @@ public Q_SLOTS:
 private:
  
   /// Retrieve SRInterface mouse button from mouse event.
-  Spire::SCIRun::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
+  spire_sr::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 
-  std::shared_ptr<GLContext>                  mContext;   ///< Graphics context.
-  std::shared_ptr<Spire::SCIRun::SRInterface> mGraphics;  ///< Interface to spire.
+  std::shared_ptr<GLContext>                mContext;   ///< Graphics context.
+  std::shared_ptr<spire_sr::SRInterface>    mGraphics;  ///< Interface to spire.
 
 #ifndef SPIRE_USE_STD_THREADS
   QTimer*                                     mTimer;

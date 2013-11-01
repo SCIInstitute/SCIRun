@@ -170,10 +170,7 @@ namespace Networks {
     ModuleLookupInfo info_;
     ModuleId id_;
 
-    Core::Algorithms::AlgorithmBase& algorithm();
-
-  //private:
-    Core::Algorithms::AlgorithmHandle algo_;
+    Core::Algorithms::AlgorithmBase& algo();
 
   protected:
     enum State {
@@ -194,6 +191,8 @@ namespace Networks {
     size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
     bool has_ui_;
+
+    Core::Algorithms::AlgorithmHandle algo_;
    
     ModuleStateHandle state_;
     PortManager<OutputPortHandle> oports_;

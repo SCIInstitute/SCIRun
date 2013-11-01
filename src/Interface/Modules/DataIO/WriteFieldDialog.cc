@@ -62,6 +62,8 @@ void WriteFieldDialog::pushFileNameToState()
 
 void WriteFieldDialog::saveFile()
 {
-  fileNameLineEdit_->setText(QFileDialog::getSaveFileName(this, "Save Field Binary File", ".", "*.fld"));
+  auto file = QFileDialog::getSaveFileName(this, "Save Field Binary File", dialogDirectory(), "*.fld");
+  fileNameLineEdit_->setText(file);
+  updateRecentFile(file);
   pushFileNameToState();
 }

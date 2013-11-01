@@ -54,6 +54,6 @@ void WriteMatrixModule::execute()
   else
     filename_ = (*fileOption)->value();
 
-  algo_->set(Variables::Filename, filename_);
-  algo_->run_generic(make_input((MatrixToWrite, matrix)));
+  algo().set(Variables::Filename, filename_);
+  algo().run_generic(make_input((MatrixToWrite, matrix)));
 }

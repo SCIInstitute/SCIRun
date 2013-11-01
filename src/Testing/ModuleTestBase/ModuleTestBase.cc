@@ -104,6 +104,17 @@ void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, Data
   }
 }
 
+DatatypeHandle ModuleTest::getDataOnThisOutputPort(ModuleHandle module, size_t portNum)
+{
+  if (portNum < module->num_output_ports())
+  {
+    auto oport = module->get_output_port(portNum);
+    //TODO: need a way to grab output values
+   // return dynamic_cast<StubbedDatatypeSink*>(oport->source().get())->getData();
+  }
+  return DatatypeHandle();
+}
+
 void ModuleTest::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum)
 {
   if (portNum < module->num_output_ports())

@@ -54,7 +54,7 @@ void SetFieldNodes::execute()
   {
     update_state(Executing);
 
-    auto output = algo_->run_generic(make_input((InputField, field)(MatrixNodes, matrix)));
+    auto output = algo().run_generic(make_input((InputField, field)(MatrixNodes, matrix)));
 
     sendOutputFromAlgorithm(OutputField, output);
   }
