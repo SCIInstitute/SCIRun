@@ -329,7 +329,11 @@ void Module::Builder::cloneInputPort(ModuleHandle module, size_t index)
 
 void Module::Builder::removeInputPort(ModuleHandle module, size_t index)
 {
-  //TODO
+  Module* m = dynamic_cast<Module*>(module.get());
+  if (m)
+  {
+    m->removeInputPort(index);
+  }
 }
 
 ModuleHandle Module::Builder::build()
@@ -379,4 +383,9 @@ bool Module::oport_connected(size_t portIndex) const
 
   auto port = oports_[portIndex];
   return port->nconnections() > 0;
+}
+
+void Module::removeInputPort(size_t index)
+{
+  iports_.remove(index);
 }

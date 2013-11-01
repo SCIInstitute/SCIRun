@@ -213,6 +213,7 @@ namespace Networks {
     friend class Builder;
     size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
+    void removeInputPort(size_t index);
     bool has_ui_;
 
     Core::Algorithms::AlgorithmHandle algo_;

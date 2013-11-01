@@ -85,7 +85,6 @@ DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, C
 
 void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
-  std::cout << ConnectionId::create(cd).id_ << std::endl;
   //TODO: assumption: dynamic = input
   auto moduleIn = network_->lookupModule(cd.in_.moduleId_);
   Module::Builder builder;
@@ -94,7 +93,10 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
 
 void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
-  std::cout << id.id_ << std::endl;
+  auto desc = id.describe();
+  auto moduleIn = network_->lookupModule(desc.in_.moduleId_);
+  Module::Builder builder;
+  builder.removeInputPort(moduleIn, desc.in_.port_);
 }
 
 
