@@ -27,6 +27,7 @@
 #
 
 SET(Engine_Network_SRCS
+  DynamicPortManager.cc
   NetworkEditorController.cc
   NetworkCommands.cc
   ProvenanceItem.cc
@@ -38,6 +39,7 @@ SET(Engine_Network_SRCS
 
 SET(Engine_Network_HEADERS
   ControllerInterfaces.h
+  DynamicPortManager.h
   NetworkEditorController.h
   NetworkCommands.h
   ProvenanceItem.h

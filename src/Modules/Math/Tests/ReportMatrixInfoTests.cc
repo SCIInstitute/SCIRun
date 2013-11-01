@@ -36,6 +36,7 @@
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
+#include <Dataflow/Engine/Controller/DynamicPortManager.h>
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/Visualization/ShowField.h>
@@ -64,60 +65,6 @@ TEST_F(ReportMatrixInfoModuleTest, ThrowsForNullMatrices)
   EXPECT_THROW(sls->execute(), NullHandleOnPortException);
 }
 
-
-//TODO: split out into new file
-class /*SCISHARE*/ DynamicPortManager
-{
-public:
-  typedef boost::signals2::signal<void (ModuleHandle, size_t)> PortAddedSignalType;
-  typedef boost::signals2::signal<void (ModuleHandle, size_t)> PortRemovedSignalType;
-
-  DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkInterface* network);
-  void connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription&);
-  void connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId&);
-
-  boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber); 
-  boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
-private:
-  const NetworkInterface* network_;
-  PortAddedSignalType portAdded_;
-  PortRemovedSignalType portRemoved_;
-};
-
-DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkInterface* network) : network_(network)
-{
-  ENSURE_NOT_NULL(network, "DPM needs network object");
-  addedSignal.connect(boost::bind(&DynamicPortManager::connectionAddedNeedToCloneAPort, this, _1));
-  removeSignal.connect(boost::bind(&DynamicPortManager::connectionRemovedNeedToRemoveAPort, this, _1));
-}
-
-void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
-{
-  //TODO: assumption: dynamic = input
-  auto moduleIn = network_->lookupModule(cd.in_.moduleId_);
-  Module::Builder builder;
-  builder.cloneInputPort(moduleIn, cd.in_.port_);
-  portAdded_(moduleIn, cd.in_.port_);
-}
-
-void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
-{
-  auto desc = id.describe();
-  auto moduleIn = network_->lookupModule(desc.in_.moduleId_);
-  Module::Builder builder;
-  builder.removeInputPort(moduleIn, desc.in_.port_);
-  portRemoved_(moduleIn, desc.in_.port_);
-}
-
-boost::signals2::connection DynamicPortManager::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
-{
-  return portAdded_.connect(subscriber);
-}
-
-boost::signals2::connection DynamicPortManager::connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber)
-{
-  return portRemoved_.connect(subscriber);
-}
 
 
 TEST(DynamicPortTests, DynamicPortsCloneThemselves)
