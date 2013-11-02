@@ -235,8 +235,12 @@ ENDIF()
 OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
 MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
 IF(DISABLE_ExternalProject_UPDATE)
-  # Skips update command by returning true
-  SET(DISABLED_UPDATE "UPDATE_COMMAND" "TRUE")
+  # do nothing commands...
+  IF(WIN32)
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
+  ELSE()
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
+  ENDIF()
 ENDIF()
 
 ########################################################################
