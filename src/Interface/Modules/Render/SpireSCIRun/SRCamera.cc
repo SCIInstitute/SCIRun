@@ -29,12 +29,13 @@
 /// \author James Hughes
 /// \date   March 2013
 
-#include "../SRCommonUniforms.h"
 #include "../namespaces.h"
 
+#include "SRCommonUniforms.h"
 #include "SRCamera.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 //------------------------------------------------------------------------------
 SRCamera::SRCamera(SRInterface& iface) :
@@ -103,5 +104,6 @@ void SRCamera::setViewTransform(const spire::M44& trafo)
                               spire::V3(mV[1].xyz()));
 }
 
-} // namespace CPM_SPIRE_SCIRUN_NS 
+} // namespace Gui
+} // namespace SCIRun 
 

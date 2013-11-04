@@ -29,17 +29,18 @@
 /// \author James Hughes
 /// \date   February 2013
 
+#include "../namespaces.h"
 #include "SRInterface.h"
-#include "namespaces.h"
-#include "src/SciBall.h"
-#include "src/SRCamera.h"
+#include "SciBall.h"
+#include "SRCamera.h"
 
 #include "spire/src/Hub.h"
 #include "spire/src/InterfaceImplementation.h"
 
 using namespace std::placeholders;
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 //------------------------------------------------------------------------------
 SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
@@ -171,5 +172,6 @@ void SRInterface::buildAndApplyCameraTransform()
   mCamera->setViewTransform(finalTrafo);
 }
 
-} // namespace CPM_SPIRE_SCIRUN_NS 
+} // namespace Gui
+} // namespace SCIRun 
 

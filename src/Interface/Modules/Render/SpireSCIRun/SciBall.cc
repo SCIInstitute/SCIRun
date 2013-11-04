@@ -30,11 +30,13 @@
 /// \date   April 2013
 
 #include "../namespaces.h"
+
 #include "SciBall.h"
 
 #include "spire/src/GLMathUtil.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 //------------------------------------------------------------------------------
 SciBall::SciBall(const spire::V3& center, float radius, const spire::M44& screenToTCS) :
@@ -139,5 +141,6 @@ spire::M44 SciBall::getTransformation() const
 }
 
 
-} // namespace CPM_SPIRE_SCIRUN_NS 
+} // namespace Gui
+} // namespace SCIRun 
 

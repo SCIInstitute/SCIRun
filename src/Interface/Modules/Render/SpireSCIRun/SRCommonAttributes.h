@@ -34,10 +34,11 @@
 
 #include <tuple>
 
-#include "namespaces.h"
+#include "../namespaces.h"
 #include "spire/src/ShaderUniformStateManTemplates.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 /// Common uniforms used by Spire.
 /// \todo Look into the ability to rename these uniforms in the future. This is
@@ -57,6 +58,7 @@ public:
 
 };
 
-} // namespace CPM_SPIRE_SCIRUN_NS 
+} // namespace Gui
+} // namespace SCIRun 
 
 #endif 

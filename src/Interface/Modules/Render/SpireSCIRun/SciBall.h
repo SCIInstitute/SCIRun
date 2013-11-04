@@ -38,7 +38,8 @@
 
 #include "spire/Interface.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 /// A reimplementation of Ken Shoemake's arcball camera. SCIRun 4's camera
 /// system is based completely off of Ken's code. The Code appears in
@@ -124,6 +125,7 @@ private:
   spire::M44  mScreenToTCS;
 };
 
-} // namespace CPM_SPIRE_SCIRUN_NS
+} // namespace Gui
+} // namespace SCIRun 
 
 #endif 

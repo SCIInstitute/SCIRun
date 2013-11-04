@@ -29,12 +29,14 @@
 /// \author James Hughes
 /// \date   August 2013
 
+#include "../namespaces.h"
+
 #include "SRUtil.h"
-#include "namespaces.h"
 
 #include "spire/src/Common.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
                                   size_t stride, float normalLength,
@@ -111,5 +113,6 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   return numInVertices;
 }
 
-} // namespace CPM_SPIRE_SCIRUN_NS 
+} // namespace Gui
+} // namespace SCIRun 
 

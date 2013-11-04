@@ -33,12 +33,13 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include <cstdint>
-#include "namespaces.h"
+#include "../namespaces.h"
 #include "spire/Interface.h"
 #include "spire/src/LambdaInterface.h"
 #include "spire/src/ObjectLambda.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 class SRCamera;
 class SciBall;
@@ -116,6 +117,7 @@ private:
 
 };
 
-} // namespace CPM_SPIRE_SCIRUN_NS
+} // namespace Gui
+} // namespace SCIRun 
 
 #endif 

@@ -32,11 +32,12 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
-#include "../SRInterface.h"
+#include "SRInterface.h"
 
 #include "spire/src/Common.h"
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 /// Basic camera class for spire, mimicking SCIRun v4.
 class SRCamera
@@ -88,6 +89,7 @@ private:
 
 };
 
-} // namespace CPM_SPIRE_SCIRUN_NS 
+} // namespace Gui
+} // namespace SCIRun 
 
 #endif 

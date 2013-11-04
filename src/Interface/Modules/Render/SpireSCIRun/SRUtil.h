@@ -37,7 +37,8 @@
 #include <vector>
 #include <memory>
 
-namespace CPM_SPIRE_SCIRUN_NS {
+namespace SCIRun {
+namespace Gui {
 
 // Misc SCIRun utilities.
 
@@ -60,6 +61,7 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
                                   size_t posOffset = 0,
                                   size_t normOffset = sizeof(float) * 3);
 
-} // namespace CPM_SPIRE_SCIRUN_NS
+} // namespace Gui
+} // namespace SCIRun 
 
 #endif 
