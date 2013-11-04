@@ -60,13 +60,13 @@ GLWidget::GLWidget(QtGLContext* context) :
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
 #ifdef SPIRE_USE_STD_THREADS
-  mGraphics = std::shared_ptr<spire_sr::SRInterface>(
-      new spire_sr::SRInterface(
+  mGraphics = std::shared_ptr<SRInterface>(
+      new SRInterface(
           std::dynamic_pointer_cast<spire::Context>(mContext),
           shaderSearchDirs, true));
 #else
-  mGraphics = std::shared_ptr<spire_sr::SRInterface>(
-      new spire_sr::SRInterface(
+  mGraphics = std::shared_ptr<SRInterface>(
+      new SRInterface(
           std::dynamic_pointer_cast<spire::Context>(mContext),
           shaderSearchDirs, false, logFunction));
   mTimer = new QTimer(this);
@@ -113,15 +113,15 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
-spire_sr::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  spire_sr::SRInterface::MouseButton btn = spire_sr::SRInterface::MOUSE_NONE;
+  SRInterface::MouseButton btn = SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
-    btn = spire_sr::SRInterface::MOUSE_LEFT;
+    btn = SRInterface::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
-    btn = spire_sr::SRInterface::MOUSE_RIGHT;
+    btn = SRInterface::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)
-    btn = spire_sr::SRInterface::MOUSE_MIDDLE;
+    btn = SRInterface::MOUSE_MIDDLE;
   
   return btn;
 }
@@ -130,21 +130,21 @@ spire_sr::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
-  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
+  SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
+  SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
+  SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 

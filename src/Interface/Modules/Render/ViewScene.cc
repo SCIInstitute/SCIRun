@@ -43,11 +43,11 @@ static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface,
 {
   // Cache object to world transform.
   ::spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(
-      std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()));
+      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
 
-  std::string objectTrafoName = std::get<0>(spire_sr::SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(spire_sr::SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(spire_sr::SRCommonUniforms::getObjectToCameraToProjection());
+  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
 
   // Loop through the unsatisfied uniforms and see if we can provide any.
   for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
@@ -63,7 +63,7 @@ static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface,
     {
       // Grab the inverse view transform.
       ::spire::M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<::spire::M44>(std::get<0>(::spire_sr::SRCommonUniforms::getCameraToWorld())));
+          iface.getGlobalUniform<::spire::M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
       ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
                                               it->shaderLocation, inverseView * objToWorld);
 
@@ -72,7 +72,7 @@ static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface,
     else if (it->uniformName == objectToCamProjName)
     {
       ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
-          std::get<0>(::spire_sr::SRCommonUniforms::getToCameraToProjection()));
+          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
       ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseViewProjection * objToWorld);
 
@@ -108,7 +108,7 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
     glLayout->update();
 
     // Set spire transient value (should no longer be used).
-    mSpire = std::weak_ptr<spire_sr::SRInterface>(mGLWidget->getSpire());
+    mSpire = std::weak_ptr<SRInterface>(mGLWidget->getSpire());
   }
   else
   {
@@ -138,7 +138,7 @@ void ViewSceneDialog::moduleExecuted()
     auto geomData = optional_any_cast_or_default<boost::shared_ptr<std::list<boost::shared_ptr<Core::Datatypes::GeometryObject>>>>(geomDataTransient);
     if (!geomData)
       return;
-    std::shared_ptr<spire_sr::SRInterface> spire = mSpire.lock();
+    std::shared_ptr<SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
 
@@ -248,7 +248,7 @@ void ViewSceneDialog::moduleExecuted()
       ::spire::M44 xform;
       xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
       spire->addObjectGlobalMetadata(
-        obj->objectName, std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()), xform);
+        obj->objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
       // This must come *after* adding the passes.
 

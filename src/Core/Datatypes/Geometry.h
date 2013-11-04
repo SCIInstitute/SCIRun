@@ -37,7 +37,6 @@
 #include <Core/Datatypes/share.h>
 #include <spire/Interface.h>
 #include <spire/src/GPUStateManager.h>
-#include <spire_scirun/SRInterface.h>
 
 // The following include contains AbstractUniformStateItem which allows
 // us to store uniforms to be passed, at a later time, to spire.
