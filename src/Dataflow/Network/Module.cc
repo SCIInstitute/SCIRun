@@ -99,7 +99,6 @@ OutputPortHandle Module::get_output_port(size_t idx) const
 
 InputPortHandle Module::get_input_port(size_t idx) const
 {
-  std::cout << "get_input_port: " << idx << " size = " << num_input_ports() << std::endl;
   return iports_[idx];
 }
 
@@ -323,12 +322,9 @@ void Module::Builder::cloneInputPort(ModuleHandle module, size_t index)
   Module* m = dynamic_cast<Module*>(module.get());
   if (m)
   {
-    std::cout << "cloning: " << module->get_id() << " at index : " << index << std::endl;
     InputPortHandle newPort(m->get_input_port(index)->clone());
-    std::cout << "clone made, setting index" << std::endl;
     newPort->setIndex(m->add_input_port(newPort));
   }
-  std::cout << "done cloneInputPort" << std::endl;
 }
 
 void Module::Builder::removeInputPort(ModuleHandle module, size_t index)

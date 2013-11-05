@@ -55,7 +55,7 @@ public:
   PortManager();
   size_t size() const;
   void add(const T& item);
-  void remove(int item);
+  void remove(size_t item);
   T operator[](size_t) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
@@ -87,13 +87,15 @@ PortManager<T>::add(const T &item)
 
 template<class T>
 void
-PortManager<T>::remove(int item)
+PortManager<T>::remove(size_t item)
 {
-  if (static_cast<int>(ports_.size()) <= item)
+  if (ports_.size() <= item)
   {
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
   }
   ports_.erase(ports_.begin() + item);
+  for (size_t i = 0; i < ports_.size(); ++i)
+    ports_[i]->setIndex(i);
 }
 
 template<class T>

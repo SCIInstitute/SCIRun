@@ -44,26 +44,22 @@ DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, C
 
 void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
-  std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
+  //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
   //TODO: assumption: dynamic = input
-  std::cout << 3.1 << std::endl;
   auto moduleIn = network_->lookupModule(cd.in_.moduleId_);
-  std::cout << 3.2 << std::endl;
   Module::Builder builder;
-  std::cout << 3.3 << std::endl;
   builder.cloneInputPort(moduleIn, cd.in_.port_);
-  std::cout << 3.4 << std::endl;
   portAdded_(moduleIn, cd.in_.port_);
 }
 
 void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
-  std::cout << "need to remove a port: " << id.id_ << std::endl;
+  //std::cout << "need to remove a port: " << id.id_ << std::endl;
   auto desc = id.describe();
   auto moduleIn = network_->lookupModule(desc.in_.moduleId_);
   Module::Builder builder;
-  builder.removeInputPort(moduleIn, desc.in_.port_ + 1);
-  portRemoved_(moduleIn, desc.in_.port_ + 1);
+  builder.removeInputPort(moduleIn, desc.in_.port_);
+  portRemoved_(moduleIn, desc.in_.port_);
 }
 
 boost::signals2::connection DynamicPortManager::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
