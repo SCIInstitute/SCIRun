@@ -284,6 +284,11 @@ void ModuleWidget::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
+void ModuleWidget::drawPorts()
+{
+  std::cout << "drawPorts :: " << moduleId_ << std::endl;
+}
+
 void ModuleWidget::printPortPositions() const
 {
   std::cout << "Port positions for module " << moduleId_ << std::endl;

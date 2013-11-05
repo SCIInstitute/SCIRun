@@ -102,6 +102,7 @@ public Q_SLOTS:
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void addDynamicInputPortWidget(size_t index);
   void removeDynamicInputPortWidget(size_t index);
+  void drawPorts();
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
