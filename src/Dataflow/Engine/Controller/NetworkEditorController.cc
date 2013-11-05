@@ -37,6 +37,8 @@
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Engine/Controller/DynamicPortManager.h>
+
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
@@ -63,7 +65,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   stateFactory_(sf), 
   algoFactory_(af),
   executorFactory_(executorFactory),
-  modulePositionEditor_(mpg)
+  modulePositionEditor_(mpg),
+  dynamicPortManager_(new DynamicPortManager(connectionAdded_, connectionRemoved_, theNetwork_.get()))
 {
   //TODO should this class own the network or just keep a reference?
 

@@ -116,6 +116,8 @@ namespace Engine {
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
 
+    boost::shared_ptr<class DynamicPortManager> dynamicPortManager_;
+
     void configureLoggingLibrary();
   };
 
