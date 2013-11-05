@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,48 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Modules/Legacy/FiniteElements/AddKnownsToLinearSystem.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
-//#include <Core/Algorithms/FiniteElements/BuildMatrix/AddKnownsToLinearSystem.h>
-#include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
-using namespace SCIRun::Modules::Math;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-
-AddKnownsToLinearSystem::AddKnownsToLinearSystem()
-  : Module(ModuleLookupInfo("AddKnownsToLinearSystem","Math", "SCIRun"), false)
+class AddKnownsToLinearSystemTests : public ModuleTest
 {
- INITIALIZE_PORT(LHS_Matrix);
- INITIALIZE_PORT(RHS_Vector);
- INITIALIZE_PORT(X_Vector);
- INITIALIZE_PORT(OutPutLHSMatrix);
- INITIALIZE_PORT(OutPutRHSVector);
+
+};
+
+TEST_F(AddKnownsToLinearSystemTests, ThrowsForNullInput)
+{
+ // auto csdf = makeModule("AddKnownsToLinearSystem");
+ // FieldHandle nullField;
+ // stubPortNWithThisData(csdf, 0, nullField);
+ // stubPortNWithThisData(csdf, 1, nullField);
+
+ // EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
 
-
-void AddKnownsToLinearSystem::execute()
+TEST_F(AddKnownsToLinearSystemTests, Foo)
 {
-  SparseRowMatrixHandle lhs;
-  DenseMatrixHandle rhs;
-  DenseMatrixHandle x;
-   
-  lhs=getRequiredInput(LHS_Matrix);
-  //rhs=getOptionalInput(RHS_Vector);
-  rhs=getRequiredInput(RHS_Vector);
-  x=getRequiredInput(X_Vector);
- 
-  auto output = algo().run_generic(make_input((LHS_Matrix,lhs)(RHS_Vector,rhs)(X_Vector,x)));
-
-  sendOutputFromAlgorithm(OutPutLHSMatrix,output);
-  sendOutputFromAlgorithm(OutPutRHSVector,output);
+  FAIL() << "TODO";
 }
-
-
-
-

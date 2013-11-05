@@ -221,11 +221,92 @@ namespace Datatypes {
     return new SparseRowMatrixGeneric<T>;
   }
 
+
   template <typename T>
   PersistentTypeID SparseRowMatrixGeneric<T>::type_id("SparseRowMatrix", "MatrixBase",
     SparseRowMatrixGeneric<T>::SparseRowMatrixGenericMaker);
 
 }}}
+#include <math.h>
+#include <iostream>
+
+template <typename SparseRowMatrixGeneric> inline bool ContainsProperMatrixElements (const SparseRowMatrixGeneric & matrix)
+  {
+    double tmp=0.0;
+    for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
+     { 
+       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
+       {
+        it.value(); 
+        it.index();
+	
+	tmp=(*matrix).coeff(i, it.index());
+	
+	if( !std::isnormal(tmp) ) return false;
+       }
+     }
+    
+    return true;
+  }
+
+
+template <typename SparseRowMatrixGeneric> inline bool isPositiveDefiniteMatrix (const SparseRowMatrixGeneric & matrix)
+  {
+     if ((*matrix).rows() != (*matrix).cols()) return false;   
+         
+     if ( !ContainsProperMatrixElements(matrix) ) return false; 
+	 
+     for (SCIRun::index_type i=0; i<(*matrix).rows();i++) //all diagonal elements positive?
+        if ( (*matrix).coeff(i, i) <= 0 )  
+                   return false;
+       
+     for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
+     { 
+       double tmp1=0.0;
+       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
+       {
+        it.value(); 
+        it.index();	
+	if (i!=it.index()) tmp1+=fabs((*matrix).coeff(i,it.index())); //abs. sum over row
+       }
+       double tmp2=0.0;
+       
+       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).col(i)); it; ++it)
+       {
+        it.value(); 
+        it.index();	
+	if (i!=it.index()) tmp2+=fabs((*matrix).coeff(it.index(),i)); //abs. sum over col	
+       }    
+       if (tmp1!=tmp2) return false; //probably not symetric since sums of abs. values are different
+       if ((tmp1>(*matrix).coeff(i, i)) || (tmp2>(*matrix).coeff(i, i))) return false; 
+     }
+    
+    return true;
+  }
+
+
+template <typename SparseRowMatrixGeneric> inline bool isSymmetricMatrix (const SparseRowMatrixGeneric & matrix)
+  {
+   
+     if ((*matrix).rows() != (*matrix).cols()) return false;
+     
+     if ( !ContainsProperMatrixElements(matrix) ) return false;  
+     
+     for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
+     { 
+       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
+       {
+        it.value(); 
+        it.index();
+	
+	if( (*matrix).coeff(i, it.index()) !=(*matrix).coeff(it.index(),i))
+	   return false;
+       }
+     }
+    
+    return true;
+  }
+
 
 #include <Core/Datatypes/MatrixIO.h>
 

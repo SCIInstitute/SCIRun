@@ -34,6 +34,7 @@ SET(Algorithms_Math_Tests_SRCS
   ParallelLinearAlgebraTests.cc
   SolveLinearSystemWithEigenTests.cc
   SolveLinearSystemAlgoTests.cc
+  #AddKnownsToLinearSystemTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

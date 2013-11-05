@@ -36,6 +36,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+#include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
@@ -57,6 +58,7 @@ using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
+using namespace SCIRun::Core::Algorithms::Math;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
@@ -108,6 +110,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new TextToTriSurfFieldAlgorithm);
   else if (name == "BuildTDCSMatrix")
     h.reset(new BuildTDCSMatrixAlgo);
+  else if (name == "AddKnownsToLinearSystem")
+    h.reset(new AddKnownsToLinearSystemAlgo);  
     
   if (h && algoCollaborator)
   {

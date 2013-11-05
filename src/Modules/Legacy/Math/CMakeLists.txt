@@ -31,7 +31,7 @@
 SET(Modules_Legacy_Math_SRCS
   #CreateScalarMatrix.cc
   #AddLinkedNodesToLinearSystem.cc
-  #AddKnownsToLinearSystem.cc
+  AddKnownsToLinearSystem.cc
   #RemoveZerosFromMatrix.cc
   #SortMatrix.cc
   #RemoveZeroRowsAndColumns.cc
@@ -67,7 +67,7 @@ SET(Modules_Legacy_Math_SRCS
 SET(Modules_Legacy_Math_HEADERS
   #CreateScalarMatrix.h
   #AddLinkedNodesToLinearSystem.h
-  #AddKnownsToLinearSystem.h
+  AddKnownsToLinearSystem.h
   #RemoveZerosFromMatrix.h
   #SortMatrix.h
   #RemoveZeroRowsAndColumns.h
