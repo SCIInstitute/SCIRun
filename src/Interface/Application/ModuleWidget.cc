@@ -246,6 +246,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
   }
+  addInputPortsToLayout();
 }
 
 void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
@@ -271,6 +272,7 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
     hookUpGeneralPortSignals(w);
     addPort(w);
   }
+  addOutputPortsToLayout();
 }
 
 void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
@@ -284,7 +286,7 @@ void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
-void ModuleWidget::addPort(OutputPortWidget* port)
+void ModuleWidget::addOutputPortsToLayout()
 {
   if (!outputPortLayout_)
   {
@@ -294,11 +296,11 @@ void ModuleWidget::addPort(OutputPortWidget* port)
     outputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(-1, outputPortLayout_);
   }
-  outputPortLayout_->addWidget(port);
-  outputPorts_.push_back(port);
+  BOOST_FOREACH(PortWidget* port, outputPorts_)
+    outputPortLayout_->addWidget(port);
 }
 
-void ModuleWidget::addPort(InputPortWidget* port)
+void ModuleWidget::addInputPortsToLayout()
 {
   if (!inputPortLayout_)
   {
@@ -307,7 +309,17 @@ void ModuleWidget::addPort(InputPortWidget* port)
     inputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(0, inputPortLayout_);
   }
-  inputPortLayout_->addWidget(port);
+  BOOST_FOREACH(PortWidget* port, inputPorts_)
+    inputPortLayout_->addWidget(port);
+}
+
+void ModuleWidget::addPort(OutputPortWidget* port)
+{
+  outputPorts_.push_back(port);
+}
+
+void ModuleWidget::addPort(InputPortWidget* port)
+{
   inputPorts_.push_back(port);
 }
 

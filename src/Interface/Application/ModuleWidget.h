@@ -151,6 +151,8 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 
   void addPortLayouts();
+  void addInputPortsToLayout();
+  void addOutputPortsToLayout();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
