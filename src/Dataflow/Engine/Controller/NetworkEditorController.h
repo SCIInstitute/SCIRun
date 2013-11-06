@@ -45,6 +45,8 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
+  typedef boost::signals2::signal<void (Networks::ModuleId, size_t)> PortAddedSignalType;
+  typedef boost::signals2::signal<void (Networks::ModuleId, size_t)> PortRemovedSignalType;
 
   // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
@@ -85,6 +87,8 @@ namespace Engine {
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber);
+    boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber);
+    boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
 
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);

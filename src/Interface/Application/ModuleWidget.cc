@@ -124,8 +124,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   : QFrame(parent),
   deletedFromGui_(true),
   colorLocked_(false),
-  moduleId_(theModule->get_id()),
   theModule_(theModule),
+  moduleId_(theModule->get_id()),
   inputPortLayout_(0),
   outputPortLayout_(0)
 {
@@ -284,9 +284,10 @@ void ModuleWidget::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
-void ModuleWidget::drawPorts()
+void ModuleWidget::drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id)
 {
-  std::cout << "drawPorts :: " << moduleId_ << std::endl;
+  if (id.id_ == moduleId_)
+    std::cout << "drawPorts :: " << moduleId_ << std::endl;
 }
 
 void ModuleWidget::printPortPositions() const

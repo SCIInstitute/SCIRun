@@ -49,7 +49,7 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
   auto moduleIn = network_->lookupModule(cd.in_.moduleId_);
   Module::Builder builder;
   builder.cloneInputPort(moduleIn, cd.in_.port_);
-  portAdded_(moduleIn, cd.in_.port_);
+  portAdded_(moduleIn->get_id(), cd.in_.port_);
 }
 
 void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
@@ -59,7 +59,7 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
   auto moduleIn = network_->lookupModule(desc.in_.moduleId_);
   Module::Builder builder;
   builder.removeInputPort(moduleIn, desc.in_.port_);
-  portRemoved_(moduleIn, desc.in_.port_);
+  portRemoved_(moduleIn->get_id(), desc.in_.port_);
 }
 
 boost::signals2::connection DynamicPortManager::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)

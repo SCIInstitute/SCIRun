@@ -41,9 +41,6 @@ namespace Engine {
   class SCISHARE DynamicPortManager : boost::noncopyable
   {
   public:
-    typedef boost::signals2::signal<void (Networks::ModuleHandle, size_t)> PortAddedSignalType;
-    typedef boost::signals2::signal<void (Networks::ModuleHandle, size_t)> PortRemovedSignalType;
-
     DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const Networks::NetworkInterface* network);
     void connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId&);

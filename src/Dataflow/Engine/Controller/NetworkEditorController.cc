@@ -247,6 +247,16 @@ boost::signals2::connection NetworkEditorController::connectNetworkExecutionFini
   return ExecutionStrategy::connectNetworkExecutionFinished(subscriber);
 }
 
+boost::signals2::connection NetworkEditorController::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
+{
+  return dynamicPortManager_->connectPortAdded(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber)
+{
+  return dynamicPortManager_->connectPortRemoved(subscriber);
+}
+
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
   NetworkToXML conv(modulePositionEditor_);
