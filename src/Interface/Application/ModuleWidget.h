@@ -35,6 +35,7 @@
 #include <boost/timer.hpp>
 #include <QFrame>
 #include <set>
+#include <deque>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/PositionProvider.h>
 
@@ -70,7 +71,7 @@ public:
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
   //TODO abstract
-  typedef std::vector<PortWidget*> Ports;
+  typedef std::deque<PortWidget*> Ports;
   const Ports& getInputPorts() const { return inputPorts_; }
   const Ports& getOutputPorts() const { return outputPorts_; }
 
@@ -105,9 +106,9 @@ public Q_SLOTS:
   void updateNote(const Note& note);
   void duplicate();
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void addDynamicInputPortWidget(size_t index);
-  void removeDynamicInputPortWidget(size_t index);
-  void drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id);
+  void drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index);
+  void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index);
+  void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
