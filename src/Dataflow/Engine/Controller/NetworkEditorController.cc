@@ -65,9 +65,10 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   stateFactory_(sf), 
   algoFactory_(af),
   executorFactory_(executorFactory),
-  modulePositionEditor_(mpg),
-  dynamicPortManager_(new DynamicPortManager(connectionAdded_, connectionRemoved_, theNetwork_.get()))
+  modulePositionEditor_(mpg)
 {
+  dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
+
   //TODO should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
@@ -101,6 +102,7 @@ ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleNam
 
 void NetworkEditorController::removeModule(const ModuleId& id)
 {
+  auto disableDynamicPortManager(createDynamicPortSwitch());
   theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
@@ -111,6 +113,7 @@ void NetworkEditorController::removeModule(const ModuleId& id)
 
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
+  auto disableDynamicPortManager(createDynamicPortSwitch());
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(id.name_);
@@ -267,6 +270,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
   {
+    auto disableDynamicPortManager(createDynamicPortSwitch());
     NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_);
     theNetwork_ = conv.from_xml_data(xml->network);
     for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
@@ -359,4 +363,25 @@ void NetworkEditorController::configureLoggingLibrary()
   //root.setPriority(log4cpp::Priority::DEBUG);
   root.addAppender(appender1);
   root.addAppender(appender2);
+}
+
+boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
+{
+  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
+}
+
+DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : dpm_(dpm), first_(true)
+{
+  if (dpm_)
+  {
+    first_ = !dpm_->isDisabled();
+    if (first_)
+      dpm_->disable();
+  }
+}
+
+DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
+{
+  if (dpm_ && first_)
+    dpm_->enable();
 }

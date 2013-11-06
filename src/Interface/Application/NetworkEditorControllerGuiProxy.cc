@@ -117,3 +117,8 @@ const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModu
 {
   return controller_->getAllAvailableModuleDescriptions();
 }
+
+boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorControllerGuiProxy::createDynamicPortSwitch()
+{
+  return controller_->createDynamicPortSwitch();
+}

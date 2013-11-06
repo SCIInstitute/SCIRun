@@ -35,7 +35,7 @@
 #include <Dataflow/Network/NetworkFwd.h>
 
 namespace SCIRun {
-  namespace Dataflow { namespace Engine { class NetworkEditorController; }}
+  namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; }}
 
 namespace Gui {
   
@@ -60,6 +60,7 @@ namespace Gui {
   public:
     const SCIRun::Dataflow::Networks::ModuleDescriptionMap& getAllAvailableModuleDescriptions() const;
     SCIRun::Dataflow::Networks::NetworkGlobalSettings& getSettings();
+    boost::shared_ptr<SCIRun::Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortSwitch();
   Q_SIGNALS:
     void moduleAdded(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module);
     void moduleRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);

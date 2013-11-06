@@ -72,18 +72,19 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   ModuleStateFactoryHandle sf_;
   AlgorithmFactoryHandle af_;
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  Network network(mf, sf_, af_);
+  NetworkEditorController controller(mf, sf_, ExecutionStrategyFactoryHandle(), af_);
 
-  ModuleHandle hasDynamic = network.add_module(ViewScene::staticInfo_);
+  auto network = controller.getNetwork();
+  ModuleHandle hasDynamic = network->add_module(ViewScene::staticInfo_);
 
   EXPECT_EQ(1, hasDynamic->num_input_ports());
 
-  ModuleHandle input1 = network.add_module(ShowFieldModule::staticInfo_);
-  ModuleHandle input2 = network.add_module(ShowFieldModule::staticInfo_);
+  ModuleHandle input1 = network->add_module(ShowFieldModule::staticInfo_);
+  ModuleHandle input2 = network->add_module(ShowFieldModule::staticInfo_);
 
   ConnectionAddedSignalType addedSignal;
   ConnectionRemovedSignalType removeSignal;
-  DynamicPortManager dpm(addedSignal, removeSignal, &network);
+  DynamicPortManager dpm(addedSignal, removeSignal, &controller);
 
   auto oport = input1->get_output_port(0);
   

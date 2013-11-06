@@ -41,16 +41,21 @@ namespace Engine {
   class SCISHARE DynamicPortManager : boost::noncopyable
   {
   public:
-    DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const Networks::NetworkInterface* network);
+    DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkEditorController* controller);
     void connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription&);
     void connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId&);
 
     boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
+
+    void enable();
+    void disable();
+    bool isDisabled() const { return !enabled_; }
   private:
-    const Networks::NetworkInterface* network_;
+    const NetworkEditorController* controller_;
     PortAddedSignalType portAdded_;
     PortRemovedSignalType portRemoved_;
+    bool enabled_;
   };
 }
 }

@@ -35,31 +35,43 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkInterface* network) : network_(network)
+DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkEditorController* controller) : controller_(controller), enabled_(true)
 {
-  ENSURE_NOT_NULL(network, "DPM needs network object");
+  ENSURE_NOT_NULL(controller, "DPM needs network controller object");
   addedSignal.connect(boost::bind(&DynamicPortManager::connectionAddedNeedToCloneAPort, this, _1));
   removeSignal.connect(boost::bind(&DynamicPortManager::connectionRemovedNeedToRemoveAPort, this, _1));
 }
 
 void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow::Networks::ConnectionDescription& cd)
 {
-  //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
-  //TODO: assumption: dynamic = input
-  auto moduleIn = network_->lookupModule(cd.in_.moduleId_);
-  Module::Builder builder;
-  builder.cloneInputPort(moduleIn, cd.in_.port_);
-  portAdded_(moduleIn->get_id(), cd.in_.port_);
+  if (enabled_)
+  {
+    //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
+    //TODO: assumption: dynamic = input
+    auto moduleIn = controller_->getNetwork()->lookupModule(cd.in_.moduleId_);
+    if (moduleIn->get_input_port(cd.in_.port_)->isDynamic())
+    {
+      Module::Builder builder;
+      builder.cloneInputPort(moduleIn, cd.in_.port_);
+      portAdded_(moduleIn->get_id(), cd.in_.port_);
+    }
+  }
 }
 
 void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Dataflow::Networks::ConnectionId& id)
 {
-  //std::cout << "need to remove a port: " << id.id_ << std::endl;
-  auto desc = id.describe();
-  auto moduleIn = network_->lookupModule(desc.in_.moduleId_);
-  Module::Builder builder;
-  builder.removeInputPort(moduleIn, desc.in_.port_);
-  portRemoved_(moduleIn->get_id(), desc.in_.port_);
+  if (enabled_)
+  {
+    //std::cout << "need to remove a port: " << id.id_ << std::endl;
+    auto desc = id.describe();
+    auto moduleIn = controller_->getNetwork()->lookupModule(desc.in_.moduleId_);
+    if (moduleIn->get_input_port(desc.in_.port_)->isDynamic())
+    {
+      Module::Builder builder;
+      builder.removeInputPort(moduleIn, desc.in_.port_);
+      portRemoved_(moduleIn->get_id(), desc.in_.port_);
+    }
+  }
 }
 
 boost::signals2::connection DynamicPortManager::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
@@ -70,4 +82,14 @@ boost::signals2::connection DynamicPortManager::connectPortAdded(const PortAdded
 boost::signals2::connection DynamicPortManager::connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber)
 {
   return portRemoved_.connect(subscriber);
+}
+
+void DynamicPortManager::enable()
+{
+  enabled_ = true;
+}
+
+void DynamicPortManager::disable()
+{
+  enabled_ = false;
 }

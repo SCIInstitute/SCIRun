@@ -48,6 +48,17 @@ namespace Engine {
   typedef boost::signals2::signal<void (Networks::ModuleId, size_t)> PortAddedSignalType;
   typedef boost::signals2::signal<void (Networks::ModuleId, size_t)> PortRemovedSignalType;
 
+  class DynamicPortManager;
+
+  struct SCISHARE DisableDynamicPortSwitch 
+  {
+    explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
+    ~DisableDynamicPortSwitch();
+  private:
+    bool first_;
+    boost::shared_ptr<DynamicPortManager> dpm_;
+  };
+
   // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
   //   This will be done in issue #231
@@ -96,6 +107,8 @@ namespace Engine {
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();
 
+    boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
+
     void setExecutorType(int type);
 
     //TODO: eek, getting bloated here. Figure out a better way to wire this one in.
@@ -120,7 +133,7 @@ namespace Engine {
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
 
-    boost::shared_ptr<class DynamicPortManager> dynamicPortManager_;
+    boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
 
     void configureLoggingLibrary();
   };

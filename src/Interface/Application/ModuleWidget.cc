@@ -41,6 +41,7 @@
 #include <Interface/Application/NoteEditor.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/Utility.h>
+#include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -120,14 +121,17 @@ namespace
 #endif
 }
 
-ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
+ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+  NetworkEditor* editor,
+  QWidget* parent /* = 0 */)
   : QFrame(parent),
   deletedFromGui_(true),
   colorLocked_(false),
   theModule_(theModule),
   moduleId_(theModule->get_id()),
   inputPortLayout_(0),
-  outputPortLayout_(0)
+  outputPortLayout_(0),
+  editor_(editor)
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -146,7 +150,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   progressBar_->setValue(0);
   
   addPortLayouts();
-  addPorts(*theModule);
+  addPorts(*theModule_);
+  optionsButton_->setVisible(theModule_->has_ui());
 
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
   int extraWidth = pixelWidth - moduleWidthThreshold;
@@ -225,28 +230,38 @@ void ModuleWidget::addPortLayouts()
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
+  addInputPorts(moduleInfoProvider);
+  addOutputPorts(moduleInfoProvider);
+}
+
+void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+{
   const ModuleId moduleId = moduleInfoProvider.get_id();
   for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
     auto type = port->get_typename();
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
-    hookUpSignals(w);
+    hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
   }
+}
+
+void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+{
+  const ModuleId moduleId = moduleInfoProvider.get_id();
   for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
   {
     OutputPortHandle port = moduleInfoProvider.get_output_port(i);
     auto type = port->get_typename();
     OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
-    hookUpSignals(w);
+    hookUpGeneralPortSignals(w);
     addPort(w);
   }
-  optionsButton_->setVisible(moduleInfoProvider.has_ui());
 }
 
-void ModuleWidget::hookUpSignals(PortWidget* port) const
+void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
 {
   connect(port, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
     this, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
@@ -302,6 +317,7 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
+  auto portSwitch = editor_->createDynamicPortDisabler();
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");

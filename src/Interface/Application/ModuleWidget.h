@@ -50,6 +50,7 @@ class PortWidget;
 class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
+class NetworkEditor;
 
 class ModuleWidget : public QFrame, //public NeedsScenePositionProvider, 
   public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
@@ -57,7 +58,9 @@ class ModuleWidget : public QFrame, //public NeedsScenePositionProvider,
 	Q_OBJECT
 	
 public:
-  ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent = 0);
+  ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+    NetworkEditor* editor, //yuck
+    QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();
@@ -126,9 +129,11 @@ private:
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 
   void addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
-  void hookUpSignals(PortWidget* port) const;
+  void hookUpGeneralPortSignals(PortWidget* port) const;
   std::string moduleId_;
   boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
   void makeOptionsDialog();
@@ -145,6 +150,7 @@ private:
   void addPortLayouts();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
+  NetworkEditor* editor_;
 };
 
 }
