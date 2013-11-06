@@ -54,11 +54,11 @@ class SCISHARE AddKnownsToLinearSystemAlgo : public AlgorithmBase
     static AlgorithmInputName RHS_Vector;
     static AlgorithmInputName X_Vector;
     static AlgorithmOutputName OutPutLHSMatrix;
-    static AlgorithmOutputName OutPutRHSMatrix;
+    static AlgorithmOutputName OutPutRHSVector;
 
   AddKnownsToLinearSystemAlgo();
   ~AddKnownsToLinearSystemAlgo();
-  bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseMatrixHandle& output_rhs) const;
+  bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
   
 }; // end namespace SCIRun

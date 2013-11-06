@@ -230,31 +230,27 @@ namespace Datatypes {
 #include <math.h>
 #include <iostream>
 
-template <typename SparseRowMatrixGeneric> inline bool ContainsProperMatrixElements (const SparseRowMatrixGeneric & matrix)
-  {
-    double tmp=0.0;
-    for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
+template <typename SparseRowMatrixGeneric> inline bool ContainsValidValues (const SparseRowMatrixGeneric &matrix)
+{
+ for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
      { 
        for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
        {
         it.value(); 
-        it.index();
-	
-	tmp=(*matrix).coeff(i, it.index());
-	
-	if( !std::isnormal(tmp) ) return false;
+        it.index();	
+	double tmp=(*matrix).coeff(i,it.index());
+	if ( !isfinite(tmp) || isnan(tmp) ) return false;
        }
-     }
-    
-    return true;
-  }
+     } 
+     return true;
+}
 
 
 template <typename SparseRowMatrixGeneric> inline bool isPositiveDefiniteMatrix (const SparseRowMatrixGeneric & matrix)
   {
      if ((*matrix).rows() != (*matrix).cols()) return false;   
          
-     if ( !ContainsProperMatrixElements(matrix) ) return false; 
+     if ( !ContainsValidValues(matrix) ) return false; 
 	 
      for (SCIRun::index_type i=0; i<(*matrix).rows();i++) //all diagonal elements positive?
         if ( (*matrix).coeff(i, i) <= 0 )  
@@ -290,7 +286,7 @@ template <typename SparseRowMatrixGeneric> inline bool isSymmetricMatrix (const 
    
      if ((*matrix).rows() != (*matrix).cols()) return false;
      
-     if ( !ContainsProperMatrixElements(matrix) ) return false;  
+     if ( !ContainsValidValues(matrix) ) return false; 
      
      for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
      { 

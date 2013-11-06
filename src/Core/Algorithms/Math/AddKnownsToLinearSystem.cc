@@ -57,8 +57,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
 
-bool AddKnownsToLinearSystemAlgo::run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseMatrixHandle&
-output_rhs) const
+bool AddKnownsToLinearSystemAlgo::run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, 
+Datatypes::DenseColumnMatrixHandle& output_rhs) const
 {
     SparseRowMatrixFromMap::Values additionalData;
 
@@ -68,19 +68,18 @@ output_rhs) const
     } 
        
     unsigned int m=static_cast<unsigned int>(stiff->ncols()),n=static_cast<unsigned int>(stiff->nrows());
-    
+    std::cout << ": " << rhs->ncols() << " " <<  (*rhs).coeff(1) << std::endl;
     if (!rhs) 
       {
         THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate new b matrix");  
       } else
-       if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1))) || !(((rhs->ncols() == 1) && (rhs->nrows() == m))))
+       if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))))
        {
-	 THROW_ALGORITHM_PROCESSING_ERROR("The dimensions of matrix b do not match the dimensions of matrix A"); 
+	 THROW_ALGORITHM_PROCESSING_ERROR("The dimensions of matrix rhs do not match the dimensions of matrix A"); 
        }
     
     auto rhsCol = matrix_cast::as_column(rhs);
     if (!rhsCol) rhsCol = matrix_convert::to_column(rhs); 
-    
     
     if (!x)
      {
@@ -99,10 +98,12 @@ output_rhs) const
      index_type knowns = 0;
      index_type unknowns = 0;
      
+     
      for (index_type p=0; p<m;p++)
      {
-      if (std::isnormal((*rhsCol).coeff(p)))
+      if (std::isnormal((*x).coeff(p)))
       {  
+        std::cout << "1-2: " << p << std::endl;
         knowns++;
 	for (index_type i=0; i<m; i++)
 	{
@@ -110,11 +111,13 @@ output_rhs) const
 	  {
 	   (*rhsCol).coeffRef(i) -= (*stiff).coeff(i,p) * (*xCol).coeff(p); 
 	    additionalData[i][p]=0.0;
+	    std::cout << "1: " << i << " " << p << std::endl;
 	  }
 	  else
 	  {          
 	   (*rhsCol)[p] = (*xCol).coeff(p);
 	    additionalData[p][p]=1.0; 
+	    std::cout << "2: " << p << " " << p << std::endl;
 	  }	    
 	}	           
       } else
@@ -122,7 +125,7 @@ output_rhs) const
         unknowns++;
       }
       cnt++;
-      if (cnt == 1000)
+      if (cnt == 10)
       {
         cnt = 0;
 	update_progress((double)p/m);
@@ -131,8 +134,9 @@ output_rhs) const
 
      output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
 
-     output_rhs = matrix_cast::as_dense(rhsCol);
+     output_rhs = rhsCol;
      output_stiff->makeCompressed();
+     
      
  return true;
 }
@@ -141,13 +145,13 @@ AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::RHS_Vector("RHS_Vector");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::X_Vector("X_Vector");
 AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutLHSMatrix("OutPutLHSMatrix");
-AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSMatrix("OutPutRHSMatrix");
+AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector");
 
 AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & input) const
 { 
   
   auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
-  auto input_rhs = input.get<DenseMatrix>(RHS_Vector);
+  auto input_rhs = input.get<DenseColumnMatrix>(RHS_Vector);
   auto input_x = input.get<DenseMatrix>(X_Vector);
 
   if (input_lhs->nrows() != input_lhs->ncols()) 
@@ -156,13 +160,13 @@ AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & 
   }
 
   SparseRowMatrixHandle output_lhs;
-  DenseMatrixHandle output_rhs;
+  DenseColumnMatrixHandle output_rhs;
   if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
   output[OutPutLHSMatrix] = output_lhs;
-  output[OutPutRHSMatrix] = output_rhs;
+  output[OutPutRHSVector] = output_rhs;
 
   return output;
 }
