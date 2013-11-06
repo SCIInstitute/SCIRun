@@ -86,10 +86,10 @@ boost::signals2::connection DynamicPortManager::connectPortRemoved(const PortRem
 
 void DynamicPortManager::enable()
 {
-  enabled_ = true;
+  //enabled_ = true;
 }
 
 void DynamicPortManager::disable()
 {
-  enabled_ = false;
+  //enabled_ = false;
 }
