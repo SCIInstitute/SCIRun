@@ -57,8 +57,8 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
 
-bool AddKnownsToLinearSystemAlgo::run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, 
-Datatypes::DenseColumnMatrixHandle& output_rhs) const
+bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMatrixHandle rhs, DenseMatrixHandle x, SparseRowMatrixHandle& output_stiff, 
+DenseColumnMatrixHandle& output_rhs) const
 {
     SparseRowMatrixFromMap::Values additionalData;
 
@@ -101,7 +101,7 @@ Datatypes::DenseColumnMatrixHandle& output_rhs) const
      
      for (index_type p=0; p<m;p++)
      {
-      if (std::isnormal((*x).coeff(p)))
+      if (IsFinite((*x).coeff(p)))
       {  
         std::cout << "1-2: " << p << std::endl;
         knowns++;

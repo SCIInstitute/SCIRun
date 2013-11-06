@@ -92,7 +92,7 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
 
 bool 
 ApplyMappingMatrixAlgo::
-run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping, FieldHandle& output) const
+run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& output) const
 {
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("ApplyMappingMatrix");

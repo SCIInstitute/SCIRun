@@ -39,7 +39,7 @@
 //! Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 //! for Windows support
-#include <Core/Algorithms/Legacy/FiniteElements/share.h>
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 	namespace Core {

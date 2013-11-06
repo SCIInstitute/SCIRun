@@ -227,7 +227,8 @@ namespace Datatypes {
     SparseRowMatrixGeneric<T>::SparseRowMatrixGenericMaker);
 
 }}}
-#include <math.h>
+
+#include <Core/Math/MiscMath.h>
 #include <iostream>
 
 template <typename SparseRowMatrixGeneric> inline bool ContainsValidValues (const SparseRowMatrixGeneric &matrix)
@@ -239,7 +240,7 @@ template <typename SparseRowMatrixGeneric> inline bool ContainsValidValues (cons
         it.value(); 
         it.index();	
 	double tmp=(*matrix).coeff(i,it.index());
-	if ( !isfinite(tmp) || isnan(tmp) ) return false;
+	if ( !IsFinite(tmp) || IsNan(tmp) ) return false;
        }
      } 
      return true;
