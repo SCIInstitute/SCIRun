@@ -44,6 +44,7 @@ namespace Render {
     ViewScene();
     virtual void execute();
     virtual void setStateDefaults();
+    virtual bool hasDynamicPorts() const { return true; }
 
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
 

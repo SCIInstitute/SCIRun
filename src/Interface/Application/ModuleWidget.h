@@ -89,6 +89,8 @@ public:
 
   void printPortPositions() const;
 
+  bool hasDynamicPorts() const;
+
   static const int PORT_SPACING = 3;
 
 public Q_SLOTS:
@@ -138,6 +140,7 @@ private:
   boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
   void makeOptionsDialog();
   void setupModuleActions();
+  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
 
   class ModuleLogWindow* logWindow_;
   class NoteEditor* noteEditor_;

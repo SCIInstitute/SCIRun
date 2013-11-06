@@ -37,15 +37,18 @@ namespace Modules {
 namespace Math {
 
   class SCISHARE AppendMatrixModule : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<MatrixPortTag, MatrixPortTag>,
+    public Has3InputPorts<MatrixPortTag, MatrixPortTag, DynamicPortTag<MatrixPortTag>>,
     public Has1OutputPort<MatrixPortTag>
   {
   public:
     AppendMatrixModule();
     virtual void execute();
     virtual void setStateDefaults();
+    virtual bool hasDynamicPorts() const { return true; }
+
     INPUT_PORT(0, FirstMatrix, DenseMatrix);
     INPUT_PORT(1, SecondMatrix, DenseMatrix);
+    INPUT_PORT_DYNAMIC(2, NextMatrix, DenseMatrix);
     OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
   };
 }}}

@@ -248,6 +248,18 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   }
 }
 
+void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+{
+  const ModuleId moduleId = moduleInfoProvider.get_id();
+  std::cout << "Module input ports: " << moduleId << std::endl;
+  for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
+  {
+    InputPortHandle port = moduleInfoProvider.get_input_port(i);
+    auto type = port->get_typename();
+    std::cout << "\t" << i << " : " << port->get_portname() << " : " << type << std::endl;
+  }
+}
+
 void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
@@ -302,7 +314,10 @@ void ModuleWidget::addPort(InputPortWidget* port)
 void ModuleWidget::drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id)
 {
   if (id.id_ == moduleId_)
+  {
     std::cout << "drawPorts :: " << moduleId_ << std::endl;
+    printInputPorts(*theModule_);
+  }
 }
 
 void ModuleWidget::printPortPositions() const
@@ -317,7 +332,7 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  auto portSwitch = editor_->createDynamicPortDisabler();
+  //auto portSwitch = editor_->createDynamicPortDisabler();
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");
@@ -451,4 +466,9 @@ void ModuleWidget::addDynamicInputPortWidget(size_t index)
 void ModuleWidget::removeDynamicInputPortWidget(size_t index)
 {
   std::cout << "removing dynamic port at index " << index << std::endl;
+}
+
+bool ModuleWidget::hasDynamicPorts() const
+{
+  return theModule_->hasDynamicPorts();
 }

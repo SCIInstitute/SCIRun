@@ -111,6 +111,11 @@ namespace Networks {
       return true; //TODO
     }
 
+    virtual bool hasDynamicPorts() const 
+    {
+      return false; //TODO: need to examine HasPorts base classes
+    }
+
     bool oport_connected(size_t portIndex) const;
 
     template <class Type, size_t N>

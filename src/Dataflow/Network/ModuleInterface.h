@@ -54,6 +54,7 @@ namespace Networks {
     virtual ModuleId get_id() const = 0;
     virtual bool has_ui() const = 0;
     virtual const ModuleLookupInfo& get_info() const = 0;
+    virtual bool hasDynamicPorts() const = 0;
   };
 
   class SCISHARE ModuleDisplayInterface 

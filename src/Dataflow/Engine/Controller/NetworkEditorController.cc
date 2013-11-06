@@ -102,7 +102,7 @@ ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleNam
 
 void NetworkEditorController::removeModule(const ModuleId& id)
 {
-  auto disableDynamicPortManager(createDynamicPortSwitch());
+  //auto disableDynamicPortManager(createDynamicPortSwitch());
   theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.

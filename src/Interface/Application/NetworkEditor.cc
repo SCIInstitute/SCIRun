@@ -197,7 +197,11 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   connect(module, SIGNAL(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)), 
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle&, const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
   
-  connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&)));
+  if (module->hasDynamicPorts())
+  {
+    connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&)));
+    connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&)));
+  }
   
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
   

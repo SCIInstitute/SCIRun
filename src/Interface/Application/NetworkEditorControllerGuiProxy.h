@@ -67,6 +67,7 @@ namespace Gui {
     void connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
     void connectionRemoved(const SCIRun::Dataflow::Networks::ConnectionId& id);
     void portAdded(const SCIRun::Dataflow::Networks::ModuleId& id);
+    void portRemoved(const SCIRun::Dataflow::Networks::ModuleId& id);
     void executionStarted();
     void executionFinished(int returnCode);
   private:
