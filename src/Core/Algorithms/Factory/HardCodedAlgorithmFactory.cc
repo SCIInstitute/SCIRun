@@ -51,6 +51,8 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms::Math;
 
+//TODO: add unit test 
+
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
 AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
