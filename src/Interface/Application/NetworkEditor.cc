@@ -119,7 +119,7 @@ boost::shared_ptr<NetworkEditorControllerGuiProxy> NetworkEditor::getNetworkEdit
 
 void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::Networks::ModuleHandle module)
 {
-  ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module, this);
+  ModuleWidget* moduleWidget = new ModuleWidget(QString::fromStdString(name), module);
   moduleEventProxy_->trackModule(module);
   
   //TODO: this depends on the ModuleWidget's dialog being created, since that will change some module state.

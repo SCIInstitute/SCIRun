@@ -51,22 +51,18 @@ class PortWidget;
 class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
-class NetworkEditor;
 
-class ModuleWidget : public QFrame, //public NeedsScenePositionProvider, 
+class ModuleWidget : public QFrame, 
   public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
 {
 	Q_OBJECT
 	
 public:
   ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
-    NetworkEditor* editor, //yuck
     QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();
-  //QPointF inputPortPosition() const;
-  //QPointF outputPortPosition() const;
 
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
@@ -158,7 +154,6 @@ private:
   void addOutputPortsToLayout();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
-  NetworkEditor* editor_;
 };
 
 }

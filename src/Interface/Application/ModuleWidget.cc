@@ -122,7 +122,6 @@ namespace
 }
 
 ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
-  NetworkEditor* editor,
   QWidget* parent /* = 0 */)
   : QFrame(parent),
   deletedFromGui_(true),
@@ -130,8 +129,7 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   theModule_(theModule),
   moduleId_(theModule->get_id()),
   inputPortLayout_(0),
-  outputPortLayout_(0),
-  editor_(editor)
+  outputPortLayout_(0)
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -364,11 +362,8 @@ void ModuleWidget::removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&
 {
   if (id.id_ == moduleId_)
   {
-    //InputPortHandle port = theModule_->get_input_port(index);
-    //auto type = port->get_typename();
-
     auto portToRemove = index;
-    std::cout << "~~~removeDynamicPort " << portToRemove << std::endl;//" : " << port->get_portname() << " : " << type << std::endl;
+    std::cout << "~~~removeDynamicPort " << portToRemove << std::endl;
 
     if (portToRemove < inputPorts_.size())
     {
@@ -399,7 +394,6 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  //auto portSwitch = editor_->createDynamicPortDisabler();
   Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");
