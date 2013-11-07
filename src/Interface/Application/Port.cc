@@ -122,7 +122,7 @@ namespace SCIRun {
     };
   }}
 
-std::map<PortWidget::Key, PortWidget*> PortWidget::portWidgetMap_;
+PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
 
 PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId, size_t index,
   bool isInput, bool isDynamic,
@@ -140,12 +140,12 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 
   setMenu(menu_);
 
-  portWidgetMap_[boost::make_tuple(moduleId_.id_, index_, isInput_)] = this;
+  portWidgetMap_[moduleId_.id_][isInput_][index_] = this;
 }
 
 PortWidget::~PortWidget()
 {
-  portWidgetMap_[boost::make_tuple(moduleId_.id_, index_, isInput_)] = 0;
+  portWidgetMap_[moduleId_.id_][isInput_][index_] = 0;
 }
 
 QSize PortWidget::sizeHint() const
@@ -221,6 +221,12 @@ size_t PortWidget::getIndex() const
   return index_;
 }
 
+void PortWidget::setIndex(size_t index)
+{
+  index_ = index;
+  portWidgetMap_[moduleId_.id_][isInput_][index_] = this;
+}
+
 namespace
 {
   const int PORT_CONNECTION_THRESHOLD = 12;
@@ -286,13 +292,21 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 {
   if (matches(cd))
   {
-    auto out = portWidgetMap_[boost::make_tuple(cd.out_.moduleId_, cd.out_.port_, false)];
-    auto in = portWidgetMap_[boost::make_tuple(cd.in_.moduleId_, cd.in_.port_, true)];
+    auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.port_];
+    auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.port_];
     auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
+    //connect(this, SIGNAL(portMoved()), c, SLOT(trackNodes()));
     setConnected(true);
   }
+}
+
+void PortWidget::moveEvent( QMoveEvent * event )
+{
+  std::cout << "PortWidget::moveEvent" << std::endl;
+  QPushButton::moveEvent(event);
+  Q_EMIT portMoved();
 }
 
 bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const

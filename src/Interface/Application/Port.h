@@ -73,6 +73,7 @@ public:
   virtual std::string get_portname() const;
   virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
+  void setIndex(size_t i);
 
   void toggleLight();
   void turn_on_light();
@@ -98,6 +99,9 @@ public:
 
   static const int WIDTH = 11;
 
+protected:
+  virtual void moveEvent(QMoveEvent * event);
+
 public Q_SLOTS:
   void MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription& cd);
   void cancelConnectionsInProgress();
@@ -107,6 +111,7 @@ Q_SIGNALS:
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
   void connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId& id);
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+  void portMoved();
 protected:
   void mousePressEvent(QMouseEvent* event);
   void mouseReleaseEvent(QMouseEvent* event);
@@ -120,7 +125,7 @@ private:
 
   const QString name_;
   const SCIRun::Dataflow::Networks::ModuleId moduleId_; 
-  const size_t index_;
+  size_t index_;
   const QColor color_;
   const std::string typename_;
   const bool isInput_;
@@ -136,8 +141,8 @@ private:
   PortActionsMenu* menu_;
 
   //TODO
-  typedef boost::tuple<std::string, size_t, bool> Key;
-  static std::map<Key, PortWidget*> portWidgetMap_;
+  typedef std::map<std::string, std::map<bool, std::map<size_t, PortWidget*>>> PortWidgetMap;
+  static PortWidgetMap portWidgetMap_;
 };
 
 class InputPortWidget : public PortWidget 

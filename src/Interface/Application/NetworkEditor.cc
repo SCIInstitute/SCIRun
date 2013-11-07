@@ -203,6 +203,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
     connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
     connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
+    connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
   }
   
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));

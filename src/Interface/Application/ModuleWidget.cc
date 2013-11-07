@@ -257,7 +257,7 @@ void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoP
   {
     InputPortHandle port = moduleInfoProvider.get_input_port(i);
     auto type = port->get_typename();
-    std::cout << "\t" << i << " : " << port->get_portname() << " : " << type << std::endl;
+    std::cout << "\t" << i << " : " << port->get_portname() << " : " << type << " dyn = " << port->isDynamic() << std::endl;
   }
 }
 
@@ -313,6 +313,16 @@ void ModuleWidget::addInputPortsToLayout()
     inputPortLayout_->addWidget(port);
 }
 
+void ModuleWidget::reindexPorts()
+{
+  for (size_t i = 0; i < inputPorts_.size(); ++i)
+  {
+    auto port = inputPorts_[i];
+    port->setIndex(i);
+    port->trackConnections();
+  }
+}
+
 void ModuleWidget::addPort(OutputPortWidget* port)
 {
   outputPorts_.push_back(port);
@@ -345,7 +355,8 @@ void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     addPort(w);
     inputPortLayout_->addWidget(w);
-
+    reindexPorts();
+    Q_EMIT dynamicPortChanged();
   }
 }
 
@@ -356,15 +367,21 @@ void ModuleWidget::removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&
     //InputPortHandle port = theModule_->get_input_port(index);
     //auto type = port->get_typename();
 
-    auto portToRemove = index + 1;
+    auto portToRemove = index;
     std::cout << "~~~removeDynamicPort " << portToRemove << std::endl;//" : " << port->get_portname() << " : " << type << std::endl;
 
     if (portToRemove < inputPorts_.size())
     {
       auto widget = inputPorts_[portToRemove];
-      auto it = inputPorts_.erase(inputPorts_.begin() + portToRemove);
+      inputPorts_.erase(inputPorts_.begin() + portToRemove);
       inputPortLayout_->removeWidget(widget);
       delete widget;
+
+      printInputPorts(*theModule_);
+
+      reindexPorts();
+
+      Q_EMIT dynamicPortChanged();
     }
 
   }

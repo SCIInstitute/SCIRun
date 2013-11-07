@@ -121,6 +121,7 @@ Q_SIGNALS:
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
+  void dynamicPortChanged();
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
 private:
@@ -142,6 +143,7 @@ private:
   void makeOptionsDialog();
   void setupModuleActions();
   void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void reindexPorts();
 
   class ModuleLogWindow* logWindow_;
   class NoteEditor* noteEditor_;
