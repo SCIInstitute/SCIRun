@@ -188,19 +188,18 @@ AlgorithmBase& Module::algo()
 
 size_t Module::add_input_port(InputPortHandle h)
 {
-  return iports_.add2(h);
-  //return iports_.size() - 1;
+  return iports_.add(h);
 }
 
 size_t Module::add_output_port(OutputPortHandle h)
 {
-  return oports_.add2(h);
+  return oports_.add(h);
 }
 
 SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
 {
   //TODO test...
-  if (idx >= iports_.size())
+  if (!iports_.containsKey(idx))
   {
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
   }
@@ -216,7 +215,7 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t id
 std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_input_handles(size_t idx)
 {
   //TODO test...
-  if (idx >= iports_.size())
+  if (!iports_.containsKey(idx))
   {
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
   }
@@ -233,7 +232,7 @@ std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_i
 void Module::send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data)
 {
   //TODO test...
-  if (idx >= oports_.size())
+  if (!oports_.containsKey(idx))
   {
     THROW_OUT_OF_RANGE("port does not exist at index " + boost::lexical_cast<std::string>(idx));
   }

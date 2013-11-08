@@ -179,10 +179,10 @@
 			<count>1</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateMatrix:2</moduleId1_>
+				<moduleId1_>CreateMatrix:6</moduleId1_>
 				<port1_>0</port1_>
 				<moduleId2_>AppendMatrix:1</moduleId2_>
-				<port2_>3</port2_>
+				<port2_>2</port2_>
 			</item>
 		</connections>
 	</networkInfo>
@@ -192,8 +192,8 @@
 		<item class_id="15" tracking_level="0" version="0">
 			<first>AppendMatrix:1</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>-1120</first>
-				<second>-344</second>
+				<first>-1201</first>
+				<second>-347</second>
 			</second>
 		</item>
 		<item>

@@ -363,7 +363,7 @@ void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_.addPort(w);
     inputPortLayout_->addWidget(w);
-    ports_.reindexInputs();
+    //ports_.reindexInputs();
     Q_EMIT dynamicPortChanged();
   }
 }
@@ -397,7 +397,7 @@ bool PortWidgetManager::removeDynamicPort(size_t index, QHBoxLayout* layout)
     layout->removeWidget(widget);
     delete widget;
 
-    reindexInputs();
+    //reindexInputs();
 
 
     std::cout << "AFTER removeDynamicPort: " << std::endl;

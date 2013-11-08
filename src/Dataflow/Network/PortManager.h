@@ -55,9 +55,10 @@ private:
 public:
   PortManager();
   size_t size() const;
-  size_t add2(const T& item);
+  size_t add(const T& item);
   void remove(size_t item);
   T operator[](size_t) const;
+  bool containsKey(size_t id) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
   //void apply(boost::function<void(T&)> func);
@@ -68,7 +69,8 @@ struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
 
 template<class T>
 PortManager<T>::PortManager() :
-  module_(0)
+  module_(0),
+  counter_(0)
 {
 }
 
@@ -81,9 +83,9 @@ PortManager<T>::size() const
 
 template<class T>
 size_t
-PortManager<T>::add2(const T &item)
+PortManager<T>::add(const T &item)
 { 
-  size_t index = size();
+  size_t index = counter_++;
   ports_[index] = item;
   return index;
 }
@@ -121,6 +123,12 @@ PortManager<T>::operator[](size_t item) const
 //  BOOST_FOREACH(T& port, ports_)
 //    func(port);
 //}
+
+template <class T>
+bool PortManager<T>::containsKey(size_t id)
+{
+  return ports_.find(id) != ports_.end();
+}
 
 template<class T>
 void 
