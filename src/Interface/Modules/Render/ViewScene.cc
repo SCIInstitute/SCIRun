@@ -36,55 +36,6 @@ using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-// Simple function to handle object transformations so that the GPU does not
-// need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface, 
-                                  std::list<::spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
-{
-  // Cache object to world transform.
-  ::spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(
-      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
-
-  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
-
-  // Loop through the unsatisfied uniforms and see if we can provide any.
-  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
-  {
-    if (it->uniformName == objectTrafoName)
-    {
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                                     it->shaderLocation, objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToViewName)
-    {
-      // Grab the inverse view transform.
-      ::spire::M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<::spire::M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                              it->shaderLocation, inverseView * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToCamProjName)
-    {
-      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
-          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseViewProjection * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else
-    {
-      ++it;
-    }
-  }
-}
-
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -141,14 +92,6 @@ void ViewSceneDialog::moduleExecuted()
     std::shared_ptr<SRInterface> spire = mSpire.lock();
     if (spire == nullptr)
       return;
-
-#ifndef SPIRE_USE_STD_THREADS
-    // In single threaded environments we always need to ensure our context
-    // is current before attempting to make calls into spire. These function
-    // invokations may result in calls to OpenGL -- but ONLY in singlethreaded
-    // environments where we do not need to queue up our requests.
-    mGLWidget->makeCurrent();
-#endif
 
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
