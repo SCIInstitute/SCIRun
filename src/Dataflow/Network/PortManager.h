@@ -56,6 +56,7 @@ public:
   void remove(size_t item);
   T operator[](size_t) const;
   bool hasPort(const PortId& id) const;
+  bool hasPortAtIndex(size_t i) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
 };
 
@@ -78,9 +79,9 @@ template<class T>
 size_t
 PortManager<T>::add(const T &item)
 { 
-  ports_[item->id()] = item;
+  ports_.insert(std::make_pair(item->id(), item));
   auto index = size() - 1;
-  portIndexes_.insert(std::make_pair(item, index))
+  //portIndexes_.insert(std::make_pair(item, index))
   return index;
 }
 
@@ -88,26 +89,27 @@ template<class T>
 void
 PortManager<T>::remove(size_t item)
 {
-  auto it = portIndexes_.right.find(item);
-  if (it == portIndexes_.end())
-  {
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
-  }
-  auto port = it->second;
-  ports_.erase(port->id());
-  portIndexes_.erase(it);
+  //auto it = portIndexes_.right.find(item);
+  //if (it == portIndexes_.end())
+  //{
+  //  BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
+  //}
+  //auto port = it->second;
+  //ports_.erase(port->id());
+  //portIndexes_.erase(it);
 }
 
 template<class T>
 T
 PortManager<T>::operator[](size_t item) const
 {
-  auto it = portIndexes_.find(item);
-  if (it == ports_.end())
-  {
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
-  }
-  return it->second;
+  //auto it = portIndexes_.find(item);
+  //if (it == ports_.end())
+  //{
+  //  BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to access a port that does not exist"));
+  //}
+  //return it->second;
+  return T();
 }
 
 template <class T>

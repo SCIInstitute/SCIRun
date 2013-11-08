@@ -48,8 +48,10 @@ namespace Networks {
     virtual ~ModuleInfoProvider() {}
     virtual OutputPortHandle get_output_port(size_t idx) const = 0;
     virtual bool hasOutputPort(const PortId& id) const = 0;
+    virtual OutputPortHandle get_output_port(const PortId& id) const = 0;
     virtual InputPortHandle get_input_port(size_t idx) const = 0;
     virtual bool hasInputPort(const PortId& id) const = 0;
+    virtual InputPortHandle get_input_port(const PortId& id) const = 0;
     virtual size_t num_input_ports() const = 0;
     virtual size_t num_output_ports() const = 0;
     virtual std::string get_module_name() const = 0;

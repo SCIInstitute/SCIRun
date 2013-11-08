@@ -238,7 +238,7 @@ std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_i
 void Module::send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data)
 {
   //TODO test...
-  if (!oports_.containsKey(idx))
+  if (!oports_.hasPortAtIndex(idx))
   {
     THROW_OUT_OF_RANGE("port does not exist at index " + boost::lexical_cast<std::string>(idx));
   }
