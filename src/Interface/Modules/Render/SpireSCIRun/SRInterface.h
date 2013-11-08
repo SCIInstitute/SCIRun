@@ -33,6 +33,10 @@
 #define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
 
 #include <cstdint>
+
+#include <Core/Datatypes/Geometry.h>
+#include <boost/shared_ptr.hpp>
+
 #include "../namespaces.h"
 #include "spire/Interface.h"
 #include "spire/src/LambdaInterface.h"
@@ -50,6 +54,7 @@ class SciBall;
 ///       There will be a lot of functionality behind it.
 class SRInterface : public spire::Interface
 {
+  typedef spire::Interface super;
 public:
   SRInterface(std::shared_ptr<spire::Context> context,
               const std::vector<std::string>& shaderDirs,
@@ -91,6 +96,11 @@ public:
   void readAsset(const std::string& filename,
                  std::vector<uint8_t> vbo, std::vector<uint8_t> ibo);
 
+  /// Remove all SCIRun 5 objects.
+  void removeAllGeomObjects();
+
+  /// Handles a new geometry object.
+  void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
 
 private:
 
@@ -114,6 +124,8 @@ private:
 
   std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
   std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
+
+  std::vector<std::string>  mSRObjects;     ///< All SCIRun objects.
 
 };
 

@@ -351,7 +351,7 @@ ELSE()
 ENDIF()
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "v0.6.0")
+  GIT_TAG "dev")
 
 CPM_Finish()
 

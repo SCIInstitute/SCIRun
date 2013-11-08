@@ -280,3 +280,4 @@ void ViewSceneDialog::addToolBar()
   menu->setEnabled(false);
   glLayout->addWidget(tools);
 }
+

@@ -37,10 +37,63 @@
 #include "spire/src/Hub.h"
 #include "spire/src/InterfaceImplementation.h"
 
+#include "SRCommonAttributes.h"
+#include "SRCommonUniforms.h"
+
 using namespace std::placeholders;
 
 namespace SCIRun {
 namespace Gui {
+
+
+// Simple function to handle object transformations so that the GPU does not
+// need to do the same calculation for each vertex.
+static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface, 
+                                  std::list<::spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+{
+  // Cache object to world transform.
+  ::spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(
+      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
+
+  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  {
+    if (it->uniformName == objectTrafoName)
+    {
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+                                                     it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToViewName)
+    {
+      // Grab the inverse view transform.
+      ::spire::M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<::spire::M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+                                              it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToCamProjName)
+    {
+      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
+          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
 
 //------------------------------------------------------------------------------
 SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
@@ -171,6 +224,137 @@ void SRInterface::buildAndApplyCameraTransform()
 
   mCamera->setViewTransform(finalTrafo);
 }
+
+
+
+//------------------------------------------------------------------------------
+void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> obj)
+{
+  // Ensure our rendering context is current on our thread.
+  super::makeCurrent();
+
+  std::string objectName = obj->objectName;
+
+  // Check to see if the object already exists in our list. If so, then
+  // remove the object. We will re-add it.
+  auto foundObject = std::find(mSRObjects.begin(), mSRObjects.end(), objectName);
+  if (foundObject != mSRObjects.end())
+  {
+    // Remove the object from spire.
+    super::removeObject(objectName);
+    mSRObjects.erase(foundObject);
+  }
+
+  // Add the object. Slightly redundant given we might have removed it before,
+  // but it keeps a logical ordering of the objects.
+  mSRObjects.push_back(objectName);
+
+  // Now we re-add the object to spire.
+  addObject(obj->objectName);
+
+  // Add vertex buffer objects.
+  for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+    addVBO(vbo.name, vbo.data, vbo.attributeNames);
+  }
+
+  // Add index buffer objects.
+  for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+    ::spire::Interface::IBO_TYPE type;
+    switch (ibo.indexSize)
+    {
+      case 1: // 8-bit
+        type = ::spire::Interface::IBO_8BIT;
+        break;
+
+      case 2: // 16-bit
+        type = ::spire::Interface::IBO_16BIT;
+        break;
+
+      case 4: // 32-bit
+        type = ::spire::Interface::IBO_32BIT;
+        break;
+
+      default:
+        type = ::spire::Interface::IBO_32BIT;
+        throw std::invalid_argument("Unable to determine index buffer depth.");
+        break;
+    }
+    addIBO(ibo.name, ibo.data, type);
+  }
+
+  // Add passes
+  for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
+    addPassToObject(obj->objectName, pass.programName,
+                           pass.vboName, pass.iboName, pass.type,
+                           pass.passName, SPIRE_DEFAULT_PASS);
+
+    // Add uniforms associated with the pass
+    for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
+    {
+      std::string uniformName = std::get<0>(*it);
+      std::shared_ptr<::spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+
+      // Be sure to always include the pass name as we are updating a
+      // subpass of SPIRE_DEFAULT_PASS.
+      addObjectPassUniformConcrete(obj->objectName, uniformName, 
+                                          uniform, pass.passName);
+    }
+
+    // Add gpu state if it has been set.
+    if (pass.hasGPUState == true)
+      // Be sure to always include the pass name as we are updating a
+      // subpass of SPIRE_DEFAULT_PASS.
+      addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+
+    // Add lambda object uniforms to the pass.
+    addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
+  }
+
+  // Add default identity transform to the object globally (instead of
+  // per-pass).
+  spire::M44 xform;
+  xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
+  addObjectGlobalMetadata(
+      obj->objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+
+  // This must come *after* adding the passes.
+
+  // Now that we have created all of the appropriate passes, get rid of the
+  // VBOs and IBOs.
+  for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
+    removeVBO(vbo.name);
+  }
+
+  for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
+  {
+    const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
+    removeIBO(ibo.name);
+  }
+
+}
+
+
+//------------------------------------------------------------------------------
+void SRInterface::removeAllGeomObjects()
+{
+  super::makeCurrent();
+
+  for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+  {
+    removeObject(*it);
+  }
+  mSRObjects.clear();
+}
+
+
 
 } // namespace Gui
 } // namespace SCIRun 
