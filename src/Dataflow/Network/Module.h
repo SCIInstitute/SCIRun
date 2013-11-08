@@ -73,8 +73,10 @@ namespace Networks {
     size_t num_input_ports() const;
     size_t num_output_ports() const;
 
-    InputPortHandle get_input_port(const std::string &name) const;
-    OutputPortHandle get_output_port(const std::string &name) const;
+    bool hasInputPort(const PortId& id) const;
+    bool hasOutputPort(const PortId& id) const;
+    InputPortHandle get_input_port(const PortId& id) const;
+    OutputPortHandle get_output_port(const PortId& id) const;
     OutputPortHandle get_output_port(size_t idx) const;
     InputPortHandle get_input_port(size_t idx) const;
 
@@ -485,7 +487,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, false)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(port0Name), #type, false)); \
       return ports;\
     }\
   };\
@@ -496,7 +498,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, false)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(port0Name), #type, false)); \
       return ports;\
     }\
   };\
@@ -507,7 +509,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type, true)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(port0Name), #type, true)); \
       return ports;\
     }\
   }\

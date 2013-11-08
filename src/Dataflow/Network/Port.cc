@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
+  : module_(module), id_(params.port_name), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
   if (typeName_.empty() || portName_.empty() || colorName_.empty())
@@ -76,10 +76,6 @@ const Connection* Port::connection(size_t i) const
 void Port::setIndex(size_t index)
 {
   index_ = index;
-  BOOST_FOREACH(Connection* c, connections_)
-  {
-    c->updatePortIndex(index);
-  }
 }
 
 size_t Port::nconnections() const

@@ -65,9 +65,9 @@ namespace Networks {
     void serialize(Archive& ar, const unsigned int version)
     {
       ar & boost::serialization::make_nvp("moduleId1_", out_.moduleId_.id_);
-      ar & boost::serialization::make_nvp("port1_", out_.port_);
+      ar & boost::serialization::make_nvp("port1_", out_.portId_.name);
       ar & boost::serialization::make_nvp("moduleId2_", in_.moduleId_.id_);
-      ar & boost::serialization::make_nvp("port2_", in_.port_);
+      ar & boost::serialization::make_nvp("port2_", in_.portId_.name);
     }
   public:
     ConnectionDescriptionXML();

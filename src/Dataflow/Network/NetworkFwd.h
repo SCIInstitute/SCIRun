@@ -43,6 +43,7 @@ class ModuleDisplayInterface;
 class ModuleStateInterface;
 class ModuleStateInterfaceFactory;
 class PortInterface;
+struct PortId;
 class PortDescriptionInterface;
 class Connection;
 class InputPortInterface;

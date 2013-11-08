@@ -34,6 +34,7 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -56,6 +57,7 @@ public:
   size_t nconnections() const;
   const Connection* connection(size_t) const;
 
+  virtual PortId id() const { return id_; }
   std::string get_typename() const { return typeName_; }
   std::string get_colorname() const { return colorName_; }
   std::string get_portname() const { return portName_; }
@@ -74,6 +76,7 @@ protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;
   size_t index_;
+  PortId id_;
 
   const std::string typeName_;
   const std::string portName_;

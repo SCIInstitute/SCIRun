@@ -32,6 +32,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -50,14 +51,14 @@ namespace Networks {
     virtual int errorCode() const = 0;
   };
 
-  typedef std::pair<ModuleHandle, size_t> ModulePortIndexPair;
-  struct ConnectionOutputPort : public ModulePortIndexPair 
+  typedef std::pair<ModuleHandle, PortId> ModulePortIdPair;
+  struct ConnectionOutputPort : public ModulePortIdPair 
   {
-    ConnectionOutputPort(ModuleHandle m, size_t p) : ModulePortIndexPair(m,p) {}
+    ConnectionOutputPort(ModuleHandle m, const PortId& p) : ModulePortIdPair(m,p) {}
   };
-  struct ConnectionInputPort : public ModulePortIndexPair 
+  struct ConnectionInputPort : public ModulePortIdPair 
   {
-    ConnectionInputPort(ModuleHandle m, size_t p) : ModulePortIndexPair(m,p) {}
+    ConnectionInputPort(ModuleHandle m,  const PortId& p) : ModulePortIdPair(m,p) {}
   };
 
   class SCISHARE NetworkInterface : public ExecutableLookup

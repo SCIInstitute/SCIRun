@@ -117,10 +117,6 @@ void Module::do_execute() throw()
   executeBegins_(id_);
   status("STARTING MODULE: " + id_.id_);
 
-  // Reset all of the ports.
-  oports_.resetAll();
-  iports_.resetAll();
-
   try 
   {
     execute();
@@ -196,10 +192,20 @@ size_t Module::add_output_port(OutputPortHandle h)
   return oports_.add(h);
 }
 
+bool Module::hasInputPort(const PortId& id) const 
+{
+  return iports_.hasPort(id);
+}
+
+bool Module::hasOutputPort(const PortId& id) const 
+{
+  return oports_.hasPort(id);
+}
+
 SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
 {
   //TODO test...
-  if (!iports_.containsKey(idx))
+  if (!iports_.hasPortAtIndex(idx))
   {
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
   }
@@ -215,7 +221,7 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t id
 std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_input_handles(size_t idx)
 {
   //TODO test...
-  if (!iports_.containsKey(idx))
+  if (!iports_.hasPortAtIndex(idx))
   {
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
   }

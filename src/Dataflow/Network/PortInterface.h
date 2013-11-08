@@ -44,6 +44,7 @@ namespace Networks {
   {
   public:
     virtual ~PortDescriptionInterface();
+    virtual PortId id() const = 0;
     virtual size_t nconnections() const = 0;
     virtual std::string get_typename() const = 0;
     virtual std::string get_portname() const = 0;
@@ -62,20 +63,6 @@ namespace Networks {
     virtual const Connection* connection(size_t) const = 0;
     virtual void setIndex(size_t index) = 0;
   };
-  
-  //TODO: needs work, keep around for a little while
-  //class SCISHARE GenericInputPortInterface : virtual public PortInterface
-  //{
-  //public:
-  //  virtual ~GenericInputPortInterface();
-  //  virtual std::vector<Core::Datatypes::DatatypeHandleOption> getData() const = 0;
-  //};
-  
-  //class SCISHARE DynamicInputPortInterface : public GenericInputPortInterface
-  //{
-  //public:
-  //virtual ~DynamicInputPortInterface();
-  //};
   
   class SCISHARE InputPortInterface : virtual public PortInterface
   {

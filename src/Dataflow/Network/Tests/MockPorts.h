@@ -48,6 +48,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_CONST_METHOD0(id, PortId());
         };
 
         typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
@@ -68,6 +69,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
           MOCK_CONST_METHOD0(clone, InputPortInterface*());
+          MOCK_CONST_METHOD0(id, PortId());
           MOCK_METHOD1(setIndex, void(size_t));
         };
 
@@ -87,6 +89,7 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_CONST_METHOD0(id, PortId());
           MOCK_METHOD1(setIndex, void(size_t));
         };
 

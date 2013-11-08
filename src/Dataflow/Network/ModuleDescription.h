@@ -41,11 +41,17 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  struct SCISHARE PortId
+  {
+    explicit PortId(const std::string& n = "<undefined>") : name(n) {}
+    std::string name;
+  };
+
   struct SCISHARE PortDescription
   {
-    PortDescription(const std::string& n, const std::string& d, bool dyn) : 
-  name(n), datatype(d), isDynamic(dyn) {}
-    std::string name;
+    PortDescription(const PortId& p, const std::string& d, bool dyn) : 
+      id(p), datatype(d), isDynamic(dyn) {}
+    PortId id;
     std::string datatype;
     bool isDynamic;
   };

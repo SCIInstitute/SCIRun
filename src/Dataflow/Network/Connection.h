@@ -41,7 +41,7 @@ namespace SCIRun {
       class SCISHARE Connection 
       {
       public:
-        Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id);
+        Connection(ModuleHandle omod, const PortId& oportid, ModuleHandle imod, const PortId& iportid, const ConnectionId& id);
         ~Connection();
 
         OutputPortHandle oport_;
@@ -51,8 +51,6 @@ namespace SCIRun {
 
         ConnectionId id_;
         bool disabled_;
-
-        void updatePortIndex(size_t index);
       };
 
 }}}
