@@ -65,6 +65,7 @@ public:
 
   virtual ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
+  virtual void setIndex(size_t index);
 
   //TODO:
   // light interface
@@ -95,7 +96,7 @@ public:
   virtual Core::Datatypes::DatatypeHandleOption getData() const;
   virtual bool isInput() const { return true; } //boo
   virtual bool isDynamic() const { return isDynamic_; }
-  virtual void setIndex(size_t index) { index_ = index; }
+  
   virtual InputPortInterface* clone() const;
 private:
   DatatypeSinkInterfaceHandle sink_;
@@ -111,7 +112,6 @@ public:
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
   virtual bool isInput() const { return false; } //boo
   virtual bool isDynamic() const { return false; } //TODO: design dynamic output ports
-  virtual void setIndex(size_t index) { index_ = index; }
 private:
   DatatypeSourceInterfaceHandle source_;
 };

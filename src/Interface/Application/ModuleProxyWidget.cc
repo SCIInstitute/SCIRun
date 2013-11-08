@@ -172,7 +172,7 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 void ModuleProxyWidget::createPortPositionProviders()
 {
   int firstPortXPos = -1;
-  Q_FOREACH(PortWidget* p, boost::join(module_->getInputPorts(), module_->getOutputPorts()))
+  Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
     if (firstPortXPos < 0)
       firstPortXPos = p->pos().x();

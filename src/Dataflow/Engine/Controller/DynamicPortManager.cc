@@ -62,7 +62,7 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
 {
   if (enabled_)
   {
-    //std::cout << "need to remove a port: " << id.id_ << std::endl;
+    std::cout << "need to remove a port: " << id.id_ << std::endl;
     auto desc = id.describe();
     auto moduleIn = controller_->getNetwork()->lookupModule(desc.in_.moduleId_);
     if (moduleIn->get_input_port(desc.in_.port_)->isDynamic())

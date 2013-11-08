@@ -51,6 +51,8 @@ namespace SCIRun {
 
         ConnectionId id_;
         bool disabled_;
+
+        void updatePortIndex(size_t index);
       };
 
 }}}

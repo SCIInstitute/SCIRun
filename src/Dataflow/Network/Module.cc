@@ -188,14 +188,13 @@ AlgorithmBase& Module::algo()
 
 size_t Module::add_input_port(InputPortHandle h)
 {
-  iports_.add(h);
-  return iports_.size() - 1;
+  return iports_.add2(h);
+  //return iports_.size() - 1;
 }
 
 size_t Module::add_output_port(OutputPortHandle h)
 {
-  oports_.add(h);
-  return oports_.size() - 1;
+  return oports_.add2(h);
 }
 
 SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)

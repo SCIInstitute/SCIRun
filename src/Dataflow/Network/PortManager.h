@@ -47,19 +47,20 @@ template<class T>
 class PortManager : boost::noncopyable
 {
 private:
-  std::deque<T> ports_;
+  std::map<size_t, T> ports_;
   ModuleInterface* module_;
+  size_t counter_;
   std::string lastportname_;
   
 public:
   PortManager();
   size_t size() const;
-  void add(const T& item);
+  size_t add2(const T& item);
   void remove(size_t item);
   T operator[](size_t) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   void set_lastportname(const std::string& name) { lastportname_ = name; }
-  void apply(boost::function<void(T&)> func);
+  //void apply(boost::function<void(T&)> func);
   void resetAll();
 };
 
@@ -79,39 +80,47 @@ PortManager<T>::size() const
 }
 
 template<class T>
-void
-PortManager<T>::add(const T &item)
+size_t
+PortManager<T>::add2(const T &item)
 { 
-  ports_.push_back(item);
+  size_t index = size();
+  ports_[index] = item;
+  return index;
 }
 
 template<class T>
 void
 PortManager<T>::remove(size_t item)
 {
-  if (ports_.size() <= item)
+  auto it = ports_.find(item);
+  if (it == ports_.end())
   {
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
   }
-  ports_.erase(ports_.begin() + item);
-  for (size_t i = 0; i < ports_.size(); ++i)
-    ports_[i]->setIndex(i);
+  ports_.erase(it);
+//  for (size_t i = 0; i < ports_.size(); ++i)
+    //ports_[i]->setIndex(i);
 }
 
 template<class T>
 T
 PortManager<T>::operator[](size_t item) const
 {
-  return ports_[item];
+  auto it = ports_.find(item);
+  if (it == ports_.end())
+  {
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
+  }
+  return it->second;
 }
 
-template<class T>
-void 
-PortManager<T>::apply(boost::function<void(T&)> func)
-{
-  BOOST_FOREACH(T& port, ports_)
-    func(port);
-}
+//template<class T>
+//void 
+//PortManager<T>::apply(boost::function<void(T&)> func)
+//{
+//  BOOST_FOREACH(T& port, ports_)
+//    func(port);
+//}
 
 template<class T>
 void 

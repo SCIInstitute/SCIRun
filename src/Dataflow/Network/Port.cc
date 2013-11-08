@@ -73,6 +73,15 @@ const Connection* Port::connection(size_t i) const
   return connections_[i];
 }
 
+void Port::setIndex(size_t index)
+{
+  index_ = index;
+  BOOST_FOREACH(Connection* c, connections_)
+  {
+    c->updatePortIndex(index);
+  }
+}
+
 size_t Port::nconnections() const
 {
   return connections_.size();

@@ -242,7 +242,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    addPort(w);
+    ports_.addPort(w);
   }
   addInputPortsToLayout();
 }
@@ -268,7 +268,7 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
     auto type = port->get_typename();
     OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
-    addPort(w);
+    ports_.addPort(w);
   }
   addOutputPortsToLayout();
 }
@@ -294,8 +294,19 @@ void ModuleWidget::addOutputPortsToLayout()
     outputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(-1, outputPortLayout_);
   }
+  ports_.addOutputsToLayout(outputPortLayout_);
+}
+
+void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
+{
+  BOOST_FOREACH(PortWidget* port, inputPorts_)
+    layout->addWidget(port);
+}
+
+void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
+{
   BOOST_FOREACH(PortWidget* port, outputPorts_)
-    outputPortLayout_->addWidget(port);
+    layout->addWidget(port);
 }
 
 void ModuleWidget::addInputPortsToLayout()
@@ -307,11 +318,10 @@ void ModuleWidget::addInputPortsToLayout()
     inputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(0, inputPortLayout_);
   }
-  BOOST_FOREACH(PortWidget* port, inputPorts_)
-    inputPortLayout_->addWidget(port);
+  ports_.addInputsToLayout(inputPortLayout_);
 }
 
-void ModuleWidget::reindexPorts()
+void PortWidgetManager::reindexInputs()
 {
   for (size_t i = 0; i < inputPorts_.size(); ++i)
   {
@@ -321,23 +331,23 @@ void ModuleWidget::reindexPorts()
   }
 }
 
-void ModuleWidget::addPort(OutputPortWidget* port)
+void PortWidgetManager::addPort(OutputPortWidget* port)
 {
   outputPorts_.push_back(port);
 }
 
-void ModuleWidget::addPort(InputPortWidget* port)
+void PortWidgetManager::addPort(InputPortWidget* port)
 {
   inputPorts_.push_back(port);
 }
 
 void ModuleWidget::drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index)
 {
-  if (id.id_ == moduleId_)
-  {
-    std::cout << "PORT PLACED/REMOVED NEXT TO: " << index << " drawPorts :: " << moduleId_ << std::endl;
-    printInputPorts(*theModule_);
-  }
+  //if (id.id_ == moduleId_)
+  //{
+  //  std::cout << "PORT PLACED/REMOVED NEXT TO: " << index << " drawPorts :: " << moduleId_ << std::endl;
+  //  printInputPorts(*theModule_);
+  //}
 }
 
 void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index)
@@ -351,9 +361,9 @@ void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, id, index+1, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    addPort(w);
+    ports_.addPort(w);
     inputPortLayout_->addWidget(w);
-    reindexPorts();
+    ports_.reindexInputs();
     Q_EMIT dynamicPortChanged();
   }
 }
@@ -365,27 +375,46 @@ void ModuleWidget::removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&
     auto portToRemove = index;
     std::cout << "~~~removeDynamicPort " << portToRemove << std::endl;
 
-    if (portToRemove < inputPorts_.size())
+    if (ports_.removeDynamicPort(index, inputPortLayout_))
     {
-      auto widget = inputPorts_[portToRemove];
-      inputPorts_.erase(inputPorts_.begin() + portToRemove);
-      inputPortLayout_->removeWidget(widget);
-      delete widget;
-
-      printInputPorts(*theModule_);
-
-      reindexPorts();
-
       Q_EMIT dynamicPortChanged();
+      printInputPorts(*theModule_);
+    }
+  }
+}
+
+bool PortWidgetManager::removeDynamicPort(size_t index, QHBoxLayout* layout)
+{
+  std::cout << "BEFORE removeDynamicPort: " << std::endl;
+  Q_FOREACH(PortWidget* port, inputPorts_)
+  {
+    std::cout << "\t" << port << " index = " << port->getIndex() << std::endl;
+  }
+  if (index < inputPorts_.size())
+  {
+    auto widget = inputPorts_[index];
+    inputPorts_.erase(inputPorts_.begin() + index);
+    layout->removeWidget(widget);
+    delete widget;
+
+    reindexInputs();
+
+
+    std::cout << "AFTER removeDynamicPort: " << std::endl;
+    Q_FOREACH(PortWidget* port, inputPorts_)
+    {
+      std::cout << "\t" << port << " index = " << port->getIndex() << std::endl;
     }
 
+    return true;
   }
+  return false;
 }
 
 void ModuleWidget::printPortPositions() const
 {
   std::cout << "Port positions for module " << moduleId_ << std::endl;
-  Q_FOREACH(PortWidget* p, boost::join(getInputPorts(), getOutputPorts()))
+  Q_FOREACH(PortWidget* p, ports_.getAllPorts())
   {
     std::cout << "\t" << p->pos();
   }
@@ -394,7 +423,7 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
+  Q_FOREACH (PortWidget* p, ports_.getAllPorts())
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");
   if (dialog_ != nullptr)
@@ -412,7 +441,7 @@ ModuleWidget::~ModuleWidget()
 
 void ModuleWidget::trackConnections()
 {
-  Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
+  Q_FOREACH (PortWidget* p, ports_.getAllPorts())
     p->trackConnections();
 }
 

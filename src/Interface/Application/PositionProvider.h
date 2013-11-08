@@ -30,6 +30,7 @@
 #define POSITION_PROVIDER_H
 
 #include <QPointF>
+#include <iostream>
 
 class QGraphicsProxyWidget;
 
@@ -45,13 +46,19 @@ public:
   virtual QPointF mapFromScene(const QPointF &point) const = 0;
 };
 
+typedef boost::shared_ptr<PositionProvider> PositionProviderPtr;
+
 class NeedsScenePositionProvider
 {
 public:
   virtual ~NeedsScenePositionProvider() {}
-  void setPositionObject(boost::shared_ptr<PositionProvider> provider) { positionProvider_ = provider; }
+  void setPositionObject(PositionProviderPtr provider) 
+  { 
+    positionProvider_ = provider; 
+  }
+  PositionProviderPtr getPositionObject() const { return positionProvider_; }
 protected:
-  boost::shared_ptr<PositionProvider> positionProvider_;
+  PositionProviderPtr positionProvider_;
 };
 
 class ProxyWidgetPosition : public PositionProvider

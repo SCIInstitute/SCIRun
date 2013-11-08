@@ -58,3 +58,7 @@ Connection::~Connection()
   iport_->detach(this);
 }
 
+void Connection::updatePortIndex(size_t index)
+{
+
+}

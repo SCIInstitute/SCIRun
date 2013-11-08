@@ -59,7 +59,7 @@ public:
   PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
-  ~PortWidget();
+  virtual ~PortWidget();
 
   QString name() const { return name_; }
   QColor color() const { return color_; }
