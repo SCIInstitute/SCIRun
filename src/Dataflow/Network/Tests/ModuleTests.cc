@@ -42,7 +42,7 @@ TEST(ModuleTests, CanBuildWithPorts)
   EXPECT_EQ(1, module->num_output_ports());
   EXPECT_EQ("SolveLinearSystem", module->get_module_name());
   EXPECT_EQ("SolveLinearSystem:0", module->get_id().id_);
-  EXPECT_FALSE(module->get_input_port(0)->isDynamic());
+  EXPECT_FALSE(module->findInputPortsWithName("RHS")[0]->isDynamic());
 }
 
 TEST(ModuleTests, CanBuildWithDynamicPorts)
@@ -54,7 +54,7 @@ TEST(ModuleTests, CanBuildWithDynamicPorts)
   EXPECT_EQ(0, module->num_output_ports());
   EXPECT_EQ("ViewScene", module->get_module_name());
   EXPECT_EQ("ViewScene:0", module->get_id().id_);
-  EXPECT_TRUE(module->get_input_port(0)->isDynamic());
+  EXPECT_TRUE(module->findInputPortsWithName("ForwardMatrix")[0]->isDynamic());
 }
 
 TEST(ModuleIdTests, CanConstructFromString)

@@ -103,9 +103,10 @@ TEST_F(NetworkTests, CanAddAndRemoveConnections)
   EXPECT_EQ(m1, network.module(0));
   EXPECT_EQ(m2, network.module(1));
 
+  //TODO: yucky, yucky test code now. needs refactoring for readability!
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#o1#_@to@_module:2_p#i2#", connId.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());

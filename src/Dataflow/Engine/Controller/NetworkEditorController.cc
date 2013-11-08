@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <boost/thread.hpp>
+#include <boost/foreach.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -123,9 +124,8 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   
-  for (size_t i = 0; i < module->num_input_ports(); ++i)
+  BOOST_FOREACH(InputPortHandle input, module->inputPorts())
   {
-    auto input = module->get_input_port(i);
     if (input->nconnections() == 1)
     {
       auto conn = input->connection(0);
@@ -146,25 +146,27 @@ void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks:
 
   //TODO duplication
   if (portToConnect->isInput())
-    for (size_t i = 0; i < newMod->num_output_ports(); ++i)
+  {
+    BOOST_FOREACH(OutputPortHandle p, newMod->outputPorts())
     {
-      auto p = newMod->get_output_port(i);
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
         return;
       }
     }
+  }
   else
-    for (size_t i = 0; i < newMod->num_input_ports(); ++i)
+  {
+    BOOST_FOREACH(InputPortHandle p, newMod->inputPorts())
     {
-      auto p = newMod->get_input_port(i);
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
         return;
       }
     }
+  }
 }
 
 void NetworkEditorController::printNetwork() const

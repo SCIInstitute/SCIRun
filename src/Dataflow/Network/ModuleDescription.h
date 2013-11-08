@@ -43,8 +43,12 @@ namespace Networks {
 
   struct SCISHARE PortId
   {
-    explicit PortId(const std::string& n = "<undefined>") : name(n) {}
+    explicit PortId(const std::string& n = "<undefined>") : name(n), id(instanceCount_++) {}
     std::string name;
+    size_t id;
+  private:
+    //TODO: make atomic
+    static size_t instanceCount_;
   };
 
   struct SCISHARE PortDescription
@@ -84,6 +88,11 @@ namespace Networks {
   SCISHARE bool operator!=(const ModuleId& lhs, const ModuleId& rhs);
   SCISHARE bool operator<(const ModuleId& lhs, const ModuleId& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleId& id);
+
+  SCISHARE bool operator==(const PortId& lhs, const PortId& rhs);
+  SCISHARE bool operator!=(const PortId& lhs, const PortId& rhs);
+  SCISHARE bool operator<(const PortId& lhs, const PortId& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& o, const PortId& id);
 
   struct SCISHARE ModuleLookupInfo
   {

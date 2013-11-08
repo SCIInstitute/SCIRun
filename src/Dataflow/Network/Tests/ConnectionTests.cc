@@ -58,8 +58,8 @@ protected:
 
   void setModuleExpectations()
   {
-    EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(dummyInputPort));
-    EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(dummyOutputPort));
+    //EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(dummyInputPort));
+    //EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(dummyOutputPort));
   }
 
   MockInputPortPtr dummyInputPort;
@@ -68,29 +68,24 @@ protected:
   MockModulePtr outputModule;
 };
 
-TEST_F(ConnectionTests, CtorThrowsWithNullModules)
+TEST_F(ConnectionTests, CtorThrowsWithNullPorts)
 {
-  ASSERT_THROW(Connection(ModuleHandle(), 1, ModuleHandle(), 2, "fake"), NullPointerException);
-  ModuleHandle dummy(new MockModule);
-  ASSERT_THROW(Connection(dummy, 1, ModuleHandle(), 2, "fake"), NullPointerException);
-  ASSERT_THROW(Connection(ModuleHandle(), 1, dummy, 2, "fake"), NullPointerException);
+  ASSERT_THROW(Connection(OutputPortHandle(), InputPortHandle(), "fake"), NullPointerException);
+  ASSERT_THROW(Connection(dummyOutputPort, InputPortHandle(), "fake"), NullPointerException);
+  ASSERT_THROW(Connection(OutputPortHandle(), dummyInputPort, "fake"), NullPointerException);
 }
 
 TEST_F(ConnectionTests, CtorThrowsWhenPortsDontExistOnModules)
 {
-  ASSERT_THROW(Connection(outputModule, 1, inputModule, 2, "test"), NullPointerException);
+  ASSERT_THROW(Connection(dummyOutputPort, dummyInputPort, "test"), NullPointerException);
 }
 
 TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 {
   setModuleExpectations();
-  Connection c(outputModule, 1, inputModule, 2, "test");
-  ASSERT_TRUE(c.imod_);
-  ASSERT_TRUE(c.omod_);
+  Connection c(dummyOutputPort, dummyInputPort, "test");
   ASSERT_TRUE(c.iport_);
   ASSERT_TRUE(c.oport_);
-  ASSERT_EQ(c.imod_, inputModule);
-  ASSERT_EQ(c.omod_, outputModule);
   ASSERT_EQ(c.oport_, dummyOutputPort);
   ASSERT_EQ(c.iport_, dummyInputPort);
   ASSERT_EQ("test", c.id_.id_);
@@ -101,13 +96,13 @@ TEST_F(ConnectionTests, CtorConnectsSelfToPorts)
   setModuleExpectations();
   EXPECT_CALL(*dummyInputPort, attach(_));
   EXPECT_CALL(*dummyOutputPort, attach(_));
-  Connection c(outputModule, 1, inputModule, 2, "test");
+  Connection c(dummyOutputPort, dummyInputPort, "test");
 }
 
 TEST_F(ConnectionTests, DtorDisconnectsSelfFromPorts)
 {
   setModuleExpectations();
-  Connection c(outputModule, 1, inputModule, 2, "test");
+  Connection c(dummyOutputPort, dummyInputPort, "test");
   EXPECT_CALL(*dummyInputPort, detach(&c));
   EXPECT_CALL(*dummyOutputPort, detach(&c));
 }

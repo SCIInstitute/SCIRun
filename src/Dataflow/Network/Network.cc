@@ -105,7 +105,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   {
     try
     {
-      ConnectionHandle conn(boost::make_shared<Connection>(outputModule, outputPortId, inputModule, inputPortId, id));
+      ConnectionHandle conn(boost::make_shared<Connection>(outputModule->getOutputPort(outputPortId), inputModule->getInputPort(inputPortId), id));
 
       //lock.lock();
 
@@ -225,4 +225,12 @@ void Network::incrementErrorCode(const ModuleId& moduleId)
 NetworkGlobalSettings& Network::settings()
 {
   return settings_;
+}
+
+ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts()[index]->id())
+{
+}
+
+ConnectionInputPort::ConnectionInputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->inputPorts()[index]->id())
+{
 }

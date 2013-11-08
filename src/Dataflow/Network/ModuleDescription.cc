@@ -35,6 +35,8 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace boost::assign;
 
+size_t PortId::instanceCount_(0);
+
 std::string PortColorLookup::toColor(const std::string& portDatatype)
 {
   if (portColorMap_.empty())
@@ -113,4 +115,24 @@ bool SCIRun::Dataflow::Networks::operator<(const ModuleId& lhs, const ModuleId& 
 std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const ModuleId& id)
 {
   return o << id.id_;
+}
+
+bool SCIRun::Dataflow::Networks::operator==(const PortId& lhs, const PortId& rhs)
+{
+  return lhs.name == rhs.name && lhs.id == rhs.id;
+}
+
+bool SCIRun::Dataflow::Networks::operator!=(const PortId& lhs, const PortId& rhs)
+{
+  return !(lhs == rhs);
+}
+
+bool SCIRun::Dataflow::Networks::operator<(const PortId& lhs, const PortId& rhs)
+{
+  return std::make_pair(lhs.name, lhs.id) < std::make_pair(rhs.name, rhs.id);
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const PortId& id)
+{
+  return o << id.name << ":" << id.id;
 }

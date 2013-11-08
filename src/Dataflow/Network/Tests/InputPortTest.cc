@@ -87,10 +87,10 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 
   boost::shared_ptr<SimpleSource> source(new SimpleSource);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, source));
-  EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
-  EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
+  //EXPECT_CALL(*inputModule, get_input_port(p2)).WillOnce(Return(inputPort));
+  //EXPECT_CALL(*outputModule, get_output_port(p1)).WillOnce(Return(outputPort));
 
-  Connection c(outputModule, 1, inputModule, 2, "test");
+  Connection c(outputPort, inputPort, "test");
 
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));

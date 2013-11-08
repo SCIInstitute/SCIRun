@@ -78,6 +78,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   ModuleHandle hasDynamic = network->add_module(ViewScene::staticInfo_);
 
   EXPECT_EQ(1, hasDynamic->num_input_ports());
+  EXPECT_EQ(1, hasDynamic->findInputPortsWithName("Geometry").size());
 
   ModuleHandle input1 = network->add_module(ShowFieldModule::staticInfo_);
   ModuleHandle input2 = network->add_module(ShowFieldModule::staticInfo_);
@@ -103,6 +104,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(1, oport->nconnections());
 
     EXPECT_EQ(2, hasDynamic->num_input_ports());
+    EXPECT_EQ(2, hasDynamic->findInputPortsWithName("Geometry").size());
 
     removeSignal(ConnectionId::create(desc));
   }
@@ -123,6 +125,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(1, oport->nconnections());
 
     EXPECT_EQ(2, hasDynamic->num_input_ports());
+    EXPECT_EQ(2, hasDynamic->findInputPortsWithName("Geometry").size());
 
     Connection c2(input1, 0, hasDynamic, 1, "test");
     ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
@@ -136,6 +139,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   }
 
   ASSERT_EQ(1, hasDynamic->num_input_ports());
+  EXPECT_EQ(1, hasDynamic->findInputPortsWithName("Geometry").size());
   EXPECT_EQ(0, hasDynamic->get_input_port(0)->nconnections());
   EXPECT_EQ(0, oport->nconnections());
 
@@ -151,6 +155,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(1, oport->nconnections());
 
     EXPECT_EQ(2, hasDynamic->num_input_ports());
+    EXPECT_EQ(2, hasDynamic->findInputPortsWithName("Geometry").size());
 
     Connection c2(input1, 0, hasDynamic, 1, "test");
     ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
@@ -158,6 +163,7 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
     EXPECT_EQ(3, hasDynamic->num_input_ports());
+    EXPECT_EQ(3, hasDynamic->findInputPortsWithName("Geometry").size());
 
     c1.reset();
     removeSignal(ConnectionId::create(desc1));

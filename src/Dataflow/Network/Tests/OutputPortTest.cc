@@ -66,11 +66,11 @@ TEST_F(OutputPortTest, SendSomeData)
 
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
   MockModulePtr inputModule(new NiceMock<MockModule>);
-  EXPECT_CALL(*inputPort, get_typename()).WillRepeatedly(Return(pcp.type_name));
-  EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort));
-  EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
+  //EXPECT_CALL(*inputPort, get_typename()).WillRepeatedly(Return(pcp.type_name));
+  //EXPECT_CALL(*inputModule, getInputPort(2)).WillRepeatedly(Return(inputPort));
+  //EXPECT_CALL(*outputModule, getOutputPort(1)).WillRepeatedly(Return(outputPort));
 
-  Connection c(outputModule, 1, inputModule, 2, "test");
+  Connection c(outputPort, inputPort, "test");
   
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
@@ -106,14 +106,14 @@ TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
   MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
   MockInputPortPtr inputPort2(new NiceMock<MockInputPort>);
   MockModulePtr inputModule(new NiceMock<MockModule>);
-  EXPECT_CALL(*inputModule, get_input_port(1)).WillRepeatedly(Return(inputPort));
-  EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort2));
-  EXPECT_CALL(*inputPort, get_typename()).WillRepeatedly(Return(pcp.type_name));
-  EXPECT_CALL(*inputPort2, get_typename()).WillRepeatedly(Return(pcp.type_name));
-  EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
+  //EXPECT_CALL(*inputModule, get_input_port(1)).WillRepeatedly(Return(inputPort));
+  //EXPECT_CALL(*inputModule, get_input_port(2)).WillRepeatedly(Return(inputPort2));
+  //EXPECT_CALL(*inputPort, get_typename()).WillRepeatedly(Return(pcp.type_name));
+  //EXPECT_CALL(*inputPort2, get_typename()).WillRepeatedly(Return(pcp.type_name));
+  //EXPECT_CALL(*outputModule, get_output_port(1)).WillRepeatedly(Return(outputPort));
 
-  Connection c1(outputModule, 1, inputModule, 1, "test1");
-  Connection c2(outputModule, 1, inputModule, 2, "test2");
+  Connection c1(outputPort, inputPort, "test1");
+  Connection c2(outputPort, inputPort2, "test2");
   EXPECT_EQ(2, outputPort->nconnections());
 
   const int dataValue = 2;

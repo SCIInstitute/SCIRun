@@ -33,7 +33,8 @@
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
-#include <boost/bimap.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
 #include <string>
 #include <map>
 
@@ -45,19 +46,22 @@ template<class T>
 class PortManager : boost::noncopyable
 {
 private:
-  //boost::bimap<T, size_t> portIndexes_;
-  std::multimap<PortId, T> ports_;
+  typedef std::map<PortId, T> PortMap;
+  PortMap ports_;
   ModuleInterface* module_;
   
 public:
   PortManager();
   size_t size() const;
   size_t add(const T& item);
-  void remove(size_t item);
-  T operator[](size_t) const;
+  void remove(const PortId& id);
+  //T operator[](size_t) const;
+  T operator[](const PortId& id) const;
+  std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
-  bool hasPortAtIndex(size_t i) const;
+  //bool hasPortAtIndex(size_t i) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
+  std::vector<T> view() const;
 };
 
 struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
@@ -77,39 +81,63 @@ PortManager<T>::size() const
 
 template<class T>
 size_t
-PortManager<T>::add(const T &item)
+PortManager<T>::add(const T& item)
 { 
-  ports_.insert(std::make_pair(item->id(), item));
+  ports_[item->id()] = item;
+  //TODO: who should manage port indexes?
+  //item->setIndex(size() - 1);
   auto index = size() - 1;
-  //portIndexes_.insert(std::make_pair(item, index))
   return index;
 }
 
 template<class T>
 void
-PortManager<T>::remove(size_t item)
+PortManager<T>::remove(const PortId& id)
 {
-  //auto it = portIndexes_.right.find(item);
-  //if (it == portIndexes_.end())
-  //{
-  //  BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
-  //}
-  //auto port = it->second;
-  //ports_.erase(port->id());
-  //portIndexes_.erase(it);
+  auto it = ports_.find(id);
+  if (it == ports_.end())
+  {
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
+  }
+  ports_.erase(it);
 }
 
 template<class T>
 T
-PortManager<T>::operator[](size_t item) const
+PortManager<T>::operator[](const PortId& id) const
 {
-  //auto it = portIndexes_.find(item);
-  //if (it == ports_.end())
-  //{
-  //  BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to access a port that does not exist"));
-  //}
-  //return it->second;
-  return T();
+  auto it = ports_.find(id);
+  if (it == ports_.end())
+  {
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to access a port that does not exist"));
+  }
+  return it->second;
+}
+
+template<class T>
+std::vector<T> PortManager<T>::operator[](const std::string& name) const
+{
+  std::vector<T> portsWithName;
+
+  boost::push_back(
+    portsWithName,
+    ports_ | boost::adaptors::map_values 
+    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }));
+
+  if (portsWithName.empty())
+  {
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager does not contain a port by name: " + name));
+  }
+
+  return portsWithName;
+}
+
+template <class T>
+std::vector<T> PortManager<T>::view() const
+{
+  std::vector<T> portVector;
+  boost::push_back(portVector, ports_ | boost::adaptors::map_values);
+  return portVector;
 }
 
 template <class T>
