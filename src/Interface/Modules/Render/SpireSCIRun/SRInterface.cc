@@ -233,6 +233,9 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   // Ensure our rendering context is current on our thread.
   super::makeCurrent();
 
+  // Set directional light source (in world space).
+  addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
+
   std::string objectName = obj->objectName;
 
   // Check to see if the object already exists in our list. If so, then
