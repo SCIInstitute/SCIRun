@@ -124,12 +124,13 @@ namespace SCIRun {
 
 PortWidget::PortWidgetMap PortWidget::portWidgetMap_;
 
-PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId, size_t index,
+PortWidget::PortWidget(const QString& name, const QColor& color, const std::string& datatype, const ModuleId& moduleId, 
+  const PortId& portId, size_t index,
   bool isInput, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory,
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent /* = 0 */)
   : QPushButton(parent), 
-  name_(name), moduleId_(moduleId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(0),
+  name_(name), moduleId_(moduleId), portId_(portId), index_(index), color_(color), typename_(datatype), isInput_(isInput), isDynamic_(isDynamic), isConnected_(false), lightOn_(false), currentConnection_(0),
   connectionFactory_(connectionFactory),
   closestPortFinder_(closestPortFinder),
   menu_(new PortActionsMenu(this))
@@ -140,12 +141,12 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 
   setMenu(menu_);
 
-  portWidgetMap_[moduleId_.id_][isInput_][index_] = this;
+  portWidgetMap_[moduleId_.id_][isInput_][portId_] = this;
 }
 
 PortWidget::~PortWidget()
 {
-  portWidgetMap_[moduleId_.id_][isInput_][index_] = 0;
+  portWidgetMap_[moduleId_.id_][isInput_][portId_] = 0;
 }
 
 QSize PortWidget::sizeHint() const
@@ -221,10 +222,14 @@ size_t PortWidget::getIndex() const
   return index_;
 }
 
+PortId PortWidget::id() const
+{
+  return portId_;
+}
+
 void PortWidget::setIndex(size_t index)
 {
   index_ = index;
-  portWidgetMap_[moduleId_.id_][isInput_][index_] = this;
 }
 
 namespace
@@ -292,8 +297,8 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 {
   if (matches(cd))
   {
-    auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.port_];
-    auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.port_];
+    auto out = portWidgetMap_[cd.out_.moduleId_][false][cd.out_.portId_];
+    auto in = portWidgetMap_[cd.in_.moduleId_][true][cd.in_.portId_];
     auto id = SCIRun::Dataflow::Networks::ConnectionId::create(cd);
     auto c = connectionFactory_->makeFinishedConnection(out, in, id);
     connect(c, SIGNAL(deleted(const SCIRun::Dataflow::Networks::ConnectionId&)), this, SIGNAL(connectionDeleted(const SCIRun::Dataflow::Networks::ConnectionId&)));
@@ -311,8 +316,8 @@ void PortWidget::moveEvent( QMoveEvent * event )
 
 bool PortWidget::matches(const SCIRun::Dataflow::Networks::ConnectionDescription& cd) const
 {
-  return (isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.port_ == index_)
-    || (!isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.port_ == index_);
+  return (isInput() && cd.in_.moduleId_ == moduleId_ && cd.in_.portId_ == portId_)
+    || (!isInput() && cd.out_.moduleId_ == moduleId_ && cd.out_.portId_ == portId_);
 }
 
 bool PortWidget::sharesParentModule(const PortWidget& other) const
@@ -404,19 +409,19 @@ void PortWidget::connectNewModule()
 }
 
 InputPortWidget::InputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-  const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isDynamic,
+  const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory, 
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, datatype, moduleId, index, true, isDynamic, connectionFactory, closestPortFinder, parent)
+  : PortWidget(name, color, datatype, moduleId, portId, index, true, isDynamic, connectionFactory, closestPortFinder, parent)
 {
 }
 
 OutputPortWidget::OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype,
-  const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isDynamic,
+  const ModuleId& moduleId, const PortId& portId, size_t index, bool isDynamic,
   boost::shared_ptr<ConnectionFactory> connectionFactory, 
   boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
   QWidget* parent /* = 0 */)
-  : PortWidget(name, color, datatype, moduleId, index, false, isDynamic, connectionFactory, closestPortFinder, parent)
+  : PortWidget(name, color, datatype, moduleId, portId, index, false, isDynamic, connectionFactory, closestPortFinder, parent)
 {
 }

@@ -130,7 +130,8 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
     {
       auto conn = input->connection(0);
       auto source = conn->oport_;
-      requestConnection(source.get(), newModule->get_input_port(i).get());
+      //TODO: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
+      requestConnection(source.get(), newModule->getInputPort(input->id()).get());
     }
   }
   
@@ -189,14 +190,14 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   auto in = from->isInput() ? from : to;     
 
   ConnectionDescription desc(
-    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
-    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()), 
+    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
   {
-    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.port_),
-      ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.port_));
+    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
+      ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
       connectionAdded_(desc);
     

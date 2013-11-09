@@ -235,14 +235,15 @@ void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider
 void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
-  for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
+  size_t i = 0;
+  BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
   {
-    InputPortHandle port = moduleInfoProvider.get_input_port(i);
     auto type = port->get_typename();
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_.addPort(w);
+    ++i;
   }
   addInputPortsToLayout();
 }
@@ -251,24 +252,26 @@ void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoP
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
   std::cout << "Module input ports: " << moduleId << std::endl;
-  for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
+  size_t i = 0;
+  BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
   {
-    InputPortHandle port = moduleInfoProvider.get_input_port(i);
     auto type = port->get_typename();
     std::cout << "\t" << i << " : " << port->get_portname() << " : " << type << " dyn = " << port->isDynamic() << std::endl;
+     ++i;
   }
 }
 
 void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
   const ModuleId moduleId = moduleInfoProvider.get_id();
-  for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
+  size_t i = 0;
+  BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
   {
-    OutputPortHandle port = moduleInfoProvider.get_output_port(i);
     auto type = port->get_typename();
     OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     ports_.addPort(w);
+    ++i;
   }
   addOutputPortsToLayout();
 }
@@ -354,7 +357,8 @@ void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id
 {
   if (id.id_ == moduleId_)
   {
-    InputPortHandle port = theModule_->get_input_port(index + 1);
+    //TODO: THE WHOLE POINT OF THIS HUGE CHANGE
+    InputPortHandle port = theModule_->inputPorts()[index + 1];
     auto type = port->get_typename();
     std::cout << "~~~addDynamicPort " << index + 1 << " : " << port->get_portname() << " : " << type << std::endl;
 

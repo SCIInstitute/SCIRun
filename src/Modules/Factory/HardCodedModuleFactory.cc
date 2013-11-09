@@ -238,11 +238,11 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
   {
-    builder.add_input_port(Port::ConstructionParams(input.name, input.datatype, input.isDynamic));
+    builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
   BOOST_FOREACH(const OutputPortDescription& output, desc.output_ports_)
   {
-    builder.add_output_port(Port::ConstructionParams(output.name, output.datatype, output.isDynamic));
+    builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
 
   ModuleHandle module = builder.build();

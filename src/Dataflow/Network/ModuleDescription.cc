@@ -35,8 +35,6 @@
 using namespace SCIRun::Dataflow::Networks;
 using namespace boost::assign;
 
-size_t PortId::instanceCount_(0);
-
 std::string PortColorLookup::toColor(const std::string& portDatatype)
 {
   if (portColorMap_.empty())

@@ -52,14 +52,16 @@ namespace Networks {
   };
 
   typedef std::pair<ModuleHandle, PortId> ModulePortIdPair;
-  struct ConnectionOutputPort : public ModulePortIdPair 
+
+  struct SCISHARE ConnectionOutputPort : public ModulePortIdPair 
   {
     ConnectionOutputPort(ModuleHandle m, const PortId& p) : ModulePortIdPair(m,p) {}
 
     //TODO: only used in test code
     ConnectionOutputPort(ModuleHandle m, size_t index);
   };
-  struct ConnectionInputPort : public ModulePortIdPair 
+  
+  struct SCISHARE ConnectionInputPort : public ModulePortIdPair 
   {
     ConnectionInputPort(ModuleHandle m,  const PortId& p) : ModulePortIdPair(m,p) {}
 

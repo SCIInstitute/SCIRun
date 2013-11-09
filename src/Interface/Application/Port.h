@@ -56,7 +56,7 @@ class PortWidget : public QPushButton, public NeedsScenePositionProvider, public
 {
   Q_OBJECT
 public:
-  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isInput, bool isDynamic,
+  PortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isInput, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory,
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, QWidget* parent = 0);
   virtual ~PortWidget();
@@ -74,6 +74,8 @@ public:
   virtual Dataflow::Networks::ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
   void setIndex(size_t i);
+
+  virtual SCIRun::Dataflow::Networks::PortId id() const;
 
   void toggleLight();
   void turn_on_light();
@@ -125,6 +127,7 @@ private:
 
   const QString name_;
   const SCIRun::Dataflow::Networks::ModuleId moduleId_; 
+  const SCIRun::Dataflow::Networks::PortId portId_;
   size_t index_;
   const QColor color_;
   const std::string typename_;
@@ -141,14 +144,15 @@ private:
   PortActionsMenu* menu_;
 
   //TODO
-  typedef std::map<std::string, std::map<bool, std::map<size_t, PortWidget*>>> PortWidgetMap;
+  typedef std::map<std::string, std::map<bool, std::map<SCIRun::Dataflow::Networks::PortId, PortWidget*>>> PortWidgetMap;
   static PortWidgetMap portWidgetMap_;
 };
 
 class InputPortWidget : public PortWidget 
 {
 public:
-  InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isDynamic,
+  InputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
+    const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic,
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);
@@ -157,7 +161,8 @@ public:
 class OutputPortWidget : public PortWidget 
 {
 public:
-  OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId, size_t index, bool isDynamic, 
+  OutputPortWidget(const QString& name, const QColor& color, const std::string& datatype, const SCIRun::Dataflow::Networks::ModuleId& moduleId,
+    const SCIRun::Dataflow::Networks::PortId& portId, size_t index, bool isDynamic, 
     boost::shared_ptr<ConnectionFactory> connectionFactory, 
     boost::shared_ptr<ClosestPortFinder> closestPortFinder, 
     QWidget* parent = 0);

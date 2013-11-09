@@ -87,17 +87,17 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   ConnectionRemovedSignalType removeSignal;
   DynamicPortManager dpm(addedSignal, removeSignal, &controller);
 
-  auto oport = input1->get_output_port(0);
+  auto oport = input1->outputPorts()[0];
   
   {
-    auto iport = hasDynamic->get_input_port(0);
+    auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
 
-    Connection c(input1, 0, hasDynamic, 0, "test");
+    Connection c(oport, iport, "test");
 
-    ConnectionDescription desc(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->getIndex()));
+    ConnectionDescription desc(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc);
 
     EXPECT_EQ(1, iport->nconnections());
@@ -110,16 +110,16 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   }
 
   ASSERT_EQ(1, hasDynamic->num_input_ports());
-  EXPECT_EQ(0, hasDynamic->get_input_port(0)->nconnections());
+  EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
 
   {
-    auto iport = hasDynamic->get_input_port(0);
+    auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
-    Connection c1(input1, 0, hasDynamic, 0, "test");
-    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->getIndex()));
+    Connection c1(oport, iport, "test");
+    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc1);
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
@@ -127,9 +127,9 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(2, hasDynamic->num_input_ports());
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName("Geometry").size());
 
-    Connection c2(input1, 0, hasDynamic, 1, "test");
-    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->get_input_port(1)->getIndex()));
+    Connection c2(oport, hasDynamic->inputPorts()[1], "test");
+    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
     EXPECT_EQ(3, hasDynamic->num_input_ports());
@@ -140,16 +140,16 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
 
   ASSERT_EQ(1, hasDynamic->num_input_ports());
   EXPECT_EQ(1, hasDynamic->findInputPortsWithName("Geometry").size());
-  EXPECT_EQ(0, hasDynamic->get_input_port(0)->nconnections());
+  EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
 
   {
-    auto iport = hasDynamic->get_input_port(0);
+    auto iport = hasDynamic->inputPorts()[0];
     EXPECT_EQ(0, oport->nconnections());
     EXPECT_EQ(0, iport->nconnections());
-    boost::shared_ptr<Connection> c1 = boost::make_shared<Connection>(input1, 0, hasDynamic, 0, "test");
-    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->getIndex()));
+    boost::shared_ptr<Connection> c1 = boost::make_shared<Connection>(oport, iport, "test");
+    ConnectionDescription desc1(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), iport->id()));
     addedSignal(desc1);
     EXPECT_EQ(1, iport->nconnections());
     EXPECT_EQ(1, oport->nconnections());
@@ -157,9 +157,9 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
     EXPECT_EQ(2, hasDynamic->num_input_ports());
     EXPECT_EQ(2, hasDynamic->findInputPortsWithName("Geometry").size());
 
-    Connection c2(input1, 0, hasDynamic, 1, "test");
-    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->getIndex()), 
-      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->get_input_port(1)->getIndex()));
+    Connection c2(oport, hasDynamic->inputPorts()[1], "test");
+    ConnectionDescription desc2(OutgoingConnectionDescription(oport->getUnderlyingModuleId(), oport->id()), 
+      IncomingConnectionDescription(iport->getUnderlyingModuleId(), hasDynamic->inputPorts()[1]->id()));
     addedSignal(desc2);
     EXPECT_EQ(2, oport->nconnections());
     EXPECT_EQ(3, hasDynamic->num_input_ports());
@@ -175,6 +175,6 @@ TEST(DynamicPortTests, DynamicPortsCloneThemselves)
   }
 
   ASSERT_EQ(1, hasDynamic->num_input_ports());
-  EXPECT_EQ(0, hasDynamic->get_input_port(0)->nconnections());
+  EXPECT_EQ(0, hasDynamic->inputPorts()[0]->nconnections());
   EXPECT_EQ(0, oport->nconnections());
 }

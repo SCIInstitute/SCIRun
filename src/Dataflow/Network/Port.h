@@ -46,10 +46,11 @@ class SCISHARE Port : virtual public PortInterface, boost::noncopyable
 public:
   struct ConstructionParams
   {
+    PortId id_;
     std::string type_name, port_name;
     bool isDynamic_;
-    ConstructionParams(const std::string& name, const std::string& type, bool isDynamic)
-      : type_name(type), port_name(name), isDynamic_(isDynamic) {}
+    ConstructionParams(const PortId& id, const std::string& type, bool isDynamic)
+      : id_(id), type_name(type), port_name(id.name), isDynamic_(isDynamic) {}
   };
   Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();

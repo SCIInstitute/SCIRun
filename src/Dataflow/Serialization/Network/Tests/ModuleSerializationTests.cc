@@ -67,14 +67,14 @@ TEST(SerializeNetworkTest, WhatDoWeNeed)
   ConnectionDescriptionXML conn;
   conn.out_.moduleId_ = ModuleId("moduleA:1");
   conn.in_.moduleId_ = ModuleId("moduleB:2");
-  conn.out_.port_ = 0;
-  conn.in_.port_ = 1;
+  conn.out_.portId_ = PortId("0");
+  conn.in_.portId_ = PortId("1");
 
   ConnectionDescriptionXML conn2;
   conn2.out_.moduleId_ = ModuleId("moduleC:3");
   conn2.in_.moduleId_ = ModuleId("moduleD:4");
-  conn2.out_.port_ = 1;
-  conn2.in_.port_ = 2;
+  conn2.out_.portId_ = PortId("1");
+  conn2.in_.portId_ = PortId("2");
 
   ConnectionsXML connections;
   connections += conn, conn2;

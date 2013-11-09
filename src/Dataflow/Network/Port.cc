@@ -128,7 +128,8 @@ void InputPort::attach(Connection* conn)
 InputPortInterface* InputPort::clone() const
 {
   DatatypeSinkInterfaceHandle sink(sink_->clone());
-  return new InputPort(module_, ConstructionParams(portName_, typeName_, isDynamic_), sink);
+  //TODO: need new id#
+  return new InputPort(module_, ConstructionParams(id_, typeName_, isDynamic_), sink);
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
