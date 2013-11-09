@@ -63,7 +63,11 @@ AlgorithmParameterName CreateLatVol::ElementSizeNormalized("ElementSizeNormalize
 
 CreateLatVol::CreateLatVol()
   : Module(ModuleLookupInfo("CreateLatVol", "NewField", "SCIRun"))
-{}
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(LatVolSize);
+  INITIALIZE_PORT(OutputField);
+}
 
 void CreateLatVol::setStateDefaults()
 {
