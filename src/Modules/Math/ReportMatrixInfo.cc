@@ -38,6 +38,9 @@ using namespace SCIRun::Core::Datatypes;
 ReportMatrixInfoModule::ReportMatrixInfoModule() : Module(ModuleLookupInfo("ReportMatrixInfo", "Math", "SCIRun")) 
 {
   INITIALIZE_PORT(InputMatrix);
+  INITIALIZE_PORT(NumRows);
+  INITIALIZE_PORT(NumCols);
+  INITIALIZE_PORT(NumElements);
 }
 
 void ReportMatrixInfoModule::execute()

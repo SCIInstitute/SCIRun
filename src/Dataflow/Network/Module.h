@@ -302,7 +302,7 @@ namespace Networks {
   boost::shared_ptr<T> Module::checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id)
   {
     if (!*inputOpt)
-      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + id.name);
+      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port " + id.name);
 
     boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
     if (!data)

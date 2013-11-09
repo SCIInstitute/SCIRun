@@ -62,6 +62,12 @@ using namespace SCIRun::Dataflow::Networks;
 SolveMinNormLeastSqSystem::SolveMinNormLeastSqSystem()
 : Module(ModuleLookupInfo("SolveMinNormLeastSqSystem", "Math", "SCIRun"), false)
 {
+  INITIALIZE_PORT(BasisVector1);
+  INITIALIZE_PORT(BasisVector2);
+  INITIALIZE_PORT(BasisVector3);
+  INITIALIZE_PORT(TargetVector);
+  INITIALIZE_PORT(WeightVector);
+  INITIALIZE_PORT(ResultVector);
 }
 
 void SolveMinNormLeastSqSystem::execute()
