@@ -43,7 +43,7 @@ namespace Networks {
 
   struct SCISHARE PortId
   {
-    explicit PortId(const std::string& n = "<undefined>") : name(n), id(0) {}
+    explicit PortId(const std::string& n = "<undefined>", size_t num = 0) : name(n), id(num) {}
     std::string name;
     size_t id; //TODO: need smart way to set
   };
