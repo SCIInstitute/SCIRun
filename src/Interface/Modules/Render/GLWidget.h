@@ -85,10 +85,7 @@ private:
 
   std::shared_ptr<GLContext>      mContext;   ///< Graphics context.
   std::shared_ptr<SRInterface>    mGraphics;  ///< Interface to spire.
-
-#ifndef SPIRE_USE_STD_THREADS
   QTimer*                         mTimer;
-#endif
 };
 
 } // end of namespace SCIRun

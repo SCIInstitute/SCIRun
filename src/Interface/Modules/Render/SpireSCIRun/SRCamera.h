@@ -43,7 +43,7 @@ namespace Gui {
 class SRCamera
 {
 public:
-  SRCamera(SRInterface& iface);
+  SRCamera(SRInterface& iface, std::shared_ptr<spire::Interface> spire);
   virtual ~SRCamera();
 
   // V  = View matrix
@@ -86,6 +86,8 @@ private:
   float                 mZFar;        ///< Position of far plane along view vec.
 
   SRInterface&          mInterface;   ///< SRInterface.
+  std::shared_ptr<spire::Interface> mSpire;
+
 
 };
 

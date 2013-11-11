@@ -38,13 +38,14 @@ namespace SCIRun {
 namespace Gui {
 
 //------------------------------------------------------------------------------
-SRCamera::SRCamera(SRInterface& iface) :
+SRCamera::SRCamera(SRInterface& iface, std::shared_ptr<spire::Interface> spire) :
     mTrafoSeq(0),
     mPerspective(true),
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
-    mInterface(iface)
+    mInterface(iface),
+    mSpire(spire)
 {
   setAsPerspective();
 
@@ -92,16 +93,16 @@ void SRCamera::setViewTransform(const spire::M44& trafo)
   mPIV  = mP * mIV;
 
   // Update appropriate uniforms.
-  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getToCameraToProjection()), mPIV);
-  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
-  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
+  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getToCameraToProjection()), mPIV);
+  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
+  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
 
   // Projection matrix is oriented down negative z. So we are looking down 
   // negative z, which is -V3(mV[2].xyz()).
-  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), 
-                              -spire::V3(mV[2].xyz()));
-  mInterface.addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()),
-                              spire::V3(mV[1].xyz()));
+  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), 
+                           -spire::V3(mV[2].xyz()));
+  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()),
+                            spire::V3(mV[1].xyz()));
 }
 
 } // namespace Gui

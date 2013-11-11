@@ -98,22 +98,41 @@ static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface,
 //------------------------------------------------------------------------------
 SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
                          const std::vector<std::string>& shaderDirs,
-                         bool createThread, LogFunction logFP) :
-    spire::Interface(context, shaderDirs, createThread, logFP),
+                         spire::Interface::LogFunction logFP) :
+    mSpire(new spire::Interface(context, shaderDirs, logFP)),
     mCamDistance(7.0f),
     mScreenWidth(640),
     mScreenHeight(480),
     mCamAccumPosDown(0.0f, 0.0f, 0.0f),
     mCamAccumPosNow(0.0f, 0.0f, 0.0f),
-    mCamera(new SRCamera(*this)),                       // Should come after all vars have been initialized.
+    mCamera(new SRCamera(*this, mSpire)),                       // Should come after all vars have been initialized.
     mSciBall(new SciBall(spire::V3(0.0f, 0.0f, 0.0f), 1.0f))   // Should come after all vars have been initialized.
 {
+
+  // Add shader attributes that we will be using.
+  mSpire->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aFieldData",   1,  false,  sizeof(float),      spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
+  mSpire->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
+
+  std::vector<std::tuple<std::string, spire::Interface::SHADER_TYPES>> shaderFiles;
+  shaderFiles.push_back(std::make_pair("UniformColor.vsh", spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("UniformColor.fsh", spire::Interface::FRAGMENT_SHADER));
+  mSpire->addPersistentShader("UniformColor", shaderFiles);
+
+  shaderFiles.clear();
+  shaderFiles.push_back(std::make_pair("DirPhong.vsh", spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER));
+  mSpire->addPersistentShader("DirPhong", shaderFiles);
+
   buildAndApplyCameraTransform();
 }
 
 //------------------------------------------------------------------------------
 SRInterface::~SRInterface()
 {
+  mSpire->terminate();
 }
 
 //------------------------------------------------------------------------------
@@ -122,10 +141,8 @@ void SRInterface::eventResize(size_t width, size_t height)
   mScreenWidth = width;
   mScreenHeight = height; 
 
-  // Ensure glViewport is called appropriately.
-  spire::Hub::RemoteFunction resizeFun =
-      std::bind(spire::InterfaceImplementation::resize, _1, width, height);
-  mHub->addFunctionToThreadQueue(resizeFun);
+  mSpire->makeCurrent();
+  GL(glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height)));
 }
 
 //------------------------------------------------------------------------------
@@ -231,10 +248,10 @@ void SRInterface::buildAndApplyCameraTransform()
 void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> obj)
 {
   // Ensure our rendering context is current on our thread.
-  super::makeCurrent();
+  mSpire->makeCurrent();
 
   // Set directional light source (in world space).
-  addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
+  mSpire->addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
 
   std::string objectName = obj->objectName;
 
@@ -244,7 +261,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   if (foundObject != mSRObjects.end())
   {
     // Remove the object from spire.
-    super::removeObject(objectName);
+    mSpire->removeObject(objectName);
     mSRObjects.erase(foundObject);
   }
 
@@ -253,13 +270,13 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   mSRObjects.push_back(objectName);
 
   // Now we re-add the object to spire.
-  addObject(obj->objectName);
+  mSpire->addObject(obj->objectName);
 
   // Add vertex buffer objects.
   for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
   {
     const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
-    addVBO(vbo.name, vbo.data, vbo.attributeNames);
+    mSpire->addVBO(vbo.name, vbo.data, vbo.attributeNames);
   }
 
   // Add index buffer objects.
@@ -286,14 +303,14 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
         throw std::invalid_argument("Unable to determine index buffer depth.");
         break;
     }
-    addIBO(ibo.name, ibo.data, type);
+    mSpire->addIBO(ibo.name, ibo.data, type);
   }
 
   // Add passes
   for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
   {
     const Core::Datatypes::GeometryObject::SpireSubPass& pass = *it;
-    addPassToObject(obj->objectName, pass.programName,
+    mSpire->addPassToObject(obj->objectName, pass.programName,
                            pass.vboName, pass.iboName, pass.type,
                            pass.passName, SPIRE_DEFAULT_PASS);
 
@@ -305,7 +322,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
 
       // Be sure to always include the pass name as we are updating a
       // subpass of SPIRE_DEFAULT_PASS.
-      addObjectPassUniformConcrete(obj->objectName, uniformName, 
+      mSpire->addObjectPassUniformConcrete(obj->objectName, uniformName, 
                                           uniform, pass.passName);
     }
 
@@ -313,17 +330,17 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     if (pass.hasGPUState == true)
       // Be sure to always include the pass name as we are updating a
       // subpass of SPIRE_DEFAULT_PASS.
-      addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+      mSpire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
 
     // Add lambda object uniforms to the pass.
-    addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
+    mSpire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
   }
 
   // Add default identity transform to the object globally (instead of
   // per-pass).
   spire::M44 xform;
   xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
-  addObjectGlobalMetadata(
+  mSpire->addObjectGlobalMetadata(
       obj->objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
 
   // This must come *after* adding the passes.
@@ -333,13 +350,13 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
   {
     const Core::Datatypes::GeometryObject::SpireVBO& vbo = *it;
-    removeVBO(vbo.name);
+    mSpire->removeVBO(vbo.name);
   }
 
   for (auto it = obj->mIBOs.cbegin(); it != obj->mIBOs.cend(); ++it)
   {
     const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
-    removeIBO(ibo.name);
+    mSpire->removeIBO(ibo.name);
   }
 
 }
@@ -348,13 +365,21 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
 //------------------------------------------------------------------------------
 void SRInterface::removeAllGeomObjects()
 {
-  super::makeCurrent();
+  mSpire->makeCurrent();
 
   for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
   {
     removeObject(*it);
   }
   mSRObjects.clear();
+}
+
+
+//------------------------------------------------------------------------------
+void SRInterface::doFrame()
+{
+  mSpire->makeCurrent();
+  mSpire->doFrame();
 }
 
 

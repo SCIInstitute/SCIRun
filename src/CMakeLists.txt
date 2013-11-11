@@ -346,7 +346,7 @@ include(${CPM_DIR}/CPM.cmake)
 # ++ MODULE: Spire
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "dev")
+  GIT_TAG "origin/dev")
 
 CPM_Finish()
 

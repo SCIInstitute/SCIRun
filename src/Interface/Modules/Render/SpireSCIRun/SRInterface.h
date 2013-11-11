@@ -48,17 +48,16 @@ namespace Gui {
 class SRCamera;
 class SciBall;
 
-/// A wrapper around spire that provides higher level functionality required
-/// to operate SCIRun.
-/// \todo Think about how we are going to break apart this class.
-///       There will be a lot of functionality behind it.
-class SRInterface : public spire::Interface
+// This class will be executing on a remote thread using boost lock free
+// structures. The view scene dialog on qt widgets only serve one purpose:
+// to relay information to this thread so that rendering can take place.
+// Information such as mouse clicks and user settings.
+class SRInterface
 {
-  typedef spire::Interface super;
 public:
   SRInterface(std::shared_ptr<spire::Context> context,
               const std::vector<std::string>& shaderDirs,
-              bool createThread, LogFunction logFP = LogFunction());
+              spire::Interface::LogFunction logFP = spire::Interface::LogFunction());
   ~SRInterface();
 
   /// Call this whenever the window is resized. This will modify the viewport
@@ -102,6 +101,9 @@ public:
   /// Handles a new geometry object.
   void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
 
+  /// Performs a frame.
+  void doFrame();
+
 private:
 
   /// Calculates the screen space coordinates given the window coordinates.
@@ -109,6 +111,8 @@ private:
 
   /// Recalculates camera transform using the most relevant data.
   void buildAndApplyCameraTransform();
+
+  std::shared_ptr<spire::Interface>    mSpire;
 
   float                     mCamDistance;   ///< Camera's distance from the origin.
 
