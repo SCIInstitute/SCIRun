@@ -344,11 +344,6 @@ endif()
 include(${CPM_DIR}/CPM.cmake)
 
 # ++ MODULE: Spire
-IF(WIN32)
-  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." OFF)
-ELSE()
-  option(USE_STD_THREADS "Use standard library threads. If turned off, no threading support is available." ON)
-ENDIF()
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
   GIT_TAG "dev")
