@@ -364,6 +364,11 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
       provenanceWindow_->clear();
       provenanceWindow_->showFile(command.openedFile_);
     }
+    else
+    {
+      //TODO: set error code to non-0 so regression tests fail!
+      // probably want to control this with a --regression flag.
+    }
   }
 }
 
