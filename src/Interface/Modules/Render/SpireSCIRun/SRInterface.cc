@@ -369,7 +369,7 @@ void SRInterface::removeAllGeomObjects()
 
   for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
   {
-    removeObject(*it);
+    mSpire->removeObject(*it);
   }
   mSRObjects.clear();
 }
