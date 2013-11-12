@@ -127,7 +127,7 @@ namespace Networks {
     {
       explicit PortNameBase(const PortId& id) : id_(id) {}
       //operator size_t() const { return N; }
-      operator PortId() const 
+      PortId toId() const
       { 
         if (id_.name.empty())
           BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
@@ -259,7 +259,7 @@ namespace Networks {
   template <class T, size_t N>
   boost::shared_ptr<T> Module::getRequiredInput(const StaticPortName<T,N>& port)
   {
-    return getRequiredInputAtIndex<T>(static_cast<PortId>(port));
+    return getRequiredInputAtIndex<T>(port.toId());
   }
 
   template <class T>

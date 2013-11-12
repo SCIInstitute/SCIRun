@@ -34,7 +34,7 @@
 #include <Core/Utils/Exception.h>
 
 #include <boost/range/adaptors.hpp>
-#include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/range/algorithm/copy.hpp>
 #include <string>
 #include <map>
 
@@ -119,10 +119,9 @@ std::vector<T> PortManager<T>::operator[](const std::string& name) const
 {
   std::vector<T> portsWithName;
 
-  boost::push_back(
-    portsWithName,
+  boost::copy(
     ports_ | boost::adaptors::map_values 
-    | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }));
+              | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
 
   if (portsWithName.empty())
   {
@@ -136,7 +135,7 @@ template <class T>
 std::vector<T> PortManager<T>::view() const
 {
   std::vector<T> portVector;
-  boost::push_back(portVector, ports_ | boost::adaptors::map_values);
+  boost::copy(ports_ | boost::adaptors::map_values, std::back_inserter(portVector));
   return portVector;
 }
 
