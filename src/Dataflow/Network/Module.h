@@ -127,6 +127,12 @@ namespace Networks {
     {
       explicit PortNameBase(const PortId& id) : id_(id) {}
       //operator size_t() const { return N; }
+
+      operator PortId() const 
+      {
+        return toId();
+      }
+
       PortId toId() const
       { 
         if (id_.name.empty())
@@ -135,7 +141,7 @@ namespace Networks {
       }
       operator std::string() const
       {
-        return static_cast<PortId>(*this).name;
+        return toId().name;
       }
 
       PortId id_;
