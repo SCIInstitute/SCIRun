@@ -270,7 +270,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   mSRObjects.push_back(objectName);
 
   // Now we re-add the object to spire.
-  mSpire->addObject(obj->objectName);
+  mSpire->addObject(objectName);
 
   // Add vertex buffer objects.
   for (auto it = obj->mVBOs.cbegin(); it != obj->mVBOs.cend(); ++it)
@@ -328,9 +328,11 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
 
     // Add gpu state if it has been set.
     if (pass.hasGPUState == true)
+    {
       // Be sure to always include the pass name as we are updating a
       // subpass of SPIRE_DEFAULT_PASS.
       mSpire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+    }
 
     // Add lambda object uniforms to the pass.
     mSpire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
@@ -358,7 +360,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     const Core::Datatypes::GeometryObject::SpireIBO& ibo = *it;
     mSpire->removeIBO(ibo.name);
   }
-
 }
 
 

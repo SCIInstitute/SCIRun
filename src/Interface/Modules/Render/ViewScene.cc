@@ -101,6 +101,7 @@ void ViewSceneDialog::moduleExecuted()
   }
 }
 
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
   auto tools = new QToolBar(this);
