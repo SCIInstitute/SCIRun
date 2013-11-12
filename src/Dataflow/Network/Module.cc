@@ -212,7 +212,7 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(const Por
 
   if (iports_[id]->isDynamic())
   {
-    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port # " + id.name + " is dynamic, get_dynamic_input_handles must be called."));
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port " + id.name + " is dynamic, get_dynamic_input_handles must be called."));
   }
 
   return iports_[id]->getData();

@@ -344,25 +344,16 @@ void PortWidgetManager::addPort(InputPortWidget* port)
   inputPorts_.push_back(port);
 }
 
-void ModuleWidget::drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index)
+void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid)
 {
-  //if (id.id_ == moduleId_)
-  //{
-  //  std::cout << "PORT PLACED/REMOVED NEXT TO: " << index << " drawPorts :: " << moduleId_ << std::endl;
-  //  printInputPorts(*theModule_);
-  //}
-}
-
-void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index)
-{
-  if (id.id_ == moduleId_)
+  if (mid.id_ == moduleId_)
   {
     //TODO: THE WHOLE POINT OF THIS HUGE CHANGE
-    InputPortHandle port = theModule_->inputPorts()[index + 1];
+    InputPortHandle port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
-    std::cout << "~~~addDynamicPort " << index + 1 << " : " << port->get_portname() << " : " << type << std::endl;
+    std::cout << "~~~addDynamicPort " << port->getIndex() + 1 << " : " << port->get_portname() << " : " << type << std::endl;
 
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, id, port->id(), index+1, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex()+1, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_.addPort(w);
@@ -372,18 +363,18 @@ void ModuleWidget::addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id
   }
 }
 
-void ModuleWidget::removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index)
+void ModuleWidget::removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid)
 {
-  if (id.id_ == moduleId_)
+  if (mid.id_ == moduleId_)
   {
-    auto portToRemove = index;
-    std::cout << "~~~removeDynamicPort " << portToRemove << std::endl;
+    //auto portToRemove = index;
+    std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
 
-    if (ports_.removeDynamicPort(index, inputPortLayout_))
-    {
-      Q_EMIT dynamicPortChanged();
-      printInputPorts(*theModule_);
-    }
+    //if (ports_.removeDynamicPort(index, inputPortLayout_))
+    //{
+    //  Q_EMIT dynamicPortChanged();
+    //  printInputPorts(*theModule_);
+    //}
   }
 }
 

@@ -123,9 +123,8 @@ public Q_SLOTS:
   void updateNote(const Note& note);
   void duplicate();
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
-  void drawPorts(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index);
-  void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index);
-  void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& id, size_t index);
+  void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
+  void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);

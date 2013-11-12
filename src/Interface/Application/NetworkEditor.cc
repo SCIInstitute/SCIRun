@@ -199,10 +199,10 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
   
   if (module->hasDynamicPorts())
   {
-    connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
-    connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
-    connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
-    connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
+    //connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
+    //connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, size_t)), module, SLOT(drawPorts(const SCIRun::Dataflow::Networks::ModuleId&, size_t)));
+    connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
+    connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
     connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
   }
   

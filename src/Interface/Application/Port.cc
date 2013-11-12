@@ -309,7 +309,6 @@ void PortWidget::MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionD
 
 void PortWidget::moveEvent( QMoveEvent * event )
 {
-  std::cout << "PortWidget::moveEvent" << std::endl;
   QPushButton::moveEvent(event);
   Q_EMIT portMoved();
 }

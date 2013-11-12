@@ -44,5 +44,11 @@ void SendTestMatrixModule::execute()
 {
   data_ = optional_any_cast_or_default<DenseMatrixHandle>(get_state()->getTransientValue("MatrixToSend"));
 
+  if (!data_)
+  {
+    error("SendTestMatrix error: data is null.");
+    return;
+  }
+
   sendOutput(TestMatrix, data_);
 }
