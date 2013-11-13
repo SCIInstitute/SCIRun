@@ -176,7 +176,6 @@ Q_SIGNALS:
     void sendToBack();
     void properties();
     void updateActions();
-    void updateScreen();
 
   private:
     typedef QPair<ModuleWidget*, ModuleWidget*> ModulePair;

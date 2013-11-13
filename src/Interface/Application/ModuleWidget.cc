@@ -373,8 +373,9 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 
     if (ports_.removeDynamicPort(pid, inputPortLayout_))
     {
+      trackConnections();
       Q_EMIT dynamicPortChanged();
-      printInputPorts(*theModule_);
+      //printInputPorts(*theModule_);
     }
   }
 }

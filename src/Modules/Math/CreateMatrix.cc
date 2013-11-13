@@ -39,7 +39,10 @@ using namespace SCIRun::Dataflow::Networks;
 
 SCIRun::Core::Algorithms::AlgorithmParameterName CreateMatrixModule::TextEntry("TextEntry");
 
-CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) {}
+CreateMatrixModule::CreateMatrixModule() : Module(ModuleLookupInfo("CreateMatrix", "Math", "SCIRun")) 
+{
+  INITIALIZE_PORT(EnteredMatrix);
+}
 
 void CreateMatrixModule::setStateDefaults()
 {

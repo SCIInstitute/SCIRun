@@ -65,9 +65,9 @@ namespace Networks {
     void serialize(Archive& ar, const unsigned int version)
     {
       ar & boost::serialization::make_nvp("moduleId1_", out_.moduleId_.id_);
-      ar & boost::serialization::make_nvp("port1_", out_.portId_.name);
+      ar & boost::serialization::make_nvp("port1_", out_.portId_);
       ar & boost::serialization::make_nvp("moduleId2_", in_.moduleId_.id_);
-      ar & boost::serialization::make_nvp("port2_", in_.portId_.name);
+      ar & boost::serialization::make_nvp("port2_", in_.portId_);
     }
   public:
     ConnectionDescriptionXML();
@@ -76,5 +76,16 @@ namespace Networks {
   };
 
 }}}
+
+namespace boost {
+  namespace serialization {
+
+    template<class Archive>
+    void serialize(Archive& ar, SCIRun::Dataflow::Networks::PortId& pid, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("name", pid.name);
+      ar & boost::serialization::make_nvp("id", pid.id);
+    }
+  }}
 
 #endif
