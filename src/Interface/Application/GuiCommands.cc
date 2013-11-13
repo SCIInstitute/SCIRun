@@ -119,11 +119,11 @@ bool FileOpenCommand::execute()
       return true;
     }
     else
-      GuiLogger::Instance().log("File load failed.");
+      GuiLogger::Instance().log("File load failed: null xml returned.");
   }
   catch (...)
   {
-    GuiLogger::Instance().log("File load failed.");
+    GuiLogger::Instance().log("File load failed: exception in load_xml.");
   }
   return false;
 }
