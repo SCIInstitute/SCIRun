@@ -58,25 +58,35 @@ ModuleHandle MockModuleFactory::create(const ModuleDescription& info)
 
   ON_CALL(*module, num_input_ports()).WillByDefault(Return(info.input_ports_.size()));
   size_t portIndex = 0;
+  std::vector<InputPortHandle> inputs;
   BOOST_FOREACH(const InputPortDescription& d, info.input_ports_)
   {
     MockInputPortPtr inputPort(new NiceMock<MockInputPort>);
     ON_CALL(*inputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
+    ON_CALL(*inputPort, id()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*module, hasInputPort(d.id)).WillByDefault(Return(true));
+    inputs.push_back(inputPort);
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
     //EXPECT_CALL(*module, get_input_port(portIndex)).WillRepeatedly(Return(inputPort));
     portIndex++;
   }
+  ON_CALL(*module, inputPorts()).WillByDefault(Return(inputs));
   
   ON_CALL(*module, num_output_ports()).WillByDefault(Return(info.output_ports_.size()));
   portIndex = 0;
+  std::vector<OutputPortHandle> outputs;
   BOOST_FOREACH(const OutputPortDescription& d, info.output_ports_)
   {
     MockOutputPortPtr outputPort(new NiceMock<MockOutputPort>);
     ON_CALL(*outputPort, get_typename()).WillByDefault(Return(PortColorLookup::toColor(d.datatype)));
+    ON_CALL(*outputPort, id()).WillByDefault(Return(PortId(d.id)));
+    ON_CALL(*module, hasOutputPort(d.id)).WillByDefault(Return(true));
+    outputs.push_back(outputPort);
     //this line is troublesome with the threaded gmock verifiers on Mac. I can disable it and we can test the functionality in ConnectionTests.
     //EXPECT_CALL(*module, get_output_port(portIndex)).WillRepeatedly(Return(outputPort));
     portIndex++;
   }
+  ON_CALL(*module, outputPorts()).WillByDefault(Return(outputs));
   
   ModuleId id("module", ++moduleCounter_);
   ON_CALL(*module, get_id()).WillByDefault(Return(id));

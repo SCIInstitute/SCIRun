@@ -54,6 +54,7 @@ protected:
     DefaultValue<InputPortHandle>::Set(InputPortHandle(new NiceMock<MockInputPort>));
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle(new NiceMock<MockOutputPort>));
     DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
+    DefaultValue<PortId>::Set(PortId());
     moduleFactory_.reset(new MockModuleFactory);
   }
 
@@ -125,7 +126,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
   
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#o1#_@to@_module:2_p#i2#", connId.id_);
 
   ConnectionId connIdEmpty = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
@@ -137,7 +138,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 
   connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#o1#_@to@_module:2_p#i2#", connId.id_);
 }
 
 //TODO: this verification pushed up to higher layer.
@@ -166,6 +167,5 @@ TEST_F(NetworkTests, CannotConnectNonExistentPorts)
   mli2.module_name_ = "Module2";
   ModuleHandle m2 = network.add_module(mli2);
 
-  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2));
-  EXPECT_EQ("", connId.id_);
+  EXPECT_THROW(network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2)), std::out_of_range);
 }

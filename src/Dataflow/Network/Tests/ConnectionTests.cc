@@ -56,12 +56,6 @@ protected:
     outputModule.reset(new NiceMock<MockModule>);
   }
 
-  void setModuleExpectations()
-  {
-    //EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(dummyInputPort));
-    //EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(dummyOutputPort));
-  }
-
   MockInputPortPtr dummyInputPort;
   MockOutputPortPtr dummyOutputPort;
   MockModulePtr inputModule;
@@ -77,7 +71,6 @@ TEST_F(ConnectionTests, CtorThrowsWithNullPorts)
 
 TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 {
-  setModuleExpectations();
   Connection c(dummyOutputPort, dummyInputPort, "test");
   ASSERT_TRUE(c.iport_);
   ASSERT_TRUE(c.oport_);
@@ -88,7 +81,6 @@ TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 
 TEST_F(ConnectionTests, CtorConnectsSelfToPorts)
 {
-  setModuleExpectations();
   EXPECT_CALL(*dummyInputPort, attach(_));
   EXPECT_CALL(*dummyOutputPort, attach(_));
   Connection c(dummyOutputPort, dummyInputPort, "test");
@@ -96,7 +88,6 @@ TEST_F(ConnectionTests, CtorConnectsSelfToPorts)
 
 TEST_F(ConnectionTests, DtorDisconnectsSelfFromPorts)
 {
-  setModuleExpectations();
   Connection c(dummyOutputPort, dummyInputPort, "test");
   EXPECT_CALL(*dummyInputPort, detach(&c));
   EXPECT_CALL(*dummyOutputPort, detach(&c));
