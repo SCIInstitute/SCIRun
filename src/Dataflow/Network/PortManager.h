@@ -136,6 +136,7 @@ std::vector<T> PortManager<T>::view() const
 {
   std::vector<T> portVector;
   boost::copy(ports_ | boost::adaptors::map_values, std::back_inserter(portVector));
+  std::sort(portVector.begin(), portVector.end(), [](const T& lhs, const T& rhs) { return lhs->getIndex() < rhs->getIndex(); });
   return portVector;
 }
 

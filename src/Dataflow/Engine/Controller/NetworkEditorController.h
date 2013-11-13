@@ -45,8 +45,8 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
-  typedef boost::signals2::signal<void (Networks::ModuleId, const Networks::PortId&)> PortAddedSignalType;
-  typedef boost::signals2::signal<void (Networks::ModuleId, const Networks::PortId&)> PortRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortRemovedSignalType;
 
   class DynamicPortManager;
 

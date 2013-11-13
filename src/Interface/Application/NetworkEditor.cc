@@ -204,6 +204,7 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
     connect(controller_.get(), SIGNAL(portAdded(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
     connect(controller_.get(), SIGNAL(portRemoved(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)), module, SLOT(removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId&, const SCIRun::Dataflow::Networks::PortId&)));
     connect(module, SIGNAL(dynamicPortChanged()), proxy, SLOT(createPortPositionProviders()));
+    connect(module, SIGNAL(dynamicPortChanged()), this, SLOT(updateScreen()));
   }
   
   module->getModule()->get_state()->connect_state_changed(boost::bind(&NetworkEditor::modified, this));
@@ -237,6 +238,11 @@ void NetworkEditor::setupModuleWidget(ModuleWidget* module)
 void NetworkEditor::bringToFront()
 {
   zLevelManager_->bringToFront();
+}
+
+void NetworkEditor::updateScreen()
+{
+  QApplication::processEvents( QEventLoop::ExcludeUserInputEvents );
 }
 
 void ZLevelManager::bringToFront()

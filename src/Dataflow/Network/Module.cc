@@ -341,14 +341,16 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   return *this;
 }
 
-void Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
+PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
 {
   Module* m = dynamic_cast<Module*>(module.get());
   if (m)
   {
     InputPortHandle newPort(m->getInputPort(id)->clone());
     newPort->setIndex(m->add_input_port(newPort));
+    return newPort->id();
   }
+  THROW_INVALID_ARGUMENT("Don't know how to clone ports on other Module types");
 }
 
 void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)

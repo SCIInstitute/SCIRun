@@ -187,7 +187,7 @@ namespace Networks {
       ModuleHandle build();
 
       //TODO: these don't quite belong here, think about extracting
-      void cloneInputPort(ModuleHandle module, const PortId& id);
+      PortId cloneInputPort(ModuleHandle module, const PortId& id);
       void removeInputPort(ModuleHandle module, const PortId& id);
 
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSinkInterface*()> SinkMaker;
@@ -547,7 +547,7 @@ namespace Modules
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
   StaticPortName< ATTACH_NAMESPACE(type), index> name;
 
-#define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj;}while(0);
+#define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
 
   //TODO: make metafunc for Input/Output
 

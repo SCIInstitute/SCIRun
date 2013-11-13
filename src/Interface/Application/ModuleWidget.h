@@ -65,7 +65,7 @@ public:
 
   void addPort(InputPortWidget* port);
   void addPort(OutputPortWidget* port);
-  bool removeDynamicPort(size_t index, QHBoxLayout* layout);
+  bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);
   void addInputsToLayout(QHBoxLayout* layout);
   void addOutputsToLayout(QHBoxLayout* layout);
   void reindexInputs();
