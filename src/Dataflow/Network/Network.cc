@@ -107,17 +107,7 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
     {
       ConnectionHandle conn(boost::make_shared<Connection>(outputModule->getOutputPort(outputPortId), inputModule->getInputPort(inputPortId), id));
 
-      //lock.lock();
-
       connections_[id] = conn;
-
-      // Reschedule next time we can.
-      //reschedule=1;
-
-      //lock.unlock();
-
-      //m1->oports_.unlock();
-      //m2->iports_.unlock();
 
       return id;
     }

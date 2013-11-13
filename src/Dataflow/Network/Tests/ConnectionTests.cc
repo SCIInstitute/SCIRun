@@ -75,11 +75,6 @@ TEST_F(ConnectionTests, CtorThrowsWithNullPorts)
   ASSERT_THROW(Connection(OutputPortHandle(), dummyInputPort, "fake"), NullPointerException);
 }
 
-TEST_F(ConnectionTests, CtorThrowsWhenPortsDontExistOnModules)
-{
-  ASSERT_THROW(Connection(dummyOutputPort, dummyInputPort, "test"), NullPointerException);
-}
-
 TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 {
   setModuleExpectations();
