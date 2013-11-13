@@ -102,9 +102,9 @@ TEST(ReadWriteMatrixFunctionalTest, ManualExecution)
 
   EXPECT_EQ(4, writeReadMatrixNetwork.nmodules());
 
-  writeReadMatrixNetwork.connect(ConnectionOutputPort(send, 0), ConnectionInputPort(write, 0));
+  writeReadMatrixNetwork.connect(ConnectionOutputPort(send, 0), ConnectionInputPort(write, 1));
   EXPECT_EQ(1, writeReadMatrixNetwork.nconnections());
-  writeReadMatrixNetwork.connect(ConnectionOutputPort(read, 0), ConnectionInputPort(receive, 0));
+  writeReadMatrixNetwork.connect(ConnectionOutputPort(read, 1), ConnectionInputPort(receive, 0));
   EXPECT_EQ(2, writeReadMatrixNetwork.nconnections());
 
   DenseMatrixHandle input = matrix1();
