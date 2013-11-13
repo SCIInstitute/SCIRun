@@ -55,40 +55,40 @@ public:
   //----------------------------------------------------------------------------
 
   /// Inverse view to world matrix.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getToCameraToProjection()
-  {return std::make_pair("uProjIV", spire::UNIFORM_FLOAT_MAT4);}
+  static std::string          getToCameraToProjectionName() {return "uProjIV";}
+  static spire::UNIFORM_TYPE  getToCameraToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
 
   /// Projection matrix.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getToProjection()
-  {return std::make_pair("uProj", spire::UNIFORM_FLOAT_MAT4);}
+  static std::string          getToProjectionName() {return "uProj";}
+  static spire::UNIFORM_TYPE  getToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
 
   /// View to world.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getCameraToWorld()
-  {return std::make_pair("uView", spire::UNIFORM_FLOAT_MAT4);}
+  static std::string          getCameraToWorldName() {return "uView";}
+  static spire::UNIFORM_TYPE  getCameraToWorldType() {return spire::UNIFORM_FLOAT_MAT4;}
 
   /// Viewing vector for the camera (used in lighting calculations).
   /// Depends on the projection matrix -- in world space.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getCameraViewVec()
-  {return std::make_pair("uCamViewVec", spire::UNIFORM_FLOAT_VEC3);}
+  static std::string          getCameraViewVecName() {return "uCamViewVec";}
+  static spire::UNIFORM_TYPE  getCameraViewVecType() {return spire::UNIFORM_FLOAT_VEC3;}
 
   /// 'Up' vector for the camera -- in world space.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getCameraUpVec()
-  {return std::make_pair("uCamUp", spire::UNIFORM_FLOAT_VEC3);}
+  static std::string          getCameraUpVecName() {return "uCamUp";}
+  static spire::UNIFORM_TYPE  getCameraUpVecType() {return spire::UNIFORM_FLOAT_VEC3;}
 
   //----------------------------------------------------------------------------
   // Object and Combined Object/Camera Uniforms
   //----------------------------------------------------------------------------
   /// Object -> World -> Camera -> Projection
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToCameraToProjection()   
-  {return std::make_pair("uProjIVObject", spire::UNIFORM_FLOAT_MAT4);}
+  static std::string          getObjectToCameraToProjectionName() {return "uProjIVObject";}
+  static spire::UNIFORM_TYPE  getObjectToCameraToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
 
   /// Object -> World to view transformation.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToView()
-  {return std::make_pair("uViewObject", spire::UNIFORM_FLOAT_MAT4);}
+  static std::string          getObjectToViewName() {return "uViewObject";}
+  static spire::UNIFORM_TYPE  getObjectToViewType() {return spire::UNIFORM_FLOAT_MAT4;}
 
   /// Object -> World transformformation.
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getObject()
-  {return std::make_pair("uObject", spire::UNIFORM_FLOAT_MAT4);}
+  static std::string          getObjectName() {return "uObject";}
+  static spire::UNIFORM_TYPE  getObjectType() {return spire::UNIFORM_FLOAT_MAT4;}
 
 };
 

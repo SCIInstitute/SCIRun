@@ -250,9 +250,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   // Ensure our rendering context is current on our thread.
   mSpire->makeCurrent();
 
-  // Set directional light source (in world space).
-  mSpire->addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
-
   std::string objectName = obj->objectName;
 
   // Check to see if the object already exists in our list. If so, then
@@ -380,7 +377,57 @@ void SRInterface::removeAllGeomObjects()
 void SRInterface::doFrame()
 {
   mSpire->makeCurrent();
-  mSpire->doFrame();
+
+  // Set directional light source (in world space).
+  mSpire->addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
+
+  // Set common transformations.
+  // Cache object to world transform.
+  spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
+
+  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
+  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
+  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
+
+  // Loop through the unsatisfied uniforms and see if we can provide any.
+  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
+  {
+    if (it->uniformName == objectTrafoName)
+    {
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+                                                     it->shaderLocation, objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToViewName)
+    {
+      // Grab the inverse view transform.
+      ::spire::M44 inverseView = glm::affineInverse(
+          iface.getGlobalUniform<::spire::M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+                                              it->shaderLocation, inverseView * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else if (it->uniformName == objectToCamProjName)
+    {
+      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
+          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
+      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+                                       it->shaderLocation, inverseViewProjection * objToWorld);
+
+      it = unsatisfiedUniforms.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+
+  // Run through all of our objects and render them.
+  
+
+  //mSpire->doFrame();
 }
 
 
