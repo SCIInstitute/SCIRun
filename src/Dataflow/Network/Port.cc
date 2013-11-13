@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), id_(params.port_name), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
+  : module_(module), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
   if (typeName_.empty() || portName_.empty() || colorName_.empty())
@@ -96,7 +96,6 @@ size_t Port::getIndex() const
 InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
   : Port(module, params), sink_(sink), isDynamic_(params.isDynamic_)
 {
-
 }
 
 InputPort::~InputPort()
@@ -128,8 +127,8 @@ void InputPort::attach(Connection* conn)
 InputPortInterface* InputPort::clone() const
 {
   DatatypeSinkInterfaceHandle sink(sink_->clone());
-  //TODO: need new id#
-  return new InputPort(module_, ConstructionParams(PortId(id_.name, id_.id + 1), typeName_, isDynamic_), sink);
+  PortId cloneId(id_.name, id_.id + 1);
+  return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)

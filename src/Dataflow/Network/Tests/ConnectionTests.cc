@@ -105,7 +105,7 @@ TEST(ConnectionIdTests, CanParseConnectionIdString)
     IncomingConnectionDescription(ModuleId("mod:2"), PortId("name2")));
   ConnectionId id = ConnectionId::create(desc);
   std::cout << id.id_ << std::endl;
-  EXPECT_EQ("mod:1_p#name1#_@to@_mod:2_p#name2#", id.id_);
+  EXPECT_EQ("mod:1_p#name1:0#_@to@_mod:2_p#name2:0#", id.id_);
   ConnectionDescription descParsed = id.describe();
   EXPECT_EQ(desc, descParsed);
 }

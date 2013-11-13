@@ -107,7 +107,7 @@ TEST_F(NetworkTests, CanAddAndRemoveConnections)
   //TODO: yucky, yucky test code now. needs refactoring for readability!
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#o1#_@to@_module:2_p#i2#", connId.id_);
+  EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
@@ -126,7 +126,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
   
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#o1#_@to@_module:2_p#i2#", connId.id_);
+  EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);
 
   ConnectionId connIdEmpty = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
@@ -138,7 +138,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 
   connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#o1#_@to@_module:2_p#i2#", connId.id_);
+  EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);
 }
 
 //TODO: this verification pushed up to higher layer.

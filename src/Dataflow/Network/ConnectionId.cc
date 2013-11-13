@@ -81,16 +81,16 @@ bool SCIRun::Dataflow::Networks::operator!=(const ConnectionDescription& lhs, co
 /*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
 {
   std::ostringstream cid;
-  cid << desc.out_.moduleId_ << "_p#" << desc.out_.portId_.name << "#_@to@_" << desc.in_.moduleId_ << "_p#" << desc.in_.portId_.name << "#";
+  cid << desc.out_.moduleId_ << "_p#" << desc.out_.portId_ << "#_@to@_" << desc.in_.moduleId_ << "_p#" << desc.in_.portId_ << "#";
   return ConnectionId(cid.str());
 }
 
 ConnectionDescription ConnectionId::describe() const
 {
-  static boost::regex r("(.+)_p#(.+)#_@to@_(.+)_p#(.+)#");
+  static boost::regex r("(.+)_p#(.+):(\\d+)#_@to@_(.+)_p#(.+):(\\d+)#");
   boost::smatch what;
   regex_match(id_, what, r);
   return ConnectionDescription(
-    OutgoingConnectionDescription(ModuleId(what[1]), PortId((std::string)what[2])), 
-    IncomingConnectionDescription(ModuleId(what[3]), PortId((std::string)what[4])));
+    OutgoingConnectionDescription(ModuleId(what[1]), PortId((std::string)what[2], boost::lexical_cast<size_t>(what[3]))), 
+    IncomingConnectionDescription(ModuleId(what[4]), PortId((std::string)what[5], boost::lexical_cast<size_t>(what[6]))));
 }

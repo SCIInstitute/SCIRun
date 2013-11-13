@@ -127,7 +127,9 @@ bool SCIRun::Dataflow::Networks::operator!=(const PortId& lhs, const PortId& rhs
 
 bool SCIRun::Dataflow::Networks::operator<(const PortId& lhs, const PortId& rhs)
 {
-  return std::make_pair(lhs.name, lhs.id) < std::make_pair(rhs.name, rhs.id);
+  if (lhs.name == rhs.name)
+    return lhs.id < rhs.id;
+  return lhs.name < rhs.name;
 }
 
 std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const PortId& id)
