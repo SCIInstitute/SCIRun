@@ -129,10 +129,10 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   Q_EMIT modified();
 }
 
-boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
-{
-  return controller_->createDynamicPortSwitch();
-}
+//boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
+//{
+//  //return controller_->createDynamicPortSwitch();
+//}
 
 void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
 {
@@ -547,7 +547,7 @@ void NetworkEditor::removeModuleWidget(const SCIRun::Dataflow::Networks::ModuleI
 
 void NetworkEditor::clear()
 {
-  auto portSwitch = createDynamicPortDisabler();
+  //auto portSwitch = createDynamicPortDisabler();
   scene_->clear();
   //TODO: this (unwritten) method does not need to be called here.  the dtors of all the module widgets get called when the scene_ is cleared, which triggered removal from the underlying network.
   // we'll need a similar hook when programming the scripting interface (moduleWidgets<->modules).

@@ -91,6 +91,14 @@ namespace Networks {
 
     virtual std::string toString() const = 0;
   };
+
+  class SCISHARE ConnectionMakerService
+  {
+  public:
+    virtual ~ConnectionMakerService() {}
+    virtual void requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
+  };
+
 }}}
 
 

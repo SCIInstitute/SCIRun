@@ -91,11 +91,15 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   
   if (!outputModule->hasOutputPort(outputPortId))
   {
-    THROW_INVALID_ARGUMENT("Unknown output port: " + outputPortId.name);
+    std::ostringstream ostr;
+    ostr << "Unknown output port: " << outputPortId;
+    THROW_INVALID_ARGUMENT(ostr.str());
   }
   if (!inputModule->hasInputPort(inputPortId))
   {
-    THROW_INVALID_ARGUMENT("Unknown input port: " + inputPortId.name);
+    std::ostringstream ostr;
+    ostr << "Unknown input port: " << inputPortId;
+    THROW_INVALID_ARGUMENT(ostr.str());
   }
 
   ConnectionId id = ConnectionId::create(ConnectionDescription(

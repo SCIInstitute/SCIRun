@@ -37,6 +37,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkEditorController* controller) : controller_(controller), enabled_(true)
 {
+  std::cout << "DPM ()" << std::endl;
   ENSURE_NOT_NULL(controller, "DPM needs network controller object");
   addedSignal.connect(boost::bind(&DynamicPortManager::connectionAddedNeedToCloneAPort, this, _1));
   removeSignal.connect(boost::bind(&DynamicPortManager::connectionRemovedNeedToRemoveAPort, this, _1));
@@ -46,7 +47,7 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
 {
   if (enabled_)
   {
-    //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
+    std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
     //TODO: assumption: dynamic = input
     auto moduleIn = controller_->getNetwork()->lookupModule(cd.in_.moduleId_);
     //std::cout << "ADD CHECKING: " << cd.in_.moduleId_ << " /// " << cd.in_.portId_ << std::endl;
@@ -65,7 +66,7 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
 {
   if (enabled_)
   {
-    //std::cout << "need to remove a port: " << id.id_ << std::endl;
+    std::cout << "need to remove a port: " << id.id_ << std::endl;
     auto desc = id.describe();
     auto moduleIn = controller_->getNetwork()->lookupModule(desc.in_.moduleId_);
     //std::cout << "REMOVE CHECKING: " << desc.in_.moduleId_ << " /// " << desc.in_.portId_ << std::endl;
@@ -87,14 +88,4 @@ boost::signals2::connection DynamicPortManager::connectPortAdded(const PortAdded
 boost::signals2::connection DynamicPortManager::connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber)
 {
   return portRemoved_.connect(subscriber);
-}
-
-void DynamicPortManager::enable()
-{
-  //enabled_ = true;
-}
-
-void DynamicPortManager::disable()
-{
-  //enabled_ = false;
 }

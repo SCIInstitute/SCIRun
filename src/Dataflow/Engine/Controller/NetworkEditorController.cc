@@ -114,7 +114,7 @@ void NetworkEditorController::removeModule(const ModuleId& id)
 
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
-  auto disableDynamicPortManager(createDynamicPortSwitch());
+  //auto disableDynamicPortManager(createDynamicPortSwitch());
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(id.name_);
@@ -273,7 +273,6 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
   {
-    auto disableDynamicPortManager(createDynamicPortSwitch());
     NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_);
     theNetwork_ = conv.from_xml_data(xml->network);
     for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
@@ -368,23 +367,23 @@ void NetworkEditorController::configureLoggingLibrary()
   root.addAppender(appender2);
 }
 
-boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
-{
-  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
-}
-
-DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : dpm_(dpm), first_(true)
-{
-  if (dpm_)
-  {
-    first_ = !dpm_->isDisabled();
-    if (first_)
-      dpm_->disable();
-  }
-}
-
-DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
-{
-  if (dpm_ && first_)
-    dpm_->enable();
-}
+//boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
+//{
+//  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
+//}
+//
+//DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : dpm_(dpm), first_(true)
+//{
+//  if (dpm_)
+//  {
+//    first_ = !dpm_->isDisabled();
+//    if (first_)
+//      dpm_->disable();
+//  }
+//}
+//
+//DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
+//{
+//  if (dpm_ && first_)
+//    dpm_->enable();
+//}

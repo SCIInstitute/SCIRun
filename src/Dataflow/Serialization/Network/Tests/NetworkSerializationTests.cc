@@ -244,3 +244,49 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   EXPECT_EQ("EvaluateLinearAlgebraUnary", trans2->get_module_name());
   EXPECT_EQ(EvaluateLinearAlgebraUnaryAlgorithm::TRANSPOSE, trans2->get_state()->getValue(Variables::Operator).getInt());
 }
+
+TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
+{
+  ModuleFactoryHandle mf(new HardCodedModuleFactory);
+  ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
+  NetworkEditorController controller(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
+
+  std::vector<ModuleHandle> showFields;
+  showFields.push_back(controller.addModule("ShowField"));
+  showFields.push_back(controller.addModule("ShowField"));
+  showFields.push_back(controller.addModule("ShowField"));
+  showFields.push_back(controller.addModule("ShowField"));
+  showFields.push_back(controller.addModule("ShowField"));
+
+  ModuleHandle view = controller.addModule("ViewScene");
+
+  NetworkHandle net = controller.getNetwork();
+  EXPECT_EQ(showFields.size() + 1, net->nmodules());
+
+  EXPECT_EQ(0, net->nconnections());
+  size_t port = 0;
+  BOOST_FOREACH(ModuleHandle show, showFields)
+  {
+    std::cout << "Attempting to connect to view scene on " << port << std::endl;
+    controller.requestConnection(show->outputPorts()[0].get(), view->inputPorts()[port++].get());
+  }
+  EXPECT_EQ(showFields.size(), net->nconnections());
+
+  auto xml = controller.saveNetwork();
+
+  std::cout << "NOW TESTING SERIALIZED COPY" << std::endl;
+
+  std::ostringstream ostr;
+  XMLSerializer::save_xml(*xml, ostr, "network");
+  //std::cout << ostr.str() << std::endl;
+
+  NetworkEditorController controller2(mf, sf, ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
+  controller2.loadNetwork(xml);
+
+  NetworkHandle deserialized = controller2.getNetwork();
+  ASSERT_TRUE(deserialized);
+
+  EXPECT_EQ(showFields.size(), deserialized->nconnections());
+  EXPECT_EQ(showFields.size() + 1, deserialized->nmodules());
+  EXPECT_NE(net.get(), deserialized.get());
+}

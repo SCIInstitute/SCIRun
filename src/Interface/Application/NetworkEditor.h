@@ -102,7 +102,8 @@ Q_SIGNALS:
   class NetworkEditor : public QGraphicsView, 
     public SCIRun::Dataflow::Networks::ExecutableLookup, 
     public SCIRun::Dataflow::Networks::ModulePositionEditor, 
-    public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>
+    public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>,
+    public SCIRun::Dataflow::Networks::ConnectionMakerService
   {
 	  Q_OBJECT
 	
@@ -138,7 +139,7 @@ Q_SIGNALS:
 
     QPixmap sceneGrab();
 
-    boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
+    //boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
   protected:
     virtual void dropEvent(QDropEvent* event);

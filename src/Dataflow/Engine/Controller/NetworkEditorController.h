@@ -30,6 +30,7 @@
 #define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkInterface.h> //TODO: split out connectionmakerservice
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
@@ -50,20 +51,20 @@ namespace Engine {
 
   class DynamicPortManager;
 
-  struct SCISHARE DisableDynamicPortSwitch 
-  {
-    explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
-    ~DisableDynamicPortSwitch();
-  private:
-    bool first_;
-    boost::shared_ptr<DynamicPortManager> dpm_;
-  };
+  //struct SCISHARE DisableDynamicPortSwitch 
+  //{
+  //  explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
+  //  ~DisableDynamicPortSwitch();
+  //private:
+  //  bool first_;
+  //  boost::shared_ptr<DynamicPortManager> dpm_;
+  //};
 
   // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
   //   This will be done in issue #231
 
-  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
+  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::ConnectionMakerService
   {
   public:
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, 
@@ -107,7 +108,7 @@ namespace Engine {
     Networks::NetworkHandle getNetwork() const;
     Networks::NetworkGlobalSettings& getSettings();
 
-    boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
+    //boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
 
     void setExecutorType(int type);
 
