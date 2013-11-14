@@ -38,11 +38,11 @@ const char* ExceptionBase::what() const throw()
     if (auto msg = boost::get_error_info<Core::ErrorMessage>(*this))
       return msg->c_str();
     else
-      return "";
+      return std::exception::what();
   }
   catch (...)
   {
-    return "";
+    return "<error retrieving what>";
   }
 }
 

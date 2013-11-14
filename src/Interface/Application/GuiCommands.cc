@@ -121,9 +121,13 @@ bool FileOpenCommand::execute()
     else
       GuiLogger::Instance().log("File load failed: null xml returned.");
   }
+  catch (ExceptionBase& e)
+  {
+    GuiLogger::Instance().log("File load failed: exception in load_xml, " + QString(e.what()));
+  }
   catch (...)
   {
-    GuiLogger::Instance().log("File load failed: exception in load_xml.");
+    GuiLogger::Instance().log("File load failed: Unknown exception in load_xml.");
   }
   return false;
 }

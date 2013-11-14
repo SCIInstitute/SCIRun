@@ -66,9 +66,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
     connectionMaker_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
-    //network->connect(ConnectionOutputPort(from, conn.out_.portId_), ConnectionInputPort(to, conn.in_.portId_));
   }
-  connectionMaker_->setNetwork(NetworkHandle());
 
   return network;
 }
