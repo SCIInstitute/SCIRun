@@ -99,6 +99,15 @@ namespace Networks {
     virtual void requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
   };
 
+  class SCISHARE NetworkEditorControllerInterface : public ConnectionMakerService
+  {
+  public:
+    virtual ~NetworkEditorControllerInterface() {}
+    virtual NetworkHandle getNetwork() const = 0;
+    virtual void setNetwork(NetworkHandle nh) = 0;
+  };
+
+
 }}}
 
 

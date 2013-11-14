@@ -189,7 +189,6 @@ bool AlgorithmParameterList::set_option(const AlgorithmParameterName& key, const
 void AlgorithmParameterList::keyNotFoundPolicy(const AlgorithmParameterName& key)
 {
   BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("Algorithm has no parameter/option with name " + key.name_));
-  //BOOST_THROW_EXCEPTION(AlgorithmParameterNotFound() << Core::ErrorMessage("option key \"" + key.name_ + "\" was not defined in algorithm"));
 }
 
 bool AlgorithmParameterList::get_option(const AlgorithmParameterName& key, std::string& value) const

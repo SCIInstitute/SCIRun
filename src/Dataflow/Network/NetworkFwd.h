@@ -65,6 +65,8 @@ struct ModulePositions;
 struct NetworkFile;
 class NetworkGlobalSettings;
 class ModulePositionEditor;
+class ConnectionMakerService;
+class NetworkEditorControllerInterface;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

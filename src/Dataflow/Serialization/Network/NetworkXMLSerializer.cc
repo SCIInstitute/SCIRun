@@ -30,6 +30,7 @@
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Network/Network.h> //TODO: need network factory??
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <fstream>
 #include <boost/archive/xml_iarchive.hpp>
@@ -41,8 +42,8 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Algorithms;
 
-NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, ModulePositionEditor* mpg)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), mpg_(mpg)
+NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, NetworkEditorControllerInterface* nec, ModulePositionEditor* mpg)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), connectionMaker_(nec), mpg_(mpg)
 {
 }
 
@@ -50,6 +51,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   //TODO: need to use NEC here to manage signal/slots for dynamic ports.
   NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_));
+  connectionMaker_->setNetwork(network);
 
   BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
   {
@@ -63,8 +65,10 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
   {
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
-    network->connect(ConnectionOutputPort(from, conn.out_.portId_), ConnectionInputPort(to, conn.in_.portId_));
+    connectionMaker_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    //network->connect(ConnectionOutputPort(from, conn.out_.portId_), ConnectionInputPort(to, conn.in_.portId_));
   }
+  connectionMaker_->setNetwork(NetworkHandle());
 
   return network;
 }

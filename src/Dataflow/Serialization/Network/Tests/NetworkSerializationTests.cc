@@ -165,7 +165,8 @@ TEST(SerializeNetworkTest, RoundTripObject)
   serializer.save_xml(networkXML, ostr1);
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
-  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle());
+  NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
+  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle(), 0);
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network);
   auto xml2 = converter.to_xml_data(network);
