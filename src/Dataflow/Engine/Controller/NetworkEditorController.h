@@ -51,14 +51,14 @@ namespace Engine {
 
   class DynamicPortManager;
 
-  //struct SCISHARE DisableDynamicPortSwitch 
-  //{
-  //  explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
-  //  ~DisableDynamicPortSwitch();
-  //private:
-  //  bool first_;
-  //  boost::shared_ptr<DynamicPortManager> dpm_;
-  //};
+  struct SCISHARE DisableDynamicPortSwitch 
+  {
+    explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
+    ~DisableDynamicPortSwitch();
+  private:
+    bool first_;
+    boost::shared_ptr<DynamicPortManager> dpm_;
+  };
 
   // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
@@ -109,7 +109,7 @@ namespace Engine {
     virtual void setNetwork(Networks::NetworkHandle nh); 
     Networks::NetworkGlobalSettings& getSettings();
 
-    //boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
+    boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
 
     void setExecutorType(int type);
 

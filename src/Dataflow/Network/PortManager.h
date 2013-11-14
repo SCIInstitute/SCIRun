@@ -97,7 +97,9 @@ PortManager<T>::remove(const PortId& id)
   auto it = ports_.find(id);
   if (it == ports_.end())
   {
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
+    std::ostringstream ostr;
+    ostr << "PortManager tried to remove a port that does not exist: " << id;
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
   ports_.erase(it);
 }
@@ -107,9 +109,11 @@ T
 PortManager<T>::operator[](const PortId& id) const
 {
   auto it = ports_.find(id);
-  if (it == ports_.end())
+  if (it == ports_.end()/* && id.*/)
   {
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to access a port that does not exist"));
+    std::ostringstream ostr;
+    ostr << "PortManager tried to access a port that does not exist: " << id;
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
   return it->second;
 }

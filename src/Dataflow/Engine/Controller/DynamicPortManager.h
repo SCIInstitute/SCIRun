@@ -47,6 +47,10 @@ namespace Engine {
 
     boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber); 
     boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
+
+    bool isDisabled() const { return !enabled_; }
+    void enable() { enabled_ = true; }
+    void disable() { enabled_ = false; }
   private:
     const NetworkEditorController* controller_;
     PortAddedSignalType portAdded_;

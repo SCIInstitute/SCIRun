@@ -37,7 +37,6 @@ using namespace SCIRun::Dataflow::Networks;
 
 DynamicPortManager::DynamicPortManager(ConnectionAddedSignalType& addedSignal, ConnectionRemovedSignalType& removeSignal, const NetworkEditorController* controller) : controller_(controller), enabled_(true)
 {
-  std::cout << "DPM ()" << std::endl;
   ENSURE_NOT_NULL(controller, "DPM needs network controller object");
   addedSignal.connect(boost::bind(&DynamicPortManager::connectionAddedNeedToCloneAPort, this, _1));
   removeSignal.connect(boost::bind(&DynamicPortManager::connectionRemovedNeedToRemoveAPort, this, _1));
@@ -50,10 +49,8 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
     std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
     //TODO: assumption: dynamic = input
     auto moduleIn = controller_->getNetwork()->lookupModule(cd.in_.moduleId_);
-    //std::cout << "ADD CHECKING: " << cd.in_.moduleId_ << " /// " << cd.in_.portId_ << std::endl;
     if (moduleIn->getInputPort(cd.in_.portId_)->isDynamic())
     {
-      //std::cout << "port is dynamic." << std::endl;
       Module::Builder builder;
       auto newPortId = builder.cloneInputPort(moduleIn, cd.in_.portId_);
       //std::cout << "SIGNALLING ADD: " << moduleIn->get_id() << " /// " << newPortId << std::endl;

@@ -61,10 +61,14 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     module->set_state(state);
   }
 
-  BOOST_FOREACH(const ConnectionDescriptionXML& conn, data.connections)
+  std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
+  std::sort(connectionsSorted.begin(), connectionsSorted.end());
+  BOOST_FOREACH(const ConnectionDescriptionXML& conn, connectionsSorted)
   {
+    std::cout << "CONNECTING: " << conn.in_.portId_ << " to " << conn.out_.portId_ << std::endl;
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
+
     connectionMaker_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
   }
 

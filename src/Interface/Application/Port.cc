@@ -137,7 +137,7 @@ PortWidget::PortWidget(const QString& name, const QColor& color, const std::stri
 {
   setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
   setAcceptDrops(true);
-  setToolTip(QString(name_).replace("_", " "));
+  setToolTip(QString(name_).replace("_", " ") + ":" + QString::number(portId_.id));
 
   setMenu(menu_);
 

@@ -280,10 +280,15 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       ModuleHandle module = theNetwork_->module(i);
       moduleAdded_(module->get_module_name(), module);
     }
-    BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
     {
-      ConnectionId id = ConnectionId::create(cd);
-      connectionAdded_(cd);
+      auto flipper(createDynamicPortSwitch());
+      //this is handled by NetworkXMLConverter now--but now the logic is convoluted. 
+      //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
+      BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+      {
+        ConnectionId id = ConnectionId::create(cd);
+        connectionAdded_(cd);
+      }
     }
     if (modulePositionEditor_)
       modulePositionEditor_->moveModules(xml->modulePositions);
@@ -373,23 +378,23 @@ void NetworkEditorController::configureLoggingLibrary()
   root.addAppender(appender2);
 }
 
-//boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
-//{
-//  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
-//}
-//
-//DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : dpm_(dpm), first_(true)
-//{
-//  if (dpm_)
-//  {
-//    first_ = !dpm_->isDisabled();
-//    if (first_)
-//      dpm_->disable();
-//  }
-//}
-//
-//DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
-//{
-//  if (dpm_ && first_)
-//    dpm_->enable();
-//}
+boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
+{
+  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
+}
+
+DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : dpm_(dpm), first_(true)
+{
+  if (dpm_)
+  {
+    first_ = !dpm_->isDisabled();
+    if (first_)
+      dpm_->disable();
+  }
+}
+
+DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
+{
+  if (dpm_ && first_)
+    dpm_->enable();
+}

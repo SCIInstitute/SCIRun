@@ -75,6 +75,9 @@ namespace Networks {
     ConnectionDescriptionXML(const ConnectionDescription& rhs);
   };
 
+  //to order connections by port index.
+  SCISHARE bool operator<(const ConnectionDescriptionXML& lhs, const ConnectionDescriptionXML& rhs);
+
 }}}
 
 namespace boost {
