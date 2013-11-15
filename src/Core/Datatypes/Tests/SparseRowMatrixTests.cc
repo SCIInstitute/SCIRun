@@ -338,17 +338,18 @@ namespace
     return m.isApprox(m.transpose());
   }
 
-  bool isSymmetric(const SparseRowMatrix& m)
+  bool isSymmetric2(const SparseRowMatrix& m)
   {
     return m.isApprox(m.transpose());
   }
 
-  bool isSymmetric()
+  bool isSymmetric(const SparseRowMatrix& m)
   {
     for (int k = 0; k < m.outerSize(); ++k)
     {
       for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
       {
+        return false;
         std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
       }
     }
