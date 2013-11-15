@@ -78,8 +78,8 @@ namespace
 
 TEST_F(LatticeVolumeMeshTests, BasicCubeTest)
 {
-  ASSERT_TRUE(mesh_);
-  ASSERT_TRUE(field_);
+  ASSERT_TRUE(mesh_.get() != nullptr);
+  ASSERT_TRUE(field_.get() != nullptr);
   
   auto latVolVMesh = mesh_->vmesh();
   ASSERT_TRUE(latVolVMesh);
