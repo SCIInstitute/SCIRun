@@ -369,7 +369,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   if (mid.id_ == moduleId_)
   {
     //auto portToRemove = index;
-    //std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
+    std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
 
     if (ports_.removeDynamicPort(pid, inputPortLayout_))
     {

@@ -318,3 +318,57 @@ TEST(SparseRowMatrixTest, GetRow)
   Eigen::SparseVector<double> r1 = m.row(1);
   std::cout << r1 << std::endl;
 }
+
+
+/*
+SparseRowMatrix matrix1()
+{
+SparseRowMatrix m(4,5);
+m.insert(0,0) = 1;
+m.insert(1,2) = -2;
+m.insert(2,3) = 0.5;
+return m;
+}
+*/
+
+namespace
+{
+  bool isSymmetric(const DenseMatrix& m)
+  {
+    return m.isApprox(m.transpose());
+  }
+
+  bool isSymmetric(const SparseRowMatrix& m)
+  {
+    return m.isApprox(m.transpose());
+  }
+
+  bool isSymmetric()
+  {
+    for (int k = 0; k < m.outerSize(); ++k)
+    {
+      for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
+      {
+        std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
+      }
+    }
+  }
+}
+
+
+
+TEST(SparseRowMatrixTest, Iteration)
+{
+  auto m = matrix1();
+  for (int k = 0; k < m.outerSize(); ++k)
+  {
+    for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
+    {
+      std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
+    }
+  }
+
+  ASSERT_FALSE(isSymmetric(m));
+  ASSERT_TRUE(isSymmetric(id3()));
+  ASSERT_TRUE(isSymmetric(Zero()));
+}
