@@ -88,7 +88,6 @@ namespace boost {
     {
       ar & boost::serialization::make_nvp("name", pid.name);
       ar & boost::serialization::make_nvp("id", pid.id);
-      ar & boost::serialization::make_nvp("dynamic", pid.dynamic);
     }
   }}
 

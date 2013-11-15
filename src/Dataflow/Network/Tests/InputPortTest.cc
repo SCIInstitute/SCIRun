@@ -106,7 +106,7 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 TEST_F(InputPortTest, CanClone)
 {
   PortId id(0, "ForwardMatrix");
-  Port::ConstructionParams pcp(id, "Matrix", false);
+  Port::ConstructionParams pcp(id, "Matrix", true);
 
   boost::shared_ptr<SimpleSink> sink(new SimpleSink);
 
