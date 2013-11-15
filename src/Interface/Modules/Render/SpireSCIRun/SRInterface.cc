@@ -46,55 +46,6 @@ namespace SCIRun {
 namespace Gui {
 
 
-// Simple function to handle object transformations so that the GPU does not
-// need to do the same calculation for each vertex.
-static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface, 
-                                  std::list<::spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
-{
-  // Cache object to world transform.
-  ::spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(
-      std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
-
-  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
-
-  // Loop through the unsatisfied uniforms and see if we can provide any.
-  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
-  {
-    if (it->uniformName == objectTrafoName)
-    {
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                                     it->shaderLocation, objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToViewName)
-    {
-      // Grab the inverse view transform.
-      ::spire::M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<::spire::M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                              it->shaderLocation, inverseView * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToCamProjName)
-    {
-      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
-          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseViewProjection * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else
-    {
-      ++it;
-    }
-  }
-}
-
 //------------------------------------------------------------------------------
 SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
                          const std::vector<std::string>& shaderDirs,

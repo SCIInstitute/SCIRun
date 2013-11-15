@@ -39,8 +39,6 @@
 
 #include "../namespaces.h"
 #include "spire/Interface.h"
-#include "spire/src/LambdaInterface.h"
-#include "spire/src/ObjectLambda.h"
 
 namespace SCIRun {
 namespace Gui {
