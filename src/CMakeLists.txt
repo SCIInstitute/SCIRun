@@ -319,7 +319,6 @@ ELSE() # IDEs: Xcode, VS, others...
   )
 ENDIF()
 
-INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 
 
 ########################################################################
@@ -431,22 +430,32 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 
 ########################################################################
+# Find and configure dl library
+
+IF(UNIX)
+  FIND_LIBRARY(DL_LIBRARY dl)
+ENDIF()
+
+
+########################################################################
 # Includes
 
-INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
+SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
 INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun5Prototype_SOURCE_DIR}/
   ${SCIRun5Prototype_SOURCE_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
-  ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
   # TODO: set up include variable in log4cpp project
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
 )
+
+INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 

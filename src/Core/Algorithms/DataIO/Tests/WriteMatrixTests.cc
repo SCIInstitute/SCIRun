@@ -95,7 +95,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealTextFile)
 
   ReadMatrixAlgorithm read;
   DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
-  ASSERT_TRUE(roundTrip);
+  ASSERT_TRUE(roundTrip.get() != nullptr);
 
   EXPECT_EQ(*m1, *roundTrip);
 }
@@ -110,7 +110,7 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFile)
 
   ReadMatrixAlgorithm read;
   DenseMatrixConstHandle roundTrip =  matrix_cast::as_dense(read.run(filename.string()));
-  ASSERT_TRUE(roundTrip);
+  ASSERT_TRUE(roundTrip.get() != nullptr);
 
   EXPECT_EQ(*m1, *roundTrip);
 }
@@ -186,7 +186,7 @@ namespace
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
 {
   auto sparse4 = readSparseMatrixFile("E:\\sparse_v4.mat");
-  ASSERT_TRUE(sparse4);
+  ASSERT_TRUE(sparse4.get() != nullptr);
   EXPECT_EQ(5, sparse4->nrows());
   EXPECT_EQ(6, sparse4->ncols());
   
@@ -195,14 +195,14 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
 
   auto sparse5 = readSparseMatrixFile(v5file);
 
-  ASSERT_TRUE(sparse5);
+  ASSERT_TRUE(sparse5.get() != nullptr);
   EXPECT_EQ(*sparse4, *sparse5);
 }
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileDense)
 {
   auto dense4 = readDenseMatrixFile("E:\\dense_v4.mat");
-  ASSERT_TRUE(dense4);
+  ASSERT_TRUE(dense4.get() != nullptr);
   EXPECT_EQ(5, dense4->nrows());
   EXPECT_EQ(6, dense4->ncols());
   
@@ -211,6 +211,6 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileDense)
 
   auto dense5 = readDenseMatrixFile(v5file);
 
-  ASSERT_TRUE(dense5);
+  ASSERT_TRUE(dense5.get() != nullptr);
   EXPECT_EQ(*dense4, *dense5);
 }

@@ -67,7 +67,7 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
     ScopedTimer t("reading sparse matrix");
     A = matrix_cast::as_sparse(reader.run(Afile.string()));
   }
-  ASSERT_TRUE(A);
+  ASSERT_TRUE(A.get() != nullptr);
   EXPECT_EQ(428931, A->nrows());
   EXPECT_EQ(428931, A->ncols());
 
@@ -76,7 +76,7 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
     ScopedTimer t("reading rhs");
     rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
   }
-  ASSERT_TRUE(rhs);
+  ASSERT_TRUE(rhs.get() != nullptr);
   EXPECT_EQ(428931, rhs->nrows());
   EXPECT_EQ(1, rhs->ncols());
 
@@ -94,13 +94,13 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
     ScopedTimer t("Running solver");
     ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
   }
-  ASSERT_TRUE(solution);
+  ASSERT_TRUE(solution.get() != nullptr);
   EXPECT_EQ(428931, solution->nrows());
   EXPECT_EQ(1, solution->ncols());
 
   auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + method + ".mat");
   auto scirun4solution = reader.run(solutionFile.string());
-  ASSERT_TRUE(scirun4solution);
+  ASSERT_TRUE(scirun4solution.get() != nullptr);
   DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
 
   EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, solutionError);

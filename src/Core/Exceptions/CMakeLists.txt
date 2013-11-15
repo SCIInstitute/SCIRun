@@ -71,7 +71,7 @@ ADD_LIBRARY(Core_Exceptions_Legacy
 
 TARGET_LINK_LIBRARIES(Core_Exceptions_Legacy
   #${TRACEBACK_LIB} 
-  #${DL_LIBRARY}
+  ${DL_LIBRARY}
 )
 
 ADD_DEPENDENCIES(Core_Exceptions_Legacy Boost_external)

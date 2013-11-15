@@ -27,3 +27,41 @@
 */
 
 #include <gtest/gtest.h>
+#include <boost/any.hpp>
+
+TEST(AnyTests, CanDefaultConstruct)
+{
+  boost::any a;
+  EXPECT_TRUE(a.empty());
+}
+
+namespace {
+
+  boost::any empty()
+  { return boost::any(); }
+  
+  const boost::any const_empty()
+  { return boost::any(); }
+}
+
+TEST(AnyTests, CanCopyConstructEmpty)
+{
+  boost::any a(empty());
+  EXPECT_TRUE(a.empty());
+  
+  boost::any a2((boost::any()));
+  EXPECT_TRUE(a2.empty());
+  
+  boost::any a3(2);
+  EXPECT_FALSE(a3.empty());
+  
+  boost::any a4((boost::any(2)));
+  EXPECT_FALSE(a4.empty());
+}
+
+TEST(AnyTests, CanCopyConstructConstEmpty_SEGFAULTSWITHBOOST154)
+{
+  boost::any a(const_empty());
+  EXPECT_TRUE(a.empty());
+}
+
