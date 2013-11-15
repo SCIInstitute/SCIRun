@@ -85,10 +85,10 @@ TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 {
   setModuleExpectations();
   Connection c(outputModule, 1, inputModule, 2, "test");
-  ASSERT_TRUE(c.imod_);
-  ASSERT_TRUE(c.omod_);
-  ASSERT_TRUE(c.iport_);
-  ASSERT_TRUE(c.oport_);
+  ASSERT_TRUE(c.imod_.get() != nullptr);
+  ASSERT_TRUE(c.omod_.get() != nullptr);
+  ASSERT_TRUE(c.iport_.get() != nullptr);
+  ASSERT_TRUE(c.oport_.get() != nullptr);
   ASSERT_EQ(c.imod_, inputModule);
   ASSERT_EQ(c.omod_, outputModule);
   ASSERT_EQ(c.oport_, dummyOutputPort);

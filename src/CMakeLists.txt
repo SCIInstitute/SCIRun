@@ -230,6 +230,20 @@ ENDIF()
 # ENDIF()
 
 ########################################################################
+# External project utilities
+
+OPTION(DISABLE_ExternalProject_UPDATE "Turn off ExternalProject UPDATE_COMMAND property (if not connected to the internet, for example" ON)
+MARK_AS_ADVANCED(DISABLE_ExternalProject_UPDATE)
+IF(DISABLE_ExternalProject_UPDATE)
+  # do nothing commands...
+  IF(WIN32)
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "rem")
+  ELSE()
+    SET(DISABLED_UPDATE "UPDATE_COMMAND" "echo")
+  ENDIF()
+ENDIF()
+
+########################################################################
 # Configure Boost external project
 
 # TODO: make macro
@@ -271,6 +285,7 @@ ExternalProject_Add(Boost_external
   BINARY_DIR ${boost_BINARY_DIR}
   DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
   PATCH_COMMAND ""
+  ${DISABLED_UPDATE}
   INSTALL_DIR ""
   INSTALL_COMMAND ""
   #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
@@ -304,7 +319,6 @@ ELSE() # IDEs: Xcode, VS, others...
   )
 ENDIF()
 
-INCLUDE_DIRECTORIES(${SCI_BOOST_INCLUDE})
 
 
 ########################################################################
@@ -416,22 +430,32 @@ ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 
 ########################################################################
+# Find and configure dl library
+
+IF(UNIX)
+  FIND_LIBRARY(DL_LIBRARY dl)
+ENDIF()
+
+
+########################################################################
 # Includes
 
-INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
+SET(CMAKE_INCLUDE_DIRECTORIES_BEFORE ON)
 
 INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_BINARY_DIR}
   ${SCIRun5Prototype_SOURCE_DIR}/
   ${SCIRun5Prototype_SOURCE_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/gtest/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/gmock/include
-  ${SCI_BOOST_INCLUDE}
   ${SCIRun5Prototype_BINARY_DIR}/
   ${SCIRun5Prototype_BINARY_DIR}/include
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/eigen
   # TODO: set up include variable in log4cpp project
   ${SCIRun5Prototype_SOURCE_DIR}/Externals/log4cpp/include
 )
+
+INCLUDE_DIRECTORIES(SYSTEM ${SCI_BOOST_INCLUDE})
 
 ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 

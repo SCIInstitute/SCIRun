@@ -131,7 +131,7 @@ PrintStringIntoString::execute()
               else
               {
                 currentstring = stringsH[inputport]; inputport++;
-                if (currentstring.get_rep() != 0)
+                if (currentstring.get_rep() != nullptr)
                 {
                   str = currentstring->get();
                 }
