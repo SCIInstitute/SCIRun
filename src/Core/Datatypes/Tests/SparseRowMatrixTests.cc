@@ -349,10 +349,12 @@ namespace
     {
       for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
       {
-        return false;
-        std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
+        if (m.coeff(it.col(), it.row()) != it.value())
+          return false; 
+        //std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
       }
     }
+    return true;
   }
 }
 
@@ -372,4 +374,8 @@ TEST(SparseRowMatrixTest, Iteration)
   ASSERT_FALSE(isSymmetric(m));
   ASSERT_TRUE(isSymmetric(id3()));
   ASSERT_TRUE(isSymmetric(Zero()));
+
+  ASSERT_FALSE(m.isSymmetric());
+  ASSERT_TRUE(id3().isSymmetric());
+  ASSERT_TRUE(Zero().isSymmetric());
 }
