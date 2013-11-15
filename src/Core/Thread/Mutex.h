@@ -31,7 +31,6 @@
 
 #include <boost/noncopyable.hpp>
 #include <boost/thread/mutex.hpp>  //TODO: pimpl?
-#include <boost/thread/lock_guard.hpp>
 #include <Core/Thread/share.h>
 
 namespace SCIRun 
