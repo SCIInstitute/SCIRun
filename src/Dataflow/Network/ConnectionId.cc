@@ -91,6 +91,6 @@ ConnectionDescription ConnectionId::describe() const
   boost::smatch what;
   regex_match(id_, what, r);
   return ConnectionDescription(
-    OutgoingConnectionDescription(ModuleId(what[1]), PortId((std::string)what[2], boost::lexical_cast<size_t>(what[3]))), 
-    IncomingConnectionDescription(ModuleId(what[4]), PortId((std::string)what[5], boost::lexical_cast<size_t>(what[6]))));
+    OutgoingConnectionDescription(ModuleId(what[1]), PortId(boost::lexical_cast<size_t>(what[3]), (std::string)what[2])), 
+    IncomingConnectionDescription(ModuleId(what[4]), PortId(boost::lexical_cast<size_t>(what[6]), (std::string)what[5])));
 }

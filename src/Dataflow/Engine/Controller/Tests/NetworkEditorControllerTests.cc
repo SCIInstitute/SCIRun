@@ -114,8 +114,8 @@ protected:
 
   std::pair<PortId,PortId> setPortIds()
   {
-    PortId id1("1");
-    PortId id2("2");
+    PortId id1(0, "1");
+    PortId id2(0, "2");
     EXPECT_CALL(*port1, id()).WillRepeatedly(Return(id1));
     EXPECT_CALL(*port2, id()).WillRepeatedly(Return(id2));
     return std::make_pair(id1, id2);

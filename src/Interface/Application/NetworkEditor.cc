@@ -129,10 +129,10 @@ void NetworkEditor::addModuleWidget(const std::string& name, SCIRun::Dataflow::N
   Q_EMIT modified();
 }
 
-//boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
-//{
-//  //return controller_->createDynamicPortSwitch();
-//}
+boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditor::createDynamicPortDisabler()
+{
+  return controller_->createDynamicPortSwitch();
+}
 
 void NetworkEditor::requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to)
 {

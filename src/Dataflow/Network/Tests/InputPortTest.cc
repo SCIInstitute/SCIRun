@@ -63,7 +63,7 @@ protected:
 
 TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 {
-  PortId id("ForwardMatrix");
+  PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", false);
 
   MockDatatypeSinkPtr sink(new NiceMock<MockDatatypeSink>);
@@ -80,7 +80,7 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 //let's just use all "real" objects to see if it works.
 TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 {
-  PortId id("ForwardMatrix");
+  PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", false);
 
   boost::shared_ptr<SimpleSink> sink(new SimpleSink);
@@ -105,7 +105,7 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 
 TEST_F(InputPortTest, CanClone)
 {
-  PortId id("ForwardMatrix");
+  PortId id(0, "ForwardMatrix");
   Port::ConstructionParams pcp(id, "Matrix", false);
 
   boost::shared_ptr<SimpleSink> sink(new SimpleSink);

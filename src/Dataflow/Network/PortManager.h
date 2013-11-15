@@ -55,11 +55,9 @@ public:
   size_t size() const;
   size_t add(const T& item);
   void remove(const PortId& id);
-  //T operator[](size_t) const;
   T operator[](const PortId& id) const;
   std::vector<T> operator[](const std::string& name) const;
   bool hasPort(const PortId& id) const;
-  //bool hasPortAtIndex(size_t i) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
   std::vector<T> view() const;
 };
@@ -109,8 +107,12 @@ T
 PortManager<T>::operator[](const PortId& id) const
 {
   auto it = ports_.find(id);
-  if (it == ports_.end()/* && id.*/)
+  if (it == ports_.end())
   {
+    if (id.dynamic)
+      std::cout << "DYNAMIC PORT NEEDS TO INSERT ITSELF HERE SOMEHOW" << std::endl;
+    else
+      std::cout << "HELLO NOT SETTING PORT FLAGS CORRECT" << std::endl;
     std::ostringstream ostr;
     ostr << "PortManager tried to access a port that does not exist: " << id;
     BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));

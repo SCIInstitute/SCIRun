@@ -52,6 +52,7 @@ class PortWidget;
 class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
+class NetworkEditor;
 
 class PortWidgetManager
 {
@@ -81,7 +82,7 @@ class ModuleWidget : public QFrame,
 	Q_OBJECT
 	
 public:
-  ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
     QWidget* parent = 0);
   ~ModuleWidget();
 
@@ -170,6 +171,7 @@ private:
   void addOutputPortsToLayout();
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
+  NetworkEditor* editor_;
 };
 
 }

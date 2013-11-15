@@ -127,7 +127,9 @@ void InputPort::attach(Connection* conn)
 InputPortInterface* InputPort::clone() const
 {
   DatatypeSinkInterfaceHandle sink(sink_->clone());
-  PortId cloneId(id_.name, id_.id + 1);
+  if (!id_.dynamic)
+    THROW_INVALID_ARGUMENT("Cannot clone non-dynamic port.");
+  PortId cloneId(id_.id + 1, id_.name, id_.dynamic);
   return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 

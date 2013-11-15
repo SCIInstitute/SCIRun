@@ -30,6 +30,7 @@
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 #define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
 
+//#include <iostream>
 #include <string>
 #include <vector>
 #include <iosfwd>
@@ -43,9 +44,13 @@ namespace Networks {
 
   struct SCISHARE PortId
   {
-    explicit PortId(const std::string& n = "<undefined>", size_t num = 0) : name(n), id(num) {}
+    explicit PortId(size_t num = 0, const std::string& n = "<undefined>", bool dyn = false) : name(n), id(num), dynamic(dyn) 
+    {
+      //std::cout << "PortId(" << num << "," << n << "," << dyn << ")" << std::endl;
+    }
     std::string name;
     size_t id; //TODO: need smart way to set
+    bool dynamic;
   };
 
   struct SCISHARE PortDescription

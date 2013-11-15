@@ -101,8 +101,8 @@ std::ostream& operator<<(std::ostream& o, const ConnectionDescription& desc)
 TEST(ConnectionIdTests, CanParseConnectionIdString)
 {
   ConnectionDescription desc(
-    OutgoingConnectionDescription(ModuleId("mod:1"), PortId("name1")), 
-    IncomingConnectionDescription(ModuleId("mod:2"), PortId("name2")));
+    OutgoingConnectionDescription(ModuleId("mod:1"), PortId(0, "name1")), 
+    IncomingConnectionDescription(ModuleId("mod:2"), PortId(0, "name2")));
   ConnectionId id = ConnectionId::create(desc);
   std::cout << id.id_ << std::endl;
   EXPECT_EQ("mod:1_p#name1:0#_@to@_mod:2_p#name2:0#", id.id_);

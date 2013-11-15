@@ -58,7 +58,7 @@ protected:
 
 TEST_F(OutputPortTest, SendSomeData)
 {
-  Port::ConstructionParams pcp(PortId("ScalarValue"), "Double", false);
+  Port::ConstructionParams pcp(PortId(0, "ScalarValue"), "Double", false);
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
   MockModulePtr outputModule(new NiceMock<MockModule>);
@@ -83,7 +83,7 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 {
   MockModulePtr outputModule(new NiceMock<MockModule>);
   
-  Port::ConstructionParams pcp(PortId("ScalarValue"), "Double", false);
+  Port::ConstructionParams pcp(PortId(0, "ScalarValue"), "Double", false);
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, mockSource));
@@ -97,7 +97,7 @@ TEST_F(OutputPortTest, DataNotSentWhenNoConnectionsOnPort)
 
 TEST_F(OutputPortTest, CanSendDataToMultipleConnections)
 {
-  Port::ConstructionParams pcp(PortId("ScalarValue"), "Double", false);
+  Port::ConstructionParams pcp(PortId(0, "ScalarValue"), "Double", false);
 
   MockDatatypeSourcePtr mockSource(new NiceMock<MockDatatypeSource>);
   MockModulePtr outputModule(new NiceMock<MockModule>);

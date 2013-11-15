@@ -121,7 +121,7 @@ namespace
 #endif
 }
 
-ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
   QWidget* parent /* = 0 */)
   : QFrame(parent),
   deletedFromGui_(true),
@@ -129,7 +129,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   theModule_(theModule),
   moduleId_(theModule->get_id()),
   inputPortLayout_(0),
-  outputPortLayout_(0)
+  outputPortLayout_(0),
+  editor_(ed)
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -349,7 +350,6 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_)
   {
-    //TODO: THE WHOLE POINT OF THIS HUGE CHANGE
     InputPortHandle port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
     //std::cout << "~~~addDynamicPort " << port->getIndex() << " : " << port->get_portname() << " : " << type << std::endl;
@@ -420,6 +420,7 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
+  auto disable(editor_->createDynamicPortDisabler());
   Q_FOREACH (PortWidget* p, ports_.getAllPorts())
     p->deleteConnections();
   GuiLogger::Instance().log("Module deleted.");

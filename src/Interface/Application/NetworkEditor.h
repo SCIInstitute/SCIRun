@@ -139,7 +139,7 @@ Q_SIGNALS:
 
     QPixmap sceneGrab();
 
-    //boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
+    boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
   protected:
     virtual void dropEvent(QDropEvent* event);

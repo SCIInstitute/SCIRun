@@ -34,9 +34,9 @@ using namespace SCIRun::Dataflow::Networks;
 TEST(ModuleTests, CanBuildWithPorts)
 {
   ModuleHandle module = Module::Builder().with_name("SolveLinearSystem")
-    .add_input_port(Port::ConstructionParams(PortId("ForwardMatrix"), "Matrix", false))
-    .add_input_port(Port::ConstructionParams(PortId("RHS"), "Matrix", false))
-    .add_output_port(Port::ConstructionParams(PortId("Solution"), "Matrix", false))
+    .add_input_port(Port::ConstructionParams(PortId(0, "ForwardMatrix"), "Matrix", false))
+    .add_input_port(Port::ConstructionParams(PortId(0, "RHS"), "Matrix", false))
+    .add_output_port(Port::ConstructionParams(PortId(0, "Solution"), "Matrix", false))
     .build();
   EXPECT_EQ(2, module->num_input_ports());
   EXPECT_EQ(1, module->num_output_ports());
@@ -48,7 +48,7 @@ TEST(ModuleTests, CanBuildWithPorts)
 TEST(ModuleTests, CanBuildWithDynamicPorts)
 {
   ModuleHandle module = Module::Builder().with_name("ViewScene")
-    .add_input_port(Port::ConstructionParams(PortId("ForwardMatrix"), "Matrix", true))
+    .add_input_port(Port::ConstructionParams(PortId(0, "ForwardMatrix"), "Matrix", true))
     .build();
   EXPECT_EQ(1, module->num_input_ports());
   EXPECT_EQ(0, module->num_output_ports());

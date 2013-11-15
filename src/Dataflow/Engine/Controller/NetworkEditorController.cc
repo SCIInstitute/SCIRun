@@ -281,7 +281,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
       moduleAdded_(module->get_module_name(), module);
     }
     {
-      auto flipper(createDynamicPortSwitch());
+      auto disable(createDynamicPortSwitch());
       //this is handled by NetworkXMLConverter now--but now the logic is convoluted. 
       //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
       BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())

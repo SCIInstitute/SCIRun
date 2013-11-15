@@ -60,14 +60,14 @@ protected:
 
 TEST_F(PortTests, CtorThrowsWithEmptyArguments)
 {
-  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams(PortId("Matrix"),   "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  NullPointerException);
-  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(""),         "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
-  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId("Matrix"),   ""             , false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
+  ASSERT_THROW(InputPort(0,                  Port::ConstructionParams(PortId(0, "Matrix"),   "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  NullPointerException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(0, ""),         "ForwardMatrix", false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
+  ASSERT_THROW(InputPort(inputModule.get(),  Port::ConstructionParams(PortId(0, "Matrix"),   ""             , false), DatatypeSinkInterfaceHandle()),  InvalidArgumentException);
 }
 
 TEST_F(PortTests, AggregatesConnections)
 {
-  Port::ConstructionParams pcp(PortId("ForwardMatrix"), "Matrix", false);
+  Port::ConstructionParams pcp(PortId(0, "ForwardMatrix"), "Matrix", false);
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
 
@@ -88,7 +88,7 @@ TEST_F(PortTests, AggregatesConnections)
 
 TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 {
-  Port::ConstructionParams pcp(PortId("ForwardMatrix"), "Matrix", false);
+  Port::ConstructionParams pcp(PortId(0, "ForwardMatrix"), "Matrix", false);
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, DatatypeSinkInterfaceHandle()));
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, DatatypeSourceInterfaceHandle()));
 
@@ -108,8 +108,8 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
 //TODO: this verification pushed up to higher layer.
 TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
 {
-  Port::ConstructionParams pcp1(PortId("ForwardMatrix"), "Matrix", false);
-  Port::ConstructionParams pcp2(PortId("VectorField"), "Field", false);
+  Port::ConstructionParams pcp1(PortId(0, "ForwardMatrix"), "Matrix", false);
+  Port::ConstructionParams pcp2(PortId(0, "VectorField"), "Field", false);
   InputPortHandle inputPort(new InputPort(inputModule.get(), pcp1, DatatypeSinkInterfaceHandle()));
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp2, DatatypeSourceInterfaceHandle()));
 
