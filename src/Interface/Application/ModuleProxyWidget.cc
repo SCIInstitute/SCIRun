@@ -171,11 +171,11 @@ QVariant ModuleProxyWidget::itemChange(GraphicsItemChange change, const QVariant
 
 void ModuleProxyWidget::createPortPositionProviders()
 {
-  int firstPortXPos = -1;
+  //std::cout << "create PPPs" << std::endl;
+  const int firstPortXPos = 5;
   Q_FOREACH(PortWidget* p, module_->ports().getAllPorts())
   {
-    if (firstPortXPos < 0)
-      firstPortXPos = p->pos().x();
+    //std::cout << "Setting position provider for port " << p->id() << " at index " << p->getIndex() << " to " << firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)) << "," << p->pos().y() << std::endl;
     QPoint realPosition(firstPortXPos + (static_cast<int>(p->getIndex()) * (PortWidget::WIDTH + ModuleWidget::PORT_SPACING)), p->pos().y());
     
     boost::shared_ptr<PositionProvider> pp(new ProxyWidgetPosition(this, realPosition + QPointF(5,5)));

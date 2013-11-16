@@ -165,6 +165,7 @@ QColor ConnectionLine::color() const
 
 void ConnectionLine::trackNodes()
 {
+  //std::cout << "trackNodes " << id_.id_ << std::endl;
   if (fromPort_ && toPort_)
   {
     drawer_->draw(this, fromPort_->position(), toPort_->position());

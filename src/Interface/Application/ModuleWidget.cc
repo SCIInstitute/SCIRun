@@ -241,7 +241,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
   BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
   {
     auto type = port->get_typename();
-    std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
+    //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
@@ -329,11 +329,12 @@ void ModuleWidget::addInputPortsToLayout()
 
 void PortWidgetManager::reindexInputs()
 {
+  //std::cout << "REINDEXING" << std::endl;
   for (size_t i = 0; i < inputPorts_.size(); ++i)
   {
     auto port = inputPorts_[i];
+    //std::cout << "setting index on " << port->id() << " to " << i << std::endl;
     port->setIndex(i);
-    port->trackConnections();
   }
 }
 
@@ -360,7 +361,6 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
     ports_.addPort(w);
     inputPortLayout_->addWidget(w);
-    //ports_.reindexInputs();
     Q_EMIT dynamicPortChanged();
   }
 }
@@ -370,11 +370,10 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
   if (mid.id_ == moduleId_ && !deleting_)
   {
     //auto portToRemove = index;
-    std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
+    //std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
 
     if (ports_.removeDynamicPort(pid, inputPortLayout_))
     {
-      trackConnections();
       Q_EMIT dynamicPortChanged();
       //printInputPorts(*theModule_);
     }
@@ -393,10 +392,15 @@ bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout
   {
     auto widget = *iter;
     inputPorts_.erase(iter);
-    layout->removeWidget(widget);
-    //widget->deleteLater();
-
+    
+    //std::cout << "Reindexing inputs" << std::endl;
     reindexInputs();
+    
+    //std::cout << "deleting widget" << std::endl;
+    layout->removeWidget(widget);
+    delete widget;
+
+    
     
     //std::cout << "AFTER removeDynamicPort: " << std::endl;
     //Q_FOREACH(PortWidget* port, inputPorts_)

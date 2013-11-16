@@ -46,7 +46,7 @@ void DynamicPortManager::connectionAddedNeedToCloneAPort(const SCIRun::Dataflow:
 {
   if (enabled_)
   {
-    std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
+    //std::cout << "need to clone a port: " << ConnectionId::create(cd).id_ << std::endl;
     //TODO: assumption: dynamic = input
     auto moduleIn = controller_->getNetwork()->lookupModule(cd.in_.moduleId_);
     if (moduleIn->getInputPort(cd.in_.portId_)->isDynamic())
@@ -63,7 +63,7 @@ void DynamicPortManager::connectionRemovedNeedToRemoveAPort(const SCIRun::Datafl
 {
   if (enabled_)
   {
-    std::cout << "need to remove a port: " << id.id_ << std::endl;
+    //std::cout << "need to remove a port: " << id.id_ << std::endl;
     auto desc = id.describe();
     auto moduleIn = controller_->getNetwork()->lookupModule(desc.in_.moduleId_);
     //std::cout << "REMOVE CHECKING: " << desc.in_.moduleId_ << " /// " << desc.in_.portId_ << std::endl;
