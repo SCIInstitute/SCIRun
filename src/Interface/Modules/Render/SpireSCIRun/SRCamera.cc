@@ -93,15 +93,15 @@ void SRCamera::setViewTransform(const spire::M44& trafo)
   mPIV  = mP * mIV;
 
   // Update appropriate uniforms.
-  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getToCameraToProjection()), mPIV);
-  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getToProjection()), mP);
-  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraToWorld()), mV);
+  mSpire->addGlobalUniform(SRCommonUniforms::getToCameraToProjectionName(), mPIV);
+  mSpire->addGlobalUniform(SRCommonUniforms::getToProjectionName(), mP);
+  mSpire->addGlobalUniform(SRCommonUniforms::getCameraToWorldName(), mV);
 
   // Projection matrix is oriented down negative z. So we are looking down 
   // negative z, which is -V3(mV[2].xyz()).
-  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraViewVec()), 
+  mSpire->addGlobalUniform(SRCommonUniforms::getCameraViewVecName(),
                            -spire::V3(mV[2].xyz()));
-  mSpire->addGlobalUniform(std::get<0>(SRCommonUniforms::getCameraUpVec()),
+  mSpire->addGlobalUniform(SRCommonUniforms::getCameraUpVecName(),
                             spire::V3(mV[1].xyz()));
 }
 

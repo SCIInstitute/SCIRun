@@ -194,7 +194,6 @@ void SRInterface::buildAndApplyCameraTransform()
 }
 
 
-
 //------------------------------------------------------------------------------
 void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> obj)
 {
@@ -205,17 +204,22 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
 
   // Check to see if the object already exists in our list. If so, then
   // remove the object. We will re-add it.
-  auto foundObject = std::find(mSRObjects.begin(), mSRObjects.end(), objectName);
+  auto foundObject = std::find_if(
+      mSRObjects.begin(), mSRObjects.end(),
+      [this](const SRObject& obj)
+      {
+        if (obj.mName == objectName)
+          return true;
+        else
+          return false;
+      });
+
   if (foundObject != mSRObjects.end())
   {
     // Remove the object from spire.
     mSpire->removeObject(objectName);
     mSRObjects.erase(foundObject);
   }
-
-  // Add the object. Slightly redundant given we might have removed it before,
-  // but it keeps a logical ordering of the objects.
-  mSRObjects.push_back(objectName);
 
   // Now we re-add the object to spire.
   mSpire->addObject(objectName);
@@ -281,19 +285,17 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       // subpass of SPIRE_DEFAULT_PASS.
       mSpire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
     }
-
-    // Add lambda object uniforms to the pass.
-    mSpire->addLambdaObjectUniforms(obj->objectName, lambdaUniformObjTrafs, pass.passName);
   }
 
   // Add default identity transform to the object globally (instead of
   // per-pass).
   spire::M44 xform;
   xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
-  mSpire->addObjectGlobalMetadata(
-      obj->objectName, std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()), xform);
+  mSRObjects.emplace_back(objectName, xform);
 
-  // This must come *after* adding the passes.
+  // Now retrieve the currently unsatisfied uniforms from the object and
+  // ensure that we build the appropriate transforms for the object
+  // (only when the object moves).
 
   // Now that we have created all of the appropriate passes, get rid of the
   // VBOs and IBOs.
@@ -323,14 +325,41 @@ void SRInterface::removeAllGeomObjects()
   mSRObjects.clear();
 }
 
+//------------------------------------------------------------------------------
+void SRInterface::beginFrame()
+{
+  // Do not even attempt to render if the framebuffer is not complete.
+  // This can happen when the rendering window is hidden (in SCIRun5 for
+  // example);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    return;
+
+  /// \todo Move this outside of the interface!
+  GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+  GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
+
+  /// \todo Make line width a part of the GPU state.
+  glLineWidth(2.0f);
+  //glEnable(GL_LINE_SMOOTH);
+
+  GPUState defaultGPUState;
+  spire->applyGPUState(defaultGPUState, true); // true = force application of state.
+}
 
 //------------------------------------------------------------------------------
 void SRInterface::doFrame()
 {
   mSpire->makeCurrent();
 
+  beginFrame();
+
   // Set directional light source (in world space).
   mSpire->addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
+
+  for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
+  {
+    M44 obj;
+  }
 
   // Set common transformations.
   // Cache object to world transform.
