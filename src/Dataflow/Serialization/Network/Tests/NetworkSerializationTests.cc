@@ -285,7 +285,7 @@ TEST(SerializeNetworkTest, FullTestWithDynamicPorts)
   controller2.loadNetwork(xml);
 
   NetworkHandle deserialized = controller2.getNetwork();
-  ASSERT_TRUE(deserialized);
+  ASSERT_TRUE(deserialized != nullptr);
 
   EXPECT_EQ(showFields.size(), deserialized->nconnections());
   EXPECT_EQ(showFields.size() + 1, deserialized->nmodules());

@@ -80,7 +80,7 @@ namespace Datatypes {
 
     bool isSymmetric() const 
     {
-      return isApprox(transpose());
+      return this->isApprox(this->transpose());
     }
 
     //TODO!

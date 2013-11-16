@@ -72,8 +72,8 @@ TEST_F(ConnectionTests, CtorThrowsWithNullPorts)
 TEST_F(ConnectionTests, CtorSetsPortsViaModules)
 {
   Connection c(dummyOutputPort, dummyInputPort, "test");
-  ASSERT_TRUE(c.iport_);
-  ASSERT_TRUE(c.oport_);
+  ASSERT_TRUE(c.iport_ != nullptr);
+  ASSERT_TRUE(c.oport_ != nullptr);
   ASSERT_EQ(c.oport_, dummyOutputPort);
   ASSERT_EQ(c.iport_, dummyInputPort);
   ASSERT_EQ("test", c.id_.id_);
