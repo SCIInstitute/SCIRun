@@ -111,7 +111,6 @@ private:
         mName(name),
         mObjectToWorld(objToWorld)
     {}
-  private:
 
     // Different types of uniform transformations that are associated
     // with the object (based off of the unsatisfied uniforms detected
@@ -123,9 +122,19 @@ private:
       OBJECT_TO_CAMERA_PROJECTION,
     };
 
-    std::string   mName;
-    spire::M44    mObjectToWorld;
-    std::list<>
+    struct SRPass
+    {
+      SRPass(const std::string& name) :
+          passName(name)
+      {}
+
+      std::string                 passName;
+      std::list<ObjectTransforms> transforms;
+    };
+
+    std::string       mName;
+    spire::M44        mObjectToWorld;
+    std::list<SRPass> mPasses;
   };
 
   /// Calculates the screen space coordinates given the window coordinates.

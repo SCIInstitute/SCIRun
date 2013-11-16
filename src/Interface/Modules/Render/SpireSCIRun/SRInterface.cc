@@ -206,7 +206,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   // remove the object. We will re-add it.
   auto foundObject = std::find_if(
       mSRObjects.begin(), mSRObjects.end(),
-      [this](const SRObject& obj)
+      [&objectName, this](const SRObject& obj)
       {
         if (obj.mName == objectName)
           return true;
@@ -258,6 +258,13 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     mSpire->addIBO(ibo.name, ibo.data, type);
   }
 
+  // Add default identity transform to the object globally (instead of
+  // per-pass).
+  spire::M44 xform;
+  xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
+  mSRObjects.emplace_back(objectName, xform);
+  SRObject& elem = mSRObjects.back();
+
   // Add passes
   for (auto it = obj->mPasses.cbegin(); it != obj->mPasses.cend(); ++it)
   {
@@ -278,6 +285,22 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
                                           uniform, pass.passName);
     }
 
+    // Add a pass to our local object.
+    elem.mPasses.emplace_back(pass.passName);
+    SRObject::SRPass& thisPass = elem.mPasses.back();
+
+    std::vector<spire::Interface::UnsatisfiedUniform> unsatisfied;
+    unsatisfied = mSpire->getUnsatisfiedUniforms(objectName, pass.passName);
+    for (auto it = unsatisfied.begin(); it != unsatisfied.end(); ++it)
+    {
+      if (it->uniformName == SRCommonUniforms::getObjectName())
+        thisPass.transforms.push_back(SRObject::OBJECT_TO_WORLD);
+      else if (it->uniformName == SRCommonUniforms::getObjectToViewName())
+        thisPass.transforms.push_back(SRObject::OBJECT_TO_CAMERA);
+      else if (it->uniformName == SRCommonUniforms::getObjectToCameraToProjectionName())
+        thisPass.transforms.push_back(SRObject::OBJECT_TO_CAMERA_PROJECTION);
+    }
+
     // Add gpu state if it has been set.
     if (pass.hasGPUState == true)
     {
@@ -286,12 +309,6 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
       mSpire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
     }
   }
-
-  // Add default identity transform to the object globally (instead of
-  // per-pass).
-  spire::M44 xform;
-  xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
-  mSRObjects.emplace_back(objectName, xform);
 
   // Now retrieve the currently unsatisfied uniforms from the object and
   // ensure that we build the appropriate transforms for the object
@@ -320,7 +337,7 @@ void SRInterface::removeAllGeomObjects()
 
   for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
   {
-    mSpire->removeObject(*it);
+    mSpire->removeObject(it->mName);
   }
   mSRObjects.clear();
 }
@@ -328,12 +345,6 @@ void SRInterface::removeAllGeomObjects()
 //------------------------------------------------------------------------------
 void SRInterface::beginFrame()
 {
-  // Do not even attempt to render if the framebuffer is not complete.
-  // This can happen when the rendering window is hidden (in SCIRun5 for
-  // example);
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    return;
-
   /// \todo Move this outside of the interface!
   GL(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
   GL(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
@@ -342,14 +353,20 @@ void SRInterface::beginFrame()
   glLineWidth(2.0f);
   //glEnable(GL_LINE_SMOOTH);
 
-  GPUState defaultGPUState;
-  spire->applyGPUState(defaultGPUState, true); // true = force application of state.
+  spire::GPUState defaultGPUState;
+  mSpire->applyGPUState(defaultGPUState, true); // true = force application of state.
 }
 
 //------------------------------------------------------------------------------
 void SRInterface::doFrame()
 {
   mSpire->makeCurrent();
+
+  // Do not even attempt to render if the framebuffer is not complete.
+  // This can happen when the rendering window is hidden (in SCIRun5 for
+  // example);
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    return;
 
   beginFrame();
 
@@ -358,56 +375,32 @@ void SRInterface::doFrame()
 
   for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
   {
-    M44 obj;
-  }
-
-  // Set common transformations.
-  // Cache object to world transform.
-  spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(std::get<0>(SRCommonAttributes::getObjectToWorldTrafo()));
-
-  std::string objectTrafoName = std::get<0>(SRCommonUniforms::getObject());
-  std::string objectToViewName = std::get<0>(SRCommonUniforms::getObjectToView());
-  std::string objectToCamProjName = std::get<0>(SRCommonUniforms::getObjectToCameraToProjection());
-
-  // Loop through the unsatisfied uniforms and see if we can provide any.
-  for (auto it = unsatisfiedUniforms.begin(); it != unsatisfiedUniforms.end(); /*nothing*/ )
-  {
-    if (it->uniformName == objectTrafoName)
+    spire::M44 obj = it->mObjectToWorld;
+    // Setup transforms for all passes and render each of the passes.
+    for (auto passit = it->mPasses.begin(); passit != it->mPasses.end(); ++passit)
     {
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                                     it->shaderLocation, objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToViewName)
-    {
-      // Grab the inverse view transform.
-      ::spire::M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<::spire::M44>(std::get<0>(SRCommonUniforms::getCameraToWorld())));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                              it->shaderLocation, inverseView * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else if (it->uniformName == objectToCamProjName)
-    {
-      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
-          std::get<0>(SRCommonUniforms::getToCameraToProjection()));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
-                                       it->shaderLocation, inverseViewProjection * objToWorld);
-
-      it = unsatisfiedUniforms.erase(it);
-    }
-    else
-    {
-      ++it;
+      for (auto trafoit = passit->transforms.begin(); trafoit != passit->transforms.end(); ++trafoit)
+      {
+        switch (*trafoit)
+        {
+          case SRObject::OBJECT_TO_WORLD:
+            mSpire->addObjectPassUniform(it->mName, SRCommonUniforms::getObjectName(),
+                                         obj, passit->passName);
+            break;
+          case SRObject::OBJECT_TO_CAMERA:
+            mSpire->addObjectPassUniform(it->mName, SRCommonUniforms::getObjectToViewName(),
+                                         mCamera->getWorldToView() * obj, passit->passName);
+            break;
+          case SRObject::OBJECT_TO_CAMERA_PROJECTION:
+            mSpire->addObjectPassUniform(it->mName, SRCommonUniforms::getObjectToCameraToProjectionName(),
+                                         mCamera->getWorldToProjection() * obj, passit->passName);
+            break;
+        }
+      }
+      mSpire->renderObject(it->mName, passit->passName);
     }
   }
 
-  // Run through all of our objects and render them.
-  
-
-  //mSpire->doFrame();
 }
 
 
