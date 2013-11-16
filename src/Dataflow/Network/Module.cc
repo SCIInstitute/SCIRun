@@ -84,7 +84,6 @@ Module::Module(const ModuleLookupInfo& info,
 
 Module::~Module()
 {
-  instanceCount_--;
 }
 
 ModuleStateFactoryHandle Module::defaultStateFactory_;

@@ -130,7 +130,8 @@ ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataf
   moduleId_(theModule->get_id()),
   inputPortLayout_(0),
   outputPortLayout_(0),
-  editor_(ed)
+  editor_(ed),
+  deleting_(false)
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -366,7 +367,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
 
 void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 {
-  if (mid.id_ == moduleId_)
+  if (mid.id_ == moduleId_ && !deleting_)
   {
     //auto portToRemove = index;
     std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
@@ -393,7 +394,7 @@ bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout
     auto widget = *iter;
     inputPorts_.erase(iter);
     layout->removeWidget(widget);
-    delete widget;
+    //widget->deleteLater();
 
     reindexInputs();
     
@@ -420,9 +421,12 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  auto disable(editor_->createDynamicPortDisabler());
+  //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
+  //disconnect()
+  deleting_ = true;
   Q_FOREACH (PortWidget* p, ports_.getAllPorts())
     p->deleteConnections();
+  
   GuiLogger::Instance().log("Module deleted.");
   if (dialog_ != nullptr)
   {

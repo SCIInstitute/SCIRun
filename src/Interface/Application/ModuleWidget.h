@@ -172,6 +172,7 @@ private:
   QHBoxLayout* inputPortLayout_;
   QHBoxLayout* outputPortLayout_;
   NetworkEditor* editor_;
+  bool deleting_;
 };
 
 }
