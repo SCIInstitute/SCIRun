@@ -27,6 +27,7 @@
 #
 
 SET(Modules_Basic_SRCS
+  DynamicPortTester.cc
   ReceiveScalar.cc
   ReceiveTestMatrix.cc
   ReceiveScalarModuleState.cc
@@ -37,6 +38,7 @@ SET(Modules_Basic_SRCS
 )
 
 SET(Modules_Basic_HEADERS
+  DynamicPortTester.h
   ReceiveScalar.h
   ReceiveScalarModuleState.h
   ReceiveTestMatrix.h

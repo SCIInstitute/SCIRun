@@ -80,6 +80,8 @@ ReadFieldModule::ReadFieldModule()
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
 {
+  INITIALIZE_PORT(Field);
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
   std::vector<std::string> importers;

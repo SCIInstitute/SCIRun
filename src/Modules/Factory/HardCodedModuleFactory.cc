@@ -39,6 +39,7 @@
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/PrintDatatype.h>
+#include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
@@ -148,6 +149,7 @@ namespace SCIRun {
             addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
             addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
             addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
+            addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
           }
         }
 

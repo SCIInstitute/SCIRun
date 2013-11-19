@@ -90,6 +90,8 @@ GenericReader<HType, PortTag>::GenericReader(const std::string &name,
     old_filemodification_(0),
     importing_(false)
 {
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FileLoaded);
 }
 
 template <class HType, class PortTag> 

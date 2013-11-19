@@ -150,13 +150,13 @@ namespace Networks {
     template <class Type, size_t N>
     struct StaticPortName : PortNameBase<Type,N>
     {
-      explicit StaticPortName(const PortId& id = PortId(0, "<not defined yet>")) : PortNameBase<Type,N>(id) {}
+      explicit StaticPortName(const PortId& id = PortId(0, "[not defined yet]")) : PortNameBase<Type,N>(id) {}
     };
 
     template <class Type, size_t N>
     struct DynamicPortName : PortNameBase<Type,N>
     {
-      explicit DynamicPortName(const PortId& id = PortId(0, "<not defined yet>")) : PortNameBase<Type,N>(id) {}
+      explicit DynamicPortName(const PortId& id = PortId(0, "[not defined yet]")) : PortNameBase<Type,N>(id) {}
     };
 
     // Throws if input is not present or null.

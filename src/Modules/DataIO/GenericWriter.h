@@ -88,6 +88,7 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
     stateFilename_(stateFilename),
     exporting_(false)
 {
+  INITIALIZE_PORT(Filename);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
