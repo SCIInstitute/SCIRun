@@ -37,9 +37,11 @@ DynamicPortTester::DynamicPortTester()
   : Module(ModuleLookupInfo("DynamicPortTester", "Testing", "SCIRun"), false)
 {
   INITIALIZE_PORT(DynamicMatrix);
-  INITIALIZE_PORT(StaticField);
+  INITIALIZE_PORT(DynamicField);
   INITIALIZE_PORT(DynamicString);
-  INITIALIZE_PORT(TestMatrix);
+  INITIALIZE_PORT(NumMatrices);
+  INITIALIZE_PORT(NumFields);
+  INITIALIZE_PORT(NumStrings);
 }
 
 void DynamicPortTester::execute()

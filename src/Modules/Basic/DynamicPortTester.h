@@ -37,19 +37,25 @@ namespace Modules {
 namespace Basic {
   
   class SCISHARE DynamicPortTester : public SCIRun::Dataflow::Networks::Module,
-    public Has1OutputPort<MatrixPortTag>,
-    public Has3InputPorts<DynamicPortTag<MatrixPortTag>, FieldPortTag, DynamicPortTag<StringPortTag>>
+    public Has3InputPorts<
+      DynamicPortTag<MatrixPortTag>, 
+      DynamicPortTag<FieldPortTag>, 
+      DynamicPortTag<StringPortTag>>,
+    public Has3OutputPorts<ScalarPortTag, ScalarPortTag, ScalarPortTag>
   {
   public:
     DynamicPortTester();
     virtual void execute();
     virtual void setStateDefaults() {}
+    virtual bool hasDynamicPorts() const { return true; }
 
     INPUT_PORT_DYNAMIC(0, DynamicMatrix, Matrix);
-    INPUT_PORT(1, StaticField, LegacyField);
+    INPUT_PORT_DYNAMIC(1, DynamicField, LegacyField);
     INPUT_PORT_DYNAMIC(2, DynamicString, String);
 
-    OUTPUT_PORT(0, TestMatrix, DenseMatrix);
+    OUTPUT_PORT(0, NumMatrices, Int32);
+    OUTPUT_PORT(1, NumFields, Int32);
+    OUTPUT_PORT(2, NumStrings, Int32);
   };
 
 }}}
