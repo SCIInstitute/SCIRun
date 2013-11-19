@@ -206,12 +206,12 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(const Por
   //TODO test...
   if (!iports_.hasPort(id))
   {
-    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + id.name));
+    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
   }
 
   if (iports_[id]->isDynamic())
   {
-    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port " + id.name + " is dynamic, get_dynamic_input_handles must be called."));
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
 
   return iports_[id]->getData();
@@ -222,12 +222,12 @@ std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_i
   //TODO test...
   if (!iports_.hasPort(id))
   {
-    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + id.name));
+    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
   }
   
   if (!iports_[id]->isDynamic())
   {
-    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Port # " + id.name + " is static, get_input_handle must be called."));
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
   }
 
   throw "not implemented";
@@ -239,7 +239,7 @@ void Module::send_output_handle(const PortId& id, SCIRun::Core::Datatypes::Datat
   //TODO test...
   if (!oports_.hasPort(id))
   {
-    THROW_OUT_OF_RANGE("Port does not exist with name " + id.name);
+    THROW_OUT_OF_RANGE("Output port does not exist: " + id.toString());
   }
 
   oports_[id]->sendData(data);

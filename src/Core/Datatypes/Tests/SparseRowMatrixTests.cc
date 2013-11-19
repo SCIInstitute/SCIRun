@@ -343,6 +343,12 @@ namespace
     return m.isApprox(m.transpose());
   }
 
+  //TODO
+  //bool isSymmetricOctave(const SparseRowMatrix& m, double tolerance)
+  //{
+  //  return (m - m.transpose()).lpNorm<Eigen::Infinity>()
+  //}
+
   bool isSymmetric(const SparseRowMatrix& m)
   {
     for (int k = 0; k < m.outerSize(); ++k)
@@ -360,7 +366,7 @@ namespace
 
 
 
-TEST(SparseRowMatrixTest, Iteration)
+TEST(SparseRowMatrixTest, IsSymmetricTests)
 {
   auto m = matrix1();
   for (int k = 0; k < m.outerSize(); ++k)

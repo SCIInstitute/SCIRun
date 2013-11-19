@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <Modules/Basic/DynamicPortTester.h>
+#include <Core/Datatypes/Scalar.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
@@ -46,5 +47,14 @@ DynamicPortTester::DynamicPortTester()
 
 void DynamicPortTester::execute()
 {
-  std::cout << "Hello." << std::endl;
+  auto matrices = getRequiredDynamicInputs(DynamicMatrix);
+  auto fields = getRequiredDynamicInputs(DynamicField);
+  auto strings  = getRequiredDynamicInputs(DynamicString);
+
+  std::cout << "Dynamic port test. Connected are " << matrices.size() << " matrices, " << fields.size()
+    << " fields, and " << strings.size() << " strings." << std::endl;
+
+  sendOutput(NumMatrices, boost::make_shared<Int32>(static_cast<int>(matrices.size())));
+  sendOutput(NumFields, boost::make_shared<Int32>(static_cast<int>(fields.size())));
+  sendOutput(NumStrings, boost::make_shared<Int32>(static_cast<int>(strings.size())));
 }

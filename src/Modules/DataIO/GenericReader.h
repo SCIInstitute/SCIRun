@@ -215,7 +215,7 @@ GenericReader<HType, PortTag>::execute()
     }
 
     Core::Datatypes::StringHandle shandle(new Core::Datatypes::String(filename_));
-    sendOutput(Filename, shandle);
+    sendOutput(FileLoaded, shandle);
     sendOutput(objectPortName_, handle);
   }
 

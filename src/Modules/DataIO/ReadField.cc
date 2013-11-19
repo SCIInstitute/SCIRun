@@ -69,8 +69,6 @@ class ReadField : public GenericReader<FieldHandle> {
 DECLARE_MAKER(ReadField)
 #endif
 
-Core::Algorithms::AlgorithmParameterName ReadFieldModule::Filename("Filename");
-
 ReadFieldModule::ReadFieldModule()
   : my_base("ReadField", "DataIO", "SCIRun", "Filename")    
   //,
@@ -81,6 +79,8 @@ ReadFieldModule::ReadFieldModule()
     //gui_delay_(get_ctx()->subVar("delay"), 0)
 {
   INITIALIZE_PORT(Field);
+  INITIALIZE_PORT(Filename);
+  INITIALIZE_PORT(FileLoaded);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;

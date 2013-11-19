@@ -80,6 +80,8 @@ namespace Datatypes {
 
     bool isSymmetric() const 
     {
+      if (this->nrows() != this->ncols())
+        return false;
       return this->isApprox(this->transpose());
     }
 

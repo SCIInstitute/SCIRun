@@ -136,3 +136,10 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Port
 {
   return o << id.name << ":" << id.id;
 }
+
+std::string PortId::toString() const
+{
+  std::ostringstream ostr;
+  ostr << *this;
+  return ostr.str();
+}
