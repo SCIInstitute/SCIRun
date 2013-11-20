@@ -206,7 +206,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   // remove the object. We will re-add it.
   auto foundObject = std::find_if(
       mSRObjects.begin(), mSRObjects.end(),
-      [&objectName, this](const SRObject& obj)
+      [&objectName, this](const SRObject& obj) -> bool
       {
         if (obj.mName == objectName)
           return true;
@@ -262,7 +262,9 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   // per-pass).
   spire::M44 xform;
   xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
-  mSRObjects.emplace_back(objectName, xform);
+  // Use emplace back when we switch to VS 2013.
+  //mSRObjects.emplace_back(objectName, xform);
+  mSRObjects.push_back(SRObject(objectName, xform));
   SRObject& elem = mSRObjects.back();
 
   // Add passes
