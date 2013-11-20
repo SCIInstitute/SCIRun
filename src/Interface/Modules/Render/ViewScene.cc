@@ -30,6 +30,7 @@
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Geometry.h>
 #include <QtGui>
+#include <QPushButton>
 #include "QtGLContext.h"
 
 using namespace SCIRun::Gui;
@@ -121,7 +122,16 @@ void ViewSceneDialog::addToolBar()
   auto menu = new QComboBox(this);
   menu->addItem("Legacy Mouse Control");
   menu->addItem("New Mouse Control");
+
   tools->addWidget(menu);
+  tools->addSeparator();
+
+  QPushButton* autoViewBtn = new QPushButton(this);
+  autoViewBtn->setText("Auto View");
+  autoViewBtn->setAutoDefault(false);
+  autoViewBtn->setDefault(false);
+  tools->addWidget(autoViewBtn);
+
   glLayout->addWidget(tools);
 
   connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
