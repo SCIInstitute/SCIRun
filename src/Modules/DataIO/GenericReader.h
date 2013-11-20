@@ -42,6 +42,7 @@
 
 #include <boost/filesystem.hpp>
 #include <Core/Datatypes/String.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Thread/Mutex.h>
 #include <Dataflow/Network/Module.h>
 
@@ -64,7 +65,6 @@ public:
 
 protected:
   std::string filename_;
-  Core::Algorithms::AlgorithmParameterName stateFilename_;
   StaticPortName<typename HType::element_type, 0> objectPortName_;
   //GuiFilename gui_filename_;
   //GuiString gui_from_env_;
@@ -82,11 +82,11 @@ protected:
 
 template <class HType, class PortTag> 
 GenericReader<HType, PortTag>::GenericReader(const std::string &name,
-				    const std::string &cat, const std::string &pack, const std::string& stateFilename)
+				    const std::string &cat, const std::string &pack, const std::string& objectPortName)
   : SCIRun::Dataflow::Networks::Module(SCIRun::Dataflow::Networks::ModuleLookupInfo(name, cat, pack)),
     //gui_filename_(get_ctx()->subVar("filename"), ""),
     //gui_from_env_(get_ctx()->subVar("from-env"),""),
-    stateFilename_(stateFilename),
+    objectPortName_(SCIRun::Dataflow::Networks::PortId(0, objectPortName)),
     old_filemodification_(0),
     importing_(false)
 {
@@ -138,7 +138,7 @@ GenericReader<HType, PortTag>::execute()
   //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
-    filename_ = get_state()->getValue(stateFilename_).getString();
+    filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).getString();
   else
     filename_ = (*fileOption)->value();
   

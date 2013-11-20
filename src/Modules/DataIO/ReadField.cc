@@ -70,7 +70,7 @@ DECLARE_MAKER(ReadField)
 #endif
 
 ReadFieldModule::ReadFieldModule()
-  : my_base("ReadField", "DataIO", "SCIRun", "Filename")    
+  : my_base("ReadField", "DataIO", "SCIRun", "Field")    
   //,
     //gui_types_(get_ctx()->subVar("types", false)),
     //gui_filetype_(get_ctx()->subVar("filetype")),
@@ -79,8 +79,6 @@ ReadFieldModule::ReadFieldModule()
     //gui_delay_(get_ctx()->subVar("delay"), 0)
 {
   INITIALIZE_PORT(Field);
-  INITIALIZE_PORT(Filename);
-  INITIALIZE_PORT(FileLoaded);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
