@@ -33,6 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/GeometryPrimitives/BBox.h>
 
 #include <boost/foreach.hpp>
 
@@ -122,24 +123,12 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   // for building our VBO.
   float* vbo = reinterpret_cast<float*>(&(*rawVBO)[0]);
 
-  // Add shared VBO to the geometry object.
-  /// \note This 'primaryVBO' is dependent on the types present in the data.
-  ///       If normals are specified, then this will NOT be the primary VBO.
-  ///       Another VBO will be constructed containing normal information.
-  ///       All of this is NOT necessary if we are on OpenGL 3.2+ where we
-  ///       can compute all normals in the geometry shader (smooth and face).
-  std::string primVBOName = id + "primaryVBO";
-  std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
-  attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
-  if (vmesh->has_normals())
-    attribs.push_back("aNormal");
-  attribs.push_back("aFieldData");
-  geom->mVBOs.emplace_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO));
 
   if (progressFunc) progressFunc(0.1);
 
   // Build vertex buffer.
   size_t i = 0;
+  Core::Geometry::BBox aabb;
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     // Add position (aPos)
@@ -148,6 +137,13 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     vbo[i+nodeOffset+1] = node.point().y();
     vbo[i+nodeOffset+2] = node.point().z();
     nodeOffset += 3;
+    if (aabb.valid() == false)
+      // First point in the AABB. Extend by a small radius away from this point
+      // to ensure we have a valid AABB.
+      aabb.extend(node.point(), 0.001f);
+    else
+      // Simply extend by this point.
+      aabb.extend(node.point());
 
     // Add optional normals (aNormal)
     if (vmesh->has_normals())
@@ -176,6 +172,20 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
     i += nodeOffset;
   }
+
+  // Add shared VBO to the geometry object.
+  /// \note This 'primaryVBO' is dependent on the types present in the data.
+  ///       If normals are specified, then this will NOT be the primary VBO.
+  ///       Another VBO will be constructed containing normal information.
+  ///       All of this is NOT necessary if we are on OpenGL 3.2+ where we
+  ///       can compute all normals in the geometry shader (smooth and face).
+  std::string primVBOName = id + "primaryVBO";
+  std::vector<std::string> attribs;   ///< \todo Switch to initializer lists when msvc supports it.
+  attribs.push_back("aPos");          ///< \todo Find a good place to pull these names from.
+  if (vmesh->has_normals())
+    attribs.push_back("aNormal");
+  attribs.push_back("aFieldData");
+  geom->mVBOs.push_back(GeometryObject::SpireVBO(primVBOName, attribs, rawVBO, aabb));
 
   if (progressFunc) progressFunc(0.25);
 

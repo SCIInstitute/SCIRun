@@ -34,9 +34,10 @@
 #include <list>
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/share.h>
+#include <Core/GeometryPrimitives/BBox.h>
 #include <spire/Interface.h>
 #include <spire/src/GPUStateManager.h>
+#include <Core/Datatypes/share.h>
 
 // The following include contains AbstractUniformStateItem which allows
 // us to store uniforms to be passed, at a later time, to spire.
@@ -65,15 +66,18 @@ namespace Datatypes {
     struct SpireVBO
     {
       SpireVBO(const std::string& vboName, const std::vector<std::string> attribs,
-               std::shared_ptr<std::vector<uint8_t>> vboData) :
+               std::shared_ptr<std::vector<uint8_t>> vboData,
+               const Core::Geometry::BBox& bbox) :
           name(vboName),
           attributeNames(attribs),
-          data(vboData)
+          data(vboData),
+          boundingBox(bbox)
       {}
 
       std::string                           name;
       std::vector<std::string>              attributeNames;
       std::shared_ptr<std::vector<uint8_t>> data;
+      Core::Geometry::BBox                  boundingBox;
     };
 
     // Could require rvalue references...
