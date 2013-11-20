@@ -102,6 +102,19 @@ void ViewSceneDialog::moduleExecuted()
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::menuMouseControlChanged(int index)
+{
+  std::shared_ptr<SRInterface> spire = mSpire.lock();
+  if (spire == nullptr)
+    return;
+
+  if (index == 0)
+    spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+  else
+    spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
   auto tools = new QToolBar(this);
@@ -109,8 +122,8 @@ void ViewSceneDialog::addToolBar()
   menu->addItem("Legacy Mouse Control");
   menu->addItem("New Mouse Control");
   tools->addWidget(menu);
-  //TODO: hook up to slots. for now, disable.
-  menu->setEnabled(false);
   glLayout->addWidget(tools);
+
+  connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
 }
 

@@ -51,6 +51,7 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
                          const std::vector<std::string>& shaderDirs,
                          spire::Interface::LogFunction logFP) :
     mSpire(new spire::Interface(context, shaderDirs, logFP)),
+    mMouseMode(MOUSE_OLDSCIRUN),
     mCamDistance(7.0f),
     mScreenWidth(640),
     mScreenHeight(480),
@@ -84,6 +85,12 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
 SRInterface::~SRInterface()
 {
   mSpire->terminate();
+}
+
+//------------------------------------------------------------------------------
+void SRInterface::setMouseMode(MouseMode mode)
+{
+  mMouseMode = mode;
 }
 
 //------------------------------------------------------------------------------
@@ -122,14 +129,26 @@ void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
   mCamAccumPosDown  = mCamAccumPosNow;
   mTransClick       = calculateScreenSpaceCoords(pos);
 
-  if (btn == MOUSE_LEFT)
+  auto translate    = [=]() {};
+  auto zoom         = [=]() {};
+  auto rotateCenter = [=]()
   {
     spire::V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
     mSciBall->beginDrag(mouseScreenSpace);
-  }
-  else if (btn == MOUSE_RIGHT)
+  };
+
+  switch (mMouseMode)
   {
-    // Store translation starting position.
+    case MOUSE_OLDSCIRUN:
+      if (btn == MOUSE_LEFT)    translate();
+      if (btn == MOUSE_RIGHT)   zoom();
+      if (btn == MOUSE_MIDDLE)  rotateCenter();
+      break;
+
+    case MOUSE_NEWSCIRUN:
+      if (btn == MOUSE_LEFT)    rotateCenter();
+      if (btn == MOUSE_RIGHT)   translate();
+      break;
   }
   mActiveDrag = btn;
 }
@@ -137,32 +156,47 @@ void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
 {
-  if (mActiveDrag == btn)
+  auto translate    = [=]()
   {
-    if (btn == MOUSE_LEFT)
-    {
-      spire::V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
-      mSciBall->drag(mouseScreenSpace);
+    spire::V2 curTrans = calculateScreenSpaceCoords(pos);
+    spire::V2 delta = curTrans - mTransClick;
+    spire::V2 trans = (-delta) * mCamDistance / 2.0f;
 
-      buildAndApplyCameraTransform();
-    }
-    else if (btn == MOUSE_RIGHT)
-    {
-      spire::V2 curTrans = calculateScreenSpaceCoords(pos);
-      spire::V2 delta = curTrans - mTransClick;
-      /// \todo This 2.5f value is a magic number, and it's real value should
-      ///       be calculated based off of the world space position of the
-      ///       camera. This value could easily be calculated based off of
-      ///       mCamDistance.
-      spire::V2 trans = (-delta) * mCamDistance / 2.0f;
+    spire::M44 camRot = mSciBall->getTransformation();
+    spire::V3 translation = 
+        static_cast<spire::V3>(camRot[0].xyz()) * trans.x
+        + static_cast<spire::V3>(camRot[1].xyz()) * trans.y;
+    mCamAccumPosNow = mCamAccumPosDown + translation;
 
-      spire::M44 camRot = mSciBall->getTransformation();
-      spire::V3 translation = static_cast<spire::V3>(camRot[0].xyz()) * trans.x
-                       + static_cast<spire::V3>(camRot[1].xyz()) * trans.y;
-      mCamAccumPosNow = mCamAccumPosDown + translation;
+    buildAndApplyCameraTransform();
+  };
+  auto zoom         = [=]()
+  {
+    // Use distance delta from center of screen to control zoom.
+    // Will need a new variable to control this.
+    spire::V2 curTrans = calculateScreenSpaceCoords(pos);
+    spire::V2 delta = curTrans - mTransClick;
+  };
+  auto rotateCenter = [=]()
+  {
+    spire::V2 mouseScreenSpace = calculateScreenSpaceCoords(pos);
+    mSciBall->drag(mouseScreenSpace);
 
-      buildAndApplyCameraTransform();
-    }
+    buildAndApplyCameraTransform();
+  };
+
+  switch (mMouseMode)
+  {
+    case MOUSE_OLDSCIRUN:
+      if (btn == MOUSE_LEFT)    translate();
+      if (btn == MOUSE_RIGHT)   zoom();
+      if (btn == MOUSE_MIDDLE)  rotateCenter();
+      break;
+
+    case MOUSE_NEWSCIRUN:
+      if (btn == MOUSE_LEFT)    rotateCenter();
+      if (btn == MOUSE_RIGHT)   translate();
+      break;
   }
 }
 

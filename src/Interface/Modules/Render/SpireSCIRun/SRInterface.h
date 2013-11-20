@@ -72,6 +72,12 @@ public:
     MOUSE_MIDDLE,
   };
 
+  enum MouseMode
+  {
+    MOUSE_OLDSCIRUN,
+    MOUSE_NEWSCIRUN
+  };
+
   void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
   void inputMouseMove(const glm::ivec2& pos, MouseButton btn);
   void inputMouseUp(const glm::ivec2& pos, MouseButton btn);
@@ -101,6 +107,9 @@ public:
 
   /// Performs a frame.
   void doFrame();
+
+  /// Sets the mouse interaction mode.
+  void setMouseMode(MouseMode mode);
 
 private:
 
@@ -148,6 +157,8 @@ private:
 
   std::shared_ptr<spire::Interface>    mSpire;
 
+  MouseMode                 mMouseMode;
+
   float                     mCamDistance;   ///< Camera's distance from the origin.
 
   size_t                    mScreenWidth;   ///< Screen width in pixels.
@@ -164,6 +175,7 @@ private:
   std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
 
   std::vector<SRObject>     mSRObjects;     ///< All SCIRun objects.
+
 
 };
 

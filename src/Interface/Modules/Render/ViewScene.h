@@ -65,6 +65,10 @@ public:
   virtual void pull() {}
 
   virtual void moduleExecuted();
+
+protected Q_SLOTS:
+  void menuMouseControlChanged(int index);
+
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
 private:

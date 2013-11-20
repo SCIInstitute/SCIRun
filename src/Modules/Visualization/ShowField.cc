@@ -197,7 +197,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
     // Build pass for the edges.
     /// \todo Find an appropriate place to put program names like UniformColor.
-    GeometryObject::SpireSubPass pass = 
+    GeometryObject::SpireSubPass pass =
         GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
                                      "UniformColor", spire::Interface::LINES);
 
