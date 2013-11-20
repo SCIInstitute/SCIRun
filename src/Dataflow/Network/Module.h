@@ -281,7 +281,12 @@ namespace Networks {
   template <class T, size_t N>
   std::vector<boost::shared_ptr<T>> Module::getRequiredDynamicInputs(const DynamicPortName<T,N>& port)
   {
-    return std::vector<boost::shared_ptr<T>>();
+    auto handleOptions = get_dynamic_input_handles(port.id_);
+    std::vector<boost::shared_ptr<T>> handles;
+    auto check = [&, this](SCIRun::Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
+    auto end = handleOptions.end() - 1; //leave off empty final port
+    std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
+    return handles;
   }
 
   template <class T, size_t N>

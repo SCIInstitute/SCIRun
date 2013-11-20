@@ -29,6 +29,9 @@
 #include <iostream>
 #include <Modules/Basic/DynamicPortTester.h>
 #include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;

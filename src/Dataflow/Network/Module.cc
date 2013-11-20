@@ -46,6 +46,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -201,7 +202,7 @@ bool Module::hasOutputPort(const PortId& id) const
   return oports_.hasPort(id);
 }
 
-SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(const PortId& id)
+DatatypeHandleOption Module::get_input_handle(const PortId& id)
 {
   //TODO test...
   if (!iports_.hasPort(id))
@@ -217,7 +218,7 @@ SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(const Por
   return iports_[id]->getData();
 }
 
-std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
+std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
 {
   //TODO test...
   if (!iports_.hasPort(id))
@@ -230,11 +231,14 @@ std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> Module::get_dynamic_i
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
   }
 
-  throw "not implemented";
-  //return iports_[idx]->getData();
+  auto portsWithName = iports_[id.name];
+  std::vector<DatatypeHandleOption> options;
+  auto getData = [](InputPortHandle input) { return input->getData(); };
+  std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
+  return options;
 }
 
-void Module::send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data)
+void Module::send_output_handle(const PortId& id, DatatypeHandle data)
 {
   //TODO test...
   if (!oports_.hasPort(id))
