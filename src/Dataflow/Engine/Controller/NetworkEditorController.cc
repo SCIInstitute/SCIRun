@@ -383,7 +383,7 @@ boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynam
   return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
 }
 
-DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : dpm_(dpm), first_(true)
+DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : first_(true), dpm_(dpm)
 {
   if (dpm_)
   {

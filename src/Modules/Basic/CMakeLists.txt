@@ -56,6 +56,7 @@ ADD_LIBRARY(Modules_Basic
 
 TARGET_LINK_LIBRARIES(Modules_Basic
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   Dataflow_Network
 )
 
