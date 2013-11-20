@@ -67,6 +67,9 @@ namespace Networks {
     //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
+  
+    //for unit testing. Need to restrict access somehow.
+    static void resetInstanceCount() { instanceCount_ = 0; }
 
     bool has_ui() const { return has_ui_; }
     void setUiVisible(bool visible); 
