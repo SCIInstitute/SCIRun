@@ -7,7 +7,7 @@
 			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateMatrix:0</first>
+				<first>CreateMatrix:10</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
@@ -36,7 +36,7 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateMatrix:1</first>
+				<first>CreateMatrix:11</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -65,7 +65,7 @@
 				</second>
 			</item>
 			<item>
-				<first>EvaluateLinearAlgebraBinary:5</first>
+				<first>EvaluateLinearAlgebraBinary:13</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -93,7 +93,7 @@
 				</second>
 			</item>
 			<item>
-				<first>EvaluateLinearAlgebraUnary:2</first>
+				<first>EvaluateLinearAlgebraUnary:12</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -133,7 +133,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:3</first>
+				<first>ReportMatrixInfo:14</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -149,7 +149,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:4</first>
+				<first>ReportMatrixInfo:15</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -169,80 +169,110 @@
 			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateMatrix:0</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraUnary:2</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateMatrix:10</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraUnary:12</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateMatrix:1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraBinary:5</moduleId2_>
-				<port2_>1</port2_>
+				<moduleId1_>CreateMatrix:11</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:13</moduleId2_>
+				<port2_>
+					<name>RHS</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateMatrix:1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateMatrix:11</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:14</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>EvaluateLinearAlgebraBinary:5</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo:4</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>EvaluateLinearAlgebraBinary:13</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:15</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>EvaluateLinearAlgebraUnary:2</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraBinary:5</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>EvaluateLinearAlgebraUnary:12</moduleId1_>
+				<port1_>
+					<name>Result</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:13</moduleId2_>
+				<port2_>
+					<name>LHS</name>
+					<id>0</id>
+				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="14" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>6</count>
 		<item_version>0</item_version>
-		<item class_id="15" tracking_level="0" version="0">
-			<first>CreateMatrix:0</first>
-			<second class_id="16" tracking_level="0" version="0">
-				<first>-1164</first>
-				<second>-535</second>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>CreateMatrix:10</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-1040</first>
+				<second>-122</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateMatrix:1</first>
+			<first>CreateMatrix:11</first>
 			<second>
-				<first>-785</first>
-				<second>-538</second>
+				<first>-778</first>
+				<second>-121</second>
 			</second>
 		</item>
 		<item>
-			<first>EvaluateLinearAlgebraBinary:5</first>
+			<first>EvaluateLinearAlgebraBinary:13</first>
 			<second>
-				<first>-952</first>
-				<second>-264</second>
+				<first>-822</first>
+				<second>150</second>
 			</second>
 		</item>
 		<item>
-			<first>EvaluateLinearAlgebraUnary:2</first>
+			<first>EvaluateLinearAlgebraUnary:12</first>
 			<second>
-				<first>-1235</first>
-				<second>-409</second>
+				<first>-1101</first>
+				<second>9</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:3</first>
+			<first>ReportMatrixInfo:14</first>
 			<second>
-				<first>-704</first>
-				<second>-399</second>
+				<first>-565</first>
+				<second>23</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:4</first>
+			<first>ReportMatrixInfo:15</first>
 			<second>
-				<first>-889</first>
-				<second>-150</second>
+				<first>-763</first>
+				<second>324</second>
 			</second>
 		</item>
 	</modulePositions>

@@ -7,7 +7,7 @@
 			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateLatVol:0</first>
+				<first>CreateLatVol:3</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
@@ -62,7 +62,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -74,7 +74,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>3</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -95,7 +95,7 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateLatVol:1</first>
+				<first>CreateLatVol:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -126,7 +126,7 @@
 									<name>ElementSizeNormalized</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -150,7 +150,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>4</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -162,7 +162,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>7</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -174,7 +174,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>10</value>
+										<value>16</value>
 									</value>
 								</second>
 							</item>
@@ -183,7 +183,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ShowField:2</first>
+				<first>ShowField:8</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -202,7 +202,7 @@
 									<name>EdgeTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -214,7 +214,7 @@
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -271,7 +271,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ShowField:3</first>
+				<first>ShowField:9</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -290,7 +290,7 @@
 									<name>EdgeTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -302,7 +302,7 @@
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -354,22 +354,6 @@
 									</value>
 								</second>
 							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ViewScene:4</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Render</category_name_>
-						<module_name_>ViewScene</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
 						</stateMap>
 					</state>
 				</second>
@@ -406,98 +390,150 @@
 					</state>
 				</second>
 			</item>
+			<item>
+				<first>ViewScene:7</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Render</category_name_>
+						<module_name_>ViewScene</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
+						</stateMap>
+					</state>
+				</second>
+			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
 			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateLatVol:0</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ShowField:2</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateLatVol:3</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:9</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateLatVol:1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ShowField:3</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateLatVol:4</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:8</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:2</moduleId1_>
-				<port1_>0</port1_>
+				<moduleId1_>ShowField:8</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ViewScene:5</moduleId2_>
-				<port2_>0</port2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:2</moduleId1_>
-				<port1_>0</port1_>
+				<moduleId1_>ShowField:8</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:7</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:9</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
 				<moduleId2_>ViewScene:6</moduleId2_>
-				<port2_>1</port2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowField:3</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ViewScene:4</moduleId2_>
-				<port2_>0</port2_>
-			</item>
-			<item>
-				<moduleId1_>ShowField:3</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ViewScene:6</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>ShowField:9</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:7</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>1</id>
+				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="14" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>7</count>
 		<item_version>0</item_version>
-		<item class_id="15" tracking_level="0" version="0">
-			<first>CreateLatVol:0</first>
-			<second class_id="16" tracking_level="0" version="0">
-				<first>-621</first>
-				<second>-457</second>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>CreateLatVol:3</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-768</first>
+				<second>-433</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateLatVol:1</first>
+			<first>CreateLatVol:4</first>
 			<second>
-				<first>-885</first>
-				<second>-468</second>
+				<first>-1034</first>
+				<second>-439</second>
 			</second>
 		</item>
 		<item>
-			<first>ShowField:2</first>
+			<first>ShowField:8</first>
 			<second>
-				<first>-653</first>
-				<second>-342</second>
+				<first>-1041</first>
+				<second>-318</second>
 			</second>
 		</item>
 		<item>
-			<first>ShowField:3</first>
+			<first>ShowField:9</first>
 			<second>
-				<first>-913</first>
-				<second>-347</second>
-			</second>
-		</item>
-		<item>
-			<first>ViewScene:4</first>
-			<second>
-				<first>-947</first>
-				<second>-213</second>
+				<first>-782</first>
+				<second>-317</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:5</first>
 			<second>
-				<first>-656</first>
-				<second>-199</second>
+				<first>-1027</first>
+				<second>-182</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-828</first>
-				<second>-66</second>
+				<first>-760</first>
+				<second>-186</second>
+			</second>
+		</item>
+		<item>
+			<first>ViewScene:7</first>
+			<second>
+				<first>-802</first>
+				<second>-37</second>
 			</second>
 		</item>
 	</modulePositions>

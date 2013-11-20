@@ -134,7 +134,7 @@
 									<name>TargetError</name>
 									<value>
 										<which>1</which>
-										<value>0.00069999999999999999</value>
+										<value>0.00069999999999999988</value>
 									</value>
 								</second>
 							</item>
@@ -230,36 +230,36 @@
 		<item class_id="16" tracking_level="0" version="0">
 			<first>ReadMatrix:0</first>
 			<second class_id="17" tracking_level="0" version="0">
-				<first>-397</first>
-				<second>-412</second>
+				<first>-857</first>
+				<second>-432</second>
 			</second>
 		</item>
 		<item>
 			<first>ReadMatrix:1</first>
 			<second>
-				<first>-717</first>
-				<second>-403</second>
+				<first>-1177</first>
+				<second>-423</second>
 			</second>
 		</item>
 		<item>
 			<first>ReportMatrixInfo:3</first>
 			<second>
-				<first>-319</first>
-				<second>-170</second>
+				<first>-779</first>
+				<second>-190</second>
 			</second>
 		</item>
 		<item>
 			<first>SolveLinearSystem:4</first>
 			<second>
-				<first>-575</first>
-				<second>-284</second>
+				<first>-1035</first>
+				<second>-304</second>
 			</second>
 		</item>
 		<item>
 			<first>WriteMatrix:2</first>
 			<second>
-				<first>-719</first>
-				<second>-173</second>
+				<first>-1179</first>
+				<second>-193</second>
 			</second>
 		</item>
 	</modulePositions>
