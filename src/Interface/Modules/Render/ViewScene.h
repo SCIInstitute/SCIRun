@@ -36,7 +36,6 @@
 #include <boost/shared_ptr.hpp>
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Render/share.h>
 
 #include "spire/Interface.h"
 #include "namespaces.h"
@@ -45,6 +44,8 @@
 #include "SpireSCIRun/SRCommonAttributes.h"
 #include "SpireSCIRun/SRCommonUniforms.h"
 #include "GLWidget.h"
+
+#include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 
