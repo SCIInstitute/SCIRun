@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="9">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateMatrix0</first>
+				<first>CreateMatrix:0</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
@@ -26,7 +26,7 @@
 									<name>TextEntry</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>1 0
+										<value>1 0 
 0 1</value>
 									</value>
 								</second>
@@ -36,7 +36,7 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateMatrix1</first>
+				<first>CreateMatrix:1</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -56,8 +56,7 @@
 									<value>
 										<which>2</which>
 										<value>1 1 1
-1 1 1
-</value>
+1 1 1</value>
 									</value>
 								</second>
 							</item>
@@ -66,7 +65,7 @@
 				</second>
 			</item>
 			<item>
-				<first>EvaluateLinearAlgebraBinary3</first>
+				<first>EvaluateLinearAlgebraBinary:5</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -94,7 +93,7 @@
 				</second>
 			</item>
 			<item>
-				<first>EvaluateLinearAlgebraUnary2</first>
+				<first>EvaluateLinearAlgebraUnary:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -103,7 +102,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>1</count>
+							<count>2</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -117,12 +116,24 @@
 									</value>
 								</second>
 							</item>
+							<item>
+								<first>
+									<name>ScalarValue</name>
+								</first>
+								<second>
+									<name>ScalarValue</name>
+									<value>
+										<which>0</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo4</first>
+				<first>ReportMatrixInfo:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -138,7 +149,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo5</first>
+				<first>ReportMatrixInfo:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -158,33 +169,33 @@
 			<count>5</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateMatrix0</moduleId1_>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraUnary2</moduleId2_>
+				<moduleId2_>EvaluateLinearAlgebraUnary:2</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateMatrix1</moduleId1_>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraBinary3</moduleId2_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:5</moduleId2_>
 				<port2_>1</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateMatrix1</moduleId1_>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo5</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:3</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 			<item>
-				<moduleId1_>EvaluateLinearAlgebraBinary3</moduleId1_>
+				<moduleId1_>EvaluateLinearAlgebraBinary:5</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo4</moduleId2_>
+				<moduleId2_>ReportMatrixInfo:4</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 			<item>
-				<moduleId1_>EvaluateLinearAlgebraUnary2</moduleId1_>
+				<moduleId1_>EvaluateLinearAlgebraUnary:2</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraBinary3</moduleId2_>
+				<moduleId2_>EvaluateLinearAlgebraBinary:5</moduleId2_>
 				<port2_>0</port2_>
 			</item>
 		</connections>
@@ -193,45 +204,45 @@
 		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="15" tracking_level="0" version="0">
-			<first>CreateMatrix0</first>
+			<first>CreateMatrix:0</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>213</first>
-				<second>246</second>
+				<first>-1164</first>
+				<second>-535</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateMatrix1</first>
+			<first>CreateMatrix:1</first>
 			<second>
-				<first>489</first>
-				<second>230</second>
+				<first>-785</first>
+				<second>-538</second>
 			</second>
 		</item>
 		<item>
-			<first>EvaluateLinearAlgebraBinary3</first>
+			<first>EvaluateLinearAlgebraBinary:5</first>
 			<second>
-				<first>386</first>
-				<second>530</second>
+				<first>-952</first>
+				<second>-264</second>
 			</second>
 		</item>
 		<item>
-			<first>EvaluateLinearAlgebraUnary2</first>
+			<first>EvaluateLinearAlgebraUnary:2</first>
 			<second>
-				<first>214</first>
-				<second>385</second>
+				<first>-1235</first>
+				<second>-409</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo4</first>
+			<first>ReportMatrixInfo:3</first>
 			<second>
-				<first>380</first>
-				<second>657</second>
+				<first>-704</first>
+				<second>-399</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo5</first>
+			<first>ReportMatrixInfo:4</first>
 			<second>
-				<first>575</first>
-				<second>396</second>
+				<first>-889</first>
+				<second>-150</second>
 			</second>
 		</item>
 	</modulePositions>
