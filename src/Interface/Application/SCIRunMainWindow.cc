@@ -366,6 +366,8 @@ void SCIRunMainWindow::loadNetworkFile(const QString& filename)
     }
     else
     {
+      if (Core::Application::Instance().parameters()->isRegressionMode())
+        exit(7);
       //TODO: set error code to non-0 so regression tests fail!
       // probably want to control this with a --regression flag.
     }
