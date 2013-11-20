@@ -154,10 +154,10 @@ void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
       ///       be calculated based off of the world space position of the
       ///       camera. This value could easily be calculated based off of
       ///       mCamDistance.
-      spire::V2 trans = (-delta) * 2.5f;
+      spire::V2 trans = (-delta) * mCamDistance / 2.0f;
 
       spire::M44 camRot = mSciBall->getTransformation();
-      spire::V3 translation =   static_cast<spire::V3>(camRot[0].xyz()) * trans.x
+      spire::V3 translation = static_cast<spire::V3>(camRot[0].xyz()) * trans.x
                        + static_cast<spire::V3>(camRot[1].xyz()) * trans.y;
       mCamAccumPosNow = mCamAccumPosDown + translation;
 
