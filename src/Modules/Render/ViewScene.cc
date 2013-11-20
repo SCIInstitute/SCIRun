@@ -39,6 +39,7 @@ ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
 
 ViewScene::ViewScene() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(GeneralGeom);
 }
 
 void ViewScene::setStateDefaults()

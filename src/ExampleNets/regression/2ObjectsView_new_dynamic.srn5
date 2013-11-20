@@ -38,7 +38,7 @@
 									<name>ElementSizeNormalized</name>
 									<value>
 										<which>3</which>
-										<value>1</value>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -62,7 +62,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>5</value>
 									</value>
 								</second>
 							</item>
@@ -74,7 +74,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>6</value>
 									</value>
 								</second>
 							</item>
@@ -86,7 +86,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>7</value>
 									</value>
 								</second>
 							</item>
@@ -202,7 +202,7 @@
 									<name>EdgeTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -214,7 +214,7 @@
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -290,7 +290,7 @@
 									<name>EdgeTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -302,7 +302,7 @@
 									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
-										<value>0</value>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
@@ -518,15 +518,15 @@
 		<item>
 			<first>ViewScene:5</first>
 			<second>
-				<first>-1027</first>
-				<second>-182</second>
+				<first>-1110</first>
+				<second>-166</second>
 			</second>
 		</item>
 		<item>
 			<first>ViewScene:6</first>
 			<second>
-				<first>-760</first>
-				<second>-186</second>
+				<first>-741</first>
+				<second>-200</second>
 			</second>
 		</item>
 		<item>
