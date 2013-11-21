@@ -51,7 +51,7 @@ class SetupRHSforTDCSandTMSTests : public ModuleTest
 TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
 {
   auto tdcs = makeModule("SetupRHSforTDCSandTMS");
-  ASSERT_TRUE(tdcs);
+  ASSERT_TRUE(tdcs != nullptr);
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);

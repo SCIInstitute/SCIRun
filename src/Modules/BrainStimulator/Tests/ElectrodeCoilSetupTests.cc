@@ -51,7 +51,7 @@ class ElectrodeCoilSetupTests : public ModuleTest
 TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
 {
   auto tdcs = makeModule("ElectrodeCoilSetup");
-  ASSERT_TRUE(tdcs);
+  ASSERT_TRUE(tdcs != nullptr);
   FieldHandle nullField;
   stubPortNWithThisData(tdcs, 0, nullField);
   stubPortNWithThisData(tdcs, 1, nullField);

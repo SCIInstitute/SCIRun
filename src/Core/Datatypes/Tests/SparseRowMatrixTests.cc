@@ -39,10 +39,224 @@ using namespace ::testing;
 
 namespace
 {
+  SparseRowMatrix posdef_matrix_correct()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 2;
+    m.insert(1,1) = 2;
+    m.insert(2,2) = 2;
+    m.insert(3,3) = 2;
+    m.insert(4,4) = 2;
+    m.insert(0,1) = -0.1;
+    m.insert(0,2) = -0.1;
+    m.insert(0,3) = -0.1;
+    m.insert(0,4) = -0.1;
+    m.insert(1,0) = -0.1;
+    m.insert(1,2) = -0.1;
+    m.insert(1,3) = -0.1;
+    m.insert(1,4) = -0.1;
+    m.insert(2,0) = -0.1;
+    m.insert(2,1) = -0.1;
+    m.insert(2,3) = -0.1;
+    m.insert(2,4) = -0.1;
+    m.insert(3,0) = -0.1;
+    m.insert(3,1) = -0.1;
+    m.insert(3,2) = -0.1;
+    m.insert(3,4) = -0.1;    
+    m.insert(4,0) = -0.1;
+    m.insert(4,1) = -0.1;
+    m.insert(4,2) = -0.1;
+    m.insert(4,3) = -0.1;   
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false1()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = -2;
+    m.insert(1,1) = 2;
+    m.insert(2,2) = 2;
+    m.insert(3,3) = 2;
+    m.insert(4,4) = 2;
+    m.insert(0,1) = -0.1;
+    m.insert(0,2) = -0.1;
+    m.insert(0,3) = -0.1;
+    m.insert(0,4) = -0.1;
+    m.insert(1,0) = -0.1;
+    m.insert(1,2) = -0.1;
+    m.insert(1,3) = -0.1;
+    m.insert(1,4) = -0.1;
+    m.insert(2,0) = -0.1;
+    m.insert(2,1) = -0.1;
+    m.insert(2,3) = -0.1;
+    m.insert(2,4) = -0.1;
+    m.insert(3,0) = -0.1;
+    m.insert(3,1) = -0.1;
+    m.insert(3,2) = -0.1;
+    m.insert(3,4) = -0.1;    
+    m.insert(4,0) = -0.1;
+    m.insert(4,1) = -0.1;
+    m.insert(4,2) = -0.1;
+    m.insert(4,3) = -0.1;   
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false2()
+  {
+    SparseRowMatrix m(5,6);
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false3()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(1,3) = NAN; 
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false4()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 2;
+    m.insert(1,1) = 2;
+    m.insert(2,2) = 2;
+    m.insert(3,3) = 2;
+    m.insert(4,4) = 2;
+    m.insert(0,1) = -0.2;
+    m.insert(0,2) = -0.2;
+    m.insert(0,3) = -0.2;
+    m.insert(0,4) = -0.2;
+    m.insert(1,0) = -0.1;
+    m.insert(1,2) = -0.1;
+    m.insert(1,3) = -0.1;
+    m.insert(1,4) = -0.1;
+    m.insert(2,0) = -0.1;
+    m.insert(2,1) = -0.1;
+    m.insert(2,3) = -0.1;
+    m.insert(2,4) = -0.1;
+    m.insert(3,0) = -0.1;
+    m.insert(3,1) = -0.1;
+    m.insert(3,2) = -0.1;
+    m.insert(3,4) = -0.1;    
+    m.insert(4,0) = -0.1;
+    m.insert(4,1) = -0.1;
+    m.insert(4,2) = -0.1;
+    m.insert(4,3) = -0.1;   
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false5()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 2;
+    m.insert(1,1) = 2;
+    m.insert(2,2) = 2;
+    m.insert(3,3) = 2;
+    m.insert(4,4) = 2;
+    m.insert(0,1) = -0.41;
+    m.insert(0,2) = -0.4;
+    m.insert(0,3) = -0.4;
+    m.insert(0,4) = -0.4;
+    m.insert(1,0) = -0.1;
+    m.insert(1,2) = -0.1;
+    m.insert(1,3) = -0.1;
+    m.insert(1,4) = -0.1;
+    m.insert(2,0) = -0.1;
+    m.insert(2,1) = -0.1;
+    m.insert(2,3) = -0.1;
+    m.insert(2,4) = -0.1;
+    m.insert(3,0) = -0.1;
+    m.insert(3,1) = -0.1;
+    m.insert(3,2) = -0.1;
+    m.insert(3,4) = -0.1;    
+    m.insert(4,0) = -0.1;
+    m.insert(4,1) = -0.1;
+    m.insert(4,2) = -0.1;
+    m.insert(4,3) = -0.1;   
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false6()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 2;
+    m.insert(1,1) = 2;
+    m.insert(2,2) = 2;
+    m.insert(3,3) = 2;
+    m.insert(4,4) = 2;
+    m.insert(0,1) = -0.41;
+    m.insert(0,2) = -0.1;
+    m.insert(0,3) = -0.1;
+    m.insert(0,4) = -0.1;
+    m.insert(1,0) = -0.4;
+    m.insert(1,2) = -0.1;
+    m.insert(1,3) = -0.1;
+    m.insert(1,4) = -0.1;
+    m.insert(2,0) = -0.4;
+    m.insert(2,1) = -0.1;
+    m.insert(2,3) = -0.1;
+    m.insert(2,4) = -0.1;
+    m.insert(3,0) = -0.4;
+    m.insert(3,1) = -0.1;
+    m.insert(3,2) = -0.1;
+    m.insert(3,4) = -0.1;    
+    m.insert(4,0) = -0.4;
+    m.insert(4,1) = -0.1;
+    m.insert(4,2) = -0.1;
+    m.insert(4,3) = -0.1;   
+    return m;
+  }
+  
+  
+  SparseRowMatrix sym_matrix_correct()
+  {
+    SparseRowMatrix m(4,4);
+    m.insert(0,0) = 1.0;
+    m.insert(3,2) = 0.5;
+    m.insert(2,3) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false0()
+  {
+    SparseRowMatrix m(4,4);
+    m.insert(0,1) = 1.0;
+    m.insert(2,3) = 0.5;
+    m.insert(3,2) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false1()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 1.0;
+    m.insert(2,3) = 0.1;
+    m.insert(4,2) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false2()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 1.0;
+    m.insert(2,4) = 0.4999999;
+    m.insert(4,2) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false3()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 1.0;
+    m.insert(2,4) = NAN;
+    m.insert(4,2) = 0.5;
+    return m;
+  }
+  
   SparseRowMatrix matrix1()
   {
     SparseRowMatrix m(4,5);
-    m.insert(0,0) = 1;
+    m.insert(0,0) = 1.0;
     m.insert(1,2) = -2;
     m.insert(2,3) = 0.5;
     return m;
@@ -50,6 +264,12 @@ namespace
   SparseRowMatrix Zero()
   {
     SparseRowMatrix m(4,5);
+    m.setZero();
+    return m;
+  }
+  SparseRowMatrix ZeroSquare()
+  {
+    SparseRowMatrix m(4,4);
     m.setZero();
     return m;
   }
@@ -309,4 +529,65 @@ TEST(SparseRowMatrixTest, DISABLED_SearchingForSingleNonzeroInRowAndColumnOnTheD
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad2()));
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad3()));
   
+}
+
+
+TEST(SparseRowMatrixTest, IsSymmetricTests)
+{
+ auto m = matrix1();
+ 
+ ASSERT_FALSE(isSymmetricMatrix(m));
+ ASSERT_TRUE(isSymmetricMatrix(id3()));
+ ASSERT_FALSE(isSymmetricMatrix(Zero()));
+ ASSERT_TRUE(isSymmetricMatrix(ZeroSquare()));
+
+ auto m1 = sym_matrix_correct();
+ ASSERT_TRUE(isSymmetricMatrix(m1));
+ ASSERT_TRUE(m1.isSymmetric());
+
+ auto m2 = sym_matrix_false0();
+ ASSERT_FALSE(isSymmetricMatrix(m2));
+ ASSERT_FALSE(m2.isSymmetric());
+
+ auto m3 = sym_matrix_false1();
+ ASSERT_FALSE(isSymmetricMatrix(m3));
+ ASSERT_FALSE(m3.isSymmetric());
+
+ auto m4 = sym_matrix_false2();
+ ASSERT_FALSE(isSymmetricMatrix(m4));
+ ASSERT_FALSE(m4.isSymmetric());
+ 
+ auto m5 = sym_matrix_false3();
+ ASSERT_FALSE(isSymmetricMatrix(m5));
+ ASSERT_FALSE(m5.isSymmetric());
+ 
+ ASSERT_FALSE(m.isSymmetric());
+ ASSERT_TRUE(id3().isSymmetric());
+ ASSERT_FALSE(Zero().isSymmetric());
+ ASSERT_TRUE(ZeroSquare().isSymmetric());
+}
+
+TEST(SparseRowMatrixTest, IsPositiveDefiniteTests)
+{
+/* auto m6 = posdef_matrix_correct();
+ ASSERT_TRUE(isPositiveDefiniteMatrix(m6));
+ 
+ auto m7 = posdef_matrix_false1();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(m7));
+ 
+ auto m8 = posdef_matrix_false2();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(m8));
+ 
+ auto m9 = posdef_matrix_false3();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(m9));
+ 
+ auto m10 = posdef_matrix_false4();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(m10));
+ 
+ auto m11 = posdef_matrix_false5();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(m11));
+ 
+ auto m12 = posdef_matrix_false6();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(m12));*/
+
 }

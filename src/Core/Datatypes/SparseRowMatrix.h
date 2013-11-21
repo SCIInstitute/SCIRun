@@ -77,7 +77,12 @@ namespace Datatypes {
     {
       visitor.visit(*this);
     }
-
+    
+    bool isSymmetric() const
+    {
+     if (this->cols() != this->rows()) return false;
+     return this->isApprox(this->transpose(),1e-16);
+    }
     //TODO!
 #if 0
     class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>
@@ -230,15 +235,13 @@ namespace Datatypes {
 #include <math.h>
 #include <iostream>
 
-template <typename SparseRowMatrixGeneric> inline bool ContainsValidValues (const SparseRowMatrixGeneric &matrix)
+template <typename T> inline bool ContainsValidValues (const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T> & m)
 {
- for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
-     { 
-       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
+  for (int k = 0; k < m.outerSize(); ++k)
+     {
+       for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
        {
-        it.value(); 
-        it.index();	
-	double tmp=(*matrix).coeff(i,it.index());
+	double tmp=it.value();
 	if ( !isfinite(tmp) || isnan(tmp) ) return false;
        }
      } 
@@ -246,63 +249,57 @@ template <typename SparseRowMatrixGeneric> inline bool ContainsValidValues (cons
 }
 
 
-template <typename SparseRowMatrixGeneric> inline bool isPositiveDefiniteMatrix (const SparseRowMatrixGeneric & matrix)
+template <typename T> inline bool isPositiveDefiniteMatrix (const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T> & m)
   {
-     if ((*matrix).rows() != (*matrix).cols()) return false;   
-         
-     if ( !ContainsValidValues(matrix) ) return false; 
+     if (m.rows() != m.cols()) return false;   
+      
+     std::cout << "p1"  << std::endl;   
 	 
-     for (SCIRun::index_type i=0; i<(*matrix).rows();i++) //all diagonal elements positive?
-        if ( (*matrix).coeff(i, i) <= 0 )  
-                   return false;
-       
-     for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
-     { 
-       double tmp1=0.0;
-       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
-       {
-        it.value(); 
-        it.index();	
-	if (i!=it.index()) tmp1+=fabs((*matrix).coeff(i,it.index())); //abs. sum over row
-       }
-       double tmp2=0.0;
-       
-       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).col(i)); it; ++it)
-       {
-        it.value(); 
-        it.index();	
-	if (i!=it.index()) tmp2+=fabs((*matrix).coeff(it.index(),i)); //abs. sum over col	
-       }    
-       if (tmp1!=tmp2) return false; //probably not symetric since sums of abs. values are different
-       if ((tmp1>(*matrix).coeff(i, i)) || (tmp2>(*matrix).coeff(i, i))) return false; 
-     }
-    
-    return true;
-  }
-
-
-template <typename SparseRowMatrixGeneric> inline bool isSymmetricMatrix (const SparseRowMatrixGeneric & matrix)
-  {
-   
-     if ((*matrix).rows() != (*matrix).cols()) return false;
+     if ( !ContainsValidValues(m) ) return false; 
      
-     if ( !ContainsValidValues(matrix) ) return false; 
+     std::cout << "p2"  << std::endl; 
      
-     for (SCIRun::index_type i=0; i<(*matrix).rows();i++)
-     { 
-       for (Eigen::SparseVector<double>::InnerIterator it((*matrix).row(i)); it; ++it)
-       {
-        it.value(); 
-        it.index();
+     double tmp1=0.0;
+     
+     for (int k = 0; k < m.outerSize(); ++k)  //all diagonal elements positive? yes? sum it up!
+         if ( m.coeff(k, k) <= 0 )  return false; else tmp1+=fabs(m.coeff(k,k));
 	
-	if( (*matrix).coeff(i, it.index()) !=(*matrix).coeff(it.index(),i))
-	   return false;
-       }
+     std::cout << "p3"  << std::endl; 
+     	 
+     for (int k = 0; k < m.outerSize(); ++k)
+     {
+       double tmp2=0.0;
+       for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
+       {
+         if (k!=it.index()) tmp2+=fabs(m.coeff(it.index(),k)); //abs. sum over col
+       } 
+      
+      if (tmp1!=tmp2) return false; //probably not symetric since sums of abs. values are different
+      std::cout << "p4"  << std::endl; 
+      if ((tmp1>m.coeff(k, k)) || (tmp2>m.coeff(k, k))) return false;
+      std::cout << "p5"  << std::endl;  
      }
     
     return true;
   }
 
+template <typename T> inline bool isSymmetricMatrix (const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T> & m)
+ {
+   if (m.rows() != m.cols()) return false;
+   
+   for (int k = 0; k < m.outerSize(); ++k)
+   {
+     for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
+     {
+       if (k<it.col())
+	  if ( m.coeff(it.col(),it.row()) != it.value())  return false;
+	     else  
+	      break;
+	    
+     }
+   }
+   return true;
+ }
 
 #include <Core/Datatypes/MatrixIO.h>
 

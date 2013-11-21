@@ -62,7 +62,7 @@ Datatypes::DenseColumnMatrixHandle& output_rhs) const
 {
     SparseRowMatrixFromMap::Values additionalData;
 
-    if (!isSymmetricMatrix(stiff))
+    if (!isSymmetricMatrix(*stiff))
     {
       THROW_ALGORITHM_PROCESSING_ERROR("LHS matrix is not symmetrical");
     } 
