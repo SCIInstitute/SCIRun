@@ -42,8 +42,8 @@ namespace SCIRun {
 namespace Gui {
 
 /// A reimplementation of Ken Shoemake's arcball camera. SCIRun 4's camera
-/// system is based completely off of Ken's code. The Code appears in
-/// Graphics Gems 4, III.1.
+/// system is based off of Ken's code. The Code appears in Graphics Gems 4, 
+/// III.1.
 /// 
 /// Unless specified otherwise, all calculations and variables stored in this
 /// class are relative to the target coordinate system (TCS) for which there is
@@ -68,7 +68,7 @@ public:
   ///                       in and out of the screen plane to various effect.
   /// \param radius         Radius in TCS. For screen coordinates, a good
   ///                       default is 0.75.
-  /// \param screenToTCS  Transformation from screen coordinates
+  /// \param screenToTCS    Transformation from screen coordinates
   ///                       to TCS. 'center' and 'radius' are given in TCS.
   SciBall(const spire::V3& center, float radius,
           const spire::M44& screenToTCS = spire::M44());
@@ -116,7 +116,6 @@ private:
   spire::V3   mVSphereTo;     ///< vNow mapped to the sphere of 'mRadius' centered at 'mCenter' in TCS.
 
   spire::M44  mMatNow;        ///< Matrix representing the current rotation.
-  spire::M44  mMatDown;       ///< Matrix representing the rotation when the mouse was first clicked.
 
   /// \todo Add in constraint sets (you can display handles and constrain
   ///       rotations along those handles).

@@ -94,7 +94,6 @@ void SciBall::beginDrag(const spire::V2& msc)
   // The next two lines are usually a part of end drag. But end drag introduces
   // too much statefullness, so we are shortcircuiting it.
   mQDown      = mQNow;
-  mMatDown    = mMatNow;
 
   // Normal 'begin' code.
   mVDown      = (mScreenToTCS * spire::V4(msc.x, msc.y, 0.0f, 1.0f)).xyz();
