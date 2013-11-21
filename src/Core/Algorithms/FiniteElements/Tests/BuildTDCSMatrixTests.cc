@@ -31,6 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;
@@ -38,8 +39,8 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::TestUtils;
 
-TEST(BuildTDCSMatrixAlgorithm, Foo)
+TEST(BuildTDCSMatrixAlgorithmTests, Foo)
 {
-  BuildTDCSMatrixAlgorithm algo;
+  BuildTDCSMatrixAlgo algo;
   FAIL() << "Insert code here for the most basic test cases !"; 
 }
