@@ -42,52 +42,82 @@ using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
 
+namespace
+{
+  //TODO: move to unit test helper library
+  FieldHandle loadFieldFromFile(const std::string& filename)
+  {
+    FieldHandle handle;
+    PiostreamPtr stream = auto_istream(filename, nullptr);
+    if (!stream)
+    {
+      throw "Error reading file '" + filename;
+    }
+
+    Pio(*stream, handle);
+
+    if (!handle || stream->error())
+    {
+      throw "File read error";
+    }
+    return handle;
+  }
+}
+
 namespace TDCSInputData
 {
   SparseRowMatrixHandle stiff()
   {
     //TODO: MORITZ fill in values up to 5x5
-    SparseRowMatrixHandle st = MAKE_SPARSE_MATRIX(
+    return MAKE_SPARSE_MATRIX_HANDLE(
       (1,0,0)
       (0,0,0)
       (0,2,0));
-    return st;
   }
   
   FieldHandle mesh()
   {
-    //TODO: DAN--need to read in file
-    return FieldHandle();
+    return loadFieldFromFile("E:\\tdcs_small_example_4dan\\mesh_scirun5.fld");
   }
   
   DenseMatrixHandle ElectrodeElements()
   {
     //TODO: MORITZ insert values as above.
-    return DenseMatrixHandle();
+    return MAKE_DENSE_MATRIX_HANDLE(
+      (1,0)
+      (0,1));
   }
   
   DenseMatrixHandle ElectrodeElementType()
   {
     //TODO: MORITZ insert values as above.
-    return DenseMatrixHandle();
+    return MAKE_DENSE_MATRIX_HANDLE(
+      (1,0)
+      (0,1));
   }
   
   DenseMatrixHandle ElectrodeElementDefinition()
   {
     //TODO: MORITZ insert values as above.
-    return DenseMatrixHandle();
+    return MAKE_DENSE_MATRIX_HANDLE(
+      (1,0)
+      (0,1));
   }
   
   DenseMatrixHandle contactimpedance()
   {
     //TODO: MORITZ insert values as above.
-    return DenseMatrixHandle();
+    return MAKE_DENSE_MATRIX_HANDLE(
+      (1,0)
+      (0,1));
   }
   
   SparseRowMatrixHandle expectedOutput()
   {
     //TODO: MORITZ insert values as above.
-    return SparseRowMatrixHandle();
+    return MAKE_SPARSE_MATRIX_HANDLE(
+      (1,0)
+      (0,1));
   }
 }
 
@@ -110,7 +140,7 @@ TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullMesh)
   SparseRowMatrixHandle output;
 
   //check on BuildTDCSMatrix.cc line 672
-  ASSERT_FALSE(algo.run(stiff(), FieldHandle(), ElectrodeElements(), ElectrodeElementType(), ElectrodeElementDefinition(), contactimpedance(), output));
+  EXPECT_FALSE(algo.run(stiff(), FieldHandle(), ElectrodeElements(), ElectrodeElementType(), ElectrodeElementDefinition(), contactimpedance(), output));
   //TODO: consider throwing an exception instead of returning false
 }
 
@@ -121,14 +151,19 @@ TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElements)
   SparseRowMatrixHandle output;
 
   //check on BuildTDCSMatrix.cc line 679
-  ASSERT_FALSE(algo.run(stiff(), mesh(), DenseMatrixHandle(), ElectrodeElementType(), ElectrodeElementDefinition(), contactimpedance(), output));
+  EXPECT_FALSE(algo.run(stiff(), mesh(), DenseMatrixHandle(), ElectrodeElementType(), ElectrodeElementDefinition(), contactimpedance(), output));
   //TODO: consider throwing an exception instead of returning false
 }
 
-//TODO:
+//TODO first:
+
 //TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElementType)  // line 686
+  // use EXPECT_THROW (search code for examples)
 //TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForNullElectrodeElementDefinition)  // line 693
 
 //TEST(BuildTDCSMatrixAlgorithmTests, ThrowsForMismatchedElectrodeMatrixRowCount)  // line 563
 // etc for checks lines 567-575
 // cover as many error cases with tests as you can, there are a lot in TDCSMatrixBuilder::singlethread() but there may be reasonable conceptual groupings to simplify the test code (may also lead to simplifying/refactoring the algorithm code
+
+//TODO next: 
+//TEST(BuildTDCSMatrixAlgorithmTests, SuccessfulRunTest)  //here's where you pass in the real matrices/fields above and compare the output to an expected matrix.
