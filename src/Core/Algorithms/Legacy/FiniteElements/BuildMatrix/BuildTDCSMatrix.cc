@@ -685,14 +685,14 @@ ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixH
   
  if (! ElectrodeElementType) //get electrode definition
  {
-   error("ElectrodeElements object not available....");
+   error("ElectrodeElementType object not available....");
    
    return false;
  }  
   
  if (! ElectrodeElementDefinition) //get electrode definition
  {
-   error("ElectrodeElements object not available....");
+   error("ElectrodeElementDefinition object not available....");
    
    return false;
  }  

@@ -120,6 +120,13 @@ inline void copyDenseToSparse(const Core::Datatypes::DenseMatrix& from, Core::Da
         to.insert(i,j) = from(i,j);
 }
 
+inline Core::Datatypes::SparseRowMatrixHandle toSparse(const Core::Datatypes::DenseMatrix& dense)
+{
+  Core::Datatypes::SparseRowMatrixHandle sp(boost::make_shared<Core::Datatypes::SparseRowMatrix>(dense.rows(), dense.cols()));
+  copyDenseToSparse(dense, *sp);
+  return sp;
+}
+
 inline Core::Datatypes::DenseMatrixHandle makeDense(const Core::Datatypes::SparseRowMatrix& sparse)
 {
   Core::Datatypes::DenseMatrixHandle dense(new Core::Datatypes::DenseMatrix(sparse.rows(), sparse.cols()));
@@ -187,6 +194,7 @@ inline std::vector<typename Cont::value_type> to_vector(const Cont& cont)
 
 #define MAKE_DENSE_MATRIX(x) (convertDataToMatrix(to_vector(boost::assign::tuple_list_of x)))
 
+#define MAKE_SPARSE_MATRIX(x) (toSparse(MAKE_DENSE_MATRIX(x)))
 
 struct SCISHARE ScopedTimer
 {
