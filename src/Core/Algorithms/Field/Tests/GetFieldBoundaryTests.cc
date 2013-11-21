@@ -61,13 +61,13 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
   MatrixHandle mapping;
   algo.run(ofh, boundary, mapping);
 
-  ASSERT_TRUE(boundary);
+  ASSERT_TRUE(boundary.get() != nullptr);
 
   //TODO: need assertions on boundary field
 
   if (basis != -1)
   {
-    ASSERT_TRUE(mapping);
+    ASSERT_TRUE(mapping.get() != nullptr);
     EXPECT_EQ(expectedMatrixRows, mapping->nrows());
     EXPECT_EQ(expectedMatrixColumns, mapping->ncols());
     std::ostringstream ostr;

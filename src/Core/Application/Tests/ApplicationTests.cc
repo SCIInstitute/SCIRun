@@ -46,7 +46,7 @@ TEST(ApplicationSingletonTest, CanCreateAndParseCommandLine)
   app.readCommandLine(argc, argv);
 
   appParams = app.parameters();
-  ASSERT_TRUE(appParams);
+  ASSERT_TRUE(appParams.get() != nullptr);
 
   EXPECT_EQ("network.srn5", appParams->inputFile().get());
   EXPECT_TRUE(appParams->executeNetwork());

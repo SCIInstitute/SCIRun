@@ -79,7 +79,7 @@ TEST(ReadMatrixAlgorithmTest, TestFromRealTextFile)
   if (boost::filesystem::exists(filename))
   {
     DenseMatrixConstHandle matrix = matrix_cast::as_dense(algo.run(filename.string()));
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     EXPECT_EQ(matrix1(), *matrix);
   }
   else
@@ -100,7 +100,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealASCIIMatFile)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 
     auto sp = matrix_cast::as_sparse(matrix);
@@ -124,7 +124,7 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealASCIIMatFile)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::dense(matrix));
 
     auto dense = matrix_cast::as_dense(matrix);
@@ -145,7 +145,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealASCIIMatFile)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::column(matrix));
 
     auto col = matrix_cast::as_column(matrix);
@@ -166,7 +166,7 @@ TEST(ReadMatrixAlgorithmTest, DISABLED_TestLargeSparseFromRealASCIIMatFile)
   if (boost::filesystem::exists(AFile))
   {
     auto matrix = algo.run(AFile.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 
     auto sp = matrix_cast::as_sparse(matrix);
@@ -224,7 +224,7 @@ TEST(ReadMatrixAlgorithmTest, TestSparseFromRealBinaryMatFile)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::sparse(matrix));
 
     auto sp = matrix_cast::as_sparse(matrix);
@@ -246,7 +246,7 @@ TEST(ReadMatrixAlgorithmTest, TestDenseFromRealBinaryMatFile)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::dense(matrix));
 
     auto dense = matrix_cast::as_dense(matrix);
@@ -266,7 +266,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::dense(matrix)); // artifact of v4 IO
 
     auto col = matrix_convert::to_column(matrix);
@@ -285,7 +285,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile2)
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     ASSERT_TRUE(matrix_is::column(matrix)); 
 
     auto col = matrix_cast::as_column(matrix);
@@ -310,7 +310,7 @@ void CallLegacyPio(const boost::filesystem::path& filename, const DenseMatrix& e
     MatrixHandle matrix;
     Pio(*stream, matrix);
 
-    ASSERT_TRUE(matrix);
+    ASSERT_TRUE(matrix.get() != nullptr);
     EXPECT_EQ(expected.nrows(), matrix->nrows());
     EXPECT_EQ(expected.ncols(), matrix->ncols());
 
