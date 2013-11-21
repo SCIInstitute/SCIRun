@@ -222,6 +222,9 @@ void SRInterface::buildAndApplyCameraTransform()
   // Translation is a post rotation operation where as zoom is a pre transform
   // operation. We should probably ensure the user doesn't scroll passed zero.
   // Remember, we are looking down NEGATIVE z.
+  // We are translating both the lookat and the eye point.
+  // Eyepoint is a function of the lookat, the camera transform, and the
+  // camera distance.
   finalTrafo[3].xyz() = mCamAccumPosNow + static_cast<spire::V3>(camRot[2].xyz()) * mCamDistance;
 
   mCamera->setViewTransform(finalTrafo);
