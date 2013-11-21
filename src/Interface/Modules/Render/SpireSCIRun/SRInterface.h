@@ -72,6 +72,12 @@ public:
     MOUSE_MIDDLE,
   };
 
+  enum MouseMode
+  {
+    MOUSE_OLDSCIRUN,
+    MOUSE_NEWSCIRUN
+  };
+
   void inputMouseDown(const glm::ivec2& pos, MouseButton btn);
   void inputMouseMove(const glm::ivec2& pos, MouseButton btn);
   void inputMouseUp(const glm::ivec2& pos, MouseButton btn);
@@ -102,7 +108,43 @@ public:
   /// Performs a frame.
   void doFrame();
 
+  /// Sets the mouse interaction mode.
+  void setMouseMode(MouseMode mode);
+
 private:
+
+  class SRObject
+  {
+  public:
+    SRObject(const std::string& name, const spire::M44& objToWorld) :
+        mName(name),
+        mObjectToWorld(objToWorld)
+    {}
+
+    // Different types of uniform transformations that are associated
+    // with the object (based off of the unsatisfied uniforms detected
+    // by the Spire object).
+    enum ObjectTransforms
+    {
+      OBJECT_TO_WORLD,
+      OBJECT_TO_CAMERA,
+      OBJECT_TO_CAMERA_PROJECTION,
+    };
+
+    struct SRPass
+    {
+      SRPass(const std::string& name) :
+          passName(name)
+      {}
+
+      std::string                 passName;
+      std::list<ObjectTransforms> transforms;
+    };
+
+    std::string       mName;
+    spire::M44        mObjectToWorld;
+    std::list<SRPass> mPasses;
+  };
 
   /// Calculates the screen space coordinates given the window coordinates.
   spire::V2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
@@ -110,7 +152,12 @@ private:
   /// Recalculates camera transform using the most relevant data.
   void buildAndApplyCameraTransform();
 
+  // Begins the frame.
+  void beginFrame();
+
   std::shared_ptr<spire::Interface>    mSpire;
+
+  MouseMode                 mMouseMode;
 
   float                     mCamDistance;   ///< Camera's distance from the origin.
 
@@ -127,7 +174,8 @@ private:
   std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
   std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
 
-  std::vector<std::string>  mSRObjects;     ///< All SCIRun objects.
+  std::vector<SRObject>     mSRObjects;     ///< All SCIRun objects.
+
 
 };
 
