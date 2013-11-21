@@ -85,7 +85,9 @@ public:
   /// Retrieves the current transformation in TCS.
   /// Obtains full transformation of object in question. If the arc ball is 
   /// being used to control camera rotation, then this will contain all
-  /// concatenated camera transformations.
+  /// concatenated camera transformations. The current state of the camera
+  /// is stored in the quaternions mQDown and mQNow. mMatNow is calculated
+  /// from mQNow.
   spire::M44 getTransformation() const;
 
 private:
