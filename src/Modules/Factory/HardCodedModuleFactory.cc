@@ -69,6 +69,12 @@
 #include <Modules/Visualization/MatrixAsVectorField.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
+#include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
+#include <Modules/BrainStimulator/SetConductivitiesToTetMesh.h>
+#include <Modules/BrainStimulator/SetupRHSforTDCSandTMS.h>
+#include <Modules/BrainStimulator/GenerateROIStatistics.h>
+#include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
+#include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
@@ -82,6 +88,7 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Modules::FiniteElements;
 using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Modules::StringProcessing;
+using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
 using namespace boost::assign;
@@ -151,6 +158,13 @@ namespace SCIRun {
             addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
             addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
           }
+
+          addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
+          addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
+          addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
+          addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
+          addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
+          addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
         }
 
         ModuleDescriptionMap descMap_;

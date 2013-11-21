@@ -110,7 +110,7 @@ namespace
   SparseRowMatrix posdef_matrix_false3()
   {
     SparseRowMatrix m(5,5);
-    m.insert(1,3) = NAN; 
+    m.insert(1,3) = std::numeric_limits<double>::quiet_NaN(); 
     return m;
   }
   
@@ -248,7 +248,7 @@ namespace
   {
     SparseRowMatrix m(5,5);
     m.insert(0,0) = 1.0;
-    m.insert(2,4) = NAN;
+    m.insert(2,4) = std::numeric_limits<double>::quiet_NaN();
     m.insert(4,2) = 0.5;
     return m;
   }
