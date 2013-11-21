@@ -48,6 +48,15 @@ class EvaluateLinearAlgebraUnaryModuleTests : public ModuleTest
 
 };
 
+TEST_F(EvaluateLinearAlgebraUnaryModuleTests, ThrowsForNullInput)
+{
+  auto eval = makeModule("EvaluateLinearAlgebraUnary");
+  MatrixHandle nullMatrix;
+  stubPortNWithThisData(eval, 0, nullMatrix);
+
+  EXPECT_THROW(eval->execute(), NullHandleOnPortException);
+}
+
 TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
 {
   const std::string name = "EvaluateLinearAlgebraUnary";
@@ -55,7 +64,7 @@ TEST_F(EvaluateLinearAlgebraUnaryModuleTests, CanCreateWithMockAlgorithm)
 
   EXPECT_EQ(name, module->get_module_name());
 
-  DenseMatrixHandle m(new DenseMatrix(2,2));
+  DenseMatrixHandle m(new DenseMatrix(2,2,2));
 
   stubPortNWithThisData(module, 0, m);
 

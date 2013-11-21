@@ -46,6 +46,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
 using namespace SCIRun::Core::Logging;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Datatypes;
 
 std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 {
@@ -54,6 +55,8 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 
 /*static*/ int Module::instanceCount_ = 0;
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
+
+/*static*/ void Module::resetInstanceCount() { instanceCount_ = 0; }
 
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
@@ -84,7 +87,6 @@ Module::Module(const ModuleLookupInfo& info,
 
 Module::~Module()
 {
-  instanceCount_--;
 }
 
 ModuleStateFactoryHandle Module::defaultStateFactory_;
@@ -92,14 +94,14 @@ AlgorithmFactoryHandle Module::defaultAlgoFactory_;
 
 LoggerHandle Module::getLogger() const { return log_ ? log_ : defaultLogger_; }
 
-OutputPortHandle Module::get_output_port(size_t idx) const
+OutputPortHandle Module::getOutputPort(const PortId& id) const
 {
-  return oports_[idx];
+  return oports_[id];
 }
 
-InputPortHandle Module::get_input_port(size_t idx) const
+InputPortHandle Module::getInputPort(const PortId& id) const
 {
-  return iports_[idx];
+  return iports_[id];
 }
 
 size_t Module::num_input_ports() const
@@ -116,10 +118,6 @@ void Module::do_execute() throw()
 {
   executeBegins_(id_);
   status("STARTING MODULE: " + id_.id_);
-
-  // Reset all of the ports.
-  oports_.resetAll();
-  iports_.resetAll();
 
   try 
   {
@@ -188,36 +186,89 @@ AlgorithmBase& Module::algo()
 
 size_t Module::add_input_port(InputPortHandle h)
 {
-  iports_.add(h);
-  return iports_.size() - 1;
+  return iports_.add(h);
 }
 
 size_t Module::add_output_port(OutputPortHandle h)
 {
-  oports_.add(h);
-  return oports_.size() - 1;
+  return oports_.add(h);
 }
 
-SCIRun::Core::Datatypes::DatatypeHandleOption Module::get_input_handle(size_t idx)
+bool Module::hasInputPort(const PortId& id) const 
 {
-  //TODO test...
-  if (idx >= iports_.size())
-  {
-    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Port not found: " + boost::lexical_cast<std::string>(idx)));
-  }
-
-  return iports_[idx]->getData();
+  return iports_.hasPort(id);
 }
 
-void Module::send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data)
+bool Module::hasOutputPort(const PortId& id) const 
+{
+  return oports_.hasPort(id);
+}
+
+DatatypeHandleOption Module::get_input_handle(const PortId& id)
 {
   //TODO test...
-  if (idx >= oports_.size())
+  if (!iports_.hasPort(id))
   {
-    THROW_OUT_OF_RANGE("port does not exist at index " + boost::lexical_cast<std::string>(idx));
+    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
   }
 
-  oports_[idx]->sendData(data);
+  if (iports_[id]->isDynamic())
+  {
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
+  }
+
+  return iports_[id]->getData();
+}
+
+std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
+{
+  //TODO test...
+  if (!iports_.hasPort(id))
+  {
+    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
+  }
+  
+  if (!iports_[id]->isDynamic())
+  {
+    BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
+  }
+
+  auto portsWithName = iports_[id.name];
+  std::vector<DatatypeHandleOption> options;
+  auto getData = [](InputPortHandle input) { return input->getData(); };
+  std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
+  return options;
+}
+
+void Module::send_output_handle(const PortId& id, DatatypeHandle data)
+{
+  //TODO test...
+  if (!oports_.hasPort(id))
+  {
+    THROW_OUT_OF_RANGE("Output port does not exist: " + id.toString());
+  }
+
+  oports_[id]->sendData(data);
+}
+
+std::vector<InputPortHandle> Module::findInputPortsWithName(const std::string& name) const
+{
+  return iports_[name];
+}
+
+std::vector<OutputPortHandle> Module::findOutputPortsWithName(const std::string& name) const
+{
+  return oports_[name];
+}
+
+std::vector<InputPortHandle> Module::inputPorts() const
+{
+  return iports_.view();
+}
+
+std::vector<OutputPortHandle> Module::outputPorts() const
+{
+  return oports_.view();
 }
 
 Module::Builder::Builder() 
@@ -272,11 +323,16 @@ Module::Builder& Module::Builder::add_input_port(const Port::ConstructionParams&
 {
   if (module_)
   {
-    DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
-    InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
-    port->setIndex(module_->add_input_port(port));
+    addInputPortImpl(*module_, params);
   }
   return *this;
+}
+
+void Module::Builder::addInputPortImpl(Module& module, const Port::ConstructionParams& params)
+{
+  DatatypeSinkInterfaceHandle sink(sink_maker_ ? sink_maker_() : 0);
+  InputPortHandle port(boost::make_shared<InputPort>(module_.get(), params, sink));
+  port->setIndex(module_->add_input_port(port));
 }
 
 Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams& params)
@@ -290,10 +346,25 @@ Module::Builder& Module::Builder::add_output_port(const Port::ConstructionParams
   return *this;
 }
 
-Module::Builder& Module::Builder::disable_ui()
+PortId Module::Builder::cloneInputPort(ModuleHandle module, const PortId& id)
 {
-  module_->has_ui_ = false;
-  return *this;
+  Module* m = dynamic_cast<Module*>(module.get());
+  if (m)
+  {
+    InputPortHandle newPort(m->getInputPort(id)->clone());
+    newPort->setIndex(m->add_input_port(newPort));
+    return newPort->id();
+  }
+  THROW_INVALID_ARGUMENT("Don't know how to clone ports on other Module types");
+}
+
+void Module::Builder::removeInputPort(ModuleHandle module, const PortId& id)
+{
+  Module* m = dynamic_cast<Module*>(module.get());
+  if (m)
+  {
+    m->removeInputPort(id);
+  }
 }
 
 ModuleHandle Module::Builder::build()
@@ -336,11 +407,16 @@ void Module::setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::U
     algo_->setUpdaterFunc(func);
 }
 
-bool Module::oport_connected(size_t portIndex) const
+bool Module::oport_connected(const PortId& id) const
 {
-  if (portIndex >= oports_.size())
+  if (!oports_.hasPort(id))
     return false;
 
-  auto port = oports_[portIndex];
+  auto port = oports_[id];
   return port->nconnections() > 0;
+}
+
+void Module::removeInputPort(const PortId& id)
+{
+  iports_.remove(id);
 }

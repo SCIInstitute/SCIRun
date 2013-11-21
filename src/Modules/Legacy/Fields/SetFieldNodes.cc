@@ -34,8 +34,6 @@ using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
-//    SCIRunAlgo::SetMeshNodesAlgo algo_;
-
 SetFieldNodes::SetFieldNodes()
   : Module(ModuleLookupInfo("SetFieldNodes", "ChangeMesh", "SCIRun"), false)
 {

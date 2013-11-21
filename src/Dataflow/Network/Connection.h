@@ -41,13 +41,11 @@ namespace SCIRun {
       class SCISHARE Connection 
       {
       public:
-        Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id);
+        Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id);
         ~Connection();
 
         OutputPortHandle oport_;
         InputPortHandle iport_;
-        ModuleHandle omod_;
-        ModuleHandle imod_;
 
         ConnectionId id_;
         bool disabled_;

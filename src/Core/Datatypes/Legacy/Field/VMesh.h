@@ -817,8 +817,6 @@ public:
   {
     VMesh::index_type* ielem = imesh->get_elems_pointer();
     VMesh::index_type* oelem  = get_elems_pointer();
-    //index_type ii = 0;
-    //index_type oo = 0;
     size_type  ss = num_elems()*num_nodes_per_elem_;
     for (index_type j=0; j <ss; j++) oelem[j] = ielem[j];
   }

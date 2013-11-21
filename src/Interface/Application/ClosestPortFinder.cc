@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <boost/range/join.hpp>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
@@ -45,7 +44,7 @@ PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
     {
       auto overModule = mpw->getModuleWidget();
 
-      auto ports = boost::join(overModule->getInputPorts(), overModule->getOutputPorts());
+      auto ports = overModule->ports().getAllPorts();
       return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
     }
   }

@@ -55,6 +55,8 @@ namespace Networks {
     virtual bool hasData() const = 0;
     virtual void setHasData(bool dataPresent) = 0;
 
+    virtual DatatypeSinkInterface* clone() const = 0;
+
     virtual void waitForData() = 0;
     virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
   };

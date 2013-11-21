@@ -60,6 +60,8 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
 
+//TODO: add unit test 
+
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
 AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const

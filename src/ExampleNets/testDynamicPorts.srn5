@@ -7,7 +7,7 @@
 			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>AppendMatrix2</first>
+				<first>AppendMatrix:1</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
@@ -35,35 +35,7 @@
 				</second>
 			</item>
 			<item>
-				<first>AppendMatrix4</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>AppendMatrix</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>RowsOrColumns</name>
-								</first>
-								<second>
-									<name>RowsOrColumns</name>
-									<value>
-										<which>0</which>
-										<value>1</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CreateMatrix0</first>
+				<first>CreateMatrix:2</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -82,8 +54,7 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value>1 1 
-1 1</value>
+										<value></value>
 									</value>
 								</second>
 							</item>
@@ -92,7 +63,7 @@
 				</second>
 			</item>
 			<item>
-				<first>CreateMatrix1</first>
+				<first>CreateMatrix:3</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -111,8 +82,7 @@
 									<name>TextEntry</name>
 									<value>
 										<which>2</which>
-										<value>2 2
-2 2</value>
+										<value></value>
 									</value>
 								</second>
 							</item>
@@ -121,76 +91,98 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo3</first>
+				<first>CreateMatrix:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
+						<module_name_>CreateMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo5</first>
+				<first>CreateMatrix:5</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
+						<module_name_>CreateMatrix</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>0</count>
+							<count>1</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:6</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value></value>
+									</value>
+								</second>
+							</item>
 						</stateMap>
 					</state>
 				</second>
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>6</count>
+			<count>1</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>AppendMatrix2</moduleId1_>
+				<moduleId1_>CreateMatrix:6</moduleId1_>
 				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo3</moduleId2_>
-				<port2_>0</port2_>
-			</item>
-			<item>
-				<moduleId1_>AppendMatrix4</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo5</moduleId2_>
-				<port2_>0</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateMatrix0</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>AppendMatrix2</moduleId2_>
-				<port2_>0</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateMatrix0</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>AppendMatrix4</moduleId2_>
-				<port2_>0</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateMatrix1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>AppendMatrix2</moduleId2_>
-				<port2_>1</port2_>
-			</item>
-			<item>
-				<moduleId1_>CreateMatrix1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>AppendMatrix4</moduleId2_>
-				<port2_>1</port2_>
+				<moduleId2_>AppendMatrix:1</moduleId2_>
+				<port2_>2</port2_>
 			</item>
 		</connections>
 	</networkInfo>
@@ -198,45 +190,45 @@
 		<count>6</count>
 		<item_version>0</item_version>
 		<item class_id="15" tracking_level="0" version="0">
-			<first>AppendMatrix2</first>
+			<first>AppendMatrix:1</first>
 			<second class_id="16" tracking_level="0" version="0">
-				<first>299</first>
-				<second>399</second>
+				<first>-1201</first>
+				<second>-347</second>
 			</second>
 		</item>
 		<item>
-			<first>AppendMatrix4</first>
+			<first>CreateMatrix:2</first>
 			<second>
-				<first>591</first>
-				<second>405</second>
+				<first>-1017</first>
+				<second>-584</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateMatrix0</first>
+			<first>CreateMatrix:3</first>
 			<second>
-				<first>210</first>
-				<second>243</second>
+				<first>-1727</first>
+				<second>-685</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateMatrix1</first>
+			<first>CreateMatrix:4</first>
 			<second>
-				<first>558</first>
-				<second>252</second>
+				<first>-1481</first>
+				<second>-755</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo3</first>
+			<first>CreateMatrix:5</first>
 			<second>
-				<first>302</first>
-				<second>552</second>
+				<first>-1595</first>
+				<second>-457</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo5</first>
+			<first>CreateMatrix:6</first>
 			<second>
-				<first>581</first>
-				<second>547</second>
+				<first>-1238</first>
+				<second>-759</second>
 			</second>
 		</item>
 	</modulePositions>

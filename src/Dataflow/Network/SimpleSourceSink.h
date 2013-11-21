@@ -29,8 +29,8 @@
 #ifndef DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 #define DATAFLOW_NETWORK_SIMPLESOURCESINK_H
 
-#include <stdexcept>
 #include <Dataflow/Network/DataflowInterfaces.h>
+#include <Dataflow/Network/share.h>
 
 namespace SCIRun
 {
@@ -38,39 +38,21 @@ namespace SCIRun
   {
     namespace Networks
     {
-      //TODO move to production...
-      class SimpleSink : public DatatypeSinkInterface
+      class SCISHARE SimpleSink : public DatatypeSinkInterface
       {
       public:
-        virtual void waitForData()
-        {
-          //do nothing
-        }
-
-        virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive()
-        {
-          return data_;
-        }
-
+        SimpleSink();
+        virtual void waitForData();
+        virtual SCIRun::Core::Datatypes::DatatypeHandleOption receive();
         virtual bool hasData() const { return hasData_; }
-        virtual void setHasData(bool dataPresent) 
-        { 
-          hasData_ = dataPresent; 
-          if (!hasData_)
-            data_.reset();
-        }
-
-        void setData(SCIRun::Core::Datatypes::DatatypeHandle data)
-        {
-          data_ = data;
-          setHasData(true);
-        }
+        virtual void setHasData(bool dataPresent);
+        virtual DatatypeSinkInterface* clone() const;
+        void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
         bool hasData_;
       };
-
-
+    
       /*
       IDEA
 
@@ -85,16 +67,10 @@ namespace SCIRun
       
       */
 
-      class SimpleSource : public DatatypeSourceInterface
+      class SCISHARE SimpleSource : public DatatypeSourceInterface
       {
       public:
-        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)
-        {
-          SimpleSink* sink = dynamic_cast<SimpleSink*>(receiver.get());
-          if (!sink)
-            THROW_INVALID_ARGUMENT("SimpleSource can only send to SimpleSinks");
-          sink->setData(data);
-        }
+        virtual void send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data);
       };
     }
   }

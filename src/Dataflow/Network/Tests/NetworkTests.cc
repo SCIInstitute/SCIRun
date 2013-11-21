@@ -35,6 +35,7 @@
 #include <Dataflow/Network/Tests/MockModule.h>
 #include <Dataflow/Network/Tests/MockPorts.h>
 #include <Dataflow/Network/Tests/MockModuleState.h>
+#include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -53,6 +54,7 @@ protected:
     DefaultValue<InputPortHandle>::Set(InputPortHandle(new NiceMock<MockInputPort>));
     DefaultValue<OutputPortHandle>::Set(OutputPortHandle(new NiceMock<MockOutputPort>));
     DefaultValue<boost::signals2::connection>::Set(boost::signals2::connection());
+    DefaultValue<PortId>::Set(PortId());
     moduleFactory_.reset(new MockModuleFactory);
   }
 
@@ -69,6 +71,9 @@ protected:
 
 ModuleStateFactoryHandle NetworkTests::sf_;
 AlgorithmFactoryHandle NetworkTests::af_;
+
+//TODO: waiting on gmock version upgrade
+#ifdef WIN32
 
 TEST_F(NetworkTests, CanAddAndRemoveModules)
 {
@@ -102,9 +107,10 @@ TEST_F(NetworkTests, CanAddAndRemoveConnections)
   EXPECT_EQ(m1, network.module(0));
   EXPECT_EQ(m2, network.module(1));
 
+  //TODO: yucky, yucky test code now. needs refactoring for readability!
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);
 
   EXPECT_TRUE(network.disconnect(connId));
   EXPECT_EQ(0, network.nconnections());
@@ -123,7 +129,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
   
   ConnectionId connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);
 
   ConnectionId connIdEmpty = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
@@ -135,7 +141,7 @@ TEST_F(NetworkTests, CannotMakeSameConnectionTwice)
 
   connId = network.connect(ConnectionOutputPort(m1, 0), ConnectionInputPort(m2, 1));
   EXPECT_EQ(1, network.nconnections());
-  EXPECT_EQ("module:1_p#0_@to@_module:2_p#1", connId.id_);
+  EXPECT_EQ("module:1_p#o1:0#_@to@_module:2_p#i2:0#", connId.id_);
 }
 
 //TODO: this verification pushed up to higher layer.
@@ -164,6 +170,7 @@ TEST_F(NetworkTests, CannotConnectNonExistentPorts)
   mli2.module_name_ = "Module2";
   ModuleHandle m2 = network.add_module(mli2);
 
-  ConnectionId connId = network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2));
-  EXPECT_EQ("", connId.id_);
+  EXPECT_THROW(network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2)), std::out_of_range);
 }
+
+#endif

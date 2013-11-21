@@ -45,8 +45,10 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(get_typename, std::string());
           MOCK_CONST_METHOD0(get_portname, std::string());
           MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_CONST_METHOD0(id, PortId());
         };
 
         typedef boost::shared_ptr<MockPortDescription> MockPortDescriptionPtr;
@@ -60,15 +62,15 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(connection, const Connection*(size_t));
           MOCK_CONST_METHOD0(get_typename, std::string());
           MOCK_CONST_METHOD0(get_portname, std::string());
-          MOCK_METHOD0(reset, void());
-          MOCK_METHOD0(finish, void());
           MOCK_CONST_METHOD0(getData, Core::Datatypes::DatatypeHandleOption());
           MOCK_CONST_METHOD0(sink, DatatypeSinkInterfaceHandle());
           MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_CONST_METHOD0(clone, InputPortInterface*());
+          MOCK_CONST_METHOD0(id, PortId());
           MOCK_METHOD1(setIndex, void(size_t));
-          MOCK_CONST_METHOD0(hasData, bool());
         };
 
         typedef boost::shared_ptr<MockInputPort> MockInputPortPtr;
@@ -82,12 +84,12 @@ namespace SCIRun {
           MOCK_CONST_METHOD1(connection, const Connection*(size_t));
           MOCK_CONST_METHOD0(get_typename, std::string());
           MOCK_CONST_METHOD0(get_portname, std::string());
-          MOCK_METHOD0(reset, void());
-          MOCK_METHOD0(finish, void());
           MOCK_METHOD1(sendData, void(Core::Datatypes::DatatypeHandle));
           MOCK_CONST_METHOD0(isInput, bool());
+          MOCK_CONST_METHOD0(isDynamic, bool());
           MOCK_CONST_METHOD0(getUnderlyingModuleId, ModuleId());
           MOCK_CONST_METHOD0(getIndex, size_t());
+          MOCK_CONST_METHOD0(id, PortId());
           MOCK_METHOD1(setIndex, void(size_t));
         };
 
@@ -97,6 +99,7 @@ namespace SCIRun {
         {
         public:
           MOCK_CONST_METHOD0(hasData, bool());
+          MOCK_CONST_METHOD0(clone, DatatypeSinkInterface*());
           MOCK_METHOD1(setHasData, void(bool));
           MOCK_METHOD0(waitForData, void());
           MOCK_METHOD0(receive, Core::Datatypes::DatatypeHandleOption());

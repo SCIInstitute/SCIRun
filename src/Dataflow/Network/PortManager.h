@@ -33,12 +33,10 @@
 #include <Dataflow/Network/Port.h>
 #include <Core/Utils/Exception.h>
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/lambda/lambda.hpp>
 #include <boost/foreach.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm/copy.hpp>
 #include <string>
-#include <vector>
 #include <map>
 
 namespace SCIRun {
@@ -49,20 +47,20 @@ template<class T>
 class PortManager : boost::noncopyable
 {
 private:
-  std::vector<T> ports_;
+  typedef std::map<PortId, T> PortMap;
+  PortMap ports_;
   ModuleInterface* module_;
-  std::string lastportname_;
   
 public:
   PortManager();
   size_t size() const;
-  void add(const T& item);
-  void remove(int item);
-  T operator[](size_t) const;
+  size_t add(const T& item);
+  void remove(const PortId& id);
+  T operator[](const PortId& id) const;
+  std::vector<T> operator[](const std::string& name) const;
+  bool hasPort(const PortId& id) const;
   void set_module(ModuleInterface* mod) { module_ = mod; }
-  void set_lastportname(const std::string& name) { lastportname_ = name; }
-  void apply(boost::function<void(T&)> func);
-  void resetAll();
+  std::vector<T> view() const;
 };
 
 struct PortOutOfBoundsException : virtual Core::ExceptionBase {};
@@ -81,43 +79,82 @@ PortManager<T>::size() const
 }
 
 template<class T>
-void
-PortManager<T>::add(const T &item)
+size_t
+PortManager<T>::add(const T& item)
 { 
-  ports_.push_back(item);
+  ports_[item->id()] = item;
+  //TODO: who should manage port indexes?
+  //item->setIndex(size() - 1);
+  auto index = size() - 1;
+  return index;
 }
 
 template<class T>
 void
-PortManager<T>::remove(int item)
+PortManager<T>::remove(const PortId& id)
 {
-  if (static_cast<int>(ports_.size()) <= item)
+  auto it = ports_.find(id);
+  if (it == ports_.end())
   {
-    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager tried to remove a port that does not exist"));
+    std::ostringstream ostr;
+    ostr << "PortManager tried to remove a port that does not exist: " << id;
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
   }
-  ports_.erase(ports_.begin() + item);
+  ports_.erase(it);
+  size_t i = 0;
+  BOOST_FOREACH(typename PortMap::value_type& portPair, ports_)
+    portPair.second->setIndex(i++);
 }
 
 template<class T>
 T
-PortManager<T>::operator[](size_t item) const
+PortManager<T>::operator[](const PortId& id) const
 {
-  return ports_[item];
+  auto it = ports_.find(id);
+  if (it == ports_.end())
+  {
+    //TODO: need a way to detect and create arbitrary dynamic ports from serialized files.
+    //if (id.dynamic)
+    //  std::cout << "DYNAMIC PORT NEEDS TO INSERT ITSELF HERE SOMEHOW" << std::endl;
+    //else
+    //  std::cout << "HELLO NOT SETTING PORT FLAGS CORRECT" << std::endl;
+    std::ostringstream ostr;
+    ostr << "PortManager tried to access a port that does not exist: " << id;
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage(ostr.str()));
+  }
+  return it->second;
 }
 
 template<class T>
-void 
-PortManager<T>::apply(boost::function<void(T&)> func)
+std::vector<T> PortManager<T>::operator[](const std::string& name) const
 {
-  BOOST_FOREACH(T& port, ports_)
-    func(port);
+  std::vector<T> portsWithName;
+
+  boost::copy(
+    ports_ | boost::adaptors::map_values 
+              | boost::adaptors::filtered([&](const T& port) { return port->get_portname() == name; }), std::back_inserter(portsWithName));
+
+  if (portsWithName.empty())
+  {
+    BOOST_THROW_EXCEPTION(PortOutOfBoundsException() << Core::ErrorMessage("PortManager does not contain a port by name: " + name));
+  }
+
+  return portsWithName;
 }
 
-template<class T>
-void 
-PortManager<T>::resetAll()
+template <class T>
+std::vector<T> PortManager<T>::view() const
 {
-  //apply(boost::bind(&T::reset, boost::lambda::_1));
+  std::vector<T> portVector;
+  boost::copy(ports_ | boost::adaptors::map_values, std::back_inserter(portVector));
+  std::sort(portVector.begin(), portVector.end(), [](const T& lhs, const T& rhs) { return lhs->getIndex() < rhs->getIndex(); });
+  return portVector;
+}
+
+template <class T>
+bool PortManager<T>::hasPort(const PortId& id) const
+{
+  return ports_.find(id) != ports_.end();
 }
 
 }}}

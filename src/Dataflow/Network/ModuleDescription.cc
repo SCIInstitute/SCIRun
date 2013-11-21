@@ -114,3 +114,32 @@ std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const Modu
 {
   return o << id.id_;
 }
+
+bool SCIRun::Dataflow::Networks::operator==(const PortId& lhs, const PortId& rhs)
+{
+  return lhs.name == rhs.name && lhs.id == rhs.id;
+}
+
+bool SCIRun::Dataflow::Networks::operator!=(const PortId& lhs, const PortId& rhs)
+{
+  return !(lhs == rhs);
+}
+
+bool SCIRun::Dataflow::Networks::operator<(const PortId& lhs, const PortId& rhs)
+{
+  if (lhs.name == rhs.name)
+    return lhs.id < rhs.id;
+  return lhs.name < rhs.name;
+}
+
+std::ostream& SCIRun::Dataflow::Networks::operator<<(std::ostream& o, const PortId& id)
+{
+  return o << id.name << ":" << id.id;
+}
+
+std::string PortId::toString() const
+{
+  std::ostringstream ostr;
+  ostr << *this;
+  return ostr.str();
+}

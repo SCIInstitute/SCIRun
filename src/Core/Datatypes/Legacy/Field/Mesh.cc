@@ -405,16 +405,6 @@ Mesh::type_name(int n)
   return name;
 }
 
-//! Return the transformation that takes a 0-1 space bounding box to
-//! the current bounding box of this mesh.
-//void Mesh::get_canonical_transform(Transform &t) 
-//{
-//  t.load_identity();
-//  BBox bbox = get_bounding_box();
-//  t.pre_scale(bbox.diagonal());
-//  t.pre_translate(Vector(bbox.min()));
-//}
-
 //! This function should be overloaded with the actual function that
 //! retrieves the virtual interface. This function is thread safe, but
 //! is not const as it deals with handles which will alter ref counts.

@@ -52,7 +52,7 @@ public:
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
       ("datadir,d", po::value<std::string>(), "scirun data directory--TODO")
-      ("regression,r", "regression test a network--TODO")
+      ("regression,r", "regression test a network")
       ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
       ("interactive,i", "interactive mode--TODO")
       ("headless,x", "disable GUI (Qt still needed, for now)")
@@ -109,10 +109,11 @@ public:
     bool executeNetwork,
     bool executeNetworkAndQuit,
     bool disableGui,
-    bool disableSplash)
+    bool disableSplash,
+    bool isRegressionMode)
     : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), help_(help), version_(version), executeNetwork_(executeNetwork),
       executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash)
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -155,6 +156,11 @@ public:
     return disableSplash_;
   }
 
+  virtual bool isRegressionMode() const
+  {
+    return isRegressionMode_;
+  }
+
 private:
   boost::optional<std::string> inputFile_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
@@ -164,6 +170,7 @@ private:
   bool executeNetworkAndQuit_;
   bool disableGui_;
   bool disableSplash_;
+  bool isRegressionMode_;
 };
 
 }
@@ -197,7 +204,8 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       parsed.count("execute") != 0,
       parsed.count("Execute") != 0,
       parsed.count("headless") != 0,
-      parsed.count("no_splash") != 0
+      parsed.count("no_splash") != 0,
+      parsed.count("regression") != 0
       );
   }
   catch (std::exception& e)

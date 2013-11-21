@@ -90,6 +90,13 @@ namespace Datatypes {
     static PersistentTypeID type_id;
     static PersistentMaker0 maker0;
 
+    bool isSymmetric() const 
+    {
+      if (this->nrows() != this->ncols())
+        return false;
+      return this->isApprox(this->transpose());
+    }
+
   private:
     virtual void print(std::ostream& o) const
     {

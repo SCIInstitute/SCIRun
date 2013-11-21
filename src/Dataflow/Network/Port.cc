@@ -40,7 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 
 Port::Port(ModuleInterface* module, const ConstructionParams& params)
-  : module_(module), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
+  : module_(module), id_(params.id_), typeName_(params.type_name), portName_(params.port_name), colorName_(PortColorLookup::toColor(params.type_name))
 {
   ENSURE_NOT_NULL(module_, "port cannot have null module");
   if (typeName_.empty() || portName_.empty() || colorName_.empty())
@@ -73,6 +73,11 @@ const Connection* Port::connection(size_t i) const
   return connections_[i];
 }
 
+void Port::setIndex(size_t index)
+{
+  index_ = index;
+}
+
 size_t Port::nconnections() const
 {
   return connections_.size();
@@ -89,9 +94,8 @@ size_t Port::getIndex() const
 }
 
 InputPort::InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink)
-  : Port(module, params), sink_(sink)
+  : Port(module, params), sink_(sink), isDynamic_(params.isDynamic_)
 {
-
 }
 
 InputPort::~InputPort()
@@ -116,8 +120,17 @@ DatatypeHandleOption InputPort::getData() const
 void InputPort::attach(Connection* conn)
 {
   if (connections_.size() > 0)
-    THROW_INVALID_ARGUMENT("input ports accept at most one connection");
+    THROW_INVALID_ARGUMENT("static input ports accept at most one connection");
   Port::attach(conn);
+}
+
+InputPortInterface* InputPort::clone() const
+{
+  DatatypeSinkInterfaceHandle sink(sink_->clone());
+  if (!isDynamic_)
+    THROW_INVALID_ARGUMENT("Cannot clone non-dynamic port.");
+  PortId cloneId(id_.id + 1, id_.name);
+  return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)

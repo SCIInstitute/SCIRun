@@ -195,17 +195,6 @@ namespace SCIRun {
     return volume*pEB->volume();
   }
  
-// TODO: function not implemented - would this case be useful, or should
-// this just be removed.
-//
-//  //! default case for face area calculation - currently not needed
-//  template <class VECTOR1, class VECTOR2,class T>
-//    inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, T* type)
-//  {
-//    ASSERT(0); // to do
-//    return 0;  
-//  }
-
   //! area calculation on points
   template <class VECTOR1, class VECTOR2>
     inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point* type)

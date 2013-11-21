@@ -804,10 +804,10 @@ run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& v
   return (true);
 }
 
-AlgorithmInputName CalculateSignedDistanceFieldAlgo::ObjectField("ObjectField");
-AlgorithmOutputName CalculateSignedDistanceFieldAlgo::SignedDistanceField("SignedDistanceField");
-AlgorithmOutputName CalculateSignedDistanceFieldAlgo::ValueField("ValueField");
-AlgorithmParameterName CalculateSignedDistanceFieldAlgo::OutputValueField("OutputValueField");
+const AlgorithmInputName CalculateSignedDistanceFieldAlgo::ObjectField("ObjectField");
+const AlgorithmOutputName CalculateSignedDistanceFieldAlgo::SignedDistanceField("SignedDistanceField");
+const AlgorithmOutputName CalculateSignedDistanceFieldAlgo::ValueField("ValueField");
+const AlgorithmParameterName CalculateSignedDistanceFieldAlgo::OutputValueField("OutputValueField");
 
 AlgorithmOutput CalculateSignedDistanceFieldAlgo::run_generic(const AlgorithmInput& input) const
 {
