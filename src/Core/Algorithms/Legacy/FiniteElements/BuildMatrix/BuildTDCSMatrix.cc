@@ -35,10 +35,12 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Math/MiscMath.h>
 
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -94,7 +96,7 @@ bool  TDCSMatrixBuilder::singlethread()  //single threaded implementation to com
 {
 ///  //the stiffness-matrix updates are written into SparseRowMatrixFromMap::Values additionalData
 ///  //the additional matrices B,C are written into a efficient tree structure (SparseRowMatrixFromMap, thanks to Dan White) and later on added to the modified stiffness matrix to the resulting "tdcs_" - matrix
-///  //the final tdcs outputmatrix takes the original input stiffness and overwrites it with additionalData
+///  //the final tdcs output matrix takes the original input stiffness and overwrites it with additionalData
   size_type m = static_cast<size_type>(mesh_nrnodes_);
   size_type n = static_cast<size_type>(mesh_nrnodes_);
   SparseRowMatrixFromMap::Values additionalData;
@@ -763,8 +765,3 @@ AlgorithmOutput BuildTDCSMatrixAlgo::run_generic(const AlgorithmInput & input) c
   output[TDCSMatrix] = tdcs;
   return output;
 }
-
-BuildTDCSMatrixAlgo::BuildTDCSMatrixAlgo() {}
-BuildTDCSMatrixAlgo::~BuildTDCSMatrixAlgo() {}
-
-//} // end namespace SCIRun

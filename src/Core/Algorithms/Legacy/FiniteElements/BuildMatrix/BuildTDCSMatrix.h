@@ -30,13 +30,7 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
 //! for Windows support
@@ -59,9 +53,6 @@ class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
     static AlgorithmInputName Contact_Impedance;
     static AlgorithmOutputName TDCSMatrix;
 
-
-  BuildTDCSMatrixAlgo();
-  ~BuildTDCSMatrixAlgo();
   bool run(Datatypes::SparseRowMatrixHandle stiff, FieldHandle mesh, Datatypes::DenseMatrixHandle ElectrodeElements, Datatypes::DenseMatrixHandle ElectrodeElementType, Datatypes::DenseMatrixHandle  ElectrodeElementDefinition, Datatypes::DenseMatrixHandle contactimpedance, Datatypes::SparseRowMatrixHandle& output) const;
   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 }; // end namespace SCIRun
