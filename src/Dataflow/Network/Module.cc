@@ -56,6 +56,8 @@ std::string SCIRun::Dataflow::Networks::to_string(const ModuleInfoProvider& m)
 /*static*/ int Module::instanceCount_ = 0;
 /*static*/ LoggerHandle Module::defaultLogger_(new ConsoleLogger);
 
+/*static*/ void Module::resetInstanceCount() { instanceCount_ = 0; }
+
 Module::Module(const ModuleLookupInfo& info,
   bool hasUi,
   AlgorithmFactoryHandle algoFactory,

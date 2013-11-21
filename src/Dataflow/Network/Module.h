@@ -69,7 +69,7 @@ namespace Networks {
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
   
     //for unit testing. Need to restrict access somehow.
-    static void resetInstanceCount() { instanceCount_ = 0; }
+    static void resetInstanceCount();
 
     bool has_ui() const { return has_ui_; }
     void setUiVisible(bool visible); 
