@@ -1,4 +1,4 @@
-// Copyright 2006, Google Inc.
+// Copyright 2013, Google Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,53 @@
 // THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-// Tests that a Google Test program that has no test defined can run
-// successfully.
 //
 // Author: wan@google.com (Zhanyong Wan)
 
+// Tests Google Mock's functionality that depends on exceptions.
+
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-int main(int argc, char **argv) {
-  testing::InitGoogleTest(&argc, argv);
+namespace {
 
-  // An ad-hoc assertion outside of all tests.
-  //
-  // This serves three purposes:
-  //
-  // 1. It verifies that an ad-hoc assertion can be executed even if
-  //    no test is defined.
-  // 2. It verifies that a failed ad-hoc assertion causes the test
-  //    program to fail.
-  // 3. We had a bug where the XML output won't be generated if an
-  //    assertion is executed before RUN_ALL_TESTS() is called, even
-  //    though --gtest_output=xml is specified.  This makes sure the
-  //    bug is fixed and doesn't regress.
-  EXPECT_EQ(1, 2);
+using testing::HasSubstr;
+using testing::internal::GoogleTestFailureException;
 
-  // The above EXPECT_EQ() should cause RUN_ALL_TESTS() to return non-zero.
-  return RUN_ALL_TESTS() ? 0 : 1;
+// A user-defined class.
+class Something {};
+
+class MockFoo {
+ public:
+  // A mock method that returns a user-defined type.  Google Mock
+  // doesn't know what the default value for this type is.
+  MOCK_METHOD0(GetSomething, Something());
+};
+
+#if GTEST_HAS_EXCEPTIONS
+
+TEST(DefaultValueTest, ThrowsRuntimeErrorWhenNoDefaultValue) {
+  MockFoo mock;
+  try {
+    // No expectation is set on this method, so Google Mock must
+    // return the default value.  However, since Google Mock knows
+    // nothing about the return type, it doesn't know what to return,
+    // and has to throw (when exceptions are enabled) or abort
+    // (otherwise).
+    mock.GetSomething();
+    FAIL() << "GetSomething()'s return type has no default value, "
+           << "so Google Mock should have thrown.";
+  } catch (const GoogleTestFailureException& /* unused */) {
+    FAIL() << "Google Test does not try to catch an exception of type "
+           << "GoogleTestFailureException, which is used for reporting "
+           << "a failure to other testing frameworks.  Google Mock should "
+           << "not throw a GoogleTestFailureException as it will kill the "
+           << "entire test program instead of just the current TEST.";
+  } catch (const std::exception& ex) {
+    EXPECT_THAT(ex.what(), HasSubstr("has no default value"));
+  }
 }
+
+#endif
+
+}  // unnamed namespace

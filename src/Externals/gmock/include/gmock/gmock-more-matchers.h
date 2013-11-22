@@ -1,4 +1,4 @@
-// Copyright 2008, Google Inc.
+// Copyright 2013, Google Inc.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,32 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// Authors: vladl@google.com (Vlad Losev)
+// Author: marcus.boerger@google.com (Marcus Boerger)
+
+// Google Mock - a framework for writing C++ mock classes.
 //
-// The Google C++ Testing Framework (Google Test)
+// This file implements some matchers that depend on gmock-generated-matchers.h.
 //
-// This header file provides classes and functions used internally
-// for testing Google Test itself.
+// Note that tests are implemented in gmock-matchers_test.cc rather than
+// gmock-more-matchers-test.cc.
 
-#ifndef GTEST_TEST_GTEST_PARAM_TEST_TEST_H_
-#define GTEST_TEST_GTEST_PARAM_TEST_TEST_H_
+#ifndef GMOCK_GMOCK_MORE_MATCHERS_H_
+#define GMOCK_GMOCK_MORE_MATCHERS_H_
 
-#include "gtest/gtest.h"
+#include "gmock/gmock-generated-matchers.h"
 
-#if GTEST_HAS_PARAM_TEST
+namespace testing {
 
-// Test fixture for testing definition and instantiation of a test
-// in separate translation units.
-class ExternalInstantiationTest : public ::testing::TestWithParam<int> {
-};
+// Defines a matcher that matches an empty container. The container must
+// support both size() and empty(), which all STL-like containers provide.
+MATCHER(IsEmpty, negation ? "isn't empty" : "is empty") {
+  if (arg.empty()) {
+    return true;
+  }
+  *result_listener << "whose size is " << arg.size();
+  return false;
+}
 
-// Test fixture for testing instantiation of a test in multiple
-// translation units.
-class InstantiationInMultipleTranslaionUnitsTest
-    : public ::testing::TestWithParam<int> {
-};
+}  // namespace testing
 
-#endif  // GTEST_HAS_PARAM_TEST
-
-#endif  // GTEST_TEST_GTEST_PARAM_TEST_TEST_H_
+#endif  // GMOCK_GMOCK_MORE_MATCHERS_H_
