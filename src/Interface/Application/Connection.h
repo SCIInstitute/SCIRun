@@ -63,10 +63,10 @@ class ConnectionLine : public QObject, public QGraphicsPathItem
 public:
   ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const SCIRun::Dataflow::Networks::ConnectionId& id, ConnectionDrawStrategyPtr drawer);
   ~ConnectionLine();
-  void trackNodes();
   void setColor(const QColor& color);
   QColor color() const;
 public Q_SLOTS:
+  void trackNodes();
   void setDrawStrategy(ConnectionDrawStrategyPtr drawer);
 Q_SIGNALS:
   void deleted(const SCIRun::Dataflow::Networks::ConnectionId& id);

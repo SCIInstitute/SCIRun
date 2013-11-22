@@ -78,6 +78,13 @@ namespace Datatypes {
       visitor.visit(*this);
     }
 
+    bool isSymmetric() const 
+    {
+      if (this->nrows() != this->ncols())
+        return false;
+      return this->isApprox(this->transpose());
+    }
+
     //TODO!
 #if 0
     class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>

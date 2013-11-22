@@ -69,10 +69,8 @@ class ReadField : public GenericReader<FieldHandle> {
 DECLARE_MAKER(ReadField)
 #endif
 
-Core::Algorithms::AlgorithmParameterName ReadFieldModule::Filename("Filename");
-
 ReadFieldModule::ReadFieldModule()
-  : my_base("ReadField", "DataIO", "SCIRun", "Filename")    
+  : my_base("ReadField", "DataIO", "SCIRun", "Field")    
   //,
     //gui_types_(get_ctx()->subVar("types", false)),
     //gui_filetype_(get_ctx()->subVar("filetype")),
@@ -80,6 +78,8 @@ ReadFieldModule::ReadFieldModule()
     //gui_number_in_series_(get_ctx()->subVar("number_in_series"), 0),
     //gui_delay_(get_ctx()->subVar("delay"), 0)
 {
+  INITIALIZE_PORT(Field);
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
   std::vector<std::string> importers;

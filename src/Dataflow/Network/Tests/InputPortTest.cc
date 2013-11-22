@@ -30,7 +30,7 @@
 #include <Dataflow/Network/Connection.h>
 #include <Dataflow/Network/Tests/MockModule.h>
 #include <Dataflow/Network/Tests/MockPorts.h>
-#include <Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Dataflow/Network/SimpleSourceSink.h>
 #include <Core/Datatypes/Scalar.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -63,7 +63,8 @@ protected:
 
 TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 {
-  Port::ConstructionParams pcp("ForwardMatrix", "Matrix");
+  PortId id(0, "ForwardMatrix");
+  Port::ConstructionParams pcp(id, "Matrix", false);
 
   MockDatatypeSinkPtr sink(new NiceMock<MockDatatypeSink>);
 
@@ -79,7 +80,8 @@ TEST_F(InputPortTest, GetDataReturnsEmptyWhenNoConnectionPresent)
 //let's just use all "real" objects to see if it works.
 TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 {
-  Port::ConstructionParams pcp("ForwardMatrix", "Matrix");
+  PortId id(0, "ForwardMatrix");
+  Port::ConstructionParams pcp(id, "Matrix", false);
 
   boost::shared_ptr<SimpleSink> sink(new SimpleSink);
 
@@ -87,10 +89,10 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
 
   boost::shared_ptr<SimpleSource> source(new SimpleSource);
   OutputPortHandle outputPort(new OutputPort(outputModule.get(), pcp, source));
-  EXPECT_CALL(*inputModule, get_input_port(2)).WillOnce(Return(inputPort));
-  EXPECT_CALL(*outputModule, get_output_port(1)).WillOnce(Return(outputPort));
+  //EXPECT_CALL(*inputModule, get_input_port(p2)).WillOnce(Return(inputPort));
+  //EXPECT_CALL(*outputModule, get_output_port(p1)).WillOnce(Return(outputPort));
 
-  Connection c(outputModule, 1, inputModule, 2, "test");
+  Connection c(outputPort, inputPort, "test");
 
   const int dataValue = 2;
   DatatypeHandle dataToPush(new Int32(dataValue));
@@ -99,4 +101,26 @@ TEST_F(InputPortTest, GetDataWaitsAndReceivesData)
   DatatypeHandleOption data = inputPort->getData();
   EXPECT_TRUE(data);
   EXPECT_EQ(dataValue, (*data)->as<Int32>()->value());
+}
+
+TEST_F(InputPortTest, CanClone)
+{
+  PortId id(0, "ForwardMatrix");
+  Port::ConstructionParams pcp(id, "Matrix", true);
+
+  boost::shared_ptr<SimpleSink> sink(new SimpleSink);
+
+  InputPortHandle inputPort(new InputPort(inputModule.get(), pcp, sink));
+
+  ASSERT_TRUE(inputPort != nullptr);
+
+  InputPortHandle clone(inputPort->clone());
+  
+  ASSERT_TRUE(clone != nullptr);
+  ASSERT_NE(clone, inputPort);
+  EXPECT_EQ(inputPort->get_portname(), clone->get_portname());
+  EXPECT_EQ(inputPort->get_typename(), clone->get_typename());
+  EXPECT_EQ(inputPort->isInput(), clone->isInput());
+  EXPECT_EQ(inputPort->isDynamic(), clone->isDynamic());
+  //EXPECT_EQ(inputPort->getUnderlyingModuleId(), clone->getUnderlyingModuleId());
 }

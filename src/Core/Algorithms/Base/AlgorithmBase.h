@@ -274,6 +274,12 @@ namespace Algorithms {
     virtual AlgorithmHandle create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const = 0;
   };
 
+  template <typename T>
+  boost::shared_ptr<T> optionalAlgoInput(boost::optional<boost::shared_ptr<T>> opt)
+  {
+    return opt.get_value_or(boost::shared_ptr<T>());
+  }
+
 }}}
 
 #define make_input(list) SCIRun::Core::Algorithms::AlgoInputBuilder() list .build()

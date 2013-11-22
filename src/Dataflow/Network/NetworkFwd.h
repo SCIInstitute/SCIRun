@@ -43,6 +43,7 @@ class ModuleDisplayInterface;
 class ModuleStateInterface;
 class ModuleStateInterfaceFactory;
 class PortInterface;
+struct PortId;
 class PortDescriptionInterface;
 class Connection;
 class InputPortInterface;
@@ -64,6 +65,8 @@ struct ModulePositions;
 struct NetworkFile;
 class NetworkGlobalSettings;
 class ModulePositionEditor;
+class ConnectionMakerService;
+class NetworkEditorControllerInterface;
 
 typedef boost::shared_ptr<NetworkInterface> NetworkHandle;
 typedef boost::shared_ptr<ModuleInterface> ModuleHandle;

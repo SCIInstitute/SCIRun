@@ -46,11 +46,11 @@ class SCISHARE CalculateSignedDistanceFieldAlgo : public AlgorithmBase
 
     bool run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value) const;
 
-    static AlgorithmParameterName OutputValueField;
+    static const AlgorithmParameterName OutputValueField;
 
-    static AlgorithmInputName ObjectField;
-    static AlgorithmOutputName SignedDistanceField;
-    static AlgorithmOutputName ValueField;
+    static const AlgorithmInputName ObjectField;
+    static const AlgorithmOutputName SignedDistanceField;
+    static const AlgorithmOutputName ValueField;
 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
 };

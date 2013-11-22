@@ -185,11 +185,6 @@ bool CubicPWI::set_data(const Array1<double>& pts, const Array1<double>& vals)
           c = (3 * (vals[i+1] - vals[i]) / delta-2 * ders[i] - ders[i+1]) / delta;
           d = (ders[i] + ders[i+1] - 2 * (vals[i+1] - vals[i]) / delta) / (delta * delta);
           
-          //double tmp = points[i];
-          //p[i].a=a+tmp*(tmp*(c-tmp*d)-b);
-          //p[i].b=b-tmp*(2*c-3*tmp*d);
-          //p[i].c=c-3*tmp*d;
-          //p[i].d=d;
           p[i].a = a;
           p[i].b = b;
           p[i].c = c;

@@ -34,6 +34,7 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 #include <Dataflow/Network/PortInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/share.h>
 
 namespace SCIRun {
@@ -45,9 +46,11 @@ class SCISHARE Port : virtual public PortInterface, boost::noncopyable
 public:
   struct ConstructionParams
   {
+    PortId id_;
     std::string type_name, port_name;
-    ConstructionParams(const std::string& name, const std::string& type)
-      : type_name(type), port_name(name) {}
+    bool isDynamic_;
+    ConstructionParams(const PortId& id, const std::string& type, bool isDynamic)
+      : id_(id), type_name(type), port_name(id.name), isDynamic_(isDynamic) {}
   };
   Port(ModuleInterface* module, const ConstructionParams& params);
   virtual ~Port();
@@ -55,6 +58,7 @@ public:
   size_t nconnections() const;
   const Connection* connection(size_t) const;
 
+  virtual PortId id() const { return id_; }
   std::string get_typename() const { return typeName_; }
   std::string get_colorname() const { return colorName_; }
   std::string get_portname() const { return portName_; }
@@ -62,11 +66,9 @@ public:
   virtual void attach(Connection* conn);
   virtual void detach(Connection* conn);
 
-  virtual void reset() {}
-  virtual void finish() {}
-
   virtual ModuleId getUnderlyingModuleId() const;
   virtual size_t getIndex() const;
+  virtual void setIndex(size_t index);
 
   //TODO:
   // light interface
@@ -75,11 +77,11 @@ protected:
   ModuleInterface* module_;
   std::vector<Connection*> connections_;
   size_t index_;
+  PortId id_;
 
-private:
-  std::string typeName_;
-  std::string portName_;
-  std::string colorName_;
+  const std::string typeName_;
+  const std::string portName_;
+  const std::string colorName_;
 };
 
 #ifdef WIN32
@@ -93,13 +95,16 @@ class SCISHARE InputPort : public Port, public InputPortInterface
 public:
   InputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSinkInterfaceHandle sink);
   virtual ~InputPort();
-  virtual Core::Datatypes::DatatypeHandleOption getData() const;
   virtual void attach(Connection* conn);
   virtual DatatypeSinkInterfaceHandle sink() const;
+  virtual Core::Datatypes::DatatypeHandleOption getData() const;
   virtual bool isInput() const { return true; } //boo
-  virtual void setIndex(size_t index) { index_ = index; }
+  virtual bool isDynamic() const { return isDynamic_; }
+  
+  virtual InputPortInterface* clone() const;
 private:
   DatatypeSinkInterfaceHandle sink_;
+  bool isDynamic_;
 };
 
 
@@ -110,7 +115,7 @@ public:
   virtual ~OutputPort();
   virtual void sendData(Core::Datatypes::DatatypeHandle data);
   virtual bool isInput() const { return false; } //boo
-  virtual void setIndex(size_t index) { index_ = index; }
+  virtual bool isDynamic() const { return false; } //TODO: design dynamic output ports
 private:
   DatatypeSourceInterfaceHandle source_;
 };

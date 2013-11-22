@@ -46,14 +46,25 @@ namespace Networks {
   {
   public:
     virtual ~ModuleInfoProvider() {}
-    virtual OutputPortHandle get_output_port(size_t idx) const = 0;
-    virtual InputPortHandle get_input_port(size_t idx) const = 0;
-    virtual size_t num_input_ports() const = 0;
+
+    //TODO: kind of ridiculous interface/duplication. Should pull out a subinterface for "PortView" and just return one of those for input/output
+    virtual bool hasOutputPort(const PortId& id) const = 0;
+    virtual OutputPortHandle getOutputPort(const PortId& id) const = 0;
+    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const = 0;
     virtual size_t num_output_ports() const = 0;
+    virtual std::vector<OutputPortHandle> outputPorts() const = 0;
+
+    virtual bool hasInputPort(const PortId& id) const = 0;
+    virtual InputPortHandle getInputPort(const PortId& id) const = 0;
+    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const = 0;
+    virtual size_t num_input_ports() const = 0;
+    virtual std::vector<InputPortHandle> inputPorts() const = 0;
+    
     virtual std::string get_module_name() const = 0;
     virtual ModuleId get_id() const = 0;
     virtual bool has_ui() const = 0;
     virtual const ModuleLookupInfo& get_info() const = 0;
+    virtual bool hasDynamicPorts() const = 0;
   };
 
   class SCISHARE ModuleDisplayInterface 
@@ -84,8 +95,9 @@ namespace Networks {
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
 
-    virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx) = 0;
-    virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
+    virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id) = 0;
+    virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id) = 0;
+    virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data) = 0;
 
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
@@ -121,6 +133,7 @@ namespace Networks {
   struct SCISHARE NullHandleOnPortException : virtual DataPortException {};
   struct SCISHARE WrongDatatypeOnPortException : virtual DataPortException {};
   struct SCISHARE PortNotFoundException : virtual DataPortException {};
+  struct SCISHARE InvalidInputPortRequestException : virtual DataPortException {};
 
   #define MODULE_ERROR_WITH_TYPE(type, message) { error(message); BOOST_THROW_EXCEPTION(type() << SCIRun::Core::ErrorMessage(message)); }
 }}}

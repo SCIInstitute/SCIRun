@@ -30,6 +30,7 @@
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 #define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
 
+//#include <iostream>
 #include <string>
 #include <vector>
 #include <iosfwd>
@@ -41,12 +42,24 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  struct SCISHARE PortId
+  {
+    explicit PortId(size_t num = 0, const std::string& n = "[undefined]") : name(n), id(num)
+    {
+      //std::cout << "PortId(" << num << "," << n << "," << dyn << ")" << std::endl;
+    }
+    std::string name;
+    size_t id; //TODO: need smart way to set
+    std::string toString() const;
+  };
+
   struct SCISHARE PortDescription
   {
-    PortDescription(const std::string& n, const std::string& d) : 
-  name(n), datatype(d) {}
-    std::string name;
+    PortDescription(const PortId& p, const std::string& d, bool dyn) : 
+      id(p), datatype(d), isDynamic(dyn) {}
+    PortId id;
     std::string datatype;
+    bool isDynamic;
   };
 
   class SCISHARE PortColorLookup
@@ -77,6 +90,11 @@ namespace Networks {
   SCISHARE bool operator!=(const ModuleId& lhs, const ModuleId& rhs);
   SCISHARE bool operator<(const ModuleId& lhs, const ModuleId& rhs);
   SCISHARE std::ostream& operator<<(std::ostream& o, const ModuleId& id);
+
+  SCISHARE bool operator==(const PortId& lhs, const PortId& rhs);
+  SCISHARE bool operator!=(const PortId& lhs, const PortId& rhs);
+  SCISHARE bool operator<(const PortId& lhs, const PortId& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& o, const PortId& id);
 
   struct SCISHARE ModuleLookupInfo
   {

@@ -33,8 +33,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
+#include <boost/range/join.hpp>
 #include <QFrame>
 #include <set>
+#include <deque>
 #include <Interface/Application/Note.h>
 #include <Interface/Application/PositionProvider.h>
 
@@ -50,26 +52,46 @@ class PortWidget;
 class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
+class NetworkEditor;
 
-class ModuleWidget : public QFrame, //public NeedsScenePositionProvider, 
+class PortWidgetManager
+{
+public:
+  typedef std::deque<PortWidget*> Ports;
+
+  auto getAllPorts() const -> decltype(boost::join(Ports(), Ports()))
+  {
+    return boost::join(inputPorts_, outputPorts_);
+  }
+
+  void addPort(InputPortWidget* port);
+  void addPort(OutputPortWidget* port);
+  bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);
+  void addInputsToLayout(QHBoxLayout* layout);
+  void addOutputsToLayout(QHBoxLayout* layout);
+  void reindexInputs();
+
+private:
+  Ports inputPorts_, outputPorts_;
+};
+
+
+class ModuleWidget : public QFrame, 
   public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
 {
 	Q_OBJECT
 	
 public:
-  ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent = 0);
+  ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+    QWidget* parent = 0);
   ~ModuleWidget();
 
   void trackConnections();
-  //QPointF inputPortPosition() const;
-  //QPointF outputPortPosition() const;
 
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
-  //TODO abstract
-  typedef std::vector<PortWidget*> Ports;
-  const Ports& getInputPorts() const { return inputPorts_; }
-  const Ports& getOutputPorts() const { return outputPorts_; }
+
+  const PortWidgetManager& ports() { return ports_; }
 
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
@@ -86,6 +108,8 @@ public:
 
   void printPortPositions() const;
 
+  bool hasDynamicPorts() const;
+
   static const int PORT_SPACING = 3;
 
 public Q_SLOTS:
@@ -100,6 +124,8 @@ public Q_SLOTS:
   void updateNote(const Note& note);
   void duplicate();
   void connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
+  void addDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
+  void removeDynamicPort(const SCIRun::Dataflow::Networks::ModuleId& mid, const SCIRun::Dataflow::Networks::PortId& pid);
 Q_SIGNALS:
   void removeModule(const SCIRun::Dataflow::Networks::ModuleId& moduleId);
   void requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface* from, const SCIRun::Dataflow::Networks::PortDescriptionInterface* to);
@@ -112,24 +138,25 @@ Q_SIGNALS:
   void duplicateModule(const SCIRun::Dataflow::Networks::ModuleHandle& module);
   void connectNewModule(const SCIRun::Dataflow::Networks::ModuleHandle& moduleToConnectTo, const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName);
   void backgroundColorUpdated(const QString& color);
+  void dynamicPortChanged();
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
 private:
-  Ports inputPorts_;
-  Ports outputPorts_;
+  PortWidgetManager ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
 
   SCIRun::Dataflow::Networks::ModuleHandle theModule_;
 
   void addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
-  void addPort(InputPortWidget* port);
-  void addPort(OutputPortWidget* port);
-  void hookUpSignals(PortWidget* port) const;
+  void addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
+  void hookUpGeneralPortSignals(PortWidget* port) const;
   std::string moduleId_;
   boost::scoped_ptr<class ModuleDialogGeneric> dialog_;
   void makeOptionsDialog();
   void setupModuleActions();
+  void printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider);
 
   class ModuleLogWindow* logWindow_;
   class NoteEditor* noteEditor_;
@@ -140,8 +167,12 @@ private:
   static boost::shared_ptr<class ModuleDialogFactory> dialogFactory_;
 
   void addPortLayouts();
-  QHBoxLayout* outputPortLayout_;
+  void addInputPortsToLayout();
+  void addOutputPortsToLayout();
   QHBoxLayout* inputPortLayout_;
+  QHBoxLayout* outputPortLayout_;
+  NetworkEditor* editor_;
+  bool deleting_;
 };
 
 }

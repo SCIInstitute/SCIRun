@@ -41,3 +41,9 @@ ConnectionDescriptionXML::ConnectionDescriptionXML() {}
 ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescriptionXML& rhs) : ConnectionDescription(rhs) {}
 
 ConnectionDescriptionXML::ConnectionDescriptionXML(const ConnectionDescription& rhs) : ConnectionDescription(rhs) {}
+
+bool SCIRun::Dataflow::Networks::operator<(const ConnectionDescriptionXML& lhs, const ConnectionDescriptionXML& rhs)
+{
+  //TODO: assumes only input ports can be dynamic.
+  return lhs.in_.portId_.id < rhs.in_.portId_.id;
+}

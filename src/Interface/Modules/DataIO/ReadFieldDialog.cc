@@ -27,14 +27,14 @@
 */
 
 #include <Interface/Modules/DataIO/ReadFieldDialog.h>
-#include <Modules/DataIO/ReadField.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <iostream>
 #include <QFileDialog>
 
-using namespace SCIRun::Modules::DataIO;
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -52,12 +52,12 @@ ReadFieldDialog::ReadFieldDialog(const std::string& name, ModuleStateHandle stat
 
 void ReadFieldDialog::pull()
 {
-  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(ReadFieldModule::Filename).getString()));
+  fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
 }
 
 void ReadFieldDialog::pushFileNameToState() 
 {
-  state_->setValue(ReadFieldModule::Filename, fileNameLineEdit_->text().trimmed().toStdString());
+  state_->setValue(Variables::Filename, fileNameLineEdit_->text().trimmed().toStdString());
 }
 
 void ReadFieldDialog::openFile()

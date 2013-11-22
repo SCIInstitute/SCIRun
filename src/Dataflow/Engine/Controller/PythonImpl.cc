@@ -28,6 +28,8 @@
 
 #ifdef BUILD_WITH_PYTHON
 
+#include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/python/to_python_converter.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Dataflow/Network/ModuleInterface.h>
@@ -83,20 +85,26 @@ namespace
     NetworkEditorController& nec_;
   };
 
+  //TODO: need to test with dynamic ports
   class PyPortsImpl : public PyPorts
   {
   public:
     PyPortsImpl(ModuleHandle mod, bool input, NetworkEditorController& nec) : nec_(nec)
     {
+      //wish:
+      //boost::push_back(ports_, 
+      //  (input ? mod->inputPorts() : mod->outputPorts())
+      //  | boost::adaptors::transformed([&](boost::shared_ptr<PortDescriptionInterface> p) { return boost::make_shared<PyPortImpl>(p, nec_); })
+      //  );
       if (input)
       {
-        for (size_t i = 0; i < mod->num_input_ports(); ++i)
-          ports_.emplace_back(boost::make_shared<PyPortImpl>(mod->get_input_port(i), nec_));
+        BOOST_FOREACH(InputPortHandle p, mod->inputPorts())
+          ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
       else
       {
-        for (size_t i = 0; i < mod->num_output_ports(); ++i)
-          ports_.emplace_back(boost::make_shared<PyPortImpl>(mod->get_output_port(i), nec_));
+        BOOST_FOREACH(OutputPortHandle p, mod->outputPorts())
+          ports_.push_back(boost::make_shared<PyPortImpl>(p, nec_));
       }
     }
 

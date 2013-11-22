@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="9">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>CreateMatrix0</first>
+				<first>AppendMatrix:2</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Math</category_name_>
-						<module_name_>CreateMatrix</module_name_>
+						<module_name_>AppendMatrix</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
@@ -20,98 +20,11 @@
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
 								<first class_id="9" tracking_level="0" version="0">
-									<name>TextEntry</name>
+									<name>RowsOrColumns</name>
 								</first>
 								<second class_id="10" tracking_level="0" version="0">
-									<name>TextEntry</name>
+									<name>RowsOrColumns</name>
 									<value class_id="11" tracking_level="0" version="0">
-										<which>2</which>
-										<value>1 0
-0 1</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>CreateMatrix1</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>CreateMatrix</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>TextEntry</name>
-								</first>
-								<second>
-									<name>TextEntry</name>
-									<value>
-										<which>2</which>
-										<value>1 1 1
-1 1 1
-</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>EvaluateLinearAlgebraBinary3</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>EvaluateLinearAlgebraBinary</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>Operator</name>
-								</first>
-								<second>
-									<name>Operator</name>
-									<value>
-										<which>0</which>
-										<value>2</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>EvaluateLinearAlgebraUnary2</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>EvaluateLinearAlgebraUnary</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>Operator</name>
-								</first>
-								<second>
-									<name>Operator</name>
-									<value>
 										<which>0</which>
 										<value>0</value>
 									</value>
@@ -122,7 +35,93 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo4</first>
+				<first>AppendMatrix:3</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>AppendMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>RowsOrColumns</name>
+								</first>
+								<second>
+									<name>RowsOrColumns</name>
+									<value>
+										<which>0</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:0</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>2 2
+2 2</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>CreateMatrix:1</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>Math</category_name_>
+						<module_name_>CreateMatrix</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>1</count>
+							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>TextEntry</name>
+								</first>
+								<second>
+									<name>TextEntry</name>
+									<value>
+										<which>2</which>
+										<value>1 1
+1 1</value>
+									</value>
+								</second>
+							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportMatrixInfo:4</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -138,7 +137,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo5</first>
+				<first>ReportMatrixInfo:5</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -155,83 +154,125 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>CreateMatrix0</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraUnary2</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>AppendMatrix:2</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:4</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateMatrix1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraBinary3</moduleId2_>
-				<port2_>1</port2_>
+				<moduleId1_>AppendMatrix:3</moduleId1_>
+				<port1_>
+					<name>ResultMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportMatrixInfo:5</moduleId2_>
+				<port2_>
+					<name>InputMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>CreateMatrix1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo5</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AppendMatrix:2</moduleId2_>
+				<port2_>
+					<name>SecondMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>EvaluateLinearAlgebraBinary3</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ReportMatrixInfo4</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateMatrix:0</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AppendMatrix:3</moduleId2_>
+				<port2_>
+					<name>FirstMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>EvaluateLinearAlgebraUnary2</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>EvaluateLinearAlgebraBinary3</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AppendMatrix:2</moduleId2_>
+				<port2_>
+					<name>FirstMatrix</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>CreateMatrix:1</moduleId1_>
+				<port1_>
+					<name>EnteredMatrix</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>AppendMatrix:3</moduleId2_>
+				<port2_>
+					<name>SecondMatrix</name>
+					<id>0</id>
+				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="14" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>6</count>
 		<item_version>0</item_version>
-		<item class_id="15" tracking_level="0" version="0">
-			<first>CreateMatrix0</first>
-			<second class_id="16" tracking_level="0" version="0">
-				<first>213</first>
-				<second>246</second>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>AppendMatrix:2</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-848</first>
+				<second>-220</second>
 			</second>
 		</item>
 		<item>
-			<first>CreateMatrix1</first>
+			<first>AppendMatrix:3</first>
 			<second>
-				<first>489</first>
-				<second>230</second>
+				<first>-571</first>
+				<second>-242</second>
 			</second>
 		</item>
 		<item>
-			<first>EvaluateLinearAlgebraBinary3</first>
+			<first>CreateMatrix:0</first>
 			<second>
-				<first>386</first>
-				<second>530</second>
+				<first>-573</first>
+				<second>-393</second>
 			</second>
 		</item>
 		<item>
-			<first>EvaluateLinearAlgebraUnary2</first>
+			<first>CreateMatrix:1</first>
 			<second>
-				<first>214</first>
-				<second>385</second>
+				<first>-936</first>
+				<second>-388</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo4</first>
+			<first>ReportMatrixInfo:4</first>
 			<second>
-				<first>380</first>
-				<second>657</second>
+				<first>-842</first>
+				<second>-77</second>
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo5</first>
+			<first>ReportMatrixInfo:5</first>
 			<second>
-				<first>575</first>
-				<second>396</second>
+				<first>-515</first>
+				<second>-94</second>
 			</second>
 		</item>
 	</modulePositions>

@@ -38,11 +38,11 @@ const char* ExceptionBase::what() const throw()
     if (auto msg = boost::get_error_info<Core::ErrorMessage>(*this))
       return msg->c_str();
     else
-      return "";
+      return std::exception::what();
   }
   catch (...)
   {
-    return "";
+    return "<error retrieving what>";
   }
 }
 
@@ -53,10 +53,10 @@ std::string ExceptionBase::typeName() const
     //TODO very hacky.
     std::string name = typeid(*this).name();
 
-    static boost::regex r(".*class.*<.*struct (.+)>");
-    boost::smatch match;
-    if (boost::regex_match(name, match, r))
-      return (std::string)match[1];
+    //static boost::regex r(".*class.*<.*struct (.+)>");
+    //boost::smatch match;
+    //if (boost::regex_match(name, match, r))
+    //  return (std::string)match[1];
     return name;
   }
   catch (...)

@@ -65,7 +65,7 @@ protected:
   HType       handle_;
   std::string filename_, filetype_;
   Core::Algorithms::AlgorithmParameterName stateFilename_;
-  PortName<typename HType::element_type, 0> objectPortName_;
+  StaticPortName<typename HType::element_type, 0> objectPortName_;
 
   //GuiFilename filename_;
   //GuiString   filetype_;
@@ -88,6 +88,7 @@ GenericWriter<HType, PortTag>::GenericWriter(const std::string &name, const std:
     stateFilename_(stateFilename),
     exporting_(false)
 {
+  INITIALIZE_PORT(Filename);
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

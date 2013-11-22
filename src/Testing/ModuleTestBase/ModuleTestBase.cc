@@ -64,6 +64,7 @@ public:
   virtual void waitForData() {}
 
   virtual DatatypeHandleOption receive() { return data_; }
+  virtual DatatypeSinkInterface* clone() const { return new StubbedDatatypeSink; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
 private:
@@ -97,7 +98,7 @@ void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, Data
 {
   if (portNum < module->num_input_ports())
   {
-    auto iport = module->get_input_port(portNum);
+    auto iport = module->inputPorts()[portNum];
     iport->attach(0);
     DatatypeHandleOption o = data;
     dynamic_cast<StubbedDatatypeSink*>(iport->sink().get())->setData(o);
@@ -108,7 +109,7 @@ DatatypeHandle ModuleTest::getDataOnThisOutputPort(ModuleHandle module, size_t p
 {
   if (portNum < module->num_output_ports())
   {
-    auto oport = module->get_output_port(portNum);
+    auto oport = module->outputPorts()[portNum];
     //TODO: need a way to grab output values
    // return dynamic_cast<StubbedDatatypeSink*>(oport->source().get())->getData();
   }
@@ -119,7 +120,7 @@ void ModuleTest::connectDummyOutputConnection(Dataflow::Networks::ModuleHandle m
 {
   if (portNum < module->num_output_ports())
   {
-    auto oport = module->get_output_port(portNum);
+    auto oport = module->outputPorts()[portNum];
     oport->attach(0);
   }
 }

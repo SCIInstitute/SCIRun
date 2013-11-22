@@ -47,8 +47,6 @@ namespace DataIO {
     virtual void setStateDefaults() {}
 
     OUTPUT_PORT(0, Field, LegacyField);
-
-    static Core::Algorithms::AlgorithmParameterName Filename;
   };
 
 }}}

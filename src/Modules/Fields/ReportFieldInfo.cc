@@ -42,6 +42,10 @@ ReportFieldInfoModule::ReportFieldInfoModule() : Module(ModuleLookupInfo("Report
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(FieldType);
   INITIALIZE_PORT(NumNodes);
+  INITIALIZE_PORT(NumElements);
+  INITIALIZE_PORT(NumData);
+  INITIALIZE_PORT(DataMin);
+  INITIALIZE_PORT(DataMax);
 }
 
 void ReportFieldInfoModule::execute()

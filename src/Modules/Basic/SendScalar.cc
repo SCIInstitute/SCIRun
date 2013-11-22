@@ -41,6 +41,7 @@ SendScalarModule::SendScalarModule()
   : Module(ModuleLookupInfo("SendScalar", "Math", "SCIRun")),
   data_(-1)
 {
+  INITIALIZE_PORT(Scalar);
 }
 
 void SendScalarModule::execute()

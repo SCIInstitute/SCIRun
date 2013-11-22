@@ -310,3 +310,78 @@ TEST(SparseRowMatrixTest, DISABLED_SearchingForSingleNonzeroInRowAndColumnOnTheD
   EXPECT_FALSE(passesTdcsTest(matrixTdcsBad3()));
   
 }
+
+TEST(SparseRowMatrixTest, GetRow)
+{
+  SparseRowMatrix m(matrix1());
+
+  Eigen::SparseVector<double> r1 = m.row(1);
+  std::cout << r1 << std::endl;
+}
+
+
+/*
+SparseRowMatrix matrix1()
+{
+SparseRowMatrix m(4,5);
+m.insert(0,0) = 1;
+m.insert(1,2) = -2;
+m.insert(2,3) = 0.5;
+return m;
+}
+*/
+
+namespace
+{
+  bool isSymmetric(const DenseMatrix& m)
+  {
+    return m.isApprox(m.transpose());
+  }
+
+  bool isSymmetric2(const SparseRowMatrix& m)
+  {
+    return m.isApprox(m.transpose());
+  }
+
+  //TODO
+  //bool isSymmetricOctave(const SparseRowMatrix& m, double tolerance)
+  //{
+  //  return (m - m.transpose()).lpNorm<Eigen::Infinity>()
+  //}
+
+  bool isSymmetric(const SparseRowMatrix& m)
+  {
+    for (int k = 0; k < m.outerSize(); ++k)
+    {
+      for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
+      {
+        if (m.coeff(it.col(), it.row()) != it.value())
+          return false; 
+        //std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
+      }
+    }
+    return true;
+  }
+}
+
+
+
+TEST(SparseRowMatrixTest, IsSymmetricTests)
+{
+  auto m = matrix1();
+  for (int k = 0; k < m.outerSize(); ++k)
+  {
+    for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
+    {
+      std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
+    }
+  }
+
+  ASSERT_FALSE(isSymmetric(m));
+  ASSERT_TRUE(isSymmetric(id3()));
+  ASSERT_TRUE(isSymmetric(Zero()));
+
+  ASSERT_FALSE(m.isSymmetric());
+  ASSERT_TRUE(id3().isSymmetric());
+  ASSERT_TRUE(Zero().isSymmetric());
+}

@@ -39,6 +39,7 @@ AppendMatrixModule::AppendMatrixModule() : Module(ModuleLookupInfo("AppendMatrix
 {
   INITIALIZE_PORT(FirstMatrix);
   INITIALIZE_PORT(SecondMatrix);
+  INITIALIZE_PORT(NextMatrix);
   INITIALIZE_PORT(ResultMatrix);
 }
 

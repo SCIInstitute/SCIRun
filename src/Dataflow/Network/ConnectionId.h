@@ -39,20 +39,20 @@ namespace Networks {
 
   struct SCISHARE OutgoingConnectionDescription
   {
-    OutgoingConnectionDescription() : port_(-1) {}
-    OutgoingConnectionDescription(const ModuleId& id, size_t p)
-      : moduleId_(id), port_(p) {}
+    OutgoingConnectionDescription() {}
+    OutgoingConnectionDescription(const ModuleId& id, const PortId& p)
+      : moduleId_(id), portId_(p) {}
     ModuleId moduleId_;
-    size_t port_;
+    PortId portId_;
   };
 
   struct SCISHARE IncomingConnectionDescription
   {
-    IncomingConnectionDescription() : port_(-1) {}
-    IncomingConnectionDescription(const ModuleId& id, size_t p)
-      : moduleId_(id), port_(p) {}
+    IncomingConnectionDescription() {}
+    IncomingConnectionDescription(const ModuleId& id, const PortId& p)
+      : moduleId_(id), portId_(p) {}
     ModuleId moduleId_;
-    size_t port_;
+    PortId portId_;
   };
 
   struct SCISHARE ConnectionDescription

@@ -62,6 +62,7 @@ WriteFieldModule::WriteFieldModule()
     //gui_increment_(get_ctx()->subVar("increment"), 0),
     //gui_current_(get_ctx()->subVar("current"), 0)
 {
+  INITIALIZE_PORT(FieldToWrite);
   filetype_ = "Binary";
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

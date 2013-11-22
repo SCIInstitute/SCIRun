@@ -32,6 +32,7 @@
 
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/ModuleInterface.h>
+#include <Dataflow/Network/ModuleDescription.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -50,14 +51,22 @@ namespace Networks {
     virtual int errorCode() const = 0;
   };
 
-  typedef std::pair<ModuleHandle, size_t> ModulePortIndexPair;
-  struct ConnectionOutputPort : public ModulePortIndexPair 
+  typedef std::pair<ModuleHandle, PortId> ModulePortIdPair;
+
+  struct SCISHARE ConnectionOutputPort : public ModulePortIdPair 
   {
-    ConnectionOutputPort(ModuleHandle m, size_t p) : ModulePortIndexPair(m,p) {}
+    ConnectionOutputPort(ModuleHandle m, const PortId& p) : ModulePortIdPair(m,p) {}
+
+    //TODO: only used in test code
+    ConnectionOutputPort(ModuleHandle m, size_t index);
   };
-  struct ConnectionInputPort : public ModulePortIndexPair 
+  
+  struct SCISHARE ConnectionInputPort : public ModulePortIdPair 
   {
-    ConnectionInputPort(ModuleHandle m, size_t p) : ModulePortIndexPair(m,p) {}
+    ConnectionInputPort(ModuleHandle m,  const PortId& p) : ModulePortIdPair(m,p) {}
+
+    //TODO: only used in test code
+    ConnectionInputPort(ModuleHandle m, size_t index);
   };
 
   class SCISHARE NetworkInterface : public ExecutableLookup
@@ -82,6 +91,23 @@ namespace Networks {
 
     virtual std::string toString() const = 0;
   };
+
+  class SCISHARE ConnectionMakerService
+  {
+  public:
+    virtual ~ConnectionMakerService() {}
+    virtual void requestConnection(const PortDescriptionInterface* from, const PortDescriptionInterface* to) = 0;
+  };
+
+  class SCISHARE NetworkEditorControllerInterface : public ConnectionMakerService
+  {
+  public:
+    virtual ~NetworkEditorControllerInterface() {}
+    virtual NetworkHandle getNetwork() const = 0;
+    virtual void setNetwork(NetworkHandle nh) = 0;
+  };
+
+
 }}}
 
 

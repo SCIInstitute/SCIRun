@@ -56,6 +56,7 @@ void EvaluateLinearAlgebraUnaryModule::execute()
 {
   auto denseInput = getRequiredInput(InputMatrix);
 
+  //TODO: standardize on camel case!
   auto state = get_state();
   
   auto oper = state->getValue(Variables::Operator).getInt();

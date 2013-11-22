@@ -27,6 +27,7 @@
 #
 
 SET(Modules_Basic_SRCS
+  DynamicPortTester.cc
   ReceiveScalar.cc
   ReceiveTestMatrix.cc
   ReceiveScalarModuleState.cc
@@ -37,6 +38,7 @@ SET(Modules_Basic_SRCS
 )
 
 SET(Modules_Basic_HEADERS
+  DynamicPortTester.h
   ReceiveScalar.h
   ReceiveScalarModuleState.h
   ReceiveTestMatrix.h
@@ -54,6 +56,7 @@ ADD_LIBRARY(Modules_Basic
 
 TARGET_LINK_LIBRARIES(Modules_Basic
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   Dataflow_Network
 )
 
