@@ -26,11 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <QtGui>
+
 #include <Interface/Modules/Render/ViewScene.h>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Core/Datatypes/Geometry.h>
-#include <QtGui>
-#include "QtGLContext.h"
+#include <Interface/Modules/Render/QtGLContext.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -39,10 +40,10 @@ using namespace SCIRun::Core::Datatypes;
 // Simple function to handle object transformations so that the GPU does not
 // need to do the same calculation for each vertex.
 static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface, 
-                                  std::list<::spire::Interface::UnsatisfiedUniform>& unsatisfiedUniforms)
+                                  std::list< ::spire::Interface::UnsatisfiedUniform >& unsatisfiedUniforms)
 {
   // Cache object to world transform.
-  ::spire::M44 objToWorld = iface.getObjectMetadata<::spire::M44>(
+  ::spire::M44 objToWorld = iface.getObjectMetadata< ::spire::M44 >(
       std::get<0>(spire_sr::SRCommonAttributes::getObjectToWorldTrafo()));
 
   std::string objectTrafoName = std::get<0>(spire_sr::SRCommonUniforms::getObject());
@@ -54,7 +55,7 @@ static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface,
   {
     if (it->uniformName == objectTrafoName)
     {
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+      ::spire::LambdaInterface::setUniform< ::spire::M44 >(it->uniformType, it->uniformName,
                                                      it->shaderLocation, objToWorld);
 
       it = unsatisfiedUniforms.erase(it);
@@ -63,17 +64,17 @@ static void lambdaUniformObjTrafs(::spire::ObjectLambdaInterface& iface,
     {
       // Grab the inverse view transform.
       ::spire::M44 inverseView = glm::affineInverse(
-          iface.getGlobalUniform<::spire::M44>(std::get<0>(::spire_sr::SRCommonUniforms::getCameraToWorld())));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+          iface.getGlobalUniform< ::spire::M44 >(std::get<0>(::spire_sr::SRCommonUniforms::getCameraToWorld())));
+      ::spire::LambdaInterface::setUniform< ::spire::M44 >(it->uniformType, it->uniformName,
                                               it->shaderLocation, inverseView * objToWorld);
 
       it = unsatisfiedUniforms.erase(it);
     }
     else if (it->uniformName == objectToCamProjName)
     {
-      ::spire::M44 inverseViewProjection = iface.getGlobalUniform<::spire::M44>(
+      ::spire::M44 inverseViewProjection = iface.getGlobalUniform< ::spire::M44 >(
           std::get<0>(::spire_sr::SRCommonUniforms::getToCameraToProjection()));
-      ::spire::LambdaInterface::setUniform<::spire::M44>(it->uniformType, it->uniformName,
+      ::spire::LambdaInterface::setUniform< ::spire::M44 >(it->uniformType, it->uniformName,
                                        it->shaderLocation, inverseViewProjection * objToWorld);
 
       it = unsatisfiedUniforms.erase(it);
@@ -225,7 +226,7 @@ void ViewSceneDialog::moduleExecuted()
         for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
         {
           std::string uniformName = std::get<0>(*it);
-          std::shared_ptr<::spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+          std::shared_ptr< ::spire::AbstractUniformStateItem > uniform(std::get<1>(*it));
 
           // Be sure to always include the pass name as we are updating a
           // subpass of SPIRE_DEFAULT_PASS.

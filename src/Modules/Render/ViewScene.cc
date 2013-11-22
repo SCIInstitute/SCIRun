@@ -29,6 +29,13 @@
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Geometry.h>
+
+// Needed to fix conflict between define in X11 header
+// and eigen enum member.
+#ifdef Success
+#  undef Success
+#endif
+
 #include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun::Modules::Render;

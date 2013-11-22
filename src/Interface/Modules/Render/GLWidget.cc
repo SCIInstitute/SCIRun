@@ -38,7 +38,7 @@
 #include <QtDebug>
 #include <Core/Application/Application.h>
 
-#include "GLWidget.h"
+#include <Interface/Modules/Render/GLWidget.h>
 
 using namespace SCIRun::Gui;
 

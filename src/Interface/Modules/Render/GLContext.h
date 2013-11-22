@@ -38,10 +38,12 @@
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include "spire/Interface.h"
-#include "namespaces.h"
-
 #include <QtOpenGL/QGLWidget>
+
+#include <spire/Interface.h>
+#include <Interface/Modules/Render/namespaces.h>
+
+//#include <QtOpenGL/QGLWidget>
 
 namespace SCIRun {
 namespace Gui {

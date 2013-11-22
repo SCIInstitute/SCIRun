@@ -33,17 +33,20 @@
 #define NOMINMAX
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
+
 #include <boost/shared_ptr.hpp>
+
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Render/share.h>
 
-#include "spire/Interface.h"
-#include "spire_scirun/SRInterface.h"
-#include "spire_scirun/SRCommonAttributes.h"
-#include "spire_scirun/SRCommonUniforms.h"
-#include "namespaces.h"
-#include "GLWidget.h"
+#include <spire/Interface.h>
+#include <spire_scirun/SRInterface.h>
+#include <spire_scirun/SRCommonAttributes.h>
+#include <spire_scirun/SRCommonUniforms.h>
+
+#include <Interface/Modules/Render/namespaces.h>
+#include <Interface/Modules/Render/GLWidget.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
 
