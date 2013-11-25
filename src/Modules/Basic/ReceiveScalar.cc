@@ -42,6 +42,7 @@ ReceiveScalarModule::ReceiveScalarModule()
   : Module(ModuleLookupInfo("ReceiveScalar", "Math", "SCIRun")),
   latestValue_(-1)
 {
+  INITIALIZE_PORT(Input);
 }
 
 void ReceiveScalarModule::execute()

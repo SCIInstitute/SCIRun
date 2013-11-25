@@ -112,13 +112,13 @@ protected:
     return std::make_pair(moduleId1, moduleId1);
   }
 
-  std::pair<size_t,size_t> setPortIndices()
+  std::pair<PortId,PortId> setPortIds()
   {
-    size_t index1 = 1;
-    size_t index2 = 2;
-    EXPECT_CALL(*port1, getIndex()).WillRepeatedly(Return(index1));
-    EXPECT_CALL(*port2, getIndex()).WillRepeatedly(Return(index2));
-    return std::make_pair(index1, index2);
+    PortId id1(0, "1");
+    PortId id2(0, "2");
+    EXPECT_CALL(*port1, id()).WillRepeatedly(Return(id1));
+    EXPECT_CALL(*port2, id()).WillRepeatedly(Return(id2));
+    return std::make_pair(id1, id2);
   }
 
   MockNetworkPtr mockNetwork_;
@@ -155,7 +155,7 @@ TEST_F(NetworkEditorControllerTests, CanAddAndRemoveConnectionWithSignalling)
 
   portsHaveSameType();
   auto modIds = portsAreOnDifferentModules();
-  auto indices = setPortIndices();
+  auto indices = setPortIds();
 
   EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(false));
   EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(true));
@@ -186,7 +186,7 @@ TEST_F(NetworkEditorControllerTests, CannotConnectInputPortToInputPort)
 
   portsHaveSameType();
   auto modIds = portsAreOnDifferentModules();
-  auto indices = setPortIndices();
+  auto indices = setPortIds();
 
   EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
   EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(true));
@@ -207,7 +207,7 @@ TEST_F(NetworkEditorControllerTests, CannotConnectOutputPortToOutputPort)
 
   portsHaveSameType();
   auto modIds = portsAreOnDifferentModules();
-  auto indices = setPortIndices();
+  auto indices = setPortIds();
 
   EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(false));
   EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));
@@ -227,7 +227,7 @@ TEST_F(NetworkEditorControllerTests, CannotConnectToFullInputPort)
 
   portsHaveSameType();
   auto modIds = portsAreOnDifferentModules();
-  auto indices = setPortIndices();
+  auto indices = setPortIds();
 
   EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
   EXPECT_CALL(*port1, nconnections()).WillOnce(Return(1));
@@ -248,7 +248,7 @@ TEST_F(NetworkEditorControllerTests, CannotConnectBetweenSameModule)
 
   portsHaveSameType();
   auto modIds = portsAreOnSameModule();
-  auto indices = setPortIndices();
+  auto indices = setPortIds();
 
   EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
   EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));
@@ -268,7 +268,7 @@ TEST_F(NetworkEditorControllerTests, CannotConnectBetweenDifferentPortTypes)
 
   portsHaveDifferentType();
   auto modIds = portsAreOnDifferentModules();
-  auto indices = setPortIndices();
+  auto indices = setPortIds();
 
   EXPECT_CALL(*port1, isInput()).WillRepeatedly(Return(true));
   EXPECT_CALL(*port2, isInput()).WillRepeatedly(Return(false));

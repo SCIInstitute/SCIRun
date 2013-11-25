@@ -110,11 +110,15 @@ ConnectionLine::ConnectionLine(PortWidget* fromPort, PortWidget* toPort, const S
     fromPort_->addConnection(this);
     fromPort_->turn_on_light();
   }
+  else
+    std::cout << "NULL FROM PORT: " << id_.id_ << std::endl;
   if (toPort_)
   {
     toPort_->addConnection(this);
     toPort_->turn_on_light();
   }
+  else
+    std::cout << "NULL TO PORT: " << id_.id_ << std::endl;
 
   if (fromPort_ && toPort_)
     setColor(fromPort_->color());
@@ -161,12 +165,13 @@ QColor ConnectionLine::color() const
 
 void ConnectionLine::trackNodes()
 {
+  //std::cout << "trackNodes " << id_.id_ << std::endl;
   if (fromPort_ && toPort_)
   {
     drawer_->draw(this, fromPort_->position(), toPort_->position());
   }
   else
-    BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection"));
+    BOOST_THROW_EXCEPTION(InvalidConnection() << Core::ErrorMessage("no from/to set for Connection: " + id_.id_));
 }
 
 void ConnectionLine::setDrawStrategy(ConnectionDrawStrategyPtr cds)

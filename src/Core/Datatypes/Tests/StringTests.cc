@@ -59,9 +59,10 @@ TEST(AnyTests, CanCopyConstructEmpty)
   EXPECT_FALSE(a4.empty());
 }
 
-TEST(AnyTests, CanCopyConstructConstEmpty_SEGFAULTSWITHBOOST154)
+#ifdef WIN32
+TEST(AnyTests, CanCopyConstructConstEmpty_SEGFAULTSWITHBOOST154_ONMAC)
 {
   boost::any a(const_empty());
   EXPECT_TRUE(a.empty());
 }
-
+#endif

@@ -47,7 +47,7 @@ bool SCIRun::Dataflow::Networks::operator!=(const ConnectionId& lhs, const Conne
 bool SCIRun::Dataflow::Networks::operator==(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs)
 {
   return lhs.moduleId_ == rhs.moduleId_
-    && lhs.port_ == rhs.port_;
+    && lhs.portId_.name == rhs.portId_.name;
 }
 
 bool SCIRun::Dataflow::Networks::operator!=(const OutgoingConnectionDescription& lhs, const OutgoingConnectionDescription& rhs)
@@ -58,7 +58,7 @@ bool SCIRun::Dataflow::Networks::operator!=(const OutgoingConnectionDescription&
 bool SCIRun::Dataflow::Networks::operator==(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs)
 {
   return lhs.moduleId_ == rhs.moduleId_
-    && lhs.port_== rhs.port_;
+    && lhs.portId_.name == rhs.portId_.name;
 }
 
 bool SCIRun::Dataflow::Networks::operator!=(const IncomingConnectionDescription& lhs, const IncomingConnectionDescription& rhs)
@@ -81,17 +81,16 @@ bool SCIRun::Dataflow::Networks::operator!=(const ConnectionDescription& lhs, co
 /*static*/ ConnectionId ConnectionId::create(const ConnectionDescription& desc)
 {
   std::ostringstream cid;
-  cid << desc.out_.moduleId_ << "_p#" << desc.out_.port_ << "_@to@_" << desc.in_.moduleId_ << "_p#" << desc.in_.port_;
+  cid << desc.out_.moduleId_ << "_p#" << desc.out_.portId_ << "#_@to@_" << desc.in_.moduleId_ << "_p#" << desc.in_.portId_ << "#";
   return ConnectionId(cid.str());
 }
 
 ConnectionDescription ConnectionId::describe() const
 {
-  static boost::regex r("(.+)_p#(\\d+)_@to@_(.+)_p#(\\d+)");
+  static boost::regex r("(.+)_p#(.+):(\\d+)#_@to@_(.+)_p#(.+):(\\d+)#");
   boost::smatch what;
   regex_match(id_, what, r);
-  return ConnectionDescription(OutgoingConnectionDescription(ModuleId(what[1]), 
-    boost::lexical_cast<size_t>((std::string)what[2])), 
-    IncomingConnectionDescription(ModuleId(what[3]), 
-    boost::lexical_cast<size_t>((std::string)what[4])));
+  return ConnectionDescription(
+    OutgoingConnectionDescription(ModuleId(what[1]), PortId(boost::lexical_cast<size_t>(what[3]), (std::string)what[2])), 
+    IncomingConnectionDescription(ModuleId(what[4]), PortId(boost::lexical_cast<size_t>(what[6]), (std::string)what[5])));
 }

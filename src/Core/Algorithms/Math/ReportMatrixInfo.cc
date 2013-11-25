@@ -144,6 +144,6 @@ AlgorithmOutput ReportMatrixInfoAlgorithm::run_generic(const AlgorithmInput& inp
   auto outputs = run(matrix);
 
   AlgorithmOutput output;
-  output.setTransient(outputs); //[MatrixInfo] = outputs;
+  output.setTransient(outputs); 
   return output;
 }

@@ -52,6 +52,9 @@ TARGET_LINK_LIBRARIES(Modules_Math_Tests
   Dataflow_Network
   Dataflow_State
   Algorithms_Factory
+  Modules_Render
+  Modules_Visualization
+  Engine_Network
   Testing_Utils
   Testing_ModuleTestBase
   gtest_main

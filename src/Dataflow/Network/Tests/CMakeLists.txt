@@ -43,7 +43,6 @@ SET(Dataflow_Network_Tests_HEADERS
   MockModuleState.h
   MockPorts.h
   MockNetwork.h
-  SimpleSourceSink.h
 )
 
 SCIRUN_ADD_UNIT_TEST(Dataflow_Network_Tests 

@@ -30,8 +30,6 @@
 
 #include <Eigen/Dense>
 
-//using namespace Eigen;
-
 typedef Eigen::MatrixXd DenseMatrix;
 
 namespace

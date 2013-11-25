@@ -30,6 +30,7 @@
 #define ENGINE_NETWORK_NETWORKEDITORCONTROLLER_H
 
 #include <Dataflow/Network/NetworkFwd.h>
+#include <Dataflow/Network/NetworkInterface.h> //TODO: split out connectionmakerservice
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Controller/ControllerInterfaces.h>
@@ -45,12 +46,25 @@ namespace Engine {
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> ConnectionAddedSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionDescription&)> InvalidConnectionSignalType;
   typedef boost::signals2::signal<void (const Networks::ConnectionId&)> ConnectionRemovedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortAddedSignalType;
+  typedef boost::signals2::signal<void (const Networks::ModuleId&, const Networks::PortId&)> PortRemovedSignalType;
+
+  class DynamicPortManager;
+
+  struct SCISHARE DisableDynamicPortSwitch 
+  {
+    explicit DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm);
+    ~DisableDynamicPortSwitch();
+  private:
+    bool first_;
+    boost::shared_ptr<DynamicPortManager> dpm_;
+  };
 
   // TODO Refactoring: split this class into two classes, NetworkEditorService and Controller.
   //   Service object will hold the Domain objects (network, factories), while Controller will manage the signal forwarding and the service's thread 
   //   This will be done in issue #231
 
-  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>
+  class SCISHARE NetworkEditorController : public NetworkIOInterface<Networks::NetworkFileHandle>, public Networks::NetworkEditorControllerInterface
   {
   public:
     explicit NetworkEditorController(Networks::ModuleFactoryHandle mf, 
@@ -85,12 +99,17 @@ namespace Engine {
     boost::signals2::connection connectConnectionAdded(const ConnectionAddedSignalType::slot_type& subscriber);
     boost::signals2::connection connectConnectionRemoved(const ConnectionRemovedSignalType::slot_type& subscriber);
     boost::signals2::connection connectInvalidConnection(const InvalidConnectionSignalType::slot_type& subscriber);
+    boost::signals2::connection connectPortAdded(const PortAddedSignalType::slot_type& subscriber);
+    boost::signals2::connection connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber);
 
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
-    Networks::NetworkHandle getNetwork() const;
+    virtual Networks::NetworkHandle getNetwork() const;
+    virtual void setNetwork(Networks::NetworkHandle nh); 
     Networks::NetworkGlobalSettings& getSettings();
+
+    boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
 
     void setExecutorType(int type);
 
@@ -115,6 +134,8 @@ namespace Engine {
     ConnectionAddedSignalType connectionAdded_;
     ConnectionRemovedSignalType connectionRemoved_;
     InvalidConnectionSignalType invalidConnection_;
+
+    boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
 
     void configureLoggingLibrary();
   };

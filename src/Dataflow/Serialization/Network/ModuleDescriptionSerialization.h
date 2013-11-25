@@ -65,9 +65,9 @@ namespace Networks {
     void serialize(Archive& ar, const unsigned int version)
     {
       ar & boost::serialization::make_nvp("moduleId1_", out_.moduleId_.id_);
-      ar & boost::serialization::make_nvp("port1_", out_.port_);
+      ar & boost::serialization::make_nvp("port1_", out_.portId_);
       ar & boost::serialization::make_nvp("moduleId2_", in_.moduleId_.id_);
-      ar & boost::serialization::make_nvp("port2_", in_.port_);
+      ar & boost::serialization::make_nvp("port2_", in_.portId_);
     }
   public:
     ConnectionDescriptionXML();
@@ -75,6 +75,20 @@ namespace Networks {
     ConnectionDescriptionXML(const ConnectionDescription& rhs);
   };
 
+  //to order connections by port index.
+  SCISHARE bool operator<(const ConnectionDescriptionXML& lhs, const ConnectionDescriptionXML& rhs);
+
 }}}
+
+namespace boost {
+  namespace serialization {
+
+    template<class Archive>
+    void serialize(Archive& ar, SCIRun::Dataflow::Networks::PortId& pid, const unsigned int version)
+    {
+      ar & boost::serialization::make_nvp("name", pid.name);
+      ar & boost::serialization::make_nvp("id", pid.id);
+    }
+  }}
 
 #endif

@@ -42,6 +42,7 @@ AlgorithmParameterName PrintDatatypeModule::ReceivedValue("ReceivedValue");
 PrintDatatypeModule::PrintDatatypeModule()
   : Module(ModuleLookupInfo("PrintDatatype", "DataIO", "SCIRun"))
 {
+  INITIALIZE_PORT(Input);
 }
 
 void PrintDatatypeModule::execute()

@@ -41,6 +41,7 @@
 #include <Interface/Application/NoteEditor.h>
 #include <Interface/Application/ClosestPortFinder.h>
 #include <Interface/Application/Utility.h>
+#include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
@@ -120,14 +121,17 @@ namespace
 #endif
 }
 
-ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, QWidget* parent /* = 0 */)
+ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
+  QWidget* parent /* = 0 */)
   : QFrame(parent),
   deletedFromGui_(true),
   colorLocked_(false),
-  moduleId_(theModule->get_id()),
   theModule_(theModule),
+  moduleId_(theModule->get_id()),
   inputPortLayout_(0),
-  outputPortLayout_(0)
+  outputPortLayout_(0),
+  editor_(ed),
+  deleting_(false)
 {
   setupUi(this);
   titleLabel_->setText("<b><h3>" + name + "</h3></b>");
@@ -146,7 +150,8 @@ ModuleWidget::ModuleWidget(const QString& name, SCIRun::Dataflow::Networks::Modu
   progressBar_->setValue(0);
   
   addPortLayouts();
-  addPorts(*theModule);
+  addPorts(*theModule_);
+  optionsButton_->setVisible(theModule_->has_ui());
 
   int pixelWidth = titleLabel_->fontMetrics().width(titleLabel_->text());
   int extraWidth = pixelWidth - moduleWidthThreshold;
@@ -225,28 +230,56 @@ void ModuleWidget::addPortLayouts()
 
 void ModuleWidget::addPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
 {
-  const ModuleId moduleId = moduleInfoProvider.get_id();
-  for (size_t i = 0; i < moduleInfoProvider.num_input_ports(); ++i)
-  {
-    InputPortHandle port = moduleInfoProvider.get_input_port(i);
-    auto type = port->get_typename();
-    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, connectionFactory_, closestPortFinder_, this);
-    hookUpSignals(w);
-    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    addPort(w);
-  }
-  for (size_t i = 0; i < moduleInfoProvider.num_output_ports(); ++i)
-  {
-    OutputPortHandle port = moduleInfoProvider.get_output_port(i);
-    auto type = port->get_typename();
-    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, i, connectionFactory_, closestPortFinder_, this);
-    hookUpSignals(w);
-    addPort(w);
-  }
-  optionsButton_->setVisible(moduleInfoProvider.has_ui());
+  addInputPorts(moduleInfoProvider);
+  addOutputPorts(moduleInfoProvider);
 }
 
-void ModuleWidget::hookUpSignals(PortWidget* port) const
+void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+{
+  const ModuleId moduleId = moduleInfoProvider.get_id();
+  size_t i = 0;
+  BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
+  {
+    auto type = port->get_typename();
+    //std::cout << "ADDING PORT: " << port->id() << "[" << port->isDynamic() << "] AT INDEX: " << i << std::endl;
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    hookUpGeneralPortSignals(w);
+    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    ports_.addPort(w);
+    ++i;
+  }
+  addInputPortsToLayout();
+}
+
+void ModuleWidget::printInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+{
+  const ModuleId moduleId = moduleInfoProvider.get_id();
+  std::cout << "Module input ports: " << moduleId << std::endl;
+  size_t i = 0;
+  BOOST_FOREACH(InputPortHandle port, moduleInfoProvider.inputPorts())
+  {
+    auto type = port->get_typename();
+    std::cout << "\t" << i << " : " << port->get_portname() << " : " << type << " dyn = " << port->isDynamic() << std::endl;
+     ++i;
+  }
+}
+
+void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoProvider& moduleInfoProvider)
+{
+  const ModuleId moduleId = moduleInfoProvider.get_id();
+  size_t i = 0;
+  BOOST_FOREACH(OutputPortHandle port, moduleInfoProvider.outputPorts())
+  {
+    auto type = port->get_typename();
+    OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    hookUpGeneralPortSignals(w);
+    ports_.addPort(w);
+    ++i;
+  }
+  addOutputPortsToLayout();
+}
+
+void ModuleWidget::hookUpGeneralPortSignals(PortWidget* port) const
 {
   connect(port, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)), 
     this, SIGNAL(requestConnection(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const SCIRun::Dataflow::Networks::PortDescriptionInterface*)));
@@ -257,7 +290,7 @@ void ModuleWidget::hookUpSignals(PortWidget* port) const
     this, SLOT(connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface*, const std::string&)));
 }
 
-void ModuleWidget::addPort(OutputPortWidget* port)
+void ModuleWidget::addOutputPortsToLayout()
 {
   if (!outputPortLayout_)
   {
@@ -267,11 +300,22 @@ void ModuleWidget::addPort(OutputPortWidget* port)
     outputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(-1, outputPortLayout_);
   }
-  outputPortLayout_->addWidget(port);
-  outputPorts_.push_back(port);
+  ports_.addOutputsToLayout(outputPortLayout_);
 }
 
-void ModuleWidget::addPort(InputPortWidget* port)
+void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
+{
+  BOOST_FOREACH(PortWidget* port, inputPorts_)
+    layout->addWidget(port);
+}
+
+void PortWidgetManager::addOutputsToLayout(QHBoxLayout* layout)
+{
+  BOOST_FOREACH(PortWidget* port, outputPorts_)
+    layout->addWidget(port);
+}
+
+void ModuleWidget::addInputPortsToLayout()
 {
   if (!inputPortLayout_)
   {
@@ -280,14 +324,99 @@ void ModuleWidget::addPort(InputPortWidget* port)
     inputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(0, inputPortLayout_);
   }
-  inputPortLayout_->addWidget(port);
+  ports_.addInputsToLayout(inputPortLayout_);
+}
+
+void PortWidgetManager::reindexInputs()
+{
+  //std::cout << "REINDEXING" << std::endl;
+  for (size_t i = 0; i < inputPorts_.size(); ++i)
+  {
+    auto port = inputPorts_[i];
+    //std::cout << "setting index on " << port->id() << " to " << i << std::endl;
+    port->setIndex(i);
+  }
+}
+
+void PortWidgetManager::addPort(OutputPortWidget* port)
+{
+  outputPorts_.push_back(port);
+}
+
+void PortWidgetManager::addPort(InputPortWidget* port)
+{
   inputPorts_.push_back(port);
+}
+
+void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
+{
+  if (mid.id_ == moduleId_)
+  {
+    InputPortHandle port = theModule_->getInputPort(pid);
+    auto type = port->get_typename();
+    //std::cout << "~~~addDynamicPort " << port->getIndex() << " : " << port->get_portname() << " : " << type << std::endl;
+
+    InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, this);
+    hookUpGeneralPortSignals(w);
+    connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
+    ports_.addPort(w);
+    inputPortLayout_->addWidget(w);
+    Q_EMIT dynamicPortChanged();
+  }
+}
+
+void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
+{
+  if (mid.id_ == moduleId_ && !deleting_)
+  {
+    //auto portToRemove = index;
+    //std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
+
+    if (ports_.removeDynamicPort(pid, inputPortLayout_))
+    {
+      Q_EMIT dynamicPortChanged();
+      //printInputPorts(*theModule_);
+    }
+  }
+}
+
+bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout)
+{
+  //std::cout << "BEFORE removeDynamicPort: " << std::endl;
+  //Q_FOREACH(PortWidget* port, inputPorts_)
+  //{
+  //  std::cout << "\t" << port << " index = " << port->getIndex() << std::endl;
+  //}
+  auto iter = std::find_if(inputPorts_.begin(), inputPorts_.end(), [&](const PortWidget* w) { return w->id() == pid; });
+  if (iter != inputPorts_.end())
+  {
+    auto widget = *iter;
+    inputPorts_.erase(iter);
+    
+    //std::cout << "Reindexing inputs" << std::endl;
+    reindexInputs();
+    
+    //std::cout << "deleting widget" << std::endl;
+    layout->removeWidget(widget);
+    delete widget;
+
+    
+    
+    //std::cout << "AFTER removeDynamicPort: " << std::endl;
+    //Q_FOREACH(PortWidget* port, inputPorts_)
+    //{
+    //  std::cout << "\t" << port << " index = " << port->getIndex() << std::endl;
+    //}
+
+    return true;
+  }
+  return false;
 }
 
 void ModuleWidget::printPortPositions() const
 {
   std::cout << "Port positions for module " << moduleId_ << std::endl;
-  Q_FOREACH(PortWidget* p, boost::join(getInputPorts(), getOutputPorts()))
+  Q_FOREACH(PortWidget* p, ports_.getAllPorts())
   {
     std::cout << "\t" << p->pos();
   }
@@ -296,8 +425,12 @@ void ModuleWidget::printPortPositions() const
 
 ModuleWidget::~ModuleWidget()
 {
-  Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
+  //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
+  //disconnect()
+  deleting_ = true;
+  Q_FOREACH (PortWidget* p, ports_.getAllPorts())
     p->deleteConnections();
+  
   GuiLogger::Instance().log("Module deleted.");
   if (dialog_ != nullptr)
   {
@@ -314,7 +447,7 @@ ModuleWidget::~ModuleWidget()
 
 void ModuleWidget::trackConnections()
 {
-  Q_FOREACH (PortWidget* p, boost::join(inputPorts_, outputPorts_))
+  Q_FOREACH (PortWidget* p, ports_.getAllPorts())
     p->trackConnections();
 }
 
@@ -419,4 +552,9 @@ void ModuleWidget::duplicate()
 void ModuleWidget::connectNewModule(const SCIRun::Dataflow::Networks::PortDescriptionInterface* portToConnect, const std::string& newModuleName)
 {
   Q_EMIT connectNewModule(theModule_, portToConnect, newModuleName);
+}
+
+bool ModuleWidget::hasDynamicPorts() const
+{
+  return theModule_->hasDynamicPorts();
 }

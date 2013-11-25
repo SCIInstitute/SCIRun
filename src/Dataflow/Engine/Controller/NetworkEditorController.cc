@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <boost/thread.hpp>
+#include <boost/foreach.hpp>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 
 #include <Dataflow/Network/Connection.h>
@@ -37,6 +38,8 @@
 #include <Dataflow/Network/ModuleFactory.h>
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
+#include <Dataflow/Engine/Controller/DynamicPortManager.h>
+
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
 #include <Dataflow/Engine/Controller/PythonImpl.h>
@@ -65,6 +68,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   executorFactory_(executorFactory),
   modulePositionEditor_(mpg)
 {
+  dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
+
   //TODO should this class own the network or just keep a reference?
 
 #ifdef BUILD_WITH_PYTHON
@@ -98,6 +103,7 @@ ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleNam
 
 void NetworkEditorController::removeModule(const ModuleId& id)
 {
+  //auto disableDynamicPortManager(createDynamicPortSwitch());
   theNetwork_->remove_module(id);
   //before or after?
   // deciding on after: ProvenanceWindow/Manager wants the state *after* removal.
@@ -108,6 +114,7 @@ void NetworkEditorController::removeModule(const ModuleId& id)
 
 ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module)
 {
+  //auto disableDynamicPortManager(createDynamicPortSwitch());
   ENSURE_NOT_NULL(module, "Cannot duplicate null module");
   ModuleId id(module->get_id());
   auto newModule = addModuleImpl(id.name_);
@@ -117,14 +124,14 @@ ModuleHandle NetworkEditorController::duplicateModule(const ModuleHandle& module
   //TODO: probably a pretty poor way to deal with what I think is a race condition with signaling the GUI to place the module widget.
   boost::this_thread::sleep(boost::posix_time::milliseconds(1));
   
-  for (size_t i = 0; i < module->num_input_ports(); ++i)
+  BOOST_FOREACH(InputPortHandle input, module->inputPorts())
   {
-    auto input = module->get_input_port(i);
     if (input->nconnections() == 1)
     {
       auto conn = input->connection(0);
       auto source = conn->oport_;
-      requestConnection(source.get(), newModule->get_input_port(i).get());
+      //TODO: this will work if we define PortId.id# to be 0..n, unique for each module. But what about gaps?
+      requestConnection(source.get(), newModule->getInputPort(input->id()).get());
     }
   }
   
@@ -140,25 +147,27 @@ void NetworkEditorController::connectNewModule(const SCIRun::Dataflow::Networks:
 
   //TODO duplication
   if (portToConnect->isInput())
-    for (size_t i = 0; i < newMod->num_output_ports(); ++i)
+  {
+    BOOST_FOREACH(OutputPortHandle p, newMod->outputPorts())
     {
-      auto p = newMod->get_output_port(i);
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
         return;
       }
     }
+  }
   else
-    for (size_t i = 0; i < newMod->num_input_ports(); ++i)
+  {
+    BOOST_FOREACH(InputPortHandle p, newMod->inputPorts())
     {
-      auto p = newMod->get_input_port(i);
       if (p->get_typename() == portToConnect->get_typename())
       {
         requestConnection(p.get(), portToConnect);
         return;
       }
     }
+  }
 }
 
 void NetworkEditorController::printNetwork() const
@@ -181,14 +190,14 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   auto in = from->isInput() ? from : to;     
 
   ConnectionDescription desc(
-    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->getIndex()), 
-    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->getIndex()));
+    OutgoingConnectionDescription(out->getUnderlyingModuleId(), out->id()), 
+    IncomingConnectionDescription(in->getUnderlyingModuleId(), in->id()));
 
   PortConnectionDeterminer q;
   if (q.canBeConnected(*from, *to))
   {
-    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.port_),
-      ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.port_));
+    ConnectionId id = theNetwork_->connect(ConnectionOutputPort(theNetwork_->lookupModule(desc.out_.moduleId_), desc.out_.portId_),
+      ConnectionInputPort(theNetwork_->lookupModule(desc.in_.moduleId_), desc.in_.portId_));
     if (!id.id_.empty())
       connectionAdded_(desc);
     
@@ -244,6 +253,16 @@ boost::signals2::connection NetworkEditorController::connectNetworkExecutionFini
   return ExecutionStrategy::connectNetworkExecutionFinished(subscriber);
 }
 
+boost::signals2::connection NetworkEditorController::connectPortAdded(const PortAddedSignalType::slot_type& subscriber)
+{
+  return dynamicPortManager_->connectPortAdded(subscriber);
+}
+
+boost::signals2::connection NetworkEditorController::connectPortRemoved(const PortRemovedSignalType::slot_type& subscriber)
+{
+  return dynamicPortManager_->connectPortRemoved(subscriber);
+}
+
 NetworkFileHandle NetworkEditorController::saveNetwork() const
 {
   NetworkToXML conv(modulePositionEditor_);
@@ -254,17 +273,22 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
   {
-    NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_);
+    NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, this);
     theNetwork_ = conv.from_xml_data(xml->network);
     for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
     {
       ModuleHandle module = theNetwork_->module(i);
       moduleAdded_(module->get_module_name(), module);
     }
-    BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
     {
-      ConnectionId id = ConnectionId::create(cd);
-      connectionAdded_(cd);
+      auto disable(createDynamicPortSwitch());
+      //this is handled by NetworkXMLConverter now--but now the logic is convoluted. 
+      //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
+      BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+      {
+        ConnectionId id = ConnectionId::create(cd);
+        connectionAdded_(cd);
+      }
     }
     if (modulePositionEditor_)
       modulePositionEditor_->moveModules(xml->modulePositions);
@@ -289,6 +313,12 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 NetworkHandle NetworkEditorController::getNetwork() const 
 {
   return theNetwork_;
+}
+
+void NetworkEditorController::setNetwork(NetworkHandle nh)
+{
+  ENSURE_NOT_NULL(nh, "Null network.");
+  theNetwork_ = nh;
 }
 
 NetworkGlobalSettings& NetworkEditorController::getSettings() 
@@ -346,4 +376,25 @@ void NetworkEditorController::configureLoggingLibrary()
   //root.setPriority(log4cpp::Priority::DEBUG);
   root.addAppender(appender1);
   root.addAppender(appender2);
+}
+
+boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()
+{
+  return boost::make_shared<DisableDynamicPortSwitch>(dynamicPortManager_);
+}
+
+DisableDynamicPortSwitch::DisableDynamicPortSwitch(boost::shared_ptr<DynamicPortManager> dpm) : first_(true), dpm_(dpm)
+{
+  if (dpm_)
+  {
+    first_ = !dpm_->isDisabled();
+    if (first_)
+      dpm_->disable();
+  }
+}
+
+DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
+{
+  if (dpm_ && first_)
+    dpm_->enable();
 }

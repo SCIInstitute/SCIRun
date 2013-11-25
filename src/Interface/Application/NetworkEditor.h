@@ -45,6 +45,9 @@ class QGraphicsScene;
 Q_DECLARE_METATYPE (std::string)
 
 namespace SCIRun {
+
+  namespace Dataflow { namespace Engine { class NetworkEditorController; struct DisableDynamicPortSwitch; }}
+
 namespace Gui {
 
   class CurrentModuleSelection
@@ -99,7 +102,8 @@ Q_SIGNALS:
   class NetworkEditor : public QGraphicsView, 
     public SCIRun::Dataflow::Networks::ExecutableLookup, 
     public SCIRun::Dataflow::Networks::ModulePositionEditor, 
-    public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>
+    public SCIRun::Dataflow::Engine::NetworkIOInterface<SCIRun::Dataflow::Networks::NetworkFileHandle>,
+    public SCIRun::Dataflow::Networks::ConnectionMakerService
   {
 	  Q_OBJECT
 	
@@ -134,6 +138,8 @@ Q_SIGNALS:
     int connectionPipelineType() const;
 
     QPixmap sceneGrab();
+
+    boost::shared_ptr<Dataflow::Engine::DisableDynamicPortSwitch> createDynamicPortDisabler();
 
   protected:
     virtual void dropEvent(QDropEvent* event);

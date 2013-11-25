@@ -45,11 +45,6 @@ InputPortInterface::~InputPortInterface()
 {
 }
 
-bool InputPortInterface::hasData() const 
-{ 
-  return sink()->hasData(); 
-}
-
 OutputPortInterface::~OutputPortInterface()
 {
 }

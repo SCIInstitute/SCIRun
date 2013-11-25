@@ -32,16 +32,10 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
-Connection::Connection(ModuleHandle omod, size_t oportno, ModuleHandle imod, size_t iportno, const ConnectionId& id)
-  : omod_(omod), imod_(imod), id_(id)
+Connection::Connection(OutputPortHandle oport, InputPortHandle iport, const ConnectionId& id)
+  : oport_(oport), iport_(iport), id_(id)
 {
-  ENSURE_NOT_NULL(omod, "output module is null");
-  ENSURE_NOT_NULL(imod, "input module is null");
-  
-  oport_ = omod_->get_output_port(oportno);
   ENSURE_NOT_NULL(oport_, "output port is null");
-  
-  iport_ = imod_->get_input_port(iportno);
   ENSURE_NOT_NULL(iport_, "input port is null");
 
   //TODO: this is already checked in the controller layer. Do we need a redundant check here? 
@@ -57,4 +51,3 @@ Connection::~Connection()
   oport_->detach(this);
   iport_->detach(this);
 }
-

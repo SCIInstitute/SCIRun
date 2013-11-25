@@ -67,16 +67,23 @@ namespace Networks {
     //for serialization
     virtual const ModuleLookupInfo& get_info() const { return info_; }
     virtual void set_id(const std::string& id) { id_ = ModuleId(id); }
+  
+    //for unit testing. Need to restrict access somehow.
+    static void resetInstanceCount();
 
     bool has_ui() const { return has_ui_; }
     void setUiVisible(bool visible); 
-    size_t num_input_ports() const;
-    size_t num_output_ports() const;
+    virtual size_t num_input_ports() const;
+    virtual size_t num_output_ports() const;
 
-    InputPortHandle get_input_port(const std::string &name) const;
-    OutputPortHandle get_output_port(const std::string &name) const;
-    OutputPortHandle get_output_port(size_t idx) const;
-    InputPortHandle get_input_port(size_t idx) const;
+    virtual bool hasInputPort(const PortId& id) const;
+    virtual bool hasOutputPort(const PortId& id) const;
+    virtual InputPortHandle getInputPort(const PortId& id) const;
+    virtual OutputPortHandle getOutputPort(const PortId& id) const;
+    virtual std::vector<InputPortHandle> findInputPortsWithName(const std::string& name) const;
+    virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const;
+    virtual std::vector<InputPortHandle> inputPorts() const;
+    virtual std::vector<OutputPortHandle> outputPorts() const;
 
     //TODO: execute signal here.
     virtual void do_execute() throw(); //--C++11--will throw nothing
@@ -84,8 +91,9 @@ namespace Networks {
     virtual void set_state(ModuleStateHandle state);
 
   private:
-    virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(size_t idx);
-    virtual void send_output_handle(size_t idx, SCIRun::Core::Datatypes::DatatypeHandle data);
+    virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
+    virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
+    virtual void send_output_handle(const PortId& id, SCIRun::Core::Datatypes::DatatypeHandle data);
 
   public:
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log);
@@ -110,35 +118,65 @@ namespace Networks {
       return true; //TODO
     }
 
-    bool oport_connected(size_t portIndex) const;
+    virtual bool hasDynamicPorts() const 
+    {
+      return false; //TODO: need to examine HasPorts base classes
+    }
+
+    bool oport_connected(const PortId& id) const;
 
     template <class Type, size_t N>
-    struct PortName
+    struct PortNameBase
     {
-      explicit PortName(const std::string& name = "") : name_(name) {}
-      operator size_t() const { return N; }
-      operator std::string() const 
-      { 
-        if (name_.empty())
-          BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
-        return name_; 
+      explicit PortNameBase(const PortId& id) : id_(id) {}
+      //operator size_t() const { return N; }
+
+      operator PortId() const 
+      {
+        return toId();
       }
 
-      std::string name_;
+      PortId toId() const
+      { 
+        if (id_.name.empty())
+          BOOST_THROW_EXCEPTION(DataPortException() << SCIRun::Core::ErrorMessage("Port name not initialized!"));
+        return id_; 
+      }
+      operator std::string() const
+      {
+        return toId().name;
+      }
+
+      PortId id_;
+    };
+    
+    template <class Type, size_t N>
+    struct StaticPortName : PortNameBase<Type,N>
+    {
+      explicit StaticPortName(const PortId& id = PortId(0, "[not defined yet]")) : PortNameBase<Type,N>(id) {}
+    };
+
+    template <class Type, size_t N>
+    struct DynamicPortName : PortNameBase<Type,N>
+    {
+      explicit DynamicPortName(const PortId& id = PortId(0, "[not defined yet]")) : PortNameBase<Type,N>(id) {}
     };
 
     // Throws if input is not present or null.
     template <class T, size_t N>
-    boost::shared_ptr<T> getRequiredInput(const PortName<T,N>& port);
+    boost::shared_ptr<T> getRequiredInput(const StaticPortName<T,N>& port);
 
     template <class T, size_t N>
-    boost::optional<boost::shared_ptr<T>> getOptionalInput(const PortName<T,N>& port);
+    boost::optional<boost::shared_ptr<T>> getOptionalInput(const StaticPortName<T,N>& port);
+
+    template <class T, size_t N>
+    std::vector<boost::shared_ptr<T>> getRequiredDynamicInputs(const DynamicPortName<T,N>& port);
 
     template <class T, class D, size_t N>
-    void sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data);
+    void sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data);
 
     template <class T, size_t N>
-    void sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
+    void sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output);
 
     class SCISHARE Builder : boost::noncopyable
     {
@@ -148,15 +186,19 @@ namespace Networks {
       Builder& using_func(ModuleMaker create);
       Builder& add_input_port(const Port::ConstructionParams& params);
       Builder& add_output_port(const Port::ConstructionParams& params);
-      Builder& disable_ui();
       Builder& setStateDefaults();
       ModuleHandle build();
+
+      //TODO: these don't quite belong here, think about extracting
+      PortId cloneInputPort(ModuleHandle module, const PortId& id);
+      void removeInputPort(ModuleHandle module, const PortId& id);
 
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSinkInterface*()> SinkMaker;
       typedef boost::function<SCIRun::Dataflow::Networks::DatatypeSourceInterface*()> SourceMaker;
       static void use_sink_type(SinkMaker func);
       static void use_source_type(SourceMaker func);
     private:
+      void addInputPortImpl(Module& module, const Port::ConstructionParams& params);
       boost::shared_ptr<Module> module_;
       static SinkMaker sink_maker_;
       static SourceMaker source_maker_;
@@ -183,13 +225,17 @@ namespace Networks {
 
   private:
     template <class T>
-    boost::shared_ptr<T> getRequiredInputAtIndex(size_t idx);
+    boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);
     template <class T>
-    boost::optional<boost::shared_ptr<T>> getOptionalInputAtIndex(size_t idx);
+    boost::optional<boost::shared_ptr<T>> getOptionalInputAtIndex(const PortId& id);
+    template <class T>
+    boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
+
 
     friend class Builder;
     size_t add_input_port(InputPortHandle);
     size_t add_output_port(OutputPortHandle);
+    void removeInputPort(const PortId& id);
     bool has_ui_;
 
     Core::Algorithms::AlgorithmHandle algo_;
@@ -210,69 +256,76 @@ namespace Networks {
   };
 
   template <class T>
-  boost::shared_ptr<T> Module::getRequiredInputAtIndex(size_t idx)
+  boost::shared_ptr<T> Module::getRequiredInputAtIndex(const PortId& id)
   {
-    auto inputOpt = get_input_handle(idx);
+    auto inputOpt = get_input_handle(id);
     if (!inputOpt)
-      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port #" + boost::lexical_cast<std::string>(idx));
+      MODULE_ERROR_WITH_TYPE(NoHandleOnPortException, "Input data required on port " + id.name);
 
-    if (!*inputOpt)
-      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
-
-    boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
-    if (!data)
-    {
-      std::ostringstream ostr;
-      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
-      MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
-    }
-    return data;
+    return checkInput<T>(inputOpt, id);
   }
   
   template <class T, size_t N>
-  boost::shared_ptr<T> Module::getRequiredInput(const PortName<T,N>& port)
+  boost::shared_ptr<T> Module::getRequiredInput(const StaticPortName<T,N>& port)
   {
-    return getRequiredInputAtIndex<T>(static_cast<size_t>(port));
+    return getRequiredInputAtIndex<T>(port.toId());
   }
 
   template <class T>
-  boost::optional<boost::shared_ptr<T>> Module::getOptionalInputAtIndex(size_t idx)
+  boost::optional<boost::shared_ptr<T>> Module::getOptionalInputAtIndex(const PortId& id)
   {
-    auto inputOpt = get_input_handle(idx);
+    auto inputOpt = get_input_handle(id);
     if (!inputOpt)
       return boost::optional<boost::shared_ptr<T>>();
 
+    return checkInput<T>(inputOpt, id);
+  }
+
+  template <class T, size_t N>
+  std::vector<boost::shared_ptr<T>> Module::getRequiredDynamicInputs(const DynamicPortName<T,N>& port)
+  {
+    auto handleOptions = get_dynamic_input_handles(port.id_);
+    std::vector<boost::shared_ptr<T>> handles;
+    auto check = [&, this](SCIRun::Core::Datatypes::DatatypeHandleOption opt) { return this->checkInput<T>(opt, port.id_); };
+    auto end = handleOptions.end() - 1; //leave off empty final port
+    std::transform(handleOptions.begin(), end, std::back_inserter(handles), check);
+    return handles;
+  }
+
+  template <class T, size_t N>
+  boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const StaticPortName<T,N>& port)
+  {
+    return getOptionalInputAtIndex<T>(port.id_);
+  }
+
+  template <class T, class D, size_t N>
+  void Module::sendOutput(const StaticPortName<T,N>& port, boost::shared_ptr<D> data)
+  {
+    const bool datatypeForThisPortMustBeCompatible = boost::is_base_of<T,D>::value;
+    BOOST_STATIC_ASSERT(datatypeForThisPortMustBeCompatible);
+    send_output_handle(port.id_, data);
+  }
+  
+  template <class T, size_t N>
+  void Module::sendOutputFromAlgorithm(const StaticPortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
+  {
+    sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
+  }
+
+  template <class T>
+  boost::shared_ptr<T> Module::checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id)
+  {
     if (!*inputOpt)
-      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port #" + boost::lexical_cast<std::string>(idx));
+      MODULE_ERROR_WITH_TYPE(NullHandleOnPortException, "Null handle on port " + id.name);
 
     boost::shared_ptr<T> data = boost::dynamic_pointer_cast<T>(*inputOpt);
     if (!data)
     {
       std::ostringstream ostr;
-      ostr << "Wrong datatype on port #" << idx << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
+      ostr << "Wrong datatype on port #" << id.name << "; expected " << typeid(T).name() << " but received " << typeid(*inputOpt).name();
       MODULE_ERROR_WITH_TYPE(WrongDatatypeOnPortException, ostr.str());
     }
     return data;
-  }
-
-  template <class T, size_t N>
-  boost::optional<boost::shared_ptr<T>> Module::getOptionalInput(const PortName<T,N>& port)
-  {
-    return getOptionalInputAtIndex<T>(static_cast<size_t>(port));
-  }
-
-  template <class T, class D, size_t N>
-  void Module::sendOutput(const PortName<T,N>& port, boost::shared_ptr<D> data)
-  {
-    const bool datatypeForThisPortMustBeCompatible = boost::is_base_of<T,D>::value;
-    BOOST_STATIC_ASSERT(datatypeForThisPortMustBeCompatible);
-    send_output_handle(static_cast<size_t>(port), data);
-  }
-  
-  template <class T, size_t N>
-  void Module::sendOutputFromAlgorithm(const PortName<T,N>& port, const Core::Algorithms::AlgorithmOutput& output)
-  {
-    sendOutput<T, T, N>(port, output.get<T>(Core::Algorithms::AlgorithmParameterName(port)));
   }
 
 }}
@@ -288,6 +341,12 @@ namespace Modules
   struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE DatatypePortTag {};
+
+  template <typename Base>
+  struct DynamicPortTag : Base 
+  {
+    typedef Base type;
+  };
   
   template <size_t N>
   struct NumInputPorts
@@ -448,7 +507,7 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, false)); \
       return ports;\
     }\
   };\
@@ -459,7 +518,18 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name)\
     {\
       std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> ports;\
-      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(port0Name, #type)); \
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, false)); \
+      return ports;\
+    }\
+  };\
+  template <>\
+  class Has1InputPort<DynamicPortTag<type ## PortTag>> : public NumInputPorts<1>\
+  {\
+  public:\
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name)\
+    {\
+      std::vector<SCIRun::Dataflow::Networks::InputPortDescription> ports;\
+      ports.push_back(SCIRun::Dataflow::Networks::PortDescription(SCIRun::Dataflow::Networks::PortId(0, port0Name), #type, true)); \
       return ports;\
     }\
   }\
@@ -470,18 +540,22 @@ namespace Modules
   PORT_SPEC(Field);
   PORT_SPEC(Mesh);  //TODO temporary
   PORT_SPEC(Geometry);
+  //PORT_SPEC(DynamicPortTag<Geometry>::type);
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type
 #define ATTACH_NAMESPACE2(type) SCIRun::Core::Datatypes::type
 
 #define INPUT_PORT(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
-  PortName< ATTACH_NAMESPACE(type), index > name;
+  StaticPortName< ATTACH_NAMESPACE(type), index > name;
+
+#define INPUT_PORT_DYNAMIC(index, name, type) static std::string inputPort ## index ## Name() { return #name; } \
+  DynamicPortName< ATTACH_NAMESPACE(type), index > name;
 
 #define OUTPUT_PORT(index, name, type) static std::string outputPort ## index ## Name() { return #name; } \
-  PortName< ATTACH_NAMESPACE(type), index> name;
+  StaticPortName< ATTACH_NAMESPACE(type), index> name;
 
-#define INITIALIZE_PORT(name) do{ name.name_ = #name;}while(0);
+#define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
 
   //TODO: make metafunc for Input/Output
 

@@ -43,10 +43,13 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun;
 
+ModuleLookupInfo ShowFieldModule::staticInfo_("ShowField", "Visualization", "SCIRun");
 
 ShowFieldModule::ShowFieldModule() : 
-    Module(ModuleLookupInfo("ShowField", "Visualization", "SCIRun"))
+    Module(staticInfo_)
 {
+  INITIALIZE_PORT(Field);
+  INITIALIZE_PORT(SceneGraph);
 }
 
 void ShowFieldModule::setStateDefaults()

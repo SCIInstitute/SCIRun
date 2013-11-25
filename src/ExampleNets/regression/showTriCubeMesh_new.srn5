@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <!DOCTYPE boost_serialization>
-<boost_serialization signature="serialization::archive" version="9">
+<boost_serialization signature="serialization::archive" version="10">
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
 			<count>3</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>ReadMesh:1</first>
+				<first>ReadField:31</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
-						<module_name_>ReadMesh</module_name_>
+						<module_name_>ReadField</module_name_>
 					</module>
 					<state class_id="6" tracking_level="0" version="0">
 						<stateMap class_id="7" tracking_level="0" version="0">
@@ -26,7 +26,7 @@
 									<name>Filename</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/Fields/convert-examples/simple_cube_trisurf.pts</value>
+										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/Fields/simple_cube_trisurf.fld</value>
 									</value>
 								</second>
 							</item>
@@ -35,23 +35,23 @@
 				</second>
 			</item>
 			<item>
-				<first>ShowMesh:0</first>
+				<first>ShowField:33</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>Visualization</category_name_>
-						<module_name_>ShowMesh</module_name_>
+						<module_name_>ShowField</module_name_>
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>6</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
-									<name>Edge Transparency</name>
+									<name>EdgeTransparency</name>
 								</first>
 								<second>
-									<name>Edge Transparency</name>
+									<name>EdgeTransparency</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
@@ -60,10 +60,10 @@
 							</item>
 							<item>
 								<first>
-									<name>Face Transparency</name>
+									<name>FaceTransparency</name>
 								</first>
 								<second>
-									<name>Face Transparency</name>
+									<name>FaceTransparency</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
@@ -72,10 +72,10 @@
 							</item>
 							<item>
 								<first>
-									<name>Node Transparency</name>
+									<name>NodeTransparency</name>
 								</first>
 								<second>
-									<name>Node Transparency</name>
+									<name>NodeTransparency</name>
 									<value>
 										<which>3</which>
 										<value>0</value>
@@ -84,10 +84,10 @@
 							</item>
 							<item>
 								<first>
-									<name>Show edges</name>
+									<name>ShowEdges</name>
 								</first>
 								<second>
-									<name>Show edges</name>
+									<name>ShowEdges</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
@@ -96,13 +96,25 @@
 							</item>
 							<item>
 								<first>
-									<name>Show faces</name>
+									<name>ShowFaces</name>
 								</first>
 								<second>
-									<name>Show faces</name>
+									<name>ShowFaces</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowNodes</name>
+								</first>
+								<second>
+									<name>ShowNodes</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
@@ -111,7 +123,7 @@
 				</second>
 			</item>
 			<item>
-				<first>ViewScene:2</first>
+				<first>ViewScene:32</first>
 				<second>
 					<module>
 						<package_name_>SCIRun</package_name_>
@@ -131,41 +143,53 @@
 			<count>2</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>ReadMesh:1</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ShowMesh:0</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>ReadField:31</moduleId1_>
+				<port1_ class_id="14" tracking_level="0" version="0">
+					<name>Field</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ShowField:33</moduleId2_>
+				<port2_>
+					<name>Field</name>
+					<id>0</id>
+				</port2_>
 			</item>
 			<item>
-				<moduleId1_>ShowMesh:0</moduleId1_>
-				<port1_>0</port1_>
-				<moduleId2_>ViewScene:2</moduleId2_>
-				<port2_>0</port2_>
+				<moduleId1_>ShowField:33</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:32</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
 			</item>
 		</connections>
 	</networkInfo>
-	<modulePositions class_id="14" tracking_level="0" version="0">
+	<modulePositions class_id="15" tracking_level="0" version="0">
 		<count>3</count>
 		<item_version>0</item_version>
-		<item class_id="15" tracking_level="0" version="0">
-			<first>ReadMesh:1</first>
-			<second class_id="16" tracking_level="0" version="0">
-				<first>-1183</first>
-				<second>-712</second>
+		<item class_id="16" tracking_level="0" version="0">
+			<first>ReadField:31</first>
+			<second class_id="17" tracking_level="0" version="0">
+				<first>-1401</first>
+				<second>-448</second>
 			</second>
 		</item>
 		<item>
-			<first>ShowMesh:0</first>
+			<first>ShowField:33</first>
 			<second>
-				<first>-1198</first>
-				<second>-588</second>
+				<first>-1384</first>
+				<second>-341</second>
 			</second>
 		</item>
 		<item>
-			<first>ViewScene:2</first>
+			<first>ViewScene:32</first>
 			<second>
-				<first>-1212</first>
-				<second>-470</second>
+				<first>-1336</first>
+				<second>-247</second>
 			</second>
 		</item>
 	</modulePositions>

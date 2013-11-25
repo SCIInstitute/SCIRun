@@ -39,6 +39,7 @@
 #include <Modules/Basic/ReceiveTestMatrix.h>
 #include <Modules/Basic/SendTestMatrix.h>
 #include <Modules/Basic/PrintDatatype.h>
+#include <Modules/Basic/DynamicPortTester.h>
 #include <Modules/Math/EvaluateLinearAlgebraUnary.h>
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
@@ -69,7 +70,7 @@
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 
-#include <Dataflow/Network/Tests/SimpleSourceSink.h>
+#include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
 
 using namespace SCIRun::Dataflow::Networks;
@@ -123,10 +124,10 @@ namespace SCIRun {
           addModuleDesc<SolveLinearSystemModule>("SolveLinearSystem", "Math", "SCIRun", "Four multi-threaded algorithms available.", "...");
           addModuleDesc<CreateStringModule>("CreateString", "String", "SCIRun", "Functional, needs GUI work.", "...");
           //addModuleDesc<ShowStringModule>("ShowString", "String", "SCIRun", "...", "...");
-          addModuleDesc<ShowFieldModule>("ShowField", "Visualization", "SCIRun", "Some basic options available, still work in progress.", "...");
+          addModuleDesc<ShowFieldModule>("Some basic options available, still work in progress.", "...");
           addModuleDesc<CreateLatVol>("CreateLatVol", "NewField", "SCIRun", "Official ported v4 module.", "...");
           //addModuleDesc<FieldToMesh>("FieldToMesh", "MiscField", "SCIRun", "New, working.", "Returns underlying mesh from a field.");
-          addModuleDesc<ViewScene>("ViewScene", "Render", "SCIRun", "Can display meshes and fields, pan/rotate/zoom.", "...");
+          addModuleDesc<ViewScene>("Can display meshes and fields, pan/rotate/zoom.", "...");
 
           addModuleDesc<GetFieldBoundary>("GetFieldBoundary", "NewField", "SCIRun", "First real ported module", "...");
           addModuleDesc<CalculateSignedDistanceToField>("CalculateSignedDistanceToField", "ChangeFieldData", "SCIRun", "Second real ported module", "...");
@@ -148,6 +149,7 @@ namespace SCIRun {
             addModuleDesc<ReceiveTestMatrixModule>("ReceiveTestMatrix", "Testing", "SCIRun", "...", "...");
             addModuleDesc<MatrixAsVectorFieldModule>("MatrixAsVectorField", "Testing", "SCIRun", "...", "...");
             addModuleDesc<CreateScalarFieldDataBasic>("CreateScalarFieldDataBasic", "Testing", "SCIRun", "Set field data via python.", "...");
+            addModuleDesc<DynamicPortTester>("DynamicPortTester", "Testing", "SCIRun", "...", "...");
           }
         }
 
@@ -170,14 +172,17 @@ namespace SCIRun {
         Lookup lookup_;
         bool includeTestingModules_;
 
+        //TODO: remove this function and use static MLI from each module
         template <class ModuleType>
         void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)
         {
-          ModuleLookupInfo info;
-          info.module_name_ = name;
-          info.package_name_ = package;
-          info.category_name_ = category;
+          ModuleLookupInfo info(name, category, package);
+          addModuleDesc<ModuleType>(info, status, desc);
+        }
 
+        template <class ModuleType>
+        void addModuleDesc(const ModuleLookupInfo& info, const std::string& status, const std::string& desc)
+        {
           ModuleDescription description;
           description.lookupInfo_ = info;
 
@@ -190,6 +195,12 @@ namespace SCIRun {
           lookup_[info] = description;
 
           descMap_[info.package_name_][info.category_name_][info.module_name_] = description;
+        }
+
+        template <class ModuleType>
+        void addModuleDesc(const std::string& status, const std::string& desc)
+        {
+          addModuleDesc<ModuleType>(ModuleType::staticInfo_, status, desc);
         }
       };
 
@@ -229,16 +240,12 @@ ModuleHandle HardCodedModuleFactory::create(const ModuleDescription& desc)
 
   BOOST_FOREACH(const InputPortDescription& input, desc.input_ports_)
   {
-    builder.add_input_port(Port::ConstructionParams(input.name, input.datatype));
+    builder.add_input_port(Port::ConstructionParams(input.id, input.datatype, input.isDynamic));
   }
   BOOST_FOREACH(const OutputPortDescription& output, desc.output_ports_)
   {
-    builder.add_output_port(Port::ConstructionParams(output.name, output.datatype));
+    builder.add_output_port(Port::ConstructionParams(output.id, output.datatype, output.isDynamic));
   }
-
-  //TODO: eliminate
-  if (desc.lookupInfo_.module_name_.find("ComputeSVD") != std::string::npos)
-    builder.disable_ui();
 
   ModuleHandle module = builder.build();
 

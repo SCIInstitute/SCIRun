@@ -43,7 +43,7 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -E [ --Execute ]      executes the given network on startup and quits when \n"
     "                        done\n"
     "  -d [ --datadir ] arg  scirun data directory--TODO\n"
-    "  -r [ --regression ]   regression test a network--TODO\n"
+    "  -r [ --regression ]   regression test a network\n"
     "  -l [ --logfile ] arg  add output messages to a logfile--TODO\n"
     "  -i [ --interactive ]  interactive mode--TODO\n"
     "  -x [ --headless ]     disable GUI (Qt still needed, for now)\n"

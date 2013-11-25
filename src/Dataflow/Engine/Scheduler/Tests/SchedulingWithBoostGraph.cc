@@ -144,6 +144,7 @@ protected:
 
   void setupBasicNetwork()
   {
+    Module::resetInstanceCount();
     //Test network:
     /* 
     send m1(0)          send m2(0)

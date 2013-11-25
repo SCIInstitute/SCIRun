@@ -36,6 +36,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/ModuleFactory.h>
+#include <Core/Utils/Exception.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
@@ -78,8 +79,8 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
 {
   ModuleHandle outputModule = out.first;
   ModuleHandle inputModule = in.first;
-  size_t outputPortIndex = out.second;
-  size_t inputPortIndex = in.second;
+  auto outputPortId = out.second;
+  auto inputPortId = in.second;
 
   ENSURE_NOT_NULL(outputModule, "cannot connect null output module");
   ENSURE_NOT_NULL(inputModule, "cannot connect null input module");
@@ -87,43 +88,34 @@ ConnectionId Network::connect(const ConnectionOutputPort& out, const ConnectionI
   // assure that the ports are not altered while connecting
   //m1->oports_.lock();
   //m2->iports_.lock();
-
-  // dynamic port safeguard.
-  //if (m2->lastportdynamic_ && p2 >= m2->iports_.size()) {
-  //  p2 = m2->iports_.size() - 1;
-  //}
-
-  if (outputPortIndex >= outputModule->num_output_ports() || inputPortIndex >= inputModule->num_input_ports())
+  
+  if (!outputModule->hasOutputPort(outputPortId))
   {
-    //TODO: log
-    //std::cout << "TODO: ERROR OR NOT?: connection not available, ports do not exist!" << std::endl;
-    return ConnectionId("");
+    std::ostringstream ostr;
+    ostr << "Unknown output port: " << outputPortId;
+    THROW_INVALID_ARGUMENT(ostr.str());
+  }
+  if (!inputModule->hasInputPort(inputPortId))
+  {
+    std::ostringstream ostr;
+    ostr << "Unknown input port: " << inputPortId;
+    THROW_INVALID_ARGUMENT(ostr.str());
   }
 
   ConnectionId id = ConnectionId::create(ConnectionDescription(
-    OutgoingConnectionDescription(outputModule->get_id(), outputPortIndex), 
-    IncomingConnectionDescription(inputModule->get_id(), inputPortIndex)));
+    OutgoingConnectionDescription(outputModule->get_id(), outputPortId), 
+    IncomingConnectionDescription(inputModule->get_id(), inputPortId)));
   if (connections_.find(id) == connections_.end())
   {
     try
     {
-      ConnectionHandle conn(boost::make_shared<Connection>(outputModule, outputPortIndex, inputModule, inputPortIndex, id));
-
-      //lock.lock();
+      ConnectionHandle conn(boost::make_shared<Connection>(outputModule->getOutputPort(outputPortId), inputModule->getInputPort(inputPortId), id));
 
       connections_[id] = conn;
 
-      // Reschedule next time we can.
-      //reschedule=1;
-
-      //lock.unlock();
-
-      //m1->oports_.unlock();
-      //m2->iports_.unlock();
-
       return id;
     }
-    catch (const std::invalid_argument& e)
+    catch (const SCIRun::Core::ExceptionBase& e)
     {
       std::cout << "Caught exception making a connection: " << e.what() << std::endl;
       ///????????
@@ -227,4 +219,12 @@ void Network::incrementErrorCode(const ModuleId& moduleId)
 NetworkGlobalSettings& Network::settings()
 {
   return settings_;
+}
+
+ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
+{
+}
+
+ConnectionInputPort::ConnectionInputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->inputPorts().at(index)->id())
+{
 }

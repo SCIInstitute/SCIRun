@@ -35,8 +35,11 @@ using namespace SCIRun::Modules::Render;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-ViewScene::ViewScene() : Module(ModuleLookupInfo("ViewScene", "Render", "SCIRun"))
+ModuleLookupInfo ViewScene::staticInfo_("ViewScene", "Render", "SCIRun");
+
+ViewScene::ViewScene() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(GeneralGeom);
 }
 
 void ViewScene::setStateDefaults()
@@ -62,14 +65,10 @@ void ViewScene::execute()
   // thread where they will be transported to Spire.
   // NOTE: I'm not implementing mutex locks for this now. But for production
   // purposes, they NEED to be in there!
-  boost::shared_ptr<GeometryObject> geom1 = getRequiredInput(GeneralGeom1);
-  boost::optional<boost::shared_ptr<GeometryObject>> geom2 = getOptionalInput(GeneralGeom2);
+  auto geoms = getRequiredDynamicInputs(GeneralGeom);
 
   boost::shared_ptr<std::list<boost::shared_ptr<GeometryObject>>> list(
-      new std::list<boost::shared_ptr<GeometryObject>>());
-  list->push_back(geom1);
-  if (geom2)
-    list->push_back(*geom2);
+      new std::list<boost::shared_ptr<GeometryObject>>(geoms.begin(), geoms.end()));
 
   // Pass geometry object up through transient... really need to be concerned
   // about the lifetimes of the buffers we have in GeometryObject. Need to

@@ -43,6 +43,8 @@ NetworkEditorControllerGuiProxy::NetworkEditorControllerGuiProxy(boost::shared_p
   controller_->connectModuleRemoved(boost::bind(&NetworkEditorControllerGuiProxy::moduleRemoved, this, _1));
   controller_->connectConnectionAdded(boost::bind(&NetworkEditorControllerGuiProxy::connectionAdded, this, _1));
   controller_->connectConnectionRemoved(boost::bind(&NetworkEditorControllerGuiProxy::connectionRemoved, this, _1));
+  controller_->connectPortAdded(boost::bind(&NetworkEditorControllerGuiProxy::portAdded, this, _1, _2));
+  controller_->connectPortRemoved(boost::bind(&NetworkEditorControllerGuiProxy::portRemoved, this, _1, _2));
   controller_->connectNetworkExecutionStarts([&]() { executionStarted(); });
   controller_->connectNetworkExecutionFinished(boost::bind(&NetworkEditorControllerGuiProxy::executionFinished, this, _1));
 }
@@ -115,4 +117,9 @@ void NetworkEditorControllerGuiProxy::connectNewModule(const SCIRun::Dataflow::N
 const ModuleDescriptionMap& NetworkEditorControllerGuiProxy::getAllAvailableModuleDescriptions() const
 {
   return controller_->getAllAvailableModuleDescriptions();
+}
+
+boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorControllerGuiProxy::createDynamicPortSwitch()
+{
+  return controller_->createDynamicPortSwitch();
 }
