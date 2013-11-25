@@ -48,6 +48,7 @@
 #include <Interface/Modules/Render/share.h>
 
 //TODO: needs to inherit from ModuleWidget somehow
+class QToolBar;
 
 namespace SCIRun {
 namespace Gui {
@@ -73,8 +74,10 @@ protected:
   virtual void closeEvent(QCloseEvent *evt) override;
 private:
   void addToolBar();
-  GLWidget*                    mGLWidget;  ///< GL widget containing context.
-  std::weak_ptr<SRInterface>   mSpire;     ///< Instance of Spire.
+
+  GLWidget*                     mGLWidget;  ///< GL widget containing context.
+  std::weak_ptr<SRInterface>    mSpire;     ///< Instance of Spire.
+  QToolBar*                     mToolBar;   ///< Tool bar.
 
 };
 

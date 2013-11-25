@@ -118,21 +118,21 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
-  auto tools = new QToolBar(this);
+  mToolBar = new QToolBar(this);
   auto menu = new QComboBox(this);
   menu->addItem("Legacy Mouse Control");
   menu->addItem("New Mouse Control");
 
-  tools->addWidget(menu);
-  tools->addSeparator();
+  mToolBar->addWidget(menu);
+  mToolBar->addSeparator();
 
   QPushButton* autoViewBtn = new QPushButton(this);
   autoViewBtn->setText("Auto View");
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
-  tools->addWidget(autoViewBtn);
+  mToolBar->addWidget(autoViewBtn);
 
-  glLayout->addWidget(tools);
+  glLayout->addWidget(mToolBar);
 
   connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
 }
