@@ -26,30 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
+#define MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-CalculateVectorMagnitudes::CalculateVectorMagnitudes()
-  : Module(ModuleLookupInfo("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun"), false)
-{
-  INITIALIZE_PORT(ScalarField);
-  INITIALIZE_PORT(VectorField);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-void CalculateVectorMagnitudes::execute()
-{
-  FieldHandle input = getRequiredInput(ScalarField);
+      class SCISHARE CalculateVectorMagnitudes : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        CalculateVectorMagnitudes();
 
-  //inputs_changed_ || !oport_cached("Field")
-  if(needToExecute())
-  {
-    update_state(Executing);
+        virtual void execute();
+        virtual void setStateDefaults() {}
 
-    auto output = algo().run_generic(make_input((ScalarField, input)));
+        INPUT_PORT(0, VectorField, LegacyField);
+        OUTPUT_PORT(0, ScalarField, LegacyField);
+      };
 
-    sendOutputFromAlgorithm(VectorField, output);
+    }
   }
 }
+
+#endif

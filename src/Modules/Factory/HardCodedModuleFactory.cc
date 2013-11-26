@@ -52,6 +52,7 @@
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
 #include <Modules/Legacy/Fields/CalculateGradients.h>
+#include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h>
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
@@ -165,7 +166,9 @@ namespace SCIRun {
           addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
           addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
           addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
-        }
+          addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
+        
+	}
 
         ModuleDescriptionMap descMap_;
 

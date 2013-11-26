@@ -32,6 +32,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   CreateLatVol.h
   GetFieldBoundary.h
   CalculateGradients.h
+  CalculateVectorMagnitudes.h
   CalculateSignedDistanceToField.h
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
@@ -130,7 +131,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CalculateMeshNodes.cc
   #QueryFieldData.cc
   #TransformMeshWithTransform.cc
-  #CalculateVectorMagnitudes.cc
+  CalculateVectorMagnitudes.cc
   #GenerateLinearSegments.cc
   #CalculateDistanceToField.cc
   #CalculateDistanceToFieldBoundary.cc

@@ -32,7 +32,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
   FieldData/CalculateGradientsAlgo.h               
-  #FieldData/CalculateVectorMagnitudes.h        
+  FieldData/CalculateVectorMagnitudesAlgo.h
   #FieldData/ConvertMappingMatrixToFieldData.h
   #FieldData/ConvertFieldDataType.h             
   #FieldData/ConvertFieldBasisType.h            
@@ -79,7 +79,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DomainFields/SplitFieldByDomain.cc
   FieldData/CalculateGradientsAlgo.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
-  #FieldData/CalculateVectorMagnitudes.cc
+  FieldData/CalculateVectorMagnitudesAlgo.cc
   #FieldData/CalculateFieldDataMetric.cc
   #FieldData/ConvertFieldDataType.cc
   #FieldData/ConvertFieldBasisType.cc

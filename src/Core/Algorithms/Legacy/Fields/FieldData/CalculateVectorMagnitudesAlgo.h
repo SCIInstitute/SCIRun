@@ -26,30 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CALCULATEVECTORMAGNITUDESALGO_H
+#define CORE_ALGORITHMS_FIELDS_FIELDDATA_CALCULATEVECTORMAGNITUDESALGO_H 1
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-CalculateVectorMagnitudes::CalculateVectorMagnitudes()
-  : Module(ModuleLookupInfo("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun"), false)
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+
+class SCISHARE CalculateVectorMagnitudesAlgo : public AlgorithmBase
 {
-  INITIALIZE_PORT(ScalarField);
-  INITIALIZE_PORT(VectorField);
-}
+  public:
+    CalculateVectorMagnitudesAlgo()
+    {
+    }
+  
+    bool run(FieldHandle input, FieldHandle& output) const;
 
-void CalculateVectorMagnitudes::execute()
-{
-  FieldHandle input = getRequiredInput(ScalarField);
+    static AlgorithmOutputName ScalarField;
+    static AlgorithmInputName VectorField;
 
-  //inputs_changed_ || !oport_cached("Field")
-  if(needToExecute())
-  {
-    update_state(Executing);
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+};
 
-    auto output = algo().run_generic(make_input((ScalarField, input)));
+}}}}
 
-    sendOutputFromAlgorithm(VectorField, output);
-  }
-}
+#endif

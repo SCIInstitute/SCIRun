@@ -31,6 +31,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
@@ -114,6 +115,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new BuildTDCSMatrixAlgo);
   else if (name == "AddKnownsToLinearSystem")
     h.reset(new AddKnownsToLinearSystemAlgo);  
+  else if (name == "CalculateVectorMagnitudes")
+    h.reset(new CalculateVectorMagnitudesAlgo); 
     
   if (h && algoCollaborator)
   {

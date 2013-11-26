@@ -27,7 +27,7 @@
 */
 
 
-#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -39,85 +39,90 @@ using namespace SCIRun::Core::Utility;
 using namespace SCIRun::Core::Algorithms;
 
 bool
-CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
+CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
 {
-  ScopedAlgorithmStatusReporter asr(this, "CalculateGradients");
+  ScopedAlgorithmStatusReporter asr(this, "CalculateVectorMagnitudes");
   if (!input)
   {
     error("No input field");
     return (false);
   }
-  
+ 
   FieldInformation fi(input);
-
-  if (fi.is_pointcloudmesh())
-  {
-    error("Cannot calculate gradients for a point cloud");
-    return (false);    
-  }
-
+  
   if (fi.is_nodata())
   {
     error("Input field does not have data associated with it");
     return (false);    
   }
-
-  if (!(fi.is_scalar()))
+  
+  if (!fi.is_vector())
   {
-    error("The data needs to be of scalar type to calculate gradients");
+    error("The data needs to be of vector type to calculate vector magnitudes");
     return (false);    
   }
-
-  fi.make_vector();
+  
+  //check if number of field matches number of nodes,face or cell elements ????
+  
+  fi.make_scalar();
   fi.make_constantdata();
   output = CreateField(fi,input->mesh());
-
+  
   if (!output)
   {
     error("Could not allocate output field");
     return (false);      
   }
-
+  
+  StackVector<double,3> grad;
   VField* ifield = input->vfield();
   VField* ofield = output->vfield();
   VMesh*  imesh  = input->vmesh();
   
-  ofield->resize_values();
-  
-  VMesh::coords_type coords;
-  imesh->get_element_center(coords);
-  
   VField::size_type num_elems = imesh->num_elems();
-  int cnt = 0;  //Moritz, 11/26/13
-  StackVector<double,3> grad;
+  
+  Vector* vec = reinterpret_cast<Vector*>(ifield->get_values_pointer());
+  double* mag = reinterpret_cast<double*>(ofield->get_values_pointer());
+  
+  if (!vec)
+  {
+   error("Could not acces input field pointer");
+   return (false); 
+  }
+  
+  if (!mag)
+  {
+   error("Could not acces output field pointer");
+   return (false); 
+  }
+  
+  int cnt = 0;
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
   {
-    ifield->gradient(grad,coords,idx);    
-    Vector v(grad[0],grad[1],grad[2]);
-    ofield->set_value(v,idx); 
-    cnt++; //Moritz, 11/26/13, begin
-    if (cnt == 400) 
-    {
+   mag[idx] = vec[idx].length();
+   cnt++; 
+   if (cnt == 400) 
+      {
         cnt = 0; 
         update_progress_max(idx,num_elems); 
-    }  //Moritz, 11/26/13, end
+      }
   }
 
   return (true);
 }
 
-AlgorithmInputName CalculateGradientsAlgo::ScalarField("ScalarField");
-AlgorithmOutputName CalculateGradientsAlgo::VectorField("VectorField");
+AlgorithmOutputName CalculateVectorMagnitudesAlgo::ScalarField("ScalarField");
+AlgorithmInputName CalculateVectorMagnitudesAlgo::VectorField("VectorField");
 
-AlgorithmOutput CalculateGradientsAlgo::run_generic(const AlgorithmInput& input) const
+AlgorithmOutput CalculateVectorMagnitudesAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto field = input.get<Field>(ScalarField);
+  auto field = input.get<Field>(VectorField);
 
-  FieldHandle gradient;
-  if (!run(field, gradient))
+  FieldHandle vectormagnitude;
+  if (!run(field, vectormagnitude))
     THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;
-  output[VectorField] = gradient;
+  output[ScalarField] = vectormagnitude;
   return output;
 }
