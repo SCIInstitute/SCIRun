@@ -27,16 +27,38 @@
 */
 
 /// \author James Hughes
-/// \date   October 2013
+/// \date   March 2013
 
-#ifndef __SCIRUN_SPIRE_NAMESPACES_H
-#define __SCIRUN_SPIRE_NAMESPACES_H
+#ifndef SPIRE_APPSPECIFIC_SCIRUN_SRCOMMONATTRIBUTES_H
+#define SPIRE_APPSPECIFIC_SCIRUN_SRCOMMONATTRIBUTES_H
 
-// 'Forward declaration' of namespaces.
-namespace CPM_SPIRE_NS {}
+#include <tuple>
 
-// Renaming namespaces in our top level.
-namespace spire = CPM_SPIRE_NS;
+#include "../namespaces.h"
+#include "spire/src/ShaderUniformStateManTemplates.h"
+
+namespace SCIRun {
+namespace Gui {
+
+/// Common uniforms used by Spire.
+/// \todo Look into the ability to rename these uniforms in the future. This is
+/// so that Spire can adapt to other code bases.
+class SRCommonAttributes
+{
+public:
+  SRCommonAttributes()          {}
+  virtual ~SRCommonAttributes() {}
+  
+  //----------------------------------------------------------------------------
+  // Common transformations
+  //----------------------------------------------------------------------------
+
+  static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToWorldTrafo()
+  {return std::make_pair("objToWorld", spire::UNIFORM_FLOAT_MAT4);}
+
+};
+
+} // namespace Gui
+} // namespace SCIRun 
 
 #endif 
-

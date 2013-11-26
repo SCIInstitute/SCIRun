@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2013 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,17 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   October 2013
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World
 
-#ifndef __SCIRUN_SPIRE_NAMESPACES_H
-#define __SCIRUN_SPIRE_NAMESPACES_H
+// Attributes
+attribute vec3  aPos;
+attribute vec3  aNormal;
 
-// 'Forward declaration' of namespaces.
-namespace CPM_SPIRE_NS {}
+// Outputs to the fragment shader.
+varying vec3    vNormal;
 
-// Renaming namespaces in our top level.
-namespace spire = CPM_SPIRE_NS;
-
-#endif 
-
+void main( void )
+{
+  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
+  // was generated in gamma space, and we need to convert it to linear space.
+  vNormal  = vec3(uObject * vec4(aNormal, 0.0));
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+}

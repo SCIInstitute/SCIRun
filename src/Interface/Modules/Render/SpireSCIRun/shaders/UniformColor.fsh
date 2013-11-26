@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2013 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -25,18 +25,18 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+#ifdef OPENGL_ES
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    // Default precision
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
+#endif
 
-/// \author James Hughes
-/// \date   October 2013
+varying vec4	fColor;
 
-#ifndef __SCIRUN_SPIRE_NAMESPACES_H
-#define __SCIRUN_SPIRE_NAMESPACES_H
-
-// 'Forward declaration' of namespaces.
-namespace CPM_SPIRE_NS {}
-
-// Renaming namespaces in our top level.
-namespace spire = CPM_SPIRE_NS;
-
-#endif 
-
+void main()
+{
+	gl_FragColor 		= fColor;
+}

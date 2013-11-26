@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2013 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
 
@@ -26,17 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   October 2013
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
+uniform vec4    uColor;             // Uniform color
 
-#ifndef __SCIRUN_SPIRE_NAMESPACES_H
-#define __SCIRUN_SPIRE_NAMESPACES_H
+// Attributes
+attribute vec3  aPos;
 
-// 'Forward declaration' of namespaces.
-namespace CPM_SPIRE_NS {}
+// Outputs to the fragment shader.
+varying vec4    fColor;
 
-// Renaming namespaces in our top level.
-namespace spire = CPM_SPIRE_NS;
-
-#endif 
-
+void main( void )
+{
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  fColor      = uColor;
+}
