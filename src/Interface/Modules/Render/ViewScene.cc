@@ -77,7 +77,10 @@ ViewSceneDialog::~ViewSceneDialog()
 //------------------------------------------------------------------------------
 void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 {
-  glLayout->removeWidget(mGLWidget);
+  // NOTE: At one point this was required because the renderer was
+  // multi-threaded. It is likely we will run into the same issue in the
+  // future. Kept for future reference.
+  //glLayout->removeWidget(mGLWidget);
 }
 
 //------------------------------------------------------------------------------
