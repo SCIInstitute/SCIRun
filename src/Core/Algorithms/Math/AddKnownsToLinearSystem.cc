@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : 10/24/2013 converted from SCIRun4 and improved
+   Last modification : 10/24/2013 ported from SCIRun4 and slightly improved
 */
 
 
@@ -68,7 +68,6 @@ DenseColumnMatrixHandle& output_rhs) const
     } 
        
     unsigned int m=static_cast<unsigned int>(stiff->ncols()),n=static_cast<unsigned int>(stiff->nrows());
-    std::cout << ": " << rhs->ncols() << " " <<  (*rhs).coeff(1) << std::endl;
     if (!rhs) 
       {
         THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate new b matrix");  
@@ -95,35 +94,32 @@ DenseColumnMatrixHandle& output_rhs) const
        
      index_type cnt = 0;
  
-     index_type knowns = 0;
-     index_type unknowns = 0;
+     // index_type knowns = 0;
+     // index_type unknowns = 0;
      
      
      for (index_type p=0; p<m;p++)
      {
       if (IsFinite((*x).coeff(p)))
       {  
-        std::cout << "1-2: " << p << std::endl;
-        knowns++;
+        //knowns++;
 	for (index_type i=0; i<m; i++)
 	{
 	  if (i!=p) 
 	  {
 	   (*rhsCol).coeffRef(i) -= (*stiff).coeff(i,p) * (*xCol).coeff(p); 
 	    additionalData[i][p]=0.0;
-	    std::cout << "1: " << i << " " << p << std::endl;
 	  }
 	  else
 	  {          
 	   (*rhsCol)[p] = (*xCol).coeff(p);
 	    additionalData[p][p]=1.0; 
-	    std::cout << "2: " << p << " " << p << std::endl;
 	  }	    
 	}	           
-      } else
+      } /*else
       {
         unknowns++;
-      }
+      }*/
       cnt++;
       if (cnt == 10)
       {

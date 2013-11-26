@@ -34,7 +34,7 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -1210,12 +1210,25 @@ AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) 
   auto lhs = input.get<SparseRowMatrix>(Variables::LHS);
   auto rhs = input.get<DenseColumnMatrix>(Variables::RHS);
 
+  if (isPositiveDefiniteMatrix(*lhs)) THROW_ALGORITHM_PROCESSING_ERROR("Error: LHS is not positive definite!");
+  
   DenseColumnMatrixHandle solution;
-  bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
-  if (!success)
+  
+  SparseRowMatrixHandle matrix = matrix_cast::as_sparse(rhs);
+  if (matrix->nonZeros()>0) 
   {
+   bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
+   if (!success)
+   {
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
+   }
+  } else
+  {
+   if  (matrix->nrows()==1 || matrix->ncols()==1) 
+          solution = boost::make_shared<DenseColumnMatrix>(matrix->nrows()*matrix->ncols()); //trivial null solution
+	   else  THROW_ALGORITHM_PROCESSING_ERROR("Error: RHS is a not vector!");
   }
+  
   AlgorithmOutput output;
   output[Variables::Solution] = solution;
   return output;
