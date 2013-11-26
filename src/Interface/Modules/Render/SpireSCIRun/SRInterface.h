@@ -160,6 +160,7 @@ private:
   MouseMode                 mMouseMode;
 
   float                     mCamDistance;   ///< Camera's distance from the origin.
+  float                     mCamDistanceDown; ///< Camera's distance when mouse was pressed.
 
   size_t                    mScreenWidth;   ///< Screen width in pixels.
   size_t                    mScreenHeight;  ///< Screen height in pixels.

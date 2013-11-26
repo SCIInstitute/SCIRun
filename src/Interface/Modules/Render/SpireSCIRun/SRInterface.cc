@@ -128,6 +128,7 @@ void SRInterface::inputMouseDown(const glm::ivec2& pos, MouseButton btn)
   // Translation variables.
   mCamAccumPosDown  = mCamAccumPosNow;
   mTransClick       = calculateScreenSpaceCoords(pos);
+  mCamDistanceDown  = mCamDistance;
 
   auto translate    = [=]() {};
   auto zoom         = [=]() {};
@@ -176,6 +177,11 @@ void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
     // Will need a new variable to control this.
     spire::V2 curTrans = calculateScreenSpaceCoords(pos);
     spire::V2 delta = curTrans - mTransClick;
+    float xScale = 4.0f;
+    float yScale = 4.0f;
+    mCamDistance = mCamDistanceDown + (delta.x) * xScale + (-delta.y) * yScale;
+
+    buildAndApplyCameraTransform();
   };
   auto rotateCenter = [=]()
   {
@@ -203,9 +209,12 @@ void SRInterface::inputMouseMove(const glm::ivec2& pos, MouseButton btn)
 //------------------------------------------------------------------------------
 void SRInterface::inputMouseWheel(int32_t delta)
 {
-  // Reason why we subtract: Feels more natural to me =/.
-  mCamDistance -= static_cast<float>(delta) / 100.0f;
-  buildAndApplyCameraTransform();
+  if (mMouseMode != MOUSE_OLDSCIRUN)
+  {
+    // Reason why we subtract: Feels more natural to me =/.
+    mCamDistance -= static_cast<float>(delta) / 100.0f;
+    buildAndApplyCameraTransform();
+  }
 }
 
 //------------------------------------------------------------------------------
