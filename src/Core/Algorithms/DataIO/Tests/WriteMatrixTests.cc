@@ -185,12 +185,12 @@ namespace
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
 {
-  auto sparse4 = readSparseMatrixFile("E:\\sparse_v4.mat");
+  auto sparse4 = readSparseMatrixFile(TestResources::rootDir() / "sparse_v4.mat");
   ASSERT_TRUE(sparse4.get() != nullptr);
   EXPECT_EQ(5, sparse4->nrows());
   EXPECT_EQ(6, sparse4->ncols());
   
-  auto v5file = "E:\\sparse_v5.mat";
+  auto v5file = TestResources::rootDir() / "sparse_v5.mat";
   writeMatrixToFile(sparse4, v5file);
 
   auto sparse5 = readSparseMatrixFile(v5file);
@@ -201,12 +201,12 @@ TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileSparse)
 
 TEST(WriteMatrixAlgorithmTest, RoundTripRealBinaryFileDense)
 {
-  auto dense4 = readDenseMatrixFile("E:\\dense_v4.mat");
+  auto dense4 = readDenseMatrixFile(TestResources::rootDir() / "dense_v4.mat");
   ASSERT_TRUE(dense4.get() != nullptr);
   EXPECT_EQ(5, dense4->nrows());
   EXPECT_EQ(6, dense4->ncols());
   
-  auto v5file = "E:\\dense_v5.mat";
+  auto v5file = TestResources::rootDir() / "dense_v5.mat";
   writeMatrixToFile(dense4, v5file);
 
   auto dense5 = readDenseMatrixFile(v5file);
