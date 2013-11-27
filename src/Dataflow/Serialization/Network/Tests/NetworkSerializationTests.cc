@@ -166,7 +166,7 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   NetworkEditorController controller(mf, ModuleStateFactoryHandle(), ExecutionStrategyFactoryHandle(), AlgorithmFactoryHandle());
-  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle(), 0);
+  NetworkXMLConverter converter(mf, ModuleStateFactoryHandle(), AlgorithmFactoryHandle(), &controller);
   NetworkHandle network = converter.from_xml_data(networkXML);
   ASSERT_TRUE(network.get() != nullptr);
   auto xml2 = converter.to_xml_data(network);
@@ -181,6 +181,7 @@ TEST(SerializeNetworkTest, RoundTripObject)
 
 TEST(SerializeNetworkTest, FullTestWithModuleState)
 {
+  Module::resetInstanceCount();
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
   ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
