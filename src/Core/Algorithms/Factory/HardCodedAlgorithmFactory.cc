@@ -36,6 +36,7 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
+#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
@@ -117,7 +118,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new AddKnownsToLinearSystemAlgo);  
   else if (name == "CalculateVectorMagnitudes")
     h.reset(new CalculateVectorMagnitudesAlgo); 
-    
+  else if (name == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+    h.reset(new GetMeshDataAlgo);
+       
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

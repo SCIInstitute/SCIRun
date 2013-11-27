@@ -140,7 +140,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CalculateInsideWhichField.cc
   #ConvertIndicesToFieldData.cc
   #CreateFieldData.cc
-  #GetFieldData.cc
+  GetFieldData.cc
   #SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc

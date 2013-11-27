@@ -26,34 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetFieldData.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef MODULES_LEGACY_FIELDS_GetFieldData_H__
+#define MODULES_LEGACY_FIELDS_GetFieldData_H__
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-GetFieldData::GetFieldData()
-  : Module(ModuleLookupInfo("GetFieldData", "ChangeMesh", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(MatrixNodes);
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-void GetFieldData::execute()
-{
-  FieldHandle input = getRequiredInput(InputField);
+      class SCISHARE GetFieldData : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        GetFieldData();
 
-  //NO Nrrd support yet !!!
+        virtual void execute();
+        virtual void setStateDefaults() {}
 
-  //inputs_changed_ || !oport_cached("Matrix Nodes")
-  if (needToExecute())
-  {    
-    update_state(Executing);
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, MatrixNodes, Matrix);
+      };
 
-    auto output = algo().run_generic(make_input((InputField, input)));
-
-    sendOutputFromAlgorithm(MatrixNodes, output);
+    }
   }
 }
+
+#endif

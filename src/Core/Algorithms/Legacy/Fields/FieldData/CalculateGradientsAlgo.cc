@@ -88,7 +88,17 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
   imesh->get_element_center(coords);
   
   VField::size_type num_elems = imesh->num_elems();
-  int cnt = 0;  //Moritz, 11/26/13
+  
+  VField::size_type num_nodes = imesh->num_nodes(); //Moritz, 11/26/13, begin
+  VField::size_type num_fielddata = ifield->num_values();
+  
+  if ( num_fielddata!=num_nodes &&  num_fielddata!=num_elems)
+  {
+    error("Input data inconsistent");
+    return (false);
+  }  
+  int cnt = 0;  //Moritz, 11/26/13, end
+  
   StackVector<double,3> grad;
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
   {

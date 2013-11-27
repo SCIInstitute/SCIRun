@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : 10/24/2013 ported from SCIRun4 and slightly improved
+   Last modification : 10/24/2013 ported from SCIRun4
 */
 
 

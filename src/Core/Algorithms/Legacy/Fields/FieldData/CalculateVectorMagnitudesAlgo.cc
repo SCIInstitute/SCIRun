@@ -80,6 +80,14 @@ CalculateVectorMagnitudesAlgo::run(FieldHandle input, FieldHandle& output) const
   VMesh*  imesh  = input->vmesh();
   
   VField::size_type num_elems = imesh->num_elems();
+  VField::size_type num_nodes = imesh->num_nodes();
+  VField::size_type num_fielddata = ifield->num_values();
+  
+  if ( num_fielddata!=num_nodes &&  num_fielddata!=num_elems)
+  {
+    error("Input data inconsistent");
+    return (false);
+  }
   
   Vector* vec = reinterpret_cast<Vector*>(ifield->get_values_pointer());
   double* mag = reinterpret_cast<double*>(ofield->get_values_pointer());

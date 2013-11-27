@@ -47,6 +47,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   TransformMesh/AlignMeshBoundingBoxes.h
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
+  MeshData/GetMeshData.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -120,6 +121,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MergeFields/JoinFields.cc
   MeshData/GetMeshNodes.cc
   MeshData/SetMeshNodes.cc
+  MeshData/GetMeshData.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
   #MeshData/GetMeshQualityField.cc

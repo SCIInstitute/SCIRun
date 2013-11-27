@@ -26,34 +26,32 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/Legacy/Fields/GetFieldData.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
+#ifndef CORE_ALGORITHMS_FIELDS_MESHDATA_GETFIELDDATA_H
+#define CORE_ALGORITHMS_FIELDS_MESHDATA_GETFIELDDATA_H 1
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-GetFieldData::GetFieldData()
-  : Module(ModuleLookupInfo("GetFieldData", "ChangeMesh", "SCIRun"), false)
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
+
+class SCISHARE GetMeshDataAlgo : public AlgorithmBase
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(MatrixNodes);
-}
+  public:
+    GetMeshDataAlgo()
+    {}
+    
+    bool run(FieldHandle& input, Datatypes::DenseMatrixHandle& output) const; 
+    bool GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
+    bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
+    bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
 
-void GetFieldData::execute()
-{
-  FieldHandle input = getRequiredInput(InputField);
+    static AlgorithmOutputName MatrixFieldData;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+};
 
-  //NO Nrrd support yet !!!
+}}}}
 
-  //inputs_changed_ || !oport_cached("Matrix Nodes")
-  if (needToExecute())
-  {    
-    update_state(Executing);
-
-    auto output = algo().run_generic(make_input((InputField, input)));
-
-    sendOutputFromAlgorithm(MatrixNodes, output);
-  }
-}
+#endif
