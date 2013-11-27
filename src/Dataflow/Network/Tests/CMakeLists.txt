@@ -56,5 +56,6 @@ TARGET_LINK_LIBRARIES(Dataflow_Network_Tests
   gtest_main
   gtest
   gmock
+  gmock_main
 )
 

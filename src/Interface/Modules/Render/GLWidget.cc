@@ -59,37 +59,13 @@ GLWidget::GLWidget(QtGLContext* context) :
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
-#ifdef SPIRE_USE_STD_THREADS
-  mGraphics = std::shared_ptr<spire_sr::SRInterface>(
-      new spire_sr::SRInterface(
+  mGraphics = std::shared_ptr<SRInterface>(
+      new SRInterface(
           std::dynamic_pointer_cast<spire::Context>(mContext),
-          shaderSearchDirs, true));
-#else
-  mGraphics = std::shared_ptr<spire_sr::SRInterface>(
-      new spire_sr::SRInterface(
-          std::dynamic_pointer_cast<spire::Context>(mContext),
-          shaderSearchDirs, false, logFunction));
+          shaderSearchDirs, logFunction));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);
-#endif
-
-  // Add shader attributes that we will be using.
-  mGraphics->addShaderAttribute("aPos",         3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aNormal",      3,  false,  sizeof(float) * 3,  spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aFieldData",   1,  false,  sizeof(float),      spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aColorFloat",  4,  false,  sizeof(float) * 4,  spire::Interface::TYPE_FLOAT);
-  mGraphics->addShaderAttribute("aColor",       4,  true,   sizeof(char) * 4,   spire::Interface::TYPE_UBYTE);
-
-  std::vector<std::tuple<std::string, spire::Interface::SHADER_TYPES>> shaderFiles;
-  shaderFiles.push_back(std::make_pair("UniformColor.vsh", spire::Interface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("UniformColor.fsh", spire::Interface::FRAGMENT_SHADER));
-  mGraphics->addPersistentShader("UniformColor", shaderFiles);
-
-  shaderFiles.clear();
-  shaderFiles.push_back(std::make_pair("DirPhong.vsh", spire::Interface::VERTEX_SHADER));
-  shaderFiles.push_back(std::make_pair("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER));
-  mGraphics->addPersistentShader("DirPhong", shaderFiles);
 
   // We must disable auto buffer swap on the 'paintEvent'.
   setAutoBufferSwap(false);
@@ -102,7 +78,6 @@ GLWidget::~GLWidget()
   if (mGraphics != nullptr)
   {
     //std::cout << "Terminating spire." << std::endl;
-    mGraphics->terminate();
     mGraphics.reset();
   }
 }
@@ -113,15 +88,15 @@ void GLWidget::initializeGL()
 }
 
 //------------------------------------------------------------------------------
-spire_sr::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
+SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 {
-  spire_sr::SRInterface::MouseButton btn = spire_sr::SRInterface::MOUSE_NONE;
+  SRInterface::MouseButton btn = SRInterface::MOUSE_NONE;
   if (event->buttons() & Qt::LeftButton)
-    btn = spire_sr::SRInterface::MOUSE_LEFT;
+    btn = SRInterface::MOUSE_LEFT;
   else if (event->buttons() & Qt::RightButton)
-    btn = spire_sr::SRInterface::MOUSE_RIGHT;
+    btn = SRInterface::MOUSE_RIGHT;
   else if (event->buttons() & Qt::MidButton)
-    btn = spire_sr::SRInterface::MOUSE_MIDDLE;
+    btn = SRInterface::MOUSE_MIDDLE;
   
   return btn;
 }
@@ -130,21 +105,21 @@ spire_sr::SRInterface::MouseButton GLWidget::getSpireButton(QMouseEvent* event)
 void GLWidget::mouseMoveEvent(QMouseEvent* event)
 {
   // Extract appropriate key.
-  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
+  SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseMove(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mousePressEvent(QMouseEvent* event)
 {
-  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
+  SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseDown(glm::ivec2(event->x(), event->y()), btn);
 }
 
 //------------------------------------------------------------------------------
 void GLWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-  spire_sr::SRInterface::MouseButton btn = getSpireButton(event);
+  SRInterface::MouseButton btn = getSpireButton(event);
   mGraphics->inputMouseUp(glm::ivec2(event->x(), event->y()), btn);
 }
 
@@ -168,7 +143,6 @@ void GLWidget::closeEvent(QCloseEvent *evt)
   if (mGraphics != nullptr)
   {
     //std::cout << "Terminating spire." << std::endl;
-    mGraphics->terminate();
     mGraphics.reset();
   }
   QGLWidget::closeEvent(evt);
@@ -183,8 +157,7 @@ void GLWidget::makeCurrent()
 //------------------------------------------------------------------------------
 void GLWidget::updateRenderer()
 {
-  mContext->makeCurrent();    // Required on windows...
-  mGraphics->ntsDoFrame();
+  mGraphics->doFrame();
   mContext->swapBuffers();
 }
 
