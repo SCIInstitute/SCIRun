@@ -26,8 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
  
-#include <gtest/gtest.h>
-
+#include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -45,13 +44,13 @@ using namespace SCIRun::TestUtils;
 namespace
 {
   //TODO: move to unit test helper library
-  FieldHandle loadFieldFromFile(const std::string& filename)
+  FieldHandle loadFieldFromFile(const boost::filesystem::path& filename)
   {
     FieldHandle handle;
-    PiostreamPtr stream = auto_istream(filename, nullptr);
+    PiostreamPtr stream = auto_istream(filename.string(), nullptr);
     if (!stream)
     {
-      throw "Error reading file '" + filename;
+      throw "Error reading file '" + filename.string();
     }
 
     Pio(*stream, handle);
@@ -77,7 +76,7 @@ namespace TDCSInputData
   
   FieldHandle mesh()
   {
-    return loadFieldFromFile("E:\\tdcs_small_example_4dan\\mesh_scirun5.fld");
+    return loadFieldFromFile(TestResources::rootDir() / "mesh_scirun5.fld");
   }
   
   DenseMatrixHandle ElectrodeElements()

@@ -129,8 +129,8 @@ inline Core::Datatypes::SparseRowMatrixHandle toSparseHandle(const Core::Datatyp
 
 inline Core::Datatypes::DenseMatrixHandle makeDense(const Core::Datatypes::SparseRowMatrix& sparse)
 {
-  Core::Datatypes::DenseMatrixHandle dense(new Core::Datatypes::DenseMatrix(sparse.rows(), sparse.cols()));
-  for (int k=0; k < sparse.innerSize(); ++k)
+  Core::Datatypes::DenseMatrixHandle dense(new Core::Datatypes::DenseMatrix(sparse.rows(), sparse.cols(), 0));
+  for (int k=0; k < sparse.outerSize(); ++k)
   {
     for (Core::Datatypes::SparseRowMatrix::InnerIterator it(sparse,k); it; ++it)
     {
