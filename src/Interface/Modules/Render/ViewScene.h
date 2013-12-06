@@ -42,9 +42,9 @@
 #include <spire/Interface.h>
 #include <Interface/Modules/Render/namespaces.h>
 
-#include <SpireSCIRun/SRInterface.h>
-#include <SpireSCIRun/SRCommonAttributes.h>
-#include <SpireSCIRun/SRCommonUniforms.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
 
 #include <Interface/Modules/Render/GLWidget.h>
 

@@ -42,7 +42,7 @@
 #include <Interface/Modules/Render/QtGLContext.h>
 
 #include <spire/Interface.h>
-#include <SpireSCIRun/SRInterface.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
 
 #include <Interface/Modules/Render/namespaces.h>
 
