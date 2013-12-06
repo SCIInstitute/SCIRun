@@ -73,7 +73,7 @@ ModuleStateFactoryHandle NetworkTests::sf_;
 AlgorithmFactoryHandle NetworkTests::af_;
 
 //TODO: waiting on gmock version upgrade
-#ifdef WIN32
+//#ifdef WIN32
 
 TEST_F(NetworkTests, CanAddAndRemoveModules)
 {
@@ -173,4 +173,4 @@ TEST_F(NetworkTests, CannotConnectNonExistentPorts)
   EXPECT_THROW(network.connect(ConnectionOutputPort(m1, 3), ConnectionInputPort(m2, 2)), std::out_of_range);
 }
 
-#endif
+//#endif

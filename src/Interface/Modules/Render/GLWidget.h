@@ -42,7 +42,7 @@
 #include <Interface/Modules/Render/QtGLContext.h>
 
 #include <spire/Interface.h>
-#include <spire_scirun/SRInterface.h>
+#include <SpireSCIRun/SRInterface.h>
 
 #include <Interface/Modules/Render/namespaces.h>
 
@@ -61,7 +61,7 @@ public:
   GLWidget(QtGLContext* context);
   ~GLWidget();
 
-  std::shared_ptr<spire_sr::SRInterface> getSpire() const {return mGraphics;}
+  std::shared_ptr<SRInterface> getSpire() const {return mGraphics;}
 
   /// Required function for single threaded interfaces that have multiple
   /// contexts running on the same thread.
@@ -83,14 +83,11 @@ public Q_SLOTS:
 private:
  
   /// Retrieve SRInterface mouse button from mouse event.
-  spire_sr::SRInterface::MouseButton getSpireButton(QMouseEvent* event);
+  SRInterface::MouseButton getSpireButton(QMouseEvent* event);
 
-  std::shared_ptr<GLContext>                mContext;   ///< Graphics context.
-  std::shared_ptr<spire_sr::SRInterface>    mGraphics;  ///< Interface to spire.
-
-#ifndef SPIRE_USE_STD_THREADS
-  QTimer*                                     mTimer;
-#endif
+  std::shared_ptr<GLContext>      mContext;   ///< Graphics context.
+  std::shared_ptr<SRInterface>    mGraphics;  ///< Interface to spire.
+  QTimer*                         mTimer;
 };
 
 } // end of namespace SCIRun

@@ -27,7 +27,9 @@
 */
 
 #include <gtest/gtest.h>
-#include <boost/program_options.hpp>
+
+//TODO: this won't link in debug mode due to Application::Instance impl
+#if NDEBUG
 #include <Core/Application/Application.h>
 
 using namespace SCIRun::Core;
@@ -51,3 +53,4 @@ TEST(ApplicationSingletonTest, CanCreateAndParseCommandLine)
   EXPECT_EQ("network.srn5", appParams->inputFile().get());
   EXPECT_TRUE(appParams->executeNetwork());
 }
+#endif
