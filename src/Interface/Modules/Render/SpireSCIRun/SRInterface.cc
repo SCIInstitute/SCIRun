@@ -325,7 +325,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
     for (auto it = pass.uniforms.begin(); it != pass.uniforms.end(); ++it)
     {
       std::string uniformName = std::get<0>(*it);
-      std::shared_ptr<::spire::AbstractUniformStateItem> uniform(std::get<1>(*it));
+      std::shared_ptr< ::spire::AbstractUniformStateItem > uniform(std::get<1>(*it));
 
       // Be sure to always include the pass name as we are updating a
       // subpass of SPIRE_DEFAULT_PASS.
