@@ -317,11 +317,15 @@ void SRInterface::doFrame()
 
   // Ensure we have an appropriate camera transform.
   mCamera->applyTransform();
+  glm::mat4 viewToWorld = mCamera->getViewToWorld();
 
   mSceneBBox.reset();
 
   // Set directional light source (in world space).
-  mSpire->addGlobalUniform("uLightDirWorld", spire::V3(1.0f, 0.0f, 0.0f));
+  //glm::vec3 viewDir = viewToWorld[2].xyz();
+  //viewDir = -viewDir; // Cameras look down -Z.
+  //mSpire->addGlobalUniform("uLightDirWorld", viewDir);
+  mSpire->addGlobalUniform("uLightDirWorld", glm::vec3(1.0f, 0.0f, 0.0f));
 
   for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
   {

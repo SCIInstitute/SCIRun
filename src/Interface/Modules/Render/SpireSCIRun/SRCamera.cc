@@ -80,13 +80,19 @@ void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
 }
 
 //------------------------------------------------------------------------------
-void SRCamera::applyTransform()
+void SRCamera::buildTransform()
 {
   ++mTrafoSeq;
 
   mV    = mArcLookAt->getWorldViewTransform();
   mIV   = glm::affineInverse(mV);
   mPIV  = mP * mIV;
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::applyTransform()
+{
+  buildTransform();
 
   // Update appropriate uniforms.
   mSpire->addGlobalUniform(SRCommonUniforms::getToCameraToProjectionName(), mPIV);

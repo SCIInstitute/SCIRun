@@ -53,6 +53,7 @@ public:
   // m  = multiplication
   const spire::M44& getWorldToProjection() const  {return mPIV;}
   const spire::M44& getWorldToView() const        {return mIV;}
+  const spire::M44& getViewToWorld() const        {return mV;}
   const spire::M44& getViewToProjection() const   {return mP;}
 
   /// Sets this camera to use a perspective projection transformation.
@@ -86,6 +87,7 @@ public:
 
 private:
 
+  void buildTransform();
   spire::V2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
   spire::M44            mPIV;         ///< Projection * Inverse View transformation.
