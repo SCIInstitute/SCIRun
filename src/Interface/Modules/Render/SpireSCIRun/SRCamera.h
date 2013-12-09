@@ -34,7 +34,8 @@
 
 #include "SRInterface.h"
 
-#include "spire/src/Common.h"
+#include <spire/src/Common.h>
+#include <arc-look-at/ArcLookAt.hpp>
 
 namespace SCIRun {
 namespace Gui {
@@ -61,7 +62,20 @@ public:
   void setAsOrthographic(float halfWidth, float halfHeight);
 
   /// Sets the current view transform (view to world space).
-  void setViewTransform(const spire::M44& view);
+  /// \xxx This should be removed.
+  void applyTransform();
+
+  /// Handle mouse down.
+  void mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+
+  /// Handle mouse movement.
+  void mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn);
+
+  /// Handle mouse wheel event.
+  void mouseWheelEvent(int32_t delta);
+
+  /// Perform autoview.
+  void doAutoView(const Core::Geometry::BBox& bbox);
 
   /// Default camera settings
   /// @{
@@ -71,6 +85,8 @@ public:
   /// @}
 
 private:
+
+  spire::V2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
   spire::M44            mPIV;         ///< Projection * Inverse View transformation.
   spire::M44            mIV;          ///< Inverse view transformation.
@@ -87,7 +103,8 @@ private:
 
   SRInterface&          mInterface;   ///< SRInterface.
   std::shared_ptr<spire::Interface> mSpire;
-
+  
+  std::shared_ptr<CPM_LOOK_AT_NS::ArcLookAt>  mArcLookAt;
 
 };
 

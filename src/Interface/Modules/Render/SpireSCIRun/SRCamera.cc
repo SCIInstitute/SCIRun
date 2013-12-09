@@ -45,14 +45,13 @@ SRCamera::SRCamera(SRInterface& iface, std::shared_ptr<spire::Interface> spire) 
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
     mInterface(iface),
-    mSpire(spire)
+    mSpire(spire),
+    mArcLookAt(new CPM_LOOK_AT_NS::ArcLookAt())
 {
   setAsPerspective();
 
   spire::M44 cam;
   cam[3] = (spire::V4(0.0f, 0.0f, 7.0f, 1.0f));
-  
-  setViewTransform(cam);
 }
 
 //------------------------------------------------------------------------------
@@ -81,15 +80,12 @@ void SRCamera::setAsOrthographic(float halfWidth, float halfHeight)
 }
 
 //------------------------------------------------------------------------------
-void SRCamera::setViewTransform(const spire::M44& trafo)
+void SRCamera::applyTransform()
 {
   ++mTrafoSeq;
 
-  //std::cout << "Transform: " << std::endl;
-  //printM44(trafo);
-
-  mV    = trafo;
-  mIV   = glm::affineInverse(trafo);
+  mV    = mArcLookAt->getWorldViewTransform();
+  mIV   = glm::affineInverse(mV);
   mPIV  = mP * mIV;
 
   // Update appropriate uniforms.
@@ -103,6 +99,77 @@ void SRCamera::setViewTransform(const spire::M44& trafo)
                            -spire::V3(mV[2].xyz()));
   mSpire->addGlobalUniform(SRCommonUniforms::getCameraUpVecName(),
                             spire::V3(mV[1].xyz()));
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::mouseDownEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
+{
+  glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
+  mArcLookAt->doReferenceDown(screenSpace);
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::mouseMoveEvent(const glm::ivec2& pos, SRInterface::MouseButton btn)
+{
+  glm::vec2 screenSpace = calculateScreenSpaceCoords(pos);
+  switch (mInterface.getMouseMode())
+  {
+    case SRInterface::MOUSE_OLDSCIRUN:
+      if (btn == SRInterface::MOUSE_LEFT)    mArcLookAt->doPan(screenSpace);
+      if (btn == SRInterface::MOUSE_RIGHT)   mArcLookAt->doZoom(screenSpace);
+      if (btn == SRInterface::MOUSE_MIDDLE)  mArcLookAt->doRotation(screenSpace);
+      break;
+
+    case SRInterface::MOUSE_NEWSCIRUN:
+      if (btn == SRInterface::MOUSE_LEFT)    mArcLookAt->doRotation(screenSpace);
+      if (btn == SRInterface::MOUSE_RIGHT)   mArcLookAt->doPan(screenSpace);
+      break;
+  }
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::mouseWheelEvent(int32_t delta)
+{
+  if (mInterface.getMouseMode() != SRInterface::MOUSE_OLDSCIRUN)
+  {
+    mArcLookAt->doZoom(-static_cast<float>(delta) / 100.0f);
+  }
+}
+
+//------------------------------------------------------------------------------
+void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
+{
+  // Convert core geom bbox to AABB.
+  Core::Geometry::Point bboxMin = bbox.min();
+  Core::Geometry::Point bboxMax = bbox.max();
+  glm::vec3 min(bboxMin.x(), bboxMin.y(), bboxMin.z());
+  glm::vec3 max(bboxMax.x(), bboxMax.y(), bboxMax.z());
+
+  CPM_GLM_AABB_NS::AABB aabb(min, max);
+
+  /// \todo Use real FOV-Y when we allow the user to change the FOV.
+  mArcLookAt->autoview(aabb, getDefaultFOVY());
+}
+
+//------------------------------------------------------------------------------
+spire::V2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
+{
+  float windowOriginX = 0.0f;
+  float windowOriginY = 0.0f;
+
+  // Transform incoming mouse coordinates into screen space.
+  spire::V2 mouseScreenSpace;
+  mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX) 
+      / static_cast<float>(mInterface.getScreenWidthPixels()) - 1.0f;
+  mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)
+      / static_cast<float>(mInterface.getScreenHeightPixels()) - 1.0f;
+
+  // Rotation with flipped axes feels much more natural. It places it inside
+  // the correct OpenGL coordinate system (with origin in the center of the
+  // screen).
+  mouseScreenSpace.y = -mouseScreenSpace.y;
+
+  return mouseScreenSpace;
 }
 
 } // namespace Gui
