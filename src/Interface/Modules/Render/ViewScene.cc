@@ -119,6 +119,13 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::autoViewClicked(bool checked)
+{
+  std::shared_ptr<SRInterface> spireLock = mSpire.lock();
+  spireLock->doAutoView();
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
   mToolBar = new QToolBar(this);
@@ -134,6 +141,7 @@ void ViewSceneDialog::addToolBar()
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
   mToolBar->addWidget(autoViewBtn);
+  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked(bool)));
 
   glLayout->addWidget(mToolBar);
 
