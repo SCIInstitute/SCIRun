@@ -67,14 +67,14 @@ ELSE()
                            COMMAND ${CMAKE_COMMAND}
                            ARGS -E copy_directory
                            ${SCIRUN_CORE_BINARY_DIR}/Shaders
-                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}
+                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Shaders
       )
       ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
                          POST_BUILD
                            COMMAND ${CMAKE_COMMAND}
                            ARGS -E copy_directory
                            ${SCIRUN_CORE_BINARY_DIR}/Assets
-                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}
+                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Assets
       )
     ENDFOREACH()
   ENDIF()
