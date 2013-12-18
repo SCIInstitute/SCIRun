@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,43 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// \author James Hughes
-/// \date   December 2012
-/// \brief  Not sure this file should go in Modules/Render. But it is an 
-///         auxiliary file to the ViewScene render module.
+#ifndef INTERFACE_MODULES_RENDER_GLCONTEXTPLATFORMCOMPATIBILITY_H
+#define INTERFACE_MODULES_RENDER_GLCONTEXTPLATFORMCOMPATIBILITY_H
 
-#ifndef INTERFACE_MODULES_RENDER_GLCONTEXT_H
-#define INTERFACE_MODULES_RENDER_GLCONTEXT_H
+// Needed because Windows uses GLEW and GLEW headers need to be included
+// before GL headers, but Qt with X11 needs to be included before GL.
+//
+// Note: If GLEW is ever replaced, review the usefulness of this header.
+#ifdef _WIN32
+#  include <spire/Interface.h>
+#  include <QtOpenGL/QGLWidget>
+#else
+#  include <QtOpenGL/QGLWidget>
+#  include <spire/Interface.h>
+#endif
 
-// For windows.
-/// \todo Make this definition specific to windows.
-#define NOMINMAX
-
-#include <Interface/Modules/Render/GLContextPlatformCompatibility.h>
-#include <Interface/Modules/Render/namespaces.h>
-
-namespace SCIRun {
-namespace Gui {
-
-/// Context that will be sent to spire.
-class GLContext : public spire::Context
-{
-public:
-  GLContext(QGLWidget* glWidget);
-  virtual ~GLContext();
-
-  /// Mandatory override from Context.
-  virtual void makeCurrent();
-  
-  /// Mandatory override from Context.
-  virtual void swapBuffers();
-
-private:
-
-  QGLWidget* mGLWidget;
-};
-
-} // end of namespace SCIRun
-} // end of namespace Gui
-
-#endif 
+#endif
