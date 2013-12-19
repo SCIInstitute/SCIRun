@@ -41,4 +41,6 @@
 #  include <spire/Interface.h>
 #endif
 
+#include <Interface/Modules/Render/namespaces.h>
+
 #endif

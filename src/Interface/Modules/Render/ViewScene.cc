@@ -26,16 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <QtGui>
-
-#include <Interface/Modules/Render/ViewScene.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Datatypes/Geometry.h>
-
-#include <QtGui>
-#include <QPushButton>
-
-#include <Interface/Modules/Render/QtGLContext.h>
+#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
