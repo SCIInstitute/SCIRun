@@ -345,7 +345,7 @@ include(${CPM_DIR}/CPM.cmake)
 # ++ MODULE: Spire
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/master")
+  GIT_TAG "0.7.3")
 
 # ++ MODULE: Arc-Look-At (Autoview Camera)
 CPM_AddModule("look_at"
