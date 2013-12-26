@@ -51,7 +51,9 @@ macro(config_compiler_and_linker)
     find_package(Threads)
   endif()
 
-  fix_default_compiler_settings_()
+  if(gtest_force_static_runtime)
+    fix_default_compiler_settings_()
+  endif()
   if (MSVC)
     # Newlines inside flags variables break CMake's NMake generator.
     # TODO(vladl@google.com): Add -RTCs and -RTCu to debug builds.
