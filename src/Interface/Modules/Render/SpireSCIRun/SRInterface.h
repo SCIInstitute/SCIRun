@@ -38,7 +38,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "../namespaces.h"
-#include "spire/Interface.h"
+#include <spire/Interface.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -111,14 +111,22 @@ public:
   /// Sets the mouse interaction mode.
   void setMouseMode(MouseMode mode);
 
+  /// Retrieves mouse interaction mode.
+  MouseMode getMouseMode();
+
+  /// Performs an autoview.
+  void doAutoView();
+
 private:
 
   class SRObject
   {
   public:
-    SRObject(const std::string& name, const spire::M44& objToWorld) :
+    SRObject(const std::string& name, const spire::M44& objToWorld,
+             const Core::Geometry::BBox& bbox) :
         mName(name),
-        mObjectToWorld(objToWorld)
+        mObjectToWorld(objToWorld),
+        mBBox(bbox)
     {}
 
     // Different types of uniform transformations that are associated
@@ -141,42 +149,25 @@ private:
       std::list<ObjectTransforms> transforms;
     };
 
-    std::string       mName;
-    spire::M44        mObjectToWorld;
-    std::list<SRPass> mPasses;
+    std::string           mName;
+    spire::M44            mObjectToWorld;
+    std::list<SRPass>     mPasses;
+    Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
   };
-
-  /// Calculates the screen space coordinates given the window coordinates.
-  spire::V2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
-
-  /// Recalculates camera transform using the most relevant data.
-  void buildAndApplyCameraTransform();
 
   // Begins the frame.
   void beginFrame();
 
-  std::shared_ptr<spire::Interface>    mSpire;
+  std::shared_ptr<spire::Interface>           mSpire;
 
-  MouseMode                 mMouseMode;
+  MouseMode                 mMouseMode;       ///< Current mouse mode.
 
-  float                     mCamDistance;   ///< Camera's distance from the origin.
-  float                     mCamDistanceDown; ///< Camera's distance when mouse was pressed.
+  size_t                    mScreenWidth;     ///< Screen width in pixels.
+  size_t                    mScreenHeight;    ///< Screen height in pixels.
 
-  size_t                    mScreenWidth;   ///< Screen width in pixels.
-  size_t                    mScreenHeight;  ///< Screen height in pixels.
-
-  spire::V2                 mTransClick;    ///< Start of the translation.
-
-  spire::V3                 mCamAccumPosDown; ///< Accumulated translation / zoom when first clicked down.
-  spire::V3                 mCamAccumPosNow;  ///< Accumulated translation / zoom currently.
-
-  MouseButton               mActiveDrag;    ///< The button we are currently dragging.
-
-  std::unique_ptr<SRCamera> mCamera;        ///< Primary camera.
-  std::unique_ptr<SciBall>  mSciBall;       ///< SCIRun 4's arcball camera.
-
-  std::vector<SRObject>     mSRObjects;     ///< All SCIRun objects.
-
+  std::unique_ptr<SRCamera> mCamera;          ///< Primary camera.
+  std::vector<SRObject>     mSRObjects;       ///< All SCIRun objects.
+  Core::Geometry::BBox      mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
 };
 

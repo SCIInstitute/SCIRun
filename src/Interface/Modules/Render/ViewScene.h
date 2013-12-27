@@ -72,6 +72,7 @@ public:
 
 protected Q_SLOTS:
   void menuMouseControlChanged(int index);
+  void autoViewClicked(bool checked);
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
