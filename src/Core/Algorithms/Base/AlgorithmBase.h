@@ -113,7 +113,7 @@ namespace Algorithms {
   
   typedef Variable AlgorithmParameter;
 
-  class SCISHARE AlgorithmLogger : public Core::Logging::LoggerInterface
+  class SCISHARE AlgorithmLogger : public Core::Logging::LegacyLoggerInterface
   {
   public:
     AlgorithmLogger();

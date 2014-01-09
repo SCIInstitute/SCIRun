@@ -39,7 +39,7 @@ class QComboBox;
 namespace SCIRun {
 namespace Gui {
 
-  class TextEditAppender : public Core::Logging::LoggerInterface
+  class TextEditAppender : public Core::Logging::LegacyLoggerInterface
   {
   public:
     explicit TextEditAppender(QTextEdit* text) : text_(text) {}

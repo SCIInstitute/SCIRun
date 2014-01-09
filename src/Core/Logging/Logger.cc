@@ -32,9 +32,9 @@
 
 using namespace SCIRun::Core::Logging;
 
-LoggerInterface::~LoggerInterface() {}
+LegacyLoggerInterface::~LegacyLoggerInterface() {}
 
-ScopedTimeRemarker::ScopedTimeRemarker(LoggerInterface* log, const std::string& label) : log_(log), label_(label) 
+ScopedTimeRemarker::ScopedTimeRemarker(LegacyLoggerInterface* log, const std::string& label) : log_(log), label_(label) 
 {}
 
 ScopedTimeRemarker::~ScopedTimeRemarker()
