@@ -29,11 +29,13 @@
 SET(Core_Logging_SRCS
   ConsoleLogger.cc
   Logger.cc
+  Log.cc
 )
 
 SET(Core_Logging_HEADERS
   ConsoleLogger.h
   DirectLogger.h
+  Log.h
   LoggerInterface.h
   LoggerFwd.h
   ScopedTimeRemarker.h

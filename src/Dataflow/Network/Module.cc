@@ -37,10 +37,7 @@
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/NullModuleState.h>
 #include <Core/Logging/ConsoleLogger.h>
-
-#include <log4cpp/Category.hh>
-#include <log4cpp/CategoryStream.hh>
-#include <log4cpp/Priority.hh>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Engine::State;
@@ -72,15 +69,15 @@ Module::Module(const ModuleLookupInfo& info,
   oports_.set_module(this);
   setLogger(defaultLogger_);
 
-  log4cpp::Category& root = log4cpp::Category::getRoot();
+  Log& log = Log::get();
 
-  root << log4cpp::Priority::INFO << "Module created: " << info.module_name_ << " with id: " << id_;
+  log << INFO << "Module created: " << info.module_name_ << " with id: " << id_;
 
   if (algoFactory)
   {
     algo_ = algoFactory->create(get_module_name(), this);
     if (algo_)
-      root << log4cpp::Priority::INFO << "Module algorithm initialized: " << info.module_name_;
+      log << INFO << "Module algorithm initialized: " << info.module_name_;
   }
 
 }
