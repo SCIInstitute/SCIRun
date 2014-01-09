@@ -61,7 +61,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeTransparency, false);
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
-  //state->setValue(DefaultMeshColor, std::string("white"));
+  state->setValue(DefaultMeshColor, ColorRGB(255, 255, 255));
 }
 
 void ShowFieldModule::execute()
@@ -102,6 +102,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
+  const ColorRGB* meshColor = state->getValue(ShowFieldModule::DefaultMeshColor).getDatatype()->as<ColorRGB>();
 
   // Resultant geometry type (representing a spire object and a number of passes).
   GeometryHandle geom(new GeometryObject(field));
