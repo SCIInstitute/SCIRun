@@ -35,6 +35,8 @@
 #include <log4cpp/Layout.hh>
 #include <log4cpp/PatternLayout.hh>
 #include <log4cpp/Priority.hh>
+#include <log4cpp/FileAppender.hh>
+#include <log4cpp/BasicLayout.hh>
 
 #include <boost/lexical_cast.hpp>
 #include <Core/Utils/Exception.h>
@@ -47,19 +49,56 @@ namespace SCIRun
   {
     namespace Logging
     {
+      class LogStreamImpl
+      {
+      public:
+        LogStreamImpl(const log4cpp::CategoryStream& s) : stream_(s) {}
+        log4cpp::CategoryStream stream_;
+      };
+
       class LogImpl
       {
       public:
         LogImpl() : cppLogger_(log4cpp::Category::getRoot())
         {
-          // Creates a simple log4cpp logger.
-          log4cpp::Appender* p_appender = new log4cpp::OstreamAppender("console", &std::cout);
-          log4cpp::PatternLayout* layout = new log4cpp::PatternLayout();
-          layout->setConversionPattern("%d{%Y-%m-%d %H:%M:%S} [%p] %c: %m%n");
-          p_appender->setLayout(layout);
+          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
 
-          cppLogger_.setPriority(log4cpp::Priority::DEBUG);
-          cppLogger_.addAppender(p_appender);
+          log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
+          auto layout1 = new log4cpp::PatternLayout();
+          std::string backupPattern1 = layout1->getConversionPattern();
+          try
+          {
+            layout1->setConversionPattern(pattern);
+          }
+          catch (log4cpp::ConfigureFailure& exception)
+          {
+            // TODO: log?
+            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+              << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
+            layout1->setConversionPattern(backupPattern1);
+          }
+          appender1->setLayout(layout1);
+
+          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
+          auto layout2 = new log4cpp::PatternLayout();
+          std::string backupPattern2 = layout1->getConversionPattern();
+          try
+          {
+            layout2->setConversionPattern(pattern);
+          }
+          catch (log4cpp::ConfigureFailure& exception)
+          {
+            // TODO: log?
+            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+              << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
+            layout2->setConversionPattern(backupPattern2);
+          }
+          appender2->setLayout(layout2);
+
+          log4cpp::Category& root = log4cpp::Category::getRoot();
+          //root.setPriority(log4cpp::Priority::DEBUG);
+          root.addAppender(appender1);
+          root.addAppender(appender2);
         }
 
         void log(LogLevel level, const std::string& msg)
@@ -67,14 +106,9 @@ namespace SCIRun
           cppLogger_ << translate(level) << msg;
         }
 
-        void stream(LogLevel level)
+        Log::Stream stream(LogLevel level)
         {
-          latestCategoryStream_ = cppLogger_ << translate(level); 
-        }
-
-        void stream(const std::string& msg)
-        {
-          latestCategoryStream_ << msg;
+          return Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
         }
 
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
@@ -104,7 +138,6 @@ namespace SCIRun
 
       private:
         log4cpp::Category& cppLogger_;
-        log4cpp::CategoryStream latestCategoryStream_;
       };
     }
   }
@@ -125,14 +158,20 @@ void Log::log(LogLevel level, const std::string& msg)
   impl_->log(level, msg);
 }
 
-Log& SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)
+Log::Stream SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)
 {
-  log.impl_->stream(level);
-  return log;
+  return log.impl_->stream(level);
 }
 
-Log& SCIRun::Core::Logging::operator<<(Log& log, const std::string& msg)
+void Log::Stream::stream(const std::string& msg)
 {
-  log.impl_->stream(msg);
+  impl_->stream_ << msg;
+}
+
+Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
+
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::string& msg)
+{
+  log.stream(msg);
   return log;
 }

@@ -45,16 +45,6 @@
 #include <Dataflow/Engine/Controller/PythonImpl.h>
 #endif
 
-
-#include <log4cpp/Category.hh>
-#include <log4cpp/Appender.hh>
-#include <log4cpp/OstreamAppender.hh>
-#include <log4cpp/FileAppender.hh>
-#include <log4cpp/Layout.hh>
-#include <log4cpp/BasicLayout.hh>
-#include <log4cpp/PatternLayout.hh>
-#include <log4cpp/Priority.hh>
-
 using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -75,8 +65,6 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
 #ifdef BUILD_WITH_PYTHON
   NetworkEditorPythonAPI::setImpl(boost::make_shared<PythonImpl>(*this));
 #endif
-
-  configureLoggingLibrary();
 }
 
 NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::NetworkHandle network, ExecutionStrategyFactoryHandle executorFactory, ModulePositionEditor* mpg)
@@ -334,48 +322,6 @@ void NetworkEditorController::setExecutorType(int type)
 const ModuleDescriptionMap& NetworkEditorController::getAllAvailableModuleDescriptions() const
 {
   return moduleFactory_->getAllAvailableModuleDescriptions();
-}
-
-void NetworkEditorController::configureLoggingLibrary()
-{
-  std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
-
-  log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
-  auto layout1 = new log4cpp::PatternLayout();
-  std::string backupPattern1 = layout1->getConversionPattern();
-  try
-  {
-    layout1->setConversionPattern(pattern);
-  }
-  catch (log4cpp::ConfigureFailure& exception)
-  {
-    // TODO: log?
-    std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-      << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
-    layout1->setConversionPattern(backupPattern1);
-  }
-  appender1->setLayout(layout1);
-
-  log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
-  auto layout2 = new log4cpp::PatternLayout();
-  std::string backupPattern2 = layout1->getConversionPattern();
-  try
-  {
-    layout2->setConversionPattern(pattern);
-  }
-  catch (log4cpp::ConfigureFailure& exception)
-  {
-    // TODO: log?
-    std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-      << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
-    layout2->setConversionPattern(backupPattern2);
-  }
-  appender2->setLayout(layout2);
-
-  log4cpp::Category& root = log4cpp::Category::getRoot();
-  //root.setPriority(log4cpp::Priority::DEBUG);
-  root.addAppender(appender1);
-  root.addAppender(appender2);
 }
 
 boost::shared_ptr<DisableDynamicPortSwitch> NetworkEditorController::createDynamicPortSwitch()

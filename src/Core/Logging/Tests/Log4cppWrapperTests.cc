@@ -27,11 +27,20 @@
 */
 
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::DefaultValue;
-using ::testing::Return;
+#include <Core/Logging/Log.h>
 
-//TODO 
+using namespace SCIRun::Core::Logging;
+
+TEST(LogWrapperTests, LogSomething)
+{
+  Log::get() << INFO << "Hello! from the unit test. Need to figure out how to redirect this away from global log file...";
+}
+
+//TODO
+#if 0 //not compiling yet
+TEST(LogWrapperTests, LogNonString)
+{
+  Log::get() << INFO << "Testing logging numbers: " << 3.14;
+}
+#endif
