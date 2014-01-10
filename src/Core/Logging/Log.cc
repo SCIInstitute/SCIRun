@@ -59,7 +59,7 @@ namespace SCIRun
       class LogImpl
       {
       public:
-        LogImpl() : cppLogger_(log4cpp::Category::getRoot())
+        LogImpl() : cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
           std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
 
@@ -106,9 +106,10 @@ namespace SCIRun
           cppLogger_ << translate(level) << msg;
         }
 
-        Log::Stream stream(LogLevel level)
+        Log::Stream& stream(LogLevel level)
         {
-          return Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
+          latestStream_ = Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
+          return latestStream_;
         }
 
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
@@ -138,6 +139,7 @@ namespace SCIRun
 
       private:
         log4cpp::Category& cppLogger_;
+        Log::Stream latestStream_;
       };
     }
   }
@@ -158,7 +160,7 @@ void Log::log(LogLevel level, const std::string& msg)
   impl_->log(level, msg);
 }
 
-Log::Stream SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)
+Log::Stream& SCIRun::Core::Logging::operator<<(Log& log, LogLevel level)
 {
   return log.impl_->stream(level);
 }

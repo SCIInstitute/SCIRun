@@ -74,7 +74,7 @@ namespace SCIRun
 
         void log(LogLevel level, const std::string& msg);
 
-        SCISHARE friend Stream operator<<(Log& log, LogLevel level);
+        SCISHARE friend Stream& operator<<(Log& log, LogLevel level);
 
       private:
         Log();
@@ -88,7 +88,7 @@ namespace SCIRun
       };
 
       //TODO: how to templatize
-      SCISHARE Log::Stream operator<<(Log& log, LogLevel level);
+      SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
     }
   }
