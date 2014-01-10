@@ -7,9 +7,10 @@
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
-option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+#
+# SCI build note: forcing static build
+set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build shared libraries (DLLs)." FORCE)
 
-set(BUILD_SHARED_LIBS OFF)
 set(
   gtest_force_shared_crt
   ON)
@@ -35,14 +36,6 @@ endif()
 
 
 ########################################################################
-# Enable PIC for 64-bit Linux if necessary
-
-if (UNIX AND NOT BUILD_SHARED_LIBS AND NOT APPLE AND NOT CYGWIN)
-  set(ENABLE_PIC ON)
-endif()
-
-
-########################################################################
 #
 # Project-wide settings
 
@@ -54,6 +47,8 @@ endif()
 # Language "C" is required for find_package(Threads).
 project(gmock CXX C)
 cmake_minimum_required(VERSION 2.6.2)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
@@ -96,19 +91,6 @@ cxx_library(gmock_main
             "${gtest_dir}/src/gtest-all.cc"
             src/gmock-all.cc
             src/gmock_main.cc)
-
-
-if (ENABLE_PIC)
-  set_target_properties(gmock
-      PROPERTIES
-        COMPILE_FLAGS "-fPIC"
-    )
-
-  set_target_properties(gmock_main
-      PROPERTIES
-        COMPILE_FLAGS "-fPIC"
-    )       
-endif()     
 
 
 ########################################################################
