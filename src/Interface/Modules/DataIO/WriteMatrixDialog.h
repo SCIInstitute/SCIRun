@@ -41,7 +41,7 @@ namespace Gui {
   
 class SCISHARE WriteMatrixDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::WriteMatrix, public RemembersFileDialogDirectory<WriteMatrixDialog>
+  public Ui::WriteMatrix, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 	
