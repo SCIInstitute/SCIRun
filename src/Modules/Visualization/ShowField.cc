@@ -61,7 +61,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeTransparency, false);
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
-  state->setValue(DefaultMeshColor, ColorRGB(255, 255, 255));
+  state->setTransientValue(DefaultMeshColor.name_, ColorRGB(255, 255, 255));
 }
 
 void ShowFieldModule::execute()
@@ -102,7 +102,11 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
-  const ColorRGB* meshColor = state->getValue(ShowFieldModule::DefaultMeshColor).getDatatype()->as<ColorRGB>();
+  const ColorRGB meshColor = optional_any_cast_or_default<ColorRGB>(
+      state->getTransientValue(ShowFieldModule::DefaultMeshColor.name_));
+  float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
+  float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
+  float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
 
   // Resultant geometry type (representing a spire object and a number of passes).
   GeometryHandle geom(new GeometryObject(field));
@@ -212,9 +216,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
     // Add appropriate uniforms to the pass (in this case, uColor).
     if (edgeTransparency)
-      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
     else
-      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
@@ -242,7 +246,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
       // Add common uniforms.
       pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
-      pass.addUniform("uDiffuseColor", spire::V4(0.8f, 0.8f, 0.8f, 1.0f));
+      pass.addUniform("uDiffuseColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
       pass.addUniform("uSpecularColor", spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
       pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
@@ -258,7 +262,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.2f;
-      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, transparency));
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
       geom->mPasses.emplace_back(pass);
     }
   }
@@ -280,9 +284,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     // Add appropriate uniforms to the pass (in this case, uColor).
     bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
     if (nodeTransparency)
-      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 0.5f));
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
     else
-      pass.addUniform("uColor", spire::V4(0.6f, 0.6f, 0.6f, 1.0f));
+      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
