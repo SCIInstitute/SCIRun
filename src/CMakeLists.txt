@@ -271,7 +271,7 @@ SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}$
 SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
 # Fixes Mac build for now, without extra boost/python cmake magic.
-SET(boost_GIT_TAG "origin/master")
+SET(boost_GIT_TAG "origin/cmake_set_pic")
 
 # TODO: fix install step
 #
@@ -292,6 +292,7 @@ ExternalProject_Add(Boost_external
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
     -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
     -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
