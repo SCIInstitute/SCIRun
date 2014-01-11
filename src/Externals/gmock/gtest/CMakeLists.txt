@@ -9,7 +9,7 @@
 # make it prominent in the GUI.
 #
 # SCI build note: forcing static build
-set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "Build shared libraries (DLLs)." FORCE)
+set(BUILD_SHARED_LIBS OFF)
 
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
