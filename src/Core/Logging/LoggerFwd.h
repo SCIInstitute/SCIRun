@@ -38,8 +38,10 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class LoggerInterface;
-      typedef boost::shared_ptr<LoggerInterface> LoggerHandle;
+      class LegacyLoggerInterface;
+      typedef boost::shared_ptr<LegacyLoggerInterface> LoggerHandle;
+
+      class Log;
     }
   }
 }

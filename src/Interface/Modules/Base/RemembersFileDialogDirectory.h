@@ -35,8 +35,7 @@
 namespace SCIRun {
 namespace Gui {
 
-  template <class Base>
-  class RemembersFileDialogDirectory
+  class SCISHARE RemembersFileDialogDirectory
   {
   protected:
     QString dialogDirectory() const
@@ -51,10 +50,6 @@ namespace Gui {
     static QString currentDirectory_;
   };
 
-  template <class Base>
-  QString RemembersFileDialogDirectory<Base>::currentDirectory_(".");
-
-}
-}
+}}
 
 #endif

@@ -39,10 +39,10 @@ namespace SCIRun
   {
     namespace Logging
     {
-      class SCISHARE LoggerInterface 
+      class SCISHARE LegacyLoggerInterface 
       {
       public:
-        virtual ~LoggerInterface();
+        virtual ~LegacyLoggerInterface();
 
         virtual void error(const std::string& msg) const = 0;
         virtual void warning(const std::string& msg) const = 0;

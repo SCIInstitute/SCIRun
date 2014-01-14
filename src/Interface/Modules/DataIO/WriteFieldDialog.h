@@ -41,7 +41,7 @@ namespace Gui {
   
 class SCISHARE WriteFieldDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::WriteFieldDialog, public RemembersFileDialogDirectory<WriteFieldDialog>
+  public Ui::WriteFieldDialog, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 	

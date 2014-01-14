@@ -26,36 +26,20 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_READ_FIELD_H
-#define INTERFACE_MODULES_READ_FIELD_H
+#include <gtest/gtest.h>
 
-#include "Interface/Modules/DataIO/ui_ReadFieldDialog.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
-#include <Interface/Modules/DataIO/share.h>
+#include <Core/Logging/Log.h>
 
-namespace SCIRun {
-namespace Gui {
+using namespace SCIRun::Core::Logging;
 
-class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
-  public Ui::ReadFieldDialog, public RemembersFileDialogDirectory
+TEST(LogWrapperTests, LogSomething)
 {
-	Q_OBJECT
-	
-public:
-  ReadFieldDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-
-private Q_SLOTS:
-  void pushFileNameToState();
-  void openFile();
-};
-
-}
+  Log::get() << INFO << "Hello! from the unit test. Need to figure out how to redirect this away from global log file..." << " ...another string";
 }
 
-#endif
+TEST(LogWrapperTests, LogNonString)
+{
+  Log::get() << INFO << "Testing logging doubles: " << 3.14 << " is a double.\n";
+  Log::get() << INFO << "Testing logging integers: " << 3 << " is an int";
+  
+}

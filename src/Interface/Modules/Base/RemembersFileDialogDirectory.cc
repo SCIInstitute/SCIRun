@@ -26,36 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_READ_FIELD_H
-#define INTERFACE_MODULES_READ_FIELD_H
-
-#include "Interface/Modules/DataIO/ui_ReadFieldDialog.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
 #include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
-#include <Interface/Modules/DataIO/share.h>
 
-namespace SCIRun {
-namespace Gui {
+using namespace SCIRun::Gui;
 
-class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
-  public Ui::ReadFieldDialog, public RemembersFileDialogDirectory
-{
-	Q_OBJECT
-	
-public:
-  ReadFieldDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
-
-private Q_SLOTS:
-  void pushFileNameToState();
-  void openFile();
-};
-
-}
-}
-
-#endif
+QString RemembersFileDialogDirectory::currentDirectory_(".");
