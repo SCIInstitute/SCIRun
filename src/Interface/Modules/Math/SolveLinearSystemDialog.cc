@@ -28,13 +28,10 @@
 
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/Log.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 #include <QtGui>
 #include <boost/bimap.hpp>
-
-#include <log4cpp/Category.hh>
-#include <log4cpp/CategoryStream.hh>
-#include <log4cpp/Priority.hh>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -91,7 +88,7 @@ void SolveLinearSystemDialog::pushParametersToState()
 
     {
       auto method = methodComboBox_->currentText().toStdString();
-      log4cpp::Category::getRoot() << log4cpp::Priority::DEBUG << "GUI: METHOD SELECTED: " << method;
+      Core::Logging::Log::get() << Core::Logging::DEBUG << "GUI: METHOD SELECTED: " << method;
 
       std::string methodOption = impl_->solverNameLookup_.left.at(method);
 

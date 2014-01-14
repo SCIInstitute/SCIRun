@@ -41,6 +41,7 @@ SET(Interface_Modules_Base_HEADERS
 SET(Interface_Modules_Base_SOURCES 
   ModuleDialogBasic.cc
   ModuleDialogGeneric.cc
+  RemembersFileDialogDirectory.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Base_FORMS_HEADERS ${Interface_Modules_Base_FORMS})

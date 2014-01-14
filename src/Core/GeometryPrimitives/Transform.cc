@@ -227,12 +227,10 @@ Transform::build_shear(double mat[4][4], const Vector& s, const Plane& p)
   // has been made unit-length.
   Vector svn(sv);
   svn.normalize();      // normalized vector for building orthonormal basis
-  //    Vector su(Cross(sv,p.normal()));
   Vector su(Cross(p.normal(),svn));
   Transform r;  // the rotation to take the z-axis to the shear normal
   // and the y-axis to the projected shear vector
   r.load_frame(su, svn, p.normal());
-  //    r.invert();
   Transform sh;
   double a[16];
   sh.get(a);

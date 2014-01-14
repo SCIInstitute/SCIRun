@@ -22,12 +22,22 @@ option(gtest_build_samples "Build gtest's sample programs." OFF)
 
 option(gtest_disable_pthreads "Disable uses of pthreads in gtest." OFF)
 
+option(gtest_force_static_runtime "Force use of static runtime in MSVC builds." OFF)
+
 # Defines pre_project_set_up_hermetic_build() and set_up_hermetic_build().
 include(cmake/hermetic_build.cmake OPTIONAL)
 
 if (COMMAND pre_project_set_up_hermetic_build)
   pre_project_set_up_hermetic_build()
 endif()
+
+########################################################################
+# Enable PIC for 64-bit Linux if necessary
+
+if (UNIX AND NOT BUILD_SHARED_LIBS AND NOT APPLE AND NOT CYGWIN)
+  set(ENABLE_PIC ON)
+endif()
+
 
 ########################################################################
 #
@@ -69,6 +79,19 @@ link_directories(${gtest_BINARY_DIR}/src)
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
+
+if (ENABLE_PIC)
+  set_target_properties(gtest
+      PROPERTIES
+        COMPILE_FLAGS "-fPIC"
+    )
+
+  set_target_properties(gtest_main
+      PROPERTIES
+        COMPILE_FLAGS "-fPIC"
+    )
+endif()
+
 target_link_libraries(gtest_main gtest)
 
 ########################################################################

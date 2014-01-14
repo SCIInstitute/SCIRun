@@ -33,6 +33,15 @@ if (COMMAND pre_project_set_up_hermetic_build)
   pre_project_set_up_hermetic_build()
 endif()
 
+
+########################################################################
+# Enable PIC for 64-bit Linux if necessary
+
+if (UNIX AND NOT BUILD_SHARED_LIBS AND NOT APPLE AND NOT CYGWIN)
+  set(ENABLE_PIC ON)
+endif()
+
+
 ########################################################################
 #
 # Project-wide settings
@@ -87,6 +96,20 @@ cxx_library(gmock_main
             "${gtest_dir}/src/gtest-all.cc"
             src/gmock-all.cc
             src/gmock_main.cc)
+
+
+if (ENABLE_PIC)
+  set_target_properties(gmock
+      PROPERTIES
+        COMPILE_FLAGS "-fPIC"
+    )
+
+  set_target_properties(gmock_main
+      PROPERTIES
+        COMPILE_FLAGS "-fPIC"
+    )       
+endif()     
+
 
 ########################################################################
 #

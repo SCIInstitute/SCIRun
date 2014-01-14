@@ -418,13 +418,6 @@ bool passesTdcsTest(const SparseRowMatrix& matrix)
           return true;
         }
       }
-      //if (it.value() == 1
-    
-    
-      //it.value();
-      //it.row();   // row index
-      //it.col();   // col index (here it is equal to k)
-    
     }
   }
   return false;

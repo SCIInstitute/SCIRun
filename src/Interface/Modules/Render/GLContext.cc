@@ -31,7 +31,7 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
-#include "GLContext.h"
+#include <Interface/Modules/Render/GLContext.h>
 
 using namespace SCIRun::Gui;
 

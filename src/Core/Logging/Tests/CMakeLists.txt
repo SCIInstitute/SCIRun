@@ -28,6 +28,7 @@
 
 SET(Core_Logging_Tests_SRCS
   LoggerTests.cc
+  Log4cppWrapperTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Core_Logging_Tests
@@ -35,7 +36,7 @@ SCIRUN_ADD_UNIT_TEST(Core_Logging_Tests
 )
 
 TARGET_LINK_LIBRARIES(Core_Logging_Tests
-  #Core_Logging
+  Core_Logging
   gtest_main
   gtest
   gmock

@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
    License for the specific language governing rights and limitations under
@@ -26,36 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_READ_FIELD_H
-#define INTERFACE_MODULES_READ_FIELD_H
+#ifndef INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H
+#define INTERFACE_MODULES_RENDER_VIEWSCENEPLATFORMCOMPATIBILITY_H
 
-#include "Interface/Modules/DataIO/ui_ReadFieldDialog.h"
-#include <boost/shared_ptr.hpp>
-#include <Modules/Basic/SendScalarModuleState.h>
-#include <Interface/Modules/Base/ModuleDialogGeneric.h>
-#include <Interface/Modules/Base/RemembersFileDialogDirectory.h>
-#include <Interface/Modules/DataIO/share.h>
+// Needed because Windows uses GLEW and GLEW headers need to be included
+// before GL headers, but Qt with X11 needs to be included before GL.
+//
+// Note: If GLEW is ever replaced, review the usefulness of this header.
+#ifdef _WIN32
+#  include <Interface/Modules/Render/ViewScene.h>
+#  include <Core/Datatypes/Geometry.h>
 
-namespace SCIRun {
-namespace Gui {
+#  include <QtGui>
 
-class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
-  public Ui::ReadFieldDialog, public RemembersFileDialogDirectory
-{
-	Q_OBJECT
-	
-public:
-  ReadFieldDialog(const std::string& name, 
-    SCIRun::Dataflow::Networks::ModuleStateHandle state,
-    QWidget* parent = 0);
-  virtual void pull();
+#  include <Interface/Modules/Render/QtGLContext.h>
+#else
+#  include <QtGui>
 
-private Q_SLOTS:
-  void pushFileNameToState();
-  void openFile();
-};
+#  include <Core/Datatypes/Geometry.h>
+#  include <Interface/Modules/Render/QtGLContext.h>
+#  include <Interface/Modules/Render/ViewScene.h>
+#endif
 
-}
-}
+#include <QPushButton>
+#include <Dataflow/Network/ModuleStateInterface.h>
 
 #endif

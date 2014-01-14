@@ -29,11 +29,13 @@
 SET(Core_Logging_SRCS
   ConsoleLogger.cc
   Logger.cc
+  Log.cc
 )
 
 SET(Core_Logging_HEADERS
   ConsoleLogger.h
   DirectLogger.h
+  Log.h
   LoggerInterface.h
   LoggerFwd.h
   ScopedTimeRemarker.h
@@ -43,6 +45,11 @@ SET(Core_Logging_HEADERS
 ADD_LIBRARY(Core_Logging 
   ${Core_Logging_HEADERS}
   ${Core_Logging_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Logging
+  Core_Utils
+  ${SCI_LOG4CPP_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)

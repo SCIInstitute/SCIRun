@@ -136,8 +136,6 @@ namespace Engine {
     InvalidConnectionSignalType invalidConnection_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
-
-    void configureLoggingLibrary();
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;
