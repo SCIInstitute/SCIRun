@@ -55,7 +55,7 @@ class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
 
   bool run(Datatypes::SparseRowMatrixHandle stiff, FieldHandle mesh, Datatypes::DenseMatrixHandle ElectrodeElements, Datatypes::DenseMatrixHandle ElectrodeElementType, Datatypes::DenseMatrixHandle  ElectrodeElementDefinition, Datatypes::DenseMatrixHandle contactimpedance, Datatypes::SparseRowMatrixHandle& output) const;
   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-}; // end namespace SCIRun
+};
 
 			}}}}
 #endif 

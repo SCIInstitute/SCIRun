@@ -32,7 +32,9 @@
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
 #include <Core/Algorithms/BrainStimulator/share.h>
-
+//////////////////////////////////////////////////////////////////////////
+// TODO MORITZ
+//////////////////////////////////////////////////////////////////////////
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {

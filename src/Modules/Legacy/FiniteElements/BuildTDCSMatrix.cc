@@ -31,7 +31,6 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
-//#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 
 using namespace SCIRun::Modules::FiniteElements;
@@ -68,17 +67,9 @@ void BuildTDCSMatrix::execute()
   ElectrodeElementType=getRequiredInput(Electrode_Element_Type);
   ElectrodeElementDefinition=getRequiredInput(Electrode_Element_Definition);
   ContactImpedance=getRequiredInput(Contact_Impedance);
-//  if (!(get_input_handle("FEM Stiffness",Stiffness,true))) return;
-//  if (!(get_input_handle("Mesh",Mesh,true))) return;
-//  if (!(get_input_handle("Electrode Element",ElectrodeElements,true))) return; 
-//  if (!(get_input_handle("Electrode Element Type",ElectrodeElementType,true))) return; 
-//  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
-//  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
  
   auto output = algo().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
-//  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
 
-//  send_output_handle("TDCS Matrix", TDCSMatrix);
   sendOutputFromAlgorithm(TDCSMatrix,output);
 }
 

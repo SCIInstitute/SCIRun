@@ -25,7 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+//////////////////////////////////////////////////////////////////////////
+// TODO MORITZ
+//////////////////////////////////////////////////////////////////////////
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
