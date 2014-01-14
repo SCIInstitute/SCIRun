@@ -56,6 +56,8 @@ GLWidget::GLWidget(QtGLContext* context) :
   ///       there is a new graphics context.
   std::vector<std::string> shaderSearchDirs;
 
+  mContext->makeCurrent();
+
   // Call gl platform init.
   CPM_GL_PLATFORM_NS::glPlatformInit();
   

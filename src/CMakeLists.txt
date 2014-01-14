@@ -342,6 +342,11 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
+# ++ MODULE: GL Platform
+CPM_AddModule("gl_platform"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
+  GIT_TAG "1.3.5")
+
 # ++ MODULE: Spire
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
