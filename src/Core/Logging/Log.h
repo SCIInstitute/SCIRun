@@ -68,6 +68,8 @@ namespace SCIRun
           explicit Stream(class LogStreamImpl* impl);
           SCISHARE friend Stream& operator<<(Stream& log, const std::string& msg);
           void stream(const std::string& msg);
+          void stream(double x);
+          void stream(int n);
         private:
           boost::shared_ptr<class LogStreamImpl> impl_;
         };
@@ -90,6 +92,8 @@ namespace SCIRun
       //TODO: how to templatize
       SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, int n);
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, double x);
     }
   }
 }

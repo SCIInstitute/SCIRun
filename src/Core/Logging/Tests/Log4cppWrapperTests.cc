@@ -34,13 +34,12 @@ using namespace SCIRun::Core::Logging;
 
 TEST(LogWrapperTests, LogSomething)
 {
-  Log::get() << INFO << "Hello! from the unit test. Need to figure out how to redirect this away from global log file...";
+  Log::get() << INFO << "Hello! from the unit test. Need to figure out how to redirect this away from global log file..." << " ...another string";
 }
 
-//TODO
-#if 0 //not compiling yet
 TEST(LogWrapperTests, LogNonString)
 {
-  Log::get() << INFO << "Testing logging numbers: " << 3.14;
+  Log::get() << INFO << "Testing logging doubles: " << 3.14 << " is a double.\n";
+  Log::get() << INFO << "Testing logging integers: " << 3 << " is an int";
+  
 }
-#endif

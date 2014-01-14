@@ -170,10 +170,32 @@ void Log::Stream::stream(const std::string& msg)
   impl_->stream_ << msg;
 }
 
+void Log::Stream::stream(double x)
+{
+  impl_->stream_ << x;
+}
+
+void Log::Stream::stream(int n)
+{
+  impl_->stream_ << n;
+}
+
 Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
 
 Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::string& msg)
 {
   log.stream(msg);
+  return log;
+}
+
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, int n)
+{
+  log.stream(n);
+  return log;
+}
+
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, double x)
+{
+  log.stream(x);
   return log;
 }
