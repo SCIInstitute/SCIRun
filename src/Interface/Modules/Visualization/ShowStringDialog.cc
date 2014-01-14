@@ -40,8 +40,6 @@ ShowStringDialog::ShowStringDialog(const std::string& name, ModuleStateHandle st
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  //executeButton_->setEnabled(false);
   
-  //connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
   buttonBox->setVisible(false);
 }

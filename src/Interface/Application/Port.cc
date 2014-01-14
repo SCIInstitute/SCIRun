@@ -355,8 +355,6 @@ void PortWidget::deleteConnections()
 {
   Q_FOREACH (ConnectionLine* c, connections_)
     delete c;
-  //size_t s = connections_.size();
-  //std::cout << s << std::endl;
   connections_.clear();
   setConnected(false);
 }

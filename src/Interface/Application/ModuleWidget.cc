@@ -329,11 +329,9 @@ void ModuleWidget::addInputPortsToLayout()
 
 void PortWidgetManager::reindexInputs()
 {
-  //std::cout << "REINDEXING" << std::endl;
   for (size_t i = 0; i < inputPorts_.size(); ++i)
   {
     auto port = inputPorts_[i];
-    //std::cout << "setting index on " << port->id() << " to " << i << std::endl;
     port->setIndex(i);
   }
 }
@@ -354,7 +352,6 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
   {
     InputPortHandle port = theModule_->getInputPort(pid);
     auto type = port->get_typename();
-    //std::cout << "~~~addDynamicPort " << port->getIndex() << " : " << port->get_portname() << " : " << type << std::endl;
 
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
@@ -369,44 +366,25 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_ && !deleting_)
   {
-    //auto portToRemove = index;
-    //std::cout << "~~~removeDynamicPort " << pid.name << std::endl;
-
     if (ports_.removeDynamicPort(pid, inputPortLayout_))
     {
       Q_EMIT dynamicPortChanged();
-      //printInputPorts(*theModule_);
     }
   }
 }
 
 bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout)
 {
-  //std::cout << "BEFORE removeDynamicPort: " << std::endl;
-  //Q_FOREACH(PortWidget* port, inputPorts_)
-  //{
-  //  std::cout << "\t" << port << " index = " << port->getIndex() << std::endl;
-  //}
   auto iter = std::find_if(inputPorts_.begin(), inputPorts_.end(), [&](const PortWidget* w) { return w->id() == pid; });
   if (iter != inputPorts_.end())
   {
     auto widget = *iter;
     inputPorts_.erase(iter);
     
-    //std::cout << "Reindexing inputs" << std::endl;
     reindexInputs();
     
-    //std::cout << "deleting widget" << std::endl;
     layout->removeWidget(widget);
     delete widget;
-
-    
-    
-    //std::cout << "AFTER removeDynamicPort: " << std::endl;
-    //Q_FOREACH(PortWidget* port, inputPorts_)
-    //{
-    //  std::cout << "\t" << port << " index = " << port->getIndex() << std::endl;
-    //}
 
     return true;
   }
