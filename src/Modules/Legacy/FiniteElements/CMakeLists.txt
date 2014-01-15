@@ -29,6 +29,7 @@
 # CMakeLists.txt for Dataflow/Modules/FiniteElements
 
 SET(Modules_Legacy_FiniteElements_HEADERS
+  BuildFEMatrix.h
   BuildTDCSMatrix.h
 )
 
@@ -36,7 +37,7 @@ SET(Modules_Legacy_FiniteElements_SRCS
   #DefinePeriodicBoundaries.cc
   #BuildFEGridMapping.cc
   #BuildFEGridMappingByDomain.cc
-  #BuildFEMatrix.cc
+  BuildFEMatrix.cc
   BuildTDCSMatrix.cc
   #BuildFESurfRHS.cc
   #BuildFEVolRHS.cc
