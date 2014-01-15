@@ -51,21 +51,21 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
     BuildFEMatrixAlgo()
     {
       // Number of processors to use
-      add_int("num_processors", AUTO);
+      addParameter(NumProcessors, AUTO);
       
       // Whether to force strict symmetry of the matrix
       // Averages symmetric components
-      add_bool("force_symmetry", false);
+      addParameter(ForceSymmetry, false);
 
       // Store intermediate results to speed up computation for
       // for instance conductivity search
       // This option only works for an indexed conductivity table
-      add_bool("generate_basis", false);
+      addParameter(GenerateBasis, false);
     }
 
     bool run(FieldHandle input,
-             MatrixHandle ctable,
-             MatrixHandle& output) const;
+             Datatypes::MatrixHandle ctable,
+             Datatypes::MatrixHandle& output) const;
   
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 };

@@ -34,16 +34,24 @@ DEALINGS IN THE SOFTWARE.
 //#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Thread/Barrier.h>
-#include <Core/Thread/Thread.h>
+//#include <Core/Thread/Thread.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Tensor.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
 
 #include <string>
 #include <vector>
 #include <algorithm>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 
 
@@ -53,12 +61,18 @@ namespace {
 class FEMBuilder
 {
 public:
-  
-  // Constructor needed as Barrier needs to have name
-  FEMBuilder(AlgoBase* algo) :
-  ref_cnt(0),
-  algo_(algo),
-  barrier_("FEMBuilder Barrier")
+  FEMBuilder(AlgorithmBase* algo) :
+    algo_(algo), numprocessors_(Thread::numProcessors()),
+    barrier_("FEMBuilder Barrier", numprocessors_),
+    mesh_(0), field_(0),
+    domain_dimension(0), local_dimension_nodes(0),
+    local_dimension_add_nodes(0),
+    local_dimension_derivatives(0),
+    local_dimension(0),
+    global_dimension_nodes(0),
+    global_dimension_add_nodes(0),
+    global_dimension_derivatives(0),
+    global_dimension(0), use_tensor_(false), use_scalars_(false)
   {
   }
   
@@ -66,19 +80,16 @@ public:
   bool build_matrix(FieldHandle input, 
                     MatrixHandle ctable,
                     MatrixHandle& output);
-  int ref_cnt; // needed for use as a LockingHandle
   
 private:
-  
-  AlgoBase* algo_;
+  AlgorithmBase* algo_;
+  int numprocessors_;
   Barrier barrier_;
   
   VMesh* mesh_;
   VField *field_;
   
   SparseRowMatrixHandle fematrix_;
-  
-  int numprocessors_;
   
   std::vector<bool> success_;
   
@@ -149,13 +160,13 @@ FEMBuilder::build_matrix(FieldHandle input,
   mesh_  = input->vmesh();
   
   // Determine the number of processors to use:
-  
-  numprocessors_ = Thread::numProcessors();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int numproc = algo_->get_int("num_processors");
   if (numproc > 0)
   {
     numprocessors_ = numproc;
   }
+#endif
   
   // If we have the Conductivity property use it, if not we assume the values on
   // the data to be the actual tensors.
@@ -163,7 +174,7 @@ FEMBuilder::build_matrix(FieldHandle input,
   
   // We added a second system of adding a conductivity table, using a matrix
   // Convert that matrix into the conducivity table
-  if (ctable.get_rep())
+  if (ctable)
   {
     tensors_.clear();
     DenseMatrix* mat = ctable->dense();
@@ -309,7 +320,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
 {
   Tensor T;
   
-  if (tensors_.size() == 0)
+  if (tensors_.empty())
   {
     field_->get_value(T,c_ind);
   }
@@ -1042,7 +1053,7 @@ FEMBuilder::parallel(int proc_num)
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_; q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
       return;
   }
 }
