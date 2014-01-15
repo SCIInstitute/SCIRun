@@ -26,12 +26,12 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildFEMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+//#include <Core/Datatypes/MatrixOperations.h>
+//#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Thread/Barrier.h>
 #include <Core/Thread/Thread.h>
@@ -43,10 +43,11 @@ DEALINGS IN THE SOFTWARE.
 #include <vector>
 #include <algorithm>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 
+
+namespace {
 // Helper class
 
 class FEMBuilder
@@ -1045,6 +1046,7 @@ FEMBuilder::parallel(int proc_num)
       return;
   }
 }
+}
 
 class BuildFEMatrixPrivateData : public AlgoData
 {
@@ -1060,26 +1062,23 @@ bool
 BuildFEMatrixAlgo::
 run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
 {
-  algo_start("BuildFEMatrix");
+  ScopedAlgorithmStatusReporter s(this, "BuildFEMatrix");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("Could not obtain input field");
-    algo_end();
     return false;
   }
   
   if (input->vfield()->is_vector())
   {
     error("This function has not yet been defined for elements with vector data");
-    algo_end();
     return false;
   }
   
   if (input->vfield()->basis_order()!=0)
   {
     error("This function has only been defined for data that is located at the elements");
-    algo_end();
     return false;
   }
   
@@ -1088,18 +1087,16 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
     if ((ctable->ncols() != 1)&&(ctable->ncols() != 6)&&(ctable->ncols() != 9))
     {
       error("Conductivity table needs to have 1, 6, or 9 columns");
-      algo_end();
       return false;
     } 
     if (ctable->nrows() == 0)
     { 
       error("ConductivityTable is empty");
-      algo_end();
       return false;
     }
   }
   
-  Handle<FEMBuilder> builder = new FEMBuilder(this);
+  FEMBuilder> builder(this);
   // Call the the none pure version
   
   if (get_bool("generate_basis"))
@@ -1108,7 +1105,7 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
     get_privatedata(privatedata);
     
     
-    if (ctable.get_rep()==0)
+    if (!ctable)
     {
       std::vector<std::pair<std::string,Tensor> > tens;
       
@@ -1126,7 +1123,7 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
       }
     }
     
-    if (ctable.get_rep())
+    if (!ctable)
     {
       size_type nconds = ctable->nrows();
       if ( (input->vmesh()->generation() != privatedata->generation_) ||
@@ -1148,7 +1145,7 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
           return false;
         }
         
-        if (privatedata->basis_fematrix_.get_rep() == 0)
+        if (!privatedata->basis_fematrix_)
         {
           error("Failed to build FEMatrix structure");
           algo_end();
@@ -1165,14 +1162,12 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
           if (! builder->build_matrix(input, con, temp) )
           {
             error("Build matrix method failed for one of the tissue types");
-            algo_end();
             return false;
           }
           
-          if (temp.get_rep() == 0)
+          if (!temp)
           {
             error("Failed to build FEMatrix component for one of the tissue types");
-            algo_end();
             return false;
           }
           
@@ -1215,7 +1210,6 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
     else
     {
       error("No conductivity table present: The generate_basis option only works for indexed conductivities");
-      algo_end();
       return false;
     }
   }
@@ -1223,19 +1217,15 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
   if (! builder->build_matrix(input,ctable,output) )
   {
     error("Build matrix method failed to build output matrix");
-    algo_end();
     return false;
   }
   
-  if (output.get_rep() == 0)
+  if (!output)
   {    
     error("Could not build output matrix");
-    algo_end();
     return false;
   }
   
-  algo_end();
   return true;
 }
 
-} // end namespace SCIRun

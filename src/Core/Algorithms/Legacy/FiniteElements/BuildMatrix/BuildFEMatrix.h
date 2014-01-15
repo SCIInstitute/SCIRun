@@ -30,25 +30,23 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEMATRIX_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEMATRIX_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace FiniteElements {
 
-//! for Windows support
-#include <Core/Algorithms/FiniteElements/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE BuildFEMatrixAlgo : public AlgoBase
+class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 {
   public:
     enum { AUTO = -1 };
+  
+    static AlgorithmParameterName NumProcessors;
+    static AlgorithmParameterName ForceSymmetry;
+    static AlgorithmParameterName GenerateBasis;
 
     BuildFEMatrixAlgo()
     {
@@ -67,9 +65,11 @@ class SCISHARE BuildFEMatrixAlgo : public AlgoBase
 
     bool run(FieldHandle input,
              MatrixHandle ctable,
-             MatrixHandle& output);
+             MatrixHandle& output) const;
+  
+    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 };
 
-} // end namespace SCIRun
+}}}}
 
 #endif 
