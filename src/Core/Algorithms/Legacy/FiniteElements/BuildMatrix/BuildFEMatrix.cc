@@ -34,7 +34,7 @@ DEALINGS IN THE SOFTWARE.
 //#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Thread/Barrier.h>
-//#include <Core/Thread/Thread.h>
+#include <Core/Thread/Parallel.h>
 
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
@@ -62,7 +62,7 @@ class FEMBuilder
 {
 public:
   FEMBuilder(AlgorithmBase* algo) :
-    algo_(algo), numprocessors_(Thread::numProcessors()),
+    algo_(algo), numprocessors_(Parallel::NumCores()),
     barrier_("FEMBuilder Barrier", numprocessors_),
     mesh_(0), field_(0),
     domain_dimension(0), local_dimension_nodes(0),
@@ -93,8 +93,8 @@ private:
   
   std::vector<bool> success_;
   
-  SparseRowMatrix::Rows rows_;
-  SparseRowMatrix::Columns allcols_;
+  //SparseRowMatrix::Rows rows_;
+  //SparseRowMatrix::Columns allcols_;
   std::vector<index_type> colidx_;
   
   index_type domain_dimension;
@@ -177,12 +177,11 @@ FEMBuilder::build_matrix(FieldHandle input,
   if (ctable)
   {
     tensors_.clear();
-    DenseMatrix* mat = ctable->dense();
-    MatrixHandle temphandle = mat;
+    DenseMatrixHandle mat = ctable->dense();
     // Only if we can convert it into a denso matrix, otherwise skip it
     if (mat)
     {
-      double* data = mat->get_data_pointer();
+      double* data = mat->data();
       size_type m = mat->nrows();
       size_type n = mat->ncols();
       Tensor T; 
@@ -247,10 +246,11 @@ FEMBuilder::build_matrix(FieldHandle input,
   success_.resize(numprocessors_,true);
   
   // Start the multi threaded FE matrix builder.
-  Thread::parallel(this, &FEMBuilder::parallel, numprocessors_);
+//  Thread::parallel(this, &FEMBuilder::parallel, numprocessors_);
+  Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
   for (size_t j=0; j<success_.size(); j++)
   {
-    if (success_[j] == false)
+    if (!success_[j])
     {
       std::ostringstream oss;
       oss << "Algorithm failed in thread " << j;
@@ -261,7 +261,7 @@ FEMBuilder::build_matrix(FieldHandle input,
   
   // Make sure it is symmetric
   
-  if (algo_->get_bool("force_symmetry"))
+  if (algo_->get(BuildFEMatrixAlgo::ForceSymmetry).getBool())
   {
     // Make sure the matrix is fully symmetric, this compensates for round off
     // errors
@@ -466,7 +466,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
   else
   {
     
-    if (precompute.size() == 0)
+    if (precompute.empty())
     {
       precompute.resize(d.size());
       for (int m=0; m < static_cast<int>(d.size()); m++)
@@ -697,12 +697,12 @@ FEMBuilder::parallel(int proc_num)
     }
   }
   
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // In case one of the threads fails, we should have them fail all
   for (int q = 0; q < numprocessors_; q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
     {
       std::ostringstream oss;
       oss << "FEMBuilder::setup failed in thread " << q;
@@ -806,12 +806,12 @@ FEMBuilder::parallel(int proc_num)
   }
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
     {
       return;
     }
@@ -849,7 +849,7 @@ FEMBuilder::parallel(int proc_num)
   }	
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
@@ -880,7 +880,7 @@ FEMBuilder::parallel(int proc_num)
   
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_; q++)
@@ -910,7 +910,7 @@ FEMBuilder::parallel(int proc_num)
   }	
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
@@ -1048,7 +1048,7 @@ FEMBuilder::parallel(int proc_num)
     success_[proc_num] = false;
   }	
   
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_; q++)
@@ -1067,7 +1067,9 @@ public:
   MatrixHandle basis_fematrix_;
 };
 
-
+AlogrithmParameterName BuildFEMatrixAlgo::NumProcessors("NumProcessors");
+AlogrithmParameterName BuildFEMatrixAlgo::ForceSymmetry("ForceSymmetry");
+AlogrithmParameterName BuildFEMatrixAlgo::GenerateBasis("GenerateBasis");
 
 bool 
 BuildFEMatrixAlgo::
@@ -1108,13 +1110,11 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
   }
   
   FEMBuilder> builder(this);
-  // Call the the none pure version
   
-  if (get_bool("generate_basis"))
+  if (get(GenerateBasis).getBool())
   {
     BuildFEMatrixPrivateData* privatedata;
     get_privatedata(privatedata);
-    
     
     if (!ctable)
     {
@@ -1122,7 +1122,7 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
       
       input->get_property("conductivity_table",tens);
       
-      if (tens.size() > 0)
+      if (!tens.empty())
       {
         ctable = new DenseMatrix(tens.size(),1);
         double* data = ctable->get_data_pointer();
@@ -1140,26 +1140,18 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
       if ( (input->vmesh()->generation() != privatedata->generation_) ||
           (privatedata->basis_fematrix_.get_rep() == 0) )
       {
-        MatrixHandle con = new DenseMatrix(nconds,1);
+        DenseMatrixHandle con(new DenseMatrix(nconds, 1, 0.0));
         double* data = con->get_data_pointer();
-        
-        // TODO: replace with std::fill
-        for (size_type i = 0; i < nconds; i++)
-        {
-          data[i] = 0.0;
-        }
         
         if (! builder->build_matrix(input, con, privatedata->basis_fematrix_) )
         {
           error("Build matrix method failed when building FEMatrix structure");
-          algo_end();
           return false;
         }
         
         if (!privatedata->basis_fematrix_)
         {
           error("Failed to build FEMatrix structure");
-          algo_end();
           return false;
         }
         
@@ -1199,10 +1191,10 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
       
       SparseRowMatrix *m = output->sparse();
       double *sum = m->get_vals();
-      double *cdata = ctable->get_data_pointer();
+      double *cdata = ctable->data();
       size_type n = ctable->ncols();
       
-      if (privatedata->basis_values_.size() > 0)
+      if (!privatedata->basis_values_.empty())
       {
         for (size_t p=0; p < privatedata->basis_values_[0].size(); p++)
           sum[p] = 0.0;
