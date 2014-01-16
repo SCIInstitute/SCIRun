@@ -73,6 +73,24 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
   shaderFiles.push_back(std::make_pair("DirPhong.vsh", spire::Interface::VERTEX_SHADER));
   shaderFiles.push_back(std::make_pair("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER));
   mSpire->addPersistentShader("DirPhong", shaderFiles);
+
+  // Load scirun5 arrow asset.
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  std::fstream arrowFile("Assets/UnitArrow.sp");
+  spire::Interface::loadProprietarySR5AssetFile(arrowFile, *rawVBO, *rawIBO);
+
+  std::vector<std::string> attribNames = {"aPos", "aNormal"};
+  spire::Interface::IBO_TYPE iboType = spire::Interface::IBO_16BIT;
+
+  mArrowVBOName = "arrowVBO";
+  mArrowIBOName = "arrowIBO";
+  mSpire->addVBO(mArrowVBOName, rawVBO, attribNames);
+  mSpire->addIBO(mArrowIBOName, rawIBO, iboType);
+
+  mArrowObjectName = "arrowObject";
+  mSpire->addObject(mArrowObjectName);
+  mSpire->addPassToObject(mArrowObjectName, "DirPhong", mArrowVBOName, mArrowIBOName, spire::Interface::TRIANGLE_STRIP);
 }
 
 //------------------------------------------------------------------------------
@@ -357,6 +375,8 @@ void SRInterface::doFrame()
       mSpire->renderObject(it->mName, passit->passName);
     }
   }
+
+  // Now render the axes on the screen.
 
 }
 
