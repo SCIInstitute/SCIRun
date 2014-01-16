@@ -50,8 +50,6 @@ BuildFEMatrix::BuildFEMatrix()
 
 void BuildFEMatrix::execute()
 {
-  MatrixHandle SysMatrix;
-  
   auto field = getRequiredInput(Mesh);
 
   auto conductivity = getOptionalInput(ConductivityTable_NOTENABLED);
@@ -63,6 +61,9 @@ void BuildFEMatrix::execute()
 #ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     algo().set("generate_basis", gui_use_basis_.get());
     algo().set("force_symmetry", gui_force_symmetry_.get());
+//#else
+//    algo().set(GenerateBasis, true);
+//    algo().set(ForceSymmetry, true);
 #endif
     
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER

@@ -32,6 +32,7 @@
 
 #include <Core/Datatypes/MatrixFwd.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <vector>
 #include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
 namespace SCIRun {
@@ -48,7 +49,7 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
     static AlgorithmParameterName ForceSymmetry;
     static AlgorithmParameterName GenerateBasis;
 
-    BuildFEMatrixAlgo()
+    BuildFEMatrixAlgo() : generation_(0)
     {
       // Number of processors to use
       addParameter(NumProcessors, AUTO);
@@ -64,10 +65,14 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
     }
 
     bool run(FieldHandle input,
-             Datatypes::MatrixHandle ctable,
-             Datatypes::MatrixHandle& output) const;
+             Datatypes::DenseMatrixHandle ctable,
+             Datatypes::SparseRowMatrixHandle& output) const;
   
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+private:
+  mutable int generation_;
+  mutable std::vector<std::vector<double> > basis_values_;
+  mutable Datatypes::SparseRowMatrixHandle basis_fematrix_;
 };
 
 }}}}
