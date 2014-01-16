@@ -176,7 +176,7 @@ FEMBuilder::build_matrix(FieldHandle input,
   if (ctable)
   {
     tensors_.clear();
-    DenseMatrixHandle mat = ctable->dense();
+    DenseMatrixHandle mat = ctable;
     // Only if we can convert it into a dense matrix, otherwise skip it
     if (mat)
     {
@@ -348,7 +348,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     for (int i=0; i<local_dimension; i++)
       l_stiff[i] = 0.0;
     
-    int local_dimension2=2*local_dimension;
+    auto local_dimension2=2*local_dimension;
     
     // These calls are direct lookups in the base of the VMesh
     // The compiler should optimize these well
@@ -432,7 +432,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
 {
   Tensor T;
   
-  if (tensors_.size() == 0)
+  if (tensors_.empty())
   {
     // Call to virtual interface. Get the tensor value. Actually this call relies
     // on the automatic casting feature of the virtual interface to convert scalar
@@ -474,7 +474,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       for(int i=0; i<local_dimension; i++)
         l_stiff[i] = 0.0;
       
-      int local_dimension2=2*local_dimension;
+      auto local_dimension2=2*local_dimension;
       
       double vol = mesh_->get_element_size();
       
@@ -553,7 +553,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       for(int i=0; i<local_dimension; i++)
         l_stiff[i] = 0.0;
       
-      int local_dimension2=2*local_dimension;
+      auto local_dimension2=2*local_dimension;
       
       for (size_t i = 0; i < d.size(); i++)
       {
@@ -881,7 +881,7 @@ FEMBuilder::parallel(int proc_num)
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_; q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
       return;
   }
   
@@ -911,7 +911,7 @@ FEMBuilder::parallel(int proc_num)
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
       return;
   }
   
@@ -920,7 +920,7 @@ FEMBuilder::parallel(int proc_num)
     //! zeroing in parallel
     const index_type ns = colidx_[proc_num];
     const index_type ne = colidx_[proc_num+1];
-    double* a = &(fematrix_->get_vals()[ns]), *ae=&(fematrix_->get_vals()[ne]);
+    double* a = &(fematrix_->valuePtr()[ns]), *ae=&(fematrix_->valuePtr()[ne]);
     while (a<ae) *a++=0.0;
     
     std::vector<VMesh::coords_type > ni_points;
@@ -1104,7 +1104,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
     {
       std::vector<std::pair<std::string,Tensor> > tens;
       
-      input->get_property("conductivity_table",tens);
+      input->properties().get_property("conductivity_table",tens);
       
       if (!tens.empty())
       {
@@ -1142,7 +1142,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         basis_values_.resize(nconds);
         for (size_type s=0; s < nconds; s++)
         {
-          MatrixHandle temp;
+          SparseRowMatrixHandle temp;
           // TODO: can initialize array using std::fill
           data[s] = 1.0;
           
@@ -1158,11 +1158,10 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
             return false;
           }
           
-          SparseRowMatrix *m = temp->sparse();
-          basis_values_[s].resize(m->get_nnz());
-          for (size_type p=0; p< m->get_nnz(); p++)
+          basis_values_[s].resize(temp->nonZeros());
+          for (size_type p=0; p< temp->nonZeros(); p++)
           {
-            basis_values_[s][p] = m->get_value(p);
+            basis_values_[s][p] = temp->valuePtr()[p];
           }
           data[s] = 0.0;
         }
@@ -1170,11 +1169,9 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         generation_ = input->vmesh()->generation();
       }
       
-      output = basis_fematrix_;
-      output.detach();
+      output.reset(basis_fematrix_->clone());
       
-      SparseRowMatrix *m = output->sparse();
-      double *sum = m->get_vals();
+      double *sum = output->valuePtr();
       double *cdata = ctable->data();
       size_type n = ctable->ncols();
       
