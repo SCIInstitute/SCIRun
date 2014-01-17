@@ -43,10 +43,10 @@ namespace SCIRun
       class SCISHARE ScopedTimeRemarker
       {
       public:
-        ScopedTimeRemarker(LoggerInterface* log, const std::string& label);
+        ScopedTimeRemarker(LegacyLoggerInterface* log, const std::string& label);
         ~ScopedTimeRemarker();
       private:
-        LoggerInterface* log_;
+        LegacyLoggerInterface* log_;
         std::string label_;
         boost::timer timer_;
       };

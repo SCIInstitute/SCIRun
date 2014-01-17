@@ -34,6 +34,7 @@ SET(Algorithms_Math_SRCS
   SolveLinearSystemWithEigen.cc
   LinearSystem/SolveLinearSystemAlgo.cc
   ParallelAlgebra/ParallelLinearAlgebra.cc
+  AddKnownsToLinearSystem.cc
 )
 
 SET(Algorithms_Math_HEADERS
@@ -45,6 +46,7 @@ SET(Algorithms_Math_HEADERS
   SolveLinearSystemWithEigen.h
   LinearSystem/SolveLinearSystemAlgo.h
   ParallelAlgebra/ParallelLinearAlgebra.h
+  AddKnownsToLinearSystem.h
 )
 
 ADD_LIBRARY(Algorithms_Math 
@@ -56,7 +58,6 @@ TARGET_LINK_LIBRARIES(Algorithms_Math
   Core_Datatypes
   Core_Thread
   Algorithms_Base
-  ${SCI_LOG4CPP_LIBRARY}
   ${SCI_BOOST_LIBRARY}
 )
 

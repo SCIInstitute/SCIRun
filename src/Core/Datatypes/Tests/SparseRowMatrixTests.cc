@@ -33,16 +33,142 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
-
+#include <Testing/Utils/MatrixTestUtilities.h>
 using namespace SCIRun::Core::Datatypes;
 using namespace ::testing;
+using namespace SCIRun::TestUtils;
 
 namespace
 {
+  SparseRowMatrixHandle posdef_matrix_correct()
+  {
+      return MAKE_SPARSE_MATRIX_HANDLE(
+      ( 1.0000000000001,-0.1,-0.2,-0.3,-0.4)
+      (-0.1, 2.0,-0.3,-0.4,-0.5)
+      (-0.2,-0.3, 2.0,-0.5,-0.6)
+      (-0.3,-0.4,-0.5, 2.0,-0.7)
+      (-0.4,-0.5,-0.6,-0.7, 3.0)
+      );
+  }
+  
+    SparseRowMatrixHandle posdef_matrix_false0()
+  {
+      return MAKE_SPARSE_MATRIX_HANDLE(
+      ( 1.01,-0.1,-0.2,-0.3,-0.4)
+      (-0.1,  2.0,-0.3,-0.4,-0.5)
+      (-0.2, -0.3, 1.6,-0.5,-0.6)
+      (-0.3, -0.4,-0.5, 2.0,-0.7)
+      (-0.4, -0.5,-0.6,-0.7, 3.0)
+      );
+  }
+  
+  SparseRowMatrixHandle posdef_matrix_false1()
+  {
+    return MAKE_SPARSE_MATRIX_HANDLE(
+      ( -2.0,-0.1,-0.1,-0.1,-0.1)
+      (-0.1, 2.0,-0.1,-0.1,-0.1)
+      (-0.1,-0.1, 2.0,-0.1,-0.1)
+      (-0.1,-0.1,-0.1, 2.0,-0.1)
+      (-0.1,-0.1,-0.1,-0.1, 2.0)
+      );
+
+  }
+  
+  SparseRowMatrix posdef_matrix_false2()
+  {
+    SparseRowMatrix m(5,6);
+    return m;
+  }
+  
+  SparseRowMatrix posdef_matrix_false3()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(1,3) = std::numeric_limits<double>::quiet_NaN(); 
+    return m;
+  }
+  
+  SparseRowMatrixHandle posdef_matrix_false4()
+  {
+     return MAKE_SPARSE_MATRIX_HANDLE(
+      ( 2.0,-0.2,-0.2,-0.2,-0.2)
+      (-0.1, 2.0,-0.1,-0.1,-0.1)
+      (-0.1,-0.1, 2.0,-0.1,-0.1)
+      (-0.1,-0.1,-0.1, 2.0,-0.1)
+      (-0.1,-0.1,-0.1,-0.1, 2.0)
+      );
+  }
+  
+  SparseRowMatrixHandle posdef_matrix_false5()
+  { 
+   return MAKE_SPARSE_MATRIX_HANDLE(
+      ( 2.0,-0.5,-0.5,-0.5,-0.5)
+      (-0.5, 2.0,-0.1,-0.1,-0.1)
+      (-0.5,-0.1, 2.0,-0.1,-0.1)
+      (-0.5,-0.1,-0.1, 2.0,-0.1)
+      (-0.5,-0.1,-0.1,-0.1, 2.0)
+      );
+  }
+  
+   SparseRowMatrixHandle posdef_matrix_false6()
+  {
+     return MAKE_SPARSE_MATRIX_HANDLE(
+      ( 2.0,-0.5,-0.5,-0.5,-0.5)
+      (-0.51, 2.0,-0.1,-0.1,-0.1)
+      (-0.5,-0.1, 2.0,-0.1,-0.1)
+      (-0.5,-0.1,-0.1, 2.0,-0.1)
+      (-0.5,-0.1,-0.1,-0.1, 2.0)
+      );
+  } 
+    
+  SparseRowMatrix sym_matrix_correct()
+  {
+    SparseRowMatrix m(4,4);
+    m.insert(0,0) = 1.0;
+    m.insert(3,2) = 0.5;
+    m.insert(2,3) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false0()
+  {
+    SparseRowMatrix m(4,4);
+    m.insert(0,1) = 1.0;
+    m.insert(2,3) = 0.5;
+    m.insert(3,2) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false1()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 1.0;
+    m.insert(2,3) = 0.1;
+    m.insert(4,2) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false2()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 1.0;
+    m.insert(2,4) = 0.4999999;
+    m.insert(4,2) = 0.5;
+    return m;
+  }
+  
+  SparseRowMatrix sym_matrix_false3()
+  {
+    SparseRowMatrix m(5,5);
+    m.insert(0,0) = 1.0;
+    m.insert(2,4) = std::numeric_limits<double>::quiet_NaN();
+    m.insert(4,2) = 0.5;
+    return m;
+  }
+  
   SparseRowMatrix matrix1()
   {
     SparseRowMatrix m(4,5);
-    m.insert(0,0) = 1;
+    m.insert(0,0) = 1.0;
     m.insert(1,2) = -2;
     m.insert(2,3) = 0.5;
     return m;
@@ -50,6 +176,12 @@ namespace
   SparseRowMatrix Zero()
   {
     SparseRowMatrix m(4,5);
+    m.setZero();
+    return m;
+  }
+  SparseRowMatrix ZeroSquare()
+  {
+    SparseRowMatrix m(4,4);
     m.setZero();
     return m;
   }
@@ -286,13 +418,6 @@ bool passesTdcsTest(const SparseRowMatrix& matrix)
           return true;
         }
       }
-      //if (it.value() == 1
-    
-    
-      //it.value();
-      //it.row();   // row index
-      //it.col();   // col index (here it is equal to k)
-    
     }
   }
   return false;
@@ -311,77 +436,68 @@ TEST(SparseRowMatrixTest, DISABLED_SearchingForSingleNonzeroInRowAndColumnOnTheD
   
 }
 
-TEST(SparseRowMatrixTest, GetRow)
-{
-  SparseRowMatrix m(matrix1());
-
-  Eigen::SparseVector<double> r1 = m.row(1);
-  std::cout << r1 << std::endl;
-}
-
-
-/*
-SparseRowMatrix matrix1()
-{
-SparseRowMatrix m(4,5);
-m.insert(0,0) = 1;
-m.insert(1,2) = -2;
-m.insert(2,3) = 0.5;
-return m;
-}
-*/
-
-namespace
-{
-  bool isSymmetric(const DenseMatrix& m)
-  {
-    return m.isApprox(m.transpose());
-  }
-
-  bool isSymmetric2(const SparseRowMatrix& m)
-  {
-    return m.isApprox(m.transpose());
-  }
-
-  //TODO
-  //bool isSymmetricOctave(const SparseRowMatrix& m, double tolerance)
-  //{
-  //  return (m - m.transpose()).lpNorm<Eigen::Infinity>()
-  //}
-
-  bool isSymmetric(const SparseRowMatrix& m)
-  {
-    for (int k = 0; k < m.outerSize(); ++k)
-    {
-      for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
-      {
-        if (m.coeff(it.col(), it.row()) != it.value())
-          return false; 
-        //std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
-      }
-    }
-    return true;
-  }
-}
-
-
 
 TEST(SparseRowMatrixTest, IsSymmetricTests)
 {
-  auto m = matrix1();
-  for (int k = 0; k < m.outerSize(); ++k)
-  {
-    for (SparseRowMatrix::InnerIterator it(m,k); it; ++it)
-    {
-      std::cout << " row = " << it.row() << " col = " << it.col() << " value = " << it.value() << std::endl;
-    }
-  }
+ auto m = matrix1();
+ 
+ ASSERT_FALSE(isSymmetricMatrix(m));
+ ASSERT_TRUE(isSymmetricMatrix(id3()));
+ ASSERT_FALSE(isSymmetricMatrix(Zero()));
+ ASSERT_TRUE(isSymmetricMatrix(ZeroSquare()));
 
-  ASSERT_FALSE(isSymmetric(m));
-  ASSERT_TRUE(isSymmetric(id3()));
-  ASSERT_TRUE(isSymmetric(Zero()));
+ auto m1 = sym_matrix_correct();
+ ASSERT_TRUE(isSymmetricMatrix(m1));
+ ASSERT_TRUE(m1.isSymmetric());
 
-  ASSERT_FALSE(m.isSymmetric());
-  ASSERT_TRUE(id3().isSymmetric());
-  ASSERT_TRUE(Zero().isSymmetric());
+ auto m2 = sym_matrix_false0();
+ ASSERT_FALSE(isSymmetricMatrix(m2));
+ ASSERT_FALSE(m2.isSymmetric());
+
+ auto m3 = sym_matrix_false1();
+ ASSERT_FALSE(isSymmetricMatrix(m3));
+ ASSERT_FALSE(m3.isSymmetric());
+
+ auto m4 = sym_matrix_false2();
+ ASSERT_FALSE(isSymmetricMatrix(m4));
+ ASSERT_FALSE(m4.isSymmetric());
+ 
+ auto m5 = sym_matrix_false3();
+ ASSERT_FALSE(isSymmetricMatrix(m5));
+ ASSERT_FALSE(m5.isSymmetric());
+ 
+ ASSERT_FALSE(m.isSymmetric());
+ ASSERT_TRUE(id3().isSymmetric());
+ ASSERT_FALSE(Zero().isSymmetric());
+ ASSERT_TRUE(ZeroSquare().isSymmetric()); 
+
+}
+
+TEST(SparseRowMatrixTest, IsPositiveDefiniteTests)
+{
+
+ auto n0 = *posdef_matrix_false0();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n0)); 
+ 
+ auto n1 = *posdef_matrix_correct();
+ ASSERT_TRUE(isPositiveDefiniteMatrix(n1));
+
+ auto n2 = *posdef_matrix_false1();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n2));
+
+ auto n3 = posdef_matrix_false2();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n3));
+ 
+ auto n4 = posdef_matrix_false3();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n4));
+
+ auto n5 = *posdef_matrix_false4();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n5));
+ 
+ auto n6 = *posdef_matrix_false5();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n6));
+ 
+ auto n7 = *posdef_matrix_false6();
+ ASSERT_FALSE(isPositiveDefiniteMatrix(n7));
+
 }

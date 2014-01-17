@@ -40,7 +40,7 @@ namespace SCIRun {
 namespace Gui {
 
 class SCISHARE ReadFieldDialog : public ModuleDialogGeneric, 
-  public Ui::ReadFieldDialog, public RemembersFileDialogDirectory<ReadFieldDialog>
+  public Ui::ReadFieldDialog, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 	

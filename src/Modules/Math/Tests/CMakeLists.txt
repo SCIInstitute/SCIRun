@@ -34,6 +34,7 @@ SET(Modules_Math_Tests_SRCS
   MatrixCalculatorFunctionalTests.cc
   SolveLinearSystemTests.cc
   SolveMinNormLeastSqSystemTests.cc
+  #AddKnownsToLinearSystemTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

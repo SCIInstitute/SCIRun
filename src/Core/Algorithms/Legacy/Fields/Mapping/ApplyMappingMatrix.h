@@ -35,37 +35,38 @@
 #include <algorithm>
 
 //! Datatypes used
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
-
+//#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Math/MiscMath.h>
 //! Base for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 //! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+    namespace Core {
+       namespace Algorithms {
+              namespace Fields {
 
-using namespace SCIRun;
-
-class SCISHARE ApplyMappingMatrixAlgo : public AlgoBase
+class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
 {
   public:
+    static AlgorithmInputName Source;
+    static AlgorithmInputName Destination;
+    static AlgorithmInputName Mapping;
+    static AlgorithmOutputName Output;  
     // Algorithm defaults
-    ApplyMappingMatrixAlgo()
-    {
-   }
+    ApplyMappingMatrixAlgo();
+    ~ApplyMappingMatrixAlgo();
 
-  public:
     // Algorithm Functions
-    bool run(FieldHandle& isrc, 
-             FieldHandle& idst,
-             MatrixHandle& mapping, 
-             FieldHandle& output);   
+    bool run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping, FieldHandle& output) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 };
 
 } // namespace SCIRunAlgo
-
+}}}
 
 #endif // ApplyMappingMatrix_h

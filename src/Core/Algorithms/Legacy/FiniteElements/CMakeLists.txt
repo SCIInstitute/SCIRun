@@ -26,33 +26,42 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# Sources of Core/Algorithms/Fields classes
-SET(Core_Algorithms_FiniteElements_SRCS
-  Periodic/DefinePeriodicBoundaries.cc
-  Mapping/BuildFEGridMapping.cc
-  Mapping/BuildNodeLink.cc
-  BuildMatrix/BuildFEMatrix.cc
-  BuildMatrix/BuildTDCSMatrix.cc
-  BuildRHS/BuildFEVolRHS.cc
-  BuildRHS/BuildFESurfRHS.cc
+# Headers of Core/Algorithms/Legacy/FiniteElements classes
+SET(Core_Algorithms_Legacy_FiniteElements_HEADERS
+  BuildMatrix/BuildTDCSMatrix.h
 )
 
-SCIRUN_ADD_LIBRARY(Core_Algorithms_FiniteElements ${Core_Algorithms_FiniteElements_SRCS})
+# Sources of Core/Algorithms/Legacy/FiniteElements classes
+SET(Core_Algorithms_Legacy_FiniteElements_SRCS
+  #Periodic/DefinePeriodicBoundaries.cc
+  #Mapping/BuildFEGridMapping.cc
+  #Mapping/BuildNodeLink.cc
+  #BuildMatrix/BuildFEMatrix.cc
+  BuildMatrix/BuildTDCSMatrix.cc
+  #BuildRHS/BuildFEVolRHS.cc
+  #BuildRHS/BuildFESurfRHS.cc
+)
 
-TARGET_LINK_LIBRARIES(Core_Algorithms_FiniteElements 
+ADD_LIBRARY(Core_Algorithms_Legacy_FiniteElements       
+${Core_Algorithms_Legacy_FiniteElements_HEADERS}
+  ${Core_Algorithms_Legacy_FiniteElements_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Algorithms_Legacy_FiniteElements 
   Core_Datatypes 
-  Core_Util 
-  Core_Exceptions 
-  Core_Thread 
-  Core_Geometry 
-  Core_Algorithms_Fields
-  Core_Algorithms_Util 
-  Core_Persistent 
-  Core_Basis 
-  ${SCI_TEEM_LIBRARY}
+#  Core_Util 
+#  Core_Exceptions 
+#  Core_Thread 
+   Core_Geometry_Primitives 
+#  Core_Algorithms_Fields
+#  Core_Algorithms_Util 
+#  Core_Persistent 
+#  Core_Basis 
+   Core_Datatypes_Legacy_Field
+#  ${SCI_TEEM_LIBRARY}
 )
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_FiniteElements)
+  ADD_DEFINITIONS(-DBUILD_Core_Algorithms_Legacy_FiniteElements)
 ENDIF(BUILD_SHARED_LIBS)
 

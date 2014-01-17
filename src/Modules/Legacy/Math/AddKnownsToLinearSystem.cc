@@ -26,50 +26,48 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Math/LinearSystem/AddKnownsToLinearSystem.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
+//#include <Core/Algorithms/FiniteElements/BuildMatrix/AddKnownsToLinearSystem.h>
+#include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 
-namespace SCIRun {
 
+using namespace SCIRun::Modules::Math;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-class AddKnownsToLinearSystem: public Module {
-public:
-  AddKnownsToLinearSystem(GuiContext*);
-  virtual void execute();
 
-private:
-  SCIRunAlgo::AddKnownsToLinearSystemAlgo algo_;
-};
-
-
-DECLARE_MAKER(AddKnownsToLinearSystem)
-
-AddKnownsToLinearSystem::AddKnownsToLinearSystem(GuiContext* ctx) :
-  Module("AddKnownsToLinearSystem", ctx, Source, "Math", "SCIRun")
+AddKnownsToLinearSystem::AddKnownsToLinearSystem()
+  : Module(ModuleLookupInfo("AddKnownsToLinearSystem","Math", "SCIRun"), false)
 {
-  algo_.set_progress_reporter(this);
+ INITIALIZE_PORT(LHS_Matrix);
+ INITIALIZE_PORT(RHS_Vector);
+ INITIALIZE_PORT(X_Vector);
+ INITIALIZE_PORT(OutPutLHSMatrix);
+ INITIALIZE_PORT(OutPutRHSVector);
 }
 
-void
-AddKnownsToLinearSystem::execute()
+
+void AddKnownsToLinearSystem::execute()
 {
-  MatrixHandle ain, bin, x, bout;
-  SparseRowMatrixHandle aout;
-  
-  get_input_handle("Matrix",ain,true);
-  get_input_handle("RHS",bin,false);
-  get_input_handle("X",x,true);
-  
-  if (inputs_changed_ || !oport_cached("Matrix") ||!oport_cached("RHS"))
-  {
-    algo_.run(ain,bin,x,aout,bout);
-    send_output_handle("Matrix",aout,true);
-    send_output_handle("RHS",bout,true);
-  }
+  SparseRowMatrixHandle lhs;
+  DenseMatrixHandle x;
+   
+  lhs=getRequiredInput(LHS_Matrix);
+  DenseColumnMatrixHandle rhs = matrix_cast::as_column(*(getOptionalInput(RHS_Vector)));
+  x=getRequiredInput(X_Vector);
+ 
+  auto output = algo().run_generic(make_input((LHS_Matrix,lhs)(RHS_Vector,rhs ? rhs : DenseColumnMatrixHandle())(X_Vector,x))); //TODO: Replace with function optionalAlgoInput
+
+  sendOutputFromAlgorithm(OutPutLHSMatrix,output);
+  sendOutputFromAlgorithm(OutPutRHSVector,output);
 }
 
-} // End namespace SCIRun
+
+
+

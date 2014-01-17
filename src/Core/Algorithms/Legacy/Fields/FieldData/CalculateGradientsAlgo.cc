@@ -88,13 +88,19 @@ CalculateGradientsAlgo::run(FieldHandle input, FieldHandle& output) const
   imesh->get_element_center(coords);
   
   VField::size_type num_elems = imesh->num_elems();
-
+  int cnt = 0;  //Moritz, 11/26/13
   StackVector<double,3> grad;
   for (VMesh::Elem::index_type idx = 0; idx < num_elems; idx++)
   {
     ifield->gradient(grad,coords,idx);    
     Vector v(grad[0],grad[1],grad[2]);
-    ofield->set_value(v,idx);  
+    ofield->set_value(v,idx); 
+    cnt++; //Moritz, 11/26/13, begin
+    if (cnt == 400) 
+    {
+        cnt = 0; 
+        update_progress_max(idx,num_elems); 
+    }  //Moritz, 11/26/13, end
   }
 
   return (true);

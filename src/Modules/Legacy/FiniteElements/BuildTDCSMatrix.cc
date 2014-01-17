@@ -29,64 +29,50 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Module.h>
-
-#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
-
-
-namespace SCIRun {
-
-class BuildTDCSMatrix : public Module {
-  public:
-    BuildTDCSMatrix(GuiContext*);
-    virtual ~BuildTDCSMatrix() {}
-
-    virtual void execute();
-  
-   private:
-    SCIRunAlgo::BuildTDCSMatrix algo_;
-
-};
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
 
-DECLARE_MAKER(BuildTDCSMatrix)
-
-BuildTDCSMatrix::BuildTDCSMatrix(GuiContext* ctx)
-  : Module("BuildTDCSMatrix", ctx, Source, "FiniteElements", "SCIRun")
+BuildTDCSMatrix::BuildTDCSMatrix()
+  : Module(ModuleLookupInfo("BuildTDCSMatrix","FiniteElements", "SCIRun"), false)
 {
-  algo_.set_progress_reporter(this);
+ INITIALIZE_PORT(FEM_Stiffness_Matrix);
+ INITIALIZE_PORT(FEM_Mesh);
+ INITIALIZE_PORT(Electrode_Element);
+ INITIALIZE_PORT(Electrode_Element_Type);
+ INITIALIZE_PORT(Electrode_Element_Definition);
+ INITIALIZE_PORT(Contact_Impedance);
+ INITIALIZE_PORT(TDCSMatrix);
 }
 
 
 void BuildTDCSMatrix::execute()
 {
   FieldHandle Mesh;
-  MatrixHandle Stiffness;
-  MatrixHandle ElectrodeElements;
-  MatrixHandle ElectrodeElementType;
-  MatrixHandle ElectrodeElementDefinition;
-  MatrixHandle ContactImpedance;
-  MatrixHandle TDCSMatrix;  
-
-  if (!(get_input_handle("FEM Stiffness",Stiffness,true))) return;
-  if (!(get_input_handle("Mesh",Mesh,true))) return;
-  if (!(get_input_handle("Electrode Element",ElectrodeElements,true))) return; 
-  if (!(get_input_handle("Electrode Element Type",ElectrodeElementType,true))) return; 
-  if (!(get_input_handle("Electrode Element Definition",ElectrodeElementDefinition,true))) return; 
-  if (!(get_input_handle("Contact Impedance",ContactImpedance,true))) return;   
+  SparseRowMatrixHandle Stiffness;
+  DenseMatrixHandle ElectrodeElements;
+  DenseMatrixHandle ElectrodeElementType;
+  DenseMatrixHandle ElectrodeElementDefinition;
+  DenseMatrixHandle ContactImpedance; 
+  std::cout <<"1"<< std::endl;
+  Stiffness=getRequiredInput(FEM_Stiffness_Matrix);
+  Mesh=getRequiredInput(FEM_Mesh);
+  ElectrodeElements=getRequiredInput(Electrode_Element);
+  ElectrodeElementType=getRequiredInput(Electrode_Element_Type);
+  ElectrodeElementDefinition=getRequiredInput(Electrode_Element_Definition);
+  ContactImpedance=getRequiredInput(Contact_Impedance);
  
-  algo_.run(Stiffness,Mesh,ElectrodeElements,ElectrodeElementType,ElectrodeElementDefinition,ContactImpedance,TDCSMatrix);  
+  auto output = algo().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
 
-  send_output_handle("TDCS Matrix", TDCSMatrix);
-  
+  sendOutputFromAlgorithm(TDCSMatrix,output);
 }
 
-} // End namespace SCIRun
 
 
 

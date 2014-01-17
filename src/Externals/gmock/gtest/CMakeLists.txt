@@ -7,7 +7,9 @@
 
 # BUILD_SHARED_LIBS is a standard CMake variable, but we declare it here to
 # make it prominent in the GUI.
-option(BUILD_SHARED_LIBS "Build shared libraries (DLLs)." OFF)
+#
+# SCI build note: forcing static build
+set(BUILD_SHARED_LIBS OFF)
 
 # When other libraries are using a shared version of runtime libraries,
 # Google Test also has to use one.
@@ -31,13 +33,6 @@ if (COMMAND pre_project_set_up_hermetic_build)
   pre_project_set_up_hermetic_build()
 endif()
 
-########################################################################
-# Enable PIC for 64-bit Linux if necessary
-
-if (UNIX AND NOT BUILD_SHARED_LIBS AND NOT APPLE AND NOT CYGWIN)
-  set(ENABLE_PIC ON)
-endif()
-
 
 ########################################################################
 #
@@ -51,6 +46,8 @@ endif()
 # Language "C" is required for find_package(Threads).
 project(gtest CXX C)
 cmake_minimum_required(VERSION 2.6.2)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 if (COMMAND set_up_hermetic_build)
   set_up_hermetic_build()
@@ -79,18 +76,6 @@ link_directories(${gtest_BINARY_DIR}/src)
 # aggressive about warnings.
 cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc)
-
-if (ENABLE_PIC)
-  set_target_properties(gtest
-      PROPERTIES
-        COMPILE_FLAGS "-fPIC"
-    )
-
-  set_target_properties(gtest_main
-      PROPERTIES
-        COMPILE_FLAGS "-fPIC"
-    )
-endif()
 
 target_link_libraries(gtest_main gtest)
 

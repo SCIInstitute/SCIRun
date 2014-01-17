@@ -28,43 +28,59 @@
 
 # CMakeLists.txt for Dataflow/Modules/FiniteElements
 
-SET(Dataflow_Modules_FiniteElements_SRCS
-  DefinePeriodicBoundaries.cc
-  BuildFEGridMapping.cc
-  BuildFEGridMappingByDomain.cc
-  BuildFEMatrix.cc
+SET(Modules_Legacy_FiniteElements_HEADERS
+  BuildTDCSMatrix.h
+)
+
+SET(Modules_Legacy_FiniteElements_SRCS
+  #DefinePeriodicBoundaries.cc
+  #BuildFEGridMapping.cc
+  #BuildFEGridMappingByDomain.cc
+  #BuildFEMatrix.cc
   BuildTDCSMatrix.cc
-  BuildFESurfRHS.cc
-  BuildFEVolRHS.cc
+  #BuildFESurfRHS.cc
+  #BuildFEVolRHS.cc
 )
     
-SCIRUN_ADD_LIBRARY(Dataflow_Modules_FiniteElements ${Dataflow_Modules_FiniteElements_SRCS})
+ADD_LIBRARY(Modules_Legacy_FiniteElements  ${Modules_Legacy_FiniteElements_HEADERS} ${Modules_Legacy_FiniteElements_SRCS})
 
-TARGET_LINK_LIBRARIES(Dataflow_Modules_FiniteElements
-  Dataflow_Network
-  Dataflow_Widgets
-  Core_Algorithms_FiniteElements
-  Core_Algorithms_Fields
-  Core_Algorithms_Util
-  Core_Algorithms_Geometry
-  Core_Basis
-  Core_Datatypes
-  Core_Exceptions
-  Core_Geom
-  Core_Geometry
-  Core_GeomInterface
-  Dataflow_GuiInterface
-  Core_ImportExport
-  Core_Math
-  Core_Persistent
-  Core_Thread
-  Dataflow_TkExtensions
-  Core_Util
-  ${TK_LIBRARY}
-  ${GL_LIBRARY}
-  ${M_LIBRARY}
-  ${THREAD_LIBRARY}
-  ${SCI_TEEM_LIBRARY}
+TARGET_LINK_LIBRARIES(Modules_Legacy_FiniteElements
+ Dataflow_Network
+ Core_Algorithms_Legacy_FiniteElements
+ Core_Datatypes_Legacy_Field
+ Algorithms_Base
+ Core_Basis
+ Core_Datatypes
+ Core_Exceptions_Legacy
+ Core_Geometry_Primitives
+ Core_Math
+ Core_Util_Legacy
+#  Dataflow_Network
+#  Dataflow_Widgets
+#  Core_Algorithms_FiniteElements
+#  Core_Algorithms_Fields
+#  Core_Algorithms_Util
+#  Core_Algorithms_Geometry
+#  Core_Basis
+#  Core_Datatypes
+#  Core_Exceptions
+#  Core_Geom
+#  Core_Geometry
+#  Core_GeomInterface
+#  Dataflow_GuiInterface
+#  Core_ImportExport
+#  Core_Math
+#  Core_Persistent
+#  Core_Thread
+#  Dataflow_TkExtensions
+#  Core_Util
+#  ${TK_LIBRARY}
+#  ${GL_LIBRARY}
+#  ${M_LIBRARY}
+#  ${THREAD_LIBRARY}
+#  ${SCI_TEEM_LIBRARY}
 )
 
-
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_FiniteElements)
+ENDIF(BUILD_SHARED_LIBS)

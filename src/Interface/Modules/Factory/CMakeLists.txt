@@ -52,6 +52,7 @@ TARGET_LINK_LIBRARIES(Interface_Modules_Factory
   Interface_Modules_Math
   Interface_Modules_Fields
   Interface_Modules_FiniteElements
+  Interface_Modules_BrainStimulator
   Interface_Modules_Render
   Interface_Modules_String
   Interface_Modules_Testing

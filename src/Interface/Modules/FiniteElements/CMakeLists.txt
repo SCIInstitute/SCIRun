@@ -28,7 +28,7 @@
 #
 
 SET(Interface_Modules_FiniteElements_FORMS
-  TDCSSimulatorDialog.ui
+ TDCSSimulatorDialog.ui
 )
 
 SET(Interface_Modules_FiniteElements_HEADERS

@@ -26,59 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Field.h>
-#include <Core/Algorithms/Fields/FieldData/CalculateVectorMagnitudes.h>
+#include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Dataflow::Networks;
 
-
-namespace SCIRun {
-
-class CalculateVectorMagnitudes : public Module
+CalculateVectorMagnitudes::CalculateVectorMagnitudes()
+  : Module(ModuleLookupInfo("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun"), false)
 {
-  public:
-    CalculateVectorMagnitudes(GuiContext* ctx);
-    virtual ~CalculateVectorMagnitudes() {}
-    virtual void execute();
-
-  private:
-    SCIRunAlgo::CalculateVectorMagnitudesAlgo algo_;
-};
-
-
-DECLARE_MAKER(CalculateVectorMagnitudes)
-
-CalculateVectorMagnitudes::CalculateVectorMagnitudes(GuiContext* ctx)
-  : Module("CalculateVectorMagnitudes", ctx, Filter, "ChangeFieldData", "SCIRun")
-{
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(ScalarField);
+  INITIALIZE_PORT(VectorField);
 }
 
-void
-CalculateVectorMagnitudes::execute()
+void CalculateVectorMagnitudes::execute()
 {
-  FieldHandle input, output;
+  FieldHandle input = getRequiredInput(ScalarField);
 
-  get_input_handle( "Field", input, true );
-
-  // If no data or a changed recalcute.
-  if( inputs_changed_ || !oport_cached("Field") )
+  //inputs_changed_ || !oport_cached("Field")
+  if(needToExecute())
   {
     update_state(Executing);
-    if (!(algo_.run(input,output))) return;
-    send_output_handle( "Field", output );
+
+    auto output = algo().run_generic(make_input((ScalarField, input)));
+
+    sendOutputFromAlgorithm(VectorField, output);
   }
 }
-
-} // End namespace SCIRun
-
-
-
-
-
-
-
-
-
-

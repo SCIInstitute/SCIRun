@@ -60,7 +60,7 @@ TEST(AnyTests, CanCopyConstructEmpty)
 }
 
 #ifdef WIN32
-TEST(AnyTests, CanCopyConstructConstEmpty_SEGFAULTSWITHBOOST154_ONMAC)
+TEST(AnyTests, DISABLED_CanCopyConstructConstEmpty_SEGFAULTSWITHBOOST154)
 {
   boost::any a(const_empty());
   EXPECT_TRUE(a.empty());

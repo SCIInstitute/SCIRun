@@ -30,33 +30,32 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDTDCSMATRIX_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
 //! for Windows support
-#include <Core/Algorithms/FiniteElements/share.h>
+#include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
-namespace SCIRunAlgo {
-using namespace SCIRun;
-}
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace FiniteElements {
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE BuildTDCSMatrix : public AlgoBase
+class SCISHARE BuildTDCSMatrixAlgo : public AlgorithmBase
 {
   public:
-  BuildTDCSMatrix();
-  ~BuildTDCSMatrix();
-  bool run(MatrixHandle stiff, FieldHandle mesh, MatrixHandle ElectrodeElements, MatrixHandle ElectrodeElementType, MatrixHandle ElectrodeElementDefinition, MatrixHandle contactimpedance, MatrixHandle& output);
-}; // end namespace SCIRun
 
-}
+    static AlgorithmInputName FEM_Stiffness_Matrix;
+    static AlgorithmInputName FEM_Mesh;
+    static AlgorithmInputName Electrode_Element;
+    static AlgorithmInputName Electrode_Element_Type;
+    static AlgorithmInputName Electrode_Element_Definition;
+    static AlgorithmInputName Contact_Impedance;
+    static AlgorithmOutputName TDCSMatrix;
+
+  bool run(Datatypes::SparseRowMatrixHandle stiff, FieldHandle mesh, Datatypes::DenseMatrixHandle ElectrodeElements, Datatypes::DenseMatrixHandle ElectrodeElementType, Datatypes::DenseMatrixHandle  ElectrodeElementDefinition, Datatypes::DenseMatrixHandle contactimpedance, Datatypes::SparseRowMatrixHandle& output) const;
+  virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+};
+
+			}}}}
 #endif 

@@ -281,7 +281,7 @@ TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile)
 TEST(ReadMatrixAlgorithmTest, TestColumnFromRealBinaryMatFile2)
 {
   ReadMatrixAlgorithm algo;
-  auto filename = boost::filesystem::path("E:\\columnBin2.mat");
+  auto filename = TestResources::rootDir() / "columnBin2.mat";
   if (boost::filesystem::exists(filename))
   {
     auto matrix = algo.run(filename.string());

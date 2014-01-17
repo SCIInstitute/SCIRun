@@ -13,6 +13,8 @@ src/Doxyfile
 *.dylib
 *.so
 *.a
+*.*~
+*.orig
 CMakeCache.txt
 CMakeFiles
 Makefile

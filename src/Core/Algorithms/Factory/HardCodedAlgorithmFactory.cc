@@ -31,11 +31,13 @@
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/CalculateVectorMagnitudesAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+#include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
@@ -45,10 +47,18 @@
 #include <Core/Algorithms/DataIO/TextToTriSurfField.h>
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
+#include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms::DataIO;
+using namespace SCIRun::Core::Algorithms::Math;
+using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
 
 //TODO: add unit test 
@@ -72,7 +82,15 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
   else if (name == "AlignMeshBoundingBoxes")
     h.reset(new AlignMeshBoundingBoxesAlgo);
   else if (name == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-    h.reset(new GetMeshNodesAlgo);
+    h.reset(new GetMeshNodesAlgo);    
+  else if (name == "ElectrodeCoilSetup")
+    h.reset(new ElectrodeCoilSetupAlgorithm);     
+  else if (name == "SetConductivitiesToTetMesh")
+    h.reset(new SetConductivitiesToTetMeshAlgorithm); 
+  else if (name == "SetupRHSforTDCSandTMS")
+    h.reset(new SetupRHSforTDCSandTMSAlgorithm);   
+  else if (name == "GenerateROIStatistics")
+    h.reset(new GenerateROIStatisticsAlgorithm);        
   else if (name == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
   else if (name == "ReportFieldInfo")
@@ -93,7 +111,13 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new ConvertMeshToIrregularMeshAlgo);
   else if (name == "ReadMesh")
     h.reset(new TextToTriSurfFieldAlgorithm);
-
+  else if (name == "BuildTDCSMatrix")
+    h.reset(new BuildTDCSMatrixAlgo);
+  else if (name == "AddKnownsToLinearSystem")
+    h.reset(new AddKnownsToLinearSystemAlgo);  
+  else if (name == "CalculateVectorMagnitudes")
+    h.reset(new CalculateVectorMagnitudesAlgo); 
+    
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

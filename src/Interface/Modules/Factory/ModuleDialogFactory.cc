@@ -46,6 +46,10 @@
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
+#include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
+#include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
+#include <Interface/Modules/BrainStimulator/GenerateROIStatisticsDialog.h>
+#include <Interface/Modules/BrainStimulator/SetupRHSforTDCSandTMSDialog.h>
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
@@ -102,6 +106,14 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new CreateLatVolDialog(moduleId, state, parentToUse_);
   if (moduleId.find("tDCSSimulator") != std::string::npos)
     return new TDCSSimulatorDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ElectrodeCoilSetup") != std::string::npos)
+    return new ElectrodeCoilSetupDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SetConductivitiesToTetMesh") != std::string::npos)
+    return new SetConductivitiesToTetMeshDialog(moduleId, state, parentToUse_); 
+  if (moduleId.find("GenerateROIStatistics") != std::string::npos)
+    return new GenerateROIStatisticsDialog(moduleId, state, parentToUse_); 
+  if (moduleId.find("SetupRHSforTDCSandTMS") != std::string::npos)
+    return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);       
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

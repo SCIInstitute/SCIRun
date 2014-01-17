@@ -52,7 +52,7 @@ private:
   QString moduleName_;
 };
 
-class ModuleLogger : public QObject, public Core::Logging::LoggerInterface
+class ModuleLogger : public QObject, public Core::Logging::LegacyLoggerInterface
 {
   Q_OBJECT
 public:

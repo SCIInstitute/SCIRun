@@ -34,7 +34,7 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ParallelAlgebra/ParallelLinearAlgebra.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-
+#include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -1211,11 +1211,13 @@ AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) 
   auto rhs = input.get<DenseColumnMatrix>(Variables::RHS);
 
   DenseColumnMatrixHandle solution;
+  
   bool success = run(lhs, rhs, DenseColumnMatrixHandle(), solution);
   if (!success)
   {
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
+  
   AlgorithmOutput output;
   output[Variables::Solution] = solution;
   return output;
