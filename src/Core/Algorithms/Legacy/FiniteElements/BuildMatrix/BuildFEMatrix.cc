@@ -894,8 +894,10 @@ FEMBuilder::parallel(int proc_num)
     if (proc_num == 0)
     {
       rows_[global_dimension] = st;
-      
+      algo_->remark("Creating fematrix on main thread.");
       fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension, rows_.get(), allcols_.get(), st));
+      rows_.reset();
+      allcols_.reset();
     }
     success_[proc_num] = true;
   }
