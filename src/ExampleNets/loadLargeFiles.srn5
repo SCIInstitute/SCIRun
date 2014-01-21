@@ -4,34 +4,18 @@
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>15</count>
+			<count>12</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
-				<first>BuildTDCSMatrix:24</first>
+				<first>ReadField:12</first>
 				<second class_id="4" tracking_level="0" version="0">
 					<module class_id="5" tracking_level="0" version="0">
-						<package_name_>SCIRun</package_name_>
-						<category_name_>FiniteElements</category_name_>
-						<module_name_>BuildTDCSMatrix</module_name_>
-					</module>
-					<state class_id="6" tracking_level="0" version="0">
-						<stateMap class_id="7" tracking_level="0" version="0">
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
-				<first>ReadField:12</first>
-				<second>
-					<module>
 						<package_name_>SCIRun</package_name_>
 						<category_name_>DataIO</category_name_>
 						<module_name_>ReadField</module_name_>
 					</module>
-					<state>
-						<stateMap>
+					<state class_id="6" tracking_level="0" version="0">
+						<stateMap class_id="7" tracking_level="0" version="0">
 							<count>1</count>
 							<item_version>0</item_version>
 							<item class_id="8" tracking_level="0" version="0">
@@ -223,22 +207,6 @@
 				</second>
 			</item>
 			<item>
-				<first>ReportMatrixInfo:26</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>Math</category_name_>
-						<module_name_>ReportMatrixInfo</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>0</count>
-							<item_version>0</item_version>
-						</stateMap>
-					</state>
-				</second>
-			</item>
-			<item>
 				<first>ReportMatrixInfo:5</first>
 				<second>
 					<module>
@@ -302,95 +270,19 @@
 					</state>
 				</second>
 			</item>
-			<item>
-				<first>WriteMatrix:25</first>
-				<second>
-					<module>
-						<package_name_>SCIRun</package_name_>
-						<category_name_>DataIO</category_name_>
-						<module_name_>WriteMatrix</module_name_>
-					</module>
-					<state>
-						<stateMap>
-							<count>1</count>
-							<item_version>0</item_version>
-							<item>
-								<first>
-									<name>Filename</name>
-								</first>
-								<second>
-									<name>Filename</name>
-									<value>
-										<which>2</which>
-										<value>E:/tdcs_big_examples/scirun5_tdcs_output.mat</value>
-									</value>
-								</second>
-							</item>
-						</stateMap>
-					</state>
-				</second>
-			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>14</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
-				<moduleId1_>BuildTDCSMatrix:24</moduleId1_>
+				<moduleId1_>ReadField:12</moduleId1_>
 				<port1_ class_id="14" tracking_level="0" version="0">
-					<name>TDCSMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>ReportMatrixInfo:26</moduleId2_>
-				<port2_>
-					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>BuildTDCSMatrix:24</moduleId1_>
-				<port1_>
-					<name>TDCSMatrix</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>WriteMatrix:25</moduleId2_>
-				<port2_>
-					<name>MatrixToWrite</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:12</moduleId1_>
-				<port1_>
-					<name>Field</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>BuildTDCSMatrix:24</moduleId2_>
-				<port2_>
-					<name>FEM_Mesh</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadField:12</moduleId1_>
-				<port1_>
 					<name>Field</name>
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ReportFieldInfo:13</moduleId2_>
 				<port2_>
 					<name>InputField</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadMatrix:0</moduleId1_>
-				<port1_>
-					<name>MatrixLoaded</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>BuildTDCSMatrix:24</moduleId2_>
-				<port2_>
-					<name>Electrode_Element_Type</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -412,33 +304,9 @@
 					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>BuildTDCSMatrix:24</moduleId2_>
-				<port2_>
-					<name>Contact_Impedance</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadMatrix:1</moduleId1_>
-				<port1_>
-					<name>MatrixLoaded</name>
-					<id>0</id>
-				</port1_>
 				<moduleId2_>ReportMatrixInfo:7</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadMatrix:2</moduleId1_>
-				<port1_>
-					<name>MatrixLoaded</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>BuildTDCSMatrix:24</moduleId2_>
-				<port2_>
-					<name>Electrode_Element</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -460,33 +328,9 @@
 					<name>MatrixLoaded</name>
 					<id>0</id>
 				</port1_>
-				<moduleId2_>BuildTDCSMatrix:24</moduleId2_>
-				<port2_>
-					<name>Electrode_Element_Definition</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadMatrix:4</moduleId1_>
-				<port1_>
-					<name>MatrixLoaded</name>
-					<id>0</id>
-				</port1_>
 				<moduleId2_>ReportMatrixInfo:5</moduleId2_>
 				<port2_>
 					<name>InputMatrix</name>
-					<id>0</id>
-				</port2_>
-			</item>
-			<item>
-				<moduleId1_>ReadMatrix:9</moduleId1_>
-				<port1_>
-					<name>MatrixLoaded</name>
-					<id>0</id>
-				</port1_>
-				<moduleId2_>BuildTDCSMatrix:24</moduleId2_>
-				<port2_>
-					<name>FEM_Stiffness_Matrix</name>
 					<id>0</id>
 				</port2_>
 			</item>
@@ -505,18 +349,11 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>15</count>
+		<count>12</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
-			<first>BuildTDCSMatrix:24</first>
-			<second class_id="17" tracking_level="0" version="0">
-				<first>-1414</first>
-				<second>-585</second>
-			</second>
-		</item>
-		<item>
 			<first>ReadField:12</first>
-			<second>
+			<second class_id="17" tracking_level="0" version="0">
 				<first>-1699</first>
 				<second>-568</second>
 			</second>
@@ -571,13 +408,6 @@
 			</second>
 		</item>
 		<item>
-			<first>ReportMatrixInfo:26</first>
-			<second>
-				<first>-1021</first>
-				<second>-454</second>
-			</second>
-		</item>
-		<item>
 			<first>ReportMatrixInfo:5</first>
 			<second>
 				<first>-1983</first>
@@ -603,13 +433,6 @@
 			<second>
 				<first>-1221</first>
 				<second>-704</second>
-			</second>
-		</item>
-		<item>
-			<first>WriteMatrix:25</first>
-			<second>
-				<first>-1343</first>
-				<second>-430</second>
 			</second>
 		</item>
 	</modulePositions>
