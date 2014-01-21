@@ -44,7 +44,6 @@ DEALINGS IN THE SOFTWARE.
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <boost/shared_array.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -92,8 +91,8 @@ private:
   
   std::vector<bool> success_;
   
-  boost::shared_array<index_type> rows_;
-  boost::shared_array<index_type> allcols_;
+  //boost::scoped_array<index_type> rows_;
+  //boost::shared_array<index_type> allcols_;
   std::vector<index_type> colidx_;
   
   index_type domain_dimension;
@@ -123,7 +122,7 @@ private:
   inline void add_lcl_gbl(index_type row, const std::vector<index_type> &cols, const std::vector<double> &lcl_a)
   {
     for (size_t i = 0; i < lcl_a.size(); i++)
-      fematrix_->add(row, cols[i], lcl_a[i]);
+      fematrix_->coeffRef(row, cols[i]) += lcl_a[i];
   }
   
 private:
@@ -183,7 +182,7 @@ FEMBuilder::build_matrix(FieldHandle input,
       double* data = mat->data();
       size_type m = mat->nrows();
       size_type n = mat->ncols();
-      Tensor T; 
+      Tensor tensor; 
       
       // Case the table has isotropic conductivities
       if (mat->ncols() == 1)
@@ -191,16 +190,16 @@ FEMBuilder::build_matrix(FieldHandle input,
         for (size_type p=0; p<m;p++)
         {
           // Set the diagonals to the proper version.
-          T.mat_[0][0] = data[p*n+0];
-          T.mat_[1][0] = 0.0;
-          T.mat_[2][0] = 0.0;
-          T.mat_[0][1] = 0.0;
-          T.mat_[1][1] = data[p*n+0];
-          T.mat_[2][1] = 0.0;
-          T.mat_[0][2] = 0.0;
-          T.mat_[1][2] = 0.0;
-          T.mat_[2][2] = data[p*n+0];
-          tensors_.push_back(std::make_pair("",T));
+          tensor.mat_[0][0] = data[p*n+0];
+          tensor.mat_[1][0] = 0.0;
+          tensor.mat_[2][0] = 0.0;
+          tensor.mat_[0][1] = 0.0;
+          tensor.mat_[1][1] = data[p*n+0];
+          tensor.mat_[2][1] = 0.0;
+          tensor.mat_[0][2] = 0.0;
+          tensor.mat_[1][2] = 0.0;
+          tensor.mat_[2][2] = data[p*n+0];
+          tensors_.push_back(std::make_pair("",tensor));
         }
       }
       
@@ -209,16 +208,16 @@ FEMBuilder::build_matrix(FieldHandle input,
       {
         for (size_type p=0; p<m;p++)
         {
-          T.mat_[0][0] = data[0+p*n];
-          T.mat_[1][0] = data[1+p*n];
-          T.mat_[2][0] = data[2+p*n];
-          T.mat_[0][1] = data[1+p*n];
-          T.mat_[1][1] = data[3+p*n];
-          T.mat_[2][1] = data[4+p*n];
-          T.mat_[0][2] = data[2+p*n];
-          T.mat_[1][2] = data[4+p*n];
-          T.mat_[2][2] = data[5+p*n];
-          tensors_.push_back(std::make_pair("",T));
+          tensor.mat_[0][0] = data[0+p*n];
+          tensor.mat_[1][0] = data[1+p*n];
+          tensor.mat_[2][0] = data[2+p*n];
+          tensor.mat_[0][1] = data[1+p*n];
+          tensor.mat_[1][1] = data[3+p*n];
+          tensor.mat_[2][1] = data[4+p*n];
+          tensor.mat_[0][2] = data[2+p*n];
+          tensor.mat_[1][2] = data[4+p*n];
+          tensor.mat_[2][2] = data[5+p*n];
+          tensors_.push_back(std::make_pair("",tensor));
         }
       }
       
@@ -227,16 +226,16 @@ FEMBuilder::build_matrix(FieldHandle input,
       {
         for (size_type p=0; p<m;p++)
         {
-          T.mat_[0][0] = data[0+p*n];
-          T.mat_[1][0] = data[1+p*n];
-          T.mat_[2][0] = data[2+p*n];
-          T.mat_[0][1] = data[1+p*n];
-          T.mat_[1][1] = data[4+p*n];
-          T.mat_[2][1] = data[5+p*n];
-          T.mat_[0][2] = data[2+p*n];
-          T.mat_[1][2] = data[5+p*n];
-          T.mat_[2][2] = data[8+p*n];
-          tensors_.push_back(std::make_pair("",T));
+          tensor.mat_[0][0] = data[0+p*n];
+          tensor.mat_[1][0] = data[1+p*n];
+          tensor.mat_[2][0] = data[2+p*n];
+          tensor.mat_[0][1] = data[1+p*n];
+          tensor.mat_[1][1] = data[4+p*n];
+          tensor.mat_[2][1] = data[5+p*n];
+          tensor.mat_[0][2] = data[2+p*n];
+          tensor.mat_[1][2] = data[5+p*n];
+          tensor.mat_[2][2] = data[8+p*n];
+          tensors_.push_back(std::make_pair("",tensor));
         }
       }
     }
@@ -895,7 +894,9 @@ FEMBuilder::parallel(int proc_num)
       SparseRowMatrix::Storage vals_(new double[st]);
       SparseRowMatrix::Data data(rows_, allcols_, vals_);
       
-      fematrix_ = new SparseRowMatrix(global_dimension, global_dimension, data, st);
+      fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension));
+      fematrix_->
+      , data, st);
     }
     success_[proc_num] = true;
   }
