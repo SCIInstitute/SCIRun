@@ -49,6 +49,9 @@ class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
     static AlgorithmParameterName ForceSymmetry;
     static AlgorithmParameterName GenerateBasis;
 
+    static AlgorithmInputName Conductivity_Table;
+    static AlgorithmOutputName Stiffness_Matrix;
+
     BuildFEMatrixAlgo() : generation_(0)
     {
       // Number of processors to use

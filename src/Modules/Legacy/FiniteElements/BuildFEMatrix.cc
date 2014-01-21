@@ -43,16 +43,16 @@ BuildFEMatrix::BuildFEMatrix()
     gui_num_processors_(get_ctx()->subVar("num-processors"), "auto")
 #endif
 {
-  INITIALIZE_PORT(Mesh);
-  INITIALIZE_PORT(ConductivityTable_NOTENABLED);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Conductivity_Table);
   INITIALIZE_PORT(Stiffness_Matrix);
 }
 
 void BuildFEMatrix::execute()
 {
-  auto field = getRequiredInput(Mesh);
+  auto field = getRequiredInput(InputField);
 
-  auto conductivity = getOptionalInput(ConductivityTable_NOTENABLED);
+  auto conductivity = getOptionalInput(Conductivity_Table);
   
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || gui_use_basis_.changed() || !oport_cached("Stiffness Matrix") )
@@ -77,9 +77,9 @@ void BuildFEMatrix::execute()
     algo_.set_int("num_processors", num_proc);
 #endif
 
-    auto output = algo().run_generic(make_input((Mesh, field)));
+    auto output = algo().run_generic(make_input((InputField, field)));
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
-    (ConductivityTable_NOTENABLED, conductivity)
+    (Conductivity_Table, conductivity)
 #endif
 
     sendOutputFromAlgorithm(Stiffness_Matrix, output);

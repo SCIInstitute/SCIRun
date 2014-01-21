@@ -40,10 +40,13 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <boost/shared_array.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -91,8 +94,8 @@ private:
   
   std::vector<bool> success_;
   
-  //boost::scoped_array<index_type> rows_;
-  //boost::shared_array<index_type> allcols_;
+  boost::shared_array<index_type> rows_;
+  boost::shared_array<index_type> allcols_;
   std::vector<index_type> colidx_;
   
   index_type domain_dimension;
@@ -262,7 +265,8 @@ FEMBuilder::build_matrix(FieldHandle input,
   {
     // Make sure the matrix is fully symmetric, this compensates for round off
     // errors
-    output.reset(new SparseRowMatrix(0.5*(fematrix_->transpose() + *fematrix_)));
+    SparseRowMatrix transpose = fematrix_->transpose();
+    output.reset(new SparseRowMatrix(0.5*(transpose + *fematrix_)));
   }
   else
   {
@@ -891,12 +895,7 @@ FEMBuilder::parallel(int proc_num)
     {
       rows_[global_dimension] = st;
       
-      SparseRowMatrix::Storage vals_(new double[st]);
-      SparseRowMatrix::Data data(rows_, allcols_, vals_);
-      
-      fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension));
-      fematrix_->
-      , data, st);
+      fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension, rows_.get(), allcols_.get(), st));
     }
     success_[proc_num] = true;
   }
@@ -1214,3 +1213,19 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
   return true;
 }
 
+AlgorithmInputName BuildFEMatrixAlgo::Conductivity_Table("Conductivity_Table");
+AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix("Stiffness_Matrix");
+
+AlgorithmOutput BuildFEMatrixAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+  auto ctable = input.get<DenseMatrix>(Conductivity_Table);
+
+  SparseRowMatrixHandle stiffness;
+  if (!run(field, ctable, stiffness))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Stiffness_Matrix] = stiffness;
+  return output;
+}
