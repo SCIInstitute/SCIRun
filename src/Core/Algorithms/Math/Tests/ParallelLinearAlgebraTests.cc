@@ -80,11 +80,11 @@ namespace
   DenseColumnMatrixHandle vector1()
   {
     DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
-	v->setZero();
-//    *v << 1, 2, 4;
-	(*v)[0] = 1;
-	(*v)[1] = 2;
-	(*v)[2] = 4;
+	  v->setZero();
+//    *v << 1, 2, 4; 
+	  (*v)[0] = 1;
+  	(*v)[1] = 2;
+	  (*v)[2] = 4;
     (*v)[size-1] = -1;
     return v;
   }
@@ -94,9 +94,9 @@ namespace
     DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
     v->setZero();
     //*v << -1, -2, -4;
-	(*v)[0] = -1;
-	(*v)[1] = -2;
-	(*v)[2] = -4; 
+	  (*v)[0] = -1;
+	  (*v)[1] = -2;
+	  (*v)[2] = -4; 
     (*v)[size-1] = 1;
     return v;
   }
@@ -106,9 +106,9 @@ namespace
     DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
     v->setZero();
    // *v << 0, 1, 0;
-	(*v)[0] = 0;
-	(*v)[1] = 1; 
-	(*v)[2] = 0; 
+	  (*v)[0] = 0;
+	  (*v)[1] = 1; 
+	  (*v)[2] = 0; 
     (*v)[size-1] = -7;
     return v;
   }
@@ -322,34 +322,52 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
   EXPECT_EQ(1, max2);
 }
 
-//TODO: by intern
+//Find what error is acceptable for the float comparison
 TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshold)
 {
 	ParallelLinearAlgebraSharedData data(getDummySystem(),1);
-	ParallelLinearAlgebra pla(data, 1);
+	ParallelLinearAlgebra pla(data, 0);
 	
-	ParallelLinearAlgebra::ParallelVector v1;
+  DenseColumnMatrixHandle v(boost::make_shared<DenseColumnMatrix>(size));
+	v->setZero();
+
+  ParallelLinearAlgebra::ParallelVector dummyResult;
+	auto dcmDummy = v;
+	pla.add_vector(dcmDummy, dummyResult);
+ 
+  //test vector 1 
+  ParallelLinearAlgebra::ParallelVector v1;
 	auto vec1 = vector1();
 	pla.add_vector(vec1, v1);
+  pla.absthreshold_invert(v1, dummyResult, 1);
+	EXPECT_EQ(dummyResult.data_[0],1);
+	EXPECT_DOUBLE_EQ(dummyResult.data_[1], 0.5);
+	EXPECT_DOUBLE_EQ(dummyResult.data_[2], 0.25);
+	EXPECT_EQ(dummyResult.data_[size-1], 1);
 	
+  //test vector 2 
+  pla.zeros(dummyResult); 
 	ParallelLinearAlgebra::ParallelVector v2;
-	auto vec2 = vector1();
+	auto vec2 = vector2(); 
 	pla.add_vector(vec2, v2);
-
-	pla.absthreshold_invert(v1,v2,0); 
-
-	EXPECT_EQ(v1.data_[0],-1);
-	EXPECT_EQ(v1.data_[size-1],1);
-	EXPECT_EQ(v1.data_[size-2],2);
-	EXPECT_EQ(v1.data_[size-3],4);
-
-	//check that the values changed
-	EXPECT_NE(v1.data_[0],1);
-	EXPECT_NE(v1.data_[1],2);
-	EXPECT_NE(v1.data_[2],4);
-	EXPECT_NE(v1.data_[size-1],-1);
-
+  pla.absthreshold_invert(v2, dummyResult, 1); 
+  EXPECT_EQ(dummyResult.data_[0],1);
+	EXPECT_DOUBLE_EQ(dummyResult.data_[1], -0.5);
+	EXPECT_DOUBLE_EQ(dummyResult.data_[2], -0.25);
+	EXPECT_EQ(dummyResult.data_[size-1], 1);
+	
+  //test vector 3 
+  pla.zeros(dummyResult); 
+  ParallelLinearAlgebra::ParallelVector v3;
+	auto vec3 = vector3(); 
+	pla.add_vector(vec3, v3);
+  pla.absthreshold_invert(v3, dummyResult, 1); 
+  EXPECT_EQ(dummyResult.data_[0], 1);
+	EXPECT_EQ(dummyResult.data_[1], 1);
+	EXPECT_EQ(dummyResult.data_[2], 1);
+	EXPECT_NEAR(dummyResult.data_[size-1], -0.1429, 0.001);
 }
+
 //TODO: by intern
 TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThresholdMulti)
 {
@@ -387,7 +405,8 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVector)
    
   ParallelLinearAlgebra::ParallelVector v2; 
   auto vec2 = vector2(); 
-  pla.add_vector(vec2, v1);
+  pla.add_vector(vec2, v2);
+  pla.zeros(v2); 
 
   ParallelLinearAlgebra::ParallelMatrix m1;  
   auto mat1 = matrix1();
@@ -395,7 +414,7 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVector)
 
   pla.mult(m1,v1,v2); 
 
-  EXPECT_EQ(v2.data_[0],6);
+  EXPECT_EQ(v2.data_[0],1);
   EXPECT_EQ(v2.data_[1],-4);
   EXPECT_EQ(v2.data_[size-1],-2); 
 }
@@ -423,22 +442,40 @@ TEST(ParallelArithmeticTests, CanSubtractVectors)
   ParallelLinearAlgebra::ParallelVector v3; 
   auto vec3 = vector3(); 
   pla.add_vector(vec3, v3);
+  pla.zeros(v3); 
 
   pla.sub(v1, v2, v3); 
-  EXPECT_EQ(v1.data_[0],2);
-  EXPECT_EQ(v1.data_[1],4);
-  EXPECT_EQ(v1.data_[2],8);
-  EXPECT_EQ(v1.data_[3],0);
-  EXPECT_EQ(v1.data_[size-1],-2);
+  EXPECT_EQ(v3.data_[0],2);
+  EXPECT_EQ(v3.data_[1],4);
+  EXPECT_EQ(v3.data_[2],8);
+  EXPECT_EQ(v3.data_[3],0);
+  EXPECT_EQ(v3.data_[size-1],-2);
+}
+
+//
+TEST(ParallelArithmeticTests, CanCompute2Norm)
+{
+  ParallelLinearAlgebraSharedData data(getDummySystem(),1);
+  ParallelLinearAlgebra pla(data,0);
+
+  ParallelLinearAlgebra::ParallelVector v1;
+  auto vec1 = vector1(); 
+  pla.add_vector(vec1,v1);
+
+  ParallelLinearAlgebra::ParallelVector v2;
+  auto vec2 = vector2(); 
+  pla.add_vector(vec2,v2);
+
+  ParallelLinearAlgebra::ParallelVector v3;
+  auto vec3 = vector3(); 
+  pla.add_vector(vec3,v3);
+  
+  EXPECT_NEAR(4.6904,pla.norm(v1),0.001); 
+  EXPECT_NEAR(4.6904,pla.norm(v2),0.001); 
+  EXPECT_NEAR(7.0711,pla.norm(v3),0.001);
 }
 
 #if 0 
-//TODO: by intern
-TEST(ParallelArithmeticTests, CanCompute2Norm)
-{
-  EXPECT_TRUE(false);
-}
-
 //TODO: by intern
 TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
 {
