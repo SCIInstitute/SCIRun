@@ -96,7 +96,6 @@ namespace SCIRun
           appender2->setLayout(layout2);
 
           log4cpp::Category& root = log4cpp::Category::getRoot();
-          //root.setPriority(log4cpp::Priority::DEBUG);
           root.addAppender(appender1);
           root.addAppender(appender2);
         }
@@ -110,6 +109,16 @@ namespace SCIRun
         {
           latestStream_ = Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
           return latestStream_;
+        }
+
+        bool verbose() const 
+        {
+          return cppLogger_.getRootPriority() == log4cpp::Priority::DEBUG;
+        }
+
+        void setVerbose(bool v)
+        {
+          cppLogger_.setPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
         }
 
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
@@ -198,4 +207,14 @@ Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, double x)
 {
   log.stream(x);
   return log;
+}
+
+void Log::setVerbose(bool v)
+{
+  impl_->setVerbose(v);
+}
+
+bool Log::verbose() const
+{
+  return impl_->verbose();
 }

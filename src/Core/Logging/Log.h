@@ -78,6 +78,9 @@ namespace SCIRun
 
         SCISHARE friend Stream& operator<<(Log& log, LogLevel level);
 
+        void setVerbose(bool v);
+        bool verbose() const;
+
       private:
         Log();
         Log(const Log&)/* =delete*/;

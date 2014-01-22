@@ -53,6 +53,7 @@ namespace SCIRun {
         virtual bool disableGui() const = 0;
         virtual bool disableSplash() const = 0;
         virtual bool isRegressionMode() const = 0;
+        virtual bool verboseMode() const = 0;
       };
 
       typedef boost::shared_ptr<ApplicationParameters> ApplicationParametersHandle;
