@@ -47,6 +47,7 @@ DEALINGS IN THE SOFTWARE.
 #include <vector>
 #include <algorithm>
 #include <boost/shared_array.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
@@ -669,6 +670,7 @@ FEMBuilder::setup()
     algo_->error("Mesh size < 0");
     success_[0] = false;
   }
+  algo_->remark("Allocating buffer for nonzero row indices of size: " + boost::lexical_cast<std::string>(global_dimension+1));
   rows_.reset(new index_type[global_dimension+1]);
   
   colidx_.resize(numprocessors_+1);
@@ -834,6 +836,7 @@ FEMBuilder::parallel(int proc_num)
       }
       
       colidx_[numprocessors_] = st;
+      algo_->remark("Allocating buffer for nonzero column indices of size: " + boost::lexical_cast<std::string>(st));
       allcols_.reset(new index_type[st]);
     }
     success_[proc_num] = true;

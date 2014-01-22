@@ -59,6 +59,7 @@ namespace Datatypes {
       if (rowCounter[nrows] != nnz)
         THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
       std::vector<Triplet> triplets;
+      triplets.reserve(nnz);
 
       int i = 0;
       int j = 0;
