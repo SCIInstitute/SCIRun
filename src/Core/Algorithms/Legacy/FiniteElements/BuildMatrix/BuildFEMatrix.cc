@@ -42,6 +42,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/GeometryPrimitives/Tensor.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
 
 #include <string>
 #include <vector>
@@ -55,6 +56,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Core::Logging;
 
 
 namespace {
@@ -157,6 +159,7 @@ FEMBuilder::build_matrix(FieldHandle input,
                          DenseMatrixHandle ctable,
                          SparseRowMatrixHandle& output)
 {
+  ScopedTimeLogger s1("FEMBuilder::build_matrix");
   // Get virtual interface to data
   field_ = input->vfield();
   mesh_  = input->vmesh();
@@ -178,6 +181,7 @@ FEMBuilder::build_matrix(FieldHandle input,
   // Convert that matrix into the conductivity table
   if (ctable)
   {
+    ScopedTimeLogger s2("FEMBuilder::build_matrix if(ctable)");
     tensors_.clear();
     DenseMatrixHandle mat = ctable;
     // Only if we can convert it into a dense matrix, otherwise skip it
@@ -261,9 +265,9 @@ FEMBuilder::build_matrix(FieldHandle input,
   }
   
   // Make sure it is symmetric
-  
   if (algo_->get(BuildFEMatrixAlgo::ForceSymmetry).getBool())
   {
+    ScopedTimeLogger s3("FEMBuilder::build_matrix make symmetric");
     // Make sure the matrix is fully symmetric, this compensates for round off
     // errors
     SparseRowMatrix transpose = fematrix_->transpose();
@@ -670,7 +674,7 @@ FEMBuilder::setup()
     algo_->error("Mesh size < 0");
     success_[0] = false;
   }
-  algo_->remark("Allocating buffer for nonzero row indices of size: " + boost::lexical_cast<std::string>(global_dimension+1));
+  Log::get() << DEBUG << "Allocating buffer for nonzero row indices of size: " << (global_dimension+1);
   rows_.reset(new index_type[global_dimension+1]);
   
   colidx_.resize(numprocessors_+1);
@@ -836,7 +840,7 @@ FEMBuilder::parallel(int proc_num)
       }
       
       colidx_[numprocessors_] = st;
-      algo_->remark("Allocating buffer for nonzero column indices of size: " + boost::lexical_cast<std::string>(st));
+      Log::get() << DEBUG << "Allocating buffer for nonzero column indices of size: " << st;
       allcols_.reset(new index_type[st]);
     }
     success_[proc_num] = true;
