@@ -28,7 +28,6 @@
 
 #include <Modules/Visualization/CreateBasicColorMap.h>
 #include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Geometry.h>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
@@ -38,5 +37,5 @@ CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("ColorMap",
 
 void CreateBasicColorMap::execute()
 {
-  sendOutput(ColorMap, boost::make_shared<ColorMap>("std"));
+  sendOutput(ColorMapObject, boost::make_shared<ColorMap>("std"));
 }

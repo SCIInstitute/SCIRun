@@ -61,7 +61,6 @@
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
-#include <Modules/DataIO/ReadMesh.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
 #include <Modules/String/CreateString.h>
@@ -153,7 +152,6 @@ namespace SCIRun {
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
           {
-            addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
             addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
             addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
             addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");

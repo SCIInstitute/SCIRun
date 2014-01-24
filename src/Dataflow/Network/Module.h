@@ -338,8 +338,8 @@ namespace Modules
   struct SCISHARE ScalarPortTag {};
   struct SCISHARE StringPortTag {};
   struct SCISHARE FieldPortTag {};
-  struct SCISHARE MeshPortTag {}; //TODO temporary
   struct SCISHARE GeometryPortTag {};
+  struct SCISHARE ColorMapPortTag {};
   struct SCISHARE DatatypePortTag {};
 
   template <typename Base>
@@ -538,9 +538,8 @@ namespace Modules
   PORT_SPEC(Scalar);
   PORT_SPEC(String);
   PORT_SPEC(Field);
-  PORT_SPEC(Mesh);  //TODO temporary
   PORT_SPEC(Geometry);
-  //PORT_SPEC(DynamicPortTag<Geometry>::type);
+  PORT_SPEC(ColorMap);
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type

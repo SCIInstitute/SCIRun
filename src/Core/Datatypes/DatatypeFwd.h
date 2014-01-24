@@ -54,7 +54,7 @@ namespace Datatypes {
 
   class String;
   class GeometryObject;
-
+  class ColorMap;
 }}
 
   class Field;

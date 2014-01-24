@@ -43,7 +43,8 @@ namespace Visualization {
   public:
     CreateBasicColorMap();
     virtual void execute();
-    OUTPUT_PORT(0, ColorMap, ColorMap);
+    virtual void setStateDefaults() {}
+    OUTPUT_PORT(0, ColorMapObject, ColorMap);
   };
 }}}
 

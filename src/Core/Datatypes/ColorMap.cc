@@ -26,23 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
-#include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Core::Datatypes;
-
-ColorRGB::ColorRGB()
-  : r_(0), g_(0), b_(0)
-{
-}
-
-ColorRGB::ColorRGB(int r, int g, int b)
-  : r_(r), g_(g), b_(b)
-{
-}
-
-std::ostream& SCIRun::Core::Datatypes::operator<<(std::ostream& out, const ColorRGB& color)
-{
-  out << "Color(" << color.r() << "," << color.g() << "," << color.b() << ")";
-  return out;
-}

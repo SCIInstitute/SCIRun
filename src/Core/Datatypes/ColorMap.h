@@ -27,10 +27,9 @@
 */
 
 
-#ifndef CORE_DATATYPES_COLORRGB_H
-#define CORE_DATATYPES_COLORRGB_H 
+#ifndef CORE_DATATYPES_COLORMAP_H
+#define CORE_DATATYPES_COLORMAP_H 
 
-#include <iosfwd>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Datatypes/share.h>
 
@@ -38,30 +37,15 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE ColorRGB 
+  class SCISHARE ColorMap : public Datatype
   {
-  private:
-    int r_, g_, b_;
   public:
-    ColorRGB();
-    ColorRGB(int, int, int);
+    explicit ColorMap(const std::string& name) {}
 
-    inline bool operator==(const ColorRGB& c) const {
-      return ((r_==c.r_)&&(g_==c.g_)&&(b_==c.b_));
-    }
-
-    inline bool operator!=(const ColorRGB& c) const {
-      return !(*this == c);
-    }
-
-    inline int r() const {return r_;}
-    inline int g() const {return g_;}
-    inline int b() const {return b_;}
+    virtual Datatype* clone() const { return 0; }
   };
 
-  typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;
-
-  SCISHARE std::ostream& operator<<(std::ostream& out, const ColorRGB& color);
+  typedef boost::shared_ptr<ColorMap> ColorMapHandle;
 
 }}}
 
