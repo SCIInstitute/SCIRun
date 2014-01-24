@@ -60,7 +60,7 @@
      <item>
       <widget class="QTabWidget" name="displayOptionsTabs_">
        <property name="currentIndex">
-        <number>1</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="nodesTab_">
         <attribute name="title">
@@ -381,7 +381,7 @@
            <x>12</x>
            <y>12</y>
            <width>304</width>
-           <height>192</height>
+           <height>213</height>
           </rect>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -436,6 +436,13 @@
               </widget>
              </item>
             </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="invertNormalsCheckBox">
+            <property name="text">
+             <string>Invert Normals</string>
+            </property>
            </widget>
           </item>
           <item>
