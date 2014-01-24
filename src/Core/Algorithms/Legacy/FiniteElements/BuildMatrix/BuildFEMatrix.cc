@@ -43,6 +43,7 @@ DEALINGS IN THE SOFTWARE.
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/ScopedTimeRemarker.h>
+#include <Core/Logging/Log.h>
 
 #include <string>
 #include <vector>
@@ -289,6 +290,7 @@ FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
                                          std::vector<double> &w,
                                          std::vector<std::vector<double> > &d)
 {
+  //ScopedTimeLogger s1("FEMBuilder::create_numerical_integration");
   int int_basis = 1;
   if (mesh_->is_quad_element() || 
       mesh_->is_hex_element() || 
@@ -323,6 +325,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
                                std::vector<double> &w,
                                std::vector<std::vector<double> >  &d)
 {
+  //ScopedTimeLogger s0("FEMBuilder::build_local_matrix");
   Tensor T;
   
   if (tensors_.empty())
@@ -438,6 +441,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                                        std::vector<std::vector<double> >  &d,
                                        std::vector<std::vector<double> > &precompute)
 {
+  //ScopedTimeLogger s0("FEMBuilder::build_local_matrix_regular");
   Tensor T;
   
   if (tensors_.empty())
@@ -615,6 +619,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
 bool
 FEMBuilder::setup()
 {	
+  ScopedTimeLogger s0("FEMBuilder::setup");
   // The domain dimension
   domain_dimension = mesh_->dimensionality();
   if (domain_dimension < 1) 
@@ -674,7 +679,7 @@ FEMBuilder::setup()
     algo_->error("Mesh size < 0");
     success_[0] = false;
   }
-  Log::get() << DEBUG << "Allocating buffer for nonzero row indices of size: " << (global_dimension+1);
+  Log::get() << DEBUG_LOG << "Allocating buffer for nonzero row indices of size: " << (global_dimension+1);
   rows_.reset(new index_type[global_dimension+1]);
   
   colidx_.resize(numprocessors_+1);
@@ -687,6 +692,7 @@ FEMBuilder::setup()
 void 
 FEMBuilder::parallel(int proc_num)
 {
+  ScopedTimeLogger s1("FEMBuilder::parallel", proc_num == 0);
   success_[proc_num] = true;
   
   if (proc_num == 0)
@@ -731,8 +737,10 @@ FEMBuilder::parallel(int proc_num)
   //! loop over system dofs for this thread
   int cnt = 0;
   size_type size_gd = end_gd-start_gd;
+  auto updateFrequency = 2*size_gd / 100;
   try
   {
+    ScopedTimeLogger loop1("FEMBuilder::parallel loop 1", proc_num == 0);
     mycols.reserve((end_gd - start_gd)*local_dimension*8);  //<! rough estimate
     
     for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
@@ -793,10 +801,11 @@ FEMBuilder::parallel(int proc_num)
       if (proc_num == 0) 
       {
         cnt++;
-        if (cnt == 200)
+        if (cnt == updateFrequency)
         {
           cnt = 0;
           algo_->update_progress_max(i,2*size_gd);
+          Log::get() << DEBUG_LOG << "Updating progress 1 to: " << i << " / " << 2*size_gd;
         }
       }    
     }
@@ -840,8 +849,10 @@ FEMBuilder::parallel(int proc_num)
       }
       
       colidx_[numprocessors_] = st;
-      Log::get() << DEBUG << "Allocating buffer for nonzero column indices of size: " << st;
-      allcols_.reset(new index_type[st]);
+      {
+        ScopedTimeLogger ss("Allocating buffer for nonzero column indices of size: " + boost::lexical_cast<std::string>(st));
+        allcols_.reset(new index_type[st]);
+      }
     }
     success_[proc_num] = true;
   }
@@ -900,6 +911,7 @@ FEMBuilder::parallel(int proc_num)
     //! the main thread makes the matrix
     if (proc_num == 0)
     {
+      ScopedTimeLogger s0("FEMBuilder::parallel 0 creating matrix");
       rows_[global_dimension] = st;
       algo_->remark("Creating fematrix on main thread.");
       fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension, rows_.get(), allcols_.get(), st));
@@ -943,7 +955,7 @@ FEMBuilder::parallel(int proc_num)
     
     //! loop over system dofs for this thread
     cnt = 0;
-    
+    ScopedTimeLogger loop1("FEMBuilder::parallel loop 2", proc_num == 0);
     size_gd = end_gd-start_gd;
     for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
     {
@@ -1038,9 +1050,10 @@ FEMBuilder::parallel(int proc_num)
       if (proc_num == 0) 
       {
         cnt++;
-        if (cnt == 200)
+        if (cnt == updateFrequency)
         {
           cnt = 0;
+          Log::get() << DEBUG_LOG << "Updating progress 2 to: " << i+size_gd << " / " << 2*size_gd;
           algo_->update_progress_max(i+size_gd,2*size_gd);
         }
       }
@@ -1072,6 +1085,7 @@ bool
 BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMatrixHandle& output) const
 {
   ScopedAlgorithmStatusReporter s(this, "BuildFEMatrix");
+  ScopedTimeLogger s1("BuildFEMatrixAlgo::run");
   
   if (!input)
   {
@@ -1109,8 +1123,10 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
   
   if (get(GenerateBasis).getBool())
   {
+    ScopedTimeLogger s2("BuildFEMatrixAlgo::run GenerateBasis");
     if (!ctable)
     {
+      ScopedTimeLogger s3("BuildFEMatrixAlgo::run GenerateBasis !ctable");
       std::vector<std::pair<std::string,Tensor> > tens;
       
       input->properties().get_property("conductivity_table",tens);
@@ -1127,8 +1143,9 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
       }
     }
     
-    if (!ctable)
+    if (ctable)
     {
+      ScopedTimeLogger s4("BuildFEMatrixAlgo::run GenerateBasis ctable");
       size_type nconds = ctable->nrows();
       if ( (input->vmesh()->generation() != generation_) ||
           (!basis_fematrix_) )

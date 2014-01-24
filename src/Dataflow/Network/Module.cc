@@ -71,13 +71,13 @@ Module::Module(const ModuleLookupInfo& info,
 
   Log& log = Log::get();
 
-  log << DEBUG << "Module created: " << info.module_name_ << " with id: " << id_;
+  log << DEBUG_LOG << "Module created: " << info.module_name_ << " with id: " << id_;
 
   if (algoFactory)
   {
     algo_ = algoFactory->create(get_module_name(), this);
     if (algo_)
-      log << DEBUG << "Module algorithm initialized: " << info.module_name_;
+      log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
 
 }

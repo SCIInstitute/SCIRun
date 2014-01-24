@@ -135,7 +135,7 @@ namespace SCIRun
           case WARN:   cpp_level = log4cpp::Priority::WARN;   break;
           case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
           case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
-          case DEBUG:  cpp_level = log4cpp::Priority::DEBUG;  break;
+          case DEBUG_LOG:  cpp_level = log4cpp::Priority::DEBUG;  break;
           default:         
             THROW_INVALID_ARGUMENT("Unknown log level: " + boost::lexical_cast<std::string>((int)level));
           };
@@ -189,6 +189,16 @@ void Log::Stream::stream(int n)
   impl_->stream_ << n;
 }
 
+void Log::Stream::stream(size_t n)
+{
+  impl_->stream_ << n;
+}
+
+void Log::Stream::stream(long long n)
+{
+  impl_->stream_ << n;
+}
+
 Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
 
 Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::string& msg)
@@ -198,6 +208,18 @@ Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::stri
 }
 
 Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, int n)
+{
+  log.stream(n);
+  return log;
+}
+
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, long long n)
+{
+  log.stream(n);
+  return log;
+}
+
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, size_t n)
 {
   log.stream(n);
   return log;

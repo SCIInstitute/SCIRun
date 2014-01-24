@@ -53,7 +53,7 @@ namespace SCIRun
         WARN,   // Not an error, but indicates error will occur if nothing done.
         NOTICE, // Events that are unusual, but not error conditions.
         INFO,   // Normal operational messages. No action required.
-        DEBUG,  // Information useful during development for debugging.
+        DEBUG_LOG,  // Information useful during development for debugging.
         NOTSET
       };
 
@@ -70,6 +70,8 @@ namespace SCIRun
           void stream(const std::string& msg);
           void stream(double x);
           void stream(int n);
+          void stream(size_t n);
+          void stream(long long n);
         private:
           boost::shared_ptr<class LogStreamImpl> impl_;
         };
@@ -96,6 +98,8 @@ namespace SCIRun
       SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, int n);
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, long long n);
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, size_t n);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, double x);
     }
   }

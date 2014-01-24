@@ -45,10 +45,14 @@ ScopedTimeRemarker::~ScopedTimeRemarker()
   log_->remark(perf.str());
 }
 
-ScopedTimeLogger::ScopedTimeLogger(const std::string& label): label_(label)
-{}
+ScopedTimeLogger::ScopedTimeLogger(const std::string& label, bool shouldLog): label_(label), shouldLog_(shouldLog)
+{
+  if (shouldLog_)
+    Log::get() << DEBUG_LOG << label_ << " starting.";
+}
 
 ScopedTimeLogger::~ScopedTimeLogger()
 {
-  Log::get() << DEBUG << label_ << " took " << timer_.elapsed() << " seconds.";
+  if (shouldLog_)
+    Log::get() << DEBUG_LOG << label_ << " took " << timer_.elapsed() << " seconds.";
 }

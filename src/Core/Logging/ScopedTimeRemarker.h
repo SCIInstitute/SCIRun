@@ -54,10 +54,11 @@ namespace SCIRun
       class SCISHARE ScopedTimeLogger
       {
       public:
-        explicit ScopedTimeLogger(const std::string& label);
+        explicit ScopedTimeLogger(const std::string& label, bool shouldLog = true);
         ~ScopedTimeLogger();
       private:
         std::string label_;
+        bool shouldLog_;
         boost::timer timer_;
       };
     }

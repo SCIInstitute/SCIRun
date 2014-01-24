@@ -88,7 +88,7 @@ void SolveLinearSystemDialog::pushParametersToState()
 
     {
       auto method = methodComboBox_->currentText().toStdString();
-      Core::Logging::Log::get() << Core::Logging::DEBUG << "GUI: METHOD SELECTED: " << method;
+      Core::Logging::Log::get() << Core::Logging::DEBUG_LOG << "GUI: METHOD SELECTED: " << method;
 
       std::string methodOption = impl_->solverNameLookup_.left.at(method);
 
