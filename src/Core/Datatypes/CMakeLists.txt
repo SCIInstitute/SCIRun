@@ -28,6 +28,7 @@
 
 SET(Core_Datatypes_SRCS
   Color.cc
+  ColorMap.cc
   Datatype.cc
   Geometry.cc
   Matrix.cc
@@ -40,6 +41,7 @@ SET(Core_Datatypes_SRCS
 
 SET(Core_Datatypes_HEADERS
   Color.h
+  ColorMap.h
   Datatype.h
   DatatypeFwd.h
   DenseMatrix.h
