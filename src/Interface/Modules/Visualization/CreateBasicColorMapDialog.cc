@@ -27,11 +27,13 @@
 */
 
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
 CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,3 +44,25 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
   fixSize();
 }
 
+
+void CreateBasicColorMapDialog::pushParametersToState()
+{
+  if (!pulling_)
+  {
+    //TODO: need pattern for this, to avoid silly recursion of push/pull.
+    auto name = colorMapNameComboBox_->currentText().toStdString();
+    Core::Logging::Log::get() << Core::Logging::DEBUG_LOG << "COLOR MAP SELECTED: " << name;
+
+    if (name != state_->getValue(Variables::ColorMapName).getString())
+    {
+      state_->setValue(Variables::ColorMapName, name);
+    }
+  }
+}
+
+void CreateBasicColorMapDialog::pull()
+{
+  Pulling p(this);
+  auto mapName = state_->getValue(Variables::ColorMapName).getString();
+  colorMapNameComboBox_->setCurrentIndex(colorMapNameComboBox_->findText(QString::fromStdString(mapName)));
+}

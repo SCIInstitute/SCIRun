@@ -33,7 +33,7 @@ using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 
-CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("ColorMap", "Visualization", "SCIRun")) {}
+CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateBasicColorMap", "Visualization", "SCIRun")) {}
 
 void CreateBasicColorMap::execute()
 {
