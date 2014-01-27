@@ -508,9 +508,8 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
   EXPECT_EQ(v3.data_[size-1],-1);
 
   pla.zeros(v2);
-  //pla.add_vector(vec3,v3); //this line w/out the lower 2 lines: v2.data[size-1] = -0 
-  auto newvec3 = vector3();
-  pla.add_vector(newvec3,v3); 
+  auto resetV3 = vector3(); 
+  pla.add_vector(resetV3,v3);
   pla.mult(v1,v3,v2); 
   EXPECT_EQ(v2.data_[0],0);
   EXPECT_EQ(v2.data_[1],2);
@@ -518,13 +517,30 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
   EXPECT_EQ(v2.data_[size-1],7);
 }
 
-#if 0 
 //TODO: by intern
 TEST(ParallelArithmeticTests, CanComputeDotProduct)
 {
-  EXPECT_TRUE(false);
+  ParallelLinearAlgebraSharedData data(getDummySystem(),1);
+  ParallelLinearAlgebra pla(data,0);
+
+  ParallelLinearAlgebra::ParallelVector v1;
+  auto vec1 = vector1(); 
+  pla.add_vector(vec1,v1);
+
+  ParallelLinearAlgebra::ParallelVector v2;
+  auto vec2 = vector2(); 
+  pla.add_vector(vec2,v2);
+
+  ParallelLinearAlgebra::ParallelVector v3;
+  auto vec3 = vector3(); 
+  pla.add_vector(vec3,v3);
+
+  EXPECT_EQ(pla.dot(v1,v2),-22); 
+  EXPECT_EQ(pla.dot(v2,v3),-9); 
+  EXPECT_EQ(pla.dot(v1,v3),9); 
 }
 
+#if 0 
 //TODO: by intern
 TEST(ParallelArithmeticTests, CanSubtractVectorsMulti)
 {
