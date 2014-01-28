@@ -31,6 +31,7 @@
 
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
+#include <boost/lexical_cast.hpp>
 #include <Core/Logging/share.h>
 
 namespace SCIRun 
@@ -69,9 +70,6 @@ namespace SCIRun
           SCISHARE friend Stream& operator<<(Stream& log, const std::string& msg);
           void stream(const std::string& msg);
           void stream(double x);
-          void stream(int n);
-          void stream(size_t n);
-          void stream(long long n);
           void flush();
         private:
           boost::shared_ptr<class LogStreamImpl> impl_;
@@ -97,13 +95,16 @@ namespace SCIRun
         boost::shared_ptr<class LogImpl> impl_;
       };
 
-      //TODO: how to templatize
       SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, int n);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, long long n);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, size_t n);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, double x);
+
+      template <typename T>
+      Log::Stream& operator<<(Log::Stream& log, const T& t)
+      {
+        return log << boost::lexical_cast<std::string>(t);
+      }
+
     }
   }
 }

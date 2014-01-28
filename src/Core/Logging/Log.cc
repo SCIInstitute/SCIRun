@@ -194,21 +194,6 @@ void Log::Stream::stream(double x)
   impl_->stream_ << x;
 }
 
-void Log::Stream::stream(int n)
-{
-  impl_->stream_ << n;
-}
-
-void Log::Stream::stream(size_t n)
-{
-  impl_->stream_ << n;
-}
-
-void Log::Stream::stream(long long n)
-{
-  impl_->stream_ << n;
-}
-
 void Log::Stream::flush()
 {
   impl_->stream_.flush();
@@ -219,24 +204,6 @@ Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
 Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::string& msg)
 {
   log.stream(msg);
-  return log;
-}
-
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, int n)
-{
-  log.stream(n);
-  return log;
-}
-
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, long long n)
-{
-  log.stream(n);
-  return log;
-}
-
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, size_t n)
-{
-  log.stream(n);
   return log;
 }
 
