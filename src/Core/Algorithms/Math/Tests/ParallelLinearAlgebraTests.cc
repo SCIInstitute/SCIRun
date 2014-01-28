@@ -296,9 +296,54 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
 }
 
 //TODO: by intern
+struct absdiag
+{
+   absdiag(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle) : 
+    data_(data), m1_(m1), v2_(v2), proc_(proc), dcmHandle_(dcmHandle) {}
+
+  ParallelLinearAlgebraSharedData& data_;
+  int proc_;
+  ParallelLinearAlgebra::ParallelMatrix& m1_;
+  ParallelLinearAlgebra::ParallelVector& v2_;
+  DenseColumnMatrixHandle dcmHandle_;
+
+  void operator()()
+  {
+    ParallelLinearAlgebra pla(data_, proc_);
+    pla.new_vector(v2_);
+    auto mOne = matrix1();
+    pla.add_matrix(mOne, m1_); 
+
+    pla.absdiag(m1_, v2_);
+  }
+};
+
 TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
 {
-  EXPECT_TRUE(false);
+  const int NUM_THREADS = 2;
+  ParallelLinearAlgebraSharedData data(getDummySystem(), NUM_THREADS);
+  
+  ParallelLinearAlgebra::ParallelVector v2;
+  ParallelLinearAlgebra::ParallelMatrix m1; 
+
+  auto vec2 = vector2();
+  auto mat1 = matrix1(); 
+
+  {
+	  absdiag diag0(data, m1, v2, 0, vec2);
+	  absdiag diag1(data, m1, v2, 1, vec2);
+  
+	  boost::thread t1 = boost::thread(boost::ref(diag0));
+	  boost::thread t2 = boost::thread(boost::ref(diag1));
+	  t1.join();
+	  t2.join();
+  }
+
+  EXPECT_EQ(v2.size_, size);
+  for (size_t i = 0; i < size; ++i)
+  {
+    EXPECT_GE(v2.data_[i], 0);
+  }
 }
 
 //TODO: by intern
