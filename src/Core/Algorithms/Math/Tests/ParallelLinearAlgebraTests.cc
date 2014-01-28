@@ -364,7 +364,7 @@ struct max
     pla.add_vector(vOne, v1_); 
     maxResult_ = pla.max(v1_);
   }
-} ;
+};
 
 TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
 {
@@ -434,10 +434,59 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 	EXPECT_NEAR(dummyResult.data_[size-1], -0.1429, 0.001);
 }
 
+struct absthreshold_inv
+{
+   absthreshold_inv(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle) : 
+    data_(data), v1_(v1), v2_(v2), proc_(proc), dcmHandle_(dcmHandle) {}
+
+  ParallelLinearAlgebraSharedData& data_;
+  int proc_;
+  ParallelLinearAlgebra::ParallelVector& v1_;
+  ParallelLinearAlgebra::ParallelVector& v2_;
+  DenseColumnMatrixHandle dcmHandle_;
+
+  void operator()()
+  {
+    ParallelLinearAlgebra pla(data_, proc_);
+   
+    pla.new_vector(v1_);
+    auto vOne = vector1();
+    pla.add_vector(vOne, v1_);
+    
+    pla.new_vector(v2_);
+    //auto vTwo = vector2(); 
+    //pla.add_vector(vTwo,v2_);
+    
+    pla.absthreshold_invert(v1_, v2_, 1);
+  }
+};
+
 //TODO: by intern
 TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThresholdMulti)
 {
-  EXPECT_TRUE(false);
+  const int NUM_THREADS = 2;
+  ParallelLinearAlgebraSharedData data(getDummySystem(), NUM_THREADS);
+  
+  ParallelLinearAlgebra::ParallelVector v1;
+  ParallelLinearAlgebra::ParallelVector v2; 
+
+  auto vec2 = vector2();
+  {
+	  absthreshold_inv absthreshold_inv0(data, v1, v2, 0, vec2);
+	  absthreshold_inv absthreshold_inv1(data, v1, v2, 1, vec2);
+  
+	  boost::thread t1 = boost::thread(boost::ref(absthreshold_inv0));
+	  boost::thread t2 = boost::thread(boost::ref(absthreshold_inv1));
+	  t1.join();
+	  t2.join();
+  }
+   
+  //test vector 1 
+	EXPECT_EQ(v2.data_[0],1);
+	EXPECT_DOUBLE_EQ(v2.data_[1], 0.5);
+	EXPECT_DOUBLE_EQ(v2.data_[2], 0.25);
+	EXPECT_EQ(v2.data_[size-1], 1);
+	
 }
 
 
