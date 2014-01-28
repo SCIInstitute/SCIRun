@@ -35,7 +35,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
-CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateBasicColorMap", "Visualization", "SCIRun")) 
+CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateStandardColorMap", "Visualization", "SCIRun")) 
 {
   INITIALIZE_PORT(ColorMapObject);
 }

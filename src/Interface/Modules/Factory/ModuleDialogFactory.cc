@@ -115,7 +115,7 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GenerateROIStatisticsDialog(moduleId, state, parentToUse_); 
   if (moduleId.find("SetupRHSforTDCSandTMS") != std::string::npos)
     return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);       
-  if (moduleId.find("CreateBasicColorMap") != std::string::npos)
+  if (moduleId.find("CreateStandardColorMap") != std::string::npos)
     return new CreateBasicColorMapDialog(moduleId, state, parentToUse_);       
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);

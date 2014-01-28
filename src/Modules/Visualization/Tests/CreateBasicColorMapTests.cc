@@ -46,7 +46,7 @@ TEST_F(CreateBasicColorMapModuleTest, ThrowsForUnknownColorMapName)
 {
   UseRealModuleStateFactory f;
 
-  auto cbc = makeModule("CreateBasicColorMap");
+  auto cbc = makeModule("CreateStandardColorMap");
 
   cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
 
@@ -57,7 +57,7 @@ TEST_F(CreateBasicColorMapModuleTest, CreatesRainbowByDefault)
 {
   UseRealModuleStateFactory f;
 
-  auto cbc = makeModule("CreateBasicColorMap");
+  auto cbc = makeModule("CreateStandardColorMap");
 
   cbc->execute();
 

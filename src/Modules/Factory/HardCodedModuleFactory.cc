@@ -147,7 +147,7 @@ namespace SCIRun {
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
           addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
-		  addModuleDesc<CreateBasicColorMap>("CreateBasicColorMap", "Visualization", "SCIRun", "In progress", "...");
+		      addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
