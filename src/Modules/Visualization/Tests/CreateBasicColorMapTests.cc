@@ -26,7 +26,40 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
+#include <Core/Datatypes/ColorMap.h>
+#include <Modules/Visualization/CreateBasicColorMap.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Utils/Exception.h>
 
-//TODO
+using namespace SCIRun::Testing;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core;
+
+class CreateBasicColorMapModuleTest : public ModuleTest
+{
+};
+
+TEST_F(CreateBasicColorMapModuleTest, ThrowsForUnknownColorMapName)
+{
+  UseRealModuleStateFactory f;
+
+  auto cbc = makeModule("CreateBasicColorMap");
+
+  cbc->get_state()->setValue(Variables::ColorMapName, std::string("null"));
+
+  EXPECT_THROW(cbc->execute(), InvalidArgumentException);
+}
+
+TEST_F(CreateBasicColorMapModuleTest, CreatesRainbowByDefault)
+{
+  UseRealModuleStateFactory f;
+
+  auto cbc = makeModule("CreateBasicColorMap");
+
+  cbc->execute();
+
+  FAIL() << "TODO: need output value collector dummy module";
+}

@@ -72,6 +72,7 @@ namespace SCIRun
           void stream(int n);
           void stream(size_t n);
           void stream(long long n);
+          void flush();
         private:
           boost::shared_ptr<class LogStreamImpl> impl_;
         };
@@ -82,6 +83,7 @@ namespace SCIRun
 
         void setVerbose(bool v);
         bool verbose() const;
+        void flush();
 
       private:
         Log();
@@ -91,6 +93,7 @@ namespace SCIRun
         Log& operator=(Log&&)/* =delete*/;
 
       private:
+        friend class Stream;
         boost::shared_ptr<class LogImpl> impl_;
       };
 

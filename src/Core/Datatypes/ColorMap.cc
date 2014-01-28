@@ -29,3 +29,25 @@
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Core::Datatypes;
+
+ColorMap::ColorMap(const std::string& name) : name_(name)
+{
+
+}
+
+ColorMap* ColorMap::clone() const
+{
+  return 0;
+}
+
+ColorMapHandle StandardColorMapFactory::create(const std::string& name)
+{
+  if (name == "Rainbow")
+    return ColorMapHandle(rainbow_.clone());
+  if (name == "Gray")
+    return ColorMapHandle(grayscale_.clone());
+  THROW_INVALID_ARGUMENT("Unknown standard colormap name: " + name);
+}
+
+ColorMap StandardColorMapFactory::rainbow_("Rainbow");
+ColorMap StandardColorMapFactory::grayscale_("Grayscale");

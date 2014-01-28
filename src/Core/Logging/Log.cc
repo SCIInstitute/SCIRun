@@ -121,6 +121,11 @@ namespace SCIRun
           cppLogger_.setPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
         }
 
+        void flush()
+        {
+          latestStream_.flush();
+        }
+
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
         {
           // Translate pix logging level to cpp logging level
@@ -164,6 +169,11 @@ Log& Log::get()
   return logger;
 }
 
+void Log::flush()
+{
+  impl_->flush();
+}
+
 void Log::log(LogLevel level, const std::string& msg)
 {
   impl_->log(level, msg);
@@ -197,6 +207,11 @@ void Log::Stream::stream(size_t n)
 void Log::Stream::stream(long long n)
 {
   impl_->stream_ << n;
+}
+
+void Log::Stream::flush()
+{
+  impl_->stream_.flush();
 }
 
 Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}

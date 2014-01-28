@@ -36,12 +36,14 @@
 #include <Dataflow/Network/DataflowInterfaces.h>
 #include <boost/functional/factory.hpp>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
+#include <Dataflow/State/SimpleMapModuleState.h>
 
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/GeometryPrimitives/Point.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Algorithms;
@@ -49,6 +51,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::Networks::Mocks;
+using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Modules::Factory;
 using namespace SCIRun::Testing;
 using ::testing::_;
@@ -87,6 +90,7 @@ ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
   Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
+  Core::Logging::Log::get().setVerbose(true);
 }
 
 ModuleHandle ModuleTest::makeModule(const std::string& name)
@@ -146,4 +150,14 @@ UseRealAlgorithmFactory::UseRealAlgorithmFactory()
 UseRealAlgorithmFactory::~UseRealAlgorithmFactory()
 {
   Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+}
+
+UseRealModuleStateFactory::UseRealModuleStateFactory()
+{
+  Module::defaultStateFactory_.reset(new SimpleMapModuleStateFactory);
+}
+
+UseRealModuleStateFactory::~UseRealModuleStateFactory()
+{
+  Module::defaultStateFactory_.reset();
 }

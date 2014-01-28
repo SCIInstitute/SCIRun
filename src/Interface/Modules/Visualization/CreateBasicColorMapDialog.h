@@ -51,7 +51,7 @@ public:
   virtual void pull();
 
   private Q_SLOTS:
-    void pushParametersToState();
+    void pushParametersToState(const QString&);
 };
 
 }

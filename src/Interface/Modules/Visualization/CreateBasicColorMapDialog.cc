@@ -42,19 +42,21 @@ CreateBasicColorMapDialog::CreateBasicColorMapDialog(const std::string& name, Mo
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
+  connect(colorMapNameComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState(const QString&)));
 }
 
 
-void CreateBasicColorMapDialog::pushParametersToState()
+void CreateBasicColorMapDialog::pushParametersToState(const QString& item)
 {
   if (!pulling_)
   {
     //TODO: need pattern for this, to avoid silly recursion of push/pull.
-    auto name = colorMapNameComboBox_->currentText().toStdString();
-    Core::Logging::Log::get() << Core::Logging::DEBUG_LOG << "COLOR MAP SELECTED: " << name;
+    auto name = item.toStdString();
 
     if (name != state_->getValue(Variables::ColorMapName).getString())
     {
+      Core::Logging::Log::get() << Core::Logging::DEBUG_LOG << "COLOR MAP SELECTED: " << name;
+      Core::Logging::Log::get().flush();
       state_->setValue(Variables::ColorMapName, name);
     }
   }

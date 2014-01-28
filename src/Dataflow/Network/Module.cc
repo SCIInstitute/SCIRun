@@ -79,7 +79,7 @@ Module::Module(const ModuleLookupInfo& info,
     if (algo_)
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
-
+  log.flush();
 }
 
 Module::~Module()

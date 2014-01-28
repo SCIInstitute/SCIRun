@@ -31,6 +31,7 @@
 #define CORE_DATATYPES_COLORMAP_H 
 
 #include <Core/Datatypes/Datatype.h>
+#include <boost/noncopyable.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
@@ -40,12 +41,25 @@ namespace Datatypes {
   class SCISHARE ColorMap : public Datatype
   {
   public:
-    explicit ColorMap(const std::string& name) {}
+    explicit ColorMap(const std::string& name);
 
-    virtual Datatype* clone() const { return 0; }
+    virtual ColorMap* clone() const;
+  private:
+    std::string name_;
+    boost::shared_ptr<class ColorMapImpl> impl_;
   };
 
   typedef boost::shared_ptr<ColorMap> ColorMapHandle;
+
+  class SCISHARE StandardColorMapFactory : boost::noncopyable
+  {
+  public:
+    static ColorMapHandle create(const std::string& name);
+  private:
+    StandardColorMapFactory();
+    static ColorMap rainbow_;
+    static ColorMap grayscale_;
+  };
 
 }}}
 

@@ -27,15 +27,26 @@
 */
 
 #include <Modules/Visualization/CreateBasicColorMap.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/ColorMap.h>
 
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateBasicColorMap", "Visualization", "SCIRun")) {}
+CreateBasicColorMap::CreateBasicColorMap() : Module(ModuleLookupInfo("CreateBasicColorMap", "Visualization", "SCIRun")) 
+{
+  INITIALIZE_PORT(ColorMapObject);
+}
+
+void CreateBasicColorMap::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(Variables::ColorMapName, std::string("Rainbow"));
+}
 
 void CreateBasicColorMap::execute()
 {
-  sendOutput(ColorMapObject, boost::make_shared<ColorMap>("std"));
+  sendOutput(ColorMapObject, StandardColorMapFactory::create(get_state()->getValue(Variables::ColorMapName).getString()));
 }
