@@ -346,25 +346,46 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
   }
 }
 
-//TODO: by intern
+struct max
+{
+   max(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, int proc, DenseColumnMatrixHandle dcmHandle) : 
+    data_(data), v1_(v1), proc_(proc), dcmHandle_(dcmHandle) {}
+
+  ParallelLinearAlgebraSharedData& data_;
+  int proc_;
+  ParallelLinearAlgebra::ParallelVector& v1_;
+  DenseColumnMatrixHandle dcmHandle_;
+  double maxResult_; 
+
+  void operator()()
+  {
+    ParallelLinearAlgebra pla(data_, proc_);
+    auto vOne = vector1();
+    pla.add_vector(vOne, v1_); 
+    maxResult_ = pla.max(v1_);
+  }
+} ;
+
 TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
 {
   //TODO: multi thread
-  ParallelLinearAlgebraSharedData data(getDummySystem(), SINGLE_THREADED_TEST_NUMPROCS);
-  ParallelLinearAlgebra pla(data, SINGLE_THREADED_TEST_PROC_INDEX);
+  ParallelLinearAlgebraSharedData data(getDummySystem(), 2);
 
-  //pla.max()
   ParallelLinearAlgebra::ParallelVector v1;
-  auto vec1 = vector1();
-  pla.add_vector(vec1, v1);
-  double max1 = pla.max(v1);
-  ParallelLinearAlgebra::ParallelVector v2;
+  double maxDouble_; 
+
   auto vec2 = vector2();
-  pla.add_vector(vec2, v2);
-  double max2 = pla.max(v2);
+  {
+	  max max0(data, v1, 0, vec2);
+	  max max1(data, v1, 1, vec2);
   
-  EXPECT_EQ(4, max1);
-  EXPECT_EQ(1, max2);
+	  boost::thread t1 = boost::thread(boost::ref(max0));
+	  boost::thread t2 = boost::thread(boost::ref(max1));
+	  t1.join();
+	  t2.join();
+    maxDouble_ = max0.maxResult_;
+  }  
+  EXPECT_EQ(4, maxDouble_);
 }
 
 //Find what error is acceptable for the float comparison
