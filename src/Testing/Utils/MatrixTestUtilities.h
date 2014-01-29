@@ -34,6 +34,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/timer.hpp>
 #include <boost/assign.hpp>
+#include <boost/filesystem.hpp>
 #include <stdexcept>
 
 #include <Core/Datatypes/DenseMatrix.h>
@@ -49,22 +50,11 @@ namespace SCIRun
 namespace TestUtils
 {
 
-//inline long long count_single_value(const Core::Datatypes::Matrix& m, const double val)
-//{
-//  return static_cast<long long>(std::count(m.begin(), m.end(), val));
-//}
-
 inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes::Matrix& m2)
 {
   return m1.nrows() == m2.nrows() 
     && m1.ncols() == m2.ncols();
 }
-
-//inline bool compare_exactly(const Core::Datatypes::Matrix& m1, const Core::Datatypes::Matrix& m2)
-//{
-//  return equal_size(m1, m2) &&
-//    std::equal(m1.begin(), m1.end(), m2.begin());
-//}
 
 #define DEFAULT_MATRIX_PERCENT_TOLERANCE 1e-5
 
@@ -215,6 +205,8 @@ struct SCISHARE ScopedTimer
   std::string name_;
   boost::timer t_;
 };
+
+SCISHARE FieldHandle loadFieldFromFile(const boost::filesystem::path& filename);
 
 }
 

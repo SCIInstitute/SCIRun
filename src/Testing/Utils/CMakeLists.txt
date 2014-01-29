@@ -45,6 +45,7 @@ ADD_LIBRARY(Testing_Utils
 
 TARGET_LINK_LIBRARIES(Testing_Utils
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
   gtest
   gmock
   ${SCI_BOOST_LIBRARY}

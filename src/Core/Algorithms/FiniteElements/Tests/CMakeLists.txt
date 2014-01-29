@@ -27,6 +27,7 @@
 #
 
 SET(Algorithms_FiniteElements_Tests_SRCS
+  BuildFEMatrixTests.cc
   BuildTDCSMatrixTests.cc
 )
 
