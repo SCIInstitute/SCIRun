@@ -425,17 +425,10 @@ bool passesTdcsTest(const SparseRowMatrix& matrix)
   {
     for (SparseRowMatrix::InnerIterator it(matrix,k); it; ++it)
     {
-      //std::cout << "value: " << it.value() << std::endl;
-      //std::cout << "row: " << it.row() << std::endl;
-      //std::cout << "col: " << it.col() << std::endl;
-
       if (hasNElements(it, 1))
       {
-        //std::cout << "has 1 element" << std::endl;
-        //std::cout << "value = " << it.value() << std::endl;
         if (it.value() == 1)
         {
-          //std::cout << "found a 1 " << std::endl;
           return true;
         }
       }

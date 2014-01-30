@@ -67,6 +67,14 @@ inline bool compare_with_tolerance(const Core::Datatypes::DenseMatrix& m1, const
     close_at_tolerance<double>(percent_tolerance(percentTolerance)));
 }
 
+inline bool compare_with_tolerance(const Core::Datatypes::SparseRowMatrix& m1, const Core::Datatypes::SparseRowMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
+{
+  using namespace boost::test_tools;
+  return equal_size(m1, m2) &&
+    std::equal(m1.valuePtr(), m1.valuePtr() + m1.nonZeros(), m2.valuePtr(),
+    close_at_tolerance<double>(percent_tolerance(percentTolerance)));
+}
+
 inline ::testing::AssertionResult compare_with_tolerance_readable(const Core::Datatypes::DenseMatrix& m1, const Core::Datatypes::DenseMatrix& m2, double percentTolerance, int printSize = 50)
 {
   return compare_with_tolerance(m1, m2, percentTolerance) ? 

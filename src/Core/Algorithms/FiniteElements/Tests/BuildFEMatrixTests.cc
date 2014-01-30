@@ -29,8 +29,10 @@
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
+#include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 
@@ -38,6 +40,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
 using ::testing::NotNull;
@@ -53,33 +56,16 @@ namespace FEInputData
   {
     return loadFieldFromFile(feMeshRoot() / file);
   }
-  
-  FieldHandle meshSize1e3()
+   
+  boost::filesystem::path expectedOutputRoot() 
   {
-    return loadFieldFromFile(feMeshRoot() / "fem_1e3_elements.fld");
+    return TestResources::rootDir() / "buildFE" / "v4Output";
   }
 
-  FieldHandle meshSize1e4()
+  SparseRowMatrixHandle expectedOutput(const std::string& file)
   {
-    return loadFieldFromFile(feMeshRoot() / "fem_1e4_elements.fld");
-  }
-
-  FieldHandle meshSize1e5()
-  {
-    return loadFieldFromFile(feMeshRoot() / "fem_1e5_elements.fld");
-  }
-
-  FieldHandle meshSize1e6()
-  {
-    return loadFieldFromFile(feMeshRoot() / "fem_1e6_elements.fld");
-  }
-  
-  SparseRowMatrixHandle expectedOutput()
-  {
-    //TODO: MORITZ insert values as above.
-    return MAKE_SPARSE_MATRIX_HANDLE(
-      (1,0)
-      (0,1));
+    ReadMatrixAlgorithm reader;
+    return matrix_cast::as_sparse(reader.run((expectedOutputRoot() / file).string()));
   }
 
   DenseMatrixHandle nullConductivityMatrix()
@@ -104,11 +90,111 @@ TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e1)
   auto mesh = loadTestMesh("fem_1e1_elements.fld");
   ASSERT_THAT(mesh, NotNull());
 
+  EXPECT_EQ(3, mesh->vmesh()->num_elems());
+
   BuildFEMatrixAlgo algo;
   SparseRowMatrixHandle output;
   ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
 
   ASSERT_THAT(output, NotNull());
 
-  FAIL() << "todo";
+  EXPECT_EQ(7, output->nrows());
+  EXPECT_EQ(7, output->ncols());
+    
+  EXPECT_DOUBLE_EQ(0.5855738571534416, output->coeff(0,0));
+  EXPECT_DOUBLE_EQ(0.3117198873128934, output->coeff(output->nrows() - 1, output->ncols() - 1));
+
+  EXPECT_TRUE(expectedOutput("1e1.mat")->isApprox(*output));
+}
+
+TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e3)
+{
+  using namespace FEInputData;
+  auto mesh = loadTestMesh("fem_1e3_elements.fld");
+  ASSERT_THAT(mesh, NotNull());
+
+  EXPECT_EQ(1000, mesh->vmesh()->num_elems());
+
+  BuildFEMatrixAlgo algo;
+  SparseRowMatrixHandle output;
+  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+
+  ASSERT_THAT(output, NotNull());
+
+  EXPECT_EQ(1040, output->nrows());
+  EXPECT_EQ(1040, output->ncols());
+
+  EXPECT_DOUBLE_EQ(2, output->coeff(0,0));
+  EXPECT_DOUBLE_EQ(1.0/3, output->coeff(output->nrows() - 1, output->ncols() - 1));
+
+  EXPECT_TRUE(expectedOutput("1e3.mat")->isApprox(*output));
+}
+
+TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e4)
+{
+  using namespace FEInputData;
+  auto mesh = loadTestMesh("fem_1e4_elements.fld");
+  ASSERT_THAT(mesh, NotNull());
+
+  EXPECT_EQ(10000, mesh->vmesh()->num_elems());
+
+  BuildFEMatrixAlgo algo;
+  SparseRowMatrixHandle output;
+  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+
+  ASSERT_THAT(output, NotNull());
+
+  EXPECT_EQ(10149, output->nrows());
+  EXPECT_EQ(10149, output->ncols());
+
+  EXPECT_DOUBLE_EQ(0.2, output->coeff(0,0));
+  EXPECT_DOUBLE_EQ(0.016666666666666666, output->coeff(output->nrows() - 1, output->ncols() - 1));
+
+  EXPECT_TRUE(expectedOutput("1e4.mat")->isApprox(*output));
+}
+
+TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e5)
+{
+  using namespace FEInputData;
+  auto mesh = loadTestMesh("fem_1e5_elements.fld");
+  ASSERT_THAT(mesh, NotNull());
+
+  EXPECT_EQ(100000, mesh->vmesh()->num_elems());
+
+  BuildFEMatrixAlgo algo;
+  SparseRowMatrixHandle output;
+  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+
+  ASSERT_THAT(output, NotNull());
+
+  EXPECT_EQ(94538, output->nrows());
+  EXPECT_EQ(94538, output->ncols());
+
+  EXPECT_DOUBLE_EQ(0.2, output->coeff(0,0));
+  EXPECT_DOUBLE_EQ(0.016666666666666666, output->coeff(output->nrows() - 1, output->ncols() - 1));
+
+  EXPECT_TRUE(compare_with_tolerance(*expectedOutput("1e5.mat"), *output));
+}
+
+TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e6)
+{
+  using namespace FEInputData;
+  auto mesh = loadTestMesh("fem_1e6_elements.fld");
+  ASSERT_THAT(mesh, NotNull());
+
+  EXPECT_EQ(1000000, mesh->vmesh()->num_elems());
+
+  BuildFEMatrixAlgo algo;
+  SparseRowMatrixHandle output;
+  ASSERT_TRUE(algo.run(mesh, nullConductivityMatrix(), output));
+
+  ASSERT_THAT(output, NotNull());
+
+  EXPECT_EQ(812604, output->nrows());
+  EXPECT_EQ(812604, output->ncols());
+
+  EXPECT_DOUBLE_EQ(0.2, output->coeff(0,0));
+  EXPECT_DOUBLE_EQ(0.066666666666666666, output->coeff(output->nrows() - 1, output->ncols() - 1));
+
+  EXPECT_TRUE(compare_with_tolerance(*expectedOutput("1e6.mat"), *output));
 }

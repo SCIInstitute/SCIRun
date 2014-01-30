@@ -39,6 +39,7 @@ TARGET_LINK_LIBRARIES(Algorithms_FiniteElements_Tests
   Algorithms_Field
   Core_Datatypes_Legacy_Field
   Core_Algorithms_Legacy_FiniteElements
+  Algorithms_DataIO
   Testing_Utils
   gtest_main
   gtest
