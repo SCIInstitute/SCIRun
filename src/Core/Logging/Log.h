@@ -105,6 +105,7 @@ namespace SCIRun
         return log << boost::lexical_cast<std::string>(t);
       }
 
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&));
     }
   }
 }

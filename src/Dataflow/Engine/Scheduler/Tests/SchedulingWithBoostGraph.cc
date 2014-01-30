@@ -49,6 +49,7 @@
 #include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/Log.h>
 
 #include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
@@ -79,6 +80,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -378,6 +380,14 @@ namespace ThreadingPrototype
       << u.runtime;
   }
 
+  Log::Stream& operator<<(Log::Stream& o, const Unit& u)
+  {
+    return o << u.id << " : "
+      << u.priority << ":"
+      << u.ready << ":" << u.done << ":"
+      << u.runtime;
+  }
+
   typedef std::queue<UnitPtr> WorkQueue;  //TODO: will need to be thread-safe
   typedef std::list<UnitPtr> WaitingList;
   typedef std::list<UnitPtr> DoneList;
@@ -410,13 +420,13 @@ namespace ThreadingPrototype
       /*donePushing_(false),*/ currentPriority_(0), mutex_(mutex)
     {
       waiting_.sort();
-      //std::cout << "Sorted work list:" << std::endl;
-      //std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+      log_ << INFO << "WorkUnitProducer starting. Sorted work list:" << std::endl;
+      std::for_each(list.begin(), list.end(), [](UnitPtr u) { log_ << INFO << *u << "\n"; });
     }
     void run()
     {
       //mutex_.lock();
-      //std::cout << "Producer started." << std::endl;
+      log_ << INFO << "Producer started." << std::endl;
       //mutex_.unlock();
       while (!waiting_.empty())
       {
@@ -425,9 +435,9 @@ namespace ThreadingPrototype
           if ((*i)->ready)
           {
             mutex_.lock();
-            //std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+            log_ << INFO << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
             work_.push(*i);
-            //std::cout << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
+            log_ << INFO << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
             mutex_.unlock();
             i = waiting_.erase(i);
           }
@@ -438,7 +448,7 @@ namespace ThreadingPrototype
         {
           currentPriority_ = (*waiting_.begin())->priority;
           //mutex_.lock();
-          //std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
+          log_ << INFO << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
           //mutex_.unlock();
           for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
           {
@@ -447,12 +457,12 @@ namespace ThreadingPrototype
           }
         }
         //mutex_.lock();
-        //std::cout << "\tProducer: Waiting list size = " << waiting_.size() << std::endl;
-        //std::cout << "\tProducer: work queue size = " << work_.size() << std::endl;
+        //log_ << INFO << "\tProducer: Waiting list size = " << waiting_.size() << std::endl;
+        //log_ << INFO << "\tProducer: work queue size = " << work_.size() << std::endl;
         //mutex_.unlock();
       }
       //mutex_.lock();
-      //std::cout << "Producer done." << std::endl;
+      log_ << INFO << "Producer done." << std::endl;
       //mutex_.unlock();
     }
     bool isDone() const
@@ -471,7 +481,10 @@ namespace ThreadingPrototype
     //bool donePushing_;
     int currentPriority_;
     Mutex& mutex_;
+    static Log& log_;
   };
+
+
 
   class WorkUnitConsumer
   {
@@ -483,29 +496,28 @@ namespace ThreadingPrototype
     void run()
     {
       //mutex_.lock();
-      //std::cout << "Consumer started." << std::endl;
+      log_ << INFO << "Consumer started." << std::endl;
       //mutex_.unlock();
       while (!producer_.isDone())
       {
         //mutex_.lock();
-        //std::cout << "\tConsumer thinks producer is not done." << std::endl;
+        log_ << INFO << "\tConsumer thinks producer is not done." << std::endl;
         //mutex_.unlock();
         while (moreWork())
         {
           //mutex_.lock();
-          //std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
+          log_ << INFO << "\tConsumer thinks work queue is not empty." << std::endl;
           //mutex_.unlock();
 
           mutex_.lock();
-          //std::cout << "\tConsumer accessing front of work queue." << std::endl;
+          log_ << INFO << "\tConsumer accessing front of work queue." << std::endl;
           UnitPtr unit = work_.front();
-          //std::cout << "\tConsumer popping front of work queue." << std::endl;
+          log_ << INFO << "\tConsumer popping front of work queue." << std::endl;
           work_.pop();
           mutex_.unlock();
 
           //mutex_.lock();
-          //std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
-          //unit->runtime << " ms" << std::endl;
+          log_ << INFO << "~~~Processing " << unit->id << ": sleeping for " << unit->runtime << " ms" << std::endl;
           //mutex_.unlock();
 
           boost::this_thread::sleep(boost::posix_time::milliseconds(unit->runtime));
@@ -514,12 +526,12 @@ namespace ThreadingPrototype
           done_.push_back(unit);
 
           //mutex_.lock();
-          //std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
+          log_ << INFO << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
           //mutex_.unlock();
         }
       }
       //mutex_.lock();
-      //std::cout << "Consumer done." << std::endl;
+      log_ << INFO << "Consumer done." << std::endl;
       //mutex_.unlock();
     }
 
@@ -535,12 +547,16 @@ namespace ThreadingPrototype
     const WorkUnitProducer& producer_;
     DoneList& done_;
     Mutex& mutex_;
+    static Log& log_;
   };
 
+  Log& WorkUnitProducer::log_ = Log::get();
+  Log& WorkUnitConsumer::log_ = Log::get();
 
-  TEST(MultiExecutorPrototypeTest, DISABLED_Run)
+
+  TEST(MultiExecutorPrototypeTest, Run)
   {
-    const int size = 100;
+    const int size = 20;
     WaitingList list;
     std::generate_n(std::back_inserter(list), size, makeUnit);
 
