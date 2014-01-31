@@ -32,6 +32,8 @@ SET(Engine_Scheduler_SRCS
   BoostGraphParallelScheduler.cc
   BoostGraphSerialScheduler.cc
   DesktopExecutionStrategyFactory.cc
+  DynamicMultithreadedNetworkExecutor.cc
+  DynamicParallelExecutionStrategy.cc
   ExecutionStrategy.cc
   GraphNetworkAnalyzer.cc
   LinearSerialNetworkExecutor.cc
@@ -47,6 +49,8 @@ SET(Engine_Scheduler_HEADERS
   BoostGraphParallelScheduler.h
   BoostGraphSerialScheduler.h
   DesktopExecutionStrategyFactory.h
+  DynamicMultithreadedNetworkExecutor.h
+  DynamicParallelExecutionStrategy.h
   GraphNetworkAnalyzer.h
   ExecutionStrategy.h
   LinearSerialNetworkExecutor.h

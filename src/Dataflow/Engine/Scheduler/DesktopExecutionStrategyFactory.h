@@ -42,7 +42,7 @@ namespace Engine {
     DesktopExecutionStrategyFactory();
     virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type);
   private:
-    ExecutionStrategyHandle serial_, parallel_;
+    ExecutionStrategyHandle serial_, parallel_, dynamic_;
   };
 }
 }}

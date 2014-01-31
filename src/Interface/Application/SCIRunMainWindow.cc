@@ -52,6 +52,7 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Core/Application/Application.h>
+#include <Core/Logging/Log.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -65,6 +66,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Logging;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
@@ -709,7 +711,7 @@ void SCIRunMainWindow::setupDevConsole()
 
 void SCIRunMainWindow::setExecutor(int type)
 {
-  std::cout << "Executor of type " << type << " selected"  << std::endl;
+  Log::get() << DEBUG_LOG << "Executor of type " << type << " selected"  << std::endl;
   networkEditor_->getNetworkEditorController()->setExecutorType(type);
 }
 

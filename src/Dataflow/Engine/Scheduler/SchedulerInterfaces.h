@@ -58,6 +58,16 @@ namespace Engine {
     ExecuteAllFinishesSignalType executeFinishes_;
   };
 
+  class SCISHARE ScopedExecutionBoundsSignaller
+  {
+  public:
+    ScopedExecutionBoundsSignaller(const ExecutionBounds& bounds, boost::function<int()> errorCodeRetriever);
+    ~ScopedExecutionBoundsSignaller();
+  private:
+    const ExecutionBounds& bounds_;
+    boost::function<int()> errorCodeRetriever_;
+  };
+
   template <class OrderType>
   class NetworkExecutor
   {
