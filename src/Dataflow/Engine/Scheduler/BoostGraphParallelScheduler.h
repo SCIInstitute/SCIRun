@@ -31,6 +31,7 @@
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
+#include <boost/lambda/lambda.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -40,7 +41,10 @@ namespace Engine {
   class SCISHARE BoostGraphParallelScheduler : public Scheduler<ParallelModuleExecutionOrder>
   {
   public:
+    explicit BoostGraphParallelScheduler(const Networks::ModuleFilter& filter = boost::lambda::constant(true));
     virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
+  private:
+    Networks::ModuleFilter filter_;
   };
 
 }}}

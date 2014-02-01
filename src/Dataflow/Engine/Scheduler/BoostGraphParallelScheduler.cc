@@ -33,13 +33,15 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
+BoostGraphParallelScheduler::BoostGraphParallelScheduler(const ModuleFilter& filter /* = boost::lambda::constant */) : filter_(filter) {}
+
 ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network) const
 {
-  NetworkGraphAnalyzer graphAnalyzer(network);
+  NetworkGraphAnalyzer graphAnalyzer(network, filter_);
   NetworkGraphAnalyzer::Graph& g = graphAnalyzer.graph();
 
   // Parallel compilation ordering
-  std::vector<int> time(network.nmodules(), 0);
+  std::vector<int> time(graphAnalyzer.moduleCount(), 0);
   for (auto i = graphAnalyzer.topologicalBegin(); i != graphAnalyzer.topologicalEnd(); ++i) 
   {    
     // Walk through the in_edges an calculate the maximum time.

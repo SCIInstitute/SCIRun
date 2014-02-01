@@ -90,6 +90,9 @@ namespace Networks {
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 
+    virtual ExecutionState executionState() const { return executionState_; }
+    virtual void setExecutionState(ExecutionState state) { executionState_ = state; }
+
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
     virtual std::vector<SCIRun::Core::Datatypes::DatatypeHandleOption> get_dynamic_input_handles(const PortId& id);
@@ -215,13 +218,13 @@ namespace Networks {
     Core::Algorithms::AlgorithmBase& algo();
 
   protected:
-    enum State {
+    enum LegacyState {
       NeedData,
       JustStarted,
       Executing,
       Completed
     };
-    void update_state(State) { /*TODO*/ }
+    void update_state(LegacyState) { /*TODO*/ }
 
   private:
     template <class T>
@@ -247,6 +250,7 @@ namespace Networks {
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
+    ExecutionState executionState_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

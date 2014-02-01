@@ -77,10 +77,19 @@ namespace
     const Scheduler<ParallelModuleExecutionOrder>* scheduler_;
   };
 
+  struct ModuleWaiting
+  {
+    bool operator()(ModuleHandle mh) const
+    {
+      return mh->executionState() == ModuleInterface::Waiting;
+    }
+  };
+
   struct DynamicParallelExecution
   {
     DynamicParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, 
       const NetworkInterface* network) : 
+        scheduler_(filter_),
         lookup_(lookup), order_(order), bounds_(bounds), network_(network)
     {}
     
@@ -102,6 +111,8 @@ namespace
             auto exec = lookup_->lookupExecutable(mod.second);
             exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer));
             exec->execute(); 
+
+            //TODO: need to use a separate signal here, rather than on the module--otherwise it persists and is added multiple times. 
           };
         });
 
@@ -110,7 +121,7 @@ namespace
       }
     }
 
-    
+    ModuleWaiting filter_;
     BoostGraphParallelScheduler scheduler_;
     const ExecutableLookup* lookup_;
     ParallelModuleExecutionOrder order_;

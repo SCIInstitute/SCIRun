@@ -87,6 +87,16 @@ namespace Networks {
 
     virtual void do_execute() = 0;
 
+    enum ExecutionState 
+    {
+      Waiting,
+      Executing,
+      Completed
+    };
+
+    virtual ExecutionState executionState() const = 0;
+    virtual void setExecutionState(ExecutionState state) = 0;
+
     //TODO for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;

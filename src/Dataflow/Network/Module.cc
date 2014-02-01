@@ -80,6 +80,8 @@ Module::Module(const ModuleLookupInfo& info,
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
+
+  setExecutionState(ModuleInterface::Waiting);
 }
 
 Module::~Module()
@@ -115,6 +117,7 @@ void Module::do_execute() throw()
 {
   executeBegins_(id_);
   status("STARTING MODULE: " + id_.id_);
+  setExecutionState(ModuleInterface::Executing);
 
   try 
   {
@@ -160,6 +163,7 @@ void Module::do_execute() throw()
 
   status("MODULE FINISHED: " + id_.id_);  
   executeEnds_(id_);
+  setExecutionState(ModuleInterface::Completed);
 }
 
 ModuleStateHandle Module::get_state() 

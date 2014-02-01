@@ -78,6 +78,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(needToExecute, bool());
           MOCK_METHOD0(setStateDefaults, void());
           MOCK_CONST_METHOD0(getAlgorithm, SCIRun::Core::Algorithms::AlgorithmHandle());
+          MOCK_CONST_METHOD0(executionState, SCIRun::Dataflow::Networks::ModuleInterface::ExecutionState());
+          MOCK_METHOD1(setExecutionState, void(SCIRun::Dataflow::Networks::ModuleInterface::ExecutionState));
         };
 
         typedef boost::shared_ptr<MockModule> MockModulePtr;

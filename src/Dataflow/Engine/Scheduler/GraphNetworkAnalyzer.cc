@@ -37,21 +37,30 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network)
+NetworkGraphAnalyzer::NetworkGraphAnalyzer(const NetworkInterface& network, const SCIRun::Dataflow::Networks::ModuleFilter& moduleFilter) : moduleCount_(0)
 {
   for (int i = 0; i < network.nmodules(); ++i)
   {
-    moduleIdLookup_.left.insert(std::make_pair(network.module(i)->get_id(), i));
+    auto module = network.module(i);
+    if (moduleFilter(module))
+    {
+      moduleIdLookup_.left.insert(std::make_pair(module->get_id(), moduleCount_));
+      moduleCount_++;
+    }
   }
 
   std::vector<Edge> edges;
 
   BOOST_FOREACH(const ConnectionDescription& cd, network.connections())
   {
-    edges.push_back(std::make_pair(moduleIdLookup_.left.at(cd.out_.moduleId_), moduleIdLookup_.left.at(cd.in_.moduleId_)));
+    if (moduleIdLookup_.left.find(cd.out_.moduleId_) != moduleIdLookup_.left.end()
+      && moduleIdLookup_.left.find(cd.in_.moduleId_) != moduleIdLookup_.left.end())
+    {
+      edges.push_back(std::make_pair(moduleIdLookup_.left.at(cd.out_.moduleId_), moduleIdLookup_.left.at(cd.in_.moduleId_)));
+    }
   }
 
-  graph_ = Graph(edges.begin(), edges.end(), network.nmodules());
+  graph_ = Graph(edges.begin(), edges.end(), moduleCount_);
 
   try
   {
@@ -81,4 +90,9 @@ NetworkGraphAnalyzer::ExecutionOrder::iterator NetworkGraphAnalyzer::topological
 NetworkGraphAnalyzer::Graph& NetworkGraphAnalyzer::graph()
 {
   return graph_;
+}
+
+int NetworkGraphAnalyzer::moduleCount() const 
+{
+  return moduleCount_;
 }

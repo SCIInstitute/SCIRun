@@ -296,6 +296,8 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
     currentExecutor_ = executorFactory_->create(ExecutionStrategy::DYNAMIC_PARALLEL); //TODO: read some setting for default executor type
 
   currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
+
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const 
