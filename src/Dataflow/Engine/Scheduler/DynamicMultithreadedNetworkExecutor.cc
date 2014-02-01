@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <Dataflow/Engine/Scheduler/DynamicMultithreadedNetworkExecutor.h>
+#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Network/ModuleInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/NetworkInterface.h>
@@ -42,16 +43,51 @@ using namespace SCIRun::Core::Logging;
 
 namespace 
 {
+  struct ScopedModuleExecutionBounds
+  {
+    static void logExecStart(const ModuleId& id)
+    {
+      Log::get() << INFO << "!!! starting " << id.id_;
+    }
+
+    static void logExecEnd(const ModuleId& id)
+    {
+      Log::get() << INFO << " ~~~ ending " << id.id_;
+    }
+  };
+
+  class SchedulePrinter
+  {
+  public:
+    SchedulePrinter(const NetworkInterface* network, const Scheduler<ParallelModuleExecutionOrder>* scheduler) : network_(network), scheduler_(scheduler) {}
+
+    void printNetworkOrder()
+    {
+      if (scheduler_ && network_)
+      {
+        auto order = scheduler_->schedule(*network_);
+        Log::get() << INFO << "NETWORK ORDER~~~\n" << order << "\n\n";
+      }
+      else
+        Log::get() << INFO << "NETWORK ORDER~~~\n <<<null>>>\n";
+    }
+
+  private:
+    const NetworkInterface* network_;
+    const Scheduler<ParallelModuleExecutionOrder>* scheduler_;
+  };
+
   struct DynamicParallelExecution
   {
-    DynamicParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds) : lookup_(lookup), order_(order), bounds_(bounds)
+    DynamicParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, 
+      const NetworkInterface* network) : 
+        lookup_(lookup), order_(order), bounds_(bounds), network_(network)
     {}
     
     void operator()() const
     {
-      std::cout << "HELLO NEW EXECUTOR" << std::endl;
-      Log::get() << INFO << "HELLO NEW EXECUTOR" << std::endl;
       ScopedExecutionBoundsSignaller signaller(bounds_, [&]() { return lookup_->errorCode(); });
+      SchedulePrinter printer(network_, &scheduler_);
       for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)
       {
         auto groupIter = order_.getGroup(group);
@@ -63,29 +99,30 @@ namespace
         {
           return [=]() 
           { 
-            std::cout << "foo" << std::endl;
-            Log::get() << INFO << "!!! starting " << mod.second.id_ << std::endl;
-            lookup_->lookupExecutable(mod.second)->execute(); 
-            Log::get() << INFO << "~~~ ending " << mod.second.id_ << std::endl;
+            auto exec = lookup_->lookupExecutable(mod.second);
+            exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer));
+            exec->execute(); 
           };
         });
 
         //std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
-        Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
+        Parallel::RunTasks([&](int i) { tasks[i](); }, static_cast<int>(tasks.size()));
       }
     }
 
+    
+    BoostGraphParallelScheduler scheduler_;
     const ExecutableLookup* lookup_;
     ParallelModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
+    const NetworkInterface* network_;
   };
-
 }
+
+DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) : network_(network) {}
 
 void DynamicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds)
 {
-  std::cout << "HELLO NEW EXECUTOR" << std::endl;
-  Log::get() << INFO << "HELLO NEW EXECUTOR" << std::endl;
-  DynamicParallelExecution runner(&lookup, order, bounds);
+  DynamicParallelExecution runner(&lookup, order, bounds, &network_);
   boost::thread execution(runner);
 }

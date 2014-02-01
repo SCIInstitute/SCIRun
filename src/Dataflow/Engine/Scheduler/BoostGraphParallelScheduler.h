@@ -40,7 +40,7 @@ namespace Engine {
   class SCISHARE BoostGraphParallelScheduler : public Scheduler<ParallelModuleExecutionOrder>
   {
   public:
-    virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network);
+    virtual ParallelModuleExecutionOrder schedule(const Networks::NetworkInterface& network) const;
   };
 
 }}}

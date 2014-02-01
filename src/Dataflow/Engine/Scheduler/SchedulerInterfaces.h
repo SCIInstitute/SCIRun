@@ -31,8 +31,9 @@
 
 #include <iostream>
 #include <Dataflow/Network/NetworkFwd.h>
-#include <boost/signals2.hpp>
+#include <Core/Logging/Log.h>
 #include <Core/Utils/Exception.h>
+#include <boost/signals2.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
@@ -46,7 +47,7 @@ namespace Engine {
   {
   public:
     virtual ~Scheduler() {}
-    virtual OrderType schedule(const Networks::NetworkInterface& network) = 0;
+    virtual OrderType schedule(const Networks::NetworkInterface& network) const = 0;
   };
 
   typedef boost::signals2::signal<void()> ExecuteAllStartsSignalType;
@@ -92,7 +93,7 @@ namespace Engine {
     catch (NetworkHasCyclesException&)
     {
       //TODO: use real logger here--or just let this exception bubble up--needs testing. 
-      std::cout << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
+      SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::ERROR << "Cannot schedule execution: network has cycles. Please break all cycles and try again." << std::endl;
       return;
     }
     executor.executeAll(lookup, order, bounds);

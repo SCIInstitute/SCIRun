@@ -40,7 +40,10 @@ namespace Engine {
   class SCISHARE DynamicMultithreadedNetworkExecutor : public NetworkExecutor<ParallelModuleExecutionOrder>
   {
   public:
+    explicit DynamicMultithreadedNetworkExecutor(const Networks::NetworkInterface& network);
     virtual void executeAll(const Networks::ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds);
+  private:
+    const Networks::NetworkInterface& network_;
   };
 
 }}}

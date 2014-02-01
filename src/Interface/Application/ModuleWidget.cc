@@ -443,6 +443,21 @@ void ModuleWidget::execute()
   Q_EMIT moduleExecuted();
 }
 
+boost::signals2::connection ModuleWidget::connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber)
+{
+  return theModule_->connectExecuteBegins(subscriber);
+}
+
+boost::signals2::connection ModuleWidget::connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber)
+{
+  return theModule_->connectExecuteEnds(subscriber);
+}
+
+boost::signals2::connection ModuleWidget::connectErrorListener(const ErrorSignalType::slot_type& subscriber)
+{
+  return theModule_->connectErrorListener(subscriber);
+}
+
 void ModuleWidget::updateBackgroundColor(const QString& color)
 {
   if (!colorLocked_)

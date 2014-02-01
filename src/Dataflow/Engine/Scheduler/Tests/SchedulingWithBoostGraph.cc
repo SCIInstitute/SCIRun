@@ -317,18 +317,10 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
 {
   setupBasicNetwork();
 
-
   BoostGraphParallelScheduler scheduler;
   auto order = scheduler.schedule(matrixMathNetwork);
-  auto range = std::make_pair(order.begin(), order.end());
-
   std::ostringstream ostr;
-  BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& v, range)
-  {
-    ostr << v.first << " " << v.second << std::endl;
-  }
-
-  std::cout << ostr.str() << std::endl;
+  ostr << order;
 
   std::string expected = 
     "0 SendTestMatrix:1\n"

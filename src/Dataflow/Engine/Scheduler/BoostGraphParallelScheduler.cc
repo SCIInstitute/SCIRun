@@ -33,7 +33,7 @@
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network)
+ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network) const
 {
   NetworkGraphAnalyzer graphAnalyzer(network);
   NetworkGraphAnalyzer::Graph& g = graphAnalyzer.graph();
