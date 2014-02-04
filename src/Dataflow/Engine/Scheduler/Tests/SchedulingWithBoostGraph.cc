@@ -336,6 +336,27 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
   EXPECT_EQ(expected, ostr.str());
 }
 
+TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
+{
+  setupBasicNetwork();
+
+  ModuleFilter filter = [](ModuleHandle mh) { return mh->get_module_name().find("Unary") == std::string::npos; };
+  BoostGraphParallelScheduler scheduler(filter);
+  auto order = scheduler.schedule(matrixMathNetwork);
+  std::ostringstream ostr;
+  ostr << order;
+
+  std::string expected = 
+    "0 EvaluateLinearAlgebraBinary:5\n"
+    "0 SendTestMatrix:1\n"
+    "0 SendTestMatrix:0\n"
+    "1 EvaluateLinearAlgebraBinary:6\n"
+    "2 ReportMatrixInfo:7\n"
+    "2 ReceiveTestMatrix:8\n";
+
+  EXPECT_EQ(expected, ostr.str());
+}
+
 namespace ThreadingPrototype
 {
   struct Unit
@@ -531,7 +552,7 @@ namespace ThreadingPrototype
   Log& WorkUnitConsumer::log_ = Log::get();
 
 
-  TEST(MultiExecutorPrototypeTest, Run1)
+  TEST(MultiExecutorPrototypeTest, DISABLED_Run1)
   {
     const int size = 50;
     WaitingList list;
@@ -676,7 +697,7 @@ namespace ThreadingPrototype
   Log& WorkUnitConsumer2::log_ = Log::get();
 
 
-  TEST(MultiExecutorPrototypeTest, Run2)
+  TEST(MultiExecutorPrototypeTest, DISABLED_Run2)
   {
     const int size = 20;
     WaitingList list;
