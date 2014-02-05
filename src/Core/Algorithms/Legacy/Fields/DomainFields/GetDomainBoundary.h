@@ -30,25 +30,19 @@
 #ifndef CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H
 #define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetDomainBoundaryAlgo : public AlgoBase
+class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
 {
   public:
-    //! Set defaults
     GetDomainBoundaryAlgo()
     {
       add_int("min_range",0);
@@ -61,11 +55,15 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgoBase
       add_bool("disconnect_boundaries",false);
     }
 
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-    bool run(FieldHandle input, MatrixHandle domainlink, FieldHandle& output);
+    static AlgorithmOutputName BoundaryField;
+    static AlgorithmOutputName MappingMatrix;
+
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
+
+    bool runImpl(FieldHandle input, FieldHandle& output);
+    bool runImpl(FieldHandle input, MatrixHandle domainlink, FieldHandle& output);
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif 

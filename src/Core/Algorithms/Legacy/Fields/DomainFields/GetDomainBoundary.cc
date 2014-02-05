@@ -31,7 +31,6 @@
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
 #include <Core/Datatypes/FieldInformation.h>
-#include <sci_hash_map.h>
 
 namespace SCIRunAlgo {
 
