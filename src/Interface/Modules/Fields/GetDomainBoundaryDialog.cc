@@ -27,10 +27,12 @@
 */
 
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -39,46 +41,56 @@ GetDomainBoundaryDialog::GetDomainBoundaryDialog(const std::string& name, Module
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  /*
-  connect(xSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(ySizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(dataAtNodesButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(dataAtCellsButton_, SIGNAL(clicked()), this, SLOT(push()));
-  connect(dataAtNoneButton_, SIGNAL(clicked()), this, SLOT(push()));*/
+  
+  connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(disconnectBoundariesCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(excludeInnerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(includeInnerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(maxCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  connect(minCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  connect(valueCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  connect(outerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
 void GetDomainBoundaryDialog::push()
 {
-  //if (!pulling_)
-  //{
-  //  state_->setValue(CreateLatVolModule::XSize, xSizeSpinBox_->value());
-  //  state_->setValue(CreateLatVolModule::YSize, ySizeSpinBox_->value());
-  //  state_->setValue(CreateLatVolModule::ZSize, zSizeSpinBox_->value());
-  //  state_->setValue(CreateLatVolModule::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
-  //  state_->setValue(CreateLatVolModule::DataAtLocation, getDataAtLocation());
-  //}
+  if (!pulling_)
+  {
+    state_->setValue(GetDomainBoundaryAlgo::AddOuterBoundary, outerBoundaryCheckBox_->isChecked());
+    state_->setValue(GetDomainBoundaryAlgo::InnerBoundaryOnly, includeInnerBoundaryCheckBox_->isChecked());
+    state_->setValue(GetDomainBoundaryAlgo::DisconnectBoundaries, disconnectBoundariesCheckBox_->isChecked());
+    state_->setValue(GetDomainBoundaryAlgo::NoInnerBoundary, excludeInnerBoundaryCheckBox_->isChecked());
+    state_->setValue(GetDomainBoundaryAlgo::UseRange, !compartmentRadioButton_->isChecked());
+    state_->setValue(GetDomainBoundaryAlgo::UseRange, compartmentsRangeRadioButton_->isChecked());
+    state_->setValue(GetDomainBoundaryAlgo::MinRange, minCompartmentSpinner_->value());
+    state_->setValue(GetDomainBoundaryAlgo::MaxRange, maxCompartmentSpinner_->value());
+    state_->setValue(GetDomainBoundaryAlgo::Domain, valueCompartmentSpinner_->value());
+  }
 }
+
+//BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void GetDomainBoundaryDialog::pull()
 {
-  //Pulling p(this);
-  //int newValue = state_->getValue(CreateLatVolModule::XSize).getInt();
-  //if (newValue != xSizeSpinBox_->value())
-  //  xSizeSpinBox_->setValue(newValue);
-  //newValue = state_->getValue(CreateLatVolModule::YSize).getInt();
-  //if (newValue != ySizeSpinBox_->value())
-  //  ySizeSpinBox_->setValue(newValue);
-  //newValue = state_->getValue(CreateLatVolModule::ZSize).getInt();
-  //if (newValue != zSizeSpinBox_->value())
-  //  zSizeSpinBox_->setValue(newValue);
-  //elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
-  //elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
+  Pulling p(this);
+  
+  int newValue = state_->getValue(GetDomainBoundaryAlgo::MinRange).getInt();
+  if (newValue != minCompartmentSpinner_->value())
+    minCompartmentSpinner_->setValue(newValue);
 
-  //std::string loc = state_->getValue(CreateLatVolModule::DataAtLocation).getString();
-  //dataAtNodesButton_->setChecked(loc == "Nodes");
-  //dataAtCellsButton_->setChecked(loc == "Cells");
-  //dataAtNoneButton_->setChecked(loc == "None");
+  newValue = state_->getValue(GetDomainBoundaryAlgo::MaxRange).getInt();
+  if (newValue != maxCompartmentSpinner_->value())
+    maxCompartmentSpinner_->setValue(newValue);
+
+  newValue = state_->getValue(GetDomainBoundaryAlgo::Domain).getInt();
+  if (newValue != valueCompartmentSpinner_->value())
+    valueCompartmentSpinner_->setValue(newValue);
+  
+  outerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::AddOuterBoundary).getBool());
+  includeInnerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::InnerBoundaryOnly).getBool());
+  disconnectBoundariesCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::DisconnectBoundaries).getBool());
+  excludeInnerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::NoInnerBoundary).getBool());
+  compartmentRadioButton_->setChecked(!state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
+  compartmentsRangeRadioButton_->setChecked(state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
 }
