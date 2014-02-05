@@ -41,7 +41,7 @@ namespace Datatypes {
   class Scalar : public Datatype
   {
   public:
-    explicit Scalar(T val) : val_(val) {}
+    explicit Scalar(const T& val) : val_(val) {}
     T value() const { return val_; }
     virtual Scalar* clone() const { return new Scalar(*this); }
   private:

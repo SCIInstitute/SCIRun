@@ -427,6 +427,16 @@ void Module::setStateBoolFromAlgo(AlgorithmParameterName name)
   get_state()->setValue(name, algo().get(name).getBool());
 }
 
+void Module::setAlgoIntFromState(AlgorithmParameterName name)
+{
+  algo().set(name, get_state()->getValue(name).getInt());
+}
+
+void Module::setAlgoBoolFromState(AlgorithmParameterName name)
+{
+  algo().set(name, get_state()->getValue(name).getBool());
+}
+
 void Module::setStateIntFromAlgo(AlgorithmParameterName name)
 {
   get_state()->setValue(name, algo().get(name).getInt());

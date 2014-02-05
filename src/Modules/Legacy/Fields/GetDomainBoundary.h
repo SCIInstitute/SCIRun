@@ -49,7 +49,7 @@ namespace SCIRun {
         INPUT_PORT(0, InputField, LegacyField);
         INPUT_PORT(1, MinValue, Double);
         INPUT_PORT(2, MaxValue, Double);
-        INPUT_PORT(3, ElemLink, Matrix);
+        INPUT_PORT(3, ElemLink, SparseRowMatrix);
         OUTPUT_PORT(0, BoundaryField, LegacyField);
       };
 

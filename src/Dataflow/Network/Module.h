@@ -228,6 +228,8 @@ namespace Networks {
 
     void setStateBoolFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateIntFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
 
   private:
     template <class T>
