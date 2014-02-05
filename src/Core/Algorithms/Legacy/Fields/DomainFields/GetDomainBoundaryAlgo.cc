@@ -106,9 +106,9 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   
   int minval = get(MinRange).getInt();
   int maxval = get(MaxRange).getInt();
-  int domval = get(Domain).getInt();
+  const int domval = get(Domain).getInt();
   
-  bool userange = get(UseRange).getBool();
+  const bool userange = get(UseRange).getBool();
   
   if (!userange)
   {
