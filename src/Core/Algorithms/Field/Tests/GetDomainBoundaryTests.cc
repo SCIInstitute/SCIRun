@@ -93,9 +93,7 @@ TEST(GetDomainBoundaryTest, CanLogErrorMessage)
   GetDomainBoundaryAlgo algo;
 
   FieldHandle input, output;
-  MatrixHandle mapping;
+  SparseRowMatrixHandle elemLink;
 
-  EXPECT_FALSE(algo.run(input, output, mapping));
-
-  EXPECT_FALSE(algo.run(input, output));
+  EXPECT_FALSE(algo.runImpl(input, elemLink, output));
 }
