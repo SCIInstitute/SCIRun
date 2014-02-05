@@ -26,14 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DomainFields/GetDomainBoundary.h>
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
-#include <Core/Datatypes/Field.h>
+//#include <Core/Algorithms/Fields/DomainFields/GetDomainBoundary.h>
+//#include <Core/Algorithms/Converter/ConverterAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
+#include <Modules/Legacy/Fields/GetDomainBoundary.h>
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
+GetDomainBoundary::GetDomainBoundary() 
+  : Module(ModuleLookupInfo("GetDomainBoundary", "NewField", "SCIRun"))
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(BoundaryField);
+  INITIALIZE_PORT(MinValue);
+  INITIALIZE_PORT(MaxValue);
+  INITIALIZE_PORT(ElemLink);
+}
+
+void GetDomainBoundary::setStateDefaults()
+{
+
+}
+
+void GetDomainBoundary::execute()
+{
+
+}
+
+#if SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
 namespace SCIRun {
 
 class GetDomainBoundary : public Module {
@@ -145,3 +169,4 @@ void GetDomainBoundary::execute()
 } // End namespace SCIRun
 
 
+#endif
