@@ -32,7 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 
 using namespace SCIRun;

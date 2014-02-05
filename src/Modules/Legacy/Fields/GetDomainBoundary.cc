@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//#include <Core/Algorithms/Fields/DomainFields/GetDomainBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 //#include <Core/Algorithms/Converter/ConverterAlgo.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
@@ -34,6 +34,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
@@ -49,7 +50,15 @@ GetDomainBoundary::GetDomainBoundary()
 
 void GetDomainBoundary::setStateDefaults()
 {
+  setStateIntFromAlgo(GetDomainBoundaryAlgo::MinRange);
+  setStateIntFromAlgo(GetDomainBoundaryAlgo::MaxRange);
+  setStateIntFromAlgo(GetDomainBoundaryAlgo::Domain);
 
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::UseRange);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::AddOuterBoundary);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::InnerBoundaryOnly);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::NoInnerBoundary);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::DisconnectBoundaries);
 }
 
 void GetDomainBoundary::execute()

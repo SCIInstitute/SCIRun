@@ -45,8 +45,6 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
   public:
     GetDomainBoundaryAlgo();
 
-    static AlgorithmInputName MinValue;
-    static AlgorithmInputName MaxValue;
     static AlgorithmInputName ElemLink;
     static AlgorithmParameterName MinRange;
     static AlgorithmParameterName MaxRange;
@@ -60,7 +58,7 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    bool runImpl(FieldHandle input, FieldHandle& output) const;
+    //bool runImpl(FieldHandle input, FieldHandle& output) const;
     bool runImpl(FieldHandle input, Datatypes::SparseRowMatrixHandle domainlink, FieldHandle& output) const;
 };
 

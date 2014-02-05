@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundary.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -47,18 +47,19 @@ using namespace SCIRun::Core::Geometry;
 
 struct pointtype
 {
+  pointtype() : node(0), val1(0), val2(0), hasneighbor(false) {}
   VMesh::Node::index_type node;
   int val1;
   int val2;      
   bool hasneighbor;
 };
 
-bool 
-GetDomainBoundaryAlgo::runImpl(FieldHandle input, FieldHandle& output) const
-{
-  SparseRowMatrixHandle domainlink;
-  return runImpl(input,domainlink,output);
-}
+//bool 
+//GetDomainBoundaryAlgo::runImpl(FieldHandle input, FieldHandle& output) const
+//{
+//  SparseRowMatrixHandle domainlink;
+//  return runImpl(input,domainlink,output);
+//}
 
 struct IndexHash 
 {
@@ -72,8 +73,6 @@ struct IndexHash
     { return (i1 < i2); }
 };
 
-AlgorithmInputName GetDomainBoundaryAlgo::MinValue("MinValue");
-AlgorithmInputName GetDomainBoundaryAlgo::MaxValue("MaxValue");
 AlgorithmInputName GetDomainBoundaryAlgo::ElemLink("ElemLink");
 AlgorithmParameterName GetDomainBoundaryAlgo::MinRange("MinRange");
 AlgorithmParameterName GetDomainBoundaryAlgo::MaxRange("MaxRange");
@@ -548,4 +547,18 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   
   CopyProperties(*input, *output);
   return true;
+}
+
+AlgorithmOutput GetDomainBoundaryAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+  auto elemlink = input.get<SparseRowMatrix>(ElemLink);
+
+  FieldHandle boundary;
+  if (!runImpl(field, elemlink, boundary))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[BoundaryField] = boundary;
+  return output;
 }

@@ -421,3 +421,13 @@ void Module::removeInputPort(const PortId& id)
 {
   iports_.remove(id);
 }
+
+void Module::setStateBoolFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getBool());
+}
+
+void Module::setStateIntFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getInt());
+}

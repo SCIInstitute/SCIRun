@@ -226,6 +226,9 @@ namespace Networks {
     };
     void update_state(LegacyState) { /*TODO*/ }
 
+    void setStateBoolFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setStateIntFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+
   private:
     template <class T>
     boost::shared_ptr<T> getRequiredInputAtIndex(const PortId& id);
