@@ -61,7 +61,7 @@ class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
     bool runImpl(FieldHandle input, FieldHandle& output) const;
-    bool runImpl(FieldHandle input, Datatypes::MatrixHandle domainlink, FieldHandle& output) const;
+    bool runImpl(FieldHandle input, Datatypes::SparseRowMatrixHandle domainlink, FieldHandle& output) const;
 };
 
 }}}}

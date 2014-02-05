@@ -56,7 +56,7 @@ struct pointtype
 bool 
 GetDomainBoundaryAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  MatrixHandle domainlink;
+  SparseRowMatrixHandle domainlink;
   return runImpl(input,domainlink,output);
 }
 
@@ -98,33 +98,34 @@ GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
 }
 
 bool 
-GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, FieldHandle& output) const
+GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainlink, FieldHandle& output) const
 {
   typedef boost::unordered_multimap<index_type,pointtype,IndexHash> pointhash_map_type;
   typedef boost::unordered_map<index_type,VMesh::Node::index_type,IndexHash> hash_map_type;
 
-  algo_start("getDomainBoundary");
+  ScopedAlgorithmStatusReporter asr(this, "GetDomainBoundary");
   
-  int minval = get_int("min_range");
-  int maxval = get_int("max_range");
-  int domval = get_int("domain");
+  int minval = get(MinRange).getInt();
+  int maxval = get(MaxRange).getInt();
+  int domval = get(Domain).getInt();
   
-  bool userange = get_bool("use_range");
+  bool userange = get(UseRange).getBool();
   
   if (!userange)
   {
-    minval = domval; maxval = domval;
+    minval = domval; 
+    maxval = domval;
   }
   
-  bool addouterboundary = get_bool("add_outer_boundary");
-  bool innerboundaryonly = get_bool("inner_boundary_only");
-  bool noinnerboundary = get_bool("no_inner_boundary");
-  bool disconnect = get_bool("disconnect_boundaries");
+  bool addouterboundary = get(AddOuterBoundary).getBool();
+  bool innerboundaryonly = get(InnerBoundaryOnly).getBool();
+  bool noinnerboundary = get(NoInnerBoundary).getBool();
+  bool disconnect = get(DisconnectBoundaries).getBool();
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end(); return (false);
+    return false;
   }
 
   FieldInformation fi(input);
@@ -133,19 +134,19 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end(); return (false);
+    return false;
   }
   
   if (!(fi.is_constantdata()))
   {
     error("This function needs a compartment definition on the elements (constant element data)");
-    algo_end(); return (false);    
+    return false;    
   }
   
   if (!(fi.is_volume()||fi.is_surface()))
   {
     error("This function is only defined for surface and volume data");
-    algo_end(); return (false);
+    return false;
   }
 
   if (fi.is_hex_element())
@@ -167,7 +168,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
   else
   {
     error("No method available for input mesh");
-    algo_end(); return (false);
+    return false;
   }
 
   fo.make_constantdata();
@@ -175,10 +176,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
   output = CreateField(fo);
   
   
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return false;
   }
   
 
@@ -194,25 +195,21 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
   VMesh::DElem::size_type numdelems = imesh->num_delems();
 
   bool isdomlink = false;
-  index_type* domlinkrr = 0;
-  index_type* domlinkcc = 0;
+  const index_type* domlinkrr = 0;
+  const index_type* domlinkcc = 0;
   
   std::vector<int> newvalues;
   
-  if (domainlink.get_rep())
+  if (domainlink)
   {
     if ((numdelems != domainlink->nrows())&&(numdelems != domainlink->ncols()))
     {
       error("The Domain Link property is not of the right dimensions");
-      algo_end(); return (false);        
+      return false;        
     }
-    SparseRowMatrix *spr = matrix_cast::as_sparse(domainlink);
-    if (spr)
-    {
-      domlinkrr = spr->get_rows();
-      domlinkcc = spr->get_cols();
-      isdomlink = true;
-    }
+    domlinkrr = domainlink->get_rows();
+    domlinkcc = domainlink->get_cols();
+    isdomlink = true;
   }  
   
   if (disconnect)
@@ -280,20 +277,20 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
       {      
         ifield->value(val1,ci);
         ifield->value(val2,nci);
-        if (innerboundaryonly == false)
+        if (!innerboundaryonly)
         {
           if (noinnerboundary)
           {
             if ((((val1 >= minval)&&(val1 <= maxval)&&
                 (!((val2 >= minval)&&(val2 <= maxval))))&&
-                (userange == true)))
+                (userange)))
             {
               newval = val1;
               includeface = true;                         
             }
             else if (((val2 >= minval)&&(val2 <= maxval)&&
                 (!((val1 >= minval)&&(val1 <= maxval))))&&
-                (userange == true))
+                (userange))
             {
               newval = val2;
               includeface = true;             
@@ -303,7 +300,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
           {
             if ((((val1 >= minval)&&(val1 <= maxval))||
                 ((val2 >= minval)&&(val2 <= maxval)))||
-                (userange == false))
+                (!userange))
             {
               if (!(val1 == val2)) 
               {
@@ -318,7 +315,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
         {
           if ((((val1 >= minval)&&(val2 >= minval))&&
               ((val1 <= maxval)&&(val2 <= maxval)))||
-              (userange == false))
+              (!userange))
           {
             if (!(val1 == val2)) 
             {
@@ -329,10 +326,10 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
           }          
         }
       }
-      else if ((addouterboundary)&&(innerboundaryonly == false))
+      else if ((addouterboundary)&&(!innerboundaryonly))
       {
         ifield->value(val1,ci);
-        if (((val1 >= minval)&&(val1 <= maxval))||(userange == false)) 
+        if (((val1 >= minval)&&(val1 <= maxval))||(!userange)) 
         {
           newval = val1;
           includeface = true;
@@ -397,7 +394,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
         omesh->add_elem(onodes);
         newvalues.push_back(newval);
       }
-      cnt++; if (cnt == 100) update_progress(delem,numdelems);
+      cnt++; if (cnt == 100) update_progress_max(delem,numdelems);
     }
   }
   else
@@ -459,20 +456,20 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
       {
         ifield->value(val1,ci);
         ifield->value(val2,nci);
-        if (innerboundaryonly == false)
+        if (!innerboundaryonly)
         {
           if (noinnerboundary)
           {
             if (((val1 >= minval)&&(val1 <= maxval)&&
                 (!((val2 >= minval)&&(val2 <= maxval))))&&
-                (userange == true))
+                (userange))
             {
               newval = val1;
               includeface = true;                         
             }    
             else if(((val2 >= minval)&&(val2 <= maxval)&&
                 (!((val1 >= minval)&&(val1 <= maxval))))&&
-                (userange == true))
+                (userange))
             {
               newval = val2;
               includeface = true;             
@@ -482,7 +479,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
           {
             if ((((val1 >= minval)&&(val1 <= maxval))||
                 ((val2 >= minval)&&(val2 <= maxval)))||
-                (userange == false))
+                (!userange))
             {
               if (!(val1 == val2)) 
               {
@@ -497,7 +494,7 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
         {
           if ((((val1 >= minval)&&(val2 >= minval))&&
               ((val1 <= maxval)&&(val2 <= maxval)))||
-              (userange == false))
+              (!userange))
           {
             if (!(val1 == val2)) 
             {
@@ -508,11 +505,11 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
           }          
         }
       }
-      else if ((addouterboundary)&&(innerboundaryonly == false))
+      else if ((addouterboundary)&&(!innerboundaryonly))
       {
         ifield->value(val1,ci);
         if (((val1 >= minval)&&(val1 <= maxval))||
-            (userange == false)) 
+            (!userange)) 
         {
           newval = val1;
           includeface = true;
@@ -542,14 +539,13 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, Fiel
         omesh->add_elem(onodes);
         newvalues.push_back(newval);
       }
-      cnt++; if (cnt == 100) update_progress(delem,numdelems);
+      cnt++; if (cnt == 100) update_progress_max(delem,numdelems);
     }
   }
   
   ofield->resize_values();
   ofield->set_values(newvalues);
   
-  // copy property manager
-	output->copy_properties(input.get_rep());
-  algo_end(); return (true);
+  CopyProperties(*input, *output);
+  return true;
 }
