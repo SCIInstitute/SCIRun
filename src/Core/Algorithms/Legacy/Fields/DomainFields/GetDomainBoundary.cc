@@ -26,34 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DomainFields/GetDomainBoundary.h>
-
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundary.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
-namespace SCIRunAlgo {
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
+
+#include <boost/unordered_map.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
-typedef class {
-public:
+struct pointtype
+{
   VMesh::Node::index_type node;
   int val1;
   int val2;      
   bool hasneighbor;
-} pointtype;
+};
 
 bool 
-GetDomainBoundaryAlgo::
-run(FieldHandle input, FieldHandle& output)
+GetDomainBoundaryAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
   MatrixHandle domainlink;
-  return(run(input,domainlink,output));
+  return runImpl(input,domainlink,output);
 }
 
-
-struct IndexHash {
+struct IndexHash 
+{
   static const size_t bucket_size = 4;
   static const size_t min_buckets = 8;
   
@@ -64,18 +72,36 @@ struct IndexHash {
     { return (i1 < i2); }
 };
 
-bool 
-GetDomainBoundaryAlgo::
-run(FieldHandle input,  MatrixHandle domainlink, FieldHandle& output)
-{
+AlgorithmInputName GetDomainBoundaryAlgo::MinValue("MinValue");
+AlgorithmInputName GetDomainBoundaryAlgo::MaxValue("MaxValue");
+AlgorithmInputName GetDomainBoundaryAlgo::ElemLink("ElemLink");
+AlgorithmParameterName GetDomainBoundaryAlgo::MinRange("MinRange");
+AlgorithmParameterName GetDomainBoundaryAlgo::MaxRange("MaxRange");
+AlgorithmParameterName GetDomainBoundaryAlgo::Domain("Domain");
+AlgorithmParameterName GetDomainBoundaryAlgo::UseRange("UseRange");
+AlgorithmParameterName GetDomainBoundaryAlgo::AddOuterBoundary("AddOuterBoundary");
+AlgorithmParameterName GetDomainBoundaryAlgo::InnerBoundaryOnly("InnerBoundaryOnly");
+AlgorithmParameterName GetDomainBoundaryAlgo::NoInnerBoundary("NoInnerBoundary");
+AlgorithmParameterName GetDomainBoundaryAlgo::DisconnectBoundaries("DisconnectBoundaries");
+AlgorithmOutputName GetDomainBoundaryAlgo::BoundaryField("BoundaryField");
 
-#ifdef HAVE_HASH_MAP
-  typedef hash_multimap<index_type,pointtype,IndexHash> pointhash_map_type;
-  typedef hash_map<index_type,VMesh::Node::index_type,IndexHash> hash_map_type;
-#else
-  typedef std::multimap<index_type,pointtype> pointhash_map_type;
-  typedef std::map<index_type,VMesh::Node::index_type> hash_map_type;
-#endif
+GetDomainBoundaryAlgo::GetDomainBoundaryAlgo()
+{
+  addParameter(MinRange, 0);
+  addParameter(MaxRange,255);
+  addParameter(Domain,1);
+  addParameter(UseRange,false);
+  addParameter(AddOuterBoundary,true);
+  addParameter(InnerBoundaryOnly,false);
+  addParameter(NoInnerBoundary,false);
+  addParameter(DisconnectBoundaries,false);
+}
+
+bool 
+GetDomainBoundaryAlgo::runImpl(FieldHandle input,  MatrixHandle domainlink, FieldHandle& output) const
+{
+  typedef boost::unordered_multimap<index_type,pointtype,IndexHash> pointhash_map_type;
+  typedef boost::unordered_map<index_type,VMesh::Node::index_type,IndexHash> hash_map_type;
 
   algo_start("getDomainBoundary");
   
@@ -527,5 +553,3 @@ run(FieldHandle input,  MatrixHandle domainlink, FieldHandle& output)
 	output->copy_properties(input.get_rep());
   algo_end(); return (true);
 }
-
-} // End namespace SCIRunAlgo
