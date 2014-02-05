@@ -96,7 +96,11 @@ namespace
     //*v << -1, -2, -4;
 	  (*v)[0] = -1;
 	  (*v)[1] = -2;
-	  (*v)[2] = -4; 
+	  (*v)[2] = -4;
+    (*v)[300] = -300;
+    (*v)[size/2] = -6;
+    (*v)[size/2 + 1] = -7;
+    (*v)[600] = -600;
     (*v)[size-1] = 1;
     return v;
   }
@@ -205,7 +209,8 @@ TEST(ParallelLinearAlgebraTests, CanCopyContentsOfVector)
 
 struct Copy
 {
-  Copy(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle vec2copy) : 
+  Copy(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+    ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle vec2copy) : 
     data_(data), v1_(v1), v2_(v2), proc_(proc), vec2copy_(vec2copy) {}
 
   ParallelLinearAlgebraSharedData& data_;
@@ -290,29 +295,33 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
   {
 	  EXPECT_GE(v1.data_[i],0);
   }
-  EXPECT_EQ(v1.data_[0], 1); 
-  EXPECT_EQ(v1.data_[2], 0);
-  EXPECT_EQ(v1.data_[size-1], 2); 
+  EXPECT_EQ(1,v1.data_[0]); 
+  EXPECT_EQ(0,v1.data_[2]);
+  EXPECT_EQ(2,v1.data_[size-1]); 
 }
 
 //TODO: by intern
 struct absdiag
 {
-   absdiag(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), m1_(m1), v2_(v2), proc_(proc), dcmHandle_(dcmHandle) {}
+   absdiag(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, 
+     ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle,
+     SparseRowMatrixHandle srmHandle) : data_(data), m1_(m1), v2_(v2), proc_(proc), 
+     dcmHandle_(dcmHandle), srmHandle_(srmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
   ParallelLinearAlgebra::ParallelMatrix& m1_;
   ParallelLinearAlgebra::ParallelVector& v2_;
   DenseColumnMatrixHandle dcmHandle_;
+  SparseRowMatrixHandle srmHandle_; 
 
   void operator()()
   {
     ParallelLinearAlgebra pla(data_, proc_);
+    pla.add_matrix(srmHandle_, m1_);
+
     pla.new_vector(v2_);
-    auto mOne = matrix1();
-    pla.add_matrix(mOne, m1_); 
+    pla.add_vector(dcmHandle_, v2_);
 
     pla.absdiag(m1_, v2_);
   }
@@ -330,8 +339,8 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
   auto mat1 = matrix1(); 
 
   {
-	  absdiag diag0(data, m1, v2, 0, vec2);
-	  absdiag diag1(data, m1, v2, 1, vec2);
+	  absdiag diag0(data, m1, v2, 0, vec2, mat1);
+	  absdiag diag1(data, m1, v2, 1, vec2, mat1);
   
 	  boost::thread t1 = boost::thread(boost::ref(diag0));
 	  boost::thread t2 = boost::thread(boost::ref(diag1));
@@ -339,17 +348,18 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonalMulti)
 	  t2.join();
   }
 
-  EXPECT_EQ(v2.size_, size);
+  EXPECT_EQ( v2.size_, size );
   for (size_t i = 0; i < size; ++i)
   {
-    EXPECT_GE(v2.data_[i], 0);
+    EXPECT_GE(v2.data_[i] , 0);
   }
 }
 
 struct max
 {
-   max(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), v1_(v1), proc_(proc), dcmHandle_(dcmHandle) {}
+   max(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+     int proc, DenseColumnMatrixHandle dcmHandle) : 
+      data_(data), v1_(v1), proc_(proc), dcmHandle_(dcmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -360,8 +370,8 @@ struct max
   void operator()()
   {
     ParallelLinearAlgebra pla(data_, proc_);
-    auto vOne = vector1();
-    pla.add_vector(vOne, v1_); 
+    pla.new_vector(v1_); 
+    pla.add_vector(dcmHandle_, v1_); 
     maxResult_ = pla.max(v1_);
   }
 };
@@ -385,7 +395,7 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
 	  t2.join();
     maxDouble_ = max0.maxResult_;
   }  
-  EXPECT_EQ(4, maxDouble_);
+  EXPECT_EQ(1, maxDouble_);
 }
 
 //Find what error is acceptable for the float comparison
@@ -417,10 +427,11 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 	auto vec2 = vector2(); 
 	pla.add_vector(vec2, v2);
   pla.absthreshold_invert(v2, dummyResult, 1); 
-  EXPECT_EQ(dummyResult.data_[0],1);
-	EXPECT_DOUBLE_EQ(dummyResult.data_[1], -0.5);
-	EXPECT_DOUBLE_EQ(dummyResult.data_[2], -0.25);
-	EXPECT_EQ(dummyResult.data_[size-1], 1);
+  
+  EXPECT_EQ(1,dummyResult.data_[0]);
+	EXPECT_DOUBLE_EQ(-0.5,dummyResult.data_[1]);
+	EXPECT_DOUBLE_EQ(-0.25,dummyResult.data_[2]);
+	EXPECT_EQ(1,dummyResult.data_[size-1]);
 	
   //test vector 3 
   pla.zeros(dummyResult); 
@@ -428,15 +439,17 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 	auto vec3 = vector3(); 
 	pla.add_vector(vec3, v3);
   pla.absthreshold_invert(v3, dummyResult, 1); 
-  EXPECT_EQ(dummyResult.data_[0], 1);
-	EXPECT_EQ(dummyResult.data_[1], 1);
-	EXPECT_EQ(dummyResult.data_[2], 1);
-	EXPECT_NEAR(dummyResult.data_[size-1], -0.1429, 0.001);
+
+  EXPECT_EQ(1,dummyResult.data_[0]);
+	EXPECT_EQ(1,dummyResult.data_[1]);
+	EXPECT_EQ(1,dummyResult.data_[2]);
+	EXPECT_NEAR(-0.1429, dummyResult.data_[size-1], 0.001);
 }
 
 struct absthreshold_inv
 {
-   absthreshold_inv(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle) : 
+   absthreshold_inv(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+     ParallelLinearAlgebra::ParallelVector& v2, int proc, DenseColumnMatrixHandle dcmHandle) : 
     data_(data), v1_(v1), v2_(v2), proc_(proc), dcmHandle_(dcmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
@@ -450,12 +463,9 @@ struct absthreshold_inv
     ParallelLinearAlgebra pla(data_, proc_);
    
     pla.new_vector(v1_);
-    auto vOne = vector1();
-    pla.add_vector(vOne, v1_);
+    pla.add_vector(dcmHandle_, v1_);
     
-    pla.new_vector(v2_);
-    //auto vTwo = vector2(); 
-    //pla.add_vector(vTwo,v2_);
+    pla.new_vector(v2_); 
     
     pla.absthreshold_invert(v1_, v2_, 1);
   }
@@ -482,10 +492,48 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
   }
    
   //test vector 1 
-	EXPECT_EQ(v2.data_[0],1);
-	EXPECT_DOUBLE_EQ(v2.data_[1], 0.5);
-	EXPECT_DOUBLE_EQ(v2.data_[2], 0.25);
-	EXPECT_EQ(v2.data_[size-1], 1);
+	EXPECT_EQ(1,v2.data_[0]);
+	EXPECT_NEAR(-0.5,v2.data_[1],0.001);
+	EXPECT_NEAR(-0.25,v2.data_[2],0.001);
+  EXPECT_NEAR(-0.0033,v2.data_[300],0.001);
+  EXPECT_NEAR(-0.1667,v2.data_[size/2],0.001);
+  EXPECT_NEAR(-0.1429,v2.data_[size/2 + 1],0.001);
+  EXPECT_NEAR(-0.0017,v2.data_[600],0.001);
+	EXPECT_EQ(1,v2.data_[size-1]);
+	
+}
+
+TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThresholdMulti8Threads)
+{
+  const int NUM_THREADS = 8;
+  ParallelLinearAlgebraSharedData data(getDummySystem(), NUM_THREADS);
+  
+  ParallelLinearAlgebra::ParallelVector v1;
+  ParallelLinearAlgebra::ParallelVector v2; 
+
+  auto vec2 = vector1();
+  std::vector<boost::shared_ptr<absthreshold_inv>> workers;
+  std::vector<boost::thread> threads;
+  {
+    for (int i = 0; i < NUM_THREADS; ++i)
+      workers.push_back(boost::make_shared<absthreshold_inv>(data, v1, v2, i, vec2));
+  
+    for (int i = 0; i < NUM_THREADS; ++i)
+      threads.push_back(boost::thread(boost::ref(*workers[i])));
+
+    for (int i = 0; i < NUM_THREADS; ++i)
+      threads[i].join();
+  }
+   
+  //test vector 1 
+	EXPECT_EQ(1, v2.data_[0]);
+	EXPECT_DOUBLE_EQ(0.5, v2.data_[1]);
+	EXPECT_DOUBLE_EQ(0.25,v2.data_[2] );
+  EXPECT_DOUBLE_EQ(1, v2.data_[300]);
+  EXPECT_DOUBLE_EQ(1, v2.data_[size/2]);
+  EXPECT_DOUBLE_EQ(1, v2.data_[size/2 + 1]);
+  EXPECT_DOUBLE_EQ(1, v2.data_[600]);
+	EXPECT_EQ(1, v2.data_[size-1]);
 	
 }
 
@@ -529,15 +577,17 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVector)
 
   pla.mult(m1,v1,v2); 
 
-  EXPECT_EQ(v2.data_[0],1);
-  EXPECT_EQ(v2.data_[1],-4);
-  EXPECT_EQ(v2.data_[size-1],-2); 
+  EXPECT_EQ(1,v2.data_[0]);
+  EXPECT_EQ(-4,v2.data_[1]);
+  EXPECT_EQ(-2,v2.data_[size-1]); 
 }
 
 struct mv_Multiply
 {
-  mv_Multiply(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& vR, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), m1_(m1), v2_(v2), vR_(vR), proc_(proc), dcmHandle_(dcmHandle) {}
+  mv_Multiply(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, 
+    ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& vR, 
+    int proc, DenseColumnMatrixHandle dcmHandle, SparseRowMatrixHandle srmHandle) : 
+    data_(data), m1_(m1), v2_(v2), vR_(vR), proc_(proc), dcmHandle_(dcmHandle), srmHandle_(srmHandle) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -545,18 +595,19 @@ struct mv_Multiply
   ParallelLinearAlgebra::ParallelVector& v2_;
   ParallelLinearAlgebra::ParallelVector& vR_; 
   DenseColumnMatrixHandle dcmHandle_;
+  SparseRowMatrixHandle srmHandle_; 
 
   void operator()()
   {
     ParallelLinearAlgebra pla(data_, proc_);
    
-    auto mOne = matrix1();
-    pla.add_matrix(mOne, m1_);
+    pla.add_matrix(srmHandle_, m1_);
     
     pla.new_vector(v2_);
     pla.add_vector(dcmHandle_,v2_);
 
-    pla.new_vector(vR_); 
+    pla.new_vector(vR_);
+    pla.add_vector(dcmHandle_,vR_); 
 
     pla.mult(m1_, v2_, vR_);
   }
@@ -571,9 +622,10 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVectorMulti)
   ParallelLinearAlgebra::ParallelVector vR;
 
   auto vecR = vector2();
+  auto mat1 = matrix1(); 
   {
-	  mv_Multiply mult_0(data, m1, v2, vR, 0, vecR);
-	  mv_Multiply mult_1(data, m1, v2, vR, 1, vecR);
+	  mv_Multiply mult_0(data, m1, v2, vR, 0, vecR, mat1);
+	  mv_Multiply mult_1(data, m1, v2, vR, 1, vecR, mat1);
   
 	  boost::thread t1 = boost::thread(boost::ref(mult_0));
 	  boost::thread t2 = boost::thread(boost::ref(mult_1));
@@ -581,10 +633,10 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVectorMulti)
 	  t2.join();
   }
   
-  EXPECT_EQ(vR.data_[0],-1);
-  EXPECT_EQ(vR.data_[1],4);
-  EXPECT_EQ(vR.data_[2],0);
-  EXPECT_EQ(vR.data_[size-1],2);
+  EXPECT_EQ(-1,vR.data_[0]);
+  EXPECT_EQ(4,vR.data_[1]);
+  EXPECT_EQ(0,vR.data_[2]);
+  EXPECT_EQ(2,vR.data_[size-1]);
 }
 
 //TODO: by intern
@@ -616,8 +668,10 @@ TEST(ParallelArithmeticTests, CanSubtractVectors)
 
 struct subtract
 {
-  subtract(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& vR, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), v1_(v1), v2_(v2), vR_(vR), proc_(proc), dcmHandle_(dcmHandle) {}
+  subtract(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+    ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& vR, 
+    int proc, DenseColumnMatrixHandle dcmHandle, DenseColumnMatrixHandle dcmHandle2) : 
+    data_(data), v1_(v1), v2_(v2), vR_(vR), proc_(proc), dcmHandle_(dcmHandle), dcmHandle2_(dcmHandle2) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
@@ -625,20 +679,21 @@ struct subtract
   ParallelLinearAlgebra::ParallelVector& v2_;
   ParallelLinearAlgebra::ParallelVector& vR_; 
   DenseColumnMatrixHandle dcmHandle_;
+  DenseColumnMatrixHandle dcmHandle2_; 
 
   void operator()()
   {
     ParallelLinearAlgebra pla(data_, proc_);
    
     pla.new_vector(v1_); 
-    auto vOne = vector1();
-    pla.add_vector(vOne, v1_);
+    pla.add_vector(dcmHandle_, v1_);
     
     pla.new_vector(v2_);
-    auto vTwo = vector2(); 
-    pla.add_vector(vTwo,v2_);
+    pla.add_vector(dcmHandle2_,v2_);
 
     pla.new_vector(vR_);
+
+    pla.ones(vR_);
 
     pla.sub(v1_, v2_, vR_);
   }
@@ -652,10 +707,11 @@ TEST(ParallelArithmeticTests, CanSubtractVectorsMulti)
   ParallelLinearAlgebra::ParallelVector v2; 
   ParallelLinearAlgebra::ParallelVector vR; 
 
-  auto vecR = vector2();
+  auto vec2 = vector2();
+  auto vec1 = vector1(); 
     {
-	    subtract sub_0(data, v1, v2, vR, 0, vecR);
-	    subtract sub_1(data, v1, v2, vR, 1, vecR);
+	    subtract sub_0(data, v1, v2, vR, 0, vec1, vec2);
+	    subtract sub_1(data, v1, v2, vR, 1, vec1, vec2);
   
 	    boost::thread t1 = boost::thread(boost::ref(sub_0));
 	    boost::thread t2 = boost::thread(boost::ref(sub_1));
@@ -663,11 +719,11 @@ TEST(ParallelArithmeticTests, CanSubtractVectorsMulti)
 	    t2.join();
     }
   
-  EXPECT_EQ(vR.data_[0],2);
-  EXPECT_EQ(vR.data_[1],4);
-  EXPECT_EQ(vR.data_[2],8);
-  EXPECT_EQ(vR.data_[3],0);
-  EXPECT_EQ(vR.data_[size-1],-2);
+  EXPECT_EQ(2,  vR.data_[0]);
+  EXPECT_EQ(4,  vR.data_[1]);
+  EXPECT_EQ(8,  vR.data_[2]);
+  EXPECT_EQ(0,  vR.data_[3]);
+  EXPECT_EQ(-2, vR.data_[size-1]);
 }
 //
 TEST(ParallelArithmeticTests, CanCompute2Norm)
@@ -688,22 +744,28 @@ TEST(ParallelArithmeticTests, CanCompute2Norm)
   pla.add_vector(vec3,v3);
   
   EXPECT_NEAR(4.6904,pla.norm(v1),0.001); 
-  EXPECT_NEAR(4.6904,pla.norm(v2),0.001); 
+  EXPECT_NEAR(670.900,pla.norm(v2),0.001); 
   EXPECT_NEAR(7.0711,pla.norm(v3),0.001);
 }
 
 
 struct norm
 {
-  norm(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), dcmHandle_(dcmHandle) {}
+  norm(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+    ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, 
+    int proc, DenseColumnMatrixHandle dcmHandle1, DenseColumnMatrixHandle dcmHandle2
+    , DenseColumnMatrixHandle dcmHandle3) : 
+    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), dcmHandle1_(dcmHandle1),
+    dcmHandle2_(dcmHandle2), dcmHandle3_(dcmHandle3) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
   ParallelLinearAlgebra::ParallelVector& v1_;
   ParallelLinearAlgebra::ParallelVector& v2_;
   ParallelLinearAlgebra::ParallelVector& v3_; 
-  DenseColumnMatrixHandle dcmHandle_;
+  DenseColumnMatrixHandle dcmHandle1_; 
+  DenseColumnMatrixHandle dcmHandle2_; 
+  DenseColumnMatrixHandle dcmHandle3_;
   double v1Norm_;
   double v2Norm_;
   double v3Norm_; 
@@ -713,19 +775,13 @@ struct norm
     ParallelLinearAlgebra pla(data_, proc_);
     
     pla.new_vector(v1_);
-    auto vec1 = vector1();
-    //pla.add_vector(dcmHandle_,v1_); 
-    pla.add_vector(vec1, v1_);
+    pla.add_vector(dcmHandle1_,v1_); 
 
     pla.new_vector(v2_);
-    auto vec2 = vector2();
-    //pla.add_vector(dcmHandle_,v2_);
-    pla.add_vector(vec2,v2_);
-
+    pla.add_vector(dcmHandle2_,v2_);
+    
     pla.new_vector(v3_);
-    auto vec3 = vector3();
-    //pla.add_vector(dcmHandle_,v3_);
-    pla.add_vector(vec3, v3_);
+    pla.add_vector(dcmHandle3_,v3_);
 
     v1Norm_ = pla.norm(v1_);
     v2Norm_ = pla.norm(v2_);
@@ -744,10 +800,12 @@ TEST(ParallelArithmeticTests, CanCompute2NormMulti)
   double v2Norm_Result;
   double v3Norm_Result; 
 
-  auto vecR = vector2();
+  auto vec1 = vector1();
+  auto vec2 = vector2();
+  auto vec3 = vector3();
   {
-	  norm norm_0(data, v1, v2, v3, 0, vecR);
-	  norm norm_1(data, v1, v2, v3, 1, vecR);
+	  norm norm_0(data, v1, v2, v3, 0, vec1, vec2, vec3);
+	  norm norm_1(data, v1, v2, v3, 1, vec1, vec2, vec3);
   
 	  boost::thread t1 = boost::thread(boost::ref(norm_0));
 	  boost::thread t2 = boost::thread(boost::ref(norm_1));
@@ -760,7 +818,7 @@ TEST(ParallelArithmeticTests, CanCompute2NormMulti)
   }
   
   EXPECT_NEAR(4.6904,v1Norm_Result,0.001); 
-  EXPECT_NEAR(4.6904,v2Norm_Result,0.001); 
+  EXPECT_NEAR(670.900,v2Norm_Result,0.001); 
   EXPECT_NEAR(7.0711,v3Norm_Result,0.001);
 }
 
@@ -793,40 +851,40 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
   auto resetV3 = vector3(); 
   pla.add_vector(resetV3,v3);
   pla.mult(v1,v3,v2); 
-  EXPECT_EQ(v2.data_[0],0);
-  EXPECT_EQ(v2.data_[1],2);
-  EXPECT_EQ(v2.data_[2],0);
-  EXPECT_EQ(v2.data_[size-1],7);
+
+  EXPECT_EQ(0,v2.data_[0]);
+  EXPECT_EQ(2,v2.data_[1]);
+  EXPECT_EQ(0,v2.data_[2]);
+  EXPECT_EQ(7,v2.data_[size-1]);
 }
 struct multVectors
 {
-  multVectors(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), dcmHandle_(dcmHandle) {}
+  multVectors(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+    ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, 
+    int proc, DenseColumnMatrixHandle dcmHandle1, DenseColumnMatrixHandle dcmHandle2) : 
+    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), 
+      dcmHandle1_(dcmHandle1), dcmHandle2_(dcmHandle2) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
   ParallelLinearAlgebra::ParallelVector& v1_;
   ParallelLinearAlgebra::ParallelVector& v2_;
   ParallelLinearAlgebra::ParallelVector& v3_; 
-  DenseColumnMatrixHandle dcmHandle_;
+  DenseColumnMatrixHandle dcmHandle1_;
+  DenseColumnMatrixHandle dcmHandle2_; 
 
   void operator()()
   {
     ParallelLinearAlgebra pla(data_, proc_);
     
     pla.new_vector(v1_); 
-    auto vec1 = vector1(); 
-    pla.add_vector(vec1, v1_);
+    pla.add_vector(dcmHandle1_, v1_);
 
     pla.new_vector(v2_);
-    auto vec2 = vector2(); 
-    pla.add_vector(vec2,v2_); 
+    pla.add_vector(dcmHandle2_,v2_); 
 
-    pla.new_vector(v3_); 
-    /*auto vec3 = vector3(); 
-    pla.add_vector(vec3, v3_);
-    pla.zeros(v3_); 
-*/
+    pla.new_vector(v3_);  
+
     pla.mult(v1_,v2_,v3_); 
   }
 };
@@ -839,10 +897,11 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
   ParallelLinearAlgebra::ParallelVector v2;
   ParallelLinearAlgebra::ParallelVector v3;
 
-  auto vecR = vector2();
+  auto vec1 = vector1();
+  auto vec2 = vector2();
   {
-	  multVectors mult_0(data, v1, v2, v3, 0, vecR);
-	  multVectors mult_1(data, v1, v2, v3, 1, vecR);
+	  multVectors mult_0(data, v1, v2, v3, 0, vec1, vec2);
+	  multVectors mult_1(data, v1, v2, v3, 1, vec1, vec2);
   
 	  boost::thread t1 = boost::thread(boost::ref(mult_0));
 	  boost::thread t2 = boost::thread(boost::ref(mult_1));
@@ -850,10 +909,10 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
 	  t2.join();
   }
 
-  EXPECT_EQ(v3.data_[0],-1);
-  EXPECT_EQ(v3.data_[1],-4);
-  EXPECT_EQ(v3.data_[2],-16);
-  EXPECT_EQ(v3.data_[size-1],-1);
+  EXPECT_EQ(-1  , v3.data_[0]);
+  EXPECT_EQ(-4  , v3.data_[1]);
+  EXPECT_EQ(-16 , v3.data_[2]);
+  EXPECT_EQ(-1  , v3.data_[size-1]);
 }
 
 
@@ -875,22 +934,28 @@ TEST(ParallelArithmeticTests, CanComputeDotProduct)
   auto vec3 = vector3(); 
   pla.add_vector(vec3,v3);
 
-  EXPECT_EQ(pla.dot(v1,v2),-22); 
-  EXPECT_EQ(pla.dot(v2,v3),-9); 
-  EXPECT_EQ(pla.dot(v1,v3),9); 
+  EXPECT_EQ(-22 , pla.dot(v1,v2)); 
+  EXPECT_EQ(-9 , pla.dot(v2,v3)); 
+  EXPECT_EQ(9 , pla.dot(v1,v3)); 
 }
 
 struct dotMult
 {
-  dotMult(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, int proc, DenseColumnMatrixHandle dcmHandle) : 
-    data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), dcmHandle_(dcmHandle) {}
+  dotMult(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelVector& v1, 
+    ParallelLinearAlgebra::ParallelVector& v2, ParallelLinearAlgebra::ParallelVector& v3, 
+    int proc, DenseColumnMatrixHandle dcmHandle, DenseColumnMatrixHandle dcmHandle2, 
+    DenseColumnMatrixHandle dcmHandle3) : 
+      data_(data), v1_(v1), v2_(v2), v3_(v3), proc_(proc), 
+      dcmHandle_(dcmHandle), dcmHandle2_(dcmHandle2), dcmHandle3_(dcmHandle3) {}
 
   ParallelLinearAlgebraSharedData& data_;
   int proc_;
   ParallelLinearAlgebra::ParallelVector& v1_;
   ParallelLinearAlgebra::ParallelVector& v2_;
   ParallelLinearAlgebra::ParallelVector& v3_; 
-  DenseColumnMatrixHandle dcmHandle_;
+  DenseColumnMatrixHandle dcmHandle_; 
+  DenseColumnMatrixHandle dcmHandle2_;
+  DenseColumnMatrixHandle dcmHandle3_;
   double v12_;
   double v23_;
   double v13_;
@@ -900,16 +965,14 @@ struct dotMult
     ParallelLinearAlgebra pla(data_, proc_);
     
     pla.new_vector(v1_); 
-    auto vec1 = vector1(); 
-    pla.add_vector(vec1, v1_);
+    pla.add_vector(dcmHandle_, v1_);
 
     pla.new_vector(v2_);
-    auto vec2 = vector2(); 
-    pla.add_vector(vec2,v2_); 
+    pla.add_vector(dcmHandle2_,v2_); 
 
     pla.new_vector(v3_); 
-    auto vec3 = vector3(); 
-    pla.add_vector(vec3,v3_); 
+    pla.add_vector(dcmHandle3_,v3_); 
+
 
     v12_ = pla.dot(v1_,v2_);
     v23_ = pla.dot(v2_,v3_);
@@ -927,11 +990,13 @@ TEST(ParallelArithmeticTests, CanComputeDotProductMulti)
   double v12;
   double v23;
   double v13;
-
-  auto vecR = vector2();
+  
+  auto vec1 = vector1(); 
+  auto vec2 = vector2();
+  auto vec3 = vector3(); 
   {
-	  dotMult dotMult_0(data, v1, v2, v3, 0, vecR);
-	  dotMult dotMult_1(data, v1, v2, v3, 1, vecR);
+	  dotMult dotMult_0(data, v1, v2, v3, 0, vec1, vec2, vec3);
+	  dotMult dotMult_1(data, v1, v2, v3, 1, vec1, vec2, vec3);
   
 	  boost::thread t1 = boost::thread(boost::ref(dotMult_0));
 	  boost::thread t2 = boost::thread(boost::ref(dotMult_1));
@@ -942,7 +1007,7 @@ TEST(ParallelArithmeticTests, CanComputeDotProductMulti)
     v13 = dotMult_0.v13_;
   }
 
-  EXPECT_EQ(v12,-22);
-  EXPECT_EQ(v23,-9);
-  EXPECT_EQ(v13,9);
+  EXPECT_EQ(-22 , v12);
+  EXPECT_EQ(-9 , v23);
+  EXPECT_EQ(9 , v13);
 }
