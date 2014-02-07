@@ -33,7 +33,7 @@ using namespace SCIRun::Core;
 CORE_SINGLETON_IMPLEMENTATION( Preferences );
 
 Preferences::Preferences() :
-  moduleErrorDialogState(true)
+  moduleErrorDialogState(true), saveBeforeExecute(false)
 {	
 }
 
