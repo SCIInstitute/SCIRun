@@ -39,8 +39,10 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
+ModuleLookupInfo GetDomainBoundary::staticInfo_("GetDomainBoundary", "NewField", "SCIRun");
+
 GetDomainBoundary::GetDomainBoundary() 
-  : Module(ModuleLookupInfo("GetDomainBoundary", "NewField", "SCIRun"))
+  : Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(BoundaryField);
