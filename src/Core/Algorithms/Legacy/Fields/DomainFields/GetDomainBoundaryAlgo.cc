@@ -36,6 +36,7 @@
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
+#include <Core/Logging/Log.h>
 
 #include <boost/unordered_map.hpp>
 
@@ -44,6 +45,7 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Logging;
 
 struct pointtype
 {
@@ -53,13 +55,6 @@ struct pointtype
   int val2;      
   bool hasneighbor;
 };
-
-//bool 
-//GetDomainBoundaryAlgo::runImpl(FieldHandle input, FieldHandle& output) const
-//{
-//  SparseRowMatrixHandle domainlink;
-//  return runImpl(input,domainlink,output);
-//}
 
 struct IndexHash 
 {
@@ -121,6 +116,16 @@ GetDomainBoundaryAlgo::runImpl(FieldHandle input, SparseRowMatrixHandle domainli
   bool noinnerboundary = get(NoInnerBoundary).getBool();
   bool disconnect = get(DisconnectBoundaries).getBool();
   
+  Log::get() << DEBUG_LOG << "GetDomainBoundaryAlgo parameters:" 
+    << "\n\tminval = " << minval 
+    << "\n\tmaxval = " << maxval 
+    << "\n\tdomval = " << domval 
+    << "\n\tuserange = " << userange 
+    << "\n\taddouterboundary = " << addouterboundary 
+    << "\n\tinnerboundaryonly = " << innerboundaryonly 
+    << "\n\tnoinnerboundary = " << noinnerboundary 
+    << "\n\tdisconnect = " << disconnect << std::endl; 
+
   if (!input)
   {
     error("No input field");
