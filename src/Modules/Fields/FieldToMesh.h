@@ -26,29 +26,29 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_FIELDS_FIELDTOMESH_H
-#define MODULES_FIELDS_FIELDTOMESH_H
-
-#include <Dataflow/Network/Module.h>
-#include <Modules/Fields/share.h>
-
-namespace SCIRun {
-  namespace Modules {
-    namespace Fields {
-
-class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
-  public Has1InputPort<FieldPortTag>,
-  public Has1OutputPort<MeshPortTag>
-{
-  public:
-    FieldToMesh();
-
-    virtual void execute();
-
-    INPUT_PORT(0, Field, LegacyField);
-    OUTPUT_PORT(0, Mesh, LegacyMesh);
-};
-
-}}}
-
-#endif
+//#ifndef MODULES_FIELDS_FIELDTOMESH_H
+//#define MODULES_FIELDS_FIELDTOMESH_H
+//
+//#include <Dataflow/Network/Module.h>
+//#include <Modules/Fields/share.h>
+//
+//namespace SCIRun {
+//  namespace Modules {
+//    namespace Fields {
+//
+//class SCISHARE FieldToMesh : public SCIRun::Dataflow::Networks::Module,
+//  public Has1InputPort<FieldPortTag>,
+//  public Has1OutputPort<MeshPortTag>
+//{
+//  public:
+//    FieldToMesh();
+//
+//    virtual void execute();
+//
+//    INPUT_PORT(0, Field, LegacyField);
+//    OUTPUT_PORT(0, Mesh, LegacyMesh);
+//};
+//
+//}}}
+//
+//#endif

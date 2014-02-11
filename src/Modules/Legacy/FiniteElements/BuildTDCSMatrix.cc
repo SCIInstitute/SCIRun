@@ -54,19 +54,12 @@ BuildTDCSMatrix::BuildTDCSMatrix()
 
 void BuildTDCSMatrix::execute()
 {
-  FieldHandle Mesh;
-  SparseRowMatrixHandle Stiffness;
-  DenseMatrixHandle ElectrodeElements;
-  DenseMatrixHandle ElectrodeElementType;
-  DenseMatrixHandle ElectrodeElementDefinition;
-  DenseMatrixHandle ContactImpedance; 
-  std::cout <<"1"<< std::endl;
-  Stiffness=getRequiredInput(FEM_Stiffness_Matrix);
-  Mesh=getRequiredInput(FEM_Mesh);
-  ElectrodeElements=getRequiredInput(Electrode_Element);
-  ElectrodeElementType=getRequiredInput(Electrode_Element_Type);
-  ElectrodeElementDefinition=getRequiredInput(Electrode_Element_Definition);
-  ContactImpedance=getRequiredInput(Contact_Impedance);
+  auto Stiffness = getRequiredInput(FEM_Stiffness_Matrix);
+  auto Mesh = getRequiredInput(FEM_Mesh);
+  auto ElectrodeElements = getRequiredInput(Electrode_Element);
+  auto ElectrodeElementType = getRequiredInput(Electrode_Element_Type);
+  auto ElectrodeElementDefinition = getRequiredInput(Electrode_Element_Definition);
+  auto ContactImpedance = getRequiredInput(Contact_Impedance);
  
   auto output = algo().run_generic(make_input((FEM_Stiffness_Matrix,Stiffness)(FEM_Mesh,Mesh)(Electrode_Element,ElectrodeElements)(Electrode_Element_Type,ElectrodeElementType)(Electrode_Element_Definition,ElectrodeElementDefinition)(Contact_Impedance,ContactImpedance)));
 

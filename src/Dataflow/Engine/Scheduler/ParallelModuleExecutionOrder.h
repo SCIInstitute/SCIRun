@@ -57,6 +57,8 @@ namespace Engine {
     ModulesByGroup map_;
   };
 
+  SCISHARE std::ostream& operator<<(std::ostream& out, const ParallelModuleExecutionOrder& order);
+
 }
 }}
 

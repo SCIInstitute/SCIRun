@@ -32,6 +32,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/bimap.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/share.h>
@@ -48,17 +49,20 @@ namespace Engine {
     typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
     typedef std::list<Vertex> ExecutionOrder;
 
-    explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network);
+    explicit NetworkGraphAnalyzer(const SCIRun::Dataflow::Networks::NetworkInterface& network, 
+      const SCIRun::Dataflow::Networks::ModuleFilter& moduleFilter = boost::lambda::constant(true));
 
     const Networks::ModuleId& moduleAt(int vertex) const;
     ExecutionOrder::iterator topologicalBegin();
     ExecutionOrder::iterator topologicalEnd();
     Graph& graph();
+    int moduleCount() const;
 
   private:
     boost::bimap<Networks::ModuleId, int> moduleIdLookup_;
     ExecutionOrder order_;
     Graph graph_;
+    int moduleCount_;
   };
 
 }}}

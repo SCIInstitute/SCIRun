@@ -28,6 +28,7 @@
 
 SET(Algorithms_Field_Tests_SRCS
   CalculateGradientsAlgoTests.cc
+  GetDomainBoundaryTests.cc
   GetFieldBoundaryTests.cc
   ReportFieldInfoTests.cc
   ConvertMeshToTriSurfMeshAlgoTests.cc

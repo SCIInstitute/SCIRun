@@ -96,7 +96,6 @@ namespace SCIRun
           appender2->setLayout(layout2);
 
           log4cpp::Category& root = log4cpp::Category::getRoot();
-          //root.setPriority(log4cpp::Priority::DEBUG);
           root.addAppender(appender1);
           root.addAppender(appender2);
         }
@@ -110,6 +109,21 @@ namespace SCIRun
         {
           latestStream_ = Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
           return latestStream_;
+        }
+
+        bool verbose() const 
+        {
+          return cppLogger_.getRootPriority() == log4cpp::Priority::DEBUG;
+        }
+
+        void setVerbose(bool v)
+        {
+          cppLogger_.setPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
+        }
+
+        void flush()
+        {
+          latestStream_.flush();
         }
 
         log4cpp::Priority::PriorityLevel translate(LogLevel level)
@@ -126,7 +140,7 @@ namespace SCIRun
           case WARN:   cpp_level = log4cpp::Priority::WARN;   break;
           case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
           case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
-          case DEBUG:  cpp_level = log4cpp::Priority::DEBUG;  break;
+          case DEBUG_LOG:  cpp_level = log4cpp::Priority::DEBUG;  break;
           default:         
             THROW_INVALID_ARGUMENT("Unknown log level: " + boost::lexical_cast<std::string>((int)level));
           };
@@ -155,6 +169,11 @@ Log& Log::get()
   return logger;
 }
 
+void Log::flush()
+{
+  impl_->flush();
+}
+
 void Log::log(LogLevel level, const std::string& msg)
 {
   impl_->log(level, msg);
@@ -175,9 +194,9 @@ void Log::Stream::stream(double x)
   impl_->stream_ << x;
 }
 
-void Log::Stream::stream(int n)
+void Log::Stream::flush()
 {
-  impl_->stream_ << n;
+  impl_->stream_.flush();
 }
 
 Log::Stream::Stream(LogStreamImpl* impl) : impl_(impl) {}
@@ -188,14 +207,25 @@ Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, const std::stri
   return log;
 }
 
-Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, int n)
-{
-  log.stream(n);
-  return log;
-}
-
 Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, double x)
 {
   log.stream(x);
   return log;
+}
+
+//super hacky and dumb. need to figure out proper way
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&))
+{
+  log.flush();
+  return log;
+}
+
+void Log::setVerbose(bool v)
+{
+  impl_->setVerbose(v);
+}
+
+bool Log::verbose() const
+{
+  return impl_->verbose();
 }

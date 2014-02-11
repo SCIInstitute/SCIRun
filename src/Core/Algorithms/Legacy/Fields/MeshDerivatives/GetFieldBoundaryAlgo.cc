@@ -210,7 +210,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     size_type nrows = osize;
     size_type ncols = isize;
 
-    typedef Eigen::Triplet<double> T;
+    typedef SparseRowMatrix::Triplet T;
     std::vector<T> tripletList;
     tripletList.reserve(nrows);
 

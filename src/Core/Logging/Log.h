@@ -31,6 +31,7 @@
 
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
+#include <boost/lexical_cast.hpp>
 #include <Core/Logging/share.h>
 
 namespace SCIRun 
@@ -53,7 +54,7 @@ namespace SCIRun
         WARN,   // Not an error, but indicates error will occur if nothing done.
         NOTICE, // Events that are unusual, but not error conditions.
         INFO,   // Normal operational messages. No action required.
-        DEBUG,  // Information useful during development for debugging.
+        DEBUG_LOG,  // Information useful during development for debugging.
         NOTSET
       };
 
@@ -69,7 +70,7 @@ namespace SCIRun
           SCISHARE friend Stream& operator<<(Stream& log, const std::string& msg);
           void stream(const std::string& msg);
           void stream(double x);
-          void stream(int n);
+          void flush();
         private:
           boost::shared_ptr<class LogStreamImpl> impl_;
         };
@@ -77,6 +78,10 @@ namespace SCIRun
         void log(LogLevel level, const std::string& msg);
 
         SCISHARE friend Stream& operator<<(Log& log, LogLevel level);
+
+        void setVerbose(bool v);
+        bool verbose() const;
+        void flush();
 
       private:
         Log();
@@ -86,14 +91,21 @@ namespace SCIRun
         Log& operator=(Log&&)/* =delete*/;
 
       private:
+        friend class Stream;
         boost::shared_ptr<class LogImpl> impl_;
       };
 
-      //TODO: how to templatize
       SCISHARE Log::Stream& operator<<(Log& log, LogLevel level);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, const std::string& msg);
-      SCISHARE Log::Stream& operator<<(Log::Stream& log, int n);
       SCISHARE Log::Stream& operator<<(Log::Stream& log, double x);
+
+      template <typename T>
+      Log::Stream& operator<<(Log::Stream& log, const T& t)
+      {
+        return log << boost::lexical_cast<std::string>(t);
+      }
+
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&));
     }
   }
 }

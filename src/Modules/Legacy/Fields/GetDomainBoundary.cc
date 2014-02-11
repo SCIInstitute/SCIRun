@@ -26,71 +26,60 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DomainFields/GetDomainBoundary.h>
-#include <Core/Algorithms/Converter/ConverterAlgo.h>
-#include <Core/Datatypes/Field.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Scalar.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Modules/Legacy/Fields/GetDomainBoundary.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
 
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+ModuleLookupInfo GetDomainBoundary::staticInfo_("GetDomainBoundary", "NewField", "SCIRun");
 
-namespace SCIRun {
-
-class GetDomainBoundary : public Module {
-  public:
-    GetDomainBoundary(GuiContext*);
-    virtual ~GetDomainBoundary() {}
-    virtual void execute();
-    
-  private:
-    GuiInt    guiuserange_;
-    GuiDouble guiminrange_;
-    GuiDouble guimaxrange_;
-    GuiInt    guiusevalue_;
-    GuiDouble guivalue_;
-    GuiInt    guiincludeouterboundary_;
-    GuiInt    guiinnerboundaryonly_;
-    GuiInt    guinoinnerboundary_;
-    GuiInt    guidisconnect_;
-    
-    SCIRunAlgo::GetDomainBoundaryAlgo algo_;
-};
-
-
-DECLARE_MAKER(GetDomainBoundary)
-GetDomainBoundary::GetDomainBoundary(GuiContext* ctx)
-  : Module("GetDomainBoundary", ctx, Source, "NewField", "SCIRun"),
-    guiuserange_(get_ctx()->subVar("userange"),255.0),
-    guiminrange_(get_ctx()->subVar("minrange"),0.0),
-    guimaxrange_(get_ctx()->subVar("maxrange"),0.0),
-    guiusevalue_(get_ctx()->subVar("usevalue"),0),
-    guivalue_(get_ctx()->subVar("value"),1.0),
-    guiincludeouterboundary_(get_ctx()->subVar("includeouterboundary"),1),
-    guiinnerboundaryonly_(get_ctx()->subVar("innerboundaryonly"),0),    
-    guinoinnerboundary_(get_ctx()->subVar("noinnerboundary"),0),    
-    guidisconnect_(get_ctx()->subVar("disconnect"),0)    
+GetDomainBoundary::GetDomainBoundary() 
+  : Module(staticInfo_)
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(BoundaryField);
+  INITIALIZE_PORT(MinValue);
+  INITIALIZE_PORT(MaxValue);
+  INITIALIZE_PORT(ElemLink);
+}
+
+void GetDomainBoundary::setStateDefaults()
+{
+  setStateIntFromAlgo(GetDomainBoundaryAlgo::MinRange);
+  setStateIntFromAlgo(GetDomainBoundaryAlgo::MaxRange);
+  setStateIntFromAlgo(GetDomainBoundaryAlgo::Domain);
+
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::UseRange);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::AddOuterBoundary);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::InnerBoundaryOnly);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::NoInnerBoundary);
+  setStateBoolFromAlgo(GetDomainBoundaryAlgo::DisconnectBoundaries);
 }
 
 void GetDomainBoundary::execute()
 {
   // Define local handles of data objects:
-  FieldHandle ifield, ofield;
-  MatrixHandle ElemLink;
-  MatrixHandle MinValue, MaxValue;
- 
-  // Get the new input data: 
-  if(!(get_input_handle("Field",ifield,true))) return;
-  get_input_handle("MinValue/Value",MinValue,false);
-  get_input_handle("MaxValue",MaxValue,false);
-  get_input_handle("ElemLink",ElemLink,false);
+  auto ifield = getRequiredInput(InputField);
+  auto elemLink = getOptionalInput(ElemLink);
+  auto minValue = getOptionalInput(MinValue);
+  auto maxValue = getOptionalInput(MaxValue);
   
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   if (ifield->is_property("ElemLink"))
   {
-    ifield->get_property("ElemLink",ElemLink);
+    ifield->get_property("ElemLink", elemLink);
   }
+#endif
   
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
   // Only reexecute if the input changed. SCIRun uses simple scheduling
   // that executes every module downstream even if no data has changed:    
   if (inputs_changed_ || guiminrange_.changed() ||  
@@ -98,50 +87,44 @@ void GetDomainBoundary::execute()
       guiuserange_.changed() || guiincludeouterboundary_.changed() ||
       guiinnerboundaryonly_.changed() || guinoinnerboundary_.changed() || 
       guidisconnect_.changed() || !oport_cached("Field"))
+#endif
+  if (needToExecute())
   {
     update_state(Executing);
 
-    if (MinValue.get_rep())
+    if (minValue && *minValue)
     {
-      double minrange;
-      if (MinValue->get_data_size() > 0) minrange = MinValue->get(0,0);
-      guiminrange_.set(minrange);
-      guivalue_.set(minrange);
-      get_ctx()->reset();
+      double minrange = (*minValue)->value();
+      get_state()->setValue(GetDomainBoundaryAlgo::MinRange, minrange);
+      get_state()->setValue(GetDomainBoundaryAlgo::Domain, minrange);  //??
     }
-    if (MaxValue.get_rep())
+    if (maxValue && *maxValue)
     {
-      double maxrange;
-      if (MaxValue->get_data_size() > 0) maxrange = MaxValue->get(0,0);
-      guimaxrange_.set(maxrange);
-      get_ctx()->reset();
+      double maxrange = (*maxValue)->value();
+      get_state()->setValue(GetDomainBoundaryAlgo::MaxRange, maxrange);
     }
 
+    auto state = get_state();
 
-    algo_.set_int("min_range",static_cast<int>(guiminrange_.get()));
-    algo_.set_int("max_range",static_cast<int>(guimaxrange_.get()));
-    algo_.set_int("domain",static_cast<int>(guiminrange_.get()));
-    algo_.set_bool("use_range",guiuserange_.get());
-    algo_.set_bool("add_outer_boundary",guiincludeouterboundary_.get());
-    algo_.set_bool("inner_boundary_only",guiinnerboundaryonly_.get());
-    algo_.set_bool("no_inner_boundary",guinoinnerboundary_.get());
-    algo_.set_bool("disconnect_boundaries",guidisconnect_.get());
+    setAlgoIntFromState(GetDomainBoundaryAlgo::MinRange);
+    setAlgoIntFromState(GetDomainBoundaryAlgo::MaxRange);
+    setAlgoIntFromState(GetDomainBoundaryAlgo::Domain);
+    setAlgoBoolFromState(GetDomainBoundaryAlgo::UseRange);
+    setAlgoBoolFromState(GetDomainBoundaryAlgo::AddOuterBoundary);
+    setAlgoBoolFromState(GetDomainBoundaryAlgo::InnerBoundaryOnly);
+    setAlgoBoolFromState(GetDomainBoundaryAlgo::NoInnerBoundary);
+    setAlgoBoolFromState(GetDomainBoundaryAlgo::DisconnectBoundaries);
 
-    if (guiusevalue_.get())
+    if (!state->getValue(GetDomainBoundaryAlgo::UseRange).getBool())
     {
-      algo_.set_bool("use_range",true);
-      algo_.set_int("min_range",static_cast<int>(guivalue_.get()));
-      algo_.set_int("max_range",static_cast<int>(guivalue_.get()));    
+      int guiValue = state->getValue(GetDomainBoundaryAlgo::Domain).getInt();
+      algo().set(GetDomainBoundaryAlgo::UseRange, true);
+      algo().set(GetDomainBoundaryAlgo::MinRange, guiValue);
+      algo().set(GetDomainBoundaryAlgo::MaxRange, guiValue);
     }
       
-    // The innerworks of the module:
-    if(!(algo_.run(ifield,ElemLink,ofield))) return;
+    auto output = algo().run_generic(make_input((InputField, ifield)(ElemLink, optionalAlgoInput(elemLink))));
     
-    // send new output if there is any:        
-    send_output_handle("Field", ofield);
+    sendOutputFromAlgorithm(BoundaryField, output);
   }
 }
-
-} // End namespace SCIRun
-
-

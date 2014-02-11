@@ -181,8 +181,6 @@ TEST(DenseMatrixTests, OldMacroStillWorks)
   EXPECT_EQ(expected, actual);
 }
 
-//TODO: needs Eigen 3.2
-#if 0
 TEST(DenseMatrixTests, HasNanTests)
 {
   DenseMatrix actual = MAKE_DENSE_MATRIX(
@@ -193,4 +191,3 @@ TEST(DenseMatrixTests, HasNanTests)
   EXPECT_FALSE(actual.hasNaN());
   EXPECT_TRUE(actual.allFinite());
 }
-#endif

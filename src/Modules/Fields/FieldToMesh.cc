@@ -26,19 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Modules/Fields/FieldToMesh.h>
-
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Modules::Fields;
-
-FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", "SCIRun"), false)
-{
-}
-
-void FieldToMesh::execute()
-{
-  auto field = getRequiredInput(Field);
-  sendOutput(Mesh, field->mesh());
-}
+//#include <Core/Datatypes/Legacy/Field/Field.h>
+//#include <Core/Datatypes/Legacy/Field/Mesh.h>
+//#include <Modules/Fields/FieldToMesh.h>
+//
+//using namespace SCIRun::Dataflow::Networks;
+//using namespace SCIRun::Modules::Fields;
+//
+//FieldToMesh::FieldToMesh() : Module(ModuleLookupInfo("FieldToMesh", "NewField", "SCIRun"), false)
+//{
+//}
+//
+//void FieldToMesh::execute()
+//{
+//  auto field = getRequiredInput(Field);
+//  sendOutput(Mesh, field->mesh());
+//}

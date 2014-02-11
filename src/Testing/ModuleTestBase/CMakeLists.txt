@@ -45,6 +45,7 @@ TARGET_LINK_LIBRARIES(Testing_ModuleTestBase
   Core_Datatypes
   Modules_Factory
   Algorithms_Factory
+  Dataflow_State
   gtest
   gmock
   ${SCI_BOOST_LIBRARY}

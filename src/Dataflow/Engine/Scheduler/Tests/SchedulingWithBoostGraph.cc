@@ -49,9 +49,11 @@
 #include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/Log.h>
 
 #include <boost/assign.hpp>
 #include <boost/config.hpp> // put this first to suppress some VC++ warnings
+#include <boost/lockfree/spsc_queue.hpp>
 
 #include <iostream>
 #include <iterator>
@@ -79,6 +81,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -314,18 +317,10 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
 {
   setupBasicNetwork();
 
-
   BoostGraphParallelScheduler scheduler;
   auto order = scheduler.schedule(matrixMathNetwork);
-  auto range = std::make_pair(order.begin(), order.end());
-
   std::ostringstream ostr;
-  BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& v, range)
-  {
-    ostr << v.first << " " << v.second << std::endl;
-  }
-
-  std::cout << ostr.str() << std::endl;
+  ostr << order;
 
   std::string expected = 
     "0 SendTestMatrix:1\n"
@@ -337,6 +332,27 @@ TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrder)
     "3 EvaluateLinearAlgebraBinary:6\n"
     "4 ReportMatrixInfo:7\n"
     "4 ReceiveTestMatrix:8\n";
+
+  EXPECT_EQ(expected, ostr.str());
+}
+
+TEST_F(SchedulingWithBoostGraph, ParallelNetworkOrderWithSomeModulesDone)
+{
+  setupBasicNetwork();
+
+  ModuleFilter filter = [](ModuleHandle mh) { return mh->get_module_name().find("Unary") == std::string::npos; };
+  BoostGraphParallelScheduler scheduler(filter);
+  auto order = scheduler.schedule(matrixMathNetwork);
+  std::ostringstream ostr;
+  ostr << order;
+
+  std::string expected = 
+    "0 EvaluateLinearAlgebraBinary:5\n"
+    "0 SendTestMatrix:1\n"
+    "0 SendTestMatrix:0\n"
+    "1 EvaluateLinearAlgebraBinary:6\n"
+    "2 ReportMatrixInfo:7\n"
+    "2 ReceiveTestMatrix:8\n";
 
   EXPECT_EQ(expected, ostr.str());
 }
@@ -356,6 +372,12 @@ namespace ThreadingPrototype
     bool ready;
     bool done;
     int runtime;
+
+    void run()
+    {
+      boost::this_thread::sleep(boost::posix_time::milliseconds(runtime));
+      done = true;
+    }
   };
 
   typedef boost::shared_ptr<Unit> UnitPtr;
@@ -371,6 +393,14 @@ namespace ThreadingPrototype
   }
 
   std::ostream& operator<<(std::ostream& o, const Unit& u)
+  {
+    return o << u.id << " : "
+      << u.priority << ":"
+      << u.ready << ":" << u.done << ":"
+      << u.runtime;
+  }
+
+  Log::Stream& operator<<(Log::Stream& o, const Unit& u)
   {
     return o << u.id << " : "
       << u.priority << ":"
@@ -407,28 +437,29 @@ namespace ThreadingPrototype
   {
   public:
     WorkUnitProducer(WorkQueue& workQueue, WaitingList& list, Mutex& mutex) : work_(workQueue), waiting_(list),
-      /*donePushing_(false),*/ currentPriority_(0), mutex_(mutex)
+      currentPriority_(0), mutex_(mutex)
     {
       waiting_.sort();
-      //std::cout << "Sorted work list:" << std::endl;
-      //std::copy(list.begin(), list.end(), std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+      log_ << INFO << "WorkUnitProducer starting. Sorted work list:" << std::endl;
+      std::for_each(list.begin(), list.end(), [](UnitPtr u) { log_ << INFO << *u << "\n"; });
     }
     void run()
     {
-      //mutex_.lock();
-      //std::cout << "Producer started." << std::endl;
-      //mutex_.unlock();
+      log_ << INFO << "Producer started." << std::endl;
       while (!waiting_.empty())
       {
         for (auto i = waiting_.begin(); i != waiting_.end(); )
         {
           if ((*i)->ready)
           {
+            log_ << INFO << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+            
             mutex_.lock();
-            //std::cout << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
             work_.push(*i);
-            //std::cout << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
             mutex_.unlock();
+
+            log_ << INFO << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
+            
             i = waiting_.erase(i);
           }
           else
@@ -437,28 +468,20 @@ namespace ThreadingPrototype
         if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
         {
           currentPriority_ = (*waiting_.begin())->priority;
-          //mutex_.lock();
-          //std::cout << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
-          //mutex_.unlock();
+          log_ << INFO << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
           for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
           {
             if ((*i)->priority == currentPriority_)
               (*i)->ready = true;
           }
         }
-        //mutex_.lock();
-        //std::cout << "\tProducer: Waiting list size = " << waiting_.size() << std::endl;
-        //std::cout << "\tProducer: work queue size = " << work_.size() << std::endl;
-        //mutex_.unlock();
       }
-      //mutex_.lock();
-      //std::cout << "Producer done." << std::endl;
-      //mutex_.unlock();
+      log_ << INFO << "Producer done." << std::endl;
     }
     bool isDone() const
     {
       boost::lock_guard<Mutex> lock(mutex_);
-      return waiting_.empty();// && donePushing_;
+      return waiting_.empty();
     }
     bool workDone() const
     {
@@ -468,10 +491,12 @@ namespace ThreadingPrototype
   private:
     WorkQueue& work_;
     WaitingList& waiting_;
-    //bool donePushing_;
     int currentPriority_;
     Mutex& mutex_;
+    static Log& log_;
   };
+
+
 
   class WorkUnitConsumer
   {
@@ -482,45 +507,30 @@ namespace ThreadingPrototype
     }
     void run()
     {
-      //mutex_.lock();
-      //std::cout << "Consumer started." << std::endl;
-      //mutex_.unlock();
+      log_ << INFO << "Consumer started." << std::endl;
       while (!producer_.isDone())
       {
-        //mutex_.lock();
-        //std::cout << "\tConsumer thinks producer is not done." << std::endl;
-        //mutex_.unlock();
+        log_ << INFO << "\tConsumer thinks producer is not done." << std::endl;
         while (moreWork())
         {
-          //mutex_.lock();
-          //std::cout << "\tConsumer thinks work queue is not empty." << std::endl;
-          //mutex_.unlock();
+          log_ << INFO << "\tConsumer thinks work queue is not empty." << std::endl;
 
           mutex_.lock();
-          //std::cout << "\tConsumer accessing front of work queue." << std::endl;
+          log_ << INFO << "\tConsumer accessing front of work queue." << std::endl;
           UnitPtr unit = work_.front();
-          //std::cout << "\tConsumer popping front of work queue." << std::endl;
+          log_ << INFO << "\tConsumer popping front of work queue." << std::endl;
           work_.pop();
           mutex_.unlock();
 
-          //mutex_.lock();
-          //std::cout << "~~~Processing " << unit->id << ": sleeping for " <<
-          //unit->runtime << " ms" << std::endl;
-          //mutex_.unlock();
-
-          boost::this_thread::sleep(boost::posix_time::milliseconds(unit->runtime));
-          unit->done = true;
+          log_ << INFO << "~~~Processing " << unit->id << ": sleeping for " << unit->runtime << " ms" << std::endl;
+          unit->run();
 
           done_.push_back(unit);
 
-          //mutex_.lock();
-          //std::cout << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
-          //mutex_.unlock();
+          log_ << INFO << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
         }
       }
-      //mutex_.lock();
-      //std::cout << "Consumer done." << std::endl;
-      //mutex_.unlock();
+      log_ << INFO << "Consumer done." << std::endl;
     }
 
     bool moreWork()
@@ -535,12 +545,16 @@ namespace ThreadingPrototype
     const WorkUnitProducer& producer_;
     DoneList& done_;
     Mutex& mutex_;
+    static Log& log_;
   };
 
+  Log& WorkUnitProducer::log_ = Log::get();
+  Log& WorkUnitConsumer::log_ = Log::get();
 
-  TEST(MultiExecutorPrototypeTest, DISABLED_Run)
+
+  TEST(MultiExecutorPrototypeTest, DISABLED_Run1)
   {
-    const int size = 100;
+    const int size = 50;
     WaitingList list;
     std::generate_n(std::back_inserter(list), size, makeUnit);
 
@@ -556,6 +570,150 @@ namespace ThreadingPrototype
 
     boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer::run, producer));
     boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer::run, consumer));
+
+    tR.join();
+    tC.join();
+
+    EXPECT_EQ(size, done.size());
+    std::cout << "DONE. Finished list first 10:" << std::endl;
+    auto end = done.begin();
+    std::advance(end, 10);
+    std::copy(done.begin(), end, std::ostream_iterator<UnitPtr>(std::cout, "\n"));
+    BOOST_FOREACH(const UnitPtr& u, done)
+    {
+      EXPECT_TRUE(u->done);
+    }
+  }
+
+  typedef boost::lockfree::spsc_queue<UnitPtr> WorkQueue2; 
+
+  class WorkUnitProducer2
+  {
+  public:
+    WorkUnitProducer2(WorkQueue2& workQueue, WaitingList& list) : work_(workQueue), waiting_(list),
+      currentPriority_(0)
+    {
+      waiting_.sort();
+      log_ << INFO << "WorkUnitProducer starting. Sorted work list:" << std::endl;
+      std::for_each(list.begin(), list.end(), [](UnitPtr u) { log_ << INFO << *u << "\n"; });
+    }
+    void run()
+    {
+      log_ << INFO << "Producer started." << std::endl;
+      while (!waiting_.empty())
+      {
+        for (auto i = waiting_.begin(); i != waiting_.end(); )
+        {
+          if ((*i)->ready)
+          {
+            log_ << INFO << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+
+            work_.push(*i);
+
+            log_ << INFO << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
+
+            i = waiting_.erase(i);
+          }
+          else
+            ++i;
+        }
+        if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
+        {
+          currentPriority_ = (*waiting_.begin())->priority;
+          log_ << INFO << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
+          for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
+          {
+            if ((*i)->priority == currentPriority_)
+              (*i)->ready = true;
+          }
+        }
+      }
+      log_ << INFO << "Producer done." << std::endl;
+    }
+    bool isDone() const
+    {
+      return waiting_.empty();
+    }
+    bool workDone() const
+    {
+      return work_.empty();
+    }
+  private:
+    WorkQueue2& work_;
+    WaitingList& waiting_;
+    int currentPriority_;
+    static Log& log_;
+  };
+
+
+
+  class WorkUnitConsumer2
+  {
+  public:
+    explicit WorkUnitConsumer2(WorkQueue2& workQueue, const WorkUnitProducer2& producer, DoneList& done) :
+    work_(workQueue), producer_(producer), done_(done)
+    {
+    }
+    void run()
+    {
+      log_ << INFO << "Consumer started." << std::endl;
+      while (!producer_.isDone())
+      {
+        log_ << INFO << "\tConsumer thinks producer is not done." << std::endl;
+        while (moreWork())
+        {
+          log_ << INFO << "\tConsumer thinks work queue is not empty." << std::endl;
+
+          log_ << INFO << "\tConsumer accessing front of work queue." << std::endl;
+          UnitPtr unit;
+          work_.pop(unit);
+          log_ << INFO << "\tConsumer popping front of work queue." << std::endl;
+
+          log_ << INFO << "~~~Processing " << unit->id << ": sleeping for " << unit->runtime << " ms" << std::endl;
+
+          unit->run();
+
+          done_.push_back(unit);
+
+          log_ << INFO << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
+        }
+      }
+      log_ << INFO << "Consumer done." << std::endl;
+    }
+
+    bool moreWork()
+    {
+      return !work_.empty();
+    }
+
+  private:
+    WorkQueue2& work_;
+    const WorkUnitProducer2& producer_;
+    DoneList& done_;
+    static Log& log_;
+  };
+
+  Log& WorkUnitProducer2::log_ = Log::get();
+  Log& WorkUnitConsumer2::log_ = Log::get();
+
+
+  TEST(MultiExecutorPrototypeTest, DISABLED_Run2)
+  {
+    const int size = 20;
+    WaitingList list;
+    std::generate_n(std::back_inserter(list), size, makeUnit);
+
+    int totalSleepTime = std::accumulate(list.begin(), list.end(), 0, [](int total, UnitPtr u){ return total + u->runtime; });
+    std::cout << size << " work units, will sleep for total of " << totalSleepTime / 1000 << " seconds" << std::endl;
+
+    WorkQueue2 workQ(list.size());
+    WorkUnitProducer2 producer(workQ, list);
+
+    DoneList done;
+    WorkUnitConsumer2 consumer(workQ, producer, done);
+
+    boost::thread tR = boost::thread(boost::bind(&WorkUnitProducer2::run, producer));
+    boost::thread tC = boost::thread(boost::bind(&WorkUnitConsumer2::run, consumer));
 
     tR.join();
     tC.join();

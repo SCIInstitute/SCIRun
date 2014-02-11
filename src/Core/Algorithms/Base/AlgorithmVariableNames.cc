@@ -43,6 +43,7 @@ PARAMETER(Method)
 PARAMETER(Preconditioner)
 PARAMETER(Filename)
 PARAMETER(BuildConvergence)
+PARAMETER(ColorMapName)
 
 INPUT(InputMatrix)
 INPUT(FirstMatrix)

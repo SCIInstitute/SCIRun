@@ -27,4 +27,24 @@
 */
 
 #include <Testing/Utils/MatrixTestUtilities.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
+using namespace SCIRun;
+
+FieldHandle SCIRun::TestUtils::loadFieldFromFile(const boost::filesystem::path& filename)
+{
+  FieldHandle handle;
+  PiostreamPtr stream = auto_istream(filename.string(), nullptr);
+  if (!stream)
+  {
+    throw "Error reading file '" + filename.string();
+  }
+
+  Pio(*stream, handle);
+
+  if (!handle || stream->error())
+  {
+    throw "File read error";
+  }
+  return handle;
+}

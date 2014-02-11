@@ -29,6 +29,7 @@
 #include <Core/Utils/Exception.h>
 #include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Dataflow/Network/NetworkInterface.h>
 
@@ -37,7 +38,8 @@ using namespace SCIRun::Dataflow::Networks;
 
 DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
   serial_(new SerialExecutionStrategy),
-  parallel_(new BasicParallelExecutionStrategy)
+  parallel_(new BasicParallelExecutionStrategy),
+  dynamic_(new DynamicParallelExecutionStrategy)
 {
 }
 
@@ -49,6 +51,8 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrateg
     return serial_;
   case ExecutionStrategy::BASIC_PARALLEL:
     return parallel_;
+  case ExecutionStrategy::DYNAMIC_PARALLEL:
+    return dynamic_;
   default:
     THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
   }

@@ -55,8 +55,8 @@ void PortColorLookup::init()
     ("Int32", "white")
     ("String", "darkGreen")
     ("Field", "yellow")
-    ("Mesh", "cyan")  //TODO temporary
     ("Geometry", "magenta")
+    ("ColorMap", "purple")
     ("Datatype", "black");
 }
 

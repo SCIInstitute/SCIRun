@@ -27,11 +27,14 @@
 */
 
 #include <Dataflow/State/SimpleMapModuleState.h>
+#include <Core/Logging/Log.h>
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 SimpleMapModuleState::SimpleMapModuleState()
 {
@@ -73,6 +76,7 @@ bool SimpleMapModuleState::containsKey(const Name& name) const
 
 void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Core::Algorithms::AlgorithmParameter::Value& value)
 {
+  Log& log = Log::get();
   auto oldLocation = stateMap_.find(parameterName);
   bool newValue = oldLocation == stateMap_.end() || !(oldLocation->second.value_ == value);
 
@@ -80,7 +84,8 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   
   if (newValue)
   {
-    //std::cout << "----signalling from state map: " << parameterName.name_ << ", " << value << std::endl;
+    log << DEBUG_LOG << "----signaling from state map: " << parameterName.name_ << ", " << boost::lexical_cast<std::string>(value);
+    log.flush();
     stateChangedSignal_();
   }
 }

@@ -44,6 +44,7 @@
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
+#include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
@@ -53,6 +54,7 @@
 #include <Interface/Modules/Visualization/MatrixAsVectorFieldDialog.h>
 #include <Interface/Modules/Visualization/ShowStringDialog.h>
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
+#include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
 
 using namespace SCIRun::Gui;
@@ -114,6 +116,10 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GenerateROIStatisticsDialog(moduleId, state, parentToUse_); 
   if (moduleId.find("SetupRHSforTDCSandTMS") != std::string::npos)
     return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);       
+  if (moduleId.find("CreateStandardColorMap") != std::string::npos)
+    return new CreateBasicColorMapDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("GetDomainBoundary") != std::string::npos)
+    return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

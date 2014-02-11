@@ -36,6 +36,7 @@
 #include <Dataflow/State/SimpleMapModuleState.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Core/Command/GlobalCommandBuilderFromCommandLine.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::CommandLine;
@@ -84,6 +85,8 @@ void Application::readCommandLine(int argc, const char* argv[])
   private_->app_filename_ = boost::filesystem::path( argv[0] );
   private_->app_filepath_ = private_->app_filename_.parent_path();
   private_->parameters_ = private_->parser.parse(argc, argv);
+
+  Logging::Log::get().setVerbose(parameters()->verboseMode());
 }
 
 NetworkEditorControllerHandle Application::controller()
