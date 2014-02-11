@@ -224,17 +224,11 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
 {
   //TODO test...
-  if (!iports_.hasPort(id))
-  {
-    BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
-  }
-  
-  if (!iports_[id]->isDynamic())
+  auto portsWithName = iports_[id.name];  //will throw if empty
+  if (!portsWithName[0]->isDynamic())
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is static, get_input_handle must be called."));
   }
-
-  auto portsWithName = iports_[id.name];
   std::vector<DatatypeHandleOption> options;
   auto getData = [](InputPortHandle input) { return input->getData(); };
   std::transform(portsWithName.begin(), portsWithName.end(), std::back_inserter(options), getData);
