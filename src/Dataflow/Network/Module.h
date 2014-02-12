@@ -33,6 +33,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/atomic.hpp>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -90,8 +91,8 @@ namespace Networks {
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 
-    virtual ExecutionState executionState() const { return executionState_; }
-    virtual void setExecutionState(ExecutionState state) { executionState_ = state; }
+    virtual ExecutionState executionState() const;
+    virtual void setExecutionState(ExecutionState state);
 
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
@@ -255,7 +256,7 @@ namespace Networks {
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
-    ExecutionState executionState_;
+    boost::atomic<ExecutionState> executionState_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

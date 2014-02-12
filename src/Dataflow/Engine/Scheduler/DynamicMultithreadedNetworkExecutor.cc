@@ -34,6 +34,7 @@
 #include <Dataflow/Network/NetworkInterface.h>
 #include <Core/Thread/Parallel.h>
 #include <Core/Logging/Log.h>
+#include <Core/Thread/Mutex.h>
 #include <boost/thread.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
@@ -61,12 +62,13 @@ namespace
   public:
     SchedulePrinter(const NetworkInterface* network, const Scheduler<ParallelModuleExecutionOrder>* scheduler) : network_(network), scheduler_(scheduler) {}
 
-    void printNetworkOrder()
+    void printNetworkOrder(const ModuleId& id)
     {
       if (scheduler_ && network_)
       {
+        Guard g(lock_.get());
         auto order = scheduler_->schedule(*network_);
-        Log::get() << INFO << "NETWORK ORDER~~~\n" << order << "\n\n";
+        Log::get() << INFO << "NETWORK ORDER~~~completed module = " << id << "\n" << order << "\n\n";
       }
       else
         Log::get() << INFO << "NETWORK ORDER~~~\n <<<null>>>\n";
@@ -75,13 +77,14 @@ namespace
   private:
     const NetworkInterface* network_;
     const Scheduler<ParallelModuleExecutionOrder>* scheduler_;
+    Mutex lock_;
   };
 
   struct ModuleWaiting
   {
     bool operator()(ModuleHandle mh) const
     {
-      return mh->executionState() == ModuleInterface::Waiting;
+      return mh->executionState() != ModuleInterface::Completed;
     }
   };
 
@@ -109,8 +112,9 @@ namespace
           return [=]() 
           { 
             auto exec = lookup_->lookupExecutable(mod.second);
-            exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer));
+            boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer, _1)));
             exec->execute(); 
+
 
             //TODO: need to use a separate signal here, rather than on the module--otherwise it persists and is added multiple times. 
           };

@@ -63,7 +63,8 @@ Module::Module(const ModuleLookupInfo& info,
   : info_(info), 
   id_(info_.module_name_, instanceCount_++),
   has_ui_(hasUi), 
-  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
+  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
+  executionState_(ModuleInterface::Waiting)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -80,8 +81,6 @@ Module::Module(const ModuleLookupInfo& info,
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
-
-  setExecutionState(ModuleInterface::Waiting);
 }
 
 Module::~Module()
@@ -162,8 +161,8 @@ void Module::do_execute() throw()
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   status("MODULE FINISHED: " + id_.id_);  
-  executeEnds_(id_);
   setExecutionState(ModuleInterface::Completed);
+  executeEnds_(id_);
 }
 
 ModuleStateHandle Module::get_state() 
@@ -434,4 +433,14 @@ void Module::setAlgoBoolFromState(AlgorithmParameterName name)
 void Module::setStateIntFromAlgo(AlgorithmParameterName name)
 {
   get_state()->setValue(name, algo().get(name).getInt());
+}
+
+ModuleInterface::ExecutionState Module::executionState() const
+{
+  return executionState_;
+}
+
+void Module::setExecutionState(ModuleInterface::ExecutionState state)
+{
+  executionState_ = state;
 }
