@@ -645,9 +645,9 @@ namespace
 
   //TODO: VS2010 compiler can't handle this function; check 2012 and clang
   template <bool Flag>
-  void setWidgetsDisableFlag(std::vector<SCIRunMainWindow::InputWidget>& widgets)
+  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets)
   {
-    std::for_each(widgets.begin(), widgets.end(), [](SCIRunMainWindow::InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
+    std::for_each(widgets.begin(), widgets.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
   }
 }
 
