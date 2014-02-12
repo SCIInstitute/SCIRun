@@ -63,12 +63,10 @@ public:
   void saveNetworkFile(const QString& fileName);
   void loadNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
-  void executeAll();
   void quit();
   void runPythonScript(const QString& scriptFileName);
-
-  typedef boost::variant<QAction*, QWidget*> InputWidget;
-
+public Q_SLOTS:
+  void executeAll();
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:
@@ -109,6 +107,7 @@ private:
   boost::shared_ptr<class NetworkExecutionProgressBar> networkProgressBar_;
   boost::shared_ptr<class GuiActionProvenanceConverter> commandConverter_;
   boost::shared_ptr<class DefaultNotePositionGetter> defaultNotePositionGetter_;
+  typedef boost::variant<QAction*, QWidget*> InputWidget;
   std::vector<InputWidget> inputWidgets_;
 Q_SIGNALS:
   void moduleItemDoubleClicked();

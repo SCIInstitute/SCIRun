@@ -112,5 +112,6 @@ namespace SCIRun
   }
 }
 
+#define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif

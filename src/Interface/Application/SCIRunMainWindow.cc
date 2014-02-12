@@ -52,8 +52,8 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Core/Application/Application.h>
-//#include <Core/Application/Preferences.h>
-//#include <Core/Logging/Log.h>
+#include <Core/Application/Preferences.h>
+#include <Core/Logging/Log.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -88,7 +88,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
   actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
 
-  connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
+  connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
 
@@ -298,13 +298,10 @@ void SCIRunMainWindow::executeCommandLineRequests()
 
 void SCIRunMainWindow::executeAll()
 {
-  //if (Core::Preferences::Instance().saveBeforeExecute)
-  //{
-  //  Log::get() << DEBUG_LOG << "saveBeforeExecute is true";
-  //  saveNetwork();
-  //}
-  //else
-  //  Log::get() << DEBUG_LOG << "saveBeforeExecute is false";
+  if (Core::Preferences::Instance().saveBeforeExecute)
+  {
+    saveNetwork();
+  }
 
   networkEditor_->executeAll();
 }
@@ -606,7 +603,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(disableModuleErrorDialogsKey))
   {
     bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
-    GuiLogger::Instance().log(QString("Setting read: disable module error dialogs = ") + disableModuleErrorDialogs);
+    GuiLogger::Instance().log("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
     prefs_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
   }
 
@@ -614,7 +611,7 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(saveBeforeExecute))
   {
     bool mode = settings.value(saveBeforeExecute).toBool();
-    GuiLogger::Instance().log(QString("Setting read: save before execute = ") + mode);
+    GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
     prefs_->setSaveBeforeExecute(mode);
   }
 }
@@ -626,10 +623,11 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("networkDirectory", latestNetworkDirectory_.path());
   settings.setValue("recentFiles", recentFiles_);
   settings.setValue("regressionTestDataDirectory", prefs_->regressionTestDataDir());
-  settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
   settings.setValue("backgroundColor", networkEditor_->background().color().name());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
+  settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
+  settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
 }
 
 namespace

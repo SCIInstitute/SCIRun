@@ -47,12 +47,12 @@ public:
   void setRegressionMode(bool mode) { regressionMode_ = mode; }
 
   bool saveBeforeExecute() const { return saveBeforeExecute_; }
-  void setSaveBeforeExecute(bool mode) { saveBeforeExecute_ = mode; }
+  void setSaveBeforeExecute(bool mode);
 
   QString regressionTestDataDir() const { return regressionTestDataDir_; }
   void setRegressionTestDataDir(const QString& dir) { regressionTestDataDir_ = dir; }
 
-  void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs) { disableModuleErrorDialogs_ = disableModuleErrorDialogs; }
+  void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs);
   bool disableModuleErrorDialogs() const { return disableModuleErrorDialogs_; }
 
 public Q_SLOTS:
