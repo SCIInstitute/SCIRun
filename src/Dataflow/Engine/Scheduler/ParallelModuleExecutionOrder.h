@@ -42,6 +42,7 @@ namespace Engine {
   {
   public:
     typedef std::multimap<int, Networks::ModuleId> ModulesByGroup;
+    typedef ModulesByGroup::value_type value_type;
     typedef ModulesByGroup::iterator iterator;
     typedef ModulesByGroup::const_iterator const_iterator;
 

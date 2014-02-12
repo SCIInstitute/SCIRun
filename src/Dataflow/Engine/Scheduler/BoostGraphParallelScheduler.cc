@@ -29,6 +29,7 @@
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -37,6 +38,7 @@ BoostGraphParallelScheduler::BoostGraphParallelScheduler(const ModuleFilter& fil
 
 ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network) const
 {
+  //LOG_DEBUG("BoostGraphParallelScheduler::schedule");
   NetworkGraphAnalyzer graphAnalyzer(network, filter_);
   NetworkGraphAnalyzer::Graph& g = graphAnalyzer.graph();
 
@@ -66,5 +68,6 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
     [&](int vertex){ return std::make_pair(time[vertex], graphAnalyzer.moduleAt(vertex)); }
   );
 
+  //LOG_DEBUG("returning from BoostGraphParallelScheduler::schedule");
   return ParallelModuleExecutionOrder(map);
 }

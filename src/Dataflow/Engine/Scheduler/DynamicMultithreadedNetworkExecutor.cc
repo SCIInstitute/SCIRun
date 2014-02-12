@@ -36,13 +36,14 @@
 #include <Core/Logging/Log.h>
 #include <Core/Thread/Mutex.h>
 #include <boost/thread.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Thread;
 using namespace SCIRun::Core::Logging;
 
-namespace 
+namespace detail
 {
   struct ScopedModuleExecutionBounds
   {
@@ -57,27 +58,43 @@ namespace
     }
   };
 
+  class ModuleWorkQueue
+  {
+  
+  };
+  
   class SchedulePrinter
   {
   public:
-    SchedulePrinter(const NetworkInterface* network, const Scheduler<ParallelModuleExecutionOrder>* scheduler) : network_(network), scheduler_(scheduler) {}
+    SchedulePrinter(const NetworkInterface* network, const Scheduler<ParallelModuleExecutionOrder>* scheduler, Mutex& lock) : network_(network), scheduler_(scheduler), lock_(lock)
+    {}
 
     void printNetworkOrder(const ModuleId& id)
     {
+      Guard g(lock_.get());
       if (scheduler_ && network_)
       {
-        Guard g(lock_.get());
         auto order = scheduler_->schedule(*network_);
-        Log::get() << INFO << "NETWORK ORDER~~~completed module = " << id << "\n" << order << "\n\n";
+        Log::get() << INFO << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:\n\t";
+        printMinGroup(order);
       }
       else
         Log::get() << INFO << "NETWORK ORDER~~~\n <<<null>>>\n";
     }
 
   private:
+    void printMinGroup(const ParallelModuleExecutionOrder& order)
+    {
+      BOOST_FOREACH(const ParallelModuleExecutionOrder::value_type& v, order.getGroup(order.minGroup()))
+      {
+        Log::get() << INFO << v.first << " " << v.second << std::endl;
+      }
+    }
+  
+  
     const NetworkInterface* network_;
     const Scheduler<ParallelModuleExecutionOrder>* scheduler_;
-    Mutex lock_;
+    Mutex& lock_;
   };
 
   struct ModuleWaiting
@@ -91,15 +108,14 @@ namespace
   struct DynamicParallelExecution
   {
     DynamicParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, 
-      const NetworkInterface* network) : 
-        scheduler_(filter_),
-        lookup_(lookup), order_(order), bounds_(bounds), network_(network)
+      const NetworkInterface* network, Mutex& lock) :
+        lookup_(lookup), order_(order), bounds_(bounds), network_(network),
+        printer_(network_, &scheduler_, lock)
     {}
     
     void operator()() const
     {
       ScopedExecutionBoundsSignaller signaller(bounds_, [&]() { return lookup_->errorCode(); });
-      SchedulePrinter printer(network_, &scheduler_);
       for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)
       {
         auto groupIter = order_.getGroup(group);
@@ -112,11 +128,8 @@ namespace
           return [=]() 
           { 
             auto exec = lookup_->lookupExecutable(mod.second);
-            boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer, _1)));
+            boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer_, _1)));
             exec->execute(); 
-
-
-            //TODO: need to use a separate signal here, rather than on the module--otherwise it persists and is added multiple times. 
           };
         });
 
@@ -125,19 +138,23 @@ namespace
       }
     }
 
-    ModuleWaiting filter_;
-    BoostGraphParallelScheduler scheduler_;
+    static ModuleWaiting filter() { return ModuleWaiting(); }
+    static BoostGraphParallelScheduler scheduler_;
     const ExecutableLookup* lookup_;
     ParallelModuleExecutionOrder order_;
     const ExecutionBounds& bounds_;
     const NetworkInterface* network_;
+    SchedulePrinter printer_;
   };
+  
+  BoostGraphParallelScheduler DynamicParallelExecution::scheduler_(filter());
 }
 
 DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) : network_(network) {}
 
 void DynamicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds)
 {
-  DynamicParallelExecution runner(&lookup, order, bounds, &network_);
+  static Mutex lock("live-scheduler");
+  detail::DynamicParallelExecution runner(&lookup, order, bounds, &network_, lock);
   boost::thread execution(runner);
 }
