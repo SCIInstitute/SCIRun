@@ -75,6 +75,8 @@ namespace Gui
       return Qt::darkGray;
     if (str == "black")
       return Qt::black;
+    if (str == "purple")
+      return Qt::darkMagenta;
     else
       return Qt::black;
   }

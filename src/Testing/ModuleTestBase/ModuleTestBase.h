@@ -72,5 +72,12 @@ namespace SCIRun
       UseRealAlgorithmFactory();
       ~UseRealAlgorithmFactory();
     };
+
+    class SCISHARE UseRealModuleStateFactory
+    {
+    public:
+      UseRealModuleStateFactory();
+      ~UseRealModuleStateFactory();
+    };
   }
 }

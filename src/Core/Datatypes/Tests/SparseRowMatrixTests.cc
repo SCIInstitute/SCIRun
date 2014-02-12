@@ -34,6 +34,8 @@
 #include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
+
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace ::testing;
 using namespace SCIRun::TestUtils;
@@ -345,11 +347,30 @@ TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
 //  PRINT_MATRIX(sum);
 //}
 
-template <typename T>
-void printArray(const T* ts, size_t size)
+namespace std
 {
-  std::copy(ts, ts + size, std::ostream_iterator<T>(std::cout, " "));
-  std::cout << std::endl;
+  template <typename A, typename B>
+  std::ostream& operator<<(std::ostream& o, const std::pair<A,B>& p)
+  {
+    return o << p.first << "," << p.second;
+  }
+}
+
+namespace
+{
+  template <typename T>
+  void printArray(const T* ts, size_t size)
+  {
+    std::copy(ts, ts + size, std::ostream_iterator<T>(std::cout, " "));
+    std::cout << std::endl;
+  }
+
+  template <typename T>
+  void printVector(const std::vector<T>& v)
+  {
+    std::copy(v.begin(), v.end(), std::ostream_iterator<T>(std::cout, " "));
+    std::cout << std::endl;
+  }
 }
 
 TEST(SparseRowMatrixTest, CheckingInternalArrays)
@@ -404,17 +425,10 @@ bool passesTdcsTest(const SparseRowMatrix& matrix)
   {
     for (SparseRowMatrix::InnerIterator it(matrix,k); it; ++it)
     {
-      //std::cout << "value: " << it.value() << std::endl;
-      //std::cout << "row: " << it.row() << std::endl;
-      //std::cout << "col: " << it.col() << std::endl;
-
       if (hasNElements(it, 1))
       {
-        //std::cout << "has 1 element" << std::endl;
-        //std::cout << "value = " << it.value() << std::endl;
         if (it.value() == 1)
         {
-          //std::cout << "found a 1 " << std::endl;
           return true;
         }
       }
@@ -500,4 +514,50 @@ TEST(SparseRowMatrixTest, IsPositiveDefiniteTests)
  auto n7 = *posdef_matrix_false6();
  ASSERT_FALSE(isPositiveDefiniteMatrix(n7));
 
+}
+
+TEST(SparseRowMatrixTest, CanBuildTripletsFromInternalArrays)
+{
+  int nnz = 35;
+  int nrows = 7, ncols = 7;
+  int rows[] = {0, 7, 11, 17, 21, 26, 30, 35};
+  int cols[] = {0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 5, 0, 1, 2, 4, 5, 6, 0, 3, 4, 6, 0, 2, 3, 4, 6, 0, 1, 2, 5, 0, 2, 3, 4, 6};
+
+  std::vector<std::pair<int,int>> nnzLocations;
+
+  int i = 0;
+  int j = 0;
+  while (i < nrows)
+  {
+    while (j < rows[i + 1])
+    {
+      nnzLocations.push_back(std::make_pair(i, cols[j]));
+      j++;
+    }
+    i++;
+  }
+
+  //printVector(nnzLocations);
+
+  SparseRowMatrix m(nrows, ncols);
+  EXPECT_EQ(nrows, m.nrows());
+  EXPECT_EQ(ncols, m.ncols());
+  EXPECT_EQ(0, m.nonZeros());
+  std::vector<SparseRowMatrix::Triplet> triplets;
+  std::transform(nnzLocations.begin(), nnzLocations.end(), std::back_inserter(triplets), [](const std::pair<int,int>& p) { return SparseRowMatrix::Triplet(p.first, p.second, 0); });
+  m.setFromTriplets(triplets.begin(), triplets.end());
+  EXPECT_EQ(nnz, m.nonZeros());
+}
+
+TEST(SparseRowMatrixTest, TestLegacyConstructor)
+{
+  int nnz = 35;
+  int nrows = 7, ncols = 7;
+  index_type rows[] = {0, 7, 11, 17, 21, 26, 30, 35};
+  index_type cols[] = {0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 5, 0, 1, 2, 4, 5, 6, 0, 3, 4, 6, 0, 2, 3, 4, 6, 0, 1, 2, 5, 0, 2, 3, 4, 6};
+
+  SparseRowMatrix m(nrows, ncols, rows, cols, nnz);
+  EXPECT_EQ(nrows, m.nrows());
+  EXPECT_EQ(ncols, m.ncols());
+  EXPECT_EQ(nnz, m.nonZeros());
 }

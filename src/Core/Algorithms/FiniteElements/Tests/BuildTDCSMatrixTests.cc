@@ -43,28 +43,6 @@ using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
 
-namespace
-{
-  //TODO: move to unit test helper library
-  FieldHandle loadFieldFromFile(const boost::filesystem::path& filename)
-  {
-    FieldHandle handle;
-    PiostreamPtr stream = auto_istream(filename.string(), nullptr);
-    if (!stream)
-    {
-      throw "Error reading file '" + filename.string();
-    }
-
-    Pio(*stream, handle);
-
-    if (!handle || stream->error())
-    {
-      throw "File read error";
-    }
-    return handle;
-  }
-}
-
 namespace TDCSInputData
 {
   SparseRowMatrixHandle stiff()

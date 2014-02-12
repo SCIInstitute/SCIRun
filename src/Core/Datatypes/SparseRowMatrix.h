@@ -45,12 +45,38 @@ namespace Datatypes {
     typedef T value_type;
     typedef SparseRowMatrixGeneric<T> this_type;
     typedef Eigen::SparseMatrix<T, Eigen::RowMajor, index_type> EigenBase;
+    typedef Eigen::Triplet<T> Triplet;
 
     //TODO: need C++11
     //using Base::Base;
 
     SparseRowMatrixGeneric() : EigenBase() {}
     SparseRowMatrixGeneric(int nrows, int ncols) : EigenBase(nrows, ncols) {}
+
+    //Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
+    SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, size_t nnz) : EigenBase(nrows, ncols)
+    {
+      if (rowCounter[nrows] != nnz)
+        THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: row accumulator array does not match number of non-zero elements.");
+      std::vector<Triplet> triplets;
+      triplets.reserve(nnz);
+
+      int i = 0;
+      int j = 0;
+      while (i < nrows)
+      {
+        while (j < rowCounter[i + 1])
+        {
+          index_type column = columnCounter[j];
+          if (column >= ncols)
+            THROW_INVALID_ARGUMENT("Invalid sparse row matrix array: column index out of bounds.");
+          triplets.push_back(Triplet(i, columnCounter[j], 0));
+          j++;
+        }
+        i++;
+      }
+      this->setFromTriplets(triplets.begin(), triplets.end());
+    }
 
     // This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
@@ -74,11 +100,15 @@ namespace Datatypes {
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
 
+    const index_type* get_rows() const { return this->outerIndexPtr(); }
+    const index_type* get_cols() const { return this->innerIndexPtr(); }
+
     virtual void accept(MatrixVisitorGeneric<T>& visitor)
     {
       visitor.visit(*this);
     }
     
+    //TODO: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
     bool isSymmetric() const
     {
      if (this->cols() != this->rows()) return false;

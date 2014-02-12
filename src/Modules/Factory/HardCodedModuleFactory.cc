@@ -57,17 +57,18 @@
 #include <Modules/Legacy/Fields/AlignMeshBoundingBoxes.h>
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
+#include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
-#include <Modules/DataIO/ReadMesh.h>
 #include <Modules/DataIO/ReadField.h>
 #include <Modules/DataIO/WriteField.h>
 #include <Modules/String/CreateString.h>
 #include <Modules/Visualization/ShowString.h>
 #include <Modules/Visualization/ShowField.h>
 #include <Modules/Visualization/MatrixAsVectorField.h>
+#include <Modules/Visualization/CreateBasicColorMap.h>
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Modules/Render/ViewScene.h>
 #include <Modules/BrainStimulator/ElectrodeCoilSetup.h>
@@ -76,6 +77,7 @@
 #include <Modules/BrainStimulator/GenerateROIStatistics.h>
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
+#include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
@@ -146,11 +148,12 @@ namespace SCIRun {
           addModuleDesc<SetFieldNodes>("SetFieldNodes", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<TDCSSimulatorModule>("tDCSSimulator", "FiniteElements", "SCIRun", "Dummy module for design purposes", "...");
           addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
+          addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
+          addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
           {
-            addModuleDesc<ReadMeshModule>("ReadMesh", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
             addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
             addModuleDesc<ReceiveScalarModule>("ReceiveScalar", "Testing", "SCIRun", "...", "...");
             addModuleDesc<SendTestMatrixModule>("SendTestMatrix", "Testing", "SCIRun", "...", "...");
@@ -161,14 +164,15 @@ namespace SCIRun {
           }
 
           addModuleDesc<BuildTDCSMatrix>("BuildTDCSMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates tDCS Forward Matrix ");
+          addModuleDesc<BuildFEMatrix>("BuildFEMatrix", "FiniteElements", "SCIRun", " in progress ", "Generates stiffness matrix ");
           addModuleDesc<ElectrodeCoilSetupModule>("ElectrodeCoilSetup", "BrainStimulator", "SCIRun", " in progress ", " Place tDCS electrodes and TMS coils ");
           addModuleDesc<SetConductivitiesToTetMeshModule>("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun", " in progress ", " Sets conveniently conductivity profile for tetrahedral mesh ");
           addModuleDesc<GenerateROIStatisticsModule>("GenerateROIStatistics", "BrainStimulator", "SCIRun", " in progress ", " Roi statistics ");   
           addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
           addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
           addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-        
-	}
+
+        }
 
         ModuleDescriptionMap descMap_;
 

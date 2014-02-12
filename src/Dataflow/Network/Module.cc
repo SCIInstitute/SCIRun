@@ -71,15 +71,17 @@ Module::Module(const ModuleLookupInfo& info,
 
   Log& log = Log::get();
 
-  log << INFO << "Module created: " << info.module_name_ << " with id: " << id_;
+  log << DEBUG_LOG << "Module created: " << info.module_name_ << " with id: " << id_;
 
   if (algoFactory)
   {
     algo_ = algoFactory->create(get_module_name(), this);
     if (algo_)
-      log << INFO << "Module algorithm initialized: " << info.module_name_;
+      log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
+  log.flush();
 
+  setExecutionState(ModuleInterface::Waiting);
 }
 
 Module::~Module()
@@ -115,6 +117,7 @@ void Module::do_execute() throw()
 {
   executeBegins_(id_);
   status("STARTING MODULE: " + id_.id_);
+  setExecutionState(ModuleInterface::Executing);
 
   try 
   {
@@ -160,6 +163,7 @@ void Module::do_execute() throw()
 
   status("MODULE FINISHED: " + id_.id_);  
   executeEnds_(id_);
+  setExecutionState(ModuleInterface::Completed);
 }
 
 ModuleStateHandle Module::get_state() 
@@ -416,4 +420,24 @@ bool Module::oport_connected(const PortId& id) const
 void Module::removeInputPort(const PortId& id)
 {
   iports_.remove(id);
+}
+
+void Module::setStateBoolFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getBool());
+}
+
+void Module::setAlgoIntFromState(AlgorithmParameterName name)
+{
+  algo().set(name, get_state()->getValue(name).getInt());
+}
+
+void Module::setAlgoBoolFromState(AlgorithmParameterName name)
+{
+  algo().set(name, get_state()->getValue(name).getBool());
+}
+
+void Module::setStateIntFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getInt());
 }

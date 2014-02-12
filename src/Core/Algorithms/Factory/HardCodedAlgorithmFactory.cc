@@ -37,6 +37,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -48,6 +49,7 @@
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
@@ -117,6 +119,10 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new AddKnownsToLinearSystemAlgo);  
   else if (name == "CalculateVectorMagnitudes")
     h.reset(new CalculateVectorMagnitudesAlgo); 
+  else if (name == "BuildFEMatrix")
+    h.reset(new BuildFEMatrixAlgo);
+  else if (name == "GetDomainBoundary")
+    h.reset(new GetDomainBoundaryAlgo);
     
   if (h && algoCollaborator)
   {

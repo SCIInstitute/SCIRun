@@ -26,50 +26,69 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildFEMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/MatrixOperations.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
 
 #include <Core/Thread/Barrier.h>
-#include <Core/Thread/Thread.h>
+#include <Core/Thread/Parallel.h>
 
-#include <Core/Geometry/Point.h>
-#include <Core/Geometry/Tensor.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Logging/ScopedTimeRemarker.h>
+#include <Core/Logging/Log.h>
 
 #include <string>
 #include <vector>
 #include <algorithm>
-
-namespace SCIRunAlgo {
+#include <boost/shared_array.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::FiniteElements;
+using namespace SCIRun::Core::Logging;
 
+
+namespace {
 // Helper class
 
 class FEMBuilder
 {
 public:
-  
-  // Constructor needed as Barrier needs to have name
-  FEMBuilder(AlgoBase* algo) :
-  ref_cnt(0),
-  algo_(algo),
-  barrier_("FEMBuilder Barrier")
+  FEMBuilder(const AlgorithmBase* algo) :
+    algo_(algo), numprocessors_(Parallel::NumCores()),
+    barrier_("FEMBuilder Barrier", numprocessors_),
+    mesh_(0), field_(0),
+    domain_dimension(0), local_dimension_nodes(0),
+    local_dimension_add_nodes(0),
+    local_dimension_derivatives(0),
+    local_dimension(0),
+    global_dimension_nodes(0),
+    global_dimension_add_nodes(0),
+    global_dimension_derivatives(0),
+    global_dimension(0), use_tensor_(false), use_scalars_(false)
   {
   }
   
   // Local entry function for none pure function.
   bool build_matrix(FieldHandle input, 
-                    MatrixHandle ctable,
-                    MatrixHandle& output);
-  int ref_cnt; // needed for use as a LockingHandle
+                    DenseMatrixHandle ctable,
+                    SparseRowMatrixHandle& output);
   
 private:
-  
-  AlgoBase* algo_;
+  const AlgorithmBase* algo_;
+  int numprocessors_;
   Barrier barrier_;
   
   VMesh* mesh_;
@@ -77,12 +96,10 @@ private:
   
   SparseRowMatrixHandle fematrix_;
   
-  int numprocessors_;
-  
   std::vector<bool> success_;
   
-  SparseRowMatrix::Rows rows_;
-  SparseRowMatrix::Columns allcols_;
+  boost::shared_array<index_type> rows_;
+  boost::shared_array<index_type> allcols_;
   std::vector<index_type> colidx_;
   
   index_type domain_dimension;
@@ -112,7 +129,7 @@ private:
   inline void add_lcl_gbl(index_type row, const std::vector<index_type> &cols, const std::vector<double> &lcl_a)
   {
     for (size_t i = 0; i < lcl_a.size(); i++)
-      fematrix_->add(row, cols[i], lcl_a[i]);
+      fematrix_->coeffRef(row, cols[i]) += lcl_a[i];
   }
   
 private:
@@ -140,40 +157,41 @@ private:
 
 bool
 FEMBuilder::build_matrix(FieldHandle input, 
-                         MatrixHandle ctable,
-                         MatrixHandle& output)
+                         DenseMatrixHandle ctable,
+                         SparseRowMatrixHandle& output)
 {
+  ScopedTimeLogger s1("FEMBuilder::build_matrix");
   // Get virtual interface to data
   field_ = input->vfield();
   mesh_  = input->vmesh();
   
   // Determine the number of processors to use:
-  
-  numprocessors_ = Thread::numProcessors();
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   int numproc = algo_->get_int("num_processors");
   if (numproc > 0)
   {
     numprocessors_ = numproc;
   }
+#endif
   
   // If we have the Conductivity property use it, if not we assume the values on
   // the data to be the actual tensors.
   field_->get_property("conductivity_table",tensors_);
   
   // We added a second system of adding a conductivity table, using a matrix
-  // Convert that matrix into the conducivity table
-  if (ctable.get_rep())
+  // Convert that matrix into the conductivity table
+  if (ctable)
   {
+    ScopedTimeLogger s2("FEMBuilder::build_matrix if(ctable)");
     tensors_.clear();
-    DenseMatrix* mat = ctable->dense();
-    MatrixHandle temphandle = mat;
-    // Only if we can convert it into a denso matrix, otherwise skip it
+    DenseMatrixHandle mat = ctable;
+    // Only if we can convert it into a dense matrix, otherwise skip it
     if (mat)
     {
-      double* data = mat->get_data_pointer();
+      double* data = mat->data();
       size_type m = mat->nrows();
       size_type n = mat->ncols();
-      Tensor T; 
+      Tensor tensor; 
       
       // Case the table has isotropic conductivities
       if (mat->ncols() == 1)
@@ -181,16 +199,16 @@ FEMBuilder::build_matrix(FieldHandle input,
         for (size_type p=0; p<m;p++)
         {
           // Set the diagonals to the proper version.
-          T.mat_[0][0] = data[p*n+0];
-          T.mat_[1][0] = 0.0;
-          T.mat_[2][0] = 0.0;
-          T.mat_[0][1] = 0.0;
-          T.mat_[1][1] = data[p*n+0];
-          T.mat_[2][1] = 0.0;
-          T.mat_[0][2] = 0.0;
-          T.mat_[1][2] = 0.0;
-          T.mat_[2][2] = data[p*n+0];
-          tensors_.push_back(std::pair<std::string, Tensor>("",T));
+          tensor.mat_[0][0] = data[p*n+0];
+          tensor.mat_[1][0] = 0.0;
+          tensor.mat_[2][0] = 0.0;
+          tensor.mat_[0][1] = 0.0;
+          tensor.mat_[1][1] = data[p*n+0];
+          tensor.mat_[2][1] = 0.0;
+          tensor.mat_[0][2] = 0.0;
+          tensor.mat_[1][2] = 0.0;
+          tensor.mat_[2][2] = data[p*n+0];
+          tensors_.push_back(std::make_pair("",tensor));
         }
       }
       
@@ -199,16 +217,16 @@ FEMBuilder::build_matrix(FieldHandle input,
       {
         for (size_type p=0; p<m;p++)
         {
-          T.mat_[0][0] = data[0+p*n];
-          T.mat_[1][0] = data[1+p*n];
-          T.mat_[2][0] = data[2+p*n];
-          T.mat_[0][1] = data[1+p*n];
-          T.mat_[1][1] = data[3+p*n];
-          T.mat_[2][1] = data[4+p*n];
-          T.mat_[0][2] = data[2+p*n];
-          T.mat_[1][2] = data[4+p*n];
-          T.mat_[2][2] = data[5+p*n];
-          tensors_.push_back(std::pair<std::string, Tensor>("",T));
+          tensor.mat_[0][0] = data[0+p*n];
+          tensor.mat_[1][0] = data[1+p*n];
+          tensor.mat_[2][0] = data[2+p*n];
+          tensor.mat_[0][1] = data[1+p*n];
+          tensor.mat_[1][1] = data[3+p*n];
+          tensor.mat_[2][1] = data[4+p*n];
+          tensor.mat_[0][2] = data[2+p*n];
+          tensor.mat_[1][2] = data[4+p*n];
+          tensor.mat_[2][2] = data[5+p*n];
+          tensors_.push_back(std::make_pair("",tensor));
         }
       }
       
@@ -217,16 +235,16 @@ FEMBuilder::build_matrix(FieldHandle input,
       {
         for (size_type p=0; p<m;p++)
         {
-          T.mat_[0][0] = data[0+p*n];
-          T.mat_[1][0] = data[1+p*n];
-          T.mat_[2][0] = data[2+p*n];
-          T.mat_[0][1] = data[1+p*n];
-          T.mat_[1][1] = data[4+p*n];
-          T.mat_[2][1] = data[5+p*n];
-          T.mat_[0][2] = data[2+p*n];
-          T.mat_[1][2] = data[5+p*n];
-          T.mat_[2][2] = data[8+p*n];
-          tensors_.push_back(std::pair<std::string, Tensor>("",T));
+          tensor.mat_[0][0] = data[0+p*n];
+          tensor.mat_[1][0] = data[1+p*n];
+          tensor.mat_[2][0] = data[2+p*n];
+          tensor.mat_[0][1] = data[1+p*n];
+          tensor.mat_[1][1] = data[4+p*n];
+          tensor.mat_[2][1] = data[5+p*n];
+          tensor.mat_[0][2] = data[2+p*n];
+          tensor.mat_[1][2] = data[5+p*n];
+          tensor.mat_[2][2] = data[8+p*n];
+          tensors_.push_back(std::make_pair("",tensor));
         }
       }
     }
@@ -235,10 +253,10 @@ FEMBuilder::build_matrix(FieldHandle input,
   success_.resize(numprocessors_,true);
   
   // Start the multi threaded FE matrix builder.
-  Thread::parallel(this, &FEMBuilder::parallel, numprocessors_);
+  Parallel::RunTasks([this](int i) { parallel(i); }, numprocessors_);
   for (size_t j=0; j<success_.size(); j++)
   {
-    if (success_[j] == false)
+    if (!success_[j])
     {
       std::ostringstream oss;
       oss << "Algorithm failed in thread " << j;
@@ -248,13 +266,13 @@ FEMBuilder::build_matrix(FieldHandle input,
   }
   
   // Make sure it is symmetric
-  
-  if (algo_->get_bool("force_symmetry"))
+  if (algo_->get(BuildFEMatrixAlgo::ForceSymmetry).getBool())
   {
+    ScopedTimeLogger s3("FEMBuilder::build_matrix make symmetric");
     // Make sure the matrix is fully symmetric, this compensates for round off
     // errors
-    MatrixHandle trans = fematrix_->make_transpose();
-    output = 0.5*(trans+fematrix_);
+    SparseRowMatrix transpose = fematrix_->transpose();
+    output.reset(new SparseRowMatrix(0.5*(transpose + *fematrix_)));
   }
   else
   {
@@ -272,6 +290,7 @@ FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
                                          std::vector<double> &w,
                                          std::vector<std::vector<double> > &d)
 {
+  //ScopedTimeLogger s1("FEMBuilder::create_numerical_integration");
   int int_basis = 1;
   if (mesh_->is_quad_element() || 
       mesh_->is_hex_element() || 
@@ -306,9 +325,10 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
                                std::vector<double> &w,
                                std::vector<std::vector<double> >  &d)
 {
+  //ScopedTimeLogger s0("FEMBuilder::build_local_matrix");
   Tensor T;
   
-  if (tensors_.size() == 0)
+  if (tensors_.empty())
   {
     field_->get_value(T,c_ind);
   }
@@ -339,7 +359,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
     for (int i=0; i<local_dimension; i++)
       l_stiff[i] = 0.0;
     
-    int local_dimension2=2*local_dimension;
+    auto local_dimension2=2*local_dimension;
     
     // These calls are direct lookups in the base of the VMesh
     // The compiler should optimize these well
@@ -421,9 +441,10 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
                                        std::vector<std::vector<double> >  &d,
                                        std::vector<std::vector<double> > &precompute)
 {
+  //ScopedTimeLogger s0("FEMBuilder::build_local_matrix_regular");
   Tensor T;
   
-  if (tensors_.size() == 0)
+  if (tensors_.empty())
   {
     // Call to virtual interface. Get the tensor value. Actually this call relies
     // on the automatic casting feature of the virtual interface to convert scalar
@@ -454,7 +475,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
   else
   {
     
-    if (precompute.size() == 0)
+    if (precompute.empty())
     {
       precompute.resize(d.size());
       for (int m=0; m < static_cast<int>(d.size()); m++)
@@ -465,10 +486,9 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       for(int i=0; i<local_dimension; i++)
         l_stiff[i] = 0.0;
       
-      int local_dimension2=2*local_dimension;
+      auto local_dimension2=2*local_dimension;
       
       double vol = mesh_->get_element_size();
-      //const int dim = mesh_->dimensionality();
       
       for (size_t i = 0; i < d.size(); i++)
       {
@@ -480,7 +500,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         // Volume elements can return negative determinants if the order of elements
         // is put in a different order
         // TODO: It seems to be that a negative determinant is not necessarily bad, 
-        // we should be more flexible on thiis point
+        // we should be more flexible on this point
         if (detJ <= 0.0) 
         {
           algo_->error("Mesh has elements with negative jacobians, check the order of the nodes that define an element");
@@ -535,7 +555,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
           const double uy = Nxj*pc[3]+Nyj*pc[4]+Nzj*pc[5];
           const double uz = Nxj*pc[6]+Nyj*pc[7]+Nzj*pc[8];
           
-          // Add everything together into one coeffiecient of the matrix
+          // Add everything together into one coefficient of the matrix
           l_stiff[j] += ux*uxyzpabc+uy*uxyzpbde+uz*uxyzpcef;
         }
       }
@@ -545,7 +565,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
       for(int i=0; i<local_dimension; i++)
         l_stiff[i] = 0.0;
       
-      int local_dimension2=2*local_dimension;
+      auto local_dimension2=2*local_dimension;
       
       for (size_t i = 0; i < d.size(); i++)
       {
@@ -599,6 +619,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
 bool
 FEMBuilder::setup()
 {	
+  ScopedTimeLogger s0("FEMBuilder::setup");
   // The domain dimension
   domain_dimension = mesh_->dimensionality();
   if (domain_dimension < 1) 
@@ -646,7 +667,7 @@ FEMBuilder::setup()
   
   if (mns > 0) 
   {
-    // We only need edges for the higher order basis in case of quatric lagrangian
+    // We only need edges for the higher order basis in case of quartic Lagrangian
     // Hence we should only synchronize it for this case
     if (global_dimension_add_nodes > 0) 
       mesh_->synchronize(Mesh::EDGES_E|Mesh::NODE_NEIGHBORS_E);
@@ -658,6 +679,7 @@ FEMBuilder::setup()
     algo_->error("Mesh size < 0");
     success_[0] = false;
   }
+  Log::get() << DEBUG_LOG << "Allocating buffer for nonzero row indices of size: " << (global_dimension+1);
   rows_.reset(new index_type[global_dimension+1]);
   
   colidx_.resize(numprocessors_+1);
@@ -670,6 +692,7 @@ FEMBuilder::setup()
 void 
 FEMBuilder::parallel(int proc_num)
 {
+  ScopedTimeLogger s1("FEMBuilder::parallel", proc_num == 0);
   success_[proc_num] = true;
   
   if (proc_num == 0)
@@ -685,12 +708,12 @@ FEMBuilder::parallel(int proc_num)
     }
   }
   
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // In case one of the threads fails, we should have them fail all
   for (int q = 0; q < numprocessors_; q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
     {
       std::ostringstream oss;
       oss << "FEMBuilder::setup failed in thread " << q;
@@ -714,8 +737,10 @@ FEMBuilder::parallel(int proc_num)
   //! loop over system dofs for this thread
   int cnt = 0;
   size_type size_gd = end_gd-start_gd;
+  auto updateFrequency = 2*size_gd / 100;
   try
   {
+    ScopedTimeLogger loop1("FEMBuilder::parallel loop 1", proc_num == 0);
     mycols.reserve((end_gd - start_gd)*local_dimension*8);  //<! rough estimate
     
     for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
@@ -776,10 +801,11 @@ FEMBuilder::parallel(int proc_num)
       if (proc_num == 0) 
       {
         cnt++;
-        if (cnt == 200)
+        if (cnt == updateFrequency)
         {
           cnt = 0;
-          algo_->update_progress(i,2*size_gd);
+          algo_->update_progress_max(i,2*size_gd);
+          Log::get() << DEBUG_LOG << "Updating progress 1 to: " << i << " / " << 2*size_gd;
         }
       }    
     }
@@ -794,12 +820,12 @@ FEMBuilder::parallel(int proc_num)
   }
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
     {
       return;
     }
@@ -823,7 +849,10 @@ FEMBuilder::parallel(int proc_num)
       }
       
       colidx_[numprocessors_] = st;
-      allcols_.reset(new index_type[st]);
+      {
+        ScopedTimeLogger ss("Allocating buffer for nonzero column indices of size: " + boost::lexical_cast<std::string>(st));
+        allcols_.reset(new index_type[st]);
+      }
     }
     success_[proc_num] = true;
   }
@@ -837,7 +866,7 @@ FEMBuilder::parallel(int proc_num)
   }	
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
@@ -868,12 +897,12 @@ FEMBuilder::parallel(int proc_num)
   
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_; q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
       return;
   }
   
@@ -882,12 +911,12 @@ FEMBuilder::parallel(int proc_num)
     //! the main thread makes the matrix
     if (proc_num == 0)
     {
+      ScopedTimeLogger s0("FEMBuilder::parallel 0 creating matrix");
       rows_[global_dimension] = st;
-      
-      SparseRowMatrix::Storage vals_(new double[st]);
-      SparseRowMatrix::Data data(rows_, allcols_, vals_);
-      
-      fematrix_ = new SparseRowMatrix(global_dimension, global_dimension, data, st);
+      algo_->remark("Creating fematrix on main thread.");
+      fematrix_.reset(new SparseRowMatrix(global_dimension, global_dimension, rows_.get(), allcols_.get(), st));
+      rows_.reset();
+      allcols_.reset();
     }
     success_[proc_num] = true;
   }
@@ -898,12 +927,12 @@ FEMBuilder::parallel(int proc_num)
   }	
   
   //! check point
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_;q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
       return;
   }
   
@@ -912,7 +941,7 @@ FEMBuilder::parallel(int proc_num)
     //! zeroing in parallel
     const index_type ns = colidx_[proc_num];
     const index_type ne = colidx_[proc_num+1];
-    double* a = &(fematrix_->get_vals()[ns]), *ae=&(fematrix_->get_vals()[ne]);
+    double* a = &(fematrix_->valuePtr()[ns]), *ae=&(fematrix_->valuePtr()[ne]);
     while (a<ae) *a++=0.0;
     
     std::vector<VMesh::coords_type > ni_points;
@@ -926,7 +955,7 @@ FEMBuilder::parallel(int proc_num)
     
     //! loop over system dofs for this thread
     cnt = 0;
-    
+    ScopedTimeLogger loop1("FEMBuilder::parallel loop 2", proc_num == 0);
     size_gd = end_gd-start_gd;
     for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
     {
@@ -1021,10 +1050,11 @@ FEMBuilder::parallel(int proc_num)
       if (proc_num == 0) 
       {
         cnt++;
-        if (cnt == 200)
+        if (cnt == updateFrequency)
         {
           cnt = 0;
-          algo_->update_progress(i+size_gd,2*size_gd);
+          Log::get() << DEBUG_LOG << "Updating progress 2 to: " << i+size_gd << " / " << 2*size_gd;
+          algo_->update_progress_max(i+size_gd,2*size_gd);
         }
       }
     }
@@ -1036,88 +1066,75 @@ FEMBuilder::parallel(int proc_num)
     success_[proc_num] = false;
   }	
   
-  barrier_.wait(numprocessors_);
+  barrier_.wait();
   
   // Bail out if one of the processes failed
   for (int q=0; q<numprocessors_; q++)
   {
-    if (success_[q] == false)
+    if (!success_[q])
       return;
   }
 }
+}
 
-class BuildFEMatrixPrivateData : public AlgoData
-{
-public:
-  int generation_;
-  std::vector<std::vector<double> > basis_values_;
-  MatrixHandle basis_fematrix_;
-};
-
-
+AlgorithmParameterName BuildFEMatrixAlgo::NumProcessors("NumProcessors");
+AlgorithmParameterName BuildFEMatrixAlgo::ForceSymmetry("ForceSymmetry");
+AlgorithmParameterName BuildFEMatrixAlgo::GenerateBasis("GenerateBasis");
 
 bool 
-BuildFEMatrixAlgo::
-run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
+BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMatrixHandle& output) const
 {
-  algo_start("BuildFEMatrix");
+  ScopedAlgorithmStatusReporter s(this, "BuildFEMatrix");
+  ScopedTimeLogger s1("BuildFEMatrixAlgo::run");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("Could not obtain input field");
-    algo_end();
     return false;
   }
   
   if (input->vfield()->is_vector())
   {
     error("This function has not yet been defined for elements with vector data");
-    algo_end();
     return false;
   }
   
   if (input->vfield()->basis_order()!=0)
   {
     error("This function has only been defined for data that is located at the elements");
-    algo_end();
     return false;
   }
   
-  if (ctable.get_rep())
+  if (ctable)
   {
     if ((ctable->ncols() != 1)&&(ctable->ncols() != 6)&&(ctable->ncols() != 9))
     {
       error("Conductivity table needs to have 1, 6, or 9 columns");
-      algo_end();
       return false;
     } 
     if (ctable->nrows() == 0)
     { 
       error("ConductivityTable is empty");
-      algo_end();
       return false;
     }
   }
   
-  Handle<FEMBuilder> builder = new FEMBuilder(this);
-  // Call the the none pure version
+  FEMBuilder builder(this);
   
-  if (get_bool("generate_basis"))
+  if (get(GenerateBasis).getBool())
   {
-    BuildFEMatrixPrivateData* privatedata;
-    get_privatedata(privatedata);
-    
-    
-    if (ctable.get_rep()==0)
+    ScopedTimeLogger s2("BuildFEMatrixAlgo::run GenerateBasis");
+    if (!ctable)
     {
+      ScopedTimeLogger s3("BuildFEMatrixAlgo::run GenerateBasis !ctable");
       std::vector<std::pair<std::string,Tensor> > tens;
       
-      input->get_property("conductivity_table",tens);
+      input->properties().get_property("conductivity_table",tens);
       
-      if (tens.size() > 0)
+      if (!tens.empty())
       {
-        ctable = new DenseMatrix(tens.size(),1);
-        double* data = ctable->get_data_pointer();
+        ctable.reset(new DenseMatrix(tens.size(), 1));
+        double* data = ctable->data();
         for (size_t i=0; i<tens.size();i++)
         {
           double t = tens[i].second.mat_[0][0];
@@ -1126,88 +1143,76 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
       }
     }
     
-    if (ctable.get_rep())
+    if (ctable)
     {
+      ScopedTimeLogger s4("BuildFEMatrixAlgo::run GenerateBasis ctable");
       size_type nconds = ctable->nrows();
-      if ( (input->vmesh()->generation() != privatedata->generation_) ||
-          (privatedata->basis_fematrix_.get_rep() == 0) )
+      if ( (input->vmesh()->generation() != generation_) ||
+          (!basis_fematrix_) )
       {
-        MatrixHandle con = new DenseMatrix(nconds,1);
-        double* data = con->get_data_pointer();
+        DenseMatrixHandle con(new DenseMatrix(nconds, 1, 0.0));
+        double* data = con->data();
         
-        // TODO: replace with std::fill
-        for (size_type i = 0; i < nconds; i++)
-        {
-          data[i] = 0.0;
-        }
-        
-        if (! builder->build_matrix(input, con, privatedata->basis_fematrix_) )
+        if (! builder.build_matrix(input, con, basis_fematrix_) )
         {
           error("Build matrix method failed when building FEMatrix structure");
-          algo_end();
           return false;
         }
         
-        if (privatedata->basis_fematrix_.get_rep() == 0)
+        if (!basis_fematrix_)
         {
           error("Failed to build FEMatrix structure");
-          algo_end();
           return false;
         }
         
-        privatedata->basis_values_.resize(nconds);
+        basis_values_.resize(nconds);
         for (size_type s=0; s < nconds; s++)
         {
-          MatrixHandle temp;
+          SparseRowMatrixHandle temp;
           // TODO: can initialize array using std::fill
           data[s] = 1.0;
           
-          if (! builder->build_matrix(input, con, temp) )
+          if (! builder.build_matrix(input, con, temp) )
           {
             error("Build matrix method failed for one of the tissue types");
-            algo_end();
             return false;
           }
           
-          if (temp.get_rep() == 0)
+          if (!temp)
           {
             error("Failed to build FEMatrix component for one of the tissue types");
-            algo_end();
             return false;
           }
           
-          SparseRowMatrix *m = temp->sparse();
-          privatedata->basis_values_[s].resize(m->get_nnz());
-          for (size_type p=0; p< m->get_nnz(); p++)
+          basis_values_[s].resize(temp->nonZeros());
+          for (size_type p=0; p< temp->nonZeros(); p++)
           {
-            privatedata->basis_values_[s][p] = m->get_value(p);
+            basis_values_[s][p] = temp->valuePtr()[p];
           }
           data[s] = 0.0;
         }
         
-        privatedata->generation_ = input->vmesh()->generation();
+        generation_ = input->vmesh()->generation();
       }
       
-      output = privatedata->basis_fematrix_;
-      output.detach();
+      output.reset(basis_fematrix_->clone());
       
-      SparseRowMatrix *m = output->sparse();
-      double *sum = m->get_vals();
-      double *cdata = ctable->get_data_pointer();
+      double *sum = output->valuePtr();
+      double *cdata = ctable->data();
       size_type n = ctable->ncols();
       
-      if (privatedata->basis_values_.size() > 0)
+      if (!basis_values_.empty())
       {
-        for (size_t p=0; p < privatedata->basis_values_[0].size(); p++)
+        for (size_t p=0; p < basis_values_[0].size(); p++)
           sum[p] = 0.0;
       }
       
       for (int s=0; s<nconds; s++)
       {
         double weight = cdata[s*n];
-        for (size_t p=0; p < privatedata->basis_values_[s].size(); p++)
+        for (size_t p=0; p < basis_values_[s].size(); p++)
         {
-          sum[p] += weight * privatedata->basis_values_[s][p];
+          sum[p] += weight * basis_values_[s][p];
         }
       }
       
@@ -1215,27 +1220,38 @@ run(FieldHandle input, MatrixHandle ctable, MatrixHandle& output)
     else
     {
       error("No conductivity table present: The generate_basis option only works for indexed conductivities");
-      algo_end();
       return false;
     }
   }
   
-  if (! builder->build_matrix(input,ctable,output) )
+  if (! builder.build_matrix(input,ctable,output) )
   {
     error("Build matrix method failed to build output matrix");
-    algo_end();
     return false;
   }
   
-  if (output.get_rep() == 0)
+  if (!output)
   {    
     error("Could not build output matrix");
-    algo_end();
     return false;
   }
   
-  algo_end();
   return true;
 }
 
-} // end namespace SCIRun
+AlgorithmInputName BuildFEMatrixAlgo::Conductivity_Table("Conductivity_Table");
+AlgorithmOutputName BuildFEMatrixAlgo::Stiffness_Matrix("Stiffness_Matrix");
+
+AlgorithmOutput BuildFEMatrixAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+  auto ctable = input.get<DenseMatrix>(Conductivity_Table);
+
+  SparseRowMatrixHandle stiffness;
+  if (!run(field, ctable, stiffness))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Stiffness_Matrix] = stiffness;
+  return output;
+}

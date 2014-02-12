@@ -48,6 +48,7 @@ TARGET_LINK_LIBRARIES(Core_Application
   Modules_Factory
   Algorithms_Factory
   Dataflow_State
+  Core_Logging
   ${SCI_BOOST_LIBRARY}
 )
 

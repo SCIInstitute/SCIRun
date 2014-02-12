@@ -34,6 +34,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/timer.hpp>
 #include <boost/assign.hpp>
+#include <boost/filesystem.hpp>
 #include <stdexcept>
 
 #include <Core/Datatypes/DenseMatrix.h>
@@ -49,22 +50,11 @@ namespace SCIRun
 namespace TestUtils
 {
 
-//inline long long count_single_value(const Core::Datatypes::Matrix& m, const double val)
-//{
-//  return static_cast<long long>(std::count(m.begin(), m.end(), val));
-//}
-
 inline bool equal_size(const Core::Datatypes::Matrix& m1, const Core::Datatypes::Matrix& m2)
 {
   return m1.nrows() == m2.nrows() 
     && m1.ncols() == m2.ncols();
 }
-
-//inline bool compare_exactly(const Core::Datatypes::Matrix& m1, const Core::Datatypes::Matrix& m2)
-//{
-//  return equal_size(m1, m2) &&
-//    std::equal(m1.begin(), m1.end(), m2.begin());
-//}
 
 #define DEFAULT_MATRIX_PERCENT_TOLERANCE 1e-5
 
@@ -74,6 +64,14 @@ inline bool compare_with_tolerance(const Core::Datatypes::DenseMatrix& m1, const
   using namespace boost::test_tools;
   return equal_size(m1, m2) &&
     std::equal(m1.data(), m1.data() + m1.size(), m2.data(),
+    close_at_tolerance<double>(percent_tolerance(percentTolerance)));
+}
+
+inline bool compare_with_tolerance(const Core::Datatypes::SparseRowMatrix& m1, const Core::Datatypes::SparseRowMatrix& m2, double percentTolerance = DEFAULT_MATRIX_PERCENT_TOLERANCE)
+{
+  using namespace boost::test_tools;
+  return equal_size(m1, m2) &&
+    std::equal(m1.valuePtr(), m1.valuePtr() + m1.nonZeros(), m2.valuePtr(),
     close_at_tolerance<double>(percent_tolerance(percentTolerance)));
 }
 
@@ -215,6 +213,8 @@ struct SCISHARE ScopedTimer
   std::string name_;
   boost::timer t_;
 };
+
+SCISHARE FieldHandle loadFieldFromFile(const boost::filesystem::path& filename);
 
 }
 

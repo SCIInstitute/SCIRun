@@ -26,34 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Modules/DataIO/ReadMesh.h>
-#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-
-using namespace SCIRun::Modules::DataIO;
-using namespace SCIRun::Core::Algorithms;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Dataflow::Networks;
-
-ReadMeshModule::ReadMeshModule() : Module(ModuleLookupInfo("ReadMesh", "DataIO", "SCIRun"))
-{
-  INITIALIZE_PORT(OutputSampleField);
-}
-
-// Only support TriSurf (initial test)
-void ReadMeshModule::execute()
-{
-  auto fileOption = getOptionalInput(Filename);
-  if (!fileOption)
-    filename_ = get_state()->getValue(Variables::Filename).getString();
-  else
-    filename_ = (*fileOption)->value();
-
-//  TextToTriSurfFieldAlgorithm algo;
-  
-  algo().set(Variables::Filename, filename_);
-  auto output = algo().run_generic(makeNullInput());
-  sendOutputFromAlgorithm(OutputSampleField, output);
-  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
-}
+//#include <Modules/DataIO/ReadMesh.h>
+//#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+//#include <Core/Datatypes/String.h>
+//#include <Core/Datatypes/Legacy/Field/Mesh.h>
+//
+//using namespace SCIRun::Modules::DataIO;
+//using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Datatypes;
+//using namespace SCIRun::Dataflow::Networks;
+//
+//ReadMeshModule::ReadMeshModule() : Module(ModuleLookupInfo("ReadMesh", "DataIO", "SCIRun"))
+//{
+//  INITIALIZE_PORT(OutputSampleField);
+//}
+//
+//// Only support TriSurf (initial test)
+//void ReadMeshModule::execute()
+//{
+//  auto fileOption = getOptionalInput(Filename);
+//  if (!fileOption)
+//    filename_ = get_state()->getValue(Variables::Filename).getString();
+//  else
+//    filename_ = (*fileOption)->value();
+//
+////  TextToTriSurfFieldAlgorithm algo;
+//  
+//  algo().set(Variables::Filename, filename_);
+//  auto output = algo().run_generic(makeNullInput());
+//  sendOutputFromAlgorithm(OutputSampleField, output);
+//  sendOutput(FileLoaded, boost::make_shared<String>(filename_));
+//}
