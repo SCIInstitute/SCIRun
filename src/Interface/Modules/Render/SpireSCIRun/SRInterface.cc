@@ -80,7 +80,9 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
   std::fstream arrowFile("Assets/UnitArrow.sp");
   spire::Interface::loadProprietarySR5AssetFile(arrowFile, *rawVBO, *rawIBO);
 
-  std::vector<std::string> attribNames = {"aPos", "aNormal"};
+  std::vector<std::string> attribNames;
+  attribNames.push_back("aPos");
+  attribNames.push_back("aNormal");
   spire::Interface::IBO_TYPE iboType = spire::Interface::IBO_16BIT;
 
   mArrowVBOName = "arrowVBO";
