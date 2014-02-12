@@ -26,39 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtGui>
-#include <Interface/Application/ClosestPortFinder.h>
-#include <Interface/Application/ModuleProxyWidget.h>
-#include <Interface/Application/ModuleWidget.h>
-#include <Interface/Application/Port.h>
-#include <Interface/Application/PortWidgetManager.h>
+#ifndef INTERFACE_APPLICATION_PORTWIDGETMANAGER_H
+#define INTERFACE_APPLICATION_PORTWIDGETMANAGER_H
 
-using namespace SCIRun::Gui;
+#include <boost/range/join.hpp>
 
-ClosestPortFinder::ClosestPortFinder(QGraphicsScene* scene) : scene_(scene) {}
+#include <Dataflow/Network/NetworkFwd.h>
 
-PortWidget* ClosestPortFinder::closestPort(const QPointF& pos)
+namespace SCIRun {
+namespace Gui {
+
+class PortWidget;
+class InputPortWidget;
+class OutputPortWidget;
+
+class PortWidgetManager
 {
-  Q_FOREACH (QGraphicsItem* item, scene_->items(pos))
+public:
+  typedef std::deque<PortWidget*> Ports;
+
+  auto getAllPorts() const -> decltype(boost::join(Ports(), Ports()))
   {
-    if (auto mpw = dynamic_cast<ModuleProxyWidget*>(item))
-    {
-      auto overModule = mpw->getModuleWidget();
-
-      auto ports = overModule->ports().getAllPorts();
-      return *std::min_element(ports.begin(), ports.end(), [=](PortWidget* lhs, PortWidget* rhs) {return lessPort(pos, lhs, rhs); });
-    }
+    return boost::join(inputPorts_, outputPorts_);
   }
-  return 0;
+
+  void addPort(InputPortWidget* port);
+  void addPort(OutputPortWidget* port);
+  bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);
+  void addInputsToLayout(QHBoxLayout* layout);
+  void addOutputsToLayout(QHBoxLayout* layout);
+  void reindexInputs();
+
+private:
+  Ports inputPorts_, outputPorts_;
+};
+
+
+}
 }
 
-int ClosestPortFinder::distance(const QPointF& pos, PortWidget* port) const
-{
-  return (pos - port->position()).manhattanLength();
-}
-
-bool ClosestPortFinder::lessPort(const QPointF& pos, PortWidget* lhs, PortWidget* rhs) const
-{
-  return distance(pos, lhs) < distance(pos, rhs);
-}
-
+#endif

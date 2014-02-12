@@ -27,7 +27,6 @@
 */
 
 #include <QtGui>
-#include <boost/range/join.hpp>
 #include <iostream>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Interface/Application/ModuleProxyWidget.h>
@@ -35,6 +34,7 @@
 #include <Interface/Application/Port.h>
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/PositionProvider.h>
+#include <Interface/Application/PortWidgetManager.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;

@@ -31,7 +31,9 @@
 
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
+#ifndef Q_MOC_RUN
 #include <boost/lexical_cast.hpp>
+#endif
 #include <Core/Logging/share.h>
 
 namespace SCIRun 
@@ -110,5 +112,6 @@ namespace SCIRun
   }
 }
 
+#define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif
