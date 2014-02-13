@@ -325,6 +325,8 @@ ENDIF()
 ########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # CPM Setup.
 set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/cpm-packages" CACHE TYPE STRING)
 find_package(Git)
