@@ -40,6 +40,8 @@
 #include "SRCommonAttributes.h"
 #include "SRCommonUniforms.h"
 
+#include <Core/Application/Application.h>
+
 using namespace std::placeholders;
 
 namespace SCIRun {
@@ -74,10 +76,13 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
   shaderFiles.push_back(std::make_pair("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER));
   mSpire->addPersistentShader("DirPhong", shaderFiles);
 
-  // Load scirun5 arrow asset.
+  // Load scirun5 arrow asset this code needs to be update with file error
+  // checking in the entity system renderer.
+  auto baseAssetDirQT = SCIRun::Core::Application::Instance().executablePath() / "Assets";
+  std::string baseAssetDir = baseAssetDirQT.string();
   std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
   std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
-  std::fstream arrowFile("Assets/UnitArrow.sp");
+  std::ifstream arrowFile(baseAssetDir + "/UnitArrow.sp", std::ios::in | std::ios::binary);
   spire::Interface::loadProprietarySR5AssetFile(arrowFile, *rawVBO, *rawIBO);
 
   std::vector<std::string> attribNames;
