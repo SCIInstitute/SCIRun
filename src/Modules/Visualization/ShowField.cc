@@ -33,6 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
 
 #include <boost/foreach.hpp>
@@ -67,13 +68,15 @@ void ShowFieldModule::setStateDefaults()
 void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-  GeometryHandle geom = buildGeometryObject(field, get_state(), get_id());
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
+  GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), get_id());
   sendOutput(SceneGraph, geom);
 }
 
 
 GeometryHandle ShowFieldModule::buildGeometryObject(
     boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     ModuleStateHandle state, 
     const std::string& id)
 {
