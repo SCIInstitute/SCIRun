@@ -185,7 +185,7 @@ IF(NOT GIT_FOUND)
 ENDIF()
 
 ########################################################################
-# Find and configure Awk & Sed  {(OS X only), needed to build app bundle
+# Find and configure Awk & Sed  {(OS X only), needed to build App bundle
 
 # should be installed by default, searching system paths only
 IF(APPLE)
@@ -198,6 +198,11 @@ IF(APPLE)
     NAMES sed
   )
   MARK_AS_ADVANCED(SED)
+
+  FIND_PROGRAM(MACDEPLOYQT
+    NAMES macdeployqt
+  )
+  MARK_AS_ADVANCED(MACDEPLOYQT)
 ENDIF()
 
 
