@@ -384,6 +384,29 @@ void SRInterface::doFrame()
             break;
         }
       }
+
+      if (it->mColorMap)
+      {
+        GL(glActiveTexture(GL_TEXTURE0));
+        glEnable(GL_TEXTURE_1D);
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_TEXTURE_3D);
+
+        // Setup appropriate texture to render the color map.
+        if (*(it->mColorMap) == "Rainbow")
+        {
+          GL(glBindTexture(GL_TEXTURE_1D, mRainbowCMap));
+        }
+        else
+        {
+          GL(glBindTexture(GL_TEXTURE_1D, mGrayscaleCMap));
+        }
+
+        // What will need to be set in the shader based on uniform name..
+        //GL(glUniform1i(it->shaderLocation, texUnit));
+
+        //mSpire->addObjectPassUniform(it->mName, "uTX0", spire::SpireSampler1D_NoRAII(0), passit->passName);
+      }
       mSpire->renderObject(it->mName, passit->passName);
     }
   }
