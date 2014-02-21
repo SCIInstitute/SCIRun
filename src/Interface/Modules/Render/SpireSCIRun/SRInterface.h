@@ -153,10 +153,14 @@ private:
     spire::M44            mObjectToWorld;
     std::list<SRPass>     mPasses;
     Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
+
+    std::string           mColorMap;
   };
 
   // Begins the frame.
   void beginFrame();
+
+  void generateColormaps();
 
   std::shared_ptr<spire::Interface>           mSpire;
 
@@ -164,6 +168,9 @@ private:
 
   size_t                    mScreenWidth;     ///< Screen width in pixels.
   size_t                    mScreenHeight;    ///< Screen height in pixels.
+
+  GLuint                    mRainbowCMap;     ///< Rainbow color map.
+  GLuint                    mGrayscaleCMap;   ///< Grayscale color map.
 
   std::unique_ptr<SRCamera> mCamera;          ///< Primary camera.
   std::vector<SRObject>     mSRObjects;       ///< All SCIRun objects.
