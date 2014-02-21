@@ -154,7 +154,7 @@ private:
     std::list<SRPass>     mPasses;
     Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
 
-    std::string           mColorMap;
+    boost::optional<std::string>    mColorMap;
   };
 
   // Begins the frame.

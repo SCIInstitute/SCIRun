@@ -270,9 +270,14 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     ///       and bind them here.
     if (vmesh->has_normals())
     {
+      std::string shaderToUse = "DirPhong";
+      if (colorMap)
+      {
+        shaderToUse = "DirPhongCMap";
+      }
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
-                                       "DirPhong", spire::Interface::TRIANGLES);
+                                       shaderToUse, spire::Interface::TRIANGLES);
 
       // Add common uniforms.
       pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
@@ -283,10 +288,15 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     }
     else
     {
+      std::string shaderToUse = "UniformColor";
+      if (colorMap)
+      {
+        shaderToUse = "ColorMap";
+      }
       // No normals present in the model, construct a uniform pass
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName,
-                                       "UniformColor", spire::Interface::TRIANGLES);
+                                       shaderToUse, spire::Interface::TRIANGLES);
 
       // Apply misc user settings.
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
