@@ -99,48 +99,21 @@ IF(APPLE AND BUILD_BUNDLE)
 # TODO: Xcode settings go here, once Xcode build is working
 # IF(${CMAKE_GENERATOR} MATCHES "Xcode")
 
-  # TODO: not sure if this is the best place both for the script and this command
-  CONFIGURE_FILE(${SCIRun5Prototype_SOURCE_DIR}/CMake/Utils/processSCIRunLibs.sh.in ${SCIRUN_CORE_BINARY_DIR}/processSCIRunLibs.sh @ONLY)
-
   IF(${CMAKE_GENERATOR} MATCHES "Unix Makefiles")
     # otool can be used to check list of dependent dylibs
     ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME} 
       POST_BUILD
         # configure Qt libs
-
         # TODO: starting with debug level output, reduce later...
         COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=3
 
-        # TODO: make sure permissions are OK
-        #COMMAND rm -Rf "${APPLICATION_NAME}.app/Contents/Frameworks"
-        #COMMAND mkdir "${APPLICATION_NAME}.app/Contents/Frameworks"
-        #COMMAND chmod +x "${APPLICATION_NAME}.app/Contents/Frameworks"
-        #COMMAND cp -R ${QT_QTCORE_LIBRARY_RELEASE} "${APPLICATION_NAME}.app/Contents/Frameworks"
-        #COMMAND cp -R ${QT_QTGUI_LIBRARY_RELEASE} "${APPLICATION_NAME}.app/Contents/Frameworks"
-        #COMMAND cp -R ${QT_QTOPENGL_LIBRARY_RELEASE} "${APPLICATION_NAME}.app/Contents/Frameworks"
-        #COMMAND install_name_tool -id @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/Frameworks/QtCore.framework/Versions/4/QtCore
-        #COMMAND install_name_tool -id @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${APPLICATION_NAME}.app/Contents/Frameworks/QtGui.framework/Versions/4/QtGui
-        #COMMAND install_name_tool -id @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${APPLICATION_NAME}.app/Contents/Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL
-        #COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/Frameworks/QtGui.framework/Versions/4/QtGui
-        #COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL
-        #COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${APPLICATION_NAME}.app/Contents/Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL
-        #COMMAND install_name_tool -change QtCore.framework/Versions/4/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-        #COMMAND install_name_tool -change QtGui.framework/Versions/4/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-        #COMMAND install_name_tool -change QtOpenGL.framework/Versions/4/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/4/QtOpenGL ${APPLICATION_NAME}.app/Contents/MacOS/${APPLICATION_NAME}
-
-        #COMMAND cp -Rf "${QT_QTGUI_LIBRARY_RELEASE}/Versions/Current/Resources" "${APPLICATION_NAME}.app/Contents"
-        #COMMAND chmod +x "${APPLICATION_NAME}.app/Contents/Resources"
-        #COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
+        COMMAND cp -Rf "${CMAKE_SOURCE_DIR}/CMake/qt.conf" ${APPLICATION_NAME}.app/Contents/Resources
 
         # configure shaders (copied from build directory)
         COMMAND cp -Rf "${SCIRUN_CORE_BINARY_DIR}/Shaders" "${APPLICATION_NAME}.app/Contents/MacOS"
         COMMAND chmod +x "${APPLICATION_NAME}.app/Contents/MacOS/Shaders"
         COMMAND cp -Rf "${SCIRUN_CORE_BINARY_DIR}/Assets" "${APPLICATION_NAME}.app/Contents/MacOS"
         COMMAND chmod +x "${APPLICATION_NAME}.app/Contents/MacOS/Assets"
-
-        # configure SCIRun shared libraries
-        #COMMAND cp -Rf ${CMAKE_LIBRARY_OUTPUT_DIRECTORY} "${APPLICATION_NAME}.app/Contents/MacOS"
-        #COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/processSCIRunLibs.sh
 
         WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
     )
