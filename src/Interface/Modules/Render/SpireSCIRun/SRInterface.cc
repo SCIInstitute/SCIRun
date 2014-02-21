@@ -409,7 +409,9 @@ void SRInterface::doFrame()
         // What will need to be set in the shader based on uniform name..
         //GL(glUniform1i(it->shaderLocation, texUnit));
 
-        //mSpire->addObjectPassUniform(it->mName, "uTX0", spire::SpireSampler1D_NoRAII(0), passit->passName);
+        spire::SpireSampler1D_NoRAII samplerType(0);
+        mSpire->addObjectPassUniform<spire::SpireSampler1D_NoRAII>(
+            it->mName, "uTX0", samplerType, passit->passName);
       }
       mSpire->renderObject(it->mName, passit->passName);
     }
