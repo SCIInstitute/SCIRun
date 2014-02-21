@@ -39,6 +39,7 @@
 
 #include "../namespaces.h"
 #include <spire/Interface.h>
+#include <gl-state/GLState.hpp>
 
 namespace SCIRun {
 namespace Gui {

@@ -36,6 +36,7 @@
 
 #include "spire/src/Hub.h"
 #include "spire/src/InterfaceImplementation.h"
+#include <gl-state/GLState.hpp>
 
 #include "SRCommonAttributes.h"
 #include "SRCommonUniforms.h"
@@ -328,6 +329,9 @@ void SRInterface::beginFrame()
   glLineWidth(2.0f);
   //glEnable(GL_LINE_SMOOTH);
 
+  CPM_GL_STATE_NS::GLState defaultGLState;
+  defaultGLState.setLineWidth(2.0f);
+  defaultGLState.apply();
   //spire::GPUState defaultGPUState;
   //mSpire->applyGPUState(defaultGPUState, true); // true = force application of state.
 }

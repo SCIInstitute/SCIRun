@@ -360,6 +360,11 @@ CPM_AddModule("look_at"
   GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"
   GIT_TAG "1.0.0")
 
+# ++ MODULE: GL State
+CPM_AddModule("gl_state"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-state.git"
+  GIT_TAG "1.0.1")
+
 CPM_Finish()
 
 ########################################################################
