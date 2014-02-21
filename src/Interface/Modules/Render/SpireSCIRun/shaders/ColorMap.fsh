@@ -35,7 +35,7 @@
 #endif
 
 uniform sampler1D uTX0;
-varying vec4	fFieldData;
+varying float	fFieldData;
 
 void main()
 {

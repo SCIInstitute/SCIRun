@@ -58,7 +58,7 @@ void main()
   vec3  reflection  = reflect(invLightDir, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
-  float diffuseColor = texture1D( uTX0, vFieldData );
+  vec4 diffuseColor = texture1D( uTX0, vFieldData );
 
   spec              = pow(spec, uSpecularPower);
   gl_FragColor      = pow(diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor, vec4(1.0/2.2));

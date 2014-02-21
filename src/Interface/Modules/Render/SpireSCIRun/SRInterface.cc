@@ -77,6 +77,16 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
   shaderFiles.push_back(std::make_pair("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER));
   mSpire->addPersistentShader("DirPhong", shaderFiles);
 
+  shaderFiles.clear();
+  shaderFiles.push_back(std::make_pair("DirPhongCMap.vsh", spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("DirPhongCMap.fsh", spire::Interface::FRAGMENT_SHADER));
+  mSpire->addPersistentShader("DirPhongCMap", shaderFiles);
+
+  shaderFiles.clear();
+  shaderFiles.push_back(std::make_pair("ColorMap.vsh", spire::Interface::VERTEX_SHADER));
+  shaderFiles.push_back(std::make_pair("ColorMap.fsh", spire::Interface::FRAGMENT_SHADER));
+  mSpire->addPersistentShader("ColorMap", shaderFiles);
+
   // Load scirun5 arrow asset this code needs to be update with file error
   // checking in the entity system renderer.
   auto baseAssetDirQT = SCIRun::Core::Application::Instance().executablePath() / "Assets";
