@@ -45,7 +45,7 @@ namespace Datatypes {
 
     virtual ColorMap* clone() const;
 
-    std::string getColorMapName() {return name_;}
+    std::string getColorMapName() const {return name_;}
   private:
     std::string name_;
     boost::shared_ptr<class ColorMapImpl> impl_;

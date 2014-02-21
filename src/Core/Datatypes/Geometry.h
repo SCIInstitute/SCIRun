@@ -143,6 +143,12 @@ namespace Datatypes {
     /// List of passes to setup.
     std::list<SpireSubPass>  mPasses;
 
+    /// Optional colormap name.
+    boost::optional<std::string> mColorMap;
+
+    double mLowestValue;    ///< Lowest value a field takes on.
+    double mHighestValue;   ///< Highest value a field takes on.
+
     /// \xxx  Possibly implement a list of global uniforms. Only do this if
     ///       there is a clear need for global uniforms.
 

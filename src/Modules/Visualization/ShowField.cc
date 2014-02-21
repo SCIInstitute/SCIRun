@@ -50,6 +50,7 @@ ShowFieldModule::ShowFieldModule() :
     Module(staticInfo_)
 {
   INITIALIZE_PORT(Field);
+  INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
 }
 
@@ -141,6 +142,8 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   // Build vertex buffer.
   size_t i = 0;
   Core::Geometry::BBox aabb;
+  double valueRangeLow = std::numeric_limits<double>::max();
+  double valueRangeHigh = std::numeric_limits<double>::lowest();
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     // Add position (aPos)
@@ -184,6 +187,8 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       double val = 0.0;
       vfield->get_value(val, node.index());
       vbo[i+nodeOffset] = static_cast<float>(val);
+      if (val > valueRangeHigh) valueRangeHigh = val;
+      if (val < valueRangeLow) valueRangeLow = val;
     }
     else
     {
@@ -192,6 +197,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     nodeOffset += 1;
 
     i += nodeOffset;
+  }
+
+  // Set value ranges for color mapping fields.
+  geom->mLowestValue = valueRangeLow;
+  geom->mLowestValue = valueRangeHigh;
+  if (colorMap)
+  {
+    geom->mColorMap = boost::optional<std::string>((*colorMap)->getColorMapName());
+  }
+  else
+  {
+    geom->mColorMap = boost::optional<std::string>();
   }
 
   // Add shared VBO to the geometry object.
