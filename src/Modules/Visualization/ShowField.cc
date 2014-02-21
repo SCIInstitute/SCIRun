@@ -139,11 +139,25 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   if (progressFunc) progressFunc(0.1);
 
+  // Build normalization bounds for field data. This simplifies the fragment
+  // shader which will improve rendering performance.
+  double valueRangeLow = std::numeric_limits<double>::max();
+  double valueRangeHigh = std::numeric_limits<double>::lowest();
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
+  {
+    if (node.index() < vfield->num_values())
+    {
+      double val = 0.0;
+      vfield->get_value(val, node.index());
+      if (val > valueRangeHigh) valueRangeHigh = val;
+      if (val < valueRangeLow) valueRangeLow = val;
+    }
+  }
+  double valueRange = valueRangeHigh - valueRangeLow;
+
   // Build vertex buffer.
   size_t i = 0;
   Core::Geometry::BBox aabb;
-  double valueRangeLow = std::numeric_limits<double>::max();
-  double valueRangeHigh = std::numeric_limits<double>::lowest();
   BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
   {
     // Add position (aPos)
@@ -186,9 +200,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     {
       double val = 0.0;
       vfield->get_value(val, node.index());
-      vbo[i+nodeOffset] = static_cast<float>(val);
-      if (val > valueRangeHigh) valueRangeHigh = val;
-      if (val < valueRangeLow) valueRangeLow = val;
+      vbo[i+nodeOffset] = static_cast<float>((val - valueRangeLow) / valueRange);
     }
     else
     {

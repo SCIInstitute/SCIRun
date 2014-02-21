@@ -406,8 +406,8 @@ void SRInterface::doFrame()
           GL(glBindTexture(GL_TEXTURE_1D, mGrayscaleCMap));
         }
 
-        // What will need to be set in the shader based on uniform name..
-        //GL(glUniform1i(it->shaderLocation, texUnit));
+        // Need to also add uniforms for min / max color map entries.
+        // Maybe we should just normalize in show field? Just for now.
 
         spire::SpireSampler1D_NoRAII samplerType(0);
         mSpire->addObjectPassUniform<spire::SpireSampler1D_NoRAII>(
