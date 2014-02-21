@@ -201,7 +201,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
   // Set value ranges for color mapping fields.
   geom->mLowestValue = valueRangeLow;
-  geom->mLowestValue = valueRangeHigh;
+  geom->mHighestValue = valueRangeHigh;
   if (colorMap)
   {
     geom->mColorMap = boost::optional<std::string>((*colorMap)->getColorMapName());
