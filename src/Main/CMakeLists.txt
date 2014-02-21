@@ -109,7 +109,7 @@ IF(APPLE AND BUILD_BUNDLE)
         # configure Qt libs
 
         # TODO: starting with debug level output, reduce later...
-        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=3 -no-plugins
+        COMMAND ${MACDEPLOYQT} ${APPLICATION_NAME}.app -verbose=3
 
         # TODO: make sure permissions are OK
         #COMMAND rm -Rf "${APPLICATION_NAME}.app/Contents/Frameworks"
