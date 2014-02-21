@@ -239,9 +239,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
         GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
                                      "UniformColor", spire::Interface::LINES);
 
-    spire::GPUState gpuState;
-    gpuState.mLineWidth = 2.5f;
-    pass.addGPUState(gpuState);
+    //spire::GPUState gpuState;
+    //gpuState.mLineWidth = 2.5f;
+    //pass.addGPUState(gpuState);
 
     bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
     // Add appropriate uniforms to the pass (in this case, uColor).

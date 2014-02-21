@@ -276,13 +276,13 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
         thisPass.transforms.push_back(SRObject::OBJECT_TO_CAMERA_PROJECTION);
     }
 
-    // Add gpu state if it has been set.
-    if (pass.hasGPUState == true)
-    {
-      // Be sure to always include the pass name as we are updating a
-      // subpass of SPIRE_DEFAULT_PASS.
-      mSpire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
-    }
+    //// Add gpu state if it has been set.
+    //if (pass.hasGPUState == true)
+    //{
+    //  // Be sure to always include the pass name as we are updating a
+    //  // subpass of SPIRE_DEFAULT_PASS.
+    //  mSpire->addObjectPassGPUState(obj->objectName, pass.gpuState, pass.passName);
+    //}
   }
 
   // Now retrieve the currently unsatisfied uniforms from the object and
@@ -328,8 +328,8 @@ void SRInterface::beginFrame()
   glLineWidth(2.0f);
   //glEnable(GL_LINE_SMOOTH);
 
-  spire::GPUState defaultGPUState;
-  mSpire->applyGPUState(defaultGPUState, true); // true = force application of state.
+  //spire::GPUState defaultGPUState;
+  //mSpire->applyGPUState(defaultGPUState, true); // true = force application of state.
 }
 
 //------------------------------------------------------------------------------
