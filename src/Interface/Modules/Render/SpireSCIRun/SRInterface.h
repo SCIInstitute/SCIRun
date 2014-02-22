@@ -124,10 +124,11 @@ private:
   {
   public:
     SRObject(const std::string& name, const spire::M44& objToWorld,
-             const Core::Geometry::BBox& bbox, boost::optional<std::string> mColorMap) :
+             const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap) :
         mName(name),
         mObjectToWorld(objToWorld),
-        mBBox(bbox)
+        mBBox(bbox),
+        mColorMap(colorMap)
     {}
 
     // Different types of uniform transformations that are associated
