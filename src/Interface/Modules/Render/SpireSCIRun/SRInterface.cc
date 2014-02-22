@@ -401,7 +401,6 @@ void SRInterface::doFrame()
 
       if (it->mColorMap and passit->passName == "facesPass")
       {
-        std::cerr << "Color mapping! " << it->mColorMap->c_str() << std::endl;
         GL(glActiveTexture(GL_TEXTURE0));
         glEnable(GL_TEXTURE_1D);
         glDisable(GL_TEXTURE_2D);
