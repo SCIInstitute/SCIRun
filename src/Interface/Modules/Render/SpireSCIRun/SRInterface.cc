@@ -248,7 +248,7 @@ void SRInterface::handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryOb
   xform[3] = ::spire::V4(0.0f, 0.0f, 0.0f, 1.0f);
   // Use emplace back when we switch to VS 2013.
   //mSRObjects.emplace_back(objectName, xform);
-  mSRObjects.push_back(SRObject(objectName, xform, bbox));
+  mSRObjects.push_back(SRObject(objectName, xform, bbox, obj->mColorMap));
   SRObject& elem = mSRObjects.back();
 
   // Add passes
@@ -401,6 +401,7 @@ void SRInterface::doFrame()
 
       if (it->mColorMap)
       {
+        std::cerr << "Color mapping! " << it->mColorMap->c_str() << std::endl;
         GL(glActiveTexture(GL_TEXTURE0));
         glEnable(GL_TEXTURE_1D);
         glDisable(GL_TEXTURE_2D);

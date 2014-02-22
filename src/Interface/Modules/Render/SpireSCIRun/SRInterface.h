@@ -124,7 +124,7 @@ private:
   {
   public:
     SRObject(const std::string& name, const spire::M44& objToWorld,
-             const Core::Geometry::BBox& bbox) :
+             const Core::Geometry::BBox& bbox, boost::optional<std::string> mColorMap) :
         mName(name),
         mObjectToWorld(objToWorld),
         mBBox(bbox)
