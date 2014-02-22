@@ -317,7 +317,10 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.2f;
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
+
+      if (!colorMap)
+        pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
+
       geom->mPasses.emplace_back(pass);
     }
   }
