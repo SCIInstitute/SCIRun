@@ -154,6 +154,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     }
   }
   double valueRange = valueRangeHigh - valueRangeLow;
+  std::cout << "valueRange " << valueRange << std::endl;
+  std::cout << "valueRangeHigh " << valueRangeHigh << std::endl;
+  std::cout << "valueRangeLow " << valueRangeLow << std::endl;
 
   // Build vertex buffer.
   size_t i = 0;
@@ -196,11 +199,13 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     }
 
     // Add field data (aFieldData)
-    if (node.index() < vfield->num_values())
+    if (node.index() < vfield->num_values() && valueRange > 0.0)
     {
       double val = 0.0;
       vfield->get_value(val, node.index());
       vbo[i+nodeOffset] = static_cast<float>((val - valueRangeLow) / valueRange);
+      //std::cout << "value quant: " << vbo[i+nodeOffset] << std::endl;
+      //std::cout << "value: " << val << std::endl;
     }
     else
     {

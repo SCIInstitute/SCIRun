@@ -399,7 +399,7 @@ void SRInterface::doFrame()
         }
       }
 
-      if (it->mColorMap and passit->passName == "facesPass")
+      if (it->mColorMap && passit->passName == "facesPass")
       {
         GL(glActiveTexture(GL_TEXTURE0));
         glEnable(GL_TEXTURE_1D);
@@ -803,7 +803,7 @@ void SRInterface::generateColormaps()
     grayscale.push_back(255);
   }
 
-  // Build rainbow texture (exxon version -- will need to change).
+  // Grayscale texture.
   GL(glGenTextures(1, &mGrayscaleCMap));
   GL(glBindTexture(GL_TEXTURE_1D, mGrayscaleCMap));
   GL(glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
@@ -813,9 +813,9 @@ void SRInterface::generateColormaps()
   GL(glPixelStorei(GL_PACK_ALIGNMENT, 1));
   GL(glTexImage1D(GL_TEXTURE_1D, 0,
                   GL_RGBA8,
-                  static_cast<GLsizei>(rainbow.size() / 4), 0,
+                  static_cast<GLsizei>(grayscale.size() / 4), 0,
                   GL_RGBA,
-                  GL_UNSIGNED_BYTE, &rainbow[0]));
+                  GL_UNSIGNED_BYTE, &grayscale[0]));
 }
 
 
