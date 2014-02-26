@@ -303,7 +303,7 @@ void NetworkEditorController::clear()
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   if (!currentExecutor_)
-    currentExecutor_ = executorFactory_->create(ExecutionStrategy::DYNAMIC_PARALLEL); //TODO: read some setting for default executor type
+    currentExecutor_ = executorFactory_->create(ExecutionStrategy::BASIC_PARALLEL); //TODO: read some setting for default executor type
 
   currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
 
