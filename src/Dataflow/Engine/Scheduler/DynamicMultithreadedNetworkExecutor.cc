@@ -67,6 +67,7 @@ namespace detail
   };
 
   typedef WorkQueue<ModuleHandle>::Impl ModuleWorkQueue;
+  typedef boost::shared_ptr<ModuleWorkQueue> ModuleWorkQueuePtr;
 
   typedef std::list<ModuleHandle> WaitingList;
   typedef std::list<ModuleHandle> DoneList;
@@ -87,7 +88,7 @@ namespace detail
       network_(network), scheduler_(scheduler), lock_(lock), work_(workQueue), waiting_(list)
     {
       //waiting_.sort();
-      //log_ << INFO << "WorkUnitProducer starting. Sorted work list:" << std::endl;
+      //log_ << INFO << "WorkUnitProducer starting. Sorted work list:";
       //std::for_each(list.begin(), list.end(), [](UnitPtr u) { log_ << INFO << *u << "\n"; });
     }
 
@@ -214,41 +215,44 @@ namespace detail
   class ModuleConsumer
   {
   public:
-    explicit ModuleConsumer(ModuleWorkQueue* workQueue, const FinishingProcess* producer, const ExecutableLookup* lookup, SchedulePrinter* printer) :
-    work_(workQueue), producer_(producer), lookup_(lookup), printer_(printer)
+    explicit ModuleConsumer(ModuleWorkQueue* workQueue, const ExecutableLookup* lookup, SchedulePrinter* printer) :
+    work_(workQueue), producer_(0), lookup_(lookup), printer_(printer), callCount_(0)
     {
       log_ << INFO << "Consumer created." << std::endl;
     }
     void operator()() const
     {
-      log_ << INFO << "Consumer started." << std::endl;
+      if (!producer_)
+        return;
+      callCount_.fetch_add(1);
+      log_ << INFO << "Consumer started. #" << callCount_;
       while (!producer_->isDone())
       {
-        log_ << INFO << "\tConsumer thinks producer is not done." << std::endl;
+        //log_ << INFO << "\tConsumer thinks producer is not done.";
         while (moreWork())
         {
-          log_ << INFO << "\tConsumer thinks work queue is not empty." << std::endl;
+          log_ << INFO << "\tConsumer thinks work queue is not empty.";
 
-          log_ << INFO << "\tConsumer accessing front of work queue." << std::endl;
+          log_ << INFO << "\tConsumer accessing front of work queue.";
           ModuleHandle unit;
           work_->pop(unit);
-          log_ << INFO << "\tConsumer popping front of work queue." << std::endl;
+          log_ << INFO << "\tConsumer popping front of work queue.";
 
           if (unit)
           {
 
-            log_ << INFO << "~~~Processing " << unit->get_id() << std::endl;
+            log_ << INFO << "~~~Processing " << unit->get_id();
 
             //unit->run();
             ModuleExecutor executor(unit, lookup_, printer_);
             boost::thread t(boost::bind(&ModuleExecutor::run, executor));
           }
           else
-            log_ << INFO << "\tConsumer received null module" << std::endl;
+            log_ << INFO << "\tConsumer received null module";
 
           //done_.push_back(unit);
 
-          //log_ << INFO << "\tConsumer: adding done unit, done size = " << done_.size() << std::endl;
+          //log_ << INFO << "\tConsumer: adding done unit, done size = " << done_.size();
         }
       }
       log_ << INFO << "Consumer done." << std::endl;
@@ -259,19 +263,22 @@ namespace detail
       return !work_->empty();
     }
 
+    void setProducer(boost::shared_ptr<const FinishingProcess> producer) { producer_ = producer; }
+
   private:
     ModuleWorkQueue* work_;
-    const FinishingProcess* producer_;
+    boost::shared_ptr<const FinishingProcess> producer_;
     const ExecutableLookup* lookup_;
     SchedulePrinter* printer_;
     //DoneList& done_;
     static Log& log_;
+    mutable boost::atomic<int> callCount_;
   };
 
   Log& ModuleProducer::log_ = Log::get();
   Log& ModuleConsumer::log_ = Log::get();
   
-
+  typedef boost::shared_ptr<ModuleConsumer> ModuleConsumerPtr;
 
   struct ModuleWaiting
   {
@@ -284,13 +291,11 @@ namespace detail
   struct DynamicParallelExecution : public FinishingProcess
   {
     DynamicParallelExecution(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, 
-      const NetworkInterface* network, Mutex& lock) :
+      const NetworkInterface* network, Mutex& lock, ModuleWorkQueuePtr work, ModuleConsumerPtr consumer) :
         lookup_(lookup), order_(order), bounds_(bounds), network_(network),
-        printer_(network_, &scheduler_, lock), work_(new ModuleWorkQueue(network->nmodules())),
+        printer_(network_, &scheduler_, lock), work_(work), consumer_(consumer),
         isDone_(false)
     {
-      consumer_.reset(new ModuleConsumer(work_.get(), this, lookup, 0));
-      boost::thread consume(boost::ref(*consumer_));
     }
     
     void operator()() const
@@ -307,7 +312,7 @@ namespace detail
         {
           return [=]() 
           { 
-            Log::get() << INFO << "Producer looking up " << mod.second << std::endl;
+            Log::get() << INFO << "Producer looking up " << mod.second;
             work_->push(network_->lookupModule(mod.second));
             auto exec = lookup_->lookupExecutable(mod.second);
             boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer_, _1)));
@@ -315,7 +320,7 @@ namespace detail
           };
         });
 
-        //std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
+        //std::cout << "Running group " << group << " of size " << tasks.size();
         Parallel::RunTasks([&](int i) { tasks[i](); }, static_cast<int>(tasks.size()));
       }
       isDone_ = true;
@@ -333,20 +338,46 @@ namespace detail
     const ExecutionBounds& bounds_;
     const NetworkInterface* network_;
     SchedulePrinter printer_;
-    boost::shared_ptr<ModuleWorkQueue> work_;
-    boost::shared_ptr<ModuleConsumer> consumer_;
+    ModuleWorkQueuePtr work_;
+    ModuleConsumerPtr consumer_;
     mutable bool isDone_;
   };
   
   BoostGraphParallelScheduler DynamicParallelExecution::scheduler_(filter());
 }
 
-DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) : network_(network) {}
+namespace SCIRun {
+  namespace Dataflow {
+    namespace Engine {
+class DynamicMultithreadedNetworkExecutorImpl
+{
+public:
+  void init(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, const NetworkInterface* network, Mutex& lock)
+  {
+    using namespace ::detail;
+    work_.reset(new ModuleWorkQueue(network->nmodules()));
+    consumer_.reset(new ModuleConsumer(work_.get(), lookup, 0));
+    runner_.reset(new DynamicParallelExecution(lookup, order, bounds, network, lock, work_, consumer_));
+    consumer_->setProducer(runner_);
+  }
+  void run()
+  {
+    boost::thread consume(boost::ref(*consumer_));
+    boost::thread execution(boost::ref(*runner_));
+  }
+private:
+  boost::shared_ptr<::detail::DynamicParallelExecution> runner_;
+  ::detail::ModuleWorkQueuePtr work_;
+  ::detail::ModuleConsumerPtr consumer_;
+};
+    }}}
+
+DynamicMultithreadedNetworkExecutor::DynamicMultithreadedNetworkExecutor(const NetworkInterface& network) : network_(network), impl_(new DynamicMultithreadedNetworkExecutorImpl) {}
 
 void DynamicMultithreadedNetworkExecutor::executeAll(const ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds)
 {
   static Mutex lock("live-scheduler");
   
-  detail::DynamicParallelExecution runner(&lookup, order, bounds, &network_, lock);
-  boost::thread execution(runner);
+  impl_->init(&lookup, order, bounds, &network_, lock);
+  impl_->run();
 }

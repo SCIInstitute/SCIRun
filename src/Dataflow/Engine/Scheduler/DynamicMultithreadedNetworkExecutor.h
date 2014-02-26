@@ -44,6 +44,7 @@ namespace Engine {
     virtual void executeAll(const Networks::ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds);
   private:
     const Networks::NetworkInterface& network_;
+    boost::shared_ptr<class DynamicMultithreadedNetworkExecutorImpl> impl_;
   };
 
 }}}
