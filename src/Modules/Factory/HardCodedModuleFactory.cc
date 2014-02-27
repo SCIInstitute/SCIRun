@@ -175,9 +175,7 @@ namespace SCIRun {
           addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
           addModuleDesc<GetFieldData>("GetFieldData", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
-	}
-
-        }
+	      }
 
         ModuleDescriptionMap descMap_;
 
