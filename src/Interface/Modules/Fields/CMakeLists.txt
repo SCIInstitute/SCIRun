@@ -30,17 +30,20 @@
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
   ReportFieldInfoDialog.ui
+  InterfaceWithCleaverDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   ReportFieldInfoDialog.h
+  InterfaceWithCleaverDialog.h
   share.h
 )
 
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
   ReportFieldInfoDialog.cc
+  InterfaceWithCleaverDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

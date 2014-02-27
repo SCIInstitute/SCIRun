@@ -40,4 +40,4 @@ ADD_SUBDIRECTORY(gmock)
 
 MESSAGE(STATUS "Configuring log4cpp")
 ADD_SUBDIRECTORY(log4cpp)
-
+ADD_SUBDIRECTORY(cleaver)

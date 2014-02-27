@@ -33,35 +33,15 @@
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
-
+//////////////////////////////////////////////////////////////////////////
+// TODO MORITZ
+//////////////////////////////////////////////////////////////////////////
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::FiniteElements;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::TestUtils;
-
-namespace
-{
-  //TODO: move to unit test helper library
-  FieldHandle loadFieldFromFile(const boost::filesystem::path& filename)
-  {
-    FieldHandle handle;
-    PiostreamPtr stream = auto_istream(filename.string(), nullptr);
-    if (!stream)
-    {
-      throw "Error reading file '" + filename.string();
-    }
-
-    Pio(*stream, handle);
-
-    if (!handle || stream->error())
-    {
-      throw "File read error";
-    }
-    return handle;
-  }
-}
 
 namespace TDCSInputData
 {

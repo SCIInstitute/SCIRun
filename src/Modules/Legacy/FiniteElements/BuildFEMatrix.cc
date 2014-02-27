@@ -27,65 +27,46 @@
 */
 
 #include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Util/StringUtil.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
 
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/GuiInterface/GuiVar.h>
-#include <Dataflow/Network/Module.h>
+using namespace SCIRun::Modules::FiniteElements;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-#include <Core/Algorithms/FiniteElements/BuildMatrix/BuildFEMatrix.h>
-
-
-namespace SCIRun {
-
-class BuildFEMatrix : public Module {
-  public:
-    BuildFEMatrix(GuiContext*);
-    virtual ~BuildFEMatrix() {}
-
-    virtual void execute();
-
-    GuiInt gui_use_basis_;
-    GuiInt gui_force_symmetry_;
-    GuiString gui_num_processors_;
-  
-  private:
-    SCIRunAlgo::BuildFEMatrixAlgo algo_;
-};
-
-
-DECLARE_MAKER(BuildFEMatrix)
-
-BuildFEMatrix::BuildFEMatrix(GuiContext* ctx)
-  : Module("BuildFEMatrix", ctx, Source, "FiniteElements", "SCIRun"),
+BuildFEMatrix::BuildFEMatrix()
+  : Module(ModuleLookupInfo("BuildFEMatrix", "FiniteElements", "SCIRun"), false)
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     gui_use_basis_(get_ctx()->subVar("use-basis"), 0),
     gui_force_symmetry_(get_ctx()->subVar("force-symmetry"), 0),
     gui_num_processors_(get_ctx()->subVar("num-processors"), "auto")
+#endif
 {
-  algo_.set_progress_reporter(this);
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Conductivity_Table);
+  INITIALIZE_PORT(Stiffness_Matrix);
 }
-
 
 void BuildFEMatrix::execute()
 {
-  FieldHandle Field;
-  MatrixHandle Conductivity;
-  MatrixHandle SysMatrix;
-  
-  if (! get_input_handle("Mesh", Field, true) )
-    return;
+  auto field = getRequiredInput(InputField);
 
-  get_input_handle("Conductivity Table", Conductivity, false);
+  auto conductivity = getOptionalInput(Conductivity_Table);
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || gui_use_basis_.changed() || !oport_cached("Stiffness Matrix") )
+#endif
   {
-    algo_.set_bool("generate_basis", gui_use_basis_.get());
-    algo_.set_bool("force_symmetry", gui_force_symmetry_.get());
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+    algo().set("generate_basis", gui_use_basis_.get());
+    algo().set("force_symmetry", gui_force_symmetry_.get());
+//#else
+//    algo().set(GenerateBasis, true);
+//    algo().set(ForceSymmetry, true);
+#endif
     
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     std::string num_proc_string = gui_num_processors_.get();
     int num_proc = SCIRunAlgo::BuildFEMatrixAlgo::AUTO;
     if ( (num_proc_string != "auto") && (! from_string(num_proc_string, num_proc) ) )
@@ -94,15 +75,13 @@ void BuildFEMatrix::execute()
     }
 
     algo_.set_int("num_processors", num_proc);
+#endif
 
-    if (! algo_.run(Field,Conductivity,SysMatrix) )
-      return;
-    
-    send_output_handle("Stiffness Matrix", SysMatrix);
+    auto output = algo().run_generic(make_input((InputField, field)));
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER 
+    (Conductivity_Table, conductivity)
+#endif
+
+    sendOutputFromAlgorithm(Stiffness_Matrix, output);
   }
 }
-
-} // End namespace SCIRun
-
-
-

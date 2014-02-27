@@ -27,7 +27,6 @@
 */
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
@@ -49,10 +48,12 @@
 #include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildTDCSMatrix.h>
+#include <Core/Algorithms/Legacy/FiniteElements/BuildMatrix/BuildFEMatrix.h>
 #include <Core/Algorithms/BrainStimulator/ElectrodeCoilSetupAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetConductivitiesToTetMeshAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
+#include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -118,6 +119,11 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new AddKnownsToLinearSystemAlgo);  
   else if (name == "CalculateVectorMagnitudes")
     h.reset(new CalculateVectorMagnitudesAlgo); 
+  else if (name == "BuildFEMatrix")
+    h.reset(new BuildFEMatrixAlgo); 
+  else if (name == "InterfaceWithCleaver")
+    h.reset(new InterfaceWithCleaverAlgorithm);  
+    
   else if (name == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new GetMeshDataAlgo);
        

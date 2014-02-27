@@ -33,6 +33,7 @@ SET(Algorithms_Field_Tests_SRCS
   ConvertMeshToTriSurfMeshAlgoTests.cc
   AlignMeshBoundingBoxesAlgoTests.cc
   SetGetFieldNodesAlgoTests.cc
+  InterfaceWithCleaverAlgorithmTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests

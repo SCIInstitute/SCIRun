@@ -30,46 +30,54 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEMATRIX_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_BUILDFEMATRIX_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/MatrixFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <vector>
+#include <Core/Algorithms/Legacy/FiniteElements/share.h>
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+	namespace Core {
+		namespace Algorithms {
+			namespace FiniteElements {
 
-//! for Windows support
-#include <Core/Algorithms/FiniteElements/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE BuildFEMatrixAlgo : public AlgoBase
+class SCISHARE BuildFEMatrixAlgo : public AlgorithmBase
 {
   public:
     enum { AUTO = -1 };
+  
+    static AlgorithmParameterName NumProcessors;
+    static AlgorithmParameterName ForceSymmetry;
+    static AlgorithmParameterName GenerateBasis;
 
-    BuildFEMatrixAlgo()
+    static AlgorithmInputName Conductivity_Table;
+    static AlgorithmOutputName Stiffness_Matrix;
+
+    BuildFEMatrixAlgo() : generation_(0)
     {
       // Number of processors to use
-      add_int("num_processors", AUTO);
+      addParameter(NumProcessors, AUTO);
       
       // Whether to force strict symmetry of the matrix
       // Averages symmetric components
-      add_bool("force_symmetry", false);
+      addParameter(ForceSymmetry, false);
 
       // Store intermediate results to speed up computation for
       // for instance conductivity search
       // This option only works for an indexed conductivity table
-      add_bool("generate_basis", false);
+      addParameter(GenerateBasis, false);
     }
 
     bool run(FieldHandle input,
-             MatrixHandle ctable,
-             MatrixHandle& output);
+             Datatypes::DenseMatrixHandle ctable,
+             Datatypes::SparseRowMatrixHandle& output) const;
+  
+    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+private:
+  mutable int generation_;
+  mutable std::vector<std::vector<double> > basis_values_;
+  mutable Datatypes::SparseRowMatrixHandle basis_fematrix_;
 };
 
-} // end namespace SCIRun
+}}}}
 
 #endif 

@@ -49,7 +49,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  -x [ --headless ]     disable GUI (Qt still needed, for now)\n"
     "  --input-file arg      SCIRun Network Input File\n"
     "  -s [ --script ] arg   SCIRun Python Script\n"
-    "  --no_splash           Turn off splash screen\n";
+    "  --no_splash           Turn off splash screen\n"
+    "  --verbose             Turn on debug log information\n";
   
   EXPECT_EQ(expectedHelp, parser.describe());
   

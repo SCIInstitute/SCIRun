@@ -663,18 +663,32 @@ public:
 
   // Shortcuts to property manager
   inline void copy_properties(VField* ifield)
-    { pm_->copy_properties(ifield->pm_); }
+  { 
+    if (pm_)
+      pm_->copy_properties(ifield->pm_); 
+  }
     
   template<class T> 
   inline void set_property(const std::string &name, const T &val, bool is_transient)
-    { pm_->set_property(name,val,is_transient); }
+  {
+    if (pm_)
+      pm_->set_property(name,val,is_transient); 
+  }
     
   template<class T> 
   inline bool get_property( const std::string &name, T &val)
-    { return(pm_->get_property(name,val)); }
+  {
+    if (pm_)
+      return(pm_->get_property(name,val)); 
+    return false;
+  }
     
   inline bool is_property( const std::string &name)
-    { return(pm_->is_property(name)); }
+  {
+    if (pm_)
+      return(pm_->is_property(name)); 
+    return false;
+  }
 protected:
   
   // Pointers to structures to access the data virtually

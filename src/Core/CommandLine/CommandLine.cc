@@ -59,6 +59,7 @@ public:
       ("input-file", po::value<std::string>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "SCIRun Python Script")
       ("no_splash", "Turn off splash screen")
+      ("verbose", "Turn on debug log information")
       ;
       
       positional_.add("input-file", -1);
@@ -101,19 +102,26 @@ namespace
 class ApplicationParametersImpl : public ApplicationParameters
 {
 public:
+  struct Flags
+  {
+    Flags(bool help,
+      bool version,
+      bool executeNetwork,
+      bool executeNetworkAndQuit,
+      bool disableGui,
+      bool disableSplash,
+      bool isRegressionMode,
+      bool isVerboseMode) : help_(help), version_(version), executeNetwork_(executeNetwork),
+      executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
+      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode), isVerboseMode_(isVerboseMode) 
+    {}
+    bool help_, version_, executeNetwork_, executeNetworkAndQuit_, disableGui_, disableSplash_, isRegressionMode_, isVerboseMode_;
+  };
   ApplicationParametersImpl(
     const boost::optional<std::string>& inputFile,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
-    bool help,
-    bool version,
-    bool executeNetwork,
-    bool executeNetworkAndQuit,
-    bool disableGui,
-    bool disableSplash,
-    bool isRegressionMode)
-    : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), help_(help), version_(version), executeNetwork_(executeNetwork),
-      executeNetworkAndQuit_(executeNetworkAndQuit), disableGui_(disableGui),
-      disableSplash_(disableSplash), isRegressionMode_(isRegressionMode)
+    const Flags& flags
+   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), flags_(flags)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -128,49 +136,48 @@ public:
 
   virtual bool help() const
   {
-    return help_;
+    return flags_.help_;
   }
 
   virtual bool version() const
   {
-    return version_;
+    return flags_.version_;
   }
 
   virtual bool executeNetwork() const
   {
-    return executeNetwork_;
+    return flags_.executeNetwork_;
   }
 
   virtual bool executeNetworkAndQuit() const
   {
-    return executeNetworkAndQuit_;
+    return flags_.executeNetworkAndQuit_;
   }
 
   virtual bool disableGui() const
   {
-    return disableGui_;
+    return flags_.disableGui_;
   }
   
   virtual bool disableSplash() const
   {
-    return disableSplash_;
+    return flags_.disableSplash_;
   }
 
   virtual bool isRegressionMode() const
   {
-    return isRegressionMode_;
+    return flags_.isRegressionMode_;
+  }
+
+  virtual bool verboseMode() const
+  {
+    return flags_.isVerboseMode_;
   }
 
 private:
   boost::optional<std::string> inputFile_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
-  bool help_;
-  bool version_;
-  bool executeNetwork_;
-  bool executeNetworkAndQuit_;
-  bool disableGui_;
-  bool disableSplash_;
-  bool isRegressionMode_;
+  Flags flags_;
 };
 
 }
@@ -199,13 +206,15 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
       (
       inputFile,
       pythonScriptFile,
-      parsed.count("help") != 0,
-      parsed.count("version") != 0,
-      parsed.count("execute") != 0,
-      parsed.count("Execute") != 0,
-      parsed.count("headless") != 0,
-      parsed.count("no_splash") != 0,
-      parsed.count("regression") != 0
+      ApplicationParametersImpl::Flags(
+        parsed.count("help") != 0,
+        parsed.count("version") != 0,
+        parsed.count("execute") != 0,
+        parsed.count("Execute") != 0,
+        parsed.count("headless") != 0,
+        parsed.count("no_splash") != 0,
+        parsed.count("regression") != 0,
+        parsed.count("verbose") != 0)
       );
   }
   catch (std::exception& e)

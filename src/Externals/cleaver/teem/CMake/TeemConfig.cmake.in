@@ -1,0 +1,61 @@
+#
+# Teem: Tools to process and visualize scientific data and images              
+# Copyright (C) 2008, 2007, 2006, 2005  Gordon Kindlmann
+# Copyright (C) 2004, 2003, 2002, 2001, 2000, 1999, 1998  University of Utah
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# (LGPL) as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# The terms of redistributing and/or modifying this software also
+# include exceptions to the LGPL that facilitate static linking.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this library; if not, write to Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+#
+
+#-----------------------------------------------------------------------------
+#
+# TeemConfig.cmake - Teem CMake configuration file for external projects.
+#
+# This file is configured by Teem and used by the UseTeem.cmake module
+# to load Teem's settings for an external project.
+
+# The Teem source tree.
+SET(Teem_SOURCE_DIR "@Teem_SOURCE_DIR@")
+
+# The Teem include file directories.
+SET(Teem_EXECUTABLE_DIRS "@Teem_EXECUTABLE_DIRS@")
+SET(Teem_LIBRARY_DIRS "@Teem_LIBRARY_DIRS@")
+SET(Teem_LIBRARIES "@Teem_BUILT_LIBRARIES@")
+SET(Teem_INCLUDE_DIRS "@Teem_INCLUDE_DIRS@")
+
+# The C flags added by Teem to the cmake-configured flags.
+SET(Teem_REQUIRED_C_FLAGS "@Teem_REQUIRED_C_FLAGS@")
+
+# The Teem version number
+SET(Teem_VERSION_MAJOR "@Teem_VERSION_MAJOR@")
+SET(Teem_VERSION_MINOR "@Teem_VERSION_MINOR@")
+SET(Teem_VERSION_PATCH "@Teem_VERSION_PATCH@")
+
+# Is Teem using shared libraries?
+SET(Teem_BUILD_SHARED_LIBS "@BUILD_SHARED_LIBS@")
+SET(Teem_BUILD_SETTINGS_FILE "@Teem_BUILD_SETTINGS_FILE@")
+
+# The location of the UseTeem.cmake file.
+SET(Teem_USE_FILE "@Teem_USE_FILE@")
+
+# The list of tools in teem
+SET(Teem_TOOLS "@Teem_TOOLS@")
+
+# The ExodusII library dependencies.
+IF(NOT Teem_NO_LIBRARY_DEPENDS)
+  INCLUDE("@Teem_LIBRARY_DEPENDS_FILE@")
+ENDIF(NOT Teem_NO_LIBRARY_DEPENDS)
+

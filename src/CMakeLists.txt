@@ -292,6 +292,7 @@ ExternalProject_Add(Boost_external
   CMAKE_CACHE_ARGS
     -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
     -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
+    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
     -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
     -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
     -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
@@ -342,10 +343,20 @@ if (NOT EXISTS ${CPM_DIR}/CPM.cmake)
 endif()
 include(${CPM_DIR}/CPM.cmake)
 
+# ++ MODULE: GL Platform
+CPM_AddModule("gl_platform"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
+  GIT_TAG "1.3.5")
+
 # ++ MODULE: Spire
 CPM_AddModule("spire"
   GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "0.7.0")
+  GIT_TAG "0.7.3")
+
+# ++ MODULE: Arc-Look-At (Autoview Camera)
+CPM_AddModule("look_at"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"
+  GIT_TAG "1.0.0")
 
 CPM_Finish()
 
@@ -563,8 +574,12 @@ SET_PROPERTY(TARGET Algorithms_Math         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Math_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
 SET_PROPERTY(TARGET Algorithms_Field         PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Algorithms_Field_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+SET_PROPERTY(TARGET Algorithms_FiniteElements_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
+SET_PROPERTY(TARGET Algorithms_BrainStimulator         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Algorithms_ElectrodeCoilSetup_Tests   PROPERTY FOLDER "Core/Algorithms/Tests")
 SET_PROPERTY(TARGET Algorithms_Factory   PROPERTY FOLDER "Core/Algorithms")
 SET_PROPERTY(TARGET Core_Algorithms_Legacy_Fields         PROPERTY FOLDER "Core/Algorithms")
+SET_PROPERTY(TARGET Core_Algorithms_Legacy_FiniteElements         PROPERTY FOLDER "Core/Algorithms")
 
 SET_PROPERTY(TARGET Dataflow_Network         PROPERTY FOLDER "Dataflow")
 SET_PROPERTY(TARGET Dataflow_Network_Tests   PROPERTY FOLDER "Dataflow/Tests")
@@ -646,6 +661,10 @@ SET_PROPERTY(TARGET Modules_String_Tests   PROPERTY FOLDER "Modules/String")
 SET_PROPERTY(TARGET Modules_FiniteElements   PROPERTY FOLDER "Modules/FiniteElements")
 SET_PROPERTY(TARGET Modules_FiniteElements_Tests   PROPERTY FOLDER "Modules/FiniteElements")
 SET_PROPERTY(TARGET Modules_Visualization   PROPERTY FOLDER "Modules/Visualization")
+SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
+SET_PROPERTY(TARGET Modules_BrainStimulator   PROPERTY FOLDER "Modules/Brain")
+SET_PROPERTY(TARGET Modules_BrainStimulator_Tests   PROPERTY FOLDER "Modules/Brain")
+SET_PROPERTY(TARGET Modules_Legacy_FiniteElements   PROPERTY FOLDER "Modules/FiniteElements")
 SET_PROPERTY(TARGET Modules_Visualization_Tests   PROPERTY FOLDER "Modules/Visualization")
 SET_PROPERTY(TARGET Dataflow_Modules_Legacy_Fields PROPERTY FOLDER "Modules/Fields")
 SET_PROPERTY(TARGET Modules_Factory   PROPERTY FOLDER "Modules")

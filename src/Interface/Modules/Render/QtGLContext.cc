@@ -30,7 +30,7 @@
 /// \date   March 2013
 
 #include <iostream>
-#include "QtGLContext.h"
+#include <Interface/Modules/Render/QtGLContext.h>
 
 namespace SCIRun {
 namespace Gui {

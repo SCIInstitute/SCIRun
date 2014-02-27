@@ -54,9 +54,30 @@ IF(APPLE)
 ELSE()
 # TODO: ELSE IF WIN32 with NSIS settings, generic Unix build
 
-ADD_EXECUTABLE(${APPLICATION_NAME}
-  ${SCIRunGUIPrototype_SOURCES}
-)
+  ADD_EXECUTABLE(${APPLICATION_NAME}
+    ${SCIRunGUIPrototype_SOURCES}
+  )
+
+  # TODO: probably need this for Xcode
+  IF(WIN32 AND MSVC)
+    # TODO: more build types to be supported?
+    FOREACH(BUILD_TYPE Debug Release)
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+                         POST_BUILD
+                           COMMAND ${CMAKE_COMMAND}
+                           ARGS -E copy_directory
+                           ${SCIRUN_CORE_BINARY_DIR}/Shaders
+                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Shaders
+      )
+      ADD_CUSTOM_COMMAND(TARGET ${APPLICATION_NAME}
+                         POST_BUILD
+                           COMMAND ${CMAKE_COMMAND}
+                           ARGS -E copy_directory
+                           ${SCIRUN_CORE_BINARY_DIR}/Assets
+                           ${SCIRUN_CORE_BINARY_DIR}/${BUILD_TYPE}/Assets
+      )
+    ENDFOREACH()
+  ENDIF()
 
 ENDIF()
 
@@ -65,6 +86,7 @@ TARGET_LINK_LIBRARIES(${APPLICATION_NAME}
   Interface_Application
 )
 
+# TODO: Apple setting, but should be able to turn off...
 SET(BUILD_BUNDLE TRUE)
 
 IF(APPLE)

@@ -28,12 +28,14 @@
 #
 
 SET(Interface_Modules_Visualization_FORMS
+  CreateBasicColorMap.ui
   MatrixAsVectorField.ui
   ShowField.ui
   ShowString.ui
 )
 
 SET(Interface_Modules_Visualization_HEADERS
+  CreateBasicColorMapDialog.h
   MatrixAsVectorFieldDialog.h
   share.h
   ShowFieldDialog.h
@@ -41,6 +43,7 @@ SET(Interface_Modules_Visualization_HEADERS
 )
 
 SET(Interface_Modules_Visualization_SOURCES 
+  CreateBasicColorMapDialog.cc
   MatrixAsVectorFieldDialog.cc
   ShowFieldDialog.cc
   ShowStringDialog.cc

@@ -38,7 +38,7 @@
 #include <QtDebug>
 #include <Core/Application/Application.h>
 
-#include "GLWidget.h"
+#include <Interface/Modules/Render/GLWidget.h>
 
 using namespace SCIRun::Gui;
 
@@ -55,6 +55,11 @@ GLWidget::GLWidget(QtGLContext* context) :
   /// \todo Implement this intelligently. This function is called everytime
   ///       there is a new graphics context.
   std::vector<std::string> shaderSearchDirs;
+
+  mContext->makeCurrent();
+
+  // Call gl platform init.
+  CPM_GL_PLATFORM_NS::glPlatformInit();
   
   auto shadersInBinDirectory = SCIRun::Core::Application::Instance().executablePath() / "Shaders";
   shaderSearchDirs.push_back(shadersInBinDirectory.string());

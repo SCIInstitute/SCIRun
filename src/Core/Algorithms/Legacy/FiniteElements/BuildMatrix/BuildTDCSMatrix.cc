@@ -717,25 +717,25 @@ ElectrodeElementDefinition, DenseMatrixHandle contactimpedance, SparseRowMatrixH
  SparseRowMatrixHandle tdcs=builder.getOutput();
  output = tdcs;
  
-///  bool found_reference_node=false;
-/// ///
-///  for(index_type i = 0; i<tdcs->nrows()-1; i++) //find reference node 
-///  {
-///    index_type ps = (*tdcs).get_row(i);
-///    index_type pe = (*tdcs).get_row(i+1);
-///    if((pe-ps)==1)
-///       {
-///        if (static_cast<double>((*tdcs).get_value(ps))==1.0)
-///        found_reference_node=true;
-/// 	break;
-///       }
-///  }
-///   
-///  if(!found_reference_node) 
-///      remark("The TDCS output matrix is not referenced yet !!! Please set the Potential of at least one node to 0 ! You can do that by setting one row and the corresponding column explicitely to 0 except for the diagonal element which should be 1 !");
-/// ///
-///  
-///   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
+  bool found_reference_node=false;
+  for(index_type i = 0; i<tdcs->nrows()-1; i++) //find reference node 
+  {
+    index_type ps = (*tdcs).get_row(i);
+    index_type pe = (*tdcs).get_row(i+1);
+    if((pe-ps)==1)
+       {
+        if (static_cast<double>((*tdcs).get_value(ps))==1.0)
+        found_reference_node=true;
+ 	break;
+       }
+  }
+   
+  if(!found_reference_node) 
+      remark("The TDCS output matrix is not referenced yet !!! Please set the Potential of at least one node to 0 ! You can do that by setting one row and the corresponding column explicitely to 0 except for the diagonal element which should be 1 !");
+   
+#endif
  return (true);
 }
 

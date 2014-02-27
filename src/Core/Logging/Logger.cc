@@ -29,12 +29,13 @@
 #include <sstream>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/ScopedTimeRemarker.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Core::Logging;
 
-LoggerInterface::~LoggerInterface() {}
+LegacyLoggerInterface::~LegacyLoggerInterface() {}
 
-ScopedTimeRemarker::ScopedTimeRemarker(LoggerInterface* log, const std::string& label) : log_(log), label_(label) 
+ScopedTimeRemarker::ScopedTimeRemarker(LegacyLoggerInterface* log, const std::string& label) : log_(log), label_(label) 
 {}
 
 ScopedTimeRemarker::~ScopedTimeRemarker()
@@ -42,4 +43,16 @@ ScopedTimeRemarker::~ScopedTimeRemarker()
   std::ostringstream perf;
   perf << label_ <<  " took " << timer_.elapsed() << " seconds." << std::endl;
   log_->remark(perf.str());
+}
+
+ScopedTimeLogger::ScopedTimeLogger(const std::string& label, bool shouldLog): label_(label), shouldLog_(shouldLog)
+{
+  if (shouldLog_)
+    Log::get() << DEBUG_LOG << label_ << " starting.";
+}
+
+ScopedTimeLogger::~ScopedTimeLogger()
+{
+  if (shouldLog_)
+    Log::get() << DEBUG_LOG << label_ << " took " << timer_.elapsed() << " seconds.";
 }

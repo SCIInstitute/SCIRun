@@ -26,12 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Interface/Modules/Render/ViewScene.h>
-#include <Dataflow/Network/ModuleStateInterface.h>
-#include <Core/Datatypes/Geometry.h>
-#include <QtGui>
-#include <QPushButton>
-#include "QtGLContext.h"
+#include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -119,6 +114,13 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
 }
 
 //------------------------------------------------------------------------------
+void ViewSceneDialog::autoViewClicked(bool checked)
+{
+  std::shared_ptr<SRInterface> spireLock = mSpire.lock();
+  spireLock->doAutoView();
+}
+
+//------------------------------------------------------------------------------
 void ViewSceneDialog::addToolBar() 
 {
   mToolBar = new QToolBar(this);
@@ -134,6 +136,7 @@ void ViewSceneDialog::addToolBar()
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
   mToolBar->addWidget(autoViewBtn);
+  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked(bool)));
 
   glLayout->addWidget(mToolBar);
 

@@ -77,7 +77,7 @@ ADD_SUBDIRECTORY(Tests)
 
 TARGET_LINK_LIBRARIES(Dataflow_Network
   Core_Datatypes
+  Core_Logging
   Algorithms_Base
-  ${SCI_LOG4CPP_LIBRARY}
   ${SCI_BOOST_LIBRARY}
 )

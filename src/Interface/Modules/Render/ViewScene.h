@@ -33,17 +33,20 @@
 #define NOMINMAX
 
 #include "Interface/Modules/Render/ui_ViewScene.h"
+
 #include <boost/shared_ptr.hpp>
+
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
-#include "spire/Interface.h"
-#include "namespaces.h"
+#include <spire/Interface.h>
+#include <Interface/Modules/Render/namespaces.h>
 
-#include "SpireSCIRun/SRInterface.h"
-#include "SpireSCIRun/SRCommonAttributes.h"
-#include "SpireSCIRun/SRCommonUniforms.h"
-#include "GLWidget.h"
+#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
+
+#include <Interface/Modules/Render/GLWidget.h>
 
 #include <Interface/Modules/Render/share.h>
 
@@ -69,6 +72,7 @@ public:
 
 protected Q_SLOTS:
   void menuMouseControlChanged(int index);
+  void autoViewClicked(bool checked);
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;

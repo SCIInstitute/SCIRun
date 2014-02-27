@@ -41,7 +41,7 @@ namespace Gui {
   
 class SCISHARE ReadMatrixDialog : public ModuleDialogGeneric, 
   //public SCIRun::State::SendScalarState, 
-  public Ui::ReadMatrix, public RemembersFileDialogDirectory<ReadMatrixDialog>
+  public Ui::ReadMatrix, public RemembersFileDialogDirectory
 {
 	Q_OBJECT
 	

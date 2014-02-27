@@ -31,17 +31,14 @@
 /// \brief  Not sure this file should go in Modules/Render. But it is an 
 ///         auxiliary file to the ViewScene render module.
 
-#ifndef TOOLS_VIEW_GLCONTEXT_H
-#define TOOLS_VIEW_GLCONTEXT_H
+#ifndef INTERFACE_MODULES_RENDER_GLCONTEXT_H
+#define INTERFACE_MODULES_RENDER_GLCONTEXT_H
 
 // For windows.
 /// \todo Make this definition specific to windows.
 #define NOMINMAX
 
-#include "spire/Interface.h"
-#include "namespaces.h"
-
-#include <QtOpenGL/QGLWidget>
+#include <Interface/Modules/Render/GLContextPlatformCompatibility.h>
 
 namespace SCIRun {
 namespace Gui {

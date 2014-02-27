@@ -38,9 +38,8 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_ElectrodeCoilSetup_Tests
 )
 
 TARGET_LINK_LIBRARIES(Algorithms_ElectrodeCoilSetup_Tests
-  Algorithms_ElectrodeCoilSetup_Tests
 #  Algorithms_SetConductivitiesToTetMesh
-  Algorithms_SetConductivitiesToTetMesh_Tests
+  Algorithms_BrainStimulator
   Core_Datatypes_Legacy_Field
   Testing_Utils
   gtest_main
