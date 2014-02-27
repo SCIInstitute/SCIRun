@@ -52,6 +52,8 @@
 #include <Dataflow/Engine/Controller/NetworkEditorController.h> //DOH! see TODO in setController
 #include <Dataflow/Engine/Controller/ProvenanceManager.h>
 #include <Core/Application/Application.h>
+#include <Core/Application/Preferences.h>
+#include <Core/Logging/Log.h>
 
 #include <Dataflow/Serialization/Network/XMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
@@ -65,6 +67,7 @@ using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Commands;
+using namespace SCIRun::Core::Logging;
 
 SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
 {
@@ -85,7 +88,7 @@ SCIRunMainWindow::SCIRunMainWindow() : firstTimePythonShown_(true)
   actionEnterWhatsThisMode_->setStatusTip(tr("Enter What's This? Mode"));
   actionEnterWhatsThisMode_->setShortcuts(QList<QKeySequence>() << tr("Ctrl+H") << tr("F1"));
 
-  connect(actionExecute_All_, SIGNAL(triggered()), networkEditor_, SLOT(executeAll()));
+  connect(actionExecute_All_, SIGNAL(triggered()), this, SLOT(executeAll()));
   connect(actionNew_, SIGNAL(triggered()), this, SLOT(newNetwork()));
   connect(networkEditor_, SIGNAL(modified()), this, SLOT(networkModified()));
 
@@ -295,6 +298,11 @@ void SCIRunMainWindow::executeCommandLineRequests()
 
 void SCIRunMainWindow::executeAll()
 {
+  if (Core::Preferences::Instance().saveBeforeExecute)
+  {
+    saveNetwork();
+  }
+
   networkEditor_->executeAll();
 }
 
@@ -595,8 +603,16 @@ void SCIRunMainWindow::readSettings()
   if (settings.contains(disableModuleErrorDialogsKey))
   {
     bool disableModuleErrorDialogs = settings.value(disableModuleErrorDialogsKey).toBool();
-    GuiLogger::Instance().log(QString("Setting read: disable module error dialogs = ") + disableModuleErrorDialogs );
+    GuiLogger::Instance().log("Setting read: disable module error dialogs = " + QString::number(disableModuleErrorDialogs));
     prefs_->setDisableModuleErrorDialogs(disableModuleErrorDialogs);
+  }
+
+  const QString saveBeforeExecute = "saveBeforeExecute";
+  if (settings.contains(saveBeforeExecute))
+  {
+    bool mode = settings.value(saveBeforeExecute).toBool();
+    GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
+    prefs_->setSaveBeforeExecute(mode);
   }
 }
 
@@ -610,6 +626,8 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("backgroundColor", networkEditor_->background().color().name());
   settings.setValue("defaultNotePositionIndex", defaultNotePositionComboBox_->currentIndex());
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
+  settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
+  settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
 }
 
 namespace
@@ -627,9 +645,9 @@ namespace
 
   //TODO: VS2010 compiler can't handle this function; check 2012 and clang
   template <bool Flag>
-  void setWidgetsDisableFlag(std::vector<SCIRunMainWindow::InputWidget>& widgets)
+  void setWidgetsDisableFlag(std::vector<InputWidget>& widgets)
   {
-    std::for_each(widgets.begin(), widgets.end(), [](SCIRunMainWindow::InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
+    std::for_each(widgets.begin(), widgets.end(), [](InputWidget& v) { boost::apply_visitor(SetDisableFlag<Flag>(), v); });
   }
 }
 
@@ -709,7 +727,7 @@ void SCIRunMainWindow::setupDevConsole()
 
 void SCIRunMainWindow::setExecutor(int type)
 {
-  std::cout << "Executor of type " << type << " selected"  << std::endl;
+  Log::get() << DEBUG_LOG << "Executor of type " << type << " selected"  << std::endl;
   networkEditor_->getNetworkEditorController()->setExecutorType(type);
 }
 

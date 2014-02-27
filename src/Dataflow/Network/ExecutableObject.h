@@ -30,6 +30,7 @@
 #ifndef DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H
 #define DATAFLOW_NETWORK_EXECUTABLE_OBJECT_H 
 
+#include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/share.h>
 
@@ -37,11 +38,19 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
+  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
+  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteEndsSignalType;
+  typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
+
   class SCISHARE ExecutableObject
   {
   public:
     ~ExecutableObject() {}
     virtual void execute() = 0;
+
+    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
+    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
+    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) = 0;
   };
 
 }}}

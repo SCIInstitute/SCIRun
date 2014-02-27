@@ -31,6 +31,7 @@
 #include <Interface/Application/ModuleProxyWidget.h>
 #include <Interface/Application/ModuleWidget.h>
 #include <Interface/Application/Port.h>
+#include <Interface/Application/PortWidgetManager.h>
 
 using namespace SCIRun::Gui;
 

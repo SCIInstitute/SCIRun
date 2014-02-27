@@ -26,34 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Utils/Exception.h>
-#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
-#include <Dataflow/Network/NetworkInterface.h>
+#ifndef ENGINE_SCHEDULER_DYNAMIC_PARALLEL_EXECUTION_STRATEGY_H
+#define ENGINE_SCHEDULER_DYNAMIC_PARALLEL_EXECUTION_STRATEGY_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Engine/Scheduler/ExecutionStrategy.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
-  serial_(new SerialExecutionStrategy),
-  parallel_(new BasicParallelExecutionStrategy),
-  dynamic_(new DynamicParallelExecutionStrategy)
-{
-}
+namespace SCIRun {
+  namespace Dataflow {
+    namespace Engine {
 
-ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
-{
-  switch (type)
-  {
-  case ExecutionStrategy::SERIAL:
-    return serial_;
-  case ExecutionStrategy::BASIC_PARALLEL:
-    return parallel_;
-  case ExecutionStrategy::DYNAMIC_PARALLEL:
-    return dynamic_;
-  default:
-    THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
-  }
-}
+      class SCISHARE DynamicParallelExecutionStrategy : public ExecutionStrategy
+      {
+      public:
+        virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup);
+      };
+
+    }
+  }}
+
+#endif

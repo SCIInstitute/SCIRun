@@ -3507,6 +3507,15 @@ RefineMeshAlgo::run(FieldHandle input, FieldHandle& output)
   std::string select; get_option("select",select);
   double isoval; get_scalar("isoval",isoval);
 
+  
+  VField* vfield = input->vfield();
+  if (vfield->num_values() == 0)
+  {
+    error("Input field has no data values. The RefineMesh algorithm requires input fields to contain data."); 
+    algo_end(); return (false);
+  }
+
+
   if (select == "none")
   {
     // just passing through

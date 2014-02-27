@@ -37,6 +37,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -120,7 +121,10 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
   else if (name == "CalculateVectorMagnitudes")
     h.reset(new CalculateVectorMagnitudesAlgo); 
   else if (name == "BuildFEMatrix")
-    h.reset(new BuildFEMatrixAlgo); 
+
+    h.reset(new BuildFEMatrixAlgo);
+  else if (name == "GetDomainBoundary")
+    h.reset(new GetDomainBoundaryAlgo);
   else if (name == "InterfaceWithCleaver")
     h.reset(new InterfaceWithCleaverAlgorithm);  
     

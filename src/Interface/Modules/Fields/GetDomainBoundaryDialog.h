@@ -26,34 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Utils/Exception.h>
-#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
-#include <Dataflow/Network/NetworkInterface.h>
+#ifndef INTERFACE_MODULES_GET_DOMAIN_BOUNDARY_H
+#define INTERFACE_MODULES_GET_DOMAIN_BOUNDARY_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include "Interface/Modules/Fields/ui_GetDomainBoundary.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
-  serial_(new SerialExecutionStrategy),
-  parallel_(new BasicParallelExecutionStrategy),
-  dynamic_(new DynamicParallelExecutionStrategy)
+namespace SCIRun {
+namespace Gui {
+  
+class SCISHARE GetDomainBoundaryDialog : public ModuleDialogGeneric, 
+  public Ui::GetDomainBoundary
 {
+	Q_OBJECT
+	
+public:
+  GetDomainBoundaryDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
+
+private Q_SLOTS:
+  void push();
+private:
+};
+
+}
 }
 
-ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
-{
-  switch (type)
-  {
-  case ExecutionStrategy::SERIAL:
-    return serial_;
-  case ExecutionStrategy::BASIC_PARALLEL:
-    return parallel_;
-  case ExecutionStrategy::DYNAMIC_PARALLEL:
-    return dynamic_;
-  default:
-    THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
-  }
-}
+#endif

@@ -45,7 +45,8 @@ namespace Engine {
     enum Type
     {
       SERIAL,
-      BASIC_PARALLEL
+      BASIC_PARALLEL,
+      DYNAMIC_PARALLEL
       // better parallel, etc
     };
 

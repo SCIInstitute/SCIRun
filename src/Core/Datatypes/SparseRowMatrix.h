@@ -100,11 +100,15 @@ namespace Datatypes {
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
 
+    const index_type* get_rows() const { return this->outerIndexPtr(); }
+    const index_type* get_cols() const { return this->innerIndexPtr(); }
+
     virtual void accept(MatrixVisitorGeneric<T>& visitor)
     {
       visitor.visit(*this);
     }
     
+    //TODO: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
     bool isSymmetric() const
     {
      if (this->cols() != this->rows()) return false;

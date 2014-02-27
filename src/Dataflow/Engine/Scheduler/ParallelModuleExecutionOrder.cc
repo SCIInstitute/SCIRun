@@ -27,6 +27,7 @@
 */
 
 #include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
@@ -66,4 +67,14 @@ int ParallelModuleExecutionOrder::maxGroup() const
 std::pair<ParallelModuleExecutionOrder::const_iterator, ParallelModuleExecutionOrder::const_iterator> ParallelModuleExecutionOrder::getGroup(int order) const
 {
   return map_.equal_range(order);
+}
+
+std::ostream& SCIRun::Dataflow::Engine::operator<<(std::ostream& out, const ParallelModuleExecutionOrder& order)
+{
+  auto range = std::make_pair(order.begin(), order.end());
+  BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& v, range)
+  {
+    out << v.first << " " << v.second << std::endl;
+  }
+  return out;
 }

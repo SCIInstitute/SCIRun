@@ -41,6 +41,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/SetFieldData.h
   #FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
+  DomainFields/GetDomainBoundaryAlgo.h
   MeshDerivatives/GetFieldBoundaryAlgo.h
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.h
   ConvertMeshType/ConvertMeshToIrregularMesh.h
@@ -73,7 +74,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DistanceField/CalculateIsInsideField.cc
   #DistanceField/CalculateInsideWhichField.cc
   DistanceField/CalculateSignedDistanceField.cc
-  #DomainFields/GetDomainBoundary.cc
+  DomainFields/GetDomainBoundaryAlgo.cc
   #DomainFields/GetDomainStructure.cc
   #DomainFields/MatchDomainLabels.cc
   #DomainFields/SplitNodesByDomain.cc

@@ -58,6 +58,8 @@ namespace SCIRun {
           MOCK_CONST_METHOD0(errorCode, int());
           MOCK_METHOD1(incrementErrorCode, void(const ModuleId&));
           MOCK_METHOD0(settings, NetworkGlobalSettings&());
+          MOCK_METHOD1(setModuleExecutionState, void(ModuleInterface::ExecutionState state));
+          MOCK_METHOD0(clear, void());
         };
 
         typedef boost::shared_ptr<MockNetwork> MockNetworkPtr;

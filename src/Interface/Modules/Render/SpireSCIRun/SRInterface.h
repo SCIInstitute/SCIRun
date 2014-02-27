@@ -169,6 +169,10 @@ private:
   std::vector<SRObject>     mSRObjects;       ///< All SCIRun objects.
   Core::Geometry::BBox      mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
+  std::string               mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
+  std::string               mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
+  std::string               mArrowObjectName; ///< Object name for profile arrow.
+
 };
 
 } // namespace Gui

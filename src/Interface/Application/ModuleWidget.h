@@ -33,7 +33,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/timer.hpp>
-#include <boost/range/join.hpp>
 #include <QFrame>
 #include <set>
 #include <deque>
@@ -53,28 +52,7 @@ class InputPortWidget;
 class OutputPortWidget;
 class PositionProvider;
 class NetworkEditor;
-
-class PortWidgetManager
-{
-public:
-  typedef std::deque<PortWidget*> Ports;
-
-  auto getAllPorts() const -> decltype(boost::join(Ports(), Ports()))
-  {
-    return boost::join(inputPorts_, outputPorts_);
-  }
-
-  void addPort(InputPortWidget* port);
-  void addPort(OutputPortWidget* port);
-  bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);
-  void addInputsToLayout(QHBoxLayout* layout);
-  void addOutputsToLayout(QHBoxLayout* layout);
-  void reindexInputs();
-
-private:
-  Ports inputPorts_, outputPorts_;
-};
-
+class PortWidgetManager;
 
 class ModuleWidget : public QFrame, 
   public SCIRun::Dataflow::Networks::ExecutableObject, public Ui::Module
@@ -91,7 +69,7 @@ public:
   size_t numInputPorts() const;
   size_t numOutputPorts() const;
 
-  const PortWidgetManager& ports() { return ports_; }
+  const PortWidgetManager& ports() { return *ports_; }
 
   std::string getModuleId() const { return moduleId_; }
   SCIRun::Dataflow::Networks::ModuleHandle getModule() const { return theModule_; }
@@ -111,6 +89,10 @@ public:
   bool hasDynamicPorts() const;
 
   static const int PORT_SPACING = 3;
+
+  virtual boost::signals2::connection connectExecuteBegins(const SCIRun::Dataflow::Networks::ExecuteBeginsSignalType::slot_type& subscriber);
+  virtual boost::signals2::connection connectExecuteEnds(const SCIRun::Dataflow::Networks::ExecuteEndsSignalType::slot_type& subscriber);
+  virtual boost::signals2::connection connectErrorListener(const SCIRun::Dataflow::Networks::ErrorSignalType::slot_type& subscriber);
 
 public Q_SLOTS:
   virtual void execute();
@@ -142,7 +124,7 @@ Q_SIGNALS:
 private Q_SLOTS:
   void updateBackgroundColor(const QString& color);
 private:
-  PortWidgetManager ports_;
+  boost::shared_ptr<PortWidgetManager> ports_;
   boost::timer timer_;
   bool deletedFromGui_, colorLocked_;
 

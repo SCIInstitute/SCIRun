@@ -31,7 +31,9 @@
 
 #include <string>
 #include <Core/Logging/LoggerFwd.h>
+#ifndef Q_MOC_RUN
 #include <boost/lexical_cast.hpp>
+#endif
 #include <Core/Logging/share.h>
 
 namespace SCIRun 
@@ -105,9 +107,11 @@ namespace SCIRun
         return log << boost::lexical_cast<std::string>(t);
       }
 
+      SCISHARE Log::Stream& operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&));
     }
   }
 }
 
+#define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif

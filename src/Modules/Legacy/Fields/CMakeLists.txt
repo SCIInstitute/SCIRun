@@ -37,6 +37,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
+  GetDomainBoundary.h
   GetFieldNodes.h
   #ApplyMappingMatrix.h
 )
@@ -151,7 +152,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #SelectAndSetFieldData3.cc
   #SplitNodesByDomain.cc
   #SplitFieldByConnectedRegion.cc
-  #GetDomainBoundary.cc
+  GetDomainBoundary.cc
   #CollectFields.cc
   #ScaleFieldMeshAndData.cc
   #CalculateProfile.cc

@@ -30,7 +30,6 @@
 #ifndef DATAFLOW_NETWORK_MODULE_INTERFACE_H
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H 
 
-#include <boost/signals2.hpp>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
@@ -76,9 +75,6 @@ namespace Networks {
 
   SCISHARE std::string to_string(const ModuleInfoProvider&);
   
-  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteBeginsSignalType;
-  typedef boost::signals2::signal<void (const ModuleId&)> ExecuteEndsSignalType;
-  typedef boost::signals2::signal<void (const ModuleId&)> ErrorSignalType;
   typedef boost::function<void(bool)> UiToggleFunc;
 
   //TODO: interface is getting bloated, segregate it.
@@ -90,6 +86,16 @@ namespace Networks {
     virtual ModuleStateHandle get_state() = 0;
 
     virtual void do_execute() = 0;
+
+    enum ExecutionState 
+    {
+      Waiting,
+      Executing,
+      Completed
+    };
+
+    virtual ExecutionState executionState() const = 0;
+    virtual void setExecutionState(ExecutionState state) = 0;
 
     //TODO for deserialization
     virtual void set_id(const std::string& id) = 0;
@@ -114,10 +120,6 @@ namespace Networks {
     /// Called before the module is to be destroyed. More importantly, called
     /// before the UI widget is to be destroyed.
     virtual void preDestruction() {}
-
-    virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber) = 0;
-    virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber) = 0;
-    virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber) = 0;
 
     //TODO:
     // need to hook up input ports for new data coming in, and output ports for cached state.

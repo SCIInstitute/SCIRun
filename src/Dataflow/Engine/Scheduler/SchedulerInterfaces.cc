@@ -27,3 +27,15 @@
 */
 
 #include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+
+using namespace SCIRun::Dataflow::Engine;
+
+ScopedExecutionBoundsSignaller::ScopedExecutionBoundsSignaller(const ExecutionBounds& bounds, boost::function<int()> errorCodeRetriever) : bounds_(bounds), errorCodeRetriever_(errorCodeRetriever)
+{
+  bounds.executeStarts_();
+}
+
+ScopedExecutionBoundsSignaller::~ScopedExecutionBoundsSignaller()
+{
+  bounds_.executeFinishes_(errorCodeRetriever_());
+}

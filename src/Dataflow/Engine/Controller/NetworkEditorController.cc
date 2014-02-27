@@ -39,6 +39,7 @@
 #include <Dataflow/Serialization/Network/NetworkXMLSerializer.h>
 #include <Dataflow/Serialization/Network/NetworkDescriptionSerialization.h>
 #include <Dataflow/Engine/Controller/DynamicPortManager.h>
+#include <Core/Logging/Log.h>
 
 #ifdef BUILD_WITH_PYTHON
 #include <Dataflow/Engine/Python/NetworkEditorPythonAPI.h>
@@ -49,6 +50,8 @@ using namespace SCIRun;
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
+using namespace SCIRun::Core;
 
 NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleStateFactoryHandle sf, ExecutionStrategyFactoryHandle executorFactory, AlgorithmFactoryHandle af, ModulePositionEditor* mpg) : 
   theNetwork_(new Network(mf, sf, af)),
@@ -193,8 +196,7 @@ void NetworkEditorController::requestConnection(const SCIRun::Dataflow::Networks
   }
   else
   {
-    //TODO: use real logger
-    std::cout << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
+    Log::get() << NOTICE << "Invalid Connection request: input port is full, or ports are different datatype or same i/o type, or on the same module." << std::endl;
     invalidConnection_(desc);
   }
 }
@@ -261,27 +263,36 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
 {
   if (xml)
   {
-    NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, this);
-    theNetwork_ = conv.from_xml_data(xml->network);
-    for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
+    try
     {
-      ModuleHandle module = theNetwork_->module(i);
-      moduleAdded_(module->get_module_name(), module);
-    }
-    {
-      auto disable(createDynamicPortSwitch());
-      //this is handled by NetworkXMLConverter now--but now the logic is convoluted. 
-      //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
-      BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+      NetworkXMLConverter conv(moduleFactory_, stateFactory_, algoFactory_, this);
+      theNetwork_ = conv.from_xml_data(xml->network);
+      for (size_t i = 0; i < theNetwork_->nmodules(); ++i)
       {
-        ConnectionId id = ConnectionId::create(cd);
-        connectionAdded_(cd);
+        ModuleHandle module = theNetwork_->module(i);
+        moduleAdded_(module->get_module_name(), module);
       }
+      {
+        auto disable(createDynamicPortSwitch());
+        //this is handled by NetworkXMLConverter now--but now the logic is convoluted. 
+        //They need to be signaled again after the modules are signaled to alert the GUI. Hence the disabling of DPM
+        BOOST_FOREACH(const ConnectionDescription& cd, theNetwork_->connections())
+        {
+          ConnectionId id = ConnectionId::create(cd);
+          connectionAdded_(cd);
+        }
+      }
+      if (modulePositionEditor_)
+        modulePositionEditor_->moveModules(xml->modulePositions);
+      else
+        std::cout << "module position editor is null" << std::endl;
     }
-    if (modulePositionEditor_)
-      modulePositionEditor_->moveModules(xml->modulePositions);
-    else
-      std::cout << "module position editor is null" << std::endl;
+    catch (ExceptionBase& e)
+    {
+      Log::get() << ERROR << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      theNetwork_->clear();
+      throw;
+    }
   }
 }
 
@@ -296,6 +307,8 @@ void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
     currentExecutor_ = executorFactory_->create(ExecutionStrategy::BASIC_PARALLEL); //TODO: read some setting for default executor type
 
   currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
+
+  theNetwork_->setModuleExecutionState(ModuleInterface::Waiting);
 }
 
 NetworkHandle NetworkEditorController::getNetwork() const 

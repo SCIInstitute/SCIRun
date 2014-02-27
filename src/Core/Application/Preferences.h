@@ -47,6 +47,7 @@ namespace SCIRun
       //TODO: reuse Seg3D state vars
 
       bool moduleErrorDialogState;
+      bool saveBeforeExecute;
 	
 	    //void save_state();
 	

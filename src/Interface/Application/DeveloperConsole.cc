@@ -37,6 +37,7 @@ DeveloperConsole::DeveloperConsole(QWidget* parent /* = 0 */) : QDockWidget(pare
   setupUi(this);
   connect(serialExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
   connect(parallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
+  connect(improvedParallelExecutionRadioButton_, SIGNAL(clicked()), this, SLOT(executorButtonClicked()));
 }
 
 void DeveloperConsole::executorButtonClicked()
@@ -45,4 +46,6 @@ void DeveloperConsole::executorButtonClicked()
     Q_EMIT executorChosen(0);
   else if (parallelExecutionRadioButton_->isChecked())
     Q_EMIT executorChosen(1);
+  else if (improvedParallelExecutionRadioButton_->isChecked())
+    Q_EMIT executorChosen(2);
 }

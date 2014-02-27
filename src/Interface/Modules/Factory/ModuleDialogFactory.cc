@@ -44,6 +44,7 @@
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
+#include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
@@ -117,7 +118,9 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("SetupRHSforTDCSandTMS") != std::string::npos)
     return new SetupRHSforTDCSandTMSDialog(moduleId, state, parentToUse_);       
   if (moduleId.find("CreateStandardColorMap") != std::string::npos)
-    return new CreateBasicColorMapDialog(moduleId, state, parentToUse_); 
+    return new CreateBasicColorMapDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("GetDomainBoundary") != std::string::npos)
+    return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
   if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
     return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);         
   else

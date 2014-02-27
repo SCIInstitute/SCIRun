@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,46 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef ENGINE_SCHEDULER_DYNAMICMULTITHREADEDNETWORKEXECUTOR_H
+#define ENGINE_SCHEDULER_DYNAMICMULTITHREADEDNETWORKEXECUTOR_H
 
-#ifndef CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H
-#define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H 1
+#include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
+#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/share.h>
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Matrix.h>
+namespace SCIRun {
+namespace Dataflow {
+namespace Engine {
 
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE GetDomainBoundaryAlgo : public AlgoBase
-{
+  class SCISHARE DynamicMultithreadedNetworkExecutor : public NetworkExecutor<ParallelModuleExecutionOrder>
+  {
   public:
-    //! Set defaults
-    GetDomainBoundaryAlgo()
-    {
-      add_int("min_range",0);
-      add_int("max_range",255);
-      add_int("domain",1);
-      add_bool("use_range",false);
-      add_bool("add_outer_boundary",true);
-      add_bool("inner_boundary_only",false);
-      add_bool("no_inner_boundary",false);
-      add_bool("disconnect_boundaries",false);
-    }
+    explicit DynamicMultithreadedNetworkExecutor(const Networks::NetworkInterface& network);
+    virtual void executeAll(const Networks::ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds);
+  private:
+    const Networks::NetworkInterface& network_;
+  };
 
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-    bool run(FieldHandle input, MatrixHandle domainlink, FieldHandle& output);
-};
+}}}
 
-} // end namespace SCIRunAlgo
-
-#endif 
+#endif

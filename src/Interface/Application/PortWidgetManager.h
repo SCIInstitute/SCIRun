@@ -26,34 +26,43 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Utils/Exception.h>
-#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
-#include <Dataflow/Network/NetworkInterface.h>
+#ifndef INTERFACE_APPLICATION_PORTWIDGETMANAGER_H
+#define INTERFACE_APPLICATION_PORTWIDGETMANAGER_H
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <boost/range/join.hpp>
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
-  serial_(new SerialExecutionStrategy),
-  parallel_(new BasicParallelExecutionStrategy),
-  dynamic_(new DynamicParallelExecutionStrategy)
+#include <Dataflow/Network/NetworkFwd.h>
+
+namespace SCIRun {
+namespace Gui {
+
+class PortWidget;
+class InputPortWidget;
+class OutputPortWidget;
+
+class PortWidgetManager
 {
-}
+public:
+  typedef std::deque<PortWidget*> Ports;
 
-ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
-{
-  switch (type)
+  auto getAllPorts() const -> decltype(boost::join(Ports(), Ports()))
   {
-  case ExecutionStrategy::SERIAL:
-    return serial_;
-  case ExecutionStrategy::BASIC_PARALLEL:
-    return parallel_;
-  case ExecutionStrategy::DYNAMIC_PARALLEL:
-    return dynamic_;
-  default:
-    THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
+    return boost::join(inputPorts_, outputPorts_);
   }
+
+  void addPort(InputPortWidget* port);
+  void addPort(OutputPortWidget* port);
+  bool removeDynamicPort(const SCIRun::Dataflow::Networks::PortId& pid, QHBoxLayout* layout);
+  void addInputsToLayout(QHBoxLayout* layout);
+  void addOutputsToLayout(QHBoxLayout* layout);
+  void reindexInputs();
+
+private:
+  Ports inputPorts_, outputPorts_;
+};
+
+
 }
+}
+
+#endif

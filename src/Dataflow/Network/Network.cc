@@ -221,6 +221,18 @@ NetworkGlobalSettings& Network::settings()
   return settings_;
 }
 
+void Network::setModuleExecutionState(ModuleInterface::ExecutionState state)
+{
+  BOOST_FOREACH(ModuleHandle module, modules_)
+    module->setExecutionState(state);
+}
+
+void Network::clear()
+{
+  connections_.clear();
+  modules_.clear();
+}
+
 ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
 {
 }

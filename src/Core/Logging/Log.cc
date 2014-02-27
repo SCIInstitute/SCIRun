@@ -213,6 +213,13 @@ Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, double x)
   return log;
 }
 
+//super hacky and dumb. need to figure out proper way
+Log::Stream& SCIRun::Core::Logging::operator<<(Log::Stream& log, std::ostream&(*func)(std::ostream&))
+{
+  log.flush();
+  return log;
+}
+
 void Log::setVerbose(bool v)
 {
   impl_->setVerbose(v);

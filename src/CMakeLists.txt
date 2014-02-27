@@ -185,7 +185,7 @@ IF(NOT GIT_FOUND)
 ENDIF()
 
 ########################################################################
-# Find and configure Awk & Sed  {(OS X only), needed to build app bundle
+# Find and configure Awk & Sed  {(OS X only), needed to build App bundle
 
 # should be installed by default, searching system paths only
 IF(APPLE)
@@ -198,6 +198,11 @@ IF(APPLE)
     NAMES sed
   )
   MARK_AS_ADVANCED(SED)
+
+  FIND_PROGRAM(MACDEPLOYQT
+    NAMES macdeployqt
+  )
+  MARK_AS_ADVANCED(MACDEPLOYQT)
 ENDIF()
 
 
@@ -324,6 +329,8 @@ ENDIF()
 
 ########################################################################
 # Configure CPM and Spire - http://github.com/iauns/cpm
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # CPM Setup.
 set(CPM_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/cpm-packages" CACHE TYPE STRING)

@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2013 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   License for the specific language governing rights and limitations under
+   
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,37 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Utils/Exception.h>
-#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
-#include <Dataflow/Network/NetworkInterface.h>
+#ifndef MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
+#define MODULES_LEGACY_FIELDS_GETDOMAINBOUNDARY_H__
 
-using namespace SCIRun::Dataflow::Engine;
-using namespace SCIRun::Dataflow::Networks;
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
-  serial_(new SerialExecutionStrategy),
-  parallel_(new BasicParallelExecutionStrategy),
-  dynamic_(new DynamicParallelExecutionStrategy)
-{
-}
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
-{
-  switch (type)
-  {
-  case ExecutionStrategy::SERIAL:
-    return serial_;
-  case ExecutionStrategy::BASIC_PARALLEL:
-    return parallel_;
-  case ExecutionStrategy::DYNAMIC_PARALLEL:
-    return dynamic_;
-  default:
-    THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
+      class SCISHARE GetDomainBoundary : public Dataflow::Networks::Module,
+        public Has4InputPorts<FieldPortTag, ScalarPortTag, ScalarPortTag, MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        GetDomainBoundary();
+
+        virtual void execute();
+        virtual void setStateDefaults();
+
+        INPUT_PORT(0, InputField, LegacyField);
+        INPUT_PORT(1, MinValue, Double);
+        INPUT_PORT(2, MaxValue, Double);
+        INPUT_PORT(3, ElemLink, SparseRowMatrix);
+        OUTPUT_PORT(0, BoundaryField, LegacyField);
+
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
+    }
   }
 }
+
+#endif

@@ -28,17 +28,14 @@
 
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
-//#include <Core/Algorithms/FiniteElements/BuildMatrix/AddKnownsToLinearSystem.h>
-#include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 
 
 using namespace SCIRun::Modules::Math;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun;
 
 
@@ -59,10 +56,10 @@ void AddKnownsToLinearSystem::execute()
   DenseMatrixHandle x;
    
   lhs=getRequiredInput(LHS_Matrix);
-  DenseColumnMatrixHandle rhs = matrix_cast::as_column(*(getOptionalInput(RHS_Vector)));
+  auto rhs = getOptionalInput(RHS_Vector);
   x=getRequiredInput(X_Vector);
  
-  auto output = algo().run_generic(make_input((LHS_Matrix,lhs)(RHS_Vector,rhs ? rhs : DenseColumnMatrixHandle())(X_Vector,x))); //TODO: Replace with function optionalAlgoInput
+  auto output = algo().run_generic(make_input((LHS_Matrix,lhs)(RHS_Vector, optionalAlgoInput(rhs))(X_Vector,x)));
 
   sendOutputFromAlgorithm(OutPutLHSMatrix,output);
   sendOutputFromAlgorithm(OutPutRHSVector,output);

@@ -65,11 +65,13 @@ namespace Networks {
     virtual void incrementErrorCode(const ModuleId& moduleId);
     virtual NetworkGlobalSettings& settings();
     virtual std::string toString() const;
+    virtual void setModuleExecutionState(ModuleInterface::ExecutionState state);
+    virtual void clear();
   private:
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
-    Modules modules_;
     Connections connections_;
+    Modules modules_;
     int errorCode_;
     NetworkGlobalSettings settings_;
   };

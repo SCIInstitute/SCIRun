@@ -61,6 +61,13 @@ namespace
     m->makeCompressed();
     return m;
   }
+  DenseColumnMatrixHandle matrix1DenseColumn()
+  {
+    DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(4));
+    m -> setZero();
+    *m << 1,2,3,4; 
+    return m;
+  }
 }
 
 TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
@@ -73,7 +80,7 @@ TEST(ReportMatrixInfoAlgorithmTests, ReportsMatrixType)
   m = matrix1Sparse();
   result = algo.run(m);
   EXPECT_EQ("SparseRowMatrix", result.get<0>());
-  m = boost::make_shared<DenseColumnMatrix>();
+  m = matrix1DenseColumn(); 
   result = algo.run(m);
   EXPECT_EQ("DenseColumnMatrix", result.get<0>());
 }

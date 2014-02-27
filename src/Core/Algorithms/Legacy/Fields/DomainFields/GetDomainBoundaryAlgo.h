@@ -26,35 +26,42 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_Math_AddKnownsToLinearSystem_H__
-#define MODULES_LEGACY_Math_AddKnownsToLinearSystem_H__
 
-#include <Dataflow/Network/Module.h>
-#include <Modules/Legacy/Math/share.h>
+#ifndef CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H
+#define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_GETDOMAINBOUNDARY_H 1
+
+#include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
-  namespace Modules {
-    namespace Math {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-      class SCISHARE AddKnownsToLinearSystem : public Dataflow::Networks::Module,
-        public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
-        public Has2OutputPorts<MatrixPortTag, MatrixPortTag>
-      {
-      public:
-        AddKnownsToLinearSystem();
-        virtual void setStateDefaults() {}
-        virtual void execute();
+class SCISHARE GetDomainBoundaryAlgo : public AlgorithmBase
+{
+  public:
+    GetDomainBoundaryAlgo();
 
-        INPUT_PORT(0, LHS_Matrix, SparseRowMatrix);
-        INPUT_PORT(1, RHS_Vector, DenseMatrix);
-	      INPUT_PORT(2, X_Vector, DenseMatrix);
-        OUTPUT_PORT(0, OutPutLHSMatrix, SparseRowMatrix);
-	      OUTPUT_PORT(1, OutPutRHSVector, DenseMatrix);
-	
-      };
+    static AlgorithmInputName ElemLink;
+    static AlgorithmParameterName MinRange;
+    static AlgorithmParameterName MaxRange;
+    static AlgorithmParameterName Domain;
+    static AlgorithmParameterName UseRange;
+    static AlgorithmParameterName AddOuterBoundary;
+    static AlgorithmParameterName InnerBoundaryOnly;
+    static AlgorithmParameterName NoInnerBoundary;
+    static AlgorithmParameterName DisconnectBoundaries;
+    static AlgorithmOutputName BoundaryField;
 
-    }
-  }
-}
+    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-#endif
+    //bool runImpl(FieldHandle input, FieldHandle& output) const;
+    bool runImpl(FieldHandle input, Datatypes::SparseRowMatrixHandle domainlink, FieldHandle& output) const;
+};
+
+}}}}
+
+#endif 

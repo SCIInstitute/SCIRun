@@ -26,34 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Utils/Exception.h>
-#include <Dataflow/Engine/Scheduler/SerialExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/BasicParallelExecutionStrategy.h>
+#include <iostream>
 #include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
-#include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
+#include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
+#include <Dataflow/Engine/Scheduler/DynamicMultithreadedNetworkExecutor.h>
 #include <Dataflow/Network/NetworkInterface.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
-  serial_(new SerialExecutionStrategy),
-  parallel_(new BasicParallelExecutionStrategy),
-  dynamic_(new DynamicParallelExecutionStrategy)
+void DynamicParallelExecutionStrategy::executeAll(const NetworkInterface& network, const ExecutableLookup& lookup)
 {
-}
-
-ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
-{
-  switch (type)
-  {
-  case ExecutionStrategy::SERIAL:
-    return serial_;
-  case ExecutionStrategy::BASIC_PARALLEL:
-    return parallel_;
-  case ExecutionStrategy::DYNAMIC_PARALLEL:
-    return dynamic_;
-  default:
-    THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
-  }
+  BoostGraphParallelScheduler scheduler;
+  DynamicMultithreadedNetworkExecutor executor(network);
+  executeWithCycleCheck(scheduler, executor, network, lookup, executionBounds_);
 }
