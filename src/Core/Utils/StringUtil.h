@@ -30,6 +30,8 @@
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun 
@@ -53,6 +55,17 @@ std::vector<T> parseLineOfNumbers(const std::string& line)
   std::vector<T> numbers((std::istream_iterator<T>(stream)), (std::istream_iterator<T>()));
   
   return numbers;
+}
+
+//TODO: move to separate header
+//TODO: move semantics
+template <typename T>
+std::vector<T*> toVectorOfRawPointers(const std::vector<boost::shared_ptr<T>>& vec)
+{
+  std::vector<T*> raws;
+  raws.reserve(vec.size());
+  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](boost::shared_ptr<T> ptr) { return ptr.get(); });
+  return raws;
 }
 
 }}
