@@ -68,7 +68,7 @@ namespace SCIRun
         {
           //TODO
           setAppenders();
-          cppLogger_.setPriority(log4cpp::Priority::DEBUG);  //?
+          cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
         }
 
         void log(LogLevel level, const std::string& msg)
@@ -84,12 +84,12 @@ namespace SCIRun
 
         bool verbose() const 
         {
-          return cppLogger_.getRootPriority() == log4cpp::Priority::DEBUG;
+          return cppLogger_.getPriority() == log4cpp::Priority::DEBUG;
         }
 
         void setVerbose(bool v)
         {
-          cppLogger_.setRootPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
+          cppLogger_.setPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
         }
 
         void flush()

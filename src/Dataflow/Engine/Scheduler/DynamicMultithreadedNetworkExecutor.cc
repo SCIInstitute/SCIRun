@@ -201,7 +201,7 @@ namespace detail
     }
     void run()
     {
-      Log::get("executor") << DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
+      Log::get("executor") << INFO << "Module Executor: " << module_->get_id() << std::endl;
       //auto exec = lookup_->lookupExecutable(module_->get_id());
       //boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, *printer_, _1)));
       //exec->execute();
