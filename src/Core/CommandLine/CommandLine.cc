@@ -60,6 +60,7 @@ public:
       ("script,s", po::value<std::string>(), "SCIRun Python Script")
       ("no_splash", "Turn off splash screen")
       ("verbose", "Turn on debug log information")
+      ("threadMode", po::value<std::string>(), "network execution threading mode--DEVELOPER USE ONLY")
       ;
       
       positional_.add("input-file", -1);
@@ -120,8 +121,9 @@ public:
   ApplicationParametersImpl(
     const boost::optional<std::string>& inputFile,
     const boost::optional<boost::filesystem::path>& pythonScriptFile,
+    const boost::optional<std::string>& threadMode,
     const Flags& flags
-   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), flags_(flags)
+   ) : inputFile_(inputFile), pythonScriptFile_(pythonScriptFile), threadMode_(threadMode), flags_(flags)
   {}
 
   virtual boost::optional<std::string> inputFile() const
@@ -174,9 +176,15 @@ public:
     return flags_.isVerboseMode_;
   }
 
+  virtual boost::optional<std::string> threadMode() const
+  {
+    return threadMode_;
+  }
+
 private:
   boost::optional<std::string> inputFile_;
   boost::optional<boost::filesystem::path> pythonScriptFile_;
+  boost::optional<std::string> threadMode_;
   Flags flags_;
 };
 
@@ -202,10 +210,12 @@ ApplicationParametersHandle CommandLineParser::parse(int argc, const char* argv[
     {
       pythonScriptFile = boost::filesystem::path(parsed["script"].as<std::string>());
     }
+    auto threadMode = parsed.count("threadMode") != 0 ? parsed["threadMode"].as<std::string>() : boost::optional<std::string>();
     return boost::make_shared<ApplicationParametersImpl>
       (
       inputFile,
       pythonScriptFile,
+      threadMode,
       ApplicationParametersImpl::Flags(
         parsed.count("help") != 0,
         parsed.count("version") != 0,
