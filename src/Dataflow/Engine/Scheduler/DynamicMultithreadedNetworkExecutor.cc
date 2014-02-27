@@ -173,10 +173,10 @@ namespace detail
       if (scheduler_ && network_)
       {
         auto order = scheduler_->schedule(*network_);
-        printMinGroup(Log::get() << INFO << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:", order);
+        printMinGroup(Log::get("producer") << INFO << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:", order);
       }
       else
-        Log::get() << INFO << "NETWORK ORDER~~~\n <<<null>>>\n";
+        Log::get("producer") << INFO << "NETWORK ORDER~~~\n <<<null>>>\n";
     }
 
   private:
@@ -201,7 +201,7 @@ namespace detail
     }
     void run()
     {
-      Log::get() << INFO << "Module Executor: " << module_->get_id() << std::endl;
+      Log::get("executor") << INFO << "Module Executor: " << module_->get_id() << std::endl;
       //auto exec = lookup_->lookupExecutable(module_->get_id());
       //boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, *printer_, _1)));
       //exec->execute();
@@ -275,8 +275,8 @@ namespace detail
     mutable boost::atomic<int> callCount_;
   };
 
-  Log& ModuleProducer::log_ = Log::get();
-  Log& ModuleConsumer::log_ = Log::get();
+  Log& ModuleProducer::log_ = Log::get("producer");
+  Log& ModuleConsumer::log_ = Log::get("consumer");
   
   typedef boost::shared_ptr<ModuleConsumer> ModuleConsumerPtr;
 
@@ -312,7 +312,7 @@ namespace detail
         {
           return [=]() 
           { 
-            Log::get() << INFO << "Producer looking up " << mod.second;
+            Log::get("producer") << INFO << "Producer looking up " << mod.second;
             work_->push(network_->lookupModule(mod.second));
             auto exec = lookup_->lookupExecutable(mod.second);
             boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer_, _1)));

@@ -64,6 +64,7 @@ namespace SCIRun
       {
       public:
         static Log& get();
+        static Log& get(const std::string& name);
 
         class SCISHARE Stream
         {
@@ -87,6 +88,7 @@ namespace SCIRun
 
       private:
         Log();
+        explicit Log(const std::string& name);
         Log(const Log&)/* =delete*/;
         Log(Log&&)/* =delete*/;
         Log& operator=(const Log&)/* =delete*/;
