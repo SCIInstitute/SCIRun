@@ -64,6 +64,7 @@ WriteFieldModule::WriteFieldModule()
 {
   INITIALIZE_PORT(FieldToWrite);
   filetype_ = "Binary";
+  objectPortName_ = &FieldToWrite;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   FieldIEPluginManager mgr;
