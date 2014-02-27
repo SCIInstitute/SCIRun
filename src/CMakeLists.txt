@@ -24,7 +24,6 @@
 #  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
-#
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11 FATAL_ERROR)
 
@@ -251,80 +250,15 @@ ENDIF()
 ########################################################################
 # Configure Boost external project
 
-# TODO: make macro
-
-ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB=1)
-
-SET(boost_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/boost")
-SET(boost_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/boost")
-
-SET(SCI_BOOST_INCLUDE ${boost_SOURCE_DIR} CACHE INTERNAL "Boost include directories." FORCE)
-SET(SCI_BOOST_LIBRARY boost CACHE INTERNAL "Boost library name." FORCE)
-
-IF(WIN32)
-#  # See cmake-2.8/Modules/FindBoost.cmake
-#  #SET(boost_LIB_PREFIX "lib")
-  SET(boost_LIB_PREFIX "")
-ELSE()
-  SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
-ENDIF()
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
+EXTERNAL_BOOST_LIBRARY(GIT ${CMAKE_CXX_FLAGS} ${DISABLED_UPDATE})
 
 
-SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-# other configuration options are RELWITHDEBINFO and MINSIZEREL
-SET(boost_LIBRARY_PATH_RELEASE "${boost_BINARY_DIR}/Release/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-SET(boost_LIBRARY_PATH_DEBUG "${boost_BINARY_DIR}/Debug/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+########################################################################
+# Configure zlib external project
 
-# Fixes Mac build for now, without extra boost/python cmake magic.
-SET(boost_GIT_TAG "origin/master")
-
-# TODO: fix install step
-#
-# If CMake ever allows overriding the checkout command or adding flags,
-# git checkout -q will silence message about detached head (harmless).
-ExternalProject_Add(Boost_external
-  PREFIX ${boost_BINARY_DIR}
-  GIT_REPOSITORY "https://github.com/SCIInstitute/boost.git"
-  GIT_TAG ${boost_GIT_TAG}
-  SOURCE_DIR ${boost_SOURCE_DIR}
-  BINARY_DIR ${boost_BINARY_DIR}
-  DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
-  PATCH_COMMAND ""
-  ${DISABLED_UPDATE}
-  INSTALL_DIR ""
-  INSTALL_COMMAND ""
-  #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
-  CMAKE_CACHE_ARGS
-    -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-    -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
-    -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
-    -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
-    -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
-    -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
-)
-
-ADD_LIBRARY(${SCI_BOOST_LIBRARY} STATIC IMPORTED GLOBAL)
-
-# adding Boost as a build target and dependency
-#
-# TODO: how to make boost include dependent on Boost_external?
-ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
-ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
-
-IF (CMAKE_GENERATOR MATCHES "Makefiles")
-  SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-    PROPERTIES
-      IMPORTED_LOCATION ${boost_LIBRARY_PATH}
-  )
-ELSE() # IDEs: Xcode, VS, others...
-  SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
-    PROPERTIES
-      IMPORTED_CONFIGURATIONS "RELEASE;DEBUG"
-      IMPORTED_LOCATION_RELEASE ${boost_LIBRARY_PATH_RELEASE}
-      IMPORTED_LOCATION_DEBUG ${boost_LIBRARY_PATH_DEBUG}
-  )
-ENDIF()
-
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
+EXTERNAL_ZLIB_LIBRARY(GIT ${CMAKE_CXX_FLAGS} ${DISABLED_UPDATE})
 
 
 ########################################################################
@@ -414,22 +348,24 @@ FIND_PACKAGE(OpenGL REQUIRED)
 # Find and configure Qt
 
 # TODO: exclude for headless
-SET(QT_MIN_VERSION "4.8.0")
-FIND_PACKAGE(Qt4 REQUIRED)
-SET(QT_USE_QTOPENGL TRUE)
+IF(NOT BUILD_HEADLESS)
+  SET(QT_MIN_VERSION "4.8.0")
+  FIND_PACKAGE(Qt4 REQUIRED)
+  SET(QT_USE_QTOPENGL TRUE)
 
-IF(QT_FOUND)
-  # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
-  # build issues haven't been corrected in CMake 2.8.7 and newer
+  IF(QT_FOUND)
+    # TODO: may want to grab Seg3D's custom FindQt4 module and UseQt4 file if
+    # build issues haven't been corrected in CMake 2.8.7 and newer
 
-  INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
-  INCLUDE(${QT_USE_FILE})
-  ADD_DEFINITIONS(${QT_DEFINITIONS})
-ELSE()
-  MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
+    INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+    INCLUDE(${QT_USE_FILE})
+    ADD_DEFINITIONS(${QT_DEFINITIONS})
+  ELSE()
+    MESSAGE(FATAL_ERROR "QT 4.8 or greater is required to build SCIRun5Prototype")
+  ENDIF()
+
+  ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 ENDIF()
-
-ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 
 ########################################################################
