@@ -50,12 +50,12 @@ namespace detail
   {
     static void logExecStart(const ModuleId& id)
     {
-      Log::get() << DEBUG << "!!! starting " << id.id_;
+      Log::get() << DEBUG_LOG << "!!! starting " << id.id_;
     }
 
     static void logExecEnd(const ModuleId& id)
     {
-      Log::get() << DEBUG << " ~~~ ending " << id.id_;
+      Log::get() << DEBUG_LOG << " ~~~ ending " << id.id_;
     }
   };
 
@@ -88,14 +88,14 @@ namespace detail
       network_(network), scheduler_(scheduler), lock_(lock), work_(workQueue), waiting_(list)
     {
       //waiting_.sort();
-      //log_ << DEBUG << "WorkUnitProducer starting. Sorted work list:";
-      //std::for_each(list.begin(), list.end(), [](UnitPtr u) { log_ << DEBUG << *u << "\n"; });
+      //log_ << DEBUG_LOG << "WorkUnitProducer starting. Sorted work list:";
+      //std::for_each(list.begin(), list.end(), [](UnitPtr u) { log_ << DEBUG_LOG << *u << "\n"; });
     }
 
       #if 0
     void run()
     {
-      log_ << DEBUG << "Producer started." << std::endl;
+      log_ << DEBUG_LOG << "Producer started." << std::endl;
       while (!waiting_.empty())
       {
         while (readyToProcess_)
@@ -104,14 +104,14 @@ namespace detail
           if (scheduler_ && network_)
           {
             auto order = scheduler_->schedule(*network_);
-            Log::get() << DEBUG << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:", order
+            Log::get() << DEBUG_LOG << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:", order
             BOOST_FOREACH(const ParallelModuleExecutionOrder::value_type& v, order.getGroup(order.minGroup()))
             {
               stream << "\n\t" << v.first << " " << v.second;
             }
           }
           else
-            Log::get() << DEBUG << "NETWORK ORDER~~~\n <<<null>>>\n";
+            Log::get() << DEBUG_LOG << "NETWORK ORDER~~~\n <<<null>>>\n";
         }
 
 
@@ -119,11 +119,11 @@ namespace detail
         {
           if ((*i)->ready)
           {
-            log_ << DEBUG << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
+            log_ << DEBUG_LOG << "\tProducer: Transferring ready unit " << (*i)->id << std::endl;
 
             work_.push(*i);
 
-            log_ << DEBUG << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
+            log_ << DEBUG_LOG << "\tProducer: Done transferring ready unit " << (*i)->id << std::endl;
 
             i = waiting_.erase(i);
           }
@@ -133,7 +133,7 @@ namespace detail
         if (workDone() && !waiting_.empty() && (*waiting_.begin())->priority > currentPriority_)
         {
           currentPriority_ = (*waiting_.begin())->priority;
-          log_ << DEBUG << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
+          log_ << DEBUG_LOG << "\tProducer: Setting as ready units with priority = " << currentPriority_ << std::endl;
           for (auto i = waiting_.begin(); i != waiting_.end(); ++i)
           {
             if ((*i)->priority == currentPriority_)
@@ -141,7 +141,7 @@ namespace detail
           }
         }
       }
-      log_ << DEBUG << "Producer done." << std::endl;
+      log_ << DEBUG_LOG << "Producer done." << std::endl;
     }
     #endif
     bool isDone() const
@@ -173,10 +173,10 @@ namespace detail
       if (scheduler_ && network_)
       {
         auto order = scheduler_->schedule(*network_);
-        printMinGroup(Log::get("producer") << DEBUG << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:", order);
+        printMinGroup(Log::get("producer") << DEBUG_LOG << "NETWORK ORDER~~~completed module = " << id << " ~~~next up:", order);
       }
       else
-        Log::get("producer") << DEBUG << "NETWORK ORDER~~~\n <<<null>>>\n";
+        Log::get("producer") << DEBUG_LOG << "NETWORK ORDER~~~\n <<<null>>>\n";
     }
 
   private:
@@ -201,7 +201,7 @@ namespace detail
     }
     void run()
     {
-      Log::get("executor") << DEBUG << "Module Executor: " << module_->get_id() << std::endl;
+      Log::get("executor") << DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
       //auto exec = lookup_->lookupExecutable(module_->get_id());
       //boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, *printer_, _1)));
       //exec->execute();
@@ -218,38 +218,38 @@ namespace detail
     explicit ModuleConsumer(ModuleWorkQueue* workQueue, const ExecutableLookup* lookup, SchedulePrinter* printer) :
     work_(workQueue), producer_(0), lookup_(lookup), printer_(printer), callCount_(0)
     {
-      log_ << DEBUG << "Consumer created." << std::endl;
+      log_ << DEBUG_LOG << "Consumer created." << std::endl;
     }
     void operator()() const
     {
       if (!producer_)
         return;
       callCount_.fetch_add(1);
-      log_ << DEBUG << "Consumer started. #" << callCount_;
+      log_ << DEBUG_LOG << "Consumer started. #" << callCount_;
       while (!producer_->isDone())
       {
         while (moreWork())
         {
-          log_ << DEBUG << "\tConsumer thinks work queue is not empty.";
+          log_ << DEBUG_LOG << "\tConsumer thinks work queue is not empty.";
 
-          log_ << DEBUG << "\tConsumer accessing front of work queue.";
+          log_ << DEBUG_LOG << "\tConsumer accessing front of work queue.";
           ModuleHandle unit;
           work_->pop(unit);
-          log_ << DEBUG << "\tConsumer popping front of work queue.";
+          log_ << DEBUG_LOG << "\tConsumer popping front of work queue.";
 
           if (unit)
           {
 
-            log_ << DEBUG << "~~~Processing " << unit->get_id();
+            log_ << DEBUG_LOG << "~~~Processing " << unit->get_id();
 
             ModuleExecutor executor(unit, lookup_, printer_);
             boost::thread t(boost::bind(&ModuleExecutor::run, executor));
           }
           else
-            log_ << DEBUG << "\tConsumer received null module";
+            log_ << DEBUG_LOG << "\tConsumer received null module";
         }
       }
-      log_ << DEBUG << "Consumer done." << std::endl;
+      log_ << DEBUG_LOG << "Consumer done." << std::endl;
     }
 
     bool moreWork() const
@@ -306,7 +306,7 @@ namespace detail
         {
           return [=]() 
           { 
-            Log::get("producer") << DEBUG << "Producer looking up " << mod.second;
+            Log::get("producer") << DEBUG_LOG << "Producer looking up " << mod.second;
             work_->push(network_->lookupModule(mod.second));
             auto exec = lookup_->lookupExecutable(mod.second);
             boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer_, _1)));
