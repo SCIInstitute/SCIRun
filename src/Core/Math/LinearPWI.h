@@ -27,14 +27,16 @@
 */
 
 
-/*
- *  LinearPWI.h: linear piecewise interpolation templates
+/**
+ *@class LinearPWI
+ *@brief Linear piecewise interpolation templates
  *
- *  Written by:
+ *@author
  *   Alexei Samsonov
  *   Department of Computer Science
  *   University of Utah
- *   July 2000
+ *
+ *@date  July 2000
  *
  */
 

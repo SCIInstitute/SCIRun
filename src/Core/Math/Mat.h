@@ -28,14 +28,16 @@
 
 
 
-/*
- *  Mat.h:  Simple matrix calculations
+/**
+ *@class Mat
+ *@brief Simple matrix calculations
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   October 1994
+ *  
+ *@date October 1994
  *
  */
 

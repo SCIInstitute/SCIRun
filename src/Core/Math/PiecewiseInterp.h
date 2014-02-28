@@ -27,14 +27,16 @@
 */
 
 
-/*
- *  PiecewiseInterp.h: base class for local family of interpolation techniques
+/**
+ *@class PiecewiseInterp
+ *@brief Base class for local family of interpolation techniques
  *
- *  Written by:
+ *@author 
  *   Alexei Samsonov
  *   Department of Computer Science
  *   University of Utah
- *   July 2000
+ *  
+ *@date July 2000
  *
  */
 

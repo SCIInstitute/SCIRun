@@ -27,13 +27,16 @@
 */
 
 
-/*
- *  Gaussian.h: support for Gaussian distributions
+/**
+ *@class Gaussian
+ *@brief Support for Gaussian distributions
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
+ *
+ *@date
  *   April 2002
  *
  */

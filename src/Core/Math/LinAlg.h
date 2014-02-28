@@ -27,14 +27,16 @@
 */
 
 
-/*
- *  LinAlg.h:  Tuned linear algebra routines
+/**
+ *@class LinAlg 
+ *@brief Tuned linear algebra routines
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   November 1995
+ *
+ *@date  November 1995
  *
  */
 
