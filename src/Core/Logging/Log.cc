@@ -68,6 +68,7 @@ namespace SCIRun
         {
           //TODO
           setAppenders();
+          cppLogger_.setAdditivity(false);
           cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
         }
 
@@ -128,7 +129,7 @@ namespace SCIRun
 
         void setAppenders()
         {
-          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
 
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
           auto layout1 = new log4cpp::PatternLayout();
