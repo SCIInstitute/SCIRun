@@ -27,14 +27,16 @@
 */
 
 
-/*
- *  LinearPWI.cc: linear piecewise interpolation
+/**
+ *@class LinearPWI
+ *@brief Linear piecewise interpolation
  *
- *  Written by:
+ *@author
  *   Alexei Samsonov
  *   Department of Computer Science
  *   University of Utah
- *   July 2000
+ *
+ *@date July 2000
  *
  */
 

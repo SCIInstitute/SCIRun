@@ -27,16 +27,17 @@
 */
 
 
-/*
- *  Gaussian.cc: support choosing a random value from a 1D Gaussian
- *               distribution (rand), as well as evaluate the probability
- *               of a particular value occuring.
+/**
+ *@class Gaussian
+ *@brief Support choosing a random value from a 1D Gaussian
+ *       distribution (rand), as well as evaluate the probability
+ *       of a particular value occuring.
  *
- *  Written by:
+ *@author 
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   July 2000
+ *@date  July 2000
  *
  */
 

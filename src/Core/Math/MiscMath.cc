@@ -28,14 +28,15 @@
 
 
 
-/*
- *  MiscMath.cc
+/**
+ *@class MiscMath
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   June 2004
+ *
+ *@date  June 2004
  *
  */
 
