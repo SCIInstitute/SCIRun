@@ -77,6 +77,7 @@ namespace detail
   public:
     virtual ~FinishingProcess() {}
     virtual bool isDone() const = 0;
+    virtual void prepare_data_for_processing() const = 0;
   };
 
   class ModuleProducer
@@ -196,60 +197,73 @@ namespace detail
 
   struct ModuleExecutor
   {
-    ModuleExecutor(ModuleHandle mod, const ExecutableLookup* lookup, SchedulePrinter* printer) : module_(mod), lookup_(lookup), printer_(printer)
+    ModuleExecutor(ModuleHandle mod, const ExecutableLookup* lookup, const FinishingProcess* printer) : module_(mod), lookup_(lookup), printer_(printer)
     {
     }
     void run()
     {
-      Log::get("executor") << INFO << "Module Executor: " << module_->get_id() << std::endl;
-      //auto exec = lookup_->lookupExecutable(module_->get_id());
-      //boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, *printer_, _1)));
-      //exec->execute();
+      //Log::get("executor") << INFO << "Module Executor: " << module_->get_id() << std::endl;
+      auto exec = lookup_->lookupExecutable(module_->get_id());
+      boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&FinishingProcess::prepare_data_for_processing, boost::ref(*printer_))));
+      exec->execute();
     }
 
     ModuleHandle module_;
     const ExecutableLookup* lookup_;
-    SchedulePrinter* printer_;
+    const FinishingProcess* printer_;
   };
 
   class ModuleConsumer
   {
   public:
     explicit ModuleConsumer(ModuleWorkQueue* workQueue, const ExecutableLookup* lookup, SchedulePrinter* printer) :
-    work_(workQueue), producer_(0), lookup_(lookup), printer_(printer), callCount_(0)
+    work_(workQueue), producer_(0), lookup_(lookup), printer_(printer), callCount_(0), shouldLog_(false)
     {
-      log_ << DEBUG_LOG << "Consumer created." << std::endl;
+      log_.setVerbose(shouldLog_);
+      if (shouldLog_)
+        log_ << DEBUG_LOG << "Consumer created." << std::endl;
     }
     void operator()() const
     {
       if (!producer_)
-        return;
-      callCount_.fetch_add(1);
-      log_ << DEBUG_LOG << "Consumer started. #" << callCount_;
-      while (!producer_->isDone())
       {
-        while (moreWork())
-        {
-          log_ << DEBUG_LOG << "\tConsumer thinks work queue is not empty.";
+        if (shouldLog_)
+          log_ << DEBUG_LOG << "Consumer quitting due to no producer pointer." << std::endl;
+        return;
+      }
+      
+      log_ << INFO << "Consumer started." << std::endl;
 
-          log_ << DEBUG_LOG << "\tConsumer accessing front of work queue.";
+      while (!producer_->isDone() || moreWork())
+      {
+        {
+          if (shouldLog_)
+            log_ << DEBUG_LOG << "\tConsumer thinks work queue is not empty.";
+
+          if (shouldLog_)
+            log_ << DEBUG_LOG << "\tConsumer accessing front of work queue.";
           ModuleHandle unit;
           work_->pop(unit);
-          log_ << DEBUG_LOG << "\tConsumer popping front of work queue.";
+          if (shouldLog_)
+            log_ << DEBUG_LOG << "\tConsumer popping front of work queue.";
 
           if (unit)
           {
+            if (shouldLog_)
+              log_ << DEBUG_LOG << "~~~Processing " << unit->get_id();
 
-            log_ << DEBUG_LOG << "~~~Processing " << unit->get_id();
-
-            ModuleExecutor executor(unit, lookup_, printer_);
+            ModuleExecutor executor(unit, lookup_, producer_.get());
             boost::thread t(boost::bind(&ModuleExecutor::run, executor));
+            //t.join();
           }
           else
-            log_ << DEBUG_LOG << "\tConsumer received null module";
+          {
+            if (shouldLog_)
+              log_ << DEBUG_LOG << "\tConsumer received null module";
+          }
         }
       }
-      log_ << DEBUG_LOG << "Consumer done." << std::endl;
+      log_ << INFO << "Consumer done." << std::endl;
     }
 
     bool moreWork() const
@@ -257,16 +271,21 @@ namespace detail
       return !work_->empty();
     }
 
-    void setProducer(boost::shared_ptr<const FinishingProcess> producer) { producer_ = producer; }
+    void setProducer(boost::shared_ptr<const FinishingProcess> producer) 
+    { 
+      if (shouldLog_)
+        log_ << DEBUG_LOG << "Consumer has producer set." << std::endl;
+      producer_ = producer; 
+    }
 
   private:
     ModuleWorkQueue* work_;
     boost::shared_ptr<const FinishingProcess> producer_;
     const ExecutableLookup* lookup_;
     SchedulePrinter* printer_;
-    //DoneList& done_;
     static Log& log_;
     mutable boost::atomic<int> callCount_;
+    bool shouldLog_;
   };
 
   Log& ModuleProducer::log_ = Log::get("producer");
@@ -338,6 +357,103 @@ namespace detail
   };
   
   BoostGraphParallelScheduler DynamicParallelExecution::scheduler_(filter());
+
+  struct SimpleSerialProducer : public FinishingProcess
+  {
+    SimpleSerialProducer(const ExecutableLookup* lookup, const ParallelModuleExecutionOrder& order, const ExecutionBounds& bounds, 
+      const NetworkInterface* network, Mutex& lock, ModuleWorkQueuePtr work, ModuleConsumerPtr consumer) :
+    lookup_(lookup), order_(order), bounds_(bounds), network_(network),
+      printer_(network_, &scheduler_, lock), work_(work), consumer_(consumer),
+      /*isDone_(false), */doneCount_(0)
+    {
+    }
+
+    virtual void prepare_data_for_processing() const
+    {
+      //std::cout << "hello this is slot from executor" << std::endl;
+
+      if (!isDone())
+      {
+        auto order = scheduler_.schedule(*network_);
+        //Log::get("producer") << INFO << "Producer processing min group " << order.minGroup();
+        auto groupIter = order.getGroup(order.minGroup());
+        //bool done = true;
+        BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod, groupIter)
+        {
+          auto module = network_->lookupModule(mod.second);
+
+          if (module->executionState() != ModuleInterface::Executing)
+          {
+            Log::get("producer") << INFO << "Producer pushing module " << mod.second << std::endl;
+            work_->push(module);
+            doneCount_.fetch_add(1);
+            Log::get("producer") << INFO << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
+          }
+        }
+        //isDone_ = done;
+      }
+    }
+
+    void operator()() const
+    {
+      ScopedExecutionBoundsSignaller signaller(bounds_, [&]() { return lookup_->errorCode(); });
+
+      Log::get("producer") << INFO << "Producer started" << std::endl;
+
+      prepare_data_for_processing();
+
+      while (!isDone())
+        boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+      
+#if 0
+      for (int group = order_.minGroup(); group <= order_.maxGroup(); ++group)
+      {
+        Log::get("producer") << INFO << "Producer processing group " << group;
+        auto groupIter = order_.getGroup(group);
+
+        std::vector<boost::function<void()>> tasks;
+
+        std::transform(groupIter.first, groupIter.second, std::back_inserter(tasks), 
+          [&](const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod) -> boost::function<void()>
+        {
+          return [=]() 
+          { 
+            Log::get("producer") << INFO << "Producer looking up " << mod.second;
+            work_->push(network_->lookupModule(mod.second));
+            //auto exec = lookup_->lookupExecutable(mod.second);
+            //boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&SchedulePrinter::printNetworkOrder, printer_, _1)));
+            //exec->execute(); 
+          };
+        });
+
+        //std::cout << "Running group " << group << " of size " << tasks.size();
+        std::for_each(tasks.begin(), tasks.end(), [](boost::function<void()> f) { f(); });
+      }
+      #endif
+      
+      Log::get("producer") << INFO << "Producer is done." << std::endl;
+    }
+
+    bool isDone() const 
+    {
+      //Log::get("producer") << INFO << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
+      return doneCount_ >= network_->nmodules();
+    }
+
+    static ModuleWaiting filter() { return ModuleWaiting(); }
+    static BoostGraphParallelScheduler scheduler_;
+    const ExecutableLookup* lookup_;
+    ParallelModuleExecutionOrder order_;
+    const ExecutionBounds& bounds_;
+    const NetworkInterface* network_;
+    SchedulePrinter printer_;
+    ModuleWorkQueuePtr work_;
+    ModuleConsumerPtr consumer_;
+    //mutable boost::atomic<bool> isDone_;
+    mutable boost::atomic<int> doneCount_;
+  };
+
+  BoostGraphParallelScheduler SimpleSerialProducer::scheduler_(filter());
 }
 
 namespace SCIRun {
@@ -351,7 +467,7 @@ namespace SCIRun {
           using namespace ::detail;
           work_.reset(new ModuleWorkQueue(network->nmodules()));
           consumer_.reset(new ModuleConsumer(work_.get(), lookup, 0));
-          runner_.reset(new DynamicParallelExecution(lookup, order, bounds, network, lock, work_, consumer_));
+          runner_.reset(new SimpleSerialProducer(lookup, order, bounds, network, lock, work_, consumer_));
           consumer_->setProducer(runner_);
         }
         void run()
@@ -360,7 +476,7 @@ namespace SCIRun {
           boost::thread execution(boost::ref(*runner_));
         }
       private:
-        boost::shared_ptr<::detail::DynamicParallelExecution> runner_;
+        boost::shared_ptr<::detail::SimpleSerialProducer> runner_;
         ::detail::ModuleWorkQueuePtr work_;
         ::detail::ModuleConsumerPtr consumer_;
       };

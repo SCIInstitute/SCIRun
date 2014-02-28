@@ -115,7 +115,9 @@ size_t Module::num_output_ports() const
 void Module::do_execute() throw()
 {
   executeBegins_(id_);
+  //TODO: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
+  LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
 
   try 
@@ -161,6 +163,7 @@ void Module::do_execute() throw()
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   status("MODULE FINISHED: " + id_.id_);  
+  LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
   executeEnds_(id_);
 }
