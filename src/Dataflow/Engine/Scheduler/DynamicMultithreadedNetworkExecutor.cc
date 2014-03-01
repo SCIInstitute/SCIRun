@@ -73,7 +73,7 @@ namespace detail
     }
     void run()
     {
-      Log::get("executor") << LOG<< "Module Executor: " << module_->get_id() << std::endl;
+      Log::get("executor") << DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
       auto exec = lookup_->lookupExecutable(module_->get_id());
       boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
       exec->execute();
