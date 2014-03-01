@@ -58,30 +58,30 @@ namespace detail
 
   typedef std::list<ModuleHandle> WaitingList;
 
-  class FinishingProcess
+  class ProducerInterface
   {
   public:
-    virtual ~FinishingProcess() {}
+    virtual ~ProducerInterface() {}
     virtual bool isDone() const = 0;
     virtual void enqueueReadyModules() const = 0;
   };
 
   struct ModuleExecutor
   {
-    ModuleExecutor(ModuleHandle mod, const ExecutableLookup* lookup, const FinishingProcess* printer) : module_(mod), lookup_(lookup), printer_(printer)
+    ModuleExecutor(ModuleHandle mod, const ExecutableLookup* lookup, const ProducerInterface* producer) : module_(mod), lookup_(lookup), producer_(producer)
     {
     }
     void run()
     {
-      //Log::get("executor") << INFO << "Module Executor: " << module_->get_id() << std::endl;
+      Log::get("executor") << LOG<< "Module Executor: " << module_->get_id() << std::endl;
       auto exec = lookup_->lookupExecutable(module_->get_id());
-      boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&FinishingProcess::enqueueReadyModules, boost::ref(*printer_))));
+      boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
       exec->execute();
     }
 
     ModuleHandle module_;
     const ExecutableLookup* lookup_;
-    const FinishingProcess* printer_;
+    const ProducerInterface* producer_;
   };
 
   class ModuleConsumer
@@ -142,7 +142,7 @@ namespace detail
       return !work_->empty();
     }
 
-    void setProducer(boost::shared_ptr<const FinishingProcess> producer) 
+    void setProducer(boost::shared_ptr<const ProducerInterface> producer) 
     { 
       if (shouldLog_)
         log_ << DEBUG_LOG << "Consumer has producer set." << std::endl;
@@ -151,7 +151,7 @@ namespace detail
 
   private:
     ModuleWorkQueue* work_;
-    boost::shared_ptr<const FinishingProcess> producer_;
+    boost::shared_ptr<const ProducerInterface> producer_;
     const ExecutableLookup* lookup_;
     static Log& log_;
     bool shouldLog_;
@@ -169,7 +169,7 @@ namespace detail
     }
   };
 
-  class ModuleProducer : public FinishingProcess
+  class ModuleProducer : public ProducerInterface
   {
   public:
     ModuleProducer(const ExecutableLookup* lookup, const ExecutionBounds& bounds, 
@@ -183,10 +183,11 @@ namespace detail
     {
       if (!isDone())
       {
-        //TODO: how much to lock?
-        Guard g(lock_.get());
-
-        auto order = scheduler_.schedule(*network_);
+        ParallelModuleExecutionOrder order;
+        {
+          Guard g(lock_.get());
+          order = scheduler_.schedule(*network_);
+        }
         log_ << DEBUG_LOG << "Producer processing min group " << order.minGroup();
         auto groupIter = order.getGroup(order.minGroup());
         BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod, groupIter)
