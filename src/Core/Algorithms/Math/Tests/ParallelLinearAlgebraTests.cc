@@ -513,16 +513,15 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 
   auto vec2 = vector1();
   std::vector<boost::shared_ptr<absthreshold_inv>> workers;
-  std::vector<boost::shared_ptr<boost::thread>> threads;
+  boost::thread_group threads;
   {
     for (int i = 0; i < NUM_THREADS; ++i)
       workers.push_back(boost::make_shared<absthreshold_inv>(data, v1, v2, i, vec2));
   
     for (int i = 0; i < NUM_THREADS; ++i)
-      threads.push_back(boost::make_shared<boost::thread>(boost::ref(*workers[i])));
+      threads.create_thread(boost::ref(*workers[i]));
 
-    for (int i = 0; i < NUM_THREADS; ++i)
-      threads[i]->join();
+    threads.join_all();
   }
 
   //test vector 1 
