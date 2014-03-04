@@ -58,6 +58,11 @@ SET(Engine_Scheduler_HEADERS
   SchedulerInterfaces.h
   SerialModuleExecutionOrder.h
   SerialExecutionStrategy.h
+  DynamicExecutor/WorkQueue.h
+  DynamicExecutor/WorkUnitConsumer.h
+  DynamicExecutor/WorkUnitExecutor.h
+  DynamicExecutor/WorkUnitProducer.h
+  DynamicExecutor/WorkUnitProducerInterface.h
   share.h
 )
 

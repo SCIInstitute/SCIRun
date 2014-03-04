@@ -26,49 +26,100 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
-#define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
+#ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITCONSUMER_H
+#define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITCONSUMER_H
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkQueue.h>
+#include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitProducerInterface.h>
+#include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitExecutor.h>
+#include <Dataflow/Network/NetworkInterface.h>
+#include <Core/Logging/Log.h>
+#include <boost/thread.hpp>
+
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
+namespace DynamicExecutor {
 
-  class SCISHARE ExecutionStrategy
+
+  class SCISHARE ModuleConsumer : boost::noncopyable
   {
   public:
-    virtual ~ExecutionStrategy() {}
-    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup) = 0;
-
-    enum Type
+    explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
+    work_(workQueue), producer_(producer), lookup_(lookup), shouldLog_(false)
     {
-      SERIAL,
-      BASIC_PARALLEL,
-      DYNAMIC_PARALLEL
-      // better parallel, etc
-    };
+      log_.setVerbose(shouldLog_);
+      if (shouldLog_)
+        log_ << Core::Logging::DEBUG_LOG << "Consumer created." << std::endl;
+    }
+    void operator()() const
+    {
+      if (!producer_)
+      {
+        if (shouldLog_)
+          log_ << Core::Logging::DEBUG_LOG << "Consumer quitting due to no producer pointer." << std::endl;
+        return;
+      }
 
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-  protected:
-    static ExecutionBounds executionBounds_;
+      log_ << Core::Logging::DEBUG_LOG << "Consumer started." << std::endl;
+
+      while (!producer_->isDone() || moreWork())
+      {
+        {
+          if (shouldLog_)
+            log_ << Core::Logging::DEBUG_LOG << "\tConsumer thinks work queue is not empty.";
+
+          if (shouldLog_)
+            log_ << Core::Logging::DEBUG_LOG << "\tConsumer accessing front of work queue.";
+          Networks::ModuleHandle unit;
+          work_->pop(unit);
+          if (shouldLog_)
+            log_ << Core::Logging::DEBUG_LOG << "\tConsumer popping front of work queue.";
+
+          if (unit)
+          {
+            if (shouldLog_)
+              log_ << Core::Logging::DEBUG_LOG << "~~~Processing " << unit->get_id();
+
+            ModuleExecutor executor(unit, lookup_, producer_.get());
+            //TODO: thread pool
+            boost::thread t(boost::bind(&ModuleExecutor::run, executor));
+          }
+          else
+          {
+            if (shouldLog_)
+              log_ << Core::Logging::DEBUG_LOG << "\tConsumer received null module";
+          }
+        }
+      }
+      log_ << Core::Logging::DEBUG_LOG << "Consumer done." << std::endl;
+    }
+
+    bool moreWork() const
+    {
+      return !work_->empty();
+    }
+
+    //void setProducer(boost::shared_ptr<ProducerInterface> producer) 
+    //{ 
+    //  if (shouldLog_)
+    //    log_ << Core::Logging::DEBUG_LOG << "Consumer has producer set." << std::endl;
+    //  producer_ = producer; 
+    //}
+
+  private:
+    ModuleWorkQueuePtr work_;
+    ProducerInterfacePtr producer_;
+    const Networks::ExecutableLookup* lookup_;
+    static Core::Logging::Log& log_;
+    bool shouldLog_;
   };
 
-  typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;
+  typedef boost::shared_ptr<ModuleConsumer> ModuleConsumerPtr;
 
-  class SCISHARE ExecutionStrategyFactory
-  {
-  public:
-    virtual ~ExecutionStrategyFactory() {}
-    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) const = 0;
-    virtual ExecutionStrategyHandle createDefault() const = 0;
-  };
-
-  typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-
-}
+}}
 }}
 
 #endif

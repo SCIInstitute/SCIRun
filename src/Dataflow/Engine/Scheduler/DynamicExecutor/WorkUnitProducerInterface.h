@@ -26,26 +26,26 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_DYNAMICMULTITHREADEDNETWORKEXECUTOR_H
-#define ENGINE_SCHEDULER_DYNAMICMULTITHREADEDNETWORKEXECUTOR_H
+#ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITPRODUCERINTERFACE_H
+#define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITPRODUCERINTERFACE_H
 
-#include <Dataflow/Engine/Scheduler/ParallelModuleExecutionOrder.h>
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+  namespace Dataflow {
+    namespace Engine {
+      namespace DynamicExecutor {
 
-  class SCISHARE DynamicMultithreadedNetworkExecutor : public NetworkExecutor<ParallelModuleExecutionOrder>
-  {
-  public:
-    explicit DynamicMultithreadedNetworkExecutor(const Networks::NetworkInterface& network);
-    virtual void executeAll(const Networks::ExecutableLookup& lookup, ParallelModuleExecutionOrder order, const ExecutionBounds& bounds);
-  private:
-    const Networks::NetworkInterface& network_;
-  };
+        class SCISHARE ProducerInterface
+        {
+        public:
+          virtual ~ProducerInterface() {}
+          virtual bool isDone() const = 0;
+          virtual void enqueueReadyModules() const = 0;
+        };
 
-}}}
+        typedef boost::shared_ptr<ProducerInterface> ProducerInterfacePtr;
+      }}
+  }}
 
 #endif

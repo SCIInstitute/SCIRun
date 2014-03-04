@@ -26,49 +26,41 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
-#define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
+#ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITEXECUTOR_H
+#define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKUNITEXECUTOR_H
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Engine/Scheduler/DynamicExecutor/WorkUnitProducerInterface.h>
+#include <Dataflow/Network/NetworkInterface.h>
+#include <Core/Logging/Log.h>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
-namespace Dataflow {
-namespace Engine {
+  namespace Dataflow {
+    namespace Engine {
+      namespace DynamicExecutor {
 
-  class SCISHARE ExecutionStrategy
-  {
-  public:
-    virtual ~ExecutionStrategy() {}
-    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup) = 0;
 
-    enum Type
-    {
-      SERIAL,
-      BASIC_PARALLEL,
-      DYNAMIC_PARALLEL
-      // better parallel, etc
-    };
+        struct SCISHARE ModuleExecutor
+        {
+          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, const ProducerInterface* producer) : module_(mod), lookup_(lookup), producer_(producer)
+          {
+          }
+          void run()
+          {
+            Core::Logging::Log::get("executor") << Core::Logging::DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
+            auto exec = lookup_->lookupExecutable(module_->get_id());
+            boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
+            exec->execute();
+          }
 
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-  protected:
-    static ExecutionBounds executionBounds_;
-  };
+          Networks::ModuleHandle module_;
+          const Networks::ExecutableLookup* lookup_;
+          const ProducerInterface* producer_;
+        };
 
-  typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;
 
-  class SCISHARE ExecutionStrategyFactory
-  {
-  public:
-    virtual ~ExecutionStrategyFactory() {}
-    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) const = 0;
-    virtual ExecutionStrategyHandle createDefault() const = 0;
-  };
+      }}
 
-  typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-
-}
-}}
+  }}
 
 #endif

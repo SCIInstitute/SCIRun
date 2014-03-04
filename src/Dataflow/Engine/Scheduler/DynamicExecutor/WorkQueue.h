@@ -26,49 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
-#define ENGINE_SCHEDULER_EXECUTION_STRATEGY_H
+#ifndef ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKQUEUE_H
+#define ENGINE_SCHEDULER_DYNAMICEXECUTOR_WORKQUEUE_H
 
-#include <Dataflow/Engine/Scheduler/SchedulerInterfaces.h>
+#include <Dataflow/Network/NetworkFwd.h>
+#include <boost/lockfree/spsc_queue.hpp>
 #include <Dataflow/Engine/Scheduler/share.h>
 
 namespace SCIRun {
 namespace Dataflow {
 namespace Engine {
+  namespace DynamicExecutor {
 
-  class SCISHARE ExecutionStrategy
-  {
-  public:
-    virtual ~ExecutionStrategy() {}
-    virtual void executeAll(const Networks::NetworkInterface& network, const Networks::ExecutableLookup& lookup) = 0;
-
-    enum Type
+    template <class Unit>
+    class WorkQueue
     {
-      SERIAL,
-      BASIC_PARALLEL,
-      DYNAMIC_PARALLEL
-      // better parallel, etc
+    public:
+      typedef boost::lockfree::spsc_queue<Unit> Impl;
     };
 
-    static boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
-    static boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
-  protected:
-    static ExecutionBounds executionBounds_;
-  };
+    typedef WorkQueue<Networks::ModuleHandle>::Impl ModuleWorkQueue;
+    typedef boost::shared_ptr<ModuleWorkQueue> ModuleWorkQueuePtr;
 
-  typedef boost::shared_ptr<ExecutionStrategy> ExecutionStrategyHandle;
+  }}
 
-  class SCISHARE ExecutionStrategyFactory
-  {
-  public:
-    virtual ~ExecutionStrategyFactory() {}
-    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) const = 0;
-    virtual ExecutionStrategyHandle createDefault() const = 0;
-  };
-
-  typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
-
-}
 }}
 
 #endif
