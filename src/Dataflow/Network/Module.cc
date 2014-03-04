@@ -447,3 +447,8 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 {
   executionState_ = state;
 }
+
+bool Module::needToExecute() const  
+{
+  return true; //TODO
+}

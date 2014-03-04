@@ -117,10 +117,7 @@ namespace Networks {
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
 
-    virtual bool needToExecute() const  
-    {
-      return true; //TODO
-    }
+    virtual bool needToExecute() const;
 
     virtual bool hasDynamicPorts() const 
     {
