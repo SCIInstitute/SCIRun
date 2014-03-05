@@ -46,20 +46,24 @@ public:
   bool isRegression() const { return regressionMode_; }
   void setRegressionMode(bool mode) { regressionMode_ = mode; }
 
+  bool saveBeforeExecute() const { return saveBeforeExecute_; }
+  void setSaveBeforeExecute(bool mode);
+
   QString regressionTestDataDir() const { return regressionTestDataDir_; }
   void setRegressionTestDataDir(const QString& dir) { regressionTestDataDir_ = dir; }
 
-  void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs) { disableModuleErrorDialogs_ = disableModuleErrorDialogs; }
+  void setDisableModuleErrorDialogs(bool disableModuleErrorDialogs);
   bool disableModuleErrorDialogs() const { return disableModuleErrorDialogs_; }
 
 public Q_SLOTS:
   void updateRegressionTestDataDir();
   void setRegressionTestDataDir();
   void updateModuleErrorDialogOption(int state);
+  void updateSaveBeforeExecuteOption(int state);
 
 private:
   NetworkEditor* networkEditor_;
-  bool regressionMode_, disableModuleErrorDialogs_;
+  bool regressionMode_, disableModuleErrorDialogs_, saveBeforeExecute_;
   QString regressionTestDataDir_;
 };
 

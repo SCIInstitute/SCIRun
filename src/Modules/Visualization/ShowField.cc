@@ -101,7 +101,8 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showNodes = state->getValue(ShowFieldModule::ShowNodes).getBool();
   bool showEdges = state->getValue(ShowFieldModule::ShowEdges).getBool();
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
-  bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
+  bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).getBool();
+  //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
   const ColorRGB meshColor = optional_any_cast_or_default<ColorRGB>(
       state->getTransientValue(ShowFieldModule::DefaultMeshColor.name_));
   float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
@@ -159,9 +160,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       Core::Geometry::Vector normal;
       vmesh->get_normal(normal, node.index());
 
-      vbo[i+nodeOffset+0] = normal.x();
-      vbo[i+nodeOffset+1] = normal.y();
-      vbo[i+nodeOffset+2] = normal.z();
+      if (!invertNormals)
+      {
+        vbo[i+nodeOffset+0] = normal.x();
+        vbo[i+nodeOffset+1] = normal.y();
+        vbo[i+nodeOffset+2] = normal.z();
+      }
+      else
+      {
+        vbo[i+nodeOffset+0] = -normal.x();
+        vbo[i+nodeOffset+1] = -normal.y();
+        vbo[i+nodeOffset+2] = -normal.z();
+      }
       nodeOffset += 3;
     }
 
@@ -411,6 +421,7 @@ AlgorithmParameterName ShowFieldModule::ShowFaces("ShowFaces");
 AlgorithmParameterName ShowFieldModule::NodeTransparency("NodeTransparency");
 AlgorithmParameterName ShowFieldModule::EdgeTransparency("EdgeTransparency");
 AlgorithmParameterName ShowFieldModule::FaceTransparency("FaceTransparency");
+AlgorithmParameterName ShowFieldModule::FaceInvertNormals("FaceInvertNormals");
 AlgorithmParameterName ShowFieldModule::DefaultMeshColor("DefaultMeshColor");
 
 
