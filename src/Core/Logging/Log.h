@@ -114,6 +114,13 @@ namespace SCIRun
   }
 }
 
+//TODO: log4cpp crashes on Mac more easily, just macro these out on that platform for now.
+#ifdef _WIN32
 #define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
+#else
+#define LOG_DEBUG(str)
+#endif
+
+
 
 #endif
