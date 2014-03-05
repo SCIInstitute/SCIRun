@@ -65,15 +65,17 @@ protected:
 
     // How to set parameters on an algorithm (that come from the GUI)
     algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, includeOuterBoundary);
-    
+
     // TODO: this logic matches the wacky module behavior
     algo.set(GetDomainBoundaryAlgo::UseRange, useRange);
     if (!useRange)
     {
       algo.set(GetDomainBoundaryAlgo::Domain, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::UseRange, true);
+      //algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
+	  algo.set(GetDomainBoundaryAlgo::MinRange, 0);
+      //algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
+      algo.set(GetDomainBoundaryAlgo::MaxRange, 255);
+	  algo.set(GetDomainBoundaryAlgo::UseRange, true);
     }
 
     FieldHandle boundary;
@@ -96,42 +98,42 @@ protected:
 // expected values of -1 need to be figured out from the v4 GUI.
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_1)
 {
-  runTest(false, true, 1, 8680, 8334);
+  runTest(false, true, 1, 9024, 8574);//p
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_1)
 {
-  runTest(false, false, 1, 9024, 8574);
+  runTest(false, false, 1, 9024, 8574);//p
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_1)
 {
-  runTest(true, false, 1, 17264, 17700);
+  runTest(true, false, 1, -1, -1);//f, crashes GUI 
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_1)
 {
-  runTest(true, true, 1, 12328, 12324);
+  runTest(true, true, 1, -1, -1);//f, crashes GUI
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_4)
 {
-  runTest(false, false, 4, 9024, 8574);
+  runTest(false, false, 4, 9024, 8574);//p
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_4)
 {
-  runTest(true, false, 4, 17264, 17700);
+  runTest(true, false, 4, -1, -1);//f, crashes GUI
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
 {
-  runTest(false, true, 4, 0, 0);
+  runTest(false, true, 4, 9024, 8574);//p
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
 {
-  runTest(true, true, 4, 0, 0);
+  runTest(true, true, 4, -1, -1);//f, crashes GUI
 }
 
 
@@ -152,7 +154,7 @@ TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
-class GetDomainBoundaryTests1 : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, int, int, int> >
+class GetDomainBoundaryTests1 : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, bool, int> >//, int, int> >
 {
 public:
   FieldHandle boundary;
@@ -180,11 +182,14 @@ protected:
     if (!::std::tr1::get<1>(GetParam()))//!useRange)
     {
       algo.set(GetDomainBoundaryAlgo::Domain,   ::std::tr1::get<2>(GetParam()));
-      algo.set(GetDomainBoundaryAlgo::MinRange, ::std::tr1::get<3>(GetParam()));
-      algo.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
+      algo.set(GetDomainBoundaryAlgo::MinRange, 0); //::std::tr1::get<3>(GetParam()));
+      algo.set(GetDomainBoundaryAlgo::MaxRange, 255); //::std::tr1::get<3>(GetParam()));
       algo.set(GetDomainBoundaryAlgo::UseRange, true);
-    }
-    algo.runImpl(latVol, unused, boundary);
+    }  
+	algo.set(GetDomainBoundaryAlgo::InnerBoundaryOnly, ::std::tr1::get<3>(GetParam()));
+	algo.set(GetDomainBoundaryAlgo::NoInnerBoundary, ::std::tr1::get<4>(GetParam()));
+	algo.set(GetDomainBoundaryAlgo::DisconnectBoundaries, ::std::tr1::get<5>(GetParam())); 
+    ASSERT_TRUE(algo.runImpl(latVol, unused, boundary));
 
   }
   virtual void TearDown()
@@ -192,7 +197,7 @@ protected:
 
 };
 
-TEST_P(GetDomainBoundaryTests1, LatVolBoundry_Parameterized)
+TEST_P(GetDomainBoundaryTests1, LatVolBoundary_Parameterized)
 {
     EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTests1); 
     //EXPECT_EQ(0, module->boundary->vmesh()->num_nodes()); 
@@ -201,13 +206,23 @@ TEST_P(GetDomainBoundaryTests1, LatVolBoundry_Parameterized)
     //EXPECT_EQ(expectedBoundaryElements, boundary->vmesh()->num_elems());
     //EXPECT_TRUE(boundary->vmesh()->is_quadsurfmesh());
 }
+//TEST_P(GetDomainBoundaryTests1, LatVolBoundary_CheckFailures)
+//{
+//	GetDomainBoundaryTests1;
+//	if(HasFailure())
+//		return;
+//}
 
+//INSTANTIATE_TEST_CASE_P(
+//  LatVolBoundry_Parameterized,
+//  GetDomainBoundaryTests1,
+//  Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
+//  );
 INSTANTIATE_TEST_CASE_P(
-  LatVolBoundry_Parameterized,
+  LatVolBoundary_CheckFailures,
   GetDomainBoundaryTests1,
-  Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
+  Combine(Bool(), Bool(), Bool(), Bool(), Bool(), Values(1,2,3,4)) //, Values(1,4), Values(1,4)) 
   );
-
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
 //
