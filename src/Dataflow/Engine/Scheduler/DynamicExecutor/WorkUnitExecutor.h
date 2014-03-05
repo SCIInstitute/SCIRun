@@ -47,7 +47,8 @@ namespace SCIRun {
           }
           void run()
           {
-            Core::Logging::Log::get("executor") << Core::Logging::DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
+            //TODO: crashes on Mac
+            //Core::Logging::Log::get("executor") << Core::Logging::DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
             auto exec = lookup_->lookupExecutable(module_->get_id());
             boost::signals2::scoped_connection s(exec->connectExecuteEnds(boost::bind(&ProducerInterface::enqueueReadyModules, boost::ref(*producer_))));
             exec->execute();
