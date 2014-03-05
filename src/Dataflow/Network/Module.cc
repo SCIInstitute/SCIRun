@@ -81,6 +81,8 @@ Module::Module(const ModuleLookupInfo& info,
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
+  
+  initStateObserver(state_.get());
 }
 
 Module::~Module()
@@ -165,6 +167,7 @@ void Module::do_execute() throw()
   status("MODULE FINISHED: " + id_.id_);  
   LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
+  resetStateChanged();
   executeEnds_(id_);
 }
 
@@ -450,5 +453,7 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 
 bool Module::needToExecute() const  
 {
-  return true; //TODO
+  return newStatePresent();
+    //TODO: || inputsChanged()
+    //TODO: || !oports_cached()
 }

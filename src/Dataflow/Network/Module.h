@@ -50,7 +50,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
   
-  class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, boost::noncopyable
+  class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, public StateChangeObserver, boost::noncopyable
   {
   public:
     Module(const ModuleLookupInfo& info, 
