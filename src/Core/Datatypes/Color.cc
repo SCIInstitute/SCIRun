@@ -26,8 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <iostream>
+#include <sstream>
 #include <Core/Datatypes/Color.h>
+#include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace SCIRun::Core::Datatypes;
 
@@ -39,6 +41,31 @@ ColorRGB::ColorRGB()
 ColorRGB::ColorRGB(int r, int g, int b)
   : r_(r), g_(g), b_(b)
 {
+}
+
+ColorRGB::ColorRGB(const std::string& rgb) : r_(0), g_(0), b_(0)
+{
+  try
+  {
+    static boost::regex r("Color\\((\\d+),(\\d+),(\\d+)\\)");
+    boost::smatch what;
+    regex_match(rgb, what, r);
+    r_ = boost::lexical_cast<int>(what[1]);
+    g_ = boost::lexical_cast<int>(what[2]);
+    b_ = boost::lexical_cast<int>(what[3]);
+  }
+  catch (...)
+  {
+    //error results in black:
+    r_ = g_ = b_ = 0;
+  }
+}
+
+std::string ColorRGB::toString() const
+{
+  std::ostringstream ostr;
+  ostr << *this;
+  return ostr.str();
 }
 
 std::ostream& SCIRun::Core::Datatypes::operator<<(std::ostream& out, const ColorRGB& color)

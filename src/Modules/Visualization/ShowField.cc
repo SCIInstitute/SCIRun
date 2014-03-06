@@ -64,7 +64,7 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeTransparency, false);
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
-  state->setTransientValue(DefaultMeshColor.name_, ColorRGB(255, 255, 255));
+  state->setValue(DefaultMeshColor, ColorRGB(255, 255, 255).toString());
 }
 
 void ShowFieldModule::execute()
@@ -108,8 +108,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).getBool();
   //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
-  const ColorRGB meshColor = optional_any_cast_or_default<ColorRGB>(
-      state->getTransientValue(ShowFieldModule::DefaultMeshColor.name_));
+  const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
   float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
   float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
   float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
