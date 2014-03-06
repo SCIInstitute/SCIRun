@@ -42,7 +42,7 @@ namespace SCIRun {
 
         struct SCISHARE ModuleExecutor
         {
-          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, const ProducerInterface* producer) : module_(mod), lookup_(lookup), producer_(producer)
+          ModuleExecutor(Networks::ModuleHandle mod, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) : module_(mod), lookup_(lookup), producer_(producer)
           {
           }
           void run()
@@ -56,7 +56,7 @@ namespace SCIRun {
 
           Networks::ModuleHandle module_;
           const Networks::ExecutableLookup* lookup_;
-          const ProducerInterface* producer_;
+          ProducerInterfacePtr producer_;
         };
 
 

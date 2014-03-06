@@ -83,7 +83,7 @@ namespace DynamicExecutor {
             if (shouldLog_)
               log_ << Core::Logging::DEBUG_LOG << "~~~Processing " << unit->get_id();
 
-            ModuleExecutor executor(unit, lookup_, producer_.get());
+            ModuleExecutor executor(unit, lookup_, producer_);
             //TODO: thread pool
             boost::thread t(boost::bind(&ModuleExecutor::run, executor));
           }
