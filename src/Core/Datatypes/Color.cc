@@ -56,8 +56,8 @@ ColorRGB::ColorRGB(const std::string& rgb) : r_(0), g_(0), b_(0)
   }
   catch (...)
   {
-    //error results in black:
-    r_ = g_ = b_ = 0;
+    //error results in white (so you can see things in viewer):
+    r_ = g_ = b_ = 255;
   }
 }
 
