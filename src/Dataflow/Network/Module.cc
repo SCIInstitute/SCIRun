@@ -135,7 +135,7 @@ void Module::do_execute() throw()
   catch (Core::ExceptionBase& e)
   {
     //TODO: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    //if (false)
+    if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName();
@@ -144,8 +144,7 @@ void Module::do_execute() throw()
       error(ostr.str());
     }
 
-    //TODO: condition this block on logging level
-    if (false)
+    if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";

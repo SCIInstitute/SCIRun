@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World
 
-#ifndef CORE_DATATYPES_COLORMAP_H
-#define CORE_DATATYPES_COLORMAP_H 
+// Attributes
+attribute vec3  aPos;
+attribute vec3  aNormal;
+attribute float aFieldData;
 
-#include <Core/Datatypes/Datatype.h>
-#include <boost/noncopyable.hpp>
-#include <Core/Datatypes/share.h>
+// Outputs to the fragment shader.
+varying vec3    vNormal;
+varying float   vFieldData;
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  class SCISHARE ColorMap : public Datatype
-  {
-  public:
-    explicit ColorMap(const std::string& name);
-
-    virtual ColorMap* clone() const;
-
-    std::string getColorMapName() const {return name_;}
-  private:
-    std::string name_;
-    boost::shared_ptr<class ColorMapImpl> impl_;
-  };
-
-  typedef boost::shared_ptr<ColorMap> ColorMapHandle;
-
-  class SCISHARE StandardColorMapFactory : boost::noncopyable
-  {
-  public:
-    static ColorMapHandle create(const std::string& name);
-  private:
-    StandardColorMapFactory();
-    static ColorMap rainbow_;
-    static ColorMap grayscale_;
-  };
-
-}}}
-
-
-#endif
+void main( void )
+{
+  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
+  // was generated in gamma space, and we need to convert it to linear space.
+  vNormal  = vec3(uObject * vec4(aNormal, 0.0));
+  vFieldData = aFieldData;
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+}

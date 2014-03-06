@@ -37,7 +37,7 @@ ColorMap::ColorMap(const std::string& name) : name_(name)
 
 ColorMap* ColorMap::clone() const
 {
-  return 0;
+  return new ColorMap(name_);
 }
 
 ColorMapHandle StandardColorMapFactory::create(const std::string& name)

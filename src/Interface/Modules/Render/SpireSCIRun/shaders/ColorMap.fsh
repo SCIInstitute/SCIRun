@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -25,45 +25,20 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
-#ifndef CORE_DATATYPES_COLORMAP_H
-#define CORE_DATATYPES_COLORMAP_H 
-
-#include <Core/Datatypes/Datatype.h>
-#include <boost/noncopyable.hpp>
-#include <Core/Datatypes/share.h>
-
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
-
-  class SCISHARE ColorMap : public Datatype
-  {
-  public:
-    explicit ColorMap(const std::string& name);
-
-    virtual ColorMap* clone() const;
-
-    std::string getColorMapName() const {return name_;}
-  private:
-    std::string name_;
-    boost::shared_ptr<class ColorMapImpl> impl_;
-  };
-
-  typedef boost::shared_ptr<ColorMap> ColorMapHandle;
-
-  class SCISHARE StandardColorMapFactory : boost::noncopyable
-  {
-  public:
-    static ColorMapHandle create(const std::string& name);
-  private:
-    StandardColorMapFactory();
-    static ColorMap rainbow_;
-    static ColorMap grayscale_;
-  };
-
-}}}
-
-
+#ifdef OPENGL_ES
+  #ifdef GL_FRAGMENT_PRECISION_HIGH
+    // Default precision
+    precision highp float;
+  #else
+    precision mediump float;
+  #endif
 #endif
+
+uniform sampler1D uTX0;
+varying float	fFieldData;
+
+void main()
+{
+  vec4 color    = texture1D(uTX0, fFieldData);
+	gl_FragColor  = color;
+}

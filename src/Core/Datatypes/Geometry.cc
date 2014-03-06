@@ -32,6 +32,8 @@
 using namespace SCIRun::Core::Datatypes;
 
 GeometryObject::GeometryObject(DatatypeConstHandle dh) : 
+    mLowestValue(0.0),
+    mHighestValue(0.0),
     data_(dh)
 {
 }
@@ -41,7 +43,10 @@ DatatypeConstHandle GeometryObject::get_underlying() const
   return data_;
 }
 
-GeometryObject::GeometryObject(const GeometryObject& other) : data_(other.data_->clone()) 
+GeometryObject::GeometryObject(const GeometryObject& other) :
+    mLowestValue(0.0),
+    mHighestValue(0.0),
+    data_(other.data_->clone())
 {}
 
 GeometryObject& GeometryObject::operator=(const GeometryObject& other) 
