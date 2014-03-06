@@ -29,17 +29,17 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#include "../namespaces.h"
-#include "SRInterface.h"
-#include "SciBall.h"
-#include "SRCamera.h"
+#include <Interface/Modules/Render/namespaces.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
+#include <Interface/Modules/Render/SpireSCIRun/SciBall.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCamera.h>
 
 #include "spire/src/Hub.h"
 #include "spire/src/InterfaceImplementation.h"
 #include <gl-state/GLState.hpp>
 
-#include "SRCommonAttributes.h"
-#include "SRCommonUniforms.h"
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
 
 #include <Core/Application/Application.h>
 
@@ -524,7 +524,8 @@ void SRInterface::doFrame()
 
 float rainbowRaw[] =
 {
-  0, 0, 0.0, 0.0,    // First bin is ZERO!  1, 0, 0.761505, 0.0,
+  //0, 0, 0.0, 0.0,    // First bin is ZERO!  1, 0, 0.761505, 0.0,
+  1, 0, 0.718638, 1.0,
   1, 0, 0.718638, 1.0,
   1, 0, 0.675771, 1.0,
   1, 0, 0.632903, 1.0,

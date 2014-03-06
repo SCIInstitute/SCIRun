@@ -37,7 +37,7 @@
 #include <Core/Datatypes/Geometry.h>
 #include <boost/shared_ptr.hpp>
 
-#include "../namespaces.h"
+#include <Interface/Modules/Render/namespaces.h>
 #include <spire/Interface.h>
 #include <gl-state/GLState.hpp>
 
