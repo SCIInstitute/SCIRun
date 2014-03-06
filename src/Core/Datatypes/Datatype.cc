@@ -43,3 +43,11 @@ Datatype& Datatype::operator=(const Datatype& rhs)
 {
   return *this;
 }
+
+int AtomicCounter::operator()() const
+{
+  counter_.fetch_add(1);
+  return counter_;
+}
+
+boost::atomic<int> AtomicCounter::counter_(0);

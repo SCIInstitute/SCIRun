@@ -68,10 +68,12 @@ public:
 
   virtual DatatypeHandleOption receive() { return data_; }
   virtual DatatypeSinkInterface* clone() const { return new StubbedDatatypeSink; }
+  virtual bool hasChanged() const { return true; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
 private:
   DatatypeHandleOption data_;
+  int previousId_;
 };
 
 class MockAlgorithmFactory : public AlgorithmFactory

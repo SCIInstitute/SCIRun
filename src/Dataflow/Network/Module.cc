@@ -62,6 +62,7 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info), 
   id_(info_.module_name_, instanceCount_++),
+  inputsChanged_(false),
   has_ui_(hasUi), 
   state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
   executionState_(ModuleInterface::Waiting)
@@ -119,7 +120,8 @@ void Module::do_execute() throw()
   executeBegins_(id_);
   //TODO: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
-  LOG_DEBUG("STARTING MODULE: " << id_.id_);
+  //TODO: need separate logger per module
+  //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
 
   try 
@@ -165,9 +167,11 @@ void Module::do_execute() throw()
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   status("MODULE FINISHED: " + id_.id_);  
-  LOG_DEBUG("MODULE FINISHED: " << id_.id_);
+  //TODO: need separate logger per module
+  //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
   resetStateChanged();
+  inputsChanged_ = false;
   executeEnds_(id_);
 }
 
@@ -218,12 +222,15 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
   }
 
-  if (iports_[id]->isDynamic())
+  auto port = iports_[id];
+  if (port->isDynamic())
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
-
-  return iports_[id]->getData();
+  
+  if (!inputsChanged_)
+    inputsChanged_ = port->hasChanged();
+  return port->getData();
 }
 
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
@@ -453,7 +460,12 @@ void Module::setExecutionState(ModuleInterface::ExecutionState state)
 
 bool Module::needToExecute() const  
 {
-  return newStatePresent();
-    //TODO: || inputsChanged()
+  return true;
+  //return newStatePresent() || inputsChanged();
     //TODO: || !oports_cached()
+}
+
+bool Module::inputsChanged() const
+{
+  return inputsChanged_;
 }

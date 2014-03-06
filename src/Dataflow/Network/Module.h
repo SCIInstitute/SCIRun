@@ -237,6 +237,8 @@ namespace Networks {
     template <class T>
     boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
+    boost::atomic<bool> inputsChanged_;
+    bool inputsChanged() const;
 
     friend class Builder;
     size_t add_input_port(InputPortHandle);

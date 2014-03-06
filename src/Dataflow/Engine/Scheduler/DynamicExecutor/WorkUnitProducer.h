@@ -54,11 +54,6 @@ namespace SCIRun {
           {
           }
 
-          ~ModuleProducer()
-          {
-            log_ << Core::Logging::DEBUG_LOG << "~Producer";
-          }
-
           virtual void enqueueReadyModules() const
           {
             if (!isDone())
