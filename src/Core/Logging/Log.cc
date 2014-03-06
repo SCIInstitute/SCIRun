@@ -136,7 +136,7 @@ namespace SCIRun
           case EMERG:  cpp_level = log4cpp::Priority::EMERG;  break;
           case ALERT:  cpp_level = log4cpp::Priority::ALERT;  break;
           case CRIT:   cpp_level = log4cpp::Priority::CRIT;   break;
-          case ERROR:  cpp_level = log4cpp::Priority::ERROR;  break;
+          case ERROR_LOG:  cpp_level = log4cpp::Priority::ERROR;  break;
           case WARN:   cpp_level = log4cpp::Priority::WARN;   break;
           case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
           case INFO:   cpp_level = log4cpp::Priority::INFO;   break;

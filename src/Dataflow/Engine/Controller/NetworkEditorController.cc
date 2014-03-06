@@ -289,7 +289,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
     }
     catch (ExceptionBase& e)
     {
-      Log::get() << ERROR << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      Log::get() << ERROR_LOG << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
       theNetwork_->clear();
       throw;
     }
