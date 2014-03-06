@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Dataflow::Networks;
 
-SimpleSink::SimpleSink() : hasData_(false), previousId_(-1)
+SimpleSink::SimpleSink() : previousId_(-1), hasData_(false)
 {
 }
 
