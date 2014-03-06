@@ -103,6 +103,9 @@ public:
   /// Remove all SCIRun 5 objects.
   void removeAllGeomObjects();
 
+  /// Garbage collect all invalid objects not given in the valid objects vector.
+  void gcInvalidObjects(const std::vector<std::string>& validObjects);
+  
   /// Handles a new geometry object.
   void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
 
