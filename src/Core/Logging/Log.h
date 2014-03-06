@@ -121,6 +121,6 @@ namespace SCIRun
 #define LOG_DEBUG(str)
 #endif
 
-
+#define LOG_DEBUG_TO(log, str) log << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif

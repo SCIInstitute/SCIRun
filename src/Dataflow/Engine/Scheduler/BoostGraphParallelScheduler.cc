@@ -38,7 +38,6 @@ BoostGraphParallelScheduler::BoostGraphParallelScheduler(const ModuleFilter& fil
 
 ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const NetworkInterface& network) const
 {
-  //LOG_DEBUG("BoostGraphParallelScheduler::schedule");
   NetworkGraphAnalyzer graphAnalyzer(network, filter_);
   NetworkGraphAnalyzer::Graph& g = graphAnalyzer.graph();
 
@@ -68,6 +67,5 @@ ParallelModuleExecutionOrder BoostGraphParallelScheduler::schedule(const Network
     [&](int vertex){ return std::make_pair(time[vertex], graphAnalyzer.moduleAt(vertex)); }
   );
 
-  //LOG_DEBUG("returning from BoostGraphParallelScheduler::schedule");
   return ParallelModuleExecutionOrder(map);
 }

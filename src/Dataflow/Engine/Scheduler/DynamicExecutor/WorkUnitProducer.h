@@ -50,31 +50,39 @@ namespace SCIRun {
           ModuleProducer(const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work) :
           lookup_(lookup), bounds_(bounds), network_(network), lock_(lock),
-            work_(work), doneCount_(0)
+            work_(work), doneCount_(0), shouldLog_(false)
           {
+            log_.setVerbose(shouldLog_);
           }
 
           virtual void enqueueReadyModules() const
           {
+            Core::Thread::Guard g(lock_->get());
             if (!isDone())
             {
-              ParallelModuleExecutionOrder order;
+              auto order = scheduler_.schedule(*network_);
+              if (shouldLog_)
               {
-                Core::Thread::Guard g(lock_->get());
-                order = scheduler_.schedule(*network_);
+                std::ostringstream ostr;
+                ostr << "Producer received this ordering: \n" << order << std::endl;
+                log_ << Core::Logging::DEBUG_LOG << ostr.str() << std::endl;
+                log_ << Core::Logging::DEBUG_LOG << "Producer processing min group " << order.minGroup();
               }
-              log_ << Core::Logging::DEBUG_LOG << "Producer processing min group " << order.minGroup();
               auto groupIter = order.getGroup(order.minGroup());
               BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& mod, groupIter)
               {
                 auto module = network_->lookupModule(mod.second);
 
-                if (module->executionState() != Networks::ModuleInterface::Executing)
+                if (module->executionState() == Networks::ModuleInterface::Waiting)
                 {
-                  log_ << Core::Logging::DEBUG_LOG << "Producer pushing module " << mod.second << std::endl;
+                  if (shouldLog_)
+                    log_ << Core::Logging::DEBUG_LOG << "Producer pushing module " << mod.second << std::endl;
+                  
                   work_->push(module);
                   doneCount_.fetch_add(1);
-                  log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
+                  
+                  if (shouldLog_)
+                    log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
                 }
               }
             }
@@ -84,14 +92,16 @@ namespace SCIRun {
           {
             ScopedExecutionBoundsSignaller signaller(bounds_, [=]() { return lookup_->errorCode(); });
 
-            log_ << Core::Logging::DEBUG_LOG << "Producer started" << std::endl;
+            if (shouldLog_)
+              log_ << Core::Logging::DEBUG_LOG << "Producer started" << std::endl;
 
             enqueueReadyModules();
 
             while (!isDone())
               boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
 
-            log_ << Core::Logging::DEBUG_LOG << "Producer is done." << std::endl;
+            if (shouldLog_)
+              log_ << Core::Logging::DEBUG_LOG << "Producer is done." << std::endl;
           }
 
           bool isDone() const 
@@ -117,6 +127,7 @@ namespace SCIRun {
           ModuleWorkQueuePtr work_;
           mutable boost::atomic<int> doneCount_;
           static Core::Logging::Log& log_;
+          bool shouldLog_;
         };
 
         typedef boost::shared_ptr<ModuleProducer> ModuleProducerPtr;

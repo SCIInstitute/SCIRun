@@ -102,13 +102,6 @@ namespace DynamicExecutor {
       return !work_->empty();
     }
 
-    //void setProducer(boost::shared_ptr<ProducerInterface> producer) 
-    //{ 
-    //  if (shouldLog_)
-    //    log_ << Core::Logging::DEBUG_LOG << "Consumer has producer set." << std::endl;
-    //  producer_ = producer; 
-    //}
-
   private:
     ModuleWorkQueuePtr work_;
     ProducerInterfacePtr producer_;
