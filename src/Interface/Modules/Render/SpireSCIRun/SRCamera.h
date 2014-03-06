@@ -32,7 +32,7 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
-#include "SRInterface.h"
+#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
 
 #include <spire/src/Common.h>
 #include <arc-look-at/ArcLookAt.hpp>

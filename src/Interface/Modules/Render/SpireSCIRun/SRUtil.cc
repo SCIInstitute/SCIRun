@@ -29,9 +29,9 @@
 /// \author James Hughes
 /// \date   August 2013
 
-#include "../namespaces.h"
+#include <Interface/Modules/Render/namespaces.h>
 
-#include "SRUtil.h"
+#include <Interface/Modules/Render/SpireSCIRun/SRUtil.h>
 
 #include "spire/src/Common.h"
 
