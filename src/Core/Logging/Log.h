@@ -52,7 +52,7 @@ namespace SCIRun
         EMERG,  // System is unusable (e.g. multiple parts down)
         ALERT,  // System is unusable (e.g. single part down)
         CRIT,   // Failure in non-primary system (e.g. backup site down)
-        ERROR,  // Non-urgent failures; relay to developers
+        ERROR_LOG,  // Non-urgent failures; relay to developers
         WARN,   // Not an error, but indicates error will occur if nothing done.
         NOTICE, // Events that are unusual, but not error conditions.
         INFO,   // Normal operational messages. No action required.

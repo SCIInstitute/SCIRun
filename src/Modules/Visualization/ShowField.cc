@@ -35,6 +35,7 @@
 #include <Core/Datatypes/Color.h>
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/Logging/Log.h>
 
 #include <boost/foreach.hpp>
 
@@ -154,9 +155,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     }
   }
   double valueRange = valueRangeHigh - valueRangeLow;
-  std::cout << "valueRange " << valueRange << std::endl;
-  std::cout << "valueRangeHigh " << valueRangeHigh << std::endl;
-  std::cout << "valueRangeLow " << valueRangeLow << std::endl;
+  LOG_DEBUG("valueRange " << valueRange << std::endl);
+  LOG_DEBUG("valueRangeHigh " << valueRangeHigh << std::endl);
+  LOG_DEBUG("valueRangeLow " << valueRangeLow << std::endl);
 
   // Build vertex buffer.
   size_t i = 0;
