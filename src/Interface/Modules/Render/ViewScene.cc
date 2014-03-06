@@ -92,11 +92,21 @@ void ViewSceneDialog::moduleExecuted()
     if (spire == nullptr)
       return;
 
+    std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
       spire->handleGeomObject(obj);
+      validObjects.push_back(obj->objectName);
     }
+    spire->gcInvalidObjects(validObjects);
+  }
+  else
+  {
+    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    if (spire == nullptr)
+      return;
+    spire->removeAllGeomObjects();
   }
 }
 

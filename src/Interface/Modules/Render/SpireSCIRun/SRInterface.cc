@@ -329,6 +329,23 @@ void SRInterface::removeAllGeomObjects()
 }
 
 //------------------------------------------------------------------------------
+void SRInterface::gcInvalidObjects(const std::vector<std::string>& validObjects)
+{
+  for (auto it = mSRObjects.begin(); it != mSRObjects.end();)
+  {
+    if (std::find(validObjects.begin(), validObjects.end(), it->mName) == validObjects.end())
+    {
+      mSpire->removeObject(it->mName);
+      it = mSRObjects.erase(it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
 void SRInterface::beginFrame()
 {
   /// \todo Move this outside of the interface!
