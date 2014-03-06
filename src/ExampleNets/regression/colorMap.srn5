@@ -26,7 +26,7 @@
 									<name>ColorMapName</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>Gray</value>
+										<value>Rainbow</value>
 									</value>
 								</second>
 							</item>
@@ -54,7 +54,7 @@
 									<name>Filename</name>
 									<value>
 										<which>2</which>
-										<value>/Users/dan/Desktop/Dev/_scirun/unittest/sciruntests/SCIRunUnitTestData/SCIRun5/UnitTests/latVolWithNormData.fld</value>
+										<value>E:/scirun/trunk_ref/SCIRunUnitTestData/SCIRun5/UnitTests/latVolWithNormData.fld</value>
 									</value>
 								</second>
 							</item>
@@ -72,7 +72,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>7</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -83,6 +83,18 @@
 									<value>
 										<which>3</which>
 										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceInvertNormals</name>
+								</first>
+								<second>
+									<name>FaceInvertNormals</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
 									</value>
 								</second>
 							</item>
