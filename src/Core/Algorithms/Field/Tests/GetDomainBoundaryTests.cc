@@ -152,12 +152,12 @@ TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
-class GetDomainBoundaryTests1 : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, int, int, int> >
+class GetDomainBoundaryTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, int, int, int> >
 {
 public:
   FieldHandle boundary;
   SparseRowMatrixHandle unused;
-  ~GetDomainBoundaryTests1() {} 
+  ~GetDomainBoundaryTestsParameterized() {} 
 
 protected:
   virtual void SetUp()
@@ -192,9 +192,9 @@ protected:
 
 };
 
-TEST_P(GetDomainBoundaryTests1, LatVolBoundry_Parameterized)
+TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
 {
-    EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTests1); 
+    EXPECT_NO_FATAL_FAILURE(GetDomainBoundaryTestsParameterized); 
     //EXPECT_EQ(0, module->boundary->vmesh()->num_nodes()); 
     //ASSERT_THAT(boundary, NotNull());
     //EXPECT_EQ(expectedBoundaryNodes, boundary->vmesh()->num_nodes());
@@ -204,7 +204,7 @@ TEST_P(GetDomainBoundaryTests1, LatVolBoundry_Parameterized)
 
 INSTANTIATE_TEST_CASE_P(
   LatVolBoundry_Parameterized,
-  GetDomainBoundaryTests1,
+  GetDomainBoundaryTestsParameterized,
   Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
   );
 
