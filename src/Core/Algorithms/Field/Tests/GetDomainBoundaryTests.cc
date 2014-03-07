@@ -136,7 +136,6 @@ TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
   runTest(true, true, 4, -1, -1);//f, crashes GUI
 }
 
-
 TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 {
   GetDomainBoundaryAlgo algo;
@@ -154,6 +153,7 @@ TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
+
 class GetDomainBoundaryTests1 : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, bool, int> >//, int, int> >
 {
 public:
@@ -221,7 +221,7 @@ TEST_P(GetDomainBoundaryTests1, LatVolBoundary_Parameterized)
 INSTANTIATE_TEST_CASE_P(
   LatVolBoundary_CheckFailures,
   GetDomainBoundaryTests1,
-  Combine(Bool(), Bool(), Bool(), Bool(), Bool(), Values(1,2,3,4)) //, Values(1,4), Values(1,4)) 
+  Combine(Bool(), Bool(), Bool(), Bool(), Bool(), Values(1,2,3,4)) 
   );
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
