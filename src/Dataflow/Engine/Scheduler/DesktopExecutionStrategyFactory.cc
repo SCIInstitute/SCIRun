@@ -62,6 +62,7 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrateg
 
 ExecutionStrategyHandle DesktopExecutionStrategyFactory::createDefault() const
 {
+  const ExecutionStrategy::Type latestWorkingVersion = ExecutionStrategy::DYNAMIC_PARALLEL;
   if (threadMode_)
   {
     LOG_DEBUG("found thread mode: " << *threadMode_);
@@ -72,11 +73,11 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::createDefault() const
     if (*threadMode_ == "dynamicParallel")
       return create(ExecutionStrategy::DYNAMIC_PARALLEL);
     else
-      return create(ExecutionStrategy::BASIC_PARALLEL); //TODO: update this to best working version
+      return create(latestWorkingVersion);
   }
   else
   {
-    LOG_DEBUG("no thread mode found, using basic parallel");
-    return create(ExecutionStrategy::BASIC_PARALLEL);  //TODO: update this to best working version
+    LOG_DEBUG("no thread mode found, using dynamic parallel"); //TODO: update this to best working version
+    return create(latestWorkingVersion);  
   }
 }
