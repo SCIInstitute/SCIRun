@@ -28,7 +28,6 @@
 
 #include <iostream>
 #include <QtGui>
-#include <boost/range/join.hpp>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 
@@ -43,6 +42,7 @@
 #include <Interface/Application/Utility.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Interface/Modules/Factory/ModuleDialogFactory.h>
+#include <Interface/Application/PortWidgetManager.h>
 
 //TODO: BAD, or will we have some sort of Application global anyway?
 #include <Interface/Application/SCIRunMainWindow.h>
@@ -124,6 +124,7 @@ namespace
 ModuleWidget::ModuleWidget(NetworkEditor* ed, const QString& name, SCIRun::Dataflow::Networks::ModuleHandle theModule, 
   QWidget* parent /* = 0 */)
   : QFrame(parent),
+  ports_(new PortWidgetManager),
   deletedFromGui_(true),
   colorLocked_(false),
   theModule_(theModule),
@@ -245,7 +246,7 @@ void ModuleWidget::addInputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPro
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    ports_.addPort(w);
+    ports_->addPort(w);
     ++i;
   }
   addInputPortsToLayout();
@@ -273,7 +274,7 @@ void ModuleWidget::addOutputPorts(const SCIRun::Dataflow::Networks::ModuleInfoPr
     auto type = port->get_typename();
     OutputPortWidget* w = new OutputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, moduleId, port->id(), i, port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
-    ports_.addPort(w);
+    ports_->addPort(w);
     ++i;
   }
   addOutputPortsToLayout();
@@ -300,7 +301,7 @@ void ModuleWidget::addOutputPortsToLayout()
     outputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(-1, outputPortLayout_);
   }
-  ports_.addOutputsToLayout(outputPortLayout_);
+  ports_->addOutputsToLayout(outputPortLayout_);
 }
 
 void PortWidgetManager::addInputsToLayout(QHBoxLayout* layout)
@@ -324,7 +325,7 @@ void ModuleWidget::addInputPortsToLayout()
     inputPortLayout_->setAlignment(Qt::AlignLeft);
     verticalLayout->insertLayout(0, inputPortLayout_);
   }
-  ports_.addInputsToLayout(inputPortLayout_);
+  ports_->addInputsToLayout(inputPortLayout_);
 }
 
 void PortWidgetManager::reindexInputs()
@@ -356,7 +357,7 @@ void ModuleWidget::addDynamicPort(const ModuleId& mid, const PortId& pid)
     InputPortWidget* w = new InputPortWidget(QString::fromStdString(port->get_portname()), to_color(PortColorLookup::toColor(type)), type, mid, port->id(), port->getIndex(), port->isDynamic(), connectionFactory_, closestPortFinder_, this);
     hookUpGeneralPortSignals(w);
     connect(this, SIGNAL(connectionAdded(const SCIRun::Dataflow::Networks::ConnectionDescription&)), w, SLOT(MakeTheConnection(const SCIRun::Dataflow::Networks::ConnectionDescription&)));
-    ports_.addPort(w);
+    ports_->addPort(w);
     inputPortLayout_->addWidget(w);
     Q_EMIT dynamicPortChanged();
   }
@@ -366,7 +367,7 @@ void ModuleWidget::removeDynamicPort(const ModuleId& mid, const PortId& pid)
 {
   if (mid.id_ == moduleId_ && !deleting_)
   {
-    if (ports_.removeDynamicPort(pid, inputPortLayout_))
+    if (ports_->removeDynamicPort(pid, inputPortLayout_))
     {
       Q_EMIT dynamicPortChanged();
     }
@@ -394,7 +395,7 @@ bool PortWidgetManager::removeDynamicPort(const PortId& pid, QHBoxLayout* layout
 void ModuleWidget::printPortPositions() const
 {
   std::cout << "Port positions for module " << moduleId_ << std::endl;
-  Q_FOREACH(PortWidget* p, ports_.getAllPorts())
+  Q_FOREACH(PortWidget* p, ports_->getAllPorts())
   {
     std::cout << "\t" << p->pos();
   }
@@ -406,7 +407,7 @@ ModuleWidget::~ModuleWidget()
   //TODO: would rather disconnect THIS from removeDynamicPort signaller in DynamicPortManager; need a method on NetworkEditor or something.
   //disconnect()
   deleting_ = true;
-  Q_FOREACH (PortWidget* p, ports_.getAllPorts())
+  Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->deleteConnections();
   
   GuiLogger::Instance().log("Module deleted.");
@@ -425,7 +426,7 @@ ModuleWidget::~ModuleWidget()
 
 void ModuleWidget::trackConnections()
 {
-  Q_FOREACH (PortWidget* p, ports_.getAllPorts())
+  Q_FOREACH (PortWidget* p, ports_->getAllPorts())
     p->trackConnections();
 }
 

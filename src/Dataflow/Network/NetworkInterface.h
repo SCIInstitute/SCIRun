@@ -89,6 +89,7 @@ namespace Networks {
     virtual void incrementErrorCode(const ModuleId& moduleId) = 0;
     virtual NetworkGlobalSettings& settings() = 0;
     virtual void setModuleExecutionState(ModuleInterface::ExecutionState state) = 0;
+    virtual void clear() = 0;
 
     virtual std::string toString() const = 0;
   };

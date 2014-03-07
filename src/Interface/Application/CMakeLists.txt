@@ -69,6 +69,7 @@ SET(Interface_Application_HEADERS
   ModuleWidget.h
   ModuleProxyWidget.h
   NetworkExecutionProgressBar.h
+  PortWidgetManager.h
   ProvenanceWindow.h
   SCIRunMainWindow.h
   Node.h

@@ -109,12 +109,13 @@ bool FileOpenCommand::execute()
 
   try
   {
-    openedFile_ = XMLSerializer::load_xml<NetworkFile>(filename_);
+    auto openedFile = XMLSerializer::load_xml<NetworkFile>(filename_);
 
-    if (openedFile_)
+    if (openedFile)
     {
       networkEditor_->clear();
-      networkEditor_->loadNetwork(openedFile_);
+      networkEditor_->loadNetwork(openedFile);
+      openedFile_ = openedFile;
       GuiLogger::Instance().log("File load done.");
       return true;
     }

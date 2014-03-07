@@ -51,6 +51,8 @@ class DeveloperConsole;
 class PreferencesWindow;
 class PythonConsoleWidget;
 
+typedef boost::variant<QAction*, QWidget*> InputWidget;
+
 class SCIRunMainWindow : public QMainWindow, public Ui::SCIRunMainWindow
 {
 	Q_OBJECT
@@ -63,12 +65,10 @@ public:
   void saveNetworkFile(const QString& fileName);
   void loadNetworkFile(const QString& filename);
   void setupQuitAfterExecute();
-  void executeAll();
   void quit();
   void runPythonScript(const QString& scriptFileName);
-
-  typedef boost::variant<QAction*, QWidget*> InputWidget;
-
+public Q_SLOTS:
+  void executeAll();
 protected:
   virtual void closeEvent(QCloseEvent* event);
 private:

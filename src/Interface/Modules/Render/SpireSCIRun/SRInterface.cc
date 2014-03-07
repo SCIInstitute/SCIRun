@@ -40,6 +40,8 @@
 #include "SRCommonAttributes.h"
 #include "SRCommonUniforms.h"
 
+#include <Core/Application/Application.h>
+
 using namespace std::placeholders;
 
 namespace SCIRun {
@@ -73,6 +75,29 @@ SRInterface::SRInterface(std::shared_ptr<spire::Context> context,
   shaderFiles.push_back(std::make_pair("DirPhong.vsh", spire::Interface::VERTEX_SHADER));
   shaderFiles.push_back(std::make_pair("DirPhong.fsh", spire::Interface::FRAGMENT_SHADER));
   mSpire->addPersistentShader("DirPhong", shaderFiles);
+
+  // Load scirun5 arrow asset this code needs to be update with file error
+  // checking in the entity system renderer.
+  auto baseAssetDirQT = SCIRun::Core::Application::Instance().executablePath() / "Assets";
+  std::string baseAssetDir = baseAssetDirQT.string();
+  std::shared_ptr<std::vector<uint8_t>> rawVBO(new std::vector<uint8_t>());
+  std::shared_ptr<std::vector<uint8_t>> rawIBO(new std::vector<uint8_t>());
+  std::ifstream arrowFile(baseAssetDir + "/UnitArrow.sp", std::ios::in | std::ios::binary);
+  spire::Interface::loadProprietarySR5AssetFile(arrowFile, *rawVBO, *rawIBO);
+
+  std::vector<std::string> attribNames;
+  attribNames.push_back("aPos");
+  attribNames.push_back("aNormal");
+  spire::Interface::IBO_TYPE iboType = spire::Interface::IBO_16BIT;
+
+  mArrowVBOName = "arrowVBO";
+  mArrowIBOName = "arrowIBO";
+  mSpire->addVBO(mArrowVBOName, rawVBO, attribNames);
+  mSpire->addIBO(mArrowIBOName, rawIBO, iboType);
+
+  mArrowObjectName = "arrowObject";
+  mSpire->addObject(mArrowObjectName);
+  mSpire->addPassToObject(mArrowObjectName, "DirPhong", mArrowVBOName, mArrowIBOName, spire::Interface::TRIANGLES);
 }
 
 //------------------------------------------------------------------------------
@@ -322,10 +347,10 @@ void SRInterface::doFrame()
   mSceneBBox.reset();
 
   // Set directional light source (in world space).
-  //glm::vec3 viewDir = viewToWorld[2].xyz();
-  //viewDir = -viewDir; // Cameras look down -Z.
-  //mSpire->addGlobalUniform("uLightDirWorld", viewDir);
-  mSpire->addGlobalUniform("uLightDirWorld", glm::vec3(1.0f, 0.0f, 0.0f));
+  glm::vec3 viewDir = viewToWorld[2].xyz();
+  viewDir = -viewDir; // Cameras look down -Z.
+  mSpire->addGlobalUniform("uLightDirWorld", viewDir);
+  //mSpire->addGlobalUniform("uLightDirWorld", glm::vec3(1.0f, 0.0f, 0.0f));
 
   for (auto it = mSRObjects.begin(); it != mSRObjects.end(); ++it)
   {
@@ -356,6 +381,82 @@ void SRInterface::doFrame()
       }
       mSpire->renderObject(it->mName, passit->passName);
     }
+  }
+
+  // Now render the axes on the screen.
+  float aspect = static_cast<float>(640) / static_cast<float>(480);
+  glm::mat4 projection = glm::perspective(0.59f, aspect, 1.0f, 2000.0f);
+
+  // Build world transform for all axes. Rotates about uninverted camera's
+  // view, then translates to a specified corner on the screen.
+  glm::mat4 axesRot = mCamera->getWorldToView();
+  axesRot[3][0] = 0.0f;
+  axesRot[3][1] = 0.0f;
+  axesRot[3][2] = 0.0f;
+  glm::mat4 invCamTrans = glm::translate(glm::mat4(1.0f), glm::vec3(0.42f, 0.39f, -1.5f));
+  glm::mat4 axesScale = glm::scale(glm::mat4(1.0f), glm::vec3(0.05));;
+  glm::mat4 axesTransform = axesScale * axesRot;
+
+  mSpire->addObjectPassUniform(mArrowObjectName, "uCamViewVec", glm::vec3(0.0f, 0.0f, -1.0f));
+  mSpire->addObjectPassUniform(mArrowObjectName, "uLightDirWorld", glm::vec3(0.0f, 0.0f, -1.0f));
+
+  // Build projection for the axes to use on the screen. The arrors will not
+  // use the camera, but will use the camera's transformation matrix.
+
+  // X Axis
+  {
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), spire::PI / 2.0f, glm::vec3(0.0, 1.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
+
+    mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.5f, 0.01f, 0.01f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
+
+    // Add appropriate projection and object -> world transformations.
+    // Light will always be directed down the camera's axis.
+    mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
+    mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
+
+    mSpire->renderObject(mArrowObjectName);
+  }
+
+  // Y Axis
+  {
+    glm::mat4 xform = glm::rotate(glm::mat4(1.0f), -spire::PI / 2.0f, glm::vec3(1.0, 0.0, 0.0));
+    glm::mat4 finalTrafo = axesTransform * xform;
+
+    mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.01f, 0.5f, 0.01f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
+
+
+    // Add appropriate projection and object -> world transformations.
+    // Light will always be directed down the camera's axis.
+    mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
+    mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
+
+    mSpire->renderObject(mArrowObjectName);
+  }
+
+  // Z Axis
+  {
+    // No rotation at all
+    glm::mat4 finalTrafo = axesTransform;
+
+    mSpire->addObjectPassUniform(mArrowObjectName, "uAmbientColor", glm::vec4(0.01f, 0.01f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uDiffuseColor", glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularColor", glm::vec4(0.5f, 0.5f, 0.5f, 1.0f));
+    mSpire->addObjectPassUniform(mArrowObjectName, "uSpecularPower", 16.0f);
+
+
+    // Add appropriate projection and object -> world transformations.
+    // Light will always be directed down the camera's axis.
+    mSpire->addObjectPassUniform(mArrowObjectName, "uProjIVObject", projection * invCamTrans * finalTrafo);
+    mSpire->addObjectPassUniform(mArrowObjectName, "uObject", finalTrafo);
+
+    mSpire->renderObject(mArrowObjectName);
   }
 
 }
