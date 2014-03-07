@@ -47,9 +47,9 @@ TEST(ColorTests, CanParseString)
   EXPECT_EQ(c, c2);
 }
 
-TEST(ColorTests, EmptyStringYieldsBlack)
+TEST(ColorTests, EmptyStringYieldsWhite)
 {
-  ColorRGB c(0,0,0);
+  ColorRGB c(255,255,255);
   ColorRGB c2("");
   EXPECT_EQ(c, c2);
 }
