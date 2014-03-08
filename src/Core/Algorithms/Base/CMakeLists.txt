@@ -55,5 +55,5 @@ TARGET_LINK_LIBRARIES(Algorithms_Base
 
 ADD_DEPENDENCIES(Algorithms_Base Boost_external)
 
-ADD_SUBDIRECTORY(Tests)
+SCIRUN_ADD_TEST_DIR(Tests)
 
