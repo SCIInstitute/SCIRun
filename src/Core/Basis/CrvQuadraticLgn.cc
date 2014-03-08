@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : CrvQuadraticLgn.cc
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 04 2004
+///   @file    CrvQuadraticLgn.cc
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Dec 04 2004
 
 #include <Core/Basis/CrvQuadraticLgn.h>
 

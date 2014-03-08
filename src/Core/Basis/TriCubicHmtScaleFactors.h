@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : TriCubicHmtScaleFactors.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Mar 01 2005
+///   @file    TriCubicHmtScaleFactors.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Mar 01 2005
 
 
 // NOTE: THIS FILE NEEDS TO BE CHANGED: SCALEFACTORS NEED TO BE COMPUTED

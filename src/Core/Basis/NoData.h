@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : NoData.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Mon Aug 23 09:57:14 2004
+///    @file    NoData.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Mon Aug 23 09:57:14 2004
 
 #ifndef CORE_BASIS_NODATA_H
 #define CORE_BASIS_NODATA_H 1

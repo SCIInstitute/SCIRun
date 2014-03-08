@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : HexTriquadraticLgn.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 3 2004
+///    @file    HexTriquadraticLgn.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Dec 3 2004
 
 #ifndef CORE_BASIS_HEXTRIQUADRATICLGN_H
 #define CORE_BASIS_HEXTRIQUADRATICLGN_H 1

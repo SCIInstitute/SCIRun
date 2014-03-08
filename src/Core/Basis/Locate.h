@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : Locate.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Oct 08 2005
+///    @file    Locate.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Oct 08 2005
 
 #ifndef CORE_BASIS_LOCATE_H
 #define CORE_BASIS_LOCATE_H 1

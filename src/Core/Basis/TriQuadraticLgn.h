@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : TriQuadraticLgn.h
-//    Author : Martin Cole, Frank Sachse
-//    Date   : Dec 04 2004
+///   @file    TriQuadraticLgn.h
+///   @author  Martin Cole, Frank Sachse
+///   @date    Dec 04 2004
  
 #ifndef CORE_BASIS_TRIQUADRATICLGN_H
 #define CORE_BASIS_TRIQUADRATICLGN_H 1

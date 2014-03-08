@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Array3.h: Interface to dynamic 3D array class
+/**
+ *@file  Array3.h 
+ *@brief Interface to dynamic 3D array class
  *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   March 1994
+ *@author Steven G. Parker
+ * 	  Department of Computer Science
+ * 	  University of Utah
+ *@date	  March 1994
  *
  */
 

@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Array2.h: Interface to dynamic 2D array class
+/**
+ *@file   Array2.h
+ *@brief  Interface to dynamic 2D array class
  *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   March 1994
+ *@author Steven G. Parker
+ * 	  Department of Computer Science
+ * 	  University of Utah
+ *@date	  March 1994
  *
  */
 
@@ -94,11 +94,11 @@ public:
   }
 
   //////////
-  //Returns number of rows
+  ///Returns number of rows
   inline size_t dim1() const {return impl_.shape()[0];}
 
   //////////
-  //Returns number of cols
+  ///Returns number of cols
   inline size_t dim2() const {return impl_.shape()[1];}
 
   impl_type& getImpl() { return impl_; }

@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : PrismCubicHmt.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 1 2004
+///    @file    PrismCubicHmt.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Dec 1 2004
 
 #ifndef CORE_BASIS_PRISMCUBICHMT_H
 #define CORE_BASIS_PRISMCUBICHMT_H 1

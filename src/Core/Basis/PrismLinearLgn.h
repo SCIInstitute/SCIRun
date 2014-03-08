@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : PrismLinearLgn.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 04 2004
+///   @file    PrismLinearLgn.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Dec 04 2004
 
 #ifndef CORE_BASIS_PRISMLINEARLGN_H
 #define CORE_BASIS_PRISMLINEARLGN_H 1

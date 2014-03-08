@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : TetLinearLgn.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 04 2004
+///   @file    TetLinearLgn.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Dec 04 2004
 
 #ifndef CORE_BASIS_TETLINEARLGN_H
 #define CORE_BASIS_TETLINEARLGN_H 1

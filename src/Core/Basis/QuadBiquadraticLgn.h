@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : QuadBiquadraticLgn.h
-//    Author : Marty Cole, Frank B. Sachse
-//    Date   : 30 Nov 2004
+///   @file    QuadBiquadraticLgn.h
+///   @author  Marty Cole, Frank B. Sachse
+///   @date    30 Nov 2004
 
 #ifndef BASIS_CORE_QUADBIQUADRATICLGN_H
 #define BASIS_CORE_QUADBIQUADRATICLGN_H 1

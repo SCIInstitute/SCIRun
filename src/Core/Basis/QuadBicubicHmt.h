@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : QuadBicubicHmt.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 04 2004
+///    @file    QuadBicubicHmt.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Dec 04 2004
 
 #ifndef CORE_BASIS_QUADBICUBICHMT_H
 #define CORE_BASIS_QUADBICUBICHMT_H 1

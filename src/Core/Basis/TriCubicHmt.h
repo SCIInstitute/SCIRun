@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : TriCubicHmt.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Oct 24 2005
+///   @file    TriCubicHmt.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Oct 24 2005
 
 #ifndef CORE_BASIS_TRICUBICHMT_H
 #define CORE_BASIS_TRICUBICHMT_H 1

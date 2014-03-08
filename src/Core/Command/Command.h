@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+///TODO: Documentation
+
 #ifndef CORE_COMMAND_COMMAND_H
 #define CORE_COMMAND_COMMAND_H
 
