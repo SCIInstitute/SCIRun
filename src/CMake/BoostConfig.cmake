@@ -26,9 +26,7 @@
 #
 # code borrowed from ITK4 HDFMacros.cmake
 
-MACRO(EXTERNAL_BOOST_LIBRARY compress_type cmake_cxx_flags disabled_update)
-
-  MESSAGE(STATUS "disabled_update=${disabled_update}")
+MACRO(EXTERNAL_BOOST_LIBRARY compress_type)
 
   ADD_DEFINITIONS(-DBOOST_ALL_NO_LIB=1)
 
@@ -44,6 +42,10 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type cmake_cxx_flags disabled_update)
     SET(boost_LIB_PREFIX "")
   ELSE()
     SET(boost_LIB_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+  ENDIF()
+
+  IF(BUILD_WITH_PYTHON)
+    ADD_DEFINITIONS(-DBOOST_PYTHON_STATIC_LIB=1)
   ENDIF()
 
   SET(boost_LIBRARY_PATH "${boost_BINARY_DIR}/${boost_LIB_PREFIX}${SCI_BOOST_LIBRARY}${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -67,17 +69,17 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type cmake_cxx_flags disabled_update)
       BINARY_DIR ${boost_BINARY_DIR}
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/boost"
       PATCH_COMMAND ""
-      ${disabled_update}
+      ${DISABLED_UPDATE}
       INSTALL_DIR ""
       INSTALL_COMMAND ""
       #CMAKE_ARGS "-DCMAKE_INSTALL_PREFIX:PATH=${boost_BINARY_DIR}"
       CMAKE_CACHE_ARGS
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-        -DCMAKE_CXX_FLAGS:STRING=${cmake_cxx_flags}
+        -DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS}
         -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
         -DBUILD_PYTHON:BOOL=${BUILD_WITH_PYTHON}
-        -DPYTHON_INCLUDE_DIR:PATH=${PYTHON_INCLUDE_DIR}
-        -DPYTHON_LIBRARY:FILEPATH=${PYTHON_LIBRARY}
+        -DSCI_PYTHON_INCLUDE:PATH=${SCI_PYTHON_INCLUDE}
+        -DSCI_PYTHON_LIBRARY:FILEPATH=${SCI_PYTHON_LIBRARY}
     )
   ELSEIF(${compress_type} MATCHES "ZIP")
     MESSAGE(STATUS "ZIP compress_type NOT implemented")
@@ -126,6 +128,10 @@ MACRO(EXTERNAL_BOOST_LIBRARY compress_type cmake_cxx_flags disabled_update)
   # TODO: how to make boost include dependent on Boost_external?
   ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} Boost_external)
   ADD_DEPENDENCIES(${SCI_BOOST_LIBRARY} ${SCI_BOOST_INCLUDE})
+
+  IF(BUILD_WITH_PYTHON)
+    ADD_DEPENDENCIES(Boost_external Python_external)
+  ENDIF()
 
   IF (CMAKE_GENERATOR MATCHES "Makefiles")
     SET_TARGET_PROPERTIES(${SCI_BOOST_LIBRARY}
