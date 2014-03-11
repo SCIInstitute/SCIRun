@@ -24,12 +24,12 @@
 #  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 #  DEALINGS IN THE SOFTWARE.
 
-MACRO(EXTERNAL_ZLIB_LIBRARY compress_type cmake_cxx_flags disabled_update)
+MACRO(EXTERNAL_ZLIB_LIBRARY compress_type)
 
   SET(zlib_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Externals/zlib")
   SET(zlib_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/Externals/zlib")
 
-  SET(SCI_ZLIB_INCLUDE ${zlib_SOURCE_DIR} CACHE INTERNAL "Zlib include directories." FORCE)
+  SET(SCI_ZLIB_INCLUDE "${zlib_SOURCE_DIR};${zlib_BINARY_DIR}" CACHE INTERNAL "Zlib include directories." FORCE)
   SET(SCI_ZLIB_LIBRARY zlib CACHE INTERNAL "Zlib library name." FORCE)
 
   # TODO: prefix for windows build?
@@ -63,6 +63,8 @@ MACRO(EXTERNAL_ZLIB_LIBRARY compress_type cmake_cxx_flags disabled_update)
         -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
         -DCMAKE_CXX_FLAGS:STRING=${cmake_cxx_flags}
         -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON
+        -DSCI_ZLIB_LIBRARY:FILEPATH=${SCI_ZLIB_LIBRARY}
+        -DSCI_ZLIB_INCLUDE:PATH=${SCI_ZLIB_INCLUDE}
     )
   ELSEIF(${compress_type} MATCHES "ZIP")
   ENDIF()
@@ -76,7 +78,7 @@ MACRO(EXTERNAL_ZLIB_LIBRARY compress_type cmake_cxx_flags disabled_update)
   IF (CMAKE_GENERATOR MATCHES "Makefiles")
     SET_TARGET_PROPERTIES(${SCI_ZLIB_LIBRARY}
       PROPERTIES
-        IMPORTED_LOCATION ${boost_LIBRARY_PATH}
+        IMPORTED_LOCATION ${zlib_LIBRARY_PATH}
     )
   ELSE() # IDEs: Xcode, VS, others...
     SET_TARGET_PROPERTIES(${SCI_ZLIB_LIBRARY}
