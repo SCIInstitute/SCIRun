@@ -32,18 +32,20 @@
 #include <Dataflow/Engine/Scheduler/DynamicParallelExecutionStrategy.h>
 #include <Dataflow/Engine/Scheduler/DesktopExecutionStrategyFactory.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;
 
-DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory() :
+DesktopExecutionStrategyFactory::DesktopExecutionStrategyFactory(const boost::optional<std::string>& threadMode) :
+  threadMode_(threadMode),
   serial_(new SerialExecutionStrategy),
   parallel_(new BasicParallelExecutionStrategy),
   dynamic_(new DynamicParallelExecutionStrategy)
 {
 }
 
-ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type)
+ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrategy::Type type) const
 {
   switch (type)
   {
@@ -55,5 +57,27 @@ ExecutionStrategyHandle DesktopExecutionStrategyFactory::create(ExecutionStrateg
     return dynamic_;
   default:
     THROW_INVALID_ARGUMENT("Unknown execution strategy type.");
+  }
+}
+
+ExecutionStrategyHandle DesktopExecutionStrategyFactory::createDefault() const
+{
+  const ExecutionStrategy::Type latestWorkingVersion = ExecutionStrategy::DYNAMIC_PARALLEL;
+  if (threadMode_)
+  {
+    LOG_DEBUG("found thread mode: " << *threadMode_);
+    if (*threadMode_ == "serial")
+      return create(ExecutionStrategy::SERIAL);
+    if (*threadMode_ == "basicParallel")
+      return create(ExecutionStrategy::BASIC_PARALLEL);
+    if (*threadMode_ == "dynamicParallel")
+      return create(ExecutionStrategy::DYNAMIC_PARALLEL);
+    else
+      return create(latestWorkingVersion);
+  }
+  else
+  {
+    LOG_DEBUG("no thread mode found, using dynamic parallel"); //TODO: update this to best working version
+    return create(latestWorkingVersion);  
   }
 }

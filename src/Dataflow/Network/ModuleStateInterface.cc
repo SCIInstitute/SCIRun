@@ -37,3 +37,26 @@ ModuleStateInterface::~ModuleStateInterface()
 ModuleStateInterfaceFactory::~ModuleStateInterfaceFactory()
 {
 }
+
+StateChangeObserver::StateChangeObserver() : stateChanged_(true) {}
+
+void StateChangeObserver::initStateObserver(ModuleStateInterface* state)
+{
+  if (state)
+    state->connect_state_changed(boost::bind(&StateChangeObserver::stateChanged, this));
+}
+
+void StateChangeObserver::stateChanged()
+{
+  stateChanged_ = true;
+}
+
+void StateChangeObserver::resetStateChanged()
+{
+  stateChanged_ = false;
+}
+
+bool StateChangeObserver::newStatePresent() const
+{
+  return stateChanged_;
+}

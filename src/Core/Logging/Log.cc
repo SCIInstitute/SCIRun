@@ -61,7 +61,75 @@ namespace SCIRun
       public:
         LogImpl() : cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
-          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+          setAppenders();
+        }
+
+        LogImpl(const std::string& name) : cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
+        {
+          //TODO
+          setAppenders();
+          cppLogger_.setAdditivity(false);
+          cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
+        }
+
+        void log(LogLevel level, const std::string& msg)
+        {
+          cppLogger_ << translate(level) << msg;
+        }
+
+        Log::Stream& stream(LogLevel level)
+        {
+          latestStream_ = Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
+          return latestStream_;
+        }
+
+        bool verbose() const 
+        {
+          return cppLogger_.getPriority() == log4cpp::Priority::DEBUG;
+        }
+
+        void setVerbose(bool v)
+        {
+          cppLogger_.setPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
+        }
+
+        void flush()
+        {
+          latestStream_.flush();
+        }
+
+        log4cpp::Priority::PriorityLevel translate(LogLevel level)
+        {
+          // Translate pix logging level to cpp logging level
+          log4cpp::Priority::PriorityLevel cpp_level = log4cpp::Priority::NOTSET;
+          switch (level)
+          {
+          case NOTSET: // allow fall through
+          case EMERG:  cpp_level = log4cpp::Priority::EMERG;  break;
+          case ALERT:  cpp_level = log4cpp::Priority::ALERT;  break;
+          case CRIT:   cpp_level = log4cpp::Priority::CRIT;   break;
+          case ERROR_LOG:  cpp_level = log4cpp::Priority::ERROR;  break;
+          case WARN:   cpp_level = log4cpp::Priority::WARN;   break;
+          case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
+          case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
+          case DEBUG_LOG:  cpp_level = log4cpp::Priority::DEBUG;  break;
+          default:         
+            THROW_INVALID_ARGUMENT("Unknown log level: " + boost::lexical_cast<std::string>((int)level));
+          };
+          if (cpp_level == log4cpp::Priority::NOTSET)
+          {
+            THROW_INVALID_ARGUMENT("Could not set log level.");
+          }
+          return cpp_level;
+        }
+
+      private:
+        log4cpp::Category& cppLogger_;
+        Log::Stream latestStream_;
+
+        void setAppenders()
+        {
+          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
 
           log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
           auto layout1 = new log4cpp::PatternLayout();
@@ -95,65 +163,9 @@ namespace SCIRun
           }
           appender2->setLayout(layout2);
 
-          log4cpp::Category& root = log4cpp::Category::getRoot();
-          root.addAppender(appender1);
-          root.addAppender(appender2);
+          cppLogger_.addAppender(appender1);
+          cppLogger_.addAppender(appender2);
         }
-
-        void log(LogLevel level, const std::string& msg)
-        {
-          cppLogger_ << translate(level) << msg;
-        }
-
-        Log::Stream& stream(LogLevel level)
-        {
-          latestStream_ = Log::Stream(new LogStreamImpl(cppLogger_ << translate(level)));
-          return latestStream_;
-        }
-
-        bool verbose() const 
-        {
-          return cppLogger_.getRootPriority() == log4cpp::Priority::DEBUG;
-        }
-
-        void setVerbose(bool v)
-        {
-          cppLogger_.setPriority(v ? log4cpp::Priority::DEBUG : log4cpp::Priority::INFO);
-        }
-
-        void flush()
-        {
-          latestStream_.flush();
-        }
-
-        log4cpp::Priority::PriorityLevel translate(LogLevel level)
-        {
-          // Translate pix logging level to cpp logging level
-          log4cpp::Priority::PriorityLevel cpp_level = log4cpp::Priority::NOTSET;
-          switch (level)
-          {
-          case NOTSET: // allow fall through
-          case EMERG:  cpp_level = log4cpp::Priority::EMERG;  break;
-          case ALERT:  cpp_level = log4cpp::Priority::ALERT;  break;
-          case CRIT:   cpp_level = log4cpp::Priority::CRIT;   break;
-          case ERROR:  cpp_level = log4cpp::Priority::ERROR;  break;
-          case WARN:   cpp_level = log4cpp::Priority::WARN;   break;
-          case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
-          case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
-          case DEBUG_LOG:  cpp_level = log4cpp::Priority::DEBUG;  break;
-          default:         
-            THROW_INVALID_ARGUMENT("Unknown log level: " + boost::lexical_cast<std::string>((int)level));
-          };
-          if (cpp_level == log4cpp::Priority::NOTSET)
-          {
-            THROW_INVALID_ARGUMENT("Could not set log level.");
-          }
-          return cpp_level;
-        }
-
-      private:
-        log4cpp::Category& cppLogger_;
-        Log::Stream latestStream_;
       };
     }
   }
@@ -163,10 +175,27 @@ Log::Log() : impl_(new LogImpl)
 {
 } 
 
+Log::Log(const std::string& name) : impl_(new LogImpl(name))
+{
+}
+
 Log& Log::get()
 {
   static Log logger;
   return logger;
+}
+
+Log& Log::get(const std::string& name)
+{
+  //TODO: make thread safe
+  static std::map<std::string, boost::shared_ptr<Log>> logs;
+  auto i = logs.find(name);
+  if (i == logs.end())
+  {
+    logs[name] = boost::shared_ptr<Log>(new Log(name));
+    return *logs[name];
+  }
+  return *i->second;
 }
 
 void Log::flush()

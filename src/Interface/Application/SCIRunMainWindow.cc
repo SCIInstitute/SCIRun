@@ -614,6 +614,14 @@ void SCIRunMainWindow::readSettings()
     GuiLogger::Instance().log("Setting read: save before execute = " + QString::number(mode));
     prefs_->setSaveBeforeExecute(mode);
   }
+
+  const QString newViewSceneMouseControls = "newViewSceneMouseControls";
+  if (settings.contains(newViewSceneMouseControls))
+  {
+    bool mode = settings.value(newViewSceneMouseControls).toBool();
+    GuiLogger::Instance().log("Setting read: newViewSceneMouseControls = " + QString::number(mode));
+    Core::Preferences::Instance().useNewViewSceneMouseControls = mode;
+  }
 }
 
 void SCIRunMainWindow::writeSettings()
@@ -628,6 +636,7 @@ void SCIRunMainWindow::writeSettings()
   settings.setValue("connectionPipeType", networkEditor_->connectionPipelineType());
   settings.setValue("disableModuleErrorDialogs", prefs_->disableModuleErrorDialogs());
   settings.setValue("saveBeforeExecute", prefs_->saveBeforeExecute());
+  settings.setValue("newViewSceneMouseControls", Core::Preferences::Instance().useNewViewSceneMouseControls);
 }
 
 namespace

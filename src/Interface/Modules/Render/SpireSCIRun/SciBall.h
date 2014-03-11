@@ -34,7 +34,7 @@
 
 #include <cstdint>
 
-#include "../namespaces.h"
+#include <Interface/Modules/Render/namespaces.h>
 
 #include "spire/Interface.h"
 

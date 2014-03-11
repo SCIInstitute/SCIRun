@@ -44,6 +44,7 @@ namespace Datatypes {
     int r_, g_, b_;
   public:
     ColorRGB();
+    explicit ColorRGB(const std::string& rgb);
     ColorRGB(int, int, int);
 
     inline bool operator==(const ColorRGB& c) const {
@@ -57,6 +58,8 @@ namespace Datatypes {
     inline int r() const {return r_;}
     inline int g() const {return g_;}
     inline int b() const {return b_;}
+
+    std::string toString() const;
   };
 
   typedef boost::shared_ptr<ColorRGB> ColorRGBHandle;

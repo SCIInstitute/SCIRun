@@ -29,9 +29,9 @@
 /// \author James Hughes
 /// \date   April 2013
 
-#include "../namespaces.h"
+#include <Interface/Modules/Render/namespaces.h>
 
-#include "SciBall.h"
+#include <Interface/Modules/Render/SpireSCIRun/SciBall.h>
 
 #include "spire/src/GLMathUtil.h"
 

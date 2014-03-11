@@ -62,8 +62,10 @@ Module::Module(const ModuleLookupInfo& info,
   const std::string& version)
   : info_(info), 
   id_(info_.module_name_, instanceCount_++),
+  inputsChanged_(false),
   has_ui_(hasUi), 
-  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState)
+  state_(stateFactory ? stateFactory->make_state(info.module_name_) : new NullModuleState),
+  executionState_(ModuleInterface::Waiting)
 {
   iports_.set_module(this);
   oports_.set_module(this);
@@ -80,8 +82,8 @@ Module::Module(const ModuleLookupInfo& info,
       log << DEBUG_LOG << "Module algorithm initialized: " << info.module_name_;
   }
   log.flush();
-
-  setExecutionState(ModuleInterface::Waiting);
+  
+  initStateObserver(state_.get());
 }
 
 Module::~Module()
@@ -116,7 +118,10 @@ size_t Module::num_output_ports() const
 void Module::do_execute() throw()
 {
   executeBegins_(id_);
+  //TODO: status() calls should be logged everywhere, need to change legacy loggers. issue #nnn
   status("STARTING MODULE: " + id_.id_);
+  //TODO: need separate logger per module
+  //LOG_DEBUG("STARTING MODULE: " << id_.id_);
   setExecutionState(ModuleInterface::Executing);
 
   try 
@@ -130,7 +135,7 @@ void Module::do_execute() throw()
   catch (Core::ExceptionBase& e)
   {
     //TODO: this block is repetitive (logging-wise) if the macros are used to log AND throw an exception with the same message. Figure out a reasonable condition to enable it.
-    //if (false)
+    if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostr;
       ostr << "Caught exception: " << e.typeName();
@@ -139,8 +144,7 @@ void Module::do_execute() throw()
       error(ostr.str());
     }
 
-    //TODO: condition this block on logging level
-    if (false)
+    if (Core::Logging::Log::get().verbose())
     {
       std::ostringstream ostrExtra;
       ostrExtra << "TODO! Following error info will be filtered later, it's too technical for general audiences.\n";
@@ -162,8 +166,12 @@ void Module::do_execute() throw()
   //oports_.apply(boost::bind(&PortInterface::finish, _1));
 
   status("MODULE FINISHED: " + id_.id_);  
-  executeEnds_(id_);
+  //TODO: need separate logger per module
+  //LOG_DEBUG("MODULE FINISHED: " << id_.id_);
   setExecutionState(ModuleInterface::Completed);
+  resetStateChanged();
+  inputsChanged_ = false;
+  executeEnds_(id_);
 }
 
 ModuleStateHandle Module::get_state() 
@@ -213,12 +221,15 @@ DatatypeHandleOption Module::get_input_handle(const PortId& id)
     BOOST_THROW_EXCEPTION(PortNotFoundException() << Core::ErrorMessage("Input port not found: " + id.toString()));
   }
 
-  if (iports_[id]->isDynamic())
+  auto port = iports_[id];
+  if (port->isDynamic())
   {
     BOOST_THROW_EXCEPTION(InvalidInputPortRequestException() << Core::ErrorMessage("Input port " + id.toString() + " is dynamic, get_dynamic_input_handles must be called."));
   }
-
-  return iports_[id]->getData();
+  
+  if (!inputsChanged_)
+    inputsChanged_ = port->hasChanged();
+  return port->getData();
 }
 
 std::vector<DatatypeHandleOption> Module::get_dynamic_input_handles(const PortId& id)
@@ -434,4 +445,26 @@ void Module::setAlgoBoolFromState(AlgorithmParameterName name)
 void Module::setStateIntFromAlgo(AlgorithmParameterName name)
 {
   get_state()->setValue(name, algo().get(name).getInt());
+}
+
+ModuleInterface::ExecutionState Module::executionState() const
+{
+  return executionState_;
+}
+
+void Module::setExecutionState(ModuleInterface::ExecutionState state)
+{
+  executionState_ = state;
+}
+
+bool Module::needToExecute() const  
+{
+  return true;
+  //return newStatePresent() || inputsChanged();
+    //TODO: || !oports_cached()
+}
+
+bool Module::inputsChanged() const
+{
+  return inputsChanged_;
 }

@@ -29,10 +29,10 @@
 /// \author James Hughes
 /// \date   March 2013
 
-#include "../namespaces.h"
+#include <Interface/Modules/Render/namespaces.h>
 
-#include "SRCommonUniforms.h"
-#include "SRCamera.h"
+#include <Interface/Modules/Render/SpireSCIRun/SRCommonUniforms.h>
+#include <Interface/Modules/Render/SpireSCIRun/SRCamera.h>
 
 namespace SCIRun {
 namespace Gui {

@@ -39,9 +39,11 @@ namespace Engine {
   class SCISHARE DesktopExecutionStrategyFactory : public ExecutionStrategyFactory
   {
   public:
-    DesktopExecutionStrategyFactory();
-    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type);
+    explicit DesktopExecutionStrategyFactory(const boost::optional<std::string>& threadMode);
+    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) const;
+    virtual ExecutionStrategyHandle createDefault() const;
   private:
+    boost::optional<std::string> threadMode_;
     ExecutionStrategyHandle serial_, parallel_, dynamic_;
   };
 }

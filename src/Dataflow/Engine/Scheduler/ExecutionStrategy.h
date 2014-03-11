@@ -62,7 +62,8 @@ namespace Engine {
   {
   public:
     virtual ~ExecutionStrategyFactory() {}
-    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) = 0;
+    virtual ExecutionStrategyHandle create(ExecutionStrategy::Type type) const = 0;
+    virtual ExecutionStrategyHandle createDefault() const = 0;
   };
 
   typedef boost::shared_ptr<ExecutionStrategyFactory> ExecutionStrategyFactoryHandle;
