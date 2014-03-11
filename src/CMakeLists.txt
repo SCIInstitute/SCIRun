@@ -248,17 +248,17 @@ IF(DISABLE_ExternalProject_UPDATE)
 ENDIF()
 
 ########################################################################
-# Configure Boost external project
-
-INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
-EXTERNAL_BOOST_LIBRARY(GIT ${CMAKE_CXX_FLAGS} ${DISABLED_UPDATE})
-
-
-########################################################################
 # Configure zlib external project
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/ZlibConfig.cmake)
-EXTERNAL_ZLIB_LIBRARY(GIT ${CMAKE_CXX_FLAGS} ${DISABLED_UPDATE})
+EXTERNAL_ZLIB_LIBRARY(GIT)
+
+
+########################################################################
+# Configure Boost external project
+
+INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/CMake/BoostConfig.cmake)
+EXTERNAL_BOOST_LIBRARY(GIT)
 
 
 ########################################################################
