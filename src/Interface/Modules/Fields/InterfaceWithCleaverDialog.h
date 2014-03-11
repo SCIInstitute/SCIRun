@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef INTERFACE_MODULES_INTERFACEWITHCLEAVERDIALOG_H
-#define INTERFACE_MODULES_INTERFACEWITHCLEAVERDIALOG_H
+#ifndef INTERFACE_MODULES_INTERFACEWITHCLEAVER_H
+#define INTERFACE_MODULES_INTERFACEWITHCLEAVER_H
 
 #include "Interface/Modules/Fields/ui_InterfaceWithCleaverDialog.h"
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
@@ -46,9 +46,10 @@ public:
     SCIRun::Dataflow::Networks::ModuleStateHandle state,
     QWidget* parent = 0);
   virtual void moduleExecuted() { pullAndDisplayInfo(); }
-  virtual void pull() {}
+  virtual void pull();
 private Q_SLOTS:
     void pullAndDisplayInfo();
+    void push();
 };
 
 }

@@ -6,193 +6,132 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>174</height>
+    <width>711</width>
+    <height>224</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>tDCSSimulator</string>
+   <string>InterfaceWithCleaverDialog</string>
   </property>
-  <widget class="QTabWidget" name="tabWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>650</width>
-     <height>151</height>
-    </rect>
-   </property>
-   <property name="currentIndex">
-    <number>0</number>
-   </property>
-   <widget class="QWidget" name="InterfaceWithCleaver">
-    <property name="whatsThis">
-     <string>Simulation</string>
-    </property>
-    <property name="accessibleName">
-     <string/>
-    </property>
-    <attribute name="title">
-     <string>InterfaceWithCleaver</string>
-    </attribute>
-    <widget class="QCheckBox" name="checkBox">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>10</y>
-       <width>87</width>
-       <height>20</height>
-      </rect>
-     </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="3">
+    <widget class="QRadioButton" name="RelativeVolumeScalingRadioButton_">
      <property name="text">
-      <string>Verbose</string>
+      <string>relatively</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_2">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>40</y>
-       <width>87</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Padding</string>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="spinBox">
-     <property name="geometry">
-      <rect>
-       <x>310</x>
-       <y>10</y>
-       <width>57</width>
-       <height>25</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="spinBox_2">
-     <property name="geometry">
-      <rect>
-       <x>410</x>
-       <y>10</y>
-       <width>57</width>
-       <height>25</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="spinBox_3">
-     <property name="geometry">
-      <rect>
-       <x>500</x>
-       <y>10</y>
-       <width>57</width>
-       <height>25</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>290</x>
-       <y>10</y>
-       <width>16</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>X:</string>
-     </property>
-    </widget>
+   </item>
+   <item row="8" column="4" alignment="Qt::AlignLeft">
     <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>390</x>
-       <y>10</y>
-       <width>16</width>
-       <height>21</height>
-      </rect>
-     </property>
      <property name="text">
       <string>Y:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>480</x>
-       <y>10</y>
-       <width>16</width>
-       <height>21</height>
-      </rect>
+   </item>
+   <item row="8" column="5">
+    <widget class="QDoubleSpinBox" name="VolumeScalingSpinBox_Y_">
+     <property name="maximum">
+      <double>1000000000.000000000000000</double>
      </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="6" alignment="Qt::AlignLeft">
+    <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Z:</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_3">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>10</y>
-       <width>71</width>
-       <height>20</height>
-      </rect>
+   </item>
+   <item row="8" column="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>X:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QCheckBox" name="PaddingCheckBox_">
+     <property name="enabled">
+      <bool>false</bool>
      </property>
      <property name="text">
-      <string>Scaling</string>
+      <string>Padding volume</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_4">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>50</y>
-       <width>101</width>
-       <height>20</height>
-      </rect>
-     </property>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QCheckBox" name="VerboseCheckBox_">
      <property name="text">
-      <string>Alpha short</string>
+      <string>Verbose output in console</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="checkBox_5">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>90</y>
-       <width>91</width>
-       <height>20</height>
-      </rect>
+   </item>
+   <item row="8" column="3">
+    <widget class="QDoubleSpinBox" name="VolumeScalingSpinBox_X_">
+     <property name="decimals">
+      <number>2</number>
      </property>
+     <property name="maximum">
+      <double>1000000000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="7" alignment="Qt::AlignLeft">
+    <widget class="QDoubleSpinBox" name="VolumeScalingSpinBox_Z_">
+     <property name="maximum">
+      <double>1000000000.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="label_7">
      <property name="text">
-      <string>Alpha long</string>
+      <string>Volume scaling using:</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>50</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
+   </item>
+   <item row="2" column="5">
+    <widget class="QRadioButton" name="AbsoluteVolumeScalingRadioButton_">
+     <property name="text">
+      <string>absolutely</string>
      </property>
     </widget>
-    <widget class="QPlainTextEdit" name="plainTextEdit_2">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>90</y>
-       <width>51</width>
-       <height>21</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-  </widget>
+   </item>
+  </layout>
  </widget>
- <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

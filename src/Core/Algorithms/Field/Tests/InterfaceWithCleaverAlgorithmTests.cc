@@ -31,8 +31,6 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
-//#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-//#include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -93,59 +91,6 @@ using namespace SCIRun::TestUtils;
    ofield->vfield()->set_values(values);
    return ofield;
   }
-  
-
-
-
-/*class VInterfaceWithCleaverAlgorithmTests : public ::testing::Test
-{
-protected:
-  virtual void SetUp()
-  {
-    // tetrahedron (single mesh unit) examples
-    {
-      FieldInformation fi("TetVolMesh", 0, "double");
-      singleTetFieldConstantBasis_ = CreateField(fi);
-      VMesh *vmesh = singleTetFieldConstantBasis_->vmesh();
-      VMesh::Node::array_type vdata;
-      vdata.resize(4);
-      
-      vmesh->node_reserve(4);
-      vmesh->elem_reserve(1);
-      vmesh->add_point( Point(0, 0, 0) );
-      vmesh->add_point( Point(0.5, 1.0, 0) );
-      vmesh->add_point( Point(1.0, 0, 0) );
-      vmesh->add_point( Point(0.5, 0.5, 1.0) );
-      for (size_type i = 0; i < 4; ++i)
-      {
-        vdata[i] = i;
-      }
-      vmesh->add_elem(vdata);
-    }
-
-    {
-      FieldInformation fi("TetVolMesh", 1, "double");
-      singleTetFieldLinearBasis_ = CreateField(fi);
-      VMesh *vmesh = singleTetFieldLinearBasis_->vmesh();
-      VMesh::Node::array_type vdata;
-      vdata.resize(4);
-      
-      vmesh->node_reserve(4);
-      vmesh->elem_reserve(1);
-      vmesh->add_point( Point(0, 0, 0) );
-      vmesh->add_point( Point(0.5, 1.0, 0) );
-      vmesh->add_point( Point(1.0, 0, 0) );
-      vmesh->add_point( Point(0.5, 0.5, 1.0) );
-      for (size_type i = 0; i < 4; ++i)
-      {
-        vdata[i] = i;
-      }
-      vmesh->add_elem(vdata);
-    }
-  }
-  FieldHandle signed_distance;
-};*/
-
 
 TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
 {
@@ -162,18 +107,4 @@ TEST(CleaverInterfaceTest, SphereSignedDistanceFieldMatrix1)
  ASSERT_TRUE(info->vmesh()->num_nodes() != 18367);
  ASSERT_TRUE(info->vfield()->num_values() != 98650);
  
- /* ASSERT_TRUE(singleTetFieldLinearBasis_.get_rep() != 0);
-  
-  VMesh *vmesh = singleTetFieldLinearBasis_->vmesh();
-  VField *vfield = singleTetFieldLinearBasis_->vfield();
-  vfield->resize_values();
-
-  std::vector<double> values(4);
-  values[0] = 1.0;
-  values[1] = 2.0;
-  values[2] = 3.0;
-  values[3] = 4.0;
-  vfield->set_values(values);
-  
-  ASSERT_EQ(vfield->num_values(), 4);*/
 }

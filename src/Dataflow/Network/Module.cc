@@ -435,3 +435,14 @@ void Module::setStateIntFromAlgo(AlgorithmParameterName name)
 {
   get_state()->setValue(name, algo().get(name).getInt());
 }
+
+
+void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
+{
+  algo().set(name, get_state()->getValue(name).getDouble());
+}
+
+void Module::setStateDoubleFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getDouble());
+}

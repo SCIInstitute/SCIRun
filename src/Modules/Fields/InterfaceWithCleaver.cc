@@ -36,6 +36,7 @@
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(ModuleLookupInfo("InterfaceWithCleaver", "NewField", "SCIRun"))
 {
@@ -44,10 +45,34 @@ InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(ModuleLookupIn
     INITIALIZE_PORT(OutputField);
 }
 
+
+void InterfaceWithCleaverModule::setStateDefaults()
+{
+  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::VerboseCheckBox);
+  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::PaddingCheckBox);
+  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
+  setStateBoolFromAlgo(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y); 
+  setStateDoubleFromAlgo(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);  
+}
+
 void InterfaceWithCleaverModule::execute()
 {
   auto field1 = getRequiredInput(InputField1);
   auto field2 = getRequiredInput(InputField2);
+
+  auto state = get_state();
+  
+  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::VerboseCheckBox);
+  //setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::PaddingCheckBox);
+  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton);
+  setAlgoBoolFromState(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton);
+  setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X);
+  setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y);
+  setAlgoDoubleFromState(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z);
+
+  algo().set(InterfaceWithCleaverAlgorithm::PaddingCheckBox, true);
 
   auto output = algo().run_generic(make_input((InputField1, field1)(InputField2, field2)));
   

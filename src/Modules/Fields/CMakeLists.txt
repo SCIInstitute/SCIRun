@@ -34,7 +34,7 @@ SET(Modules_Fields_SRCS
 )
 
 SET(Modules_Fields_HEADERS
-  InterfaceWithCleaver.cc
+  InterfaceWithCleaver.h
   CreateScalarFieldDataBasic.h
   FieldToMesh.h
   ReportFieldInfo.h

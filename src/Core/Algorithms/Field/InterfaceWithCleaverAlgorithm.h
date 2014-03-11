@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_InterfaceWithCleaver_H
-#define ALGORITHMS_MATH_InterfaceWithCleaver_H
+#ifndef ALGORITHMS_MATH_INTERFACEWITHCLEAVER_H
+#define ALGORITHMS_MATH_INTERFACEWITHCLEAVER_H
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
@@ -44,12 +44,19 @@ namespace Fields {
   class SCISHARE InterfaceWithCleaverAlgorithm : public AlgorithmBase
   {
   public:
-      
+    InterfaceWithCleaverAlgorithm();  
     static const AlgorithmInputName InputField1;
     static const AlgorithmInputName InputField2;
     static const AlgorithmOutputName OutputField;
- 
-    FieldHandle run(FieldHandle field1, FieldHandle field2/*, FieldHandle& output*/) const;
+    static AlgorithmParameterName VerboseCheckBox;
+    static AlgorithmParameterName PaddingCheckBox;
+    static AlgorithmParameterName AbsoluteVolumeScalingRadioButton;
+    static AlgorithmParameterName RelativeVolumeScalingRadioButton;       
+    static AlgorithmParameterName VolumeScalingSpinBox_X;
+    static AlgorithmParameterName VolumeScalingSpinBox_Y;
+    static AlgorithmParameterName VolumeScalingSpinBox_Z;
+    
+    FieldHandle run(FieldHandle field1, FieldHandle field2) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
   };
 

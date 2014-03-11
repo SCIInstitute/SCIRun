@@ -27,7 +27,7 @@
 */
 
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
-#include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
+#include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
@@ -39,12 +39,62 @@ InterfaceWithCleaverDialog::InterfaceWithCleaverDialog(const std::string& name, 
   QWidget* parent /* = 0 */)
   : ModuleDialogGeneric(state, parent)
 {
-/*  setupUi(this);
+
+  setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-
-  buttonBox->setVisible(false); */
+  connect(VerboseCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(AbsoluteVolumeScalingRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(RelativeVolumeScalingRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(PaddingCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(VolumeScalingSpinBox_X_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(VolumeScalingSpinBox_Y_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  connect(VolumeScalingSpinBox_Z_, SIGNAL(valueChanged(double)), this, SLOT(push()));
 }
+
+void InterfaceWithCleaverDialog::push()
+{
+
+ if (!pulling_)
+  {
+   state_->setValue(InterfaceWithCleaverAlgorithm::VerboseCheckBox, VerboseCheckBox_->isChecked());
+   //state_->setValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox, PaddingCheckBox_->isChecked());
+   state_->setValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox,true);
+   state_->setValue(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton, AbsoluteVolumeScalingRadioButton_->isChecked()); 
+   state_->setValue(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton, RelativeVolumeScalingRadioButton_->isChecked());  
+   state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X, VolumeScalingSpinBox_X_->value());
+   state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y, VolumeScalingSpinBox_Y_->value());
+   state_->setValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z, VolumeScalingSpinBox_Z_->value());   
+  }
+
+
+}
+
+void InterfaceWithCleaverDialog::pull()
+{
+
+  Pulling p(this);
+    
+  double newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_X).getDouble();
+  if (newValue != VolumeScalingSpinBox_X_->value())
+    VolumeScalingSpinBox_X_->setValue(newValue); 
+  
+  newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Y).getDouble();
+  if (newValue != VolumeScalingSpinBox_Y_->value())
+    VolumeScalingSpinBox_Y_->setValue(newValue); 
+  
+  newValue = state_->getValue(InterfaceWithCleaverAlgorithm::VolumeScalingSpinBox_Z).getDouble();
+  if (newValue != VolumeScalingSpinBox_Z_->value())
+    VolumeScalingSpinBox_Z_->setValue(newValue);    
+  
+  VerboseCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::VerboseCheckBox).getBool());  
+  //PaddingCheckBox_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::PaddingCheckBox).getBool());
+  PaddingCheckBox_->setChecked(true);
+  AbsoluteVolumeScalingRadioButton_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton).getBool());
+  RelativeVolumeScalingRadioButton_->setChecked(state_->getValue(InterfaceWithCleaverAlgorithm::RelativeVolumeScalingRadioButton).getBool());
+    
+}
+
 
 void InterfaceWithCleaverDialog::pullAndDisplayInfo() 
 {

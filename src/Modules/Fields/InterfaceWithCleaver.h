@@ -43,7 +43,7 @@ namespace Fields {
   public:
     InterfaceWithCleaverModule();
     virtual void execute();
-    virtual void setStateDefaults() {}
+    virtual void setStateDefaults();
     INPUT_PORT(0, InputField1, LegacyField);
     INPUT_PORT(1, InputField2, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);

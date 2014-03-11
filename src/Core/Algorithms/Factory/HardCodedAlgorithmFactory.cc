@@ -121,13 +121,11 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
   else if (name == "CalculateVectorMagnitudes")
     h.reset(new CalculateVectorMagnitudesAlgo); 
   else if (name == "BuildFEMatrix")
-
     h.reset(new BuildFEMatrixAlgo);
   else if (name == "GetDomainBoundary")
     h.reset(new GetDomainBoundaryAlgo);
   else if (name == "InterfaceWithCleaver")
-    h.reset(new InterfaceWithCleaverAlgorithm);  
-    
+    h.reset(new InterfaceWithCleaverAlgorithm);      
   else if (name == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new GetMeshDataAlgo);
        
