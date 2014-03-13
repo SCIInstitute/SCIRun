@@ -48,7 +48,7 @@ namespace DynamicExecutor {
   {
   public:
     explicit ModuleConsumer(ModuleWorkQueuePtr workQueue, const Networks::ExecutableLookup* lookup, ProducerInterfacePtr producer) :
-    work_(workQueue), producer_(producer), lookup_(lookup), shouldLog_(false)
+    work_(workQueue), producer_(producer), lookup_(lookup), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
     {
       log_.setVerbose(shouldLog_);
       if (shouldLog_)
@@ -67,6 +67,7 @@ namespace DynamicExecutor {
 
       while (!producer_->isDone() || moreWork())
       {
+        if (moreWork())
         {
           if (shouldLog_)
             log_ << Core::Logging::DEBUG_LOG << "\tConsumer thinks work queue is not empty.";
