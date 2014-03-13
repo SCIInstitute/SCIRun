@@ -29,14 +29,15 @@
 
 
 
-/*
- *  ParallelBase: Helper class to instantiate several threads
+/**
+ *@class ParallelBase
+ *@brief Helper class to instantiate several threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date June 1997
  *
  */
 

@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Thread: The thread class
+/**
+ *@file  Thread.h
+ *@brief The thread class
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -62,9 +62,9 @@ class Runnable;
 class ThreadGroup;
 	
 
-//! The Thread class provides a new context in which to run.  A single
-//! Runnable class is attached to a single Thread class, which are
-//! executed in another thread.   
+/// The Thread class provides a new context in which to run.  A single
+/// Runnable class is attached to a single Thread class, which are
+/// executed in another thread.   
 class SCISHARE Thread {
 #ifdef SCI_64BITS
   static const unsigned long long DEFAULT_STACKSIZE  = 256 * 1024; // 256 KB
@@ -72,20 +72,20 @@ class SCISHARE Thread {
   static const unsigned long long DEFAULT_STACKSIZE  = 128 * 1024; // 128 KB
 #endif
 public:
-  //! Possible thread start states
+  /// Possible thread start states
   enum ActiveState {
     Activated,
     Stopped,
     NotActivated
   };
 	    
-  //! Create a thread, which will execute the <b>run()</b>
-  //! method in the <b>runner</b> object. The thread <b>name</b>
-  //! is used for identification purposes, and does not need to
-  //! be unique with respect to other threads.  <b>Group</b>
-  //! specifies the ThreadGroup that to which this thread
-  //! should belong.  If no group is specified (group==0),
-  //! the default group is used.
+  /// Create a thread, which will execute the <b>run()</b>
+  /// method in the <b>runner</b> object. The thread <b>name</b>
+  /// is used for identification purposes, and does not need to
+  /// be unique with respect to other threads.  <b>Group</b>
+  /// specifies the ThreadGroup that to which this thread
+  /// should belong.  If no group is specified (group==0),
+  /// the default group is used.
   Thread(Runnable* runner,
 	 const char* name,
 	 ThreadGroup* group=0, 
@@ -93,105 +93,105 @@ public:
 	 unsigned long long stack_size = DEFAULT_STACKSIZE);
 
  
-  //! Return the <b>ThreadGroup</b> associated with this thread.
+  /// Return the <b>ThreadGroup</b> associated with this thread.
   ThreadGroup* getThreadGroup();
 	    
  
-  //! Return the <b>Runnable</b> associated with this thread.
+  /// Return the <b>Runnable</b> associated with this thread.
   Runnable* getRunnable();
 	    
  
-  //! Flag the thread as a daemon thread.  When all non-deamon
-  //! threads exit, the program will exit.
+  /// Flag the thread as a daemon thread.  When all non-deamon
+  /// threads exit, the program will exit.
   void setDaemon(bool to=true);
 	    
  
-  //! Returns true if the thread is tagged as a daemon thread.
+  /// Returns true if the thread is tagged as a daemon thread.
   bool isDaemon() const;
 	    
  
-  //! If the thread is started in the the NotActivated state,
-  //! use this to activate the thread (the argument should be
-  //! false).
+  /// If the thread is started in the the NotActivated state,
+  /// use this to activate the thread (the argument should be
+  /// false).
   void activate(bool stopped);
 	    
  
-  //! Arrange to have the thread deleted automatically at exit.
-  //! The pointer to the thread should not be used by any other
-  //! threads once this has been called.
+  /// Arrange to have the thread deleted automatically at exit.
+  /// The pointer to the thread should not be used by any other
+  /// threads once this has been called.
   void detach();
 	    
  
-  //! Returns true if the thread is detached
+  /// Returns true if the thread is detached
   bool isDetached() const;
 	    
  
-  //! Set the stack size for a particular thread.  In order
-  //! to use this thread, you must create the thread in the
-  //! NotActivated state, set the stack size, and then start
-  //! the thread using activate(false).  Setting the stack
-  //! size for a thread that is running or has ever been run,
-  //! will throw an exception.  The units are in bytes.
+  /// Set the stack size for a particular thread.  In order
+  /// to use this thread, you must create the thread in the
+  /// NotActivated state, set the stack size, and then start
+  /// the thread using activate(false).  Setting the stack
+  /// size for a thread that is running or has ever been run,
+  /// will throw an exception.  The units are in bytes.
   void setStackSize(unsigned long long stackSize);
 	    
  
-  //! Returns the stack size for the thread
+  /// Returns the stack size for the thread
   unsigned long long getStackSize() const;
 	    
  
-  //! Kill all threads and exit with <b>code</b>.
+  /// Kill all threads and exit with <b>code</b>.
   static void exitAll(int code);
 	    
  
-  //! Exit the currently running thread
+  /// Exit the currently running thread
   static void exit();
 	    
  
-  //! Returns a pointer to the currently running thread.
+  /// Returns a pointer to the currently running thread.
   static Thread* self();
 	    
  
-  //! Stop the thread.
+  /// Stop the thread.
   void stop();
 	    
  
-  //! Resume the thread
+  /// Resume the thread
   void resume();
 	    
  
-  //! Blocks the calling thread until this thead has finished
-  //! executing. You cannot join detached threads or daemon threads.
+  /// Blocks the calling thread until this thead has finished
+  /// executing. You cannot join detached threads or daemon threads.
   void join();
 	    
  
-  //! Returns the name of the thread
+  /// Returns the name of the thread
   const char* getThreadName() const;
 	    
  
-  //! Returns the number of processors on the system
+  /// Returns the number of processors on the system
   static int numProcessors();
 	    
  
-  //! Request that the thread migrate to processor <i>proc</i>.
-  //! If <i>proc</i> is -1, then the thread is free to run
-  //! anywhere.
+  /// Request that the thread migrate to processor <i>proc</i>.
+  /// If <i>proc</i> is -1, then the thread is free to run
+  /// anywhere.
   void migrate(int proc);
 	    
  
-  //! Start up several threads that will run in parallel.  A new
-  //! <b>ThreadGroup</b> is created as a child of the optional parent.
-  //! If <i>block</i> is true, then the caller will block until all
-  //! of the threads return.  Otherwise, the call will return
-  //! immediately.
+  /// Start up several threads that will run in parallel.  A new
+  /// <b>ThreadGroup</b> is created as a child of the optional parent.
+  /// If <i>block</i> is true, then the caller will block until all
+  /// of the threads return.  Otherwise, the call will return
+  /// immediately.
   static ThreadGroup* parallel(ParallelBase& helper,
 			       int nthreads, bool block,
 			       ThreadGroup* threadGroup=0);
 
  
-  //! Start up several threads that will run in parallel.
-  //! If <i>block</i> is true, then the caller will block until all
-  //! of the threads return.  Otherwise, the call will return
-  //! immediately.
+  /// Start up several threads that will run in parallel.
+  /// If <i>block</i> is true, then the caller will block until all
+  /// of the threads return.  Otherwise, the call will return
+  /// immediately.
   template<class T>
   static void parallel(T* ptr, void (T::*pmf)(int),
 		       int numThreads)
@@ -205,7 +205,7 @@ public:
   }
 
  
-  //! Another overloaded version of parallel that passes 1 argument
+  /// Another overloaded version of parallel that passes 1 argument
   template<class T, class Arg1>
   static void parallel(T* ptr, void (T::*pmf)(int, Arg1),
 		       int numThreads, Arg1 a1)
@@ -219,7 +219,7 @@ public:
   }
 
  
-  //! Another overloaded version of parallel that passes 2 arguments
+  /// Another overloaded version of parallel that passes 2 arguments
   template<class T, class Arg1, class Arg2>
   static void parallel(T* ptr, void (T::* pmf)(int, Arg1, Arg2),
 		       int numThreads, Arg1 a1, Arg2 a2)
@@ -233,7 +233,7 @@ public:
   }
 
  
-  //! Another overloaded version of parallel that passes 3 arguments
+  /// Another overloaded version of parallel that passes 3 arguments
   template<class T, class Arg1, class Arg2, class Arg3>
   static void parallel(T* ptr, void (T::* pmf)(int, Arg1, Arg2, Arg3),
 		       int numThreads, Arg1 a1, Arg2 a2, Arg3 a3)
@@ -246,7 +246,7 @@ public:
     }
   }
 
-  //! Another overloaded version of parallel that passes 4 arguments
+  /// Another overloaded version of parallel that passes 4 arguments
   template<class T, class Arg1, class Arg2, class Arg3, class Arg4>
   static void parallel(T* ptr, void (T::* pmf)(int, Arg1, Arg2, Arg3, Arg4),
 		       int numThreads, Arg1 a1, Arg2 a2, Arg3 a3, Arg4 a4)
@@ -260,36 +260,36 @@ public:
   }
 
  
-  //! Abort the current thread, or the process.  Prints a message on
-  //! stderr, and the user may choose one of:
-  //! <pre>continue(c)/dbx(d)/cvd(v)/kill thread(k)/exit(e)</pre>
-  //! context is necesary on Windows to catch a segfault
+  /// Abort the current thread, or the process.  Prints a message on
+  /// stderr, and the user may choose one of:
+  /// <pre>continue(c)/dbx(d)/cvd(v)/kill thread(k)/exit(e)</pre>
+  /// context is necesary on Windows to catch a segfault
   static void niceAbort(void* Context = 0);
 	    
  
-  //! Mark a section as one that could block for debugging purposes.
-  //! The <b>int</b> that is returned should be passed into
-  //! <i>couldBlockDone(int)</i> when the section has completed.  This
-  //! will typically not be used outside of the thread implementation.
+  /// Mark a section as one that could block for debugging purposes.
+  /// The <b>int</b> that is returned should be passed into
+  /// <i>couldBlockDone(int)</i> when the section has completed.  This
+  /// will typically not be used outside of the thread implementation.
   static int couldBlock(const char* why);
 	    
  
-  //! Mark the end of a selection that could block.
-  //! <i>restore</i> was returned from a previous invocation
-  //! of the above <b>couldBlock</b>.
+  /// Mark the end of a selection that could block.
+  /// <i>restore</i> was returned from a previous invocation
+  /// of the above <b>couldBlock</b>.
   static void couldBlockDone(int restore);
 	    
  
-  //! The calling process voluntarily gives up time to another process
+  /// The calling process voluntarily gives up time to another process
   static void yield();
 
  
-  //! Return true if the thread library has been initialized. This
-  //! will typically not be used outside of the thread implementation.
+  /// Return true if the thread library has been initialized. This
+  /// will typically not be used outside of the thread implementation.
   static bool isInitialized();
 
-  //! set to "exit" (or something else) so we don't have to always 
-  //! wait for the user to input something
+  /// set to "exit" (or something else) so we don't have to always 
+  /// wait for the user to input something
   static void setDefaultAbortMode(const char* abortMode);
 
   static void initialize();
@@ -360,11 +360,11 @@ private:
   
   static void print_threads();
 
-  //! Cannot copy them
+  /// Cannot copy them
   Thread(const Thread&);
   Thread& operator=(const Thread&);
 };	
-} //! End namespace SCIRun
+} /// End namespace SCIRun
 
 #endif
 

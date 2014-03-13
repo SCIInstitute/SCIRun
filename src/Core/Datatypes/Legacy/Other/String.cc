@@ -42,7 +42,7 @@ maker()
 PersistentTypeID String::type_id("String", "PropertyManager", maker);
 
 
-//! constructors
+/// constructors
 String::String()
 {
   DEBUG_CONSTRUCTOR("String")

@@ -28,16 +28,17 @@
 
 
 
-/*
- *  SparseRowMatrix.h:  Sparse Row Matrices
+/**
+ *@file  SparseRowMatrix.h
+ *@brief Sparse Row Matrices
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   November 1994
+ *@date  November 1994
  *
- * See http://math.nist.gov/MatrixMarket/formats.html#MMformat
+ *@details See http://math.nist.gov/MatrixMarket/formats.html#MMformat
  * for more information about this sparse matrix format.
  */
 

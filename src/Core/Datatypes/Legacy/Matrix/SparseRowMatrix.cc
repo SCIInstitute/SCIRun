@@ -27,14 +27,13 @@
 */
 
 
-/*
- *  SparseRowMatrix.cc: ?
+/**
+ *@file  SparseRowMatrix.cc
  *
- *  Written by:
- *   Author: ?
+ *@author
  *   Department of Computer Science
  *   University of Utah
- *   Date: ?
+ *@date
  *
  */
 

@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+///TODO Documentation
+
 #include <Core/Thread/Barrier.h>
 
 using namespace SCIRun::Core::Thread;

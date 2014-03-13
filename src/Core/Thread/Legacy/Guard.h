@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Guard: Automatically lock/unlock a mutex or crowdmonitor.
+/**
+ *@file  Guard.h
+ *@brief Automatically lock/unlock a mutex or crowdmonitor.
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -52,13 +52,13 @@ class CrowdMonitor;
 
 /**************************************
 
-  CLASS
+@class
   Guard
 
   KEYWORDS
   Thread
 
-  DESCRIPTION
+@details
   Utility class to lock and unlock a <b>Mutex</b> or a <b>CrowdMonitor</b>.
   The constructor of the <b>Guard</b> object will lock the mutex
   (or <b>CrowdMonitor</b>), and the destructor will unlock it.
@@ -75,8 +75,8 @@ class CrowdMonitor;
 class SCISHARE Guard {
 public:
   //////////
-  // Attach the <b>Guard</b> object to the <i>mutex</i>, and
-  // acquire the mutex.
+  /// Attach the <b>Guard</b> object to the <i>mutex</i>, and
+  /// acquire the mutex.
   Guard(Mutex* mutex);
 
   Guard(RecursiveMutex* rmutex);
@@ -87,16 +87,16 @@ public:
   };
     
   //////////
-  // Attach the <b>Guard</b> to the <i>CrowdMonitor</pre> and
-  // acquire one of the locks.  If <i>action</i> is
-  // <b>Guard::Read</b>, the read lock will be acquired, and if
-  // <i>action</i> is <b>Write</b>, then the write lock will be
-  // acquired.  The appropriate lock will then be released by the
-  // destructor
+  /// Attach the <b>Guard</b> to the <i>CrowdMonitor</pre> and
+  /// acquire one of the locks.  If <i>action</i> is
+  /// <b>Guard::Read</b>, the read lock will be acquired, and if
+  /// <i>action</i> is <b>Write</b>, then the write lock will be
+  /// acquired.  The appropriate lock will then be released by the
+  /// destructor
   Guard(CrowdMonitor* crowdMonitor, Which action);
     
   //////////
-  // Release the lock acquired by the constructor.
+  /// Release the lock acquired by the constructor.
   ~Guard();
 private:
   Mutex* mutex_;

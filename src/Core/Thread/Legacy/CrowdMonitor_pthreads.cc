@@ -28,15 +28,16 @@
 
 
 
-/*
- *  CrowdMonitor: Multiple reader/single writer locks, implementation
+/**
+ *@class CrowdMonitor
+ *@brief Multiple reader/single writer locks, implementation
  *   for pthreads simply wrapping pthread_rwlock_t
  *
- *  Written by:
- *   Author:  Wayne Witzel
+ *@author
+ *   Wayne Witzel
  *   Department of Computer Science
  *   University of Utah
- *   Date: March 2002
+ *@date March 2002
  *
  */
 

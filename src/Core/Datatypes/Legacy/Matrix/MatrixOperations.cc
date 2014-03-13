@@ -28,14 +28,15 @@
 
 
 
-/*
- *  MatrixOperations.cc: Matrix Operations
+/**
+ *@file  MatrixOperations.cc
+ *@brief Matrix Operations
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   August 2003
+ *@date  August 2003
  *
  */
 

@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Time: Utility class for dealing with time
+/**
+ *@file  Time.h 
+ *@brief Utility class for dealing with time
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date June 1997
  *
  */
 
@@ -47,13 +47,13 @@
 namespace SCIRun {
 /**************************************
 
- CLASS
+@class
  Time
 
  KEYWORDS
  Thread, Time
 
- DESCRIPTION
+@details
  Utility class to manage Time.  This class is implemented using
  high precision counters on the SGI, and standard unix system calls
  on other machines.
@@ -64,38 +64,38 @@ public:
   typedef long long SysClock;
 	    
   //////////
-  // Return the current system time, in terms of clock ticks.
-  // Time zero is at some arbitrary point in the past.
+  /// Return the current system time, in terms of clock ticks.
+  /// Time zero is at some arbitrary point in the past.
   static SysClock currentTicks();
 	    
   //////////
-  // Return the current system time, in terms of seconds.
-  // This is slower than currentTicks().  Time zero is at
-  // some arbitrary point in the past.
+  /// Return the current system time, in terms of seconds.
+  /// This is slower than currentTicks().  Time zero is at
+  /// some arbitrary point in the past.
   static double currentSeconds();
 	    
   //////////
-  // Return the conversion from seconds to ticks.
+  /// Return the conversion from seconds to ticks.
   static double ticksPerSecond();
 	    
   //////////
-  // Return the conversion from ticks to seconds.
+  /// Return the conversion from ticks to seconds.
   static double secondsPerTick();
 	    
   //////////
-  // Wait until the specified time in clock ticks.
+  /// Wait until the specified time in clock ticks.
   static void waitUntil(SysClock ticks);
 	    
   //////////
-  // Wait until the specified time in seconds.
+  /// Wait until the specified time in seconds.
   static void waitUntil(double seconds);
 	    
   //////////
-  // Wait for the specified time in clock ticks
+  /// Wait for the specified time in clock ticks
   static void waitFor(SysClock ticks);
 	    
   //////////
-  // Wait for the specified time in seconds
+  /// Wait for the specified time in seconds
   static void waitFor(double seconds);
 
 private:

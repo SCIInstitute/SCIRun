@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ScanlineMesh.h: Templated Mesh defined on a 3D Regular Grid
+/**
+ *@file  ScanlineMesh.h
+ *@brief Templated Mesh defined on a 3D Regular Grid
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   January 2001
+ *@date  January 2001
  *
  */
 
@@ -42,8 +43,8 @@
 #ifndef CORE_DATATYPES_SCANLINEMESH_H
 #define CORE_DATATYPES_SCANLINEMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
@@ -69,21 +70,21 @@ namespace SCIRun {
 // Declarations for virtual interface
 
 
-//! Functions for creating the virtual interface
-//! Declare the functions that instantiate the virtual interface
+/// Functions for creating the virtual interface
+/// Declare the functions that instantiate the virtual interface
 template <class Basis>
 class ScanlineMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVScanlineMesh(MESH* mesh) { return (0); }
 
-//! These declarations are needed for a combined dynamic compilation as
-//! as well as virtual functions solution.
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// These declarations are needed for a combined dynamic compilation as
+/// as well as virtual functions solution.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 
 #if (SCIRUN_SCANLINE_SUPPORT > 0)
 
@@ -97,7 +98,7 @@ template <class Basis>
 class ScanlineMesh : public Mesh
 {
 
-//! Make sure the virtual interface has access
+/// Make sure the virtual interface has access
 template <class MESH> friend class VScanlineMesh;
 
 public:
@@ -111,7 +112,7 @@ public:
   typedef boost::shared_ptr<ScanlineMesh<Basis> > handle_type;
   typedef Basis           basis_type;
 
-  //! Index and Iterator types required for Mesh Concept.
+  /// Index and Iterator types required for Mesh Concept.
   struct Node {
     typedef NodeIndex<under_type>       index_type;
     typedef NodeIterator<under_type>    iterator;
@@ -208,9 +209,9 @@ public:
   { 
     DEBUG_CONSTRUCTOR("ScanlineMesh")   
   
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVScanlineMesh(this));
   
     compute_jacobian(); 
@@ -222,9 +223,9 @@ public:
   { 
     DEBUG_CONSTRUCTOR("ScanlineMesh")   
 
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVScanlineMesh(this));   
 
     compute_jacobian(); 
@@ -235,7 +236,7 @@ public:
     DEBUG_DESTRUCTOR("ScanlineMesh")     
   }
 
-  //! Access point to virtual interface
+  /// Access point to virtual interface
   virtual VMesh* vmesh() { return (vmesh_.get()); }
 
   virtual MeshFacadeHandle getFacade() const
@@ -249,7 +250,7 @@ public:
   virtual bool has_face_normals() const { return false; }
   virtual bool is_editable() const { return false; }
   
-  //! get the mesh statistics
+  /// get the mesh statistics
   index_type get_min_i() const { return min_i_; }
   bool get_min(std::vector<index_type>&) const;
   size_type get_ni() const { return ni_; }
@@ -259,16 +260,16 @@ public:
   virtual void transform(const Core::Geometry::Transform &t);
   virtual void get_canonical_transform(Core::Geometry::Transform &t);
 
-  //! set the mesh statistics
+  /// set the mesh statistics
   void set_min_i(index_type i) {min_i_ = i; }
   void set_min(std::vector<index_type> mins);
   void set_ni(size_type i)
   {
     ni_ = i;
 
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     vmesh_.reset(CreateVScanlineMesh(this));
   }
   virtual void set_dim(std::vector<size_type> dims);
@@ -297,7 +298,7 @@ public:
   void to_index(typename Cell::index_type &, index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\".");  }
 
-  //! get the child elements of the given index
+  /// get the child elements of the given index
   void get_nodes(typename Node::array_type &, typename Edge::index_type) const;
   void get_nodes(typename Node::array_type &, typename Face::index_type) const
   { ASSERTFAIL("This mesh type does not have faces use \"elem\".");  }
@@ -314,7 +315,7 @@ public:
   void get_faces(typename Face::array_type &, typename Elem::index_type) const
   {}
 
-  //! get the parent element(s) of the given index
+  /// get the parent element(s) of the given index
   void get_elems(typename Elem::array_type &result,
                  typename Node::index_type idx) const;
   void get_elems(typename Elem::array_type&,
@@ -322,14 +323,14 @@ public:
   void get_elems(typename Elem::array_type&,
                  typename Face::index_type) const {}
 
-  //! Wrapper to get the derivative elements from this element.
+  /// Wrapper to get the derivative elements from this element.
   void get_delems(typename DElem::array_type &result,
                   typename Elem::index_type idx) const
   {
     get_nodes(result, idx);
   }
 
-  //! Get the size of an elemnt (length, area, volume)
+  /// Get the size of an elemnt (length, area, volume)
   double get_size(typename Node::index_type) const { return 0.0; }
   double get_size(typename Edge::index_type idx) const
   {
@@ -359,7 +360,7 @@ public:
   int get_valence(typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! get the center point (in object space) of an element
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &, typename Node::index_type) const;
   void get_center(Core::Geometry::Point &, typename Edge::index_type) const;
   void get_center(Core::Geometry::Point &, typename Face::index_type) const
@@ -404,8 +405,8 @@ public:
   virtual int topology_geometry() const { return (Mesh::STRUCTURED | Mesh::REGULAR); }
   Basis& get_basis() { return basis_; }
 
- //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an edge.
+ /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an edge.
   void pwl_approx_edge(std::vector<std::vector<double> > &coords,
                        typename Elem::index_type /*ci*/,
                        unsigned int,
@@ -416,8 +417,8 @@ public:
     basis_.approx_edge(0, div_per_unit, coords);
   }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an face.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an face.
   void pwl_approx_face(std::vector<std::vector<std::vector<double> > >& /*coords*/,
                        typename Elem::index_type /*ci*/,
                        typename Face::index_type /*fi*/,
@@ -426,16 +427,16 @@ public:
     ASSERTFAIL("ScanlineMesh has no faces");
   }
 
-  //! Synchronize functions, as there is nothing to synchronize, these
-  //! functions always succeed
+  /// Synchronize functions, as there is nothing to synchronize, these
+  /// functions always succeed
 
   virtual bool synchronize(mask_type /*sync*/) { return (true); }
   virtual bool unsynchronize(mask_type /*sync*/) { return (true); }
   bool clear_synchronization() { return (true); }
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the local
-  //! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the local
+  /// coordinate of a point
   template<class VECTOR>
   bool get_coords(VECTOR &coords, const Core::Geometry::Point &p, typename Elem::index_type idx) const
   {
@@ -463,8 +464,8 @@ public:
     return (true);    
   }
 
-  //! Find the location in the global coordinate system for a local coordinate
-  //! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local coordinate
+  /// This function is the opposite of get_coords.
   template<class VECTOR>
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, typename Elem::index_type idx) const
   {
@@ -480,9 +481,9 @@ public:
     pt = transform_.project(p);
   }
 
-  //! Interpolate the derivate of the function, This infact will return the
-  //! jacobian of the local to global coordinate transformation. This function
-  //! is mainly intended for the non linear elements
+  /// Interpolate the derivate of the function, This infact will return the
+  /// jacobian of the local to global coordinate transformation. This function
+  /// is mainly intended for the non linear elements
   template<class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, typename Elem::index_type idx, VECTOR2 &J) const
   {
@@ -499,8 +500,8 @@ public:
     J[0] = transform_.project(Core::Geometry::Point(1.0,0.0,0.0)); 
   }
 
-  //! Get the determinant of the jacobian, which is the local volume of an element
-  //! and is intended to help with the integration of functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume of an element
+  /// and is intended to help with the integration of functions over an element.
   template<class VECTOR>
   double det_jacobian(const VECTOR& coords,
                 typename Elem::index_type idx) const
@@ -515,9 +516,9 @@ public:
     return (det_jacobian_);
   }
 
-  //! Get the jacobian of the transformation. In case one wants the non inverted
-  //! version of this matrix. This is currentl here for completeness of the 
-  //! interface
+  /// Get the jacobian of the transformation. In case one wants the non inverted
+  /// version of this matrix. This is currentl here for completeness of the 
+  /// interface
   template<class VECTOR>
   void jacobian(const VECTOR& coords, typename Elem::index_type idx, double* J) const
   {
@@ -552,9 +553,9 @@ public:
     J[8] = jacobian_[8];
   }
 
-  //! Get the inverse jacobian of the transformation. This one is needed to 
-  //! translate local gradients into global gradients. Hence it is crucial for
-  //! calculating gradients of fields, or constructing finite elements.             
+  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// translate local gradients into global gradients. Hence it is crucial for
+  /// calculating gradients of fields, or constructing finite elements.             
   template<class VECTOR>
   double inverse_jacobian(const VECTOR& coords, typename Elem::index_type idx, double* Ji) const
   {
@@ -601,18 +602,18 @@ public:
 
   double get_epsilon() const;
 
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
-  //! These IDs are created as soon as this class will be instantiated
-  //! The first one is for Pio and the second for the virtual interface
-  //! These are currently different as they serve different needs.
+  /// These IDs are created as soon as this class will be instantiated
+  /// The first one is for Pio and the second for the virtual interface
+  /// These are currently different as they serve different needs.
   static PersistentTypeID scanline_typeid;
-  //! Core functionality for getting the name of a templated mesh class  
+  /// Core functionality for getting the name of a templated mesh class  
   static const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return scanline_typeid.type; }
   
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Some of this should be obsolete  
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Some of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -621,18 +622,18 @@ public:
   static const TypeDescription* elem_type_description()
   { return edge_type_description(); }
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new ScanlineMesh(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<ScanlineMesh>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle scanline_maker(size_type x, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
   { 
     return boost::make_shared<ScanlineMesh>(x,min,max); 
   }
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
   template <class INDEX>
   bool
   find_closest_node(double& pdist, Core::Geometry::Point &result, 
@@ -644,14 +645,14 @@ public:
     return (false);
   }
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
   template <class INDEX>
   bool 
   find_closest_node(double& pdist, Core::Geometry::Point &result, 
                     INDEX &node, const Core::Geometry::Point &p) const
   {
-    //! If there are no elements, we cannot find the closest
+    /// If there are no elements, we cannot find the closest
     if (ni_ == 0)  return (false);
     
     const Core::Geometry::Point r = transform_.unproject(p);
@@ -678,7 +679,7 @@ public:
                     INDEX &elem, 
                     const Core::Geometry::Point &p) const
   {
-    //! If there are no elements, we cannot find the closest
+    /// If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
     
     const Core::Geometry::Point r = transform_.unproject(p);
@@ -712,8 +713,8 @@ public:
     return (false);
   }
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
   template <class INDEX>
   bool 
   find_closest_elem(double& pdist, 
@@ -721,7 +722,7 @@ public:
                     INDEX &elem, 
                     const Core::Geometry::Point &p) const
   {
-    //! If there are no elements, we cannot find the closest
+    /// If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
     
     const Core::Geometry::Point r = transform_.unproject(p);
@@ -739,15 +740,15 @@ public:
   }
 
 
-  //! This function will return multiple elements if the closest point is
-  //! located on a node or edge. All bordering elements are returned in that 
-  //! case. 
+  /// This function will return multiple elements if the closest point is
+  /// located on a node or edge. All bordering elements are returned in that 
+  /// case. 
   template <class ARRAY>
   bool
   find_closest_elems(double& pdist, Core::Geometry::Point &result,
                      ARRAY &elems, const Core::Geometry::Point &p) const
   {
-    //! If there are no elements, we cannot find the closest
+    /// If there are no elements, we cannot find the closest
     if (ni_ == 0) return (false);
     
     const double epsilon_ = 1e-8;
@@ -789,17 +790,17 @@ protected:
 
   void compute_jacobian();
 
-  //! the min typename Node::index_type ( incase this is a subLattice )
+  /// the min typename Node::index_type ( incase this is a subLattice )
   index_type           min_i_;
 
-  //! the typename Node::index_type space extents of a ScanlineMesh
-  //! (min=min_typename Node::index_type, max=min+extents-1)
+  /// the typename Node::index_type space extents of a ScanlineMesh
+  /// (min=min_typename Node::index_type, max=min+extents-1)
   size_type            ni_;
 
-  //! the object space extents of a ScanlineMesh
+  /// the object space extents of a ScanlineMesh
   Core::Geometry::Transform            transform_;
 
-  //! the basis fn
+  /// the basis fn
   Basis                basis_;
 
   boost::shared_ptr<VMesh>        vmesh_;
@@ -842,9 +843,9 @@ ScanlineMesh<Basis>::ScanlineMesh(size_type ni,
   transform_.compute_imat();
   compute_jacobian();
   
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   vmesh_.reset(CreateVScanlineMesh(this));
 }
 
@@ -929,9 +930,9 @@ ScanlineMesh<Basis>::set_dim(std::vector<size_type> dim)
 {
   ni_ = dim[0];
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   vmesh_.reset(CreateVScanlineMesh(this)); 
 }
 
@@ -1342,8 +1343,8 @@ template <class Basis>
 bool
 ScanlineMesh<Basis>::locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
 {
-  //! If there are no nodes, return false, otherwise there will always be 
-  //! a node that is closest
+  /// If there are no nodes, return false, otherwise there will always be 
+  /// a node that is closest
   if (ni_ == 0) return (false);
   
   const Core::Geometry::Point r = transform_.unproject(p);
@@ -1364,7 +1365,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Core::Geometr
 {
   if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
-  //! If there are no elements, we are definitely not inside an element
+  /// If there are no elements, we are definitely not inside an element
   if (ni_ < 2) return (false);
 
   const double epsilon_ = 1e-7;
@@ -1386,7 +1387,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem, const Core::Geometr
     return (true);
   }
 
-  //! Not inside any elements
+  /// Not inside any elements
   return (false);
 }
 
@@ -1398,7 +1399,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem,
 {
   if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
-  //! If there are no elements, we are definitely not inside an element
+  /// If there are no elements, we are definitely not inside an element
   if (ni_ < 2) return (false);
 
   coords.resize(1);
@@ -1424,7 +1425,7 @@ ScanlineMesh<Basis>::locate(typename Edge::index_type &elem,
 
   coords[0] = ii - fi;
 
-  //! Not inside any elements
+  /// Not inside any elements
   return (false);
 }
 

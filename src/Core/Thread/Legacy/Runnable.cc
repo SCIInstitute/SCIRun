@@ -29,14 +29,15 @@
 
 
 
-/*
- *  Runnable: The base class for all threads
+/**
+ *@class Runnable
+ *@brief The base class for all threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date June 1997
  *
  */
 

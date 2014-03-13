@@ -28,14 +28,14 @@
 
 
 
-/*
- *  ParallelBase: Helper class to instantiate several threads
+/**
+ *@file  ParallelBase.h
+ *@brief Helper class to instantiate several threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -49,13 +49,13 @@ namespace SCIRun {
 class Semaphore;
 /**************************************
 
- CLASS
+@class
  ParallelBase
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Helper class for Parallel class.  This will never be used
  by a user program.  See <b>Parallel</b> instead.
    
@@ -63,7 +63,7 @@ class Semaphore;
 class SCISHARE ParallelBase {
 public:
   //////////
-  // <i>The thread body</i>
+  /// <i>The thread body</i>
   virtual void run(int proc)=0;
 
 protected:

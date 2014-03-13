@@ -27,14 +27,14 @@
 */
 
 
-/*
- *  CompGeom.cc
+/**
+ *@file CompGeom.cc
  *
- *  Written by:
+ *@author
  *   Allen Sanderson
  *   SCI Institute
  *   University of Utah
- *   August 2005
+ *@date August 2005
  *
  */
 

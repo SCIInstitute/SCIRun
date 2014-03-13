@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Parallel1: Automatically instantiate several threads, with 1 argument
+/**
+ *@file  Parallel1.h
+ *@brief Automatically instantiate several threads, with 1 argument
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 2000
+ *   @date: June 2000
  *
  */
 
@@ -48,13 +48,13 @@
 namespace SCIRun {
 /**************************************
 
- CLASS
+@class
  Parallel1
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Helper class to make instantiating threads to perform a parallel
  task easier.
    
@@ -62,14 +62,14 @@ namespace SCIRun {
 template<class T, class Arg1> class Parallel1  : public ParallelBase {
 public:
   //////////
-  // Create a Parallel1 object, using the specified member
-  // function instead of <i>Parallel1</i>.  This will
-  // typically be used like:
-  // <b><pre>Thread::Parallel1(Parallel1&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
+  /// Create a Parallel1 object, using the specified member
+  /// function instead of <i>Parallel1</i>.  This will
+  /// typically be used like:
+  /// <b><pre>Thread::Parallel1(Parallel1&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
   Parallel1(T* obj, void (T::*pmf)(int, Arg1), Arg1 a1);
 	    
   //////////
-  // Destroy the Parallel1 object - the threads will remain alive.
+  /// Destroy the Parallel1 object - the threads will remain alive.
   virtual ~Parallel1();
   T* obj_;
   void (T::*pmf_)(int, Arg1);

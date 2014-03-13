@@ -28,14 +28,15 @@
 
 
  
-/*
- *  ThreadLock.h:  
- *     Mutex that is lockable multiple times within the same thread
- *  Written by:
+/**
+ *@file  ThreadLock.h  
+ *@brief Mutex that is lockable multiple times within the same thread
+ *
+ *@author
  *   McKay Davis / Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   August 1994
+ *@date  August 1994
  *
  */
 

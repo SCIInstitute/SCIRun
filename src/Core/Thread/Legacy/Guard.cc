@@ -30,14 +30,15 @@
 
 
 
-/*
- *  Guard: Automatically lock/unlock a mutex or crowdmonitor.
+/**
+ *@class Guard 
+ *@brief Automatically lock/unlock a mutex or crowdmonitor.
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date June 1997
  *
  */
 

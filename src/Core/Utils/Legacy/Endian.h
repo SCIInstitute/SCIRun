@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Endian.h:  Detect host endianness and provide tools to swap bytes if necessary.
+/**
+ *@file  Endian.h
+ *@brief Detect host endianness and provide tools to swap bytes if necessary.
  *
- *  Written by:
+ *@author
  *   Kurt Zimmerman
  *   Department of Computer Science
  *   University of Utah
- *   January 2001
+ *@date  January 2001
  *
  */
 

@@ -27,12 +27,12 @@
 */
 
 
-/*
+/**
  * Manual template instantiations
  */
 
 
-/*
+/**
  * These aren't used by Datatypes directly, but since they are used in
  * a lot of different modules, we instantiate them here to avoid bloat
  *

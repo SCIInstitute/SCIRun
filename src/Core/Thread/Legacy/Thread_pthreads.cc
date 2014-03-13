@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Thread_pthreads.cc: Posix threads implementation of the thread library
+/**
+ *@file  Thread_pthreads.cc
+ *@brief Posix threads implementation of the thread library
  *
- *  Written by:
- *   Author: Steve Parker
+ *@authof
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date: June 1997
  *
  */
 #include <algorithm>

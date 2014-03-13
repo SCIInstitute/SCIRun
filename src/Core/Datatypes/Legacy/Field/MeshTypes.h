@@ -26,16 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  MeshTypes.h: Forward declarations of Mesh get_type_description.
+/**
+ *@file  MeshTypes.h
+ *@brief Forward declarations of Mesh get_type_description.
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   January 2005
+ *@date  January 2005
  *
- *
+ *@details
  *  The GCC 3.4 compiler will not compile the GenericField template
  *  without these being declared ahead of time.  It will compile one
  *  field include because the mesh is included before GenericField.

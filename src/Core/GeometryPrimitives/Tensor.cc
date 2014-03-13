@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  Tensor.cc: Symmetric, positive definite tensors (diffusion, conductivity)
+/**
+ *@file  Tensor.cc
+ *@brief Symmetric, positive definite tensors (diffusion, conductivity)
  *
- *  Written by:
- *   Author: David Weinstein
+ *@author
+ *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   Date: March 2001
+ *@date   March 2001
  *
  */
 

@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Pstream.h: reading/writing persistent objects
+/**
+ *@file  Pstream.h
+ *@brief reading/writing persistent objects
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   June 2007
+ *@date  June 2007
  *
  */
 

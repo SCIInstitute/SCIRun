@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+///TODO Documentation
 
 #ifndef CORE_DATATYPES_FIELDARRAY_H
 #define CORE_DATATYPES_FIELDARRAY_H 1
@@ -41,14 +41,14 @@ namespace SCIRun {
 class SCISHARE FieldArray: public PropertyManager
 {
   public:
-    //! Constructor / Destructor
+    /// Constructor / Destructor
     FieldArray();
     virtual ~FieldArray();
     
-    //! Clone field will generate a pointer to a new copy
+    /// Clone field will generate a pointer to a new copy
     FieldArray *clone() const;
     
-    //! Persistent I/O.
+    /// Persistent I/O.
     static  PersistentTypeID type_id;
     virtual void io(Piostream& stream);
     

@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+///TODO Documentation
+
 #ifndef CORE_UTILS_EXCEPTION_H
 #define CORE_UTILS_EXCEPTION_H
 

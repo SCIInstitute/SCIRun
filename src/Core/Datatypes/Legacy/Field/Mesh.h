@@ -54,7 +54,7 @@ public:
 
   virtual MeshFacadeHandle getFacade() const = 0;
 
-  //! These will become obsolete at some point
+  /// These will become obsolete at some point
   enum
   { 
     UNKNOWN		= 0,
@@ -64,7 +64,7 @@ public:
     IRREGULAR   	= 1 << 4
   };
 
-  //! Synchronize system
+  /// Synchronize system
   enum
   { 
     NONE_E		= 0,
@@ -95,16 +95,16 @@ public:
 
   virtual int basis_order();
   
-  //! Persistent I/O.
+  /// Persistent I/O.
   void    io(Piostream &stream);
   static  PersistentTypeID type_id;
   static  const std::string type_name(int n = -1);
   virtual const TypeDescription *get_type_description() const = 0;
     
-  //! Virtual interface functions:
-  //! Get the virtual mesh interface, this returns the pointer to an internal
-  //! object that has all the virtual functions. This object will be destroyed
-  //! when the mesh is destroyed. The user does not need to destroy the VMesh.
+  /// Virtual interface functions:
+  /// Get the virtual mesh interface, this returns the pointer to an internal
+  /// object that has all the virtual functions. This object will be destroyed
+  /// when the mesh is destroyed. The user does not need to destroy the VMesh.
   virtual VMesh* vmesh();
 };
 

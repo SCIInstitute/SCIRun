@@ -28,6 +28,8 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+//TODO Documentation
+
 // Core SCIRun Includes
 
 #include <Core/Thread/Legacy/Mutex.h>
@@ -97,8 +99,8 @@ SCISHARE Mutex nrrdIEPluginMutex("Nrrd Import/Export Plugin Table Lock");
 }
 
 
-// This set stores all of the environemnt keys that were set when scirun was
-// started. Its checked by sci_putenv to ensure we don't overwrite variables
+/// This set stores all of the environemnt keys that were set when scirun was
+/// started. Its checked by sci_putenv to ensure we don't overwrite variables
 static std::map<std::string, std::string> scirun_env;
 
 // MacroSubstitute takes var_value returns a string with the environment

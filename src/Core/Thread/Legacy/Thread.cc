@@ -29,14 +29,15 @@
 
 
 
-/*
- *  Thread: The thread class
+/**
+ *@file  Thread.cc
+ *@brief The thread class
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date  June 1997
  *
  */
 

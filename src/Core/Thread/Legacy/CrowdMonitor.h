@@ -28,14 +28,14 @@
 
 
 
-/*
- *  CrowdMonitor: Multiple reader/single writer locks
+/**
+ *@file  CrowdMonitor.h
+ *@brief Multiple reader/single writer locks
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -48,13 +48,13 @@ namespace SCIRun {
   struct CrowdMonitor_private;
 /**************************************
  
-CLASS
+@class
    CrowdMonitor
    
 KEYWORDS
    Thread
    
-DESCRIPTION
+@details
    Multiple reader, single writer synchronization primitive.  Some
    applications do not need the strict level of synchronization
    provided by the <b>Mutex</b>.  The <b>CrowdMonitor</b> relaxes
@@ -79,40 +79,40 @@ WARNING
 	class SCISHARE CrowdMonitor {
 	public:
 	    //////////
-	    // Create and initialize the CrowdMonitor. <i>name</i> should
-	    // be a static which describes the primitive for debugging
-	    // purposes.
+	    /// Create and initialize the CrowdMonitor. <i>name</i> should
+	    /// be a static which describes the primitive for debugging
+	    /// purposes.
 	    CrowdMonitor(const char* name);
     
 	    //////////
-	    // Destroy the CrowdMonitor.
+	    /// Destroy the CrowdMonitor.
 	    ~CrowdMonitor();
     
 	    //////////
-	    // Acquire the read-only lock associated with this
-	    // <b>CrowdMonitor</b>. Multiple threads may hold the
-	    // read-only lock simultaneously.
+	    /// Acquire the read-only lock associated with this
+	    /// <b>CrowdMonitor</b>. Multiple threads may hold the
+	    /// read-only lock simultaneously.
 	    void readLock();
     
 	    //////////
-	    // Release the read-only lock obtained from <i>readLock</i>.
-	    // Undefined behavior may result when <i>readUnlock</i> is
-	    // called and a <i>readLock</i> is not held by the calling
-	    // Thread.
+	    /// Release the read-only lock obtained from <i>readLock</i>.
+	    /// Undefined behavior may result when <i>readUnlock</i> is
+	    /// called and a <i>readLock</i> is not held by the calling
+	    /// Thread.
 	    void readUnlock();
     
 	    //////////
-	    // Acquire the write lock associated with this
-	    // <b>CrowdMonitor</b>. Only one thread may hold the write
-	    // lock, and during the time that this lock is not held, no
-	    // threads may hold the read-only lock.
+	    /// Acquire the write lock associated with this
+	    /// <b>CrowdMonitor</b>. Only one thread may hold the write
+	    /// lock, and during the time that this lock is not held, no
+	    /// threads may hold the read-only lock.
 	    void writeLock();
 
 	    //////////
-	    // Release the write-only lock obtained from <i>writeLock</i>.
-	    // Undefined behavior may result when <i>writeUnlock</i> is
-	    // called and a <i>writeLock</i> is not held by the calling
-	    // Thread.
+	    /// Release the write-only lock obtained from <i>writeLock</i>.
+	    /// Undefined behavior may result when <i>writeUnlock</i> is
+	    /// called and a <i>writeLock</i> is not held by the calling
+	    /// Thread.
 	    void writeUnlock();
 
 	private:

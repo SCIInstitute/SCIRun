@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #ifndef CORE_UTIL_STRINGUTIL_H
 #define CORE_UTIL_STRINGUTIL_H 1
 
@@ -123,12 +125,12 @@ SCISHARE std::string string_toupper(std::string);
 SCISHARE std::string string_tolower(std::string);
 
 //////////
-// Remove directory name
+/// Remove directory name
 inline std::string basename(const std::string &path)
 { return (path.substr(path.rfind('/')+1)); }
 
 //////////
-// Return directory name
+/// Return directory name
 inline std::string pathname(const std::string &path)
 { return (path.substr(0, path.rfind('/')+1)); }
 
@@ -136,11 +138,11 @@ inline std::string pathname(const std::string &path)
 SCISHARE std::vector<std::string> split_string(const std::string& str, char sep);
 
 /////////
-// C++ify a string, turn newlines into \n, use \t, \r, \\ \", etc.
+/// C++ify a string, turn newlines into \n, use \t, \r, \\ \", etc.
 SCISHARE std::string string_Cify(const std::string &str);
 
 //////////
-// Unsafe cast from string to char *, used to export strings to C functions.
+/// Unsafe cast from string to char *, used to export strings to C functions.
 SCISHARE char* ccast_unsafe(const std::string &str);
 
 // replaces all occurances of 'substr' in 'str' with 'replacement'

@@ -29,15 +29,16 @@
 
 
 
-/*
- *  Thread_unix.cc: Utilities for all unix implementations of the
+/**
+ *@file  Thread_unix.cc
+ *@brief Utilities for all unix implementations of the
  * 		    the thread library
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date: June 1997
  *
  */
 

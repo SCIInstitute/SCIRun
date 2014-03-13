@@ -29,14 +29,15 @@
 
 
 
-/*
- *  ThreadPool: A pool of threads
+/**
+ *@file  ThreadPool.cc
+ *@brief A pool of threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: January 2000
+ *@date January 2000
  *
  */
 

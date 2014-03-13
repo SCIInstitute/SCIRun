@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Persistent.h: Base class for persistent objects...
+/**
+ *@file  Persistent.h
+ *@brief Base class for persistent objects...
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   April 1994
+ *@date  April 1994
  *
  */
 

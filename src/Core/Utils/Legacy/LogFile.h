@@ -29,7 +29,9 @@
 */
 
 
-// LogFile.h
+///TODO Documentation
+
+///@file LogFile.h
 
 
 #ifndef CORE_UTIL_LOGFILE_H

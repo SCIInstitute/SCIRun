@@ -28,11 +28,10 @@
 
 
 
-/*
- *  ThrottledRunnable: 
+/**
+ *@file  ThrottledRunnable.h 
  *
- *  Written by:
- *   Author: McKay Davis
+ *@author McKay Davis
  *
  */
 

@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Datatype.cc: The Datatype Data type
+/**
+ *@file  Datatype.cc
+ *@brief The Datatype Data type
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date  July 1994
  *
  */
 

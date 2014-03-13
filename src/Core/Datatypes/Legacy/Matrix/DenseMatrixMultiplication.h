@@ -28,8 +28,8 @@
 
 
 
-/*
- *  DenseMatrixMultiplication.h
+/**
+ *@file  DenseMatrixMultiplication.h
  */
 
 

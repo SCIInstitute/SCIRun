@@ -28,14 +28,14 @@
 
 
 
-/*
- *  ThreadPool: A pool of threads
+/**
+ *@file  ThreadPool
+ *@brief A pool of threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: January 2000
+ *   @date: January 2000
  *
  */
 
@@ -57,36 +57,35 @@ namespace SCIRun {
 class 	ThreadPoolHelper;
 /**************************************
 
- CLASS
+@class
  ThreadPool
 
  KEYWORDS
  ThreadPool
 
- DESCRIPTION
-
+@details
  The ThreadPool class groups a bunch of worker threads.
    
 ****************************************/
 class ThreadPool {
 public:
   //////////
-  // Create a thread pool.  <tt>name</tt> should be a static
-  // string which describes the primitive for debugging purposes.
+  /// Create a thread pool.  <tt>name</tt> should be a static
+  /// string which describes the primitive for debugging purposes.
   ThreadPool(const char* name);
 
   //////////
-  // Destroy the pool and shutdown all threads
+  /// Destroy the pool and shutdown all threads
   ~ThreadPool();
 
   //////////
-  // Start up several threads that will run in parallel.
-  // The caller will block until all of the threads return.
+  /// Start up several threads that will run in parallel.
+  /// The caller will block until all of the threads return.
   void parallel(const ParallelBase& helper, int nthreads);
 
   //////////
-  // Start up several threads that will run in parallel.
-  // The caller will block until all of the threads return.
+  /// Start up several threads that will run in parallel.
+  /// The caller will block until all of the threads return.
   template<class T>
   void parallel(T* ptr, void (T::*pmf)(int), int numThreads) {
     parallel(Parallel<T>(ptr, pmf),
@@ -94,7 +93,7 @@ public:
   }
 
   //////////
-  // Another overloaded version of parallel that passes 1 argument
+  /// Another overloaded version of parallel that passes 1 argument
   template<class T, class Arg1>
   void parallel(T* ptr, void (T::*pmf)(int, Arg1),
 		int numThreads,
@@ -104,7 +103,7 @@ public:
   }
 
   //////////
-  // Another overloaded version of parallel that passes 2 arguments
+  /// Another overloaded version of parallel that passes 2 arguments
   template<class T, class Arg1, class Arg2>
   void parallel(T* ptr, void (T::* pmf)(int, Arg1, Arg2),
 		int numThreads,
@@ -114,7 +113,7 @@ public:
   }
 
   //////////
-  // Another overloaded version of parallel that passes 3 arguments
+  /// Another overloaded version of parallel that passes 3 arguments
   template<class T, class Arg1, class Arg2, class Arg3>
   void parallel(T* ptr, void (T::* pmf)(int, Arg1, Arg2, Arg3),
 		int numThreads,

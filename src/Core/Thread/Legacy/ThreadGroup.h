@@ -28,14 +28,14 @@
 
 
 
-/*
- *  ThreadGroup: A set of threads
+/**
+ *@file  ThreadGroup.h
+ *@brief A set of threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date June 1997
  *
  */
 
@@ -54,13 +54,13 @@ class Thread;
 
 /**************************************
  
-CLASS
+@class
    ThreadGroup
    
 KEYWORDS
    Thread
    
-DESCRIPTION
+@details
    A group of threads that are linked together for scheduling
    and control purposes.  The threads may be stopped, resumed
    and alerted simultaneously.
@@ -70,51 +70,51 @@ DESCRIPTION
 	public:
 	    
 	    //////////
-	    // Create a thread group with the specified <i>name</i>.
-	    // <i>parentGroup</i> specifies the parent <b>ThreadGroup</b>
-	    // which defaults to the default top-level group.
+	    /// Create a thread group with the specified <i>name</i>.
+	    /// <i>parentGroup</i> specifies the parent <b>ThreadGroup</b>
+	    /// which defaults to the default top-level group.
 	    ThreadGroup(const char* name, ThreadGroup* parentGroup=0);
 	    
 	    //////////
-	    // Destroy the thread group.  All of the running threads
-	    // should be stopped before the <b>ThreadGroup</b> is destroyed.
+	    /// Destroy the thread group.  All of the running threads
+	    /// should be stopped before the <b>ThreadGroup</b> is destroyed.
 	    ~ThreadGroup();
 	    
 	    //////////
-	    // Return a snapshot of the number of living threads.  If
-	    // <i>countDaemon</i> is true, then daemon threads will be
-	    // included in the count.
+	    /// Return a snapshot of the number of living threads.  If
+	    /// <i>countDaemon</i> is true, then daemon threads will be
+	    /// included in the count.
 	    int numActive(bool countDaemon);
 	    
 	    //////////
-	    // Stop all of the threads in this thread group
+	    /// Stop all of the threads in this thread group
 	    void stop();
 	    
 	    //////////
-	    // Resume all of the threads in this thread group
+	    /// Resume all of the threads in this thread group
 	    void resume();
 	    
 	    //////////
-	    // Wait until all of the threads have completed.
+	    /// Wait until all of the threads have completed.
 	    void join();
 	    
 	    //////////
-	    // Detach the thread, joins are no longer possible.
+	    /// Detach the thread, joins are no longer possible.
 	    void detach();
 	    
 	    //////////
-	    // Return the parent <b>ThreadGroup.</b>  Returns null if
-	    // this is the default threadgroup.
+	    /// Return the parent <b>ThreadGroup.</b>  Returns null if
+	    /// this is the default threadgroup.
 	    ThreadGroup* parentGroup();
 	    
 	    //////////
-	    // Arrange to have the threadGroup gang scheduled, so that
-	    // all of the threads will be executing at the same time if
-	    // multiprocessing resources permit.  This interface will
-	    // typically be employed by the <i>Thread::parallel</i>
-	    // static method, and will typically not be called directly
-	    // by user code.  Threads added to the group after this call
-	    // may or may not be included in the schedule gang. 
+	    /// Arrange to have the threadGroup gang scheduled, so that
+	    /// all of the threads will be executing at the same time if
+	    /// multiprocessing resources permit.  This interface will
+	    /// typically be employed by the <i>Thread::parallel</i>
+	    /// static method, and will typically not be called directly
+	    /// by user code.  Threads added to the group after this call
+	    /// may or may not be included in the schedule gang. 
 	    void gangSchedule();
 
 	protected:

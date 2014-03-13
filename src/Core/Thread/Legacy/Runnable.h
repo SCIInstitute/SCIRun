@@ -29,14 +29,14 @@
 
 
 
-/*
- *  Runnable: The base class for all threads
+/**
+ *@file  Runnable
+ *@brief The base class for all threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -49,14 +49,13 @@ namespace SCIRun {
 
 /**************************************
  
-CLASS
+@class
    Runnable
    
 KEYWORDS
    Thread
    
-DESCRIPTION
-   
+@details  
    This class should be a base class for any class which is to be
    attached to a thread.  It provides a <i>run</i> pure virtual method
    which should be overridden to provide the thread body.  When this
@@ -75,19 +74,19 @@ DESCRIPTION
   {
   protected:
     //////////
-    // Create a new runnable, and initialize its state.
+    /// Create a new runnable, and initialize its state.
     Runnable(bool delete_on_exit = true);
 
     //////////
-    // The runnable destructor.  See the note above about deleting any
-    // object derived from runnable.
+    /// The runnable destructor.  See the note above about deleting any
+    /// object derived from runnable.
     virtual ~Runnable();
 
     //////////
-    // This method will be overridden to implement the main body
-    // of the thread.  This method will called when the runnable
-    // is attached to a <b>Thread</b> object, and will be executed
-    // in a new context.
+    /// This method will be overridden to implement the main body
+    /// of the thread.  This method will called when the runnable
+    /// is attached to a <b>Thread</b> object, and will be executed
+    /// in a new context.
     virtual void run()=0;
   private:
     bool delete_on_exit;

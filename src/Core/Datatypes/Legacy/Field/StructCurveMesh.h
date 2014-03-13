@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
+/**@details
   A structured curve is a dataset with regular topology but with
   irregular geometry.  The line defined may have any shape but can not
   be overlapping or self-intersecting.
@@ -43,8 +43,8 @@
 #ifndef CORE_DATATYPES_STRUCTCURVEMESH_H
 #define CORE_DATATYPES_STRUCTCURVEMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it to sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Persistent/PersistentSTL.h>
@@ -60,23 +60,23 @@
 
 namespace SCIRun {
 
-//! Declarations for virtual interface
+/// Declarations for virtual interface
 
-//! Functions for creating the virtual interface
-//! Declare the functions that instantiate the virtual interface
+/// Functions for creating the virtual interface
+/// Declare the functions that instantiate the virtual interface
 template <class Basis>
 class StructCurveMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVStructCurveMesh(MESH* mesh) { return (0); }
 
-//! These declarations are needed for a combined dynamic compilation as
-//! as well as virtual functions solution.
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// These declarations are needed for a combined dynamic compilation as
+/// as well as virtual functions solution.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 
 #if (SCIRUN_STRUCTCURVE_SUPPORT > 0)
 
@@ -89,11 +89,11 @@ template <class Basis>
 class StructCurveMesh : public ScanlineMesh<Basis>
 {
 
-//! Make sure the virtual interface has access
+/// Make sure the virtual interface has access
 template <class MESH> friend class VStructCurveMesh;
 
 public:
-  //! Types that change depending on 32 or 64bits
+  /// Types that change depending on 32 or 64bits
   typedef SCIRun::index_type            under_type;
   typedef SCIRun::index_type            index_type;
   typedef SCIRun::size_type             size_type;
@@ -108,7 +108,7 @@ public:
     DEBUG_DESTRUCTOR("StructCurveMesh")   
   }
 
-  //! get the mesh statistics
+  /// get the mesh statistics
   double get_cord_length() const;
   virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
@@ -119,9 +119,9 @@ public:
 
     points_.resize(dims[0]);
 
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     ScanlineMesh<Basis>::vmesh_.reset(CreateVStructCurveMesh(this));
   }
 
@@ -130,7 +130,7 @@ public:
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
 
-  //! get the child elements of the given index
+  /// get the child elements of the given index
   void get_nodes(typename ScanlineMesh<Basis>::Node::array_type &,
                  typename ScanlineMesh<Basis>::Edge::index_type) const;
   void get_nodes(typename ScanlineMesh<Basis>::Node::array_type &,
@@ -145,7 +145,7 @@ public:
                  typename ScanlineMesh<Basis>::Edge::index_type idx) const
   { a.push_back(idx);}
 
-  //! Get the size of an elemnt (length, area, volume)
+  /// Get the size of an elemnt (length, area, volume)
   double get_size(typename ScanlineMesh<Basis>::Node::index_type) const
   { return 0.0; }
   double get_size(typename ScanlineMesh<Basis>::Edge::index_type idx) const
@@ -179,7 +179,7 @@ public:
   int get_valence(typename ScanlineMesh<Basis>::Cell::index_type) const
   { return 0; }
 
-  //! get the center point (in object space) of an element
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &,
                   const typename ScanlineMesh<Basis>::Node::index_type&) const;
   void get_center(Core::Geometry::Point &,
@@ -249,7 +249,7 @@ public:
       index_(ind)
     {}
 
-    //! the following designed to coordinate with ::get_nodes
+    /// the following designed to coordinate with ::get_nodes
     inline
     index_type node0_index() const 
     {
@@ -262,7 +262,7 @@ public:
     }
 
 
-    //! the following designed to coordinate with ::get_edges
+    /// the following designed to coordinate with ::get_edges
     inline
     index_type edge0_index() const 
     {
@@ -287,20 +287,20 @@ public:
 
   friend class ElemData;
 
- //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an edge.
+ /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an edge.
   void pwl_approx_edge(std::vector<std::vector<double> > &coords,
                        typename ScanlineMesh<Basis>::Elem::index_type /*ci*/,
                        unsigned int,
                        unsigned int div_per_unit) const
   {
-    //! Needs to match unit_edges in Basis/QuadBilinearLgn.cc
-    //! compare get_nodes order to the basis order
+    /// Needs to match unit_edges in Basis/QuadBilinearLgn.cc
+    /// compare get_nodes order to the basis order
     this->basis_.approx_edge(0, div_per_unit, coords);
   }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an face.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an face.
   void pwl_approx_face(std::vector<std::vector<std::vector<double> > >& /*coords*/,
                        typename ScanlineMesh<Basis>::Elem::index_type /*ci*/,
                        typename ScanlineMesh<Basis>::Face::index_type /*fi*/,
@@ -310,9 +310,9 @@ public:
   }
 
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the
-  //! local ! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the
+  /// local ! coordinate of a point
   template<class VECTOR, class INDEX>
   bool get_coords(VECTOR &coords, const Core::Geometry::Point &p, INDEX idx) const
   {
@@ -320,8 +320,8 @@ public:
     return this->basis_.get_coords(coords, p, ed);
   }
 
-  //! Find the location in the global coordinate system for a local
-  //! coordinate ! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local
+  /// coordinate ! This function is the opposite of get_coords.
   template<class VECTOR, class INDEX>
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, INDEX idx) const
   {
@@ -329,10 +329,10 @@ public:
     pt = this->basis_.interpolate(coords, ed);
   }
 
-  //! Interpolate the derivate of the function, This infact will
-  //! return the ! jacobian of the local to global coordinate
-  //! transformation. This function ! is mainly intended for the non
-  //! linear elements
+  /// Interpolate the derivate of the function, This infact will
+  /// return the ! jacobian of the local to global coordinate
+  /// transformation. This function ! is mainly intended for the non
+  /// linear elements
   template<class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords,
 		typename ScanlineMesh<Basis>::Elem::index_type idx,
@@ -342,9 +342,9 @@ public:
     this->basis_.derivate(coords, ed, J);
   }
 
-  //! Get the determinant of the jacobian, which is the local volume
-  //! of an element ! and is intended to help with the integration of
-  //! functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume
+  /// of an element ! and is intended to help with the integration of
+  /// functions over an element.
   template<class VECTOR>
   double det_jacobian(const VECTOR& coords,
 		      typename ScanlineMesh<Basis>::Elem::index_type idx) const
@@ -354,9 +354,9 @@ public:
     return (DetMatrix3x3(J));
   }
 
-  //! Get the jacobian of the transformation. In case one wants the
-  //! non inverted ! version of this matrix. This is currentl here for
-  //! completeness of the ! interface
+  /// Get the jacobian of the transformation. In case one wants the
+  /// non inverted ! version of this matrix. This is currentl here for
+  /// completeness of the ! interface
   template<class VECTOR>
   void jacobian(const VECTOR& coords,
 		typename ScanlineMesh<Basis>::Elem::index_type idx,
@@ -378,10 +378,10 @@ public:
     J[8] = Jv2.z();
   }
 
-  //! Get the inverse jacobian of the transformation. This one is
-  //! needed to ! translate local gradients into global gradients. Hence
-  //! it is crucial for ! calculating gradients of fields, or
-  //! constructing finite elements.
+  /// Get the inverse jacobian of the transformation. This one is
+  /// needed to ! translate local gradients into global gradients. Hence
+  /// it is crucial for ! calculating gradients of fields, or
+  /// constructing finite elements.
   template<class VECTOR>                
   double inverse_jacobian(const VECTOR& coords,
 			  typename ScanlineMesh<Basis>::Elem::index_type idx,
@@ -472,8 +472,8 @@ public:
   template <class INDEX>
   bool locate_node(INDEX &idx, const Core::Geometry::Point &p) const
   {
-    //! If there are no nodes, return false, otherwise there will always be 
-    //! a node that is closest
+    /// If there are no nodes, return false, otherwise there will always be 
+    /// a node that is closest
     if (points_.size() == 0) return (false);
     
     typename ScanlineMesh<Basis>::Node::iterator ni, nie;
@@ -507,18 +507,18 @@ public:
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
     
-    //! If there are no elements, one cannot find a point inside
+    /// If there are no elements, one cannot find a point inside
     if (sz == 0) return (false);
     
     double alpha;
     
-    //! Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for
     if (idx >= 0 && idx < sz) 
     {
       if (inside2_p(idx,p,alpha)) return (true);
     }
     
-    //! Loop over all nodes to find one that finds
+    /// Loop over all nodes to find one that finds
     typename ScanlineMesh<Basis>::Elem::iterator ei;
     this->begin(ei);
     typename ScanlineMesh<Basis>::Elem::iterator eie;
@@ -545,19 +545,19 @@ public:
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
     
-    //! If there are no elements, one cannot find a point inside
+    /// If there are no elements, one cannot find a point inside
     if (sz == 0) return (false);
     
     coords.resize(1);
     double alpha;
     
-    //! Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for
     if (idx >= 0 && idx < sz) 
     {
       if (inside2_p(idx,p,coords[0])) return (true);
     }
     
-    //! Loop over all nodes to find one that finds
+    /// Loop over all nodes to find one that finds
     typename ScanlineMesh<Basis>::Elem::iterator ei;
     this->begin(ei);
     typename ScanlineMesh<Basis>::Elem::iterator eie;
@@ -585,7 +585,7 @@ public:
     return(find_closest_node(pdist,result,idx,point,-1.0));
   }
   
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX>
   bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          INDEX &idx, const Core::Geometry::Point &point,
@@ -595,7 +595,7 @@ public:
     typename ScanlineMesh<Basis>::Node::size_type sz;
     this->size(sz);
 
-    //! No nodes, so none is closest
+    /// No nodes, so none is closest
     if (sz == 0) return (false);
 
     typename ScanlineMesh<Basis>::Node::iterator ni;
@@ -606,7 +606,7 @@ public:
     Core::Geometry::Point p2;
     double dist;
 
-    //! Check whether first estimate is the one we are looking for
+    /// Check whether first estimate is the one we are looking for
     if (idx >= 0 && idx < sz)
     {
       p2 = points_[*ni]; 
@@ -620,7 +620,7 @@ public:
       }           
     }
     
-    //! Loop through all nodes to find the one that is closest
+    /// Loop through all nodes to find the one that is closest
     double mindist = maxdist;
     
     while(ni != nie)
@@ -649,7 +649,7 @@ public:
   }
 
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
                          Core::Geometry::Point &result,
@@ -660,7 +660,7 @@ public:
     return find_closest_elem(pdist,result,coords,idx,p,-1.0);
   }
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
                          Core::Geometry::Point &result,
@@ -673,7 +673,7 @@ public:
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
 
-    //! No elements, none that can be closest
+    /// No elements, none that can be closest
     if (sz == 0) return (false);
 
     typename ScanlineMesh<Basis>::Elem::iterator ni;
@@ -685,7 +685,7 @@ public:
     double dist;
 
     coords.resize(1);
-    //! Check whether first guess is OK
+    /// Check whether first guess is OK
     if (idx >= 0 && idx < sz)
     {
       double alpha;
@@ -698,7 +698,7 @@ public:
       }           
     }
     
-    //! Loop through all elements to find closest
+    /// Loop through all elements to find closest
     double mindist = maxdist;
     Core::Geometry::Point res;
     
@@ -737,7 +737,7 @@ public:
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }    
   
-  //! Find the closest elements to a point
+  /// Find the closest elements to a point
   template<class ARRAY>
   bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
                           ARRAY &elems, const Core::Geometry::Point &p) const
@@ -747,7 +747,7 @@ public:
     typename ScanlineMesh<Basis>::Elem::size_type sz;
     this->size(sz);
 
-    //! No elements, none that is closest
+    /// No elements, none that is closest
     if (sz == 0) return (false);
 
     typename ScanlineMesh<Basis>::Elem::iterator ni;
@@ -784,25 +784,25 @@ public:
     return (true);
   }
 
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
-  //! These IDs are created as soon as this class will be instantiated
-  //! The first one is for Pio and the second for the virtual
-  //! interface ! These are currently different as they serve different
-  //! needs.  static PersistentTypeID type_idts;
+  /// These IDs are created as soon as this class will be instantiated
+  /// The first one is for Pio and the second for the virtual
+  /// interface ! These are currently different as they serve different
+  /// needs.  static PersistentTypeID type_idts;
   static PersistentTypeID scanline_typeid;
-  //! Core functionality for getting the name of a templated mesh class  
+  /// Core functionality for getting the name of a templated mesh class  
   static  const std::string type_name(int n = -1);
   
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Soem of this should be obsolete  
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Soem of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new StructCurveMesh<Basis>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<StructCurveMesh<Basis>>();}
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle structcurve_maker(size_type x) { return boost::make_shared<StructCurveMesh<Basis>>(x);}
 
   std::vector<Core::Geometry::Point>& get_points() { return (points_); }
@@ -845,9 +845,9 @@ StructCurveMesh<Basis>::StructCurveMesh():
 {
   DEBUG_CONSTRUCTOR("StructCurveMesh")   
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   this->vmesh_.reset(CreateVStructCurveMesh(this));
 }
 
@@ -863,9 +863,9 @@ StructCurveMesh<Basis>::StructCurveMesh(size_type n)
 {
   DEBUG_CONSTRUCTOR("StructCurveMesh")   
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   this->vmesh_.reset(CreateVStructCurveMesh(this));
 }
 
@@ -889,9 +889,9 @@ StructCurveMesh<Basis>::StructCurveMesh(const StructCurveMesh &copy)
 
   copy.synchronize_lock_.unlock();
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   this->vmesh_.reset(CreateVStructCurveMesh(this));   
 }
 
@@ -1156,7 +1156,7 @@ StructCurveMesh<Basis>::io(Piostream& stream)
   stream.begin_class(type_name(-1), STRUCT_CURVE_MESH_VERSION);
   ScanlineMesh<Basis>::io(stream);
 
-  //! IO data members, in order
+  /// IO data members, in order
   Pio(stream, points_);
 
   stream.end_class();
@@ -1215,6 +1215,6 @@ StructCurveMesh<Basis>::get_type_description() const
 }
 
 
-} //! namespace SCIRun
+} /// namespace SCIRun
 
-#endif //! SCI_project_StructCurveMesh_h
+#endif /// SCI_project_StructCurveMesh_h

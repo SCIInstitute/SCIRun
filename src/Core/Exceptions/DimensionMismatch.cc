@@ -28,14 +28,15 @@
 
 
 
-/*
- *  DimensionMismatch.h: Exception to indicate a failed bounds check
+/**
+ *@file  DimensionMismatch.h
+ *@brief Exception to indicate a failed bounds check
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   August 2000
+ *@date  August 2000
  *
  */
 

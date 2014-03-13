@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/Math/MiscMath.h>

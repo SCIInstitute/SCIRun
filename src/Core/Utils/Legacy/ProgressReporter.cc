@@ -30,14 +30,14 @@
 
 
 
-/*
- *  ProgressReporter.cc
+/**
+ *@file  ProgressReporter.cc
  *
- *  Written by:
+ *@author
  *   Yarden Livnat
  *   Department of Computer Science
  *   University of Utah
- *   Jul 2003
+ *@date  Jul 2003
  *
  */
 

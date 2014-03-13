@@ -28,15 +28,14 @@
 
 
 
-/*
- *  Image.h
+/**
+ *@file Image.h
  *
- *  Written by:
- *   Author: ?
+ *@author
  *   Sourced from MeshPort.cc by David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   Date: ?
+ *@date
  *
  */
 

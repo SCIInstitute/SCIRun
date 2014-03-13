@@ -55,7 +55,7 @@ namespace Datatypes {
       this->fill(val);
     }
 
-    // This constructor allows you to construct DenseMatrixGeneric from Eigen expressions
+    /// This constructor allows you to construct DenseMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     DenseMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
       : EigenBase(other)
@@ -63,7 +63,7 @@ namespace Datatypes {
 
     explicit DenseMatrixGeneric(const Geometry::Transform& t);
 
-    // This method allows you to assign Eigen expressions to DenseMatrixGeneric
+    /// This method allows you to assign Eigen expressions to DenseMatrixGeneric
     template<typename OtherDerived>
     DenseMatrixGeneric& operator=(const Eigen::MatrixBase<OtherDerived>& other)
     {

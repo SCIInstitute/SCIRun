@@ -29,14 +29,15 @@
 
 
 
-/*
- *  FileNotFound.h: Exactly what you think
+/**
+ *@file  FileNotFound.h
+ *@brief Exactly what you think
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1999
+ *@date  July 1999
  *
  */
 

@@ -30,11 +30,10 @@
 
 
 
-/*
- *  ThrottledRunnable: 
+/**
+ *@file  ThrottledRunnable.cc 
  *
- *  Written by:
- *   Author: McKay Davis
+ *@author McKay Davis
  *
  */
 

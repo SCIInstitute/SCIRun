@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Reducer: A barrier with reduction operations
+/**
+ *@file  Reducer.h
+ *@brief A barrier with reduction operations
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date June 1997
  *
  */
 
@@ -48,13 +48,13 @@ namespace SCIRun {
 
 /**************************************
  
-CLASS
+@class
    Reducer
    
 KEYWORDS
    Thread
    
-DESCRIPTION
+@details
    Perform reduction operations over a set of threads.  Reduction
    operations include things like global sums, global min/max, etc.
    In these operations, a local sum (operation) is performed on each
@@ -64,28 +64,28 @@ DESCRIPTION
 	template<class T> class Reducer : public Barrier {
 	public:
 	    //////////
-	    // The function that performs the reduction
+	    /// The function that performs the reduction
 	    typedef T (*ReductionOp)(const T&, const T&);
 
 	    //////////
-	    // Create a <b> Reducer</i>.
-	    // At each operation, a barrier wait is performed, and the
-	    // operation will be performed to compute the global balue.
-	    // <i>name</i> should be a static string which describes
-	    // the primitive for debugging purposes.
-	    // op is a function which will compute a reduced value from
-	    // a pair of values.  op should be associative and commutative,
-	    // even up to floating point errors.
+	    /// Create a <b> Reducer</i>.
+	    /// At each operation, a barrier wait is performed, and the
+	    /// operation will be performed to compute the global balue.
+	    /// <i>name</i> should be a static string which describes
+	    /// the primitive for debugging purposes.
+	    /// op is a function which will compute a reduced value from
+	    /// a pair of values.  op should be associative and commutative,
+	    /// even up to floating point errors.
 	    Reducer(const char* name, ReductionOp);
 
 	    //////////
-	    // Destroy the Reducer and free associated memory.
+	    /// Destroy the Reducer and free associated memory.
 	    virtual ~Reducer();
 
 	    //////////
-	    // Performs a global reduction over all of the threads.  As
-	    // soon as each thread has called reduce with their local value,
-	    // each thread will return the same global reduced value.
+	    /// Performs a global reduction over all of the threads.  As
+	    /// soon as each thread has called reduce with their local value,
+	    /// each thread will return the same global reduced value.
 	    T reduce(int myrank, int numThreads, const T& value);
 
 	private:

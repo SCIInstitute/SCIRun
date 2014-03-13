@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+//TODO Documentation
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Utils/Legacy/Debug.h>

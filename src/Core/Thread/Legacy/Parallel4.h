@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Parallel4: Automatically instantiate several threads, with 4 arguments
+/**
+ *@file  Parallel4.h
+ *@brief Automatically instantiate several threads, with 4 arguments
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -48,13 +48,13 @@
 namespace SCIRun {
 /**************************************
 
- CLASS
+@class
  Parallel4
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Helper class to make instantiating threads to perform a parallel
  task easier.
    
@@ -64,16 +64,16 @@ template<class T, class Arg1, class Arg2, class Arg3, class Arg4> class Parallel
 {
 public:
   //////////
-  // Create a Parallel4 object, using the specified member
-  // function instead of <i>Parallel4</i>.  This will
-  // typically be used like:
-  // <b><pre>Thread::Parallel4(Parallel4&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
+  /// Create a Parallel4 object, using the specified member
+  /// function instead of <i>Parallel4</i>.  This will
+  /// typically be used like:
+  /// <b><pre>Thread::Parallel4(Parallel4&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
   Parallel4(T* obj,
 	    void (T::*pmf)(int, Arg1, Arg2, Arg3, Arg4),
 	    Arg1 a1, Arg2 a2, Arg3 a3, Arg4 a4);
 	    
   //////////
-  // Destroy the Parallel4 object - the threads will remain alive.
+  /// Destroy the Parallel4 object - the threads will remain alive.
   virtual ~Parallel4();
   T* obj_;
   void (T::*pmf_)(int, Arg1, Arg2, Arg3, Arg4);

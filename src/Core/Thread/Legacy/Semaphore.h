@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Semaphore: Basic semaphore primitive
+/**
+ *@file  Semaphore
+ *@breif Basic semaphore primitive
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -50,13 +50,13 @@ class Semaphore_private;
 
 /**************************************
  
- CLASS
+@class
  Semaphore
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@detials
  Counting semaphore synchronization primitive.  A semaphore provides
  atomic access to a special counter.  The <i>up</i> method is used
  to increment the counter, and the <i>down</i> method is used to
@@ -68,33 +68,33 @@ class Semaphore_private;
 class SCISHARE Semaphore {
 public:
   //////////
-  // Create the semaphore, and setup the initial <i>count.name</i>
-  // should be a static string which describes the primitive for
-  // debugging purposes.
+  /// Create the semaphore, and setup the initial <i>count.name</i>
+  /// should be a static string which describes the primitive for
+  /// debugging purposes.
   Semaphore(const char* name, int count);
 
   //////////
-  // Destroy the semaphore
+  /// Destroy the semaphore
   ~Semaphore();
 
   //////////
-  // Increment the semaphore count, unblocking up to <i>count</i>
-  // threads that may be blocked in the <i>down</i> method.
+  /// Increment the semaphore count, unblocking up to <i>count</i>
+  /// threads that may be blocked in the <i>down</i> method.
   void up(int count=1);
     
   //////////
-  // Decrement the semaphore count by <i>count</i>.  If the
-  // count is zero, this thread will be blocked until another
-  // thread calls the <i>up</i> method. The order in which
-  // threads will be unblocked is not defined, but implementors
-  // should give preference to those threads that have waited
-  // the longest.
+  /// Decrement the semaphore count by <i>count</i>.  If the
+  /// count is zero, this thread will be blocked until another
+  /// thread calls the <i>up</i> method. The order in which
+  /// threads will be unblocked is not defined, but implementors
+  /// should give preference to those threads that have waited
+  /// the longest.
   void down(int count=1);
 
   //////////
-  // Attempt to decrement the semaphore count by one, but will
-  // never block. If the count was zero, <i>tryDown</i> will
-  // return false. Otherwise, <i>tryDown</i> will return true.
+  /// Attempt to decrement the semaphore count by one, but will
+  /// never block. If the count was zero, <i>tryDown</i> will
+  /// return false. Otherwise, <i>tryDown</i> will return true.
   bool tryDown();
 
 private:

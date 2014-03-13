@@ -29,14 +29,15 @@
 
 
 
-/*
- *  SimpleReducer: A barrier with reduction operations
+/**
+ *@file  SimpleReducer.cc
+ *@brief A barrier with reduction operations
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date: June 1997
  *
  */
 

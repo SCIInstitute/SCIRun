@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Parallel: Automatically instantiate several threads
+/**
+ *@file  Parallel.h
+ *@brief Automatically instantiate several threads
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -48,13 +48,13 @@
 namespace SCIRun {
 /**************************************
  
-  CLASS
+@class
   Parallel
    
   KEYWORDS
   Thread
    
-  DESCRIPTION
+@details
   Helper class to make instantiating threads to perform a parallel
   task easier.
    
@@ -62,14 +62,14 @@ namespace SCIRun {
 template<class T> class Parallel  : public ParallelBase {
 public:
   //////////
-  // Create a parallel object, using the specified member
-  // function instead of <i>parallel</i>.  This will
-  // typically be used like:
-  // <b><pre>Thread::parallel(Parallel&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
+  /// Create a parallel object, using the specified member
+  /// function instead of <i>parallel</i>.  This will
+  /// typically be used like:
+  /// <b><pre>Thread::parallel(Parallel&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
   Parallel(T* obj, void (T::*pmf)(int));
 	    
   //////////
-  // Destroy the Parallel object - the threads will remain alive.
+  /// Destroy the Parallel object - the threads will remain alive.
   virtual ~Parallel();
   T* obj_;
   void (T::*pmf_)(int);

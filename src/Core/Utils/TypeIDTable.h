@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+///TODO Documentation
+
 #ifndef CORE_UTILS_TYPEIDTABLE_H
 #define CORE_UTILS_TYPEIDTABLE_H
 
@@ -40,7 +42,7 @@ namespace Core
 {
 namespace Utility
 {
-  // A thread-safe map used for constructor lookup in Mesh/Field factories.
+  /// A thread-safe map used for constructor lookup in Mesh/Field factories.
 
   template <class CtorInfo>
   class TypeIDTable : boost::noncopyable

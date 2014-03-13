@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Assert.h: Utility for specifying data invariants (Assertions)
+/**
+ *@file  Assert.h
+ *@brief Utility for specifying data invariants (Assertions)
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   Feb. 1994
+ *@date  Feb. 1994
  *
  */
 

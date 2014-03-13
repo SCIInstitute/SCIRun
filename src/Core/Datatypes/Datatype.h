@@ -26,7 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
+///TODO Documentation
+ 
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 
 

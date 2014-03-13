@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #include <Core/Utils/Legacy/StringUtil.h>
 #include <Core/Utils/Legacy/Assert.h>
 

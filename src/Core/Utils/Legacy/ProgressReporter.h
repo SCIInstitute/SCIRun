@@ -29,14 +29,14 @@
 
 
 
-/*
- *  ProgressReporter.h:
+/**
+ *@file  ProgressReporter.h:
  *
- *  Written by:
+ *@author
  *   Yarden Livnat
  *   Department of Computer Science
  *   University of Utah
- *   July 2003
+ *@date  July 2003
  *
  */
 

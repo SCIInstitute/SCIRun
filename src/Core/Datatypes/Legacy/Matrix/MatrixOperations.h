@@ -28,14 +28,15 @@
 
 
 
-/*
- *  MatrixOperations.h: Matrix Operations
+/**
+ *@file  MatrixOperations.h
+ *@brief Matrix Operations
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   August 2003
+ *@date  August 2003
  *
  */
 

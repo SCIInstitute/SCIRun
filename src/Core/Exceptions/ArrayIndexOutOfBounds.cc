@@ -28,14 +28,15 @@
 
 
 
-/*
- *  ArrayIndexOutOfBounds.h: Exception to indicate a failed bounds check
+/**
+ *@file  ArrayIndexOutOfBounds.h
+ *@brief Exception to indicate a failed bounds check
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   March 2000
+ *@date  March 2000
  *
  */
 

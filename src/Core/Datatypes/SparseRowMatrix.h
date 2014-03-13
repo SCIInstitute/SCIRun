@@ -47,13 +47,13 @@ namespace Datatypes {
     typedef Eigen::SparseMatrix<T, Eigen::RowMajor, index_type> EigenBase;
     typedef Eigen::Triplet<T> Triplet;
 
-    //TODO: need C++11
+    ///TODO: need C++11
     //using Base::Base;
 
     SparseRowMatrixGeneric() : EigenBase() {}
     SparseRowMatrixGeneric(int nrows, int ncols) : EigenBase(nrows, ncols) {}
 
-    //Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
+    ///Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
     SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, size_t nnz) : EigenBase(nrows, ncols)
     {
       if (rowCounter[nrows] != nnz)
@@ -78,13 +78,13 @@ namespace Datatypes {
       this->setFromTriplets(triplets.begin(), triplets.end());
     }
 
-    // This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
+    /// This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     SparseRowMatrixGeneric(const Eigen::SparseMatrixBase<OtherDerived>& other)
       : EigenBase(other)
     { }
 
-    // This method allows you to assign Eigen expressions to SparseRowMatrixGeneric
+    /// This method allows you to assign Eigen expressions to SparseRowMatrixGeneric
     template<typename OtherDerived>
     SparseRowMatrixGeneric& operator=(const Eigen::SparseMatrixBase<OtherDerived>& other)
     {
@@ -108,13 +108,13 @@ namespace Datatypes {
       visitor.visit(*this);
     }
     
-    //TODO: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
+    ///TODO: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
     bool isSymmetric() const
     {
      if (this->cols() != this->rows()) return false;
      return this->isApprox(this->transpose(),1e-16);
     }
-    //TODO!
+    ///TODO!
 #if 0
     class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>
     {

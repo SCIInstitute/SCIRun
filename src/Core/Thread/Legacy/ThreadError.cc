@@ -29,14 +29,15 @@
 
 
 
-/*
- *  ThreadError: Exception class for unusual errors in the thread library
+/**
+ *@file  ThreadError.cc
+ *@brief Exception class for unusual errors in the thread library
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: August 1999
+ *@date August 1999
  *
  */
 

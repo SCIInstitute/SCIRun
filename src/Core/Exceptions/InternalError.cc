@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  InternalError.h: Generic exception for internal errors
+/**
+ *@file  InternalError.h
+ *@brief Generic exception for internal errors
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1999
+ *@date  July 1999
  *
  */
 

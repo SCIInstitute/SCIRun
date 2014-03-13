@@ -28,14 +28,14 @@
 
 
 
-/*
- *  SimpleReducer: A barrier with reduction operations
+/**
+ *@file  SimpleReducer.h
+ *@brief A barrier with reduction operations
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -50,13 +50,13 @@ namespace SCIRun {
 
 /**************************************
  
-CLASS
+@class
    SimpleReducer
    
 KEYWORDS
    Thread
    
-DESCRIPTION
+@details
    Perform reduction operations over a set of threads.  Reduction
    operations include things like global sums, global min/max, etc.
    In these operations, a local sum (operation) is performed on each
@@ -66,33 +66,33 @@ DESCRIPTION
 	class SCISHARE SimpleReducer : public Barrier {
 	public:
 	    //////////
-	    // Create a <b> SimpleReducer</i>.
-	    // At each operation, a barrier wait is performed, and the
-	    // operation will be performed to compute the global balue.
-	    // <i>name</i> should be a static string which describes
-	    // the primitive for debugging purposes.
+	    /// Create a <b> SimpleReducer</i>.
+	    /// At each operation, a barrier wait is performed, and the
+	    /// operation will be performed to compute the global balue.
+	    /// <i>name</i> should be a static string which describes
+	    /// the primitive for debugging purposes.
 	    SimpleReducer(const char* name);
 
 	    //////////
-	    // Destroy the SimpleReducer and free associated memory.
+	    /// Destroy the SimpleReducer and free associated memory.
 	    virtual ~SimpleReducer();
 
 	    //////////
-	    // Performs a global sum over all of the threads.  As soon as each
-	    // thread has called sum with their local sum, each thread will
-	    // return the same global sum.
+	    /// Performs a global sum over all of the threads.  As soon as each
+	    /// thread has called sum with their local sum, each thread will
+	    /// return the same global sum.
 	    double sum(int myrank, int numThreads, double mysum);
 
 	    //////////
-	    // Performs a global max over all of the threads.  As soon as each
-	    // thread has called max with their local max, each thread will
-	    // return the same global max.
+	    /// Performs a global max over all of the threads.  As soon as each
+	    /// thread has called max with their local max, each thread will
+	    /// return the same global max.
 	    double max(int myrank, int numThreads, double mymax);
 
 	    //////////
-	    // Performs a global min over all of the threads.  As soon as each
-	    // thread has called min with their local max, each thread will
-	    // return the same global max.
+	    /// Performs a global min over all of the threads.  As soon as each
+	    /// thread has called min with their local max, each thread will
+	    /// return the same global max.
 	    double min(int myrank, int numThreads, double mymax);
 
 	private:

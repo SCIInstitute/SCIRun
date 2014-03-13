@@ -29,14 +29,15 @@
 
 
 
-/*
- *  IllegalValue.h: Generic exception for invalid values
+/**
+ *@file  IllegalValue.h
+ *@brief Generic exception for invalid values
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1999
+ *@date  July 1999
  *
  */
 

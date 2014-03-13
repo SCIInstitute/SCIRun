@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Exception.h: Base exception class
+/**
+ *@file  Exception.h
+ *@brief Base exception class
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   March 2000
+ *@date  March 2000
  *
  */
 

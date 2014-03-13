@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
+/**@details
   A structured grid is a dataset with regular topology but with irregular
   geometry.
 
@@ -46,8 +46,8 @@
 #ifndef CORE_DATATYPES_STRUCTHEXVOLMESH_H
 #define CORE_DATATYPES_STRUCTHEXVOLMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it to sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it to sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Thread/Mutex.h>
@@ -59,29 +59,29 @@
 
 #include <Core/Datatypes/Legacy/Field/LatVolMesh.h>
 
-//! Incude needed for Windows: declares SCISHARE
+/// Incude needed for Windows: declares SCISHARE
 #include <Core/Datatypes/Legacy/Field/share.h>
 
 namespace SCIRun {
 
-//! Declarations for virtual interface
+/// Declarations for virtual interface
 
 
-//! Functions for creating the virtual interface
-//! Declare the functions that instantiate the virtual interface
+/// Functions for creating the virtual interface
+/// Declare the functions that instantiate the virtual interface
 template <class Basis>
 class StructHexVolMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behaviour will allow
+/// for dynamically compiling the interfae if needed.
 template<class MESH>
 VMesh* CreateVStructHexVolMesh(MESH* mesh) { return (0); }
 
-//! These declarations are needed for a combined dynamic compilation as
-//! as well as virtual functions solution.
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// These declarations are needed for a combined dynamic compilation as
+/// as well as virtual functions solution.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 
 #if (SCIRUN_STRUCTHEXVOL_SUPPORT > 0)
 
@@ -98,7 +98,7 @@ template <class MESH>
 friend class VStructHexVolMesh;
 
 public:
-  //! Types that change depending on 32 or 64bits
+  /// Types that change depending on 32 or 64bits
   typedef SCIRun::index_type                 under_type;
   typedef SCIRun::index_type                 index_type;
   typedef SCIRun::size_type                  size_type;
@@ -126,7 +126,7 @@ public:
       index_(ind)
     {}
 
-    //! the following designed to coordinate with ::get_nodes
+    /// the following designed to coordinate with ::get_nodes
     inline
     index_type node0_index() const {
       return (index_.i_ + mesh_.get_ni()*index_.j_ +
@@ -211,7 +211,7 @@ public:
 
   friend class ElemData;
 
-  //! get the mesh statistics
+  /// get the mesh statistics
   virtual Core::Geometry::BBox get_bounding_box() const;
   virtual void transform(const Core::Geometry::Transform &t);
 
@@ -223,9 +223,9 @@ public:
 
     points_.resize(dims[2], dims[1], dims[0]);
 
-    //! Create a new virtual interface for this copy
-    //! all pointers have changed hence create a new
-    //! virtual interface class
+    /// Create a new virtual interface for this copy
+    /// all pointers have changed hence create a new
+    /// virtual interface class
     LatVolMesh<Basis>::vmesh_.reset(CreateVStructHexVolMesh(this)); 
   }
 
@@ -234,7 +234,7 @@ public:
     return (Mesh::STRUCTURED | Mesh::IRREGULAR);
   }
 
-  //! get the center point (in object space) of an element
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &,
                   const typename LatVolMesh<Basis>::Node::index_type &) const;
   void get_center(Core::Geometry::Point &, typename LatVolMesh<Basis>::Edge::index_type) const;
@@ -314,12 +314,12 @@ public:
     // TODO: Generate bounding boxes for elements and integrate this into the
     // basis function code.
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (this->ni_ == 0 || this->nj_ == 0 || this->nk_ == 0) return (false);
 
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if (elem.i_ >= 0 && elem.i_ < (this->ni_-1) &&
         elem.j_ >= 0 && elem.j_ < (this->nj_-1) &&
         elem.k_ >= 0 && elem.k_ < (this->nk_-1)) 
@@ -383,8 +383,8 @@ public:
     do 
     {
       found = true; 
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -623,9 +623,9 @@ public:
                         const typename LatVolMesh<Basis>::Elem::index_type & i,
                         FieldRNG &rng) const;
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the local
-  //! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the local
+  /// coordinate of a point
   template<class VECTOR>
   bool get_coords(VECTOR &coords, const Core::Geometry::Point &p,
 		  typename LatVolMesh<Basis>::Elem::index_type idx) const
@@ -634,8 +634,8 @@ public:
     return this->basis_.get_coords(coords, p, ed);
   }
 
-  //! Find the location in the global coordinate system for a local
-  //! coordinate ! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local
+  /// coordinate ! This function is the opposite of get_coords.
   template<class VECTOR>
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords,
 		   typename LatVolMesh<Basis>::Elem::index_type idx) const
@@ -644,10 +644,10 @@ public:
     pt = this->basis_.interpolate(coords, ed);
   }
 
-  //! Interpolate the derivate of the function, This infact will
-  //! return the jacobian of the local to global coordinate
-  //! transformation. This function is mainly intended for the non
-  //! linear elements
+  /// Interpolate the derivate of the function, This infact will
+  /// return the jacobian of the local to global coordinate
+  /// transformation. This function is mainly intended for the non
+  /// linear elements
   template<class VECTOR1, class VECTOR2>  
   void derivate(const VECTOR1 &coords,
 		typename LatVolMesh<Basis>::Elem::index_type idx,
@@ -657,9 +657,9 @@ public:
     this->basis_.derivate(coords, ed, J);
   }
   
-  //! Get the determinant of the jacobian, which is the local volume
-  //! of an element and is intended to help with the integration of
-  //! functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume
+  /// of an element and is intended to help with the integration of
+  /// functions over an element.
   template<class VECTOR>  
   double det_jacobian(const VECTOR& coords,
 		      typename LatVolMesh<Basis>::Elem::index_type idx) const
@@ -669,9 +669,9 @@ public:
     return (DetMatrix3x3(J));
   }
 
-  //! Get the jacobian of the transformation. In case one wants the
-  //! non inverted version of this matrix. This is currentl here for
-  //! completeness of the interface
+  /// Get the jacobian of the transformation. In case one wants the
+  /// non inverted version of this matrix. This is currentl here for
+  /// completeness of the interface
   template<class VECTOR>
   void jacobian(const VECTOR& coords,
 		typename LatVolMesh<Basis>::Elem::index_type idx,
@@ -691,10 +691,10 @@ public:
     J[8] = Jv[2].z();
   }
 
-  //! Get the inverse jacobian of the transformation. This one is
-  //! needed to translate local gradients into global gradients. Hence
-  //! it is crucial for calculating gradients of fields, or
-  //! constructing finite elements.
+  /// Get the inverse jacobian of the transformation. This one is
+  /// needed to translate local gradients into global gradients. Hence
+  /// it is crucial for calculating gradients of fields, or
+  /// constructing finite elements.
   template<class VECTOR>                 
   double inverse_jacobian(const VECTOR& coords,
 			  typename LatVolMesh<Basis>::Elem::index_type idx,
@@ -765,14 +765,14 @@ public:
   virtual bool unsynchronize(mask_type);
   bool clear_synchronization();
     
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
   static PersistentTypeID structhexvol_typeid;
-  //! Core functionality for getting the name of a templated mesh class  
+  /// Core functionality for getting the name of a templated mesh class  
   static  const std::string type_name(int n = -1);
 
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Soem of this should be obsolete  
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Soem of this should be obsolete  
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -781,11 +781,11 @@ public:
   static const TypeDescription* elem_type_description()
   { return cell_type_description(); }
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new StructHexVolMesh<Basis>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker()  { return boost::make_shared<StructHexVolMesh<Basis>>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle structhexvol_maker(size_type x,
 				       size_type y,
 				       size_type z)
@@ -840,10 +840,10 @@ public:
     // basis function code.
     if (this->basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (this->ni_ == 0 || this->nj_ == 0 || this->nk_ == 0) return (false);
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if (elem.i_ >= 0 && elem.i_ < (this->ni_-1) &&
         elem.j_ >= 0 && elem.j_ < (this->nj_-1) &&
         elem.k_ >= 0 && elem.k_ < (this->nk_-1)) 
@@ -909,10 +909,10 @@ public:
     // basis function code.
     if (this->basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (this->ni_ == 0 || this->nj_ == 0 || this->nk_ == 0) return (false);
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if (elem.i_ >= 0 && elem.i_ < (this->ni_-1) &&
         elem.j_ >= 0 && elem.j_ < (this->nj_-1) &&
         elem.k_ >= 0 && elem.k_ < (this->nk_-1)) 
@@ -951,10 +951,10 @@ public:
   template <class INDEX>
   bool inline locate_node(INDEX &node, const Core::Geometry::Point &p) const
   {
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (this->ni_ == 0 || this->nj_ == 0 || this->nk_ == 0) return (false);
     
-    //! Check first guess
+    /// Check first guess
     if (node.i_ >= 0 && node.i_ < this->ni_ &&
         node.j_ >= 0 && node.j_ < this->nj_ &&
         node.k_ >= 0 && node.k_ < this->nk_) 
@@ -990,8 +990,8 @@ public:
     do 
     {
       found = true; 
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
     
       for (index_type i = bi; i <= ei; i++)
       {
@@ -1069,7 +1069,7 @@ private:
   mask_type                           synchronized_;
   double                              epsilon_;
   double                              epsilon2_; 
-  double                              epsilon3_; //! for volumetric comparison
+  double                              epsilon3_; /// for volumetric comparison
 };
 
 template <class Basis>
@@ -1087,9 +1087,9 @@ StructHexVolMesh<Basis>::StructHexVolMesh():
 {
   DEBUG_CONSTRUCTOR("StructHexVolMesh")     
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
 
@@ -1107,9 +1107,9 @@ StructHexVolMesh<Basis>::StructHexVolMesh(size_type i,
 {
   DEBUG_CONSTRUCTOR("StructHexVolMesh")     
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   this->vmesh_.reset(CreateVStructHexVolMesh(this));
 }
 
@@ -1136,9 +1136,9 @@ StructHexVolMesh<Basis>::StructHexVolMesh(const StructHexVolMesh<Basis> &copy):
 
   copy.synchronize_lock_.unlock();
   
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   this->vmesh_.reset(CreateVStructHexVolMesh(this)); 
 }
 
@@ -1274,12 +1274,12 @@ StructHexVolMesh<Basis>::find_closest_node(double& pdist, Core::Geometry::Point 
       typename LatVolMesh<Basis>::Node::index_type &node, const Core::Geometry::Point &p,
       double maxdist) const
 {
-  //! If there are no nodes we cannot find a closest point
+  /// If there are no nodes we cannot find a closest point
   if (this->ni_ == 0 || this->nj_ == 0 || this->nk_ == 0) return (false);
   
   if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
   
-  //! Check first guess
+  /// Check first guess
   if (node.i_ >= 0 && node.i_ < this->ni_ &&
       node.j_ >= 0 && node.j_ < this->nj_ &&
       node.k_ >= 0 && node.k_ < this->nk_) 
@@ -1322,8 +1322,8 @@ StructHexVolMesh<Basis>::find_closest_node(double& pdist, Core::Geometry::Point 
   do 
   {
     found = true; 
-    //! We need to do a full shell without any elements that are closer
-    //! to make sure there no closer elements in neighboring searchgrid cells
+    /// We need to do a full shell without any elements that are closer
+    /// to make sure there no closer elements in neighboring searchgrid cells
   
     for (index_type i = bi; i <= ei; i++)
     {
@@ -1354,7 +1354,7 @@ StructHexVolMesh<Basis>::find_closest_node(double& pdist, Core::Geometry::Point 
                   result = point; 
                   node = idx; 
                   dmin = dist; 
-                  //! If we are closer than eps^2 we found a node close enough
+                  /// If we are closer than eps^2 we found a node close enough
                   if (dmin < epsilon2_) 
                   {
                     pdist = sqrt(dmin);
@@ -1380,7 +1380,7 @@ StructHexVolMesh<Basis>::find_closest_node(double& pdist, Core::Geometry::Point 
   return (true);
 }
 
-  //! Find the closest elements to a point  
+  /// Find the closest elements to a point  
 template<class Basis>  
 bool 
 StructHexVolMesh<Basis>::find_closest_elems(double& /*pdist*/, Core::Geometry::Point& /*result*/, 
@@ -1432,20 +1432,20 @@ StructHexVolMesh<Basis>::get_weights(const Core::Geometry::Point &p,
 }
 
 
-//! ===================================================================
-//! area3D_Polygon(): computes the area of a 3D planar polygon
-//!    Input:  int n = the number of vertices in the polygon
-//!            Core::Geometry::Point* V = an array of n+2 vertices in a plane
-//!                       with V[n]=V[0] and V[n+1]=V[1]
-//!            Core::Geometry::Point N = unit normal vector of the polygon's plane
-//!    Return: the (float) area of the polygon
+/// ===================================================================
+/// area3D_Polygon(): computes the area of a 3D planar polygon
+///    Input:  int n = the number of vertices in the polygon
+///            Core::Geometry::Point* V = an array of n+2 vertices in a plane
+///                       with V[n]=V[0] and V[n+1]=V[1]
+///            Core::Geometry::Point N = unit normal vector of the polygon's plane
+///    Return: the (float) area of the polygon
 
-//! Copyright 2009, softSurfer (www.softsurfer.com)
-//! This code may be freely used and modified for any purpose
-//! providing that this copyright notice is included with it.
-//! SoftSurfer makes no warranty for this code, and cannot be held
-//! liable for any real or imagined damage resulting from its use.
-//! Users of this code must verify correctness for their application.
+/// Copyright 2009, softSurfer (www.softsurfer.com)
+/// This code may be freely used and modified for any purpose
+/// providing that this copyright notice is included with it.
+/// SoftSurfer makes no warranty for this code, and cannot be held
+/// liable for any real or imagined damage resulting from its use.
+/// Users of this code must verify correctness for their application.
 
 template <class Basis>
 double
@@ -1453,24 +1453,24 @@ StructHexVolMesh<Basis>::polygon_area(const typename LatVolMesh<Basis>::Node::ar
 				      const Core::Geometry::Vector N) const
 {
   double area = 0;
-  double an, ax, ay, az;  //! abs value of normal and its coords
-  int   coord;           //! coord to ignore: 1=x, 2=y, 3=z
+  double an, ax, ay, az;  /// abs value of normal and its coords
+  int   coord;           // coord to ignore: 1=x, 2=y, 3=z
   index_type   i, j, k;         //! loop indices
   const size_type n = ni.size();
 
-  //! select largest abs coordinate to ignore for projection
-  ax = (N.x()>0 ? N.x() : -N.x());     //! abs x-coord
-  ay = (N.y()>0 ? N.y() : -N.y());     //! abs y-coord
-  az = (N.z()>0 ? N.z() : -N.z());     //! abs z-coord
+  /// select largest abs coordinate to ignore for projection
+  ax = (N.x()>0 ? N.x() : -N.x());     /// abs x-coord
+  ay = (N.y()>0 ? N.y() : -N.y());     /// abs y-coord
+  az = (N.z()>0 ? N.z() : -N.z());     /// abs z-coord
 
-  coord = 3;                     //! ignore z-coord
+  coord = 3;                     /// ignore z-coord
   if (ax > ay) 
   {
-    if (ax > az) coord = 1;    //! ignore x-coord
+    if (ax > az) coord = 1;    /// ignore x-coord
   }
-  else if (ay > az) coord = 2;   //! ignore y-coord
+  else if (ay > az) coord = 2;   /// ignore y-coord
 
-  //! compute area of the 2D projection
+  /// compute area of the 2D projection
   for (i=1, j=2, k=0; i<=n; i++, j++, k++)
     switch (coord) 
     {
@@ -1488,8 +1488,8 @@ StructHexVolMesh<Basis>::polygon_area(const typename LatVolMesh<Basis>::Node::ar
       continue;
     }
 
-  //! scale to get area before projection
-  an = sqrt( ax*ax + ay*ay + az*az);  //! length of normal vector
+  /// scale to get area before projection
+  an = sqrt( ax*ax + ay*ay + az*az);  /// length of normal vector
   switch (coord) 
   {
   case 1:
@@ -1609,14 +1609,14 @@ StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
   double u = rng();
   double v = rng();
 
-  //! Fold cube into prism.
+  /// Fold cube into prism.
   if (t + u > 1.0)
   {
     t = 1.0 - t;
     u = 1.0 - u;
   }
 
-  //! Fold prism into tet.
+  /// Fold prism into tet.
   if (u + v > 1.0)
   {
     const double tmp = v;
@@ -1630,7 +1630,7 @@ StructHexVolMesh<Basis>::get_random_point(Core::Geometry::Point &p,
     t = 1.0 - u - tmp;
   }
  
-  //! Convert to Barycentric and compute new point.
+  /// Convert to Barycentric and compute new point.
   const double a = 1.0 - t - u - v; 
       
   if (w > (a0 + a1 + a2 + a3))
@@ -1667,25 +1667,25 @@ StructHexVolMesh<Basis>::synchronize(mask_type sync)
         !(synchronized_ & Mesh::ELEM_LOCATE_E) ||
         !(synchronized_ & Mesh::EPSILON_E) ))
   {
-    //! These computations share the evaluation of the bounding box
+    /// These computations share the evaluation of the bounding box
     Core::Geometry::BBox bb = get_bounding_box(); 
 
-    //! Compute the epsilon for geometrical closeness comparisons
-    //! Mainly used by the grid lookup tables
+    /// Compute the epsilon for geometrical closeness comparisons
+    /// Mainly used by the grid lookup tables
     if (sync & (Mesh::EPSILON_E|Mesh::LOCATE_E|Mesh::FIND_CLOSEST_E) && 
         !(synchronized_ & Mesh::EPSILON_E))
     {
       compute_epsilon(bb);
     }
 
-    //! Table for finding nodes in space
+    /// Table for finding nodes in space
     if (sync & (Mesh::NODE_LOCATE_E|Mesh::FIND_CLOSEST_NODE_E) && 
         !(synchronized_ & Mesh::NODE_LOCATE_E))
     {
       compute_node_grid(bb);
     }
 
-    //! Table for finding elements in space
+    /// Table for finding elements in space
     if (sync & (Mesh::ELEM_LOCATE_E|Mesh::FIND_CLOSEST_ELEM_E) && 
         !(synchronized_ & Mesh::ELEM_LOCATE_E))
     {
@@ -1869,11 +1869,11 @@ StructHexVolMesh<Basis>::io(Piostream& stream)
 {
   int version =  stream.begin_class(type_name(-1), STRUCT_HEX_VOL_MESH_VERSION);
   LatVolMesh<Basis>::io(stream);
-  //! IO data members, in order
+  /// IO data members, in order
 
   if (version == 1)
   {
-    //! The dimensions of this array were swapped
+    /// The dimensions of this array were swapped
     Array3<Core::Geometry::Point> tpoints;
     Pio(stream, tpoints);
     
@@ -2016,6 +2016,6 @@ StructHexVolMesh<Basis>::cell_type_description()
   return td;
 }
 
-} //! namespace SCIRun
+} /// namespace SCIRun
 
-#endif //! SCI_project_StructHexVolMesh_h
+#endif /// SCI_project_StructHexVolMesh_h

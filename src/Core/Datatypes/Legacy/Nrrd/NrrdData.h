@@ -26,15 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-// NrrdData.h - interface to Gordon's Nrrd class
-//
-//  Written by:
-//   David Weinstein
-//   School of Computing
-//   University of Utah
-//   February 2001
-
+/*
+ *@file  NrrdData.h
+ *@brief Interface to Gordon's Nrrd class
+ *
+ *@author
+ *   David Weinstein
+ *   School of Computing
+ *   University of Utah
+ *@date  February 2001
+ */
 
 #if !defined(SCI_Teem_NrrdData_h)
 #define SCI_Teem_NrrdData_h

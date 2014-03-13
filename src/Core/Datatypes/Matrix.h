@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 
-#ifndef CORE_DATATYPES_MATRIX_H
 #define CORE_DATATYPES_MATRIX_H 
 
 #include <Core/Datatypes/Datatype.h>

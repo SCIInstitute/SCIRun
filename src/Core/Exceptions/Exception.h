@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  Exception.h: Base class for all SCI Exceptions
+/**
+ *@file  Exception.h
+ *@brief Base class for all SCI Exceptions
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1999
+ *@date   July 1999
  *
  */
 

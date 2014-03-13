@@ -29,8 +29,8 @@
 #ifndef CORE_DATATYPES_QUADSURFMESH_H
 #define CORE_DATATYPES_QUADSURFMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
@@ -58,7 +58,7 @@
 #include <boost/thread.hpp>
 #include <Core/Persistent/PersistentSTL.h>
 
-//! Needed for some specialized functions
+/// Needed for some specialized functions
 #include <set>
 
 #include <Core/Datatypes/Legacy/Field/share.h>
@@ -70,17 +70,17 @@ namespace SCIRun {
 
 template <class Basis> class QuadSurfMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVQuadSurfMesh(MESH* mesh) { return (0); }
 
 #if (SCIRUN_QUADSURF_SUPPORT > 0)
-//! These declarations are needed for a combined dynamic compilation as
-//! as well as virtual functions solution.
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// These declarations are needed for a combined dynamic compilation as
+/// as well as virtual functions solution.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<Core::Basis::QuadBilinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
 SCISHARE VMesh* CreateVQuadSurfMesh(QuadSurfMesh<Core::Basis::QuadBiquadraticLgn<Core::Geometry::Point> >* mesh);
@@ -101,7 +101,7 @@ template <class Basis>
 class QuadSurfMesh : public Mesh
 {
 
-//! Make sure the virtual interface has access
+/// Make sure the virtual interface has access
 template<class MESH> friend class VQuadSurfMesh;
 template<class MESH> friend class VMeshShared;
 template<class MESH> friend class VUnstructuredMesh;
@@ -116,7 +116,7 @@ public:
   typedef boost::shared_ptr<QuadSurfMesh<Basis> > handle_type;
   typedef Basis                         basis_type;
 
-  //! Index and Iterator types required for Mesh Concept.
+  /// Index and Iterator types required for Mesh Concept.
   struct Node {
     typedef NodeIndex<under_type>       index_type;
     typedef NodeIterator<under_type>    iterator;
@@ -145,15 +145,15 @@ public:
     typedef std::vector<index_type>          array_type;
   };
 
-  //! Elem refers to the most complex topological object
-  //! DElem refers to object just below Elem in the topological hierarchy
+  /// Elem refers to the most complex topological object
+  /// DElem refers to object just below Elem in the topological hierarchy
   typedef Face Elem;
   typedef Edge DElem;
 
-  //! Somehow the information of how to interpolate inside an element
-  //! ended up in a separate class, as they need to share information
-  //! this construction was created to transfer data. 
-  //! Hopefully in the future this class will disappear again.
+  /// Somehow the information of how to interpolate inside an element
+  /// ended up in a separate class, as they need to share information
+  /// this construction was created to transfer data. 
+  /// Hopefully in the future this class will disappear again.
   friend class ElemData;
 
   class ElemData
@@ -165,7 +165,7 @@ public:
       mesh_(msh),
       index_(ind)
     {
-      //! Linear and Constant Basis never use edges_
+      /// Linear and Constant Basis never use edges_
       if (basis_type::polynomial_order() > 1) 
       {
         mesh_.get_edges_from_face(edges_, index_);
@@ -194,7 +194,7 @@ public:
       return mesh_.faces_[index_ * 4 + 3];
     }
 
-    //! changed the indexing as we now use unique indices
+    /// changed the indexing as we now use unique indices
     inline
     index_type edge0_index() const 
     {
@@ -238,11 +238,11 @@ public:
     }
 
   private:
-    //! reference to the mesh
+    /// reference to the mesh
     const QuadSurfMesh<Basis>        &mesh_;
-    //! copy of element index
+    /// copy of element index
     const index_type                 index_;
-    //! need edges for quadratic meshes    
+    /// need edges for quadratic meshes    
     typename Edge::array_type        edges_;
    };
 
@@ -321,17 +321,17 @@ public:
 
   //////////////////////////////////////////////////////////////////
   
-  //! Construct a new mesh
+  /// Construct a new mesh
   QuadSurfMesh();
   
-  //! Copy a mesh, needed for detaching the mesh from a field   
+  /// Copy a mesh, needed for detaching the mesh from a field   
   QuadSurfMesh(const QuadSurfMesh& copy);
   
-  //! Clone function for detaching the mesh and automatically generating
-  //! a new version if needed.    
+  /// Clone function for detaching the mesh and automatically generating
+  /// a new version if needed.    
   virtual QuadSurfMesh *clone() const { return new QuadSurfMesh(*this); }
 
-  //! Destructor 
+  /// Destructor 
   virtual ~QuadSurfMesh();
 
   MeshFacadeHandle getFacade() const
@@ -339,51 +339,51 @@ public:
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
   }
 
-  //! Access point to virtual interface
+  /// Access point to virtual interface
   virtual VMesh* vmesh() {  return vmesh_.get(); }
 
-  //! This one should go at some point, should be reroute through the
-  //! virtual interface
+  /// This one should go at some point, should be reroute through the
+  /// virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
-  //! Topological dimension  
+  /// Topological dimension  
   virtual int dimensionality() const { return 2; }
 
-  //! What kind of mesh is this 
-  //! structured = no connectivity data
-  //! regular    = no node location data
+  /// What kind of mesh is this 
+  /// structured = no connectivity data
+  /// regular    = no node location data
   virtual int topology_geometry() const 
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
-  //! Get the bounding box of the field    
+  /// Get the bounding box of the field    
   virtual Core::Geometry::BBox get_bounding_box() const;
 
-  //! Return the transformation that takes a 0-1 space bounding box 
-  //! to the current bounding box of this mesh.  
+  /// Return the transformation that takes a 0-1 space bounding box 
+  /// to the current bounding box of this mesh.  
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
 
-  //! Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
+  /// Core::Geometry::Transform a field (transform all nodes using this transformation matrix)  
   virtual void transform(const Core::Geometry::Transform &t);
 
-  //! Check whether mesh can be altered by adding nodes or elements
+  /// Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return (true); }
 
-  //! Has this mesh normals.
+  /// Has this mesh normals.
   // Note: normals point inward.
   // TODO: this is inconsistent with TriSurfMesh - should both surfaces
   // have consistent normal direction?
   virtual bool has_normals() const { return (true); }
 
-  //! Compute tables for doing topology, these need to be synchronized
-  //! before doing a lot of operations.
+  /// Compute tables for doing topology, these need to be synchronized
+  ///before doing a lot of operations.
   virtual bool synchronize(mask_type mask);
   virtual bool unsynchronize(mask_type mask);
   bool clear_synchronization();
 
-  //! Get the basis class.  
+  /// Get the basis class.  
   Basis& get_basis() { return basis_; }
 
-  //! begin/end iterators   
+  /// begin/end iterators   
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
   void begin(typename Face::iterator &) const;
@@ -399,11 +399,11 @@ public:
   void size(typename Face::size_type &) const;
   void size(typename Cell::size_type &) const;
 
-  //! These are here to convert indices to unsigned int
-  //! counters. Some how the decision was made to use multi
-  //! dimensional indices in some fields, these functions
-  //! should deal with different pointer types.
-  //! Use the virtual interface to avoid all this non sense.
+  /// These are here to convert indices to unsigned int
+  /// counters. Some how the decision was made to use multi
+  /// dimensional indices in some fields, these functions
+  /// should deal with different pointer types.
+  /// Use the virtual interface to avoid all this non sense.
   void to_index(typename Node::index_type &index, index_type i) const 
   { index = i; }
   void to_index(typename Edge::index_type &index, index_type i) const 
@@ -413,7 +413,7 @@ public:
   void to_index(typename Cell::index_type&, index_type) const 
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Get the child elements of the given index.
+  /// Get the child elements of the given index.
   void get_nodes(typename Node::array_type &array, 
                  typename Node::index_type idx) const
   { array.resize(1); array[0]= idx; }
@@ -492,8 +492,8 @@ public:
                   typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an edge.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an edge.
   template<class VECTOR, class INDEX>
   void pwl_approx_edge(std::vector<VECTOR > &coords,
                        INDEX ci,
@@ -503,8 +503,8 @@ public:
     basis_.approx_edge(which_edge, div_per_unit, coords);
   }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an face.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an face.
   template<class VECTOR, class INDEX>
   void pwl_approx_face(std::vector<std::vector<VECTOR > > &coords,
                        INDEX ci,
@@ -514,7 +514,7 @@ public:
     basis_.approx_face(which_face, div_per_unit, coords);
   }  
 
-  //! get the center point (in object space) of an element  
+  /// get the center point (in object space) of an element  
   void get_center(Core::Geometry::Point &result, typename Node::index_type idx) const
   { get_node_center(result, idx); }
   void get_center(Core::Geometry::Point &result, typename Edge::index_type idx) const
@@ -524,7 +524,7 @@ public:
   void get_center(Core::Geometry::Point&, typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Get the size of an element (length, area, volume)
+  /// Get the size of an element (length, area, volume)
   double get_size(typename Node::index_type /*idx*/) const 
   { return 0.0; }
   double get_size(typename Edge::index_type idx) const
@@ -547,7 +547,7 @@ public:
   double get_size(typename Cell::index_type) const 
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
     
-  //! More specific names for get_size    
+  /// More specific names for get_size    
   double get_length(typename Edge::index_type idx) const 
   { return get_size(idx); }
   double get_area(typename Face::index_type idx) const 
@@ -557,16 +557,16 @@ public:
 
 
 
-  //! Get neighbors of an element or a node
+  /// Get neighbors of an element or a node
   
-  //! THIS ONE IS FLAWED AS IN 3D SPACE MULTIPLE EDGES CAN CONNECTED THROUGH
-  //! ONE EDGE
+  /// THIS ONE IS FLAWED AS IN 3D SPACE MULTIPLE EDGES CAN CONNECTED THROUGH
+  /// ONE EDGE
   bool get_neighbor(typename Elem::index_type &neighbor,
                     typename Elem::index_type elem,
                     typename DElem::index_type delem) const
   { return(get_elem_neighbor(neighbor,elem,delem)); } 
 
-  //! These are more general implementations                      
+  /// These are more general implementations                      
   void get_neighbors(std::vector<typename Node::index_type> &array,
                      typename Node::index_type node)
   { get_node_neighbors(array,node); }
@@ -579,7 +579,7 @@ public:
   { get_elem_neighbors(array,elem); }
     
     
-  //! Locate a point in a mesh, find which is the closest node
+  /// Locate a point in a mesh, find which is the closest node
   bool locate(typename Node::index_type &node, const Core::Geometry::Point &p) const
   { return (locate_node(node,p)); }
   bool locate(typename Edge::index_type &edge, const Core::Geometry::Point &p) const
@@ -595,8 +595,8 @@ public:
   { return (locate_elem(elem,coords,p)); }
 
 
-  //! These should become obsolete soon, they do not follow the concept
-  //! of the basis functions....
+  /// These should become obsolete soon, they do not follow the concept
+  /// of the basis functions....
   int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
   int get_weights(const Core::Geometry::Point & , typename Edge::array_type & , double * )
   { ASSERTFAIL("QuadSurfMesh: get_weights(edges) is not supported."); }
@@ -604,7 +604,7 @@ public:
   int get_weights(const Core::Geometry::Point & , typename Cell::array_type & , double * )
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Access the nodes of the mesh
+  /// Access the nodes of the mesh
   void get_point(Core::Geometry::Point &p, typename Node::index_type i) const 
     { p = points_[i]; }
   void set_point(const Core::Geometry::Point &p, typename Node::index_type i)
@@ -612,7 +612,7 @@ public:
 
   void get_random_point(Core::Geometry::Point &, typename Elem::index_type, FieldRNG &rng) const;
   
-  //! Normals for visualizations
+  /// Normals for visualizations
   void get_normal(Core::Geometry::Vector &n, typename Node::index_type i) const 
   { 
     ASSERTMSG(synchronized_ & Mesh::NORMALS_E,
@@ -620,7 +620,7 @@ public:
     n = normals_[i]; 
   }
 
-  //! Get the normals at the outside of the element
+  /// Get the normals at the outside of the element
   template<class VECTOR, class INDEX1, class INDEX2>
   void get_normal(Core::Geometry::Vector &result, VECTOR &coords,
                   INDEX1 eidx,INDEX2 /*fidx*/)
@@ -669,12 +669,12 @@ public:
     result.normalize();
   }
 
-  //! Add a new node to the mesh
+  /// Add a new node to the mesh
   typename Node::index_type add_point(const Core::Geometry::Point &p);
   typename Node::index_type add_node(const Core::Geometry::Point &p)
     { return(add_point(p)); }
 
-  //! Add a new element to the mesh
+  /// Add a new element to the mesh
   template <class ARRAY>
   typename Elem::index_type add_elem(ARRAY a)
   {
@@ -694,9 +694,9 @@ public:
   void resize_elems(size_type s) { faces_.resize(static_cast<size_t>(s*4)); }
 
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the local
-  //! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the local
+  /// coordinate of a point
   template<class VECTOR, class INDEX>
   bool get_coords(VECTOR &coords, const Core::Geometry::Point &p, INDEX idx) const
   {
@@ -704,8 +704,8 @@ public:
     return basis_.get_coords(coords, p, ed);
   }
 
-  //! Find the location in the global coordinate system for a local coordinate
-  //! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local coordinate
+  /// This function is the opposite of get_coords.
   template<class VECTOR, class INDEX>
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, INDEX idx) const
   {
@@ -713,9 +713,9 @@ public:
     pt = basis_.interpolate(coords, ed);
   }
 
-  //! Interpolate the derivate of the function, This infact will return the
-  //! jacobian of the local to global coordinate transformation. This function
-  //! is mainly intended for the non linear elements
+  /// Interpolate the derivate of the function, This infact will return the
+  /// jacobian of the local to global coordinate transformation. This function
+  /// is mainly intended for the non linear elements
   template<class VECTOR1, class INDEX, class VECTOR2>
   void derivate(const VECTOR1 &coords, INDEX idx, VECTOR2 &J) const
   {
@@ -723,8 +723,8 @@ public:
     basis_.derivate(coords, ed, J);
   }
 
-  //! Get the determinant of the jacobian, which is the local volume of an element
-  //! and is intended to help with the integration of functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume of an element
+  /// and is intended to help with the integration of functions over an element.
   template<class VECTOR, class INDEX>
   double det_jacobian(const VECTOR& coords, INDEX idx) const
   {
@@ -733,9 +733,9 @@ public:
     return (DetMatrix3x3(J));
   }
 
-  //! Get the jacobian of the transformation. In case one wants the non inverted
-  //! version of this matrix. This is currently here for completeness of the 
-  //! interface
+  /// Get the jacobian of the transformation. In case one wants the non inverted
+  /// version of this matrix. This is currently here for completeness of the 
+  /// interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
   {
@@ -755,9 +755,9 @@ public:
     J[8] = Jv2.z();
   }
 
-  //! Get the inverse jacobian of the transformation. This one is needed to 
-  //! translate local gradients into global gradients. Hence it is crucial for
-  //! calculating gradients of fields, or constructing finite elements.             
+  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// translate local gradients into global gradients. Hence it is crucial for
+  /// calculating gradients of fields, or constructing finite elements.             
   template<class VECTOR, class INDEX>                
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
@@ -859,7 +859,7 @@ public:
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename Node::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
     
     if (node >= 0 && node < sz)
@@ -901,9 +901,9 @@ public:
     do 
     {
       found = true; 
-      //! This looks incorrect - but it is correct
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// This looks incorrect - but it is correct
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
     
       for (index_type i = bi; i <= ei; i++)
       {
@@ -934,7 +934,7 @@ public:
                     node = INDEX(*it); 
                     dmin = dist; 
 
-                    //! If we are closer than eps^2 we found a node close enough
+                    /// If we are closer than eps^2 we found a node close enough
                     if (dmin < epsilon2_) 
                     {
                       pdist = sqrt(dmin);
@@ -1091,8 +1091,8 @@ public:
 
 
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest
+  /// This function will find the closest element and the location on that
+  /// element that is the closest
 
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
@@ -1116,10 +1116,10 @@ public:
 
     typename Elem::size_type sz; size(sz);
     
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
 
-    //! Test the one in face that is an initial guess
+    /// Test the one in face that is an initial guess
     if (elem >= 0 && elem < sz)
     {
       const index_type idx = elem * 4;
@@ -1132,11 +1132,11 @@ public:
       double dist = (p-result).length2();
       if ( dist < epsilon2_ )
       {
-        //! As we computed an estimate, we use the Newton's method in the basis functions
-        //! compute a more refined solution. This function may slow down computation.
-        //! This piece of code will calculate the coordinates in the local element framework
-        //! (the newton's method of finding a minimum), then it will project this back
-        //! THIS CODE SHOULD BE FURTHER OPTIMIZED
+        /// As we computed an estimate, we use the Newton's method in the basis functions
+        /// compute a more refined solution. This function may slow down computation.
+        /// This piece of code will calculate the coordinates in the local element framework
+        /// (the newton's method of finding a minimum), then it will project this back
+        /// THIS CODE SHOULD BE FURTHER OPTIMIZED
 
         ElemData ed(*this,elem);
         basis_.get_coords(coords,result,ed);
@@ -1173,9 +1173,9 @@ public:
     do 
     {
       found = true; 
-      //! This looks incorrect - but it is correct
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// This looks incorrect - but it is correct
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
 
       for (index_type i = bi; i <= ei; i++)
       {
@@ -1212,11 +1212,11 @@ public:
                     dmin = dist;
                     if (dmin < epsilon2_) 
                     {
-                      //! As we computed an estimate, we use the Newton's method in the basis functions
-                      //! compute a more refined solution. This function may slow down computation.
-                      //! This piece of code will calculate the coordinates in the local element framework
-                      //! (the newton's method of finding a minimum), then it will project this back
-                      //! THIS CODE SHOULD BE FURTHER OPTIMIZED
+                      /// As we computed an estimate, we use the Newton's method in the basis functions
+                      /// compute a more refined solution. This function may slow down computation.
+                      /// This piece of code will calculate the coordinates in the local element framework
+                      /// (the newton's method of finding a minimum), then it will project this back
+                      /// THIS CODE SHOULD BE FURTHER OPTIMIZED
 
                       ElemData ed(*this,elem);
                       basis_.get_coords(coords,result,ed);
@@ -1243,11 +1243,11 @@ public:
 
     if (!found_one) return (false);
 
-    //! As we computed an estimate, we use the Newton's method in the basis functions
-    //! compute a more refined solution. This function may slow down computation.
-    //! This piece of code will calculate the coordinates in the local element framework
-    //! (the newton's method of finding a minimum), then it will project this back
-    //! THIS CODE SHOULD BE FURTHER OPTIMIZED
+    /// As we computed an estimate, we use the Newton's method in the basis functions
+    /// compute a more refined solution. This function may slow down computation.
+    /// This piece of code will calculate the coordinates in the local element framework
+    /// (the newton's method of finding a minimum), then it will project this back
+    /// THIS CODE SHOULD BE FURTHER OPTIMIZED
 
     ElemData ed(*this,elem);
     basis_.get_coords(coords,result,ed);
@@ -1260,11 +1260,11 @@ public:
     return (true);
   }
 
-  //! This function will find the closest element and the location on that
-  //! element that is the closest; it takes an additional repelpos argument
-  //! which defines an exclusion zone that's not considered.  A repelnormal
-  //! can also be specified in order to restrict the faces to those that are
-  //! pointing in a different direction from the repel point.
+  /// This function will find the closest element and the location on that
+  /// element that is the closest; it takes an additional repelpos argument
+  /// which defines an exclusion zone that's not considered.  A repelnormal
+  /// can also be specified in order to restrict the faces to those that are
+  /// pointing in a different direction from the repel point.
   template <class INDEX, class ARRAY>
   bool find_closest_elem_far_from(double& pdist, 
                          Core::Geometry::Point &result,
@@ -1280,7 +1280,7 @@ public:
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename Elem::size_type sz; size(sz);
     
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
 
     ASSERTMSG(synchronized_ & Mesh::ELEM_LOCATE_E,
@@ -1309,8 +1309,8 @@ public:
     do 
     {
       found = true; 
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -1358,11 +1358,11 @@ public:
                     
                     if (dmin < epsilon2_)
                     {
-                      //! As we computed an estimate, we use the Newton's method in the basis functions
-                      //! compute a more refined solution. This function may slow down computation.
-                      //! This piece of code will calculate the coordinates in the local element framework
-                      //! (the newton's method of finding a minimum), then it will project this back
-                      //! THIS CODE SHOULD BE FURTHER OPTIMIZED
+                      /// As we computed an estimate, we use the Newton's method in the basis functions
+                      /// compute a more refined solution. This function may slow down computation.
+                      /// This piece of code will calculate the coordinates in the local element framework
+                      /// (the newton's method of finding a minimum), then it will project this back
+                      /// THIS CODE SHOULD BE FURTHER OPTIMIZED
 
                       ElemData ed(*this,face);
                       basis_.get_coords(coords,result,ed);
@@ -1390,11 +1390,11 @@ public:
 
     if (!found_one) return (false);
     
-    //! As we computed an estimate, we use the Newton's method in the basis functions
-    //! compute a more refined solution. This function may slow down computation.
-    //! This piece of code will calculate the coordinates in the local element framework
-    //! (the newton's method of finding a minimum), then it will project this back
-    //! THIS CODE SHOULD BE FURTHER OPTIMIZED
+    /// As we computed an estimate, we use the Newton's method in the basis functions
+    /// compute a more refined solution. This function may slow down computation.
+    /// This piece of code will calculate the coordinates in the local element framework
+    /// (the newton's method of finding a minimum), then it will project this back
+    /// THIS CODE SHOULD BE FURTHER OPTIMIZED
 
     ElemData ed(*this,face);
     basis_.get_coords(coords,result,ed);
@@ -1425,7 +1425,7 @@ public:
   
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
 
     // Walking the grid like this works really well if we're near the
@@ -1458,9 +1458,9 @@ public:
     do 
     {
       found = true; 
-      //! This looks incorrect - but it is correct
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements
+      /// This looks incorrect - but it is correct
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements
       for (index_type i = bi; i <= ei; i++)
       {
         if (i < 0 || i > ni) continue;
@@ -1542,18 +1542,18 @@ public:
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
   
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
 
-  //! This ID is created as soon as this class will be instantiated  
+  /// This ID is created as soon as this class will be instantiated  
   static PersistentTypeID quadsurfmesh_typeid;
   
-  //! Core functionality for getting the name of a templated mesh class
+  /// Core functionality for getting the name of a templated mesh class
   static  const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return quadsurfmesh_typeid.type; }
   
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Some of this should be obsolete   
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Some of this should be obsolete   
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -1562,9 +1562,9 @@ public:
   static const TypeDescription* elem_type_description()
     { return face_type_description(); }
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new QuadSurfMesh<Basis>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<QuadSurfMesh<Basis>>(); }
 
 
@@ -1750,8 +1750,8 @@ protected:
       faces_[idx * 4 + n] = static_cast<index_type>(array[n]);
   }
 
-  //! This function has been rewritten to allow for non manifold surfaces to be 
-  //! handled ok.
+  /// This function has been rewritten to allow for non manifold surfaces to be 
+  /// handled ok.
   template <class INDEX1, class INDEX2>
   bool get_elem_neighbor(INDEX1 &neighbor, INDEX1 elem, INDEX2 delem) const
   {
@@ -1856,7 +1856,7 @@ protected:
   {
     typename Node::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
     //! Check first guess
@@ -1891,9 +1891,9 @@ protected:
     do 
     {
       found = true; 
-      //! This looks incorrect - but it is correct
-      //! We need to do a full shell without any elements that are closer
-      //! to make sure there no closer elements in neighboring searchgrid cells
+      /// This looks incorrect - but it is correct
+      /// We need to do a full shell without any elements that are closer
+      /// to make sure there no closer elements in neighboring searchgrid cells
     
       for (index_type i = bi; i <= ei; i++)
       {
@@ -1940,7 +1940,7 @@ protected:
     return (true); 
   }
 
-  //! This is currently implemented as an exhaustive search
+  /// This is currently implemented as an exhaustive search
   template <class INDEX>
   inline bool locate_edge(INDEX &loc, const Core::Geometry::Point &p) const
   {
@@ -1979,10 +1979,10 @@ protected:
 
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p)) return (true);
@@ -2045,10 +2045,10 @@ protected:
 
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p)) 
@@ -2209,25 +2209,25 @@ protected:
   index_type next(index_type i) { return ((i%4)==3) ? (i-3) : (i+1); }
   index_type prev(index_type i) { return ((i%4)==0) ? (i+3) : (i-1); }
 
-  //! array with all the points
+  /// array with all the points
   std::vector<Core::Geometry::Point>                         points_;
-  //! array with the four nodes that make up a face
+  /// array with the four nodes that make up a face
   std::vector<index_type>                    faces_;
   
-  //! FOR EDGE -> NODES
-  //! array with information from edge number (unique ones) to the node numbers 
-  //! this one refers to the first node
+  /// FOR EDGE -> NODES
+  /// array with information from edge number (unique ones) to the node numbers 
+  /// this one refers to the first node
   std::vector<std::vector<index_type> >            edges_;
-  //! FOR FACES -> EDGE NUMBER
-  //! array with information from halfedge (computed directly from face) to the edge number
+  /// FOR FACES -> EDGE NUMBER
+  /// array with information from halfedge (computed directly from face) to the edge number
   std::vector<index_type>                    halfedge_to_edge_;  // halfedge->edge map
   
   typedef std::vector<std::vector<typename Elem::index_type> > NodeNeighborMap;
   NodeNeighborMap                       node_neighbors_;  
   
   std::vector<Core::Geometry::Vector>                           normals_; //! normalized per node
-  boost::shared_ptr<SearchGridT<index_type> >  node_grid_; //! Lookup grid for nodes
-  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_; //! Lookup grid for elements
+  boost::shared_ptr<SearchGridT<index_type> >  node_grid_; /// Lookup grid for nodes
+  boost::shared_ptr<SearchGridT<index_type> >  elem_grid_; /// Lookup grid for elements
 
   // Lock and Condition Variable for hand shaking
   mutable Core::Thread::Mutex         synchronize_lock_;
@@ -2238,13 +2238,13 @@ protected:
   // Which tables are currently being computed
   mask_type             synchronizing_;
   
-  Basis     basis_;    //! Basis for interpolation
+  Basis     basis_;    /// Basis for interpolation
   
   Core::Geometry::BBox      bbox_;
-  double    epsilon_;  //! epsilon for calculations 1e-8*diagonal bounding box
-  double    epsilon2_; //! square of epsilon for squared distance comparisons
+  double    epsilon_;  /// epsilon for calculations 1e-8*diagonal bounding box
+  double    epsilon2_; /// square of epsilon for squared distance comparisons
   
-  //! Pointer to virtual interface
+  /// Pointer to virtual interface
   boost::shared_ptr<VMesh> vmesh_; //! Virtual function table
 
 #ifdef HAVE_HASH_MAP
@@ -2335,7 +2335,7 @@ QuadSurfMesh<Basis>::QuadSurfMesh()
 {
   DEBUG_CONSTRUCTOR("QuadSurfMesh") 
 
-  //! Initialize the virtual interface when the mesh is created
+  /// Initialize the virtual interface when the mesh is created
   vmesh_.reset(CreateVQuadSurfMesh(this));
 }
 
@@ -2356,17 +2356,17 @@ QuadSurfMesh<Basis>::QuadSurfMesh(const QuadSurfMesh &copy)
 {
   DEBUG_CONSTRUCTOR("QuadSurfMesh") 
 
-  //! We need to lock before we can copy these as these
-  //! structures are generate dynamically when they are
-  //! needed.  
+  /// We need to lock before we can copy these as these
+  /// structures are generate dynamically when they are
+  /// needed.  
   Core::Thread::Guard rlock(copy.synchronize_lock_.get());
 
   points_ = copy.points_;
   faces_ = copy.faces_;
 
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   vmesh_.reset(CreateVQuadSurfMesh(this));
 }
 

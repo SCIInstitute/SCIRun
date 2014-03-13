@@ -30,6 +30,8 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
+///TODO Documentation
+
 #ifndef CORE_GEOMETRY_POINTVECTOROPERATORS_H
 #define CORE_GEOMETRY_POINTVECTOROPERATORS_H
 

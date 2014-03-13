@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #include <iostream>
 #include <Core/Logging/ConsoleLogger.h>
 

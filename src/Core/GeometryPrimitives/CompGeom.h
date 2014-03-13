@@ -27,14 +27,14 @@
 */
 
 
-/*
- *  CompGeom.h
+/**
+ *@file  CompGeom.h
  *
- *  Written by:
+ *@author
  *   Allen Sanderson
  *   SCI Institute
  *   University of Utah
- *   August 2005
+ *@date  August 2005
  *
  */
 
@@ -52,10 +52,10 @@ namespace SCIRun {
   namespace Core {
     namespace Geometry {
 
-// Compute the distance squared from the point to the given line,
-// where the line is specified by two end points.  This function
-// actually computes the distance to the line segment
-// between the given points and not to the line itself.
+/// Compute the distance squared from the point to the given line,
+/// where the line is specified by two end points.  This function
+/// actually computes the distance to the line segment
+/// between the given points and not to the line itself.
 SCISHARE double
 distance_to_line2(const Point &p, const Point &a, const Point &b, 
                   const double epsilon = 1e-12);
@@ -70,8 +70,8 @@ distance_to_line2_aux(Point &result, int& node,
                       const Point &p, const Point &a, const Point &b, 
                       const double epsilon = 1e-12);
 
-// Compute the point on the triangle closest to the given point.
-// The distance to the triangle will be (P - result).length())
+/// Compute the point on the triangle closest to the given point.
+/// The distance to the triangle will be (P - result).length())
 SCISHARE void
 closest_point_on_tri(Point &result, const Point &P,
                      const Point &A, const Point &B, const Point &C, 
@@ -84,8 +84,8 @@ closest_point_on_tri(Point &result, int &edge, int& node,
                      const double epsilon = 1e-12);
 
 
-// This is only an estimate for an element that is not flat, it is exact
-// for a flat element.
+/// This is only an estimate for an element that is not flat, it is exact
+/// for a flat element.
 SCISHARE void
 est_closest_point_on_quad(Point &result, const Point &P,
                       const Point &A, const Point &B, 
@@ -105,9 +105,9 @@ RayTriangleIntersection(double &t, double &u, double &v, bool backface_cull,
                         const double epsilon = 1e-6);
 
 
-// Compute s and t such that the distance between A0 + s * (A1 - AO)
-// and B0 + t * (B1 - B0) is minimal.  Return false if the lines are
-// parallel, true otherwise.
+/// Compute s and t such that the distance between A0 + s * (A1 - AO)
+/// and B0 + t * (B1 - B0) is minimal.  Return false if the lines are
+/// parallel, true otherwise.
 SCISHARE bool
 closest_line_to_line(double &s, double &t,
                      const Point &A0, const Point &A1,

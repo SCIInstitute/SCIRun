@@ -26,9 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : TypeDescription.cc
-//    Author : Martin Cole
-//    Date   : Mon May 14 10:20:21 2001
+///    @file    TypeDescription.cc
+///    @author  Martin Cole
+///    @date    Mon May 14 10:20:21 2001
 
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Utils/Legacy/FileUtils.h>

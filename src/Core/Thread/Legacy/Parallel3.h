@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Parallel3: Automatically instantiate several threads, with 3 arguments
+/**
+ *@file  Parallel3
+ *@brief Automatically instantiate several threads, with 3 arguments
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 3997
+ *   @date June 3997
  *
  */
 
@@ -48,13 +48,13 @@
 namespace SCIRun {
 /**************************************
 
- CLASS
+@class
  Parallel3
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Helper class to make instantiating threads to perform a parallel
  task easier.
    
@@ -62,14 +62,14 @@ namespace SCIRun {
 template<class T, class Arg1, class Arg2, class Arg3> class Parallel3  : public ParallelBase {
 public:
   //////////
-  // Create a Parallel3 object, using the specified member
-  // function instead of <i>Parallel3</i>.  This will
-  // typically be used like:
-  // <b><pre>Thread::Parallel3(Parallel3&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
+  /// Create a Parallel3 object, using the specified member
+  /// function instead of <i>Parallel3</i>.  This will
+  /// typically be used like:
+  /// <b><pre>Thread::Parallel3(Parallel3&lt;MyClass&gt;(this, &amp;MyClass::mymemberfn), nthreads);</pre></b>
   Parallel3(T* obj, void (T::*pmf)(int, Arg1, Arg2, Arg3), Arg1 a1, Arg2 a2, Arg3 a3);
 	    
   //////////
-  // Destroy the Parallel3 object - the threads will remain alive.
+  /// Destroy the Parallel3 object - the threads will remain alive.
   virtual ~Parallel3();
   T* obj_;
   void (T::*pmf_)(int, Arg1, Arg2, Arg3);

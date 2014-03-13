@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #ifndef CORE_GEOMETRY_BBOX_H
 #define CORE_GEOMETRY_BBOX_H 1
 
@@ -34,8 +36,8 @@
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/GeometryPrimitives/share.h>
 
-// TODO: replace asserts in this code with warnings or other reporting
-// mechanism that doesn't abort the program
+/// TODO: replace asserts in this code with warnings or other reporting
+/// mechanism that doesn't abort the program
 
 namespace SCIRun {
 namespace Core {

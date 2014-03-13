@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 
 #ifndef CORE_LOGGING_LOGGERFWD_H
 #define CORE_LOGGING_LOGGERFWD_H 

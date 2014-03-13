@@ -29,14 +29,15 @@
 
 
 
-/*
- *  Barrier: Barrier synchronization primitive (default implementation)
+/**
+ *@class Barrier
+ *@brief Barrier synchronization primitive (default implementation)
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date June 1997
  *
  */
 

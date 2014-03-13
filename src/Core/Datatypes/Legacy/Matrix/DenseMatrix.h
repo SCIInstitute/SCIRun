@@ -28,14 +28,15 @@
 
 
 
-/*
- *  DenseMatrix.h:  Dense matrices
+/**
+ *@file  DenseMatrix.h
+ *@brief Dense matrices
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   October 1994
+ *@date  October 1994
  *
  */
 

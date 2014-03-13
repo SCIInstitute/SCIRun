@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+///TODO Documentation
+
 #ifndef CORE_THREAD_MUTEX_H
 #define CORE_THREAD_MUTEX_H
 

@@ -28,14 +28,15 @@
 
 
 
-/*
- *  String.h:  String Object
+/**
+ *@file  String.h
+ *@brief String Object
  *
- *  Written by:
+ *@author
  *   Jeroen Stinstra
  *   Department of Computer Science
  *   University of Utah
- *   October 2005
+ *@date  October 2005
  *
  */
 

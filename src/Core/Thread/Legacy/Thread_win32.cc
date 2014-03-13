@@ -29,14 +29,15 @@
 
 
 
-/*
- *  Thread_win32.cc: win32 threads implementation of the thread library
+/**
+ *@file  Thread_win32.cc
+ *@brief win32 threads implementation of the thread library
  *
- *  Written by:
- *   Author: Chris Moulding
+ *@author
+ *   Chris Moulding
  *   Department of Computer Science
  *   University of Utah
- *   Date: November 1999
+ *@date November 1999
  *
  */
 

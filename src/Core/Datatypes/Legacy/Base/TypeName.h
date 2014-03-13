@@ -28,14 +28,15 @@
 
 
 /*
- *   TypeName.h : template to return name of argument type; 
- *                used in PIO of templatized types
+ *@file  TypeName.h
+ *@brief template to return name of argument type; 
+ *       used in PIO of templatized types
  *                
- *   Created by:
+ *@author
  *   Alexei Samsonov
  *   Department of Computer Science
  *   University of Utah
- *   December 2000
+ *@date  December 2000
  *
  */
 

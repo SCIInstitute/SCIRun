@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #ifndef CORE_UTIL_MEMORYUTIL_H
 #define CORE_UTIL_MEMORYUTIL_H 
 

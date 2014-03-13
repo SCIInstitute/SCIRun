@@ -28,14 +28,15 @@
 
 
 
-/*
- *  Color.h: Simple RGB color model
+/**
+ *@file  Color.h
+ *@brief Simple RGB color model
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   June 1994
+ *@date  June 1994
  *
  */
 

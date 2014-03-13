@@ -26,20 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-
-/*
- *  AssertionFailed.h: Exception for a failed assertion.  Note - this
- *    version takes only a char*.  There is a FancyAssertionFailed that
- *    takes std::string.  This is done to prevent include file pollution
- *    with std::string
+/**
+ *@file AssertionFailed.h
+ *@brief Exception for a failed assertion.  Note - this
+ *	 version takes only a char*.  There is a FancyAssertionFailed that
+ *	 takes std::string.  This is done to prevent include file pollution
+ *	 with std::string
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1999
+ *@date  July 1999
  *
  */
 

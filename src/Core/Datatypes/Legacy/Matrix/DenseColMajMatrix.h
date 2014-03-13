@@ -28,14 +28,15 @@
 
 
 
-/*
- *  DenseColMajMatrix.h:  DenseColMaj matrices
+/**
+ *@file  DenseColMajMatrix.h
+ *@brief DenseColMaj matrices
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   October 1994
+ *@date  October 1994
  *
  */
 

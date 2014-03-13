@@ -33,7 +33,7 @@
 // THIS CODE CONTAINS SOME REALLY SCARY CONSTRUCTS AND SHOULD BE REPLACED
 // BY BETTER CODE
 
-/* FileUtils.cc */
+/*@file FileUtils.cc */
 
 #include <errno.h>
 #include <stdio.h>

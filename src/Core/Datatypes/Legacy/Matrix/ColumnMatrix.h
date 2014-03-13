@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ColumnMatrix.h: for RHS and LHS
+/**
+ *@file  ColumnMatrix.h
+ *@brief for RHS and LHS
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date  July 1994
  *
  */
 

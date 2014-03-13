@@ -29,14 +29,15 @@
 
 
 
-/*
- *  CleanupManager.cc: Manage exitAll callbacks.
+/**
+ *@file  CleanupManager.cc
+ *@brief Manage exitAll callbacks.
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   November 2004
+ *@date  November 2004
  *
  */
 

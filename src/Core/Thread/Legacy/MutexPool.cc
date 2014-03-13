@@ -29,14 +29,15 @@
 
 
 
-/*
- *  MutexPool: A set of mutex objects
+/**
+ *@class MutexPool 
+ *@brief A set of mutex objects
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: September 1999
+ *@date September 1999
  *
  */
 

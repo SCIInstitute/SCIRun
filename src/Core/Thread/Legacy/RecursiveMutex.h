@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Barrier: Barrier synchronization primitive
+/**
+ *@file  Barrier
+ *@brief Barrier synchronization primitive
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -51,13 +51,13 @@ namespace SCIRun {
 class RecursiveMutex_private;
 /**************************************
 
- CLASS
+@class
  RecursiveMutex
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Provides a recursive <b>Mut</b>ual <b>Ex</b>clusion primitive.  Atomic
  <b>lock()</b> and <b>unlock()</b> will lock and unlock the mutex.
  Nested calls to <b>lock()</b> by the same thread are acceptable,
@@ -69,29 +69,29 @@ class RecursiveMutex_private;
 class SCISHARE RecursiveMutex {
 public:
   //////////
-  // Create the Mutex.  The Mutex is allocated in the unlocked
-  // state. <i>name</i> should be a static string which describe
-  // the primitive for debugging purposes.
+  /// Create the Mutex.  The Mutex is allocated in the unlocked
+  /// state. <i>name</i> should be a static string which describe
+  /// the primitive for debugging purposes.
   explicit RecursiveMutex(const char* name);
 
   //////////
-  // Destroy the Mutex.  Destroying a Mutex in the locked state
-  // has undefined results.
+  /// Destroy the Mutex.  Destroying a Mutex in the locked state
+  /// has undefined results.
   ~RecursiveMutex();
 
   //////////
-  // Acquire the Mutex.  This method will block until the Mutex
-  // is acquired.
+  /// Acquire the Mutex.  This method will block until the Mutex
+  /// is acquired.
   void lock();
 
   //////////
-  // Attempt to acquire the Mutex without blocking.  Returns
-  // true if the mutex was available and actually acquired.
+  /// Attempt to acquire the Mutex without blocking.  Returns
+  /// true if the mutex was available and actually acquired.
   bool tryLock();
 
   //////////
-  // Release the Mutex, unblocking any other threads that are
-  // blocked waiting for the Mutex.
+  /// Release the Mutex, unblocking any other threads that are
+  /// blocked waiting for the Mutex.
   void unlock();
 
   friend class ConditionVariable;

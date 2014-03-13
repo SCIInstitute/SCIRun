@@ -28,15 +28,16 @@
 
 
 
-/*
- *  Thread_unix.h:  Header file for utiity functions for unix versions
+/**
+ *@file  Thread_unix.h 
+ *@brief Header file for utiity functions for unix versions
  *		    of the thread class
  *
- *  Written by:
- *   Author: Steve Parker
+ *@author
+ *   Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *@date  June 1997
  *
  */
 

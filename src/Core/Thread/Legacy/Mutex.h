@@ -28,14 +28,14 @@
 
 
 
-/*
- *  Mutex: Standard locking primitive
+/**
+ *@file  Mutex.h
+ *@brief Standard locking primitive
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author: Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date: June 1997
  *
  */
 
@@ -50,13 +50,13 @@ struct Mutex_private;
 
 /**************************************
 
- CLASS
+@class
  Mutex
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Provides a simple <b>Mut</b>ual <b>Ex</b>clusion primitive.  Atomic
  <b>lock()</b> and <b>unlock()</b> will lock and unlock the mutex.
  This is not a recursive Mutex (See <b>RecursiveMutex</b>), and calling
@@ -66,29 +66,29 @@ struct Mutex_private;
 class SCISHARE Mutex {
 public:
   //////////
-  // Create the mutex.  The mutex is allocated in the unlocked
-  // state. <i>name</i> should be a static string which describes
-  // the primitive for debugging purposes.  
+  /// Create the mutex.  The mutex is allocated in the unlocked
+  /// state. <i>name</i> should be a static string which describes
+  /// the primitive for debugging purposes.  
   explicit Mutex(const char* name);
 
   //////////
-  // Destroy the mutex.  Destroying the mutex in the locked state
-  // has undefined results.
+  /// Destroy the mutex.  Destroying the mutex in the locked state
+  /// has undefined results.
   ~Mutex();
 
   //////////
-  // Acquire the Mutex.  This method will block until the mutex
-  // is acquired.
+  /// Acquire the Mutex.  This method will block until the mutex
+  /// is acquired.
   void lock();
 
   //////////
-  // Attempt to acquire the Mutex without blocking.  Returns
-  // true if the mutex was available and actually acquired.
+  /// Attempt to acquire the Mutex without blocking.  Returns
+  /// true if the mutex was available and actually acquired.
   bool tryLock();
 
   //////////
-  // Release the Mutex, unblocking any other threads that are
-  // blocked waiting for the Mutex.
+  /// Release the Mutex, unblocking any other threads that are
+  /// blocked waiting for the Mutex.
   void unlock();
   friend class ConditionVariable;
 private:

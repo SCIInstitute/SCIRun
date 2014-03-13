@@ -27,14 +27,13 @@
 */
 
 
-/*
- *  SparseMatrixFunctions.cc: 
+/**
+ *@file  SparseMatrixFunctions.cc 
  *
- *  Written by:
- *   Author: ?
+ *@author
  *   Department of Computer Science
  *   University of Utah
- *   Date: ?
+ *@date
  *
  */
 

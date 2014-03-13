@@ -28,14 +28,15 @@
 
 
 
-/*
- *  DimensionMismatch.h: Exception to indicate a failed bounds check
+/**
+ *@file  DimensionMismatch.h
+ *@brief Exception to indicate a failed bounds check
  *
- *  Written by:
+ *@author
  *   McKay Davis
  *   Department of Computer Science
  *   University of Utah
- *   Feb 2005
+ *@date  Feb 2005
  *
  */
 

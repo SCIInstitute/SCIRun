@@ -28,14 +28,14 @@
 
 
 
-/*
- *  ThreadError: Exception class for unusual errors in the thread library
+/**
+ *@file  ThreadError.h
+ *@brief Exception class for unusual errors in the thread library
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: August 1999
+ *   @date August 1999
  *
  */
 
@@ -50,13 +50,13 @@
 namespace SCIRun {
 /**************************************
  
-CLASS
+@class
    ThreadError
    
 KEYWORDS
    Exception, Thread
    
-DESCRIPTION
+@details
    An exception class for serious thread library errors.  They are
    often not recoverable.
 
@@ -64,25 +64,25 @@ DESCRIPTION
 	class ThreadError : public Exception {
 	public:
 	    //////////
-	    // Constructor for the ThreadError class.  Message is
-	    // a human readable string that explains the reason for
-	    // the error
+	    /// Constructor for the ThreadError class.  Message is
+	    /// a human readable string that explains the reason for
+	    /// the error
 	    ThreadError(const std::string& message);
 
 	    //////////
-	    // Copy ctor
+	    /// Copy ctor
 	    ThreadError(const ThreadError&);
 
 	    //////////
-	    // Destructor
+	    /// Destructor
 	    virtual ~ThreadError();
 
 	    //////////
-	    // returns the message associated with this error
+	    /// returns the message associated with this error
 	    virtual const char* message() const;
 
 	    //////////
-	    // returns the name of this exception (the name of this class)
+	    /// returns the name of this exception (the name of this class)
 	    virtual const char* type() const;
 
 	protected:

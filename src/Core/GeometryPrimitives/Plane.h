@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 
 #ifndef CORE_GEOMETRY_PLANE_H
 #define CORE_GEOMETRY_PLANE_H 1
