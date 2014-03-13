@@ -39,6 +39,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   SetFieldNodes.h
   GetDomainBoundary.h
   GetFieldNodes.h
+  JoinFields.h
   #ApplyMappingMatrix.h
 )
 
@@ -95,7 +96,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #SetFieldProperty.cc
   #GetSliceFromStructuredFieldByIndices.cc
   #SubsampleStructuredFieldByIndices.cc
-  #JoinFields.cc
+  JoinFields.cc
   CalculateGradients.cc
   #ConvertHexVolToTetVol.cc
   #MergeFields.cc
