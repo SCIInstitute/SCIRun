@@ -27,21 +27,21 @@
 */
 
 
-/*
- *  WriteField.cc: Save persistent representation of a field to a file
+/**
+ *@file  WriteField.cc
+ *@brief Save persistent representation of a field to a file
  *
- *  Written by:
+ *@author
  *   Elisha R. Hughes
  *   CVRTI
  *   University of Utah
- *   November 2004
-
  *  based on:
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
  *   July 1994
  *
+ *@date November 2004
  */
 
 #include <Modules/DataIO/WriteField.h>

@@ -26,14 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  EvaluateLinAlgUnary: Unary matrix operations -- just transpose for now
+/**
+ *@class EvaluateLinAlgUnary
+ *@brief Unary matrix operations -- just transpose for now
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
  */
 

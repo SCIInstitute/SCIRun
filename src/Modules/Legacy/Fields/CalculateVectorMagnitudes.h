@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 #ifndef MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
 #define MODULES_LEGACY_FIELDS_CalculateVectorMagnitudes_H__
 

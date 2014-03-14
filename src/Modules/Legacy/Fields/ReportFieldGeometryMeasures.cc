@@ -28,14 +28,14 @@
 
 
 
-/*
- *  ReportFieldGeometryMeasures.cc: 
+/**
+ *@file  ReportFieldGeometryMeasures.cc 
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

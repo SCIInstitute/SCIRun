@@ -26,13 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//! Include the algorithm
+// Include the algorithm
 #include <Core/Algorithms/Fields/MeshDerivatives/GetCentroids.h>
 
-//! The module class
+// The module class
 #include <Dataflow/Network/Module.h>
 
-//! We need to define the ports used
+// We need to define the ports used
 #include <Dataflow/Network/Ports/FieldPort.h>
 
 namespace SCIRun {
@@ -60,7 +60,7 @@ GetCentroidsFromMesh::GetCentroidsFromMesh(GuiContext* ctx)
   : Module("GetCentroidsFromMesh", ctx, Filter, "NewField", "SCIRun"),
     component_(get_ctx()->subVar("component"),"elem")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 
@@ -73,10 +73,10 @@ GetCentroidsFromMesh::execute()
   if (inputs_changed_ && !oport_cached("Field"))
   {
     update_state(Executing);
-    //! Set the component we want to extract
+    /// Set the component we want to extract
     algo_.set_option("centroid",component_.get());
 
-    //! Run the algorithm
+    /// Run the algorithm
     if(!(algo_.run(input,output))) return;
     
     send_output_handle("Field", output);

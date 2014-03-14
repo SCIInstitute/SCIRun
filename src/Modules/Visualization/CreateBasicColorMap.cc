@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #include <Modules/Visualization/CreateBasicColorMap.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/ColorMap.h>

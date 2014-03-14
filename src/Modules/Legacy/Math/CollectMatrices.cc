@@ -26,15 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  CollectMatrices: Matrix operations -- concatenate, replace
+/**
+ *@cless CollectMatrices
+ *@brief Matrix operations -- concatenate, replace
  *
- *  Written by:
+ *@author
  *   David Weinstein &
  *   Chris Butson
  *   Department of Computer Science
  *   University of Utah
- *   July 2002
+ *@date  July 2002
  *
  */
 

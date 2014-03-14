@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
 
@@ -59,7 +60,7 @@ ConvertMeshToPointCloud::ConvertMeshToPointCloud(GuiContext* ctx)
   : Module("ConvertMeshToPointCloud", ctx, Filter, "ChangeMesh", "SCIRun"),
     datalocation_(get_ctx()->subVar("datalocation"))
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

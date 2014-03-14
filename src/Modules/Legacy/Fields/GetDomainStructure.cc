@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 #include <Core/Algorithms/Fields/DomainFields/GetDomainStructure.h>
 
 #include <Dataflow/Network/Ports/FieldPort.h>

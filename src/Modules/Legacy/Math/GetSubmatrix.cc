@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  GetSubmatrix: Clip out a subregion from a Matrix
+/**
+ *@class GetSubmatrix
+ *@brief Clip out a subregion from a Matrix
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   January 2002
+ *@date  January 2002
  *
  */
 

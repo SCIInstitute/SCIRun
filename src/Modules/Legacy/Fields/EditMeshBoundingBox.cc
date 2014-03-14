@@ -27,11 +27,11 @@
 */
 
 
-
-//    File   : EditMeshBoundingBox.cc
-//    Author : McKay Davis
-//    Date   : July 2002
-
+/**
+ *   @file    EditMeshBoundingBox.cc
+ *   @author  McKay Davis
+ *   @date    July 2002
+ */
 
 #include <Dataflow/Network/Module.h>
 

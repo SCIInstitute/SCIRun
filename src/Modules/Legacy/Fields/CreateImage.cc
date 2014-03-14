@@ -28,14 +28,15 @@
 
 
 
-/*
- *  CreateImage.cc:  Make an ImageField that fits the source field.
+/**
+ *@file  CreateImage.cc
+ *@brief Make an ImageField that fits the source field.
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

@@ -27,14 +27,14 @@
 */
 
 
-/*
- *  WriteHDF5DumpFile.h
+/**
+ *@file  WriteHDF5DumpFile.h
  *
- *  Written by:
+ *@author
  *   Allen Sanderson
  *   SCI Institute
  *   University of Utah
- *   May 2003
+ *@date  May 2003
  *
  */
 

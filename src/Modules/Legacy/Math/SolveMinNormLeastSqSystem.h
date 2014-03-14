@@ -27,16 +27,17 @@
 */
 
 
-/*
- *  SolveMinNormLeastSqSystem: Select a row or column of a matrix
+/**
+ *@file  SolveMinNormLeastSqSystem
+ *@brief Select a row or column of a matrix
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
- *
+ *@details
  * This module computes the minimal norm, least squared solution to a
  *  nx3 linear system.
  * Given four input ColumnMatrices (v0,v1,v2,b),

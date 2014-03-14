@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  BuildNoiseColumnMatrix: Add BuildNoiseColumnMatrix to a matrix
+/**
+ *@file  BuildNoiseColumnMatrix
+ *@brief Add BuildNoiseColumnMatrix to a matrix
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
  */
 

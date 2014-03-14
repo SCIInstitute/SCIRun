@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ReadColorMap2.cc: Read a persistent colormap from a file
+/**
+ *@file  ReadColorMap2.cc
+ *@brief Read a persistent colormap from a file
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   Sept 2004
+ *@date  Sept 2004
  *
  */
 

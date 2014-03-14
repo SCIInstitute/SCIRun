@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ReadMatrix.cc: Read a persistent matrix from a file
+/**
+ *@file  ReadMatrix.cc
+ *@brief Read a persistent matrix from a file
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date@date July 1994
  *
  */
 

@@ -28,14 +28,15 @@
 
 
 
-/*
- *  MergeFields.cc:  Insert a field into a TetVolMesh
+/**
+ *@file  MergeFields.cc
+ *@brief Insert a field into a TetVolMesh
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   January 2006
+ *@date  January 2006
  *
  */
 

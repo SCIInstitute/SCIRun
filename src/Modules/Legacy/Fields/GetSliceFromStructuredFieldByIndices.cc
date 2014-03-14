@@ -26,13 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : GetSliceFromStructuredFieldByIndices.h
-//    Author : Michael Callahan &&
-//             Allen Sanderson
-//             SCI Institute
-//             University of Utah
-//    Date   : March 2006
-
+/**
+      @file    GetSliceFromStructuredFieldByIndices.h
+      @author  Michael Callahan &&
+               Allen Sanderson
+               SCI Institute
+               University of Utah
+      @date    March 2006
+ */
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>

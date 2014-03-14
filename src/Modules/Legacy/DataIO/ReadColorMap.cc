@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ReadColorMap.cc: Read a persistent colormap from a file
+/**
+ *@file  ReadColorMap.cc
+ *@brief Read a persistent colormap from a file
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date  July 1994
  *
  */
 

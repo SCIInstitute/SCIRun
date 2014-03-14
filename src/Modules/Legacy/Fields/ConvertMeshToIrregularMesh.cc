@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 
@@ -55,7 +56,7 @@ DECLARE_MAKER(ConvertMeshToIrregularMesh)
 ConvertMeshToIrregularMesh::ConvertMeshToIrregularMesh(GuiContext* context)
   : Module("ConvertMeshToIrregularMesh", context, Filter, "ChangeMesh", "SCIRun")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

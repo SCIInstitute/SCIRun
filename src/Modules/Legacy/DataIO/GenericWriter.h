@@ -26,18 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
+/**
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date   July 1994
  *
  */
 
 
-/*
+/**@details
  * Limitations:
  *   Uses .tcl file with "filename" and "filetype"
  *   Input port must be of type SimpleIPort

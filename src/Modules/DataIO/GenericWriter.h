@@ -29,13 +29,13 @@
 #ifndef MODULES_DATAIO_GENERIC_WRITER_H
 #define MODULES_DATAIO_GENERIC_WRITER_H
 
-/*
+/**
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date  July 1994
  *
  */
 

@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  GetColumnOrRowFromMatrix: Select a row or column of a matrix
+/**
+ *@class GetColumnOrRowFromMatrix
+ *@brief Select a row or column of a matrix
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
  */
 

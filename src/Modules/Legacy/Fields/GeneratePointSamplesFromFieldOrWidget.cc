@@ -27,13 +27,14 @@
 */
 
 
-/*
- *  GeneratePointSamplesFromFieldOrWidget.cc:  From a mesh, seed some number of dipoles
+/**
+ *@file  GeneratePointSamplesFromFieldOrWidget.cc
+ *@brief From a mesh, seed some number of dipoles
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   University of Utah
- *   October 2000
+ *@date  October 2000
  *
  */
  

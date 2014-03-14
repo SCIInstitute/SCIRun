@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  WritePath.cc: Save persistent representation of a path to a file
+/**
+ *@file  WritePath.cc
+ *@brief Save persistent representation of a path to a file
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   July 1994
+ *@date  July 1994
  *
  */
 

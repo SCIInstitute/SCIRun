@@ -27,15 +27,15 @@
 */
 
 
-/*
- *  SwapNodeLocationsWithMatrixEntries:
- *  Store/retrieve values from an input matrix to/from the nodes of a field.
+/**
+ *@class  SwapNodeLocationsWithMatrixEntries:
+ *@brief  Store/retrieve values from an input matrix to/from the nodes of a field.
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   February 2001
+ *@dat   February 2001
  *
  */
 

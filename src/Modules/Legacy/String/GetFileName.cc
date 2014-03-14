@@ -26,11 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  GetFileName.cc:
+/**
+ *@file  GetFileName.cc
  *
- *  Written by:
+ *@author
  *   jeroen
+ *   
  *   TODAY'S DATE HERE
  *
  */

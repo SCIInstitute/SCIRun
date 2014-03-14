@@ -27,12 +27,12 @@
 */
 
 
-/*
- *  ComputeSVD.cc:
+/**
+ *@file  ComputeSVD.cc
  *
- *  Written by:
+ *@author
  *   Burak Erem
- *   November 27, 2011
+ *@date  November 27, 2011
  *
  */
 

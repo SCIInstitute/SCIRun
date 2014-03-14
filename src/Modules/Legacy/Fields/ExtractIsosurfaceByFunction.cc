@@ -26,13 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//    File   : ExtractIsosurfaceByFunction.h
-//    Author : Michael Callahan &&
+/**
+//    @file    ExtractIsosurfaceByFunction.h
+//    @author  Michael Callahan &&
 //             Allen Sanderson
 //             SCI Institute
 //             University of Utah
-//    Date   : March 2006
-
+//    @date    March 2006
+ */
 
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>

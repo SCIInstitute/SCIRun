@@ -26,12 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  ReadString.cc:
+/**
+ *@file  ReadString.cc
  *
- *  Written by:
+ *@author
  *   jeroen
- *   TODAY'S DATE HERE
+ *  
+ * TODAY'S DATE HERE
  *
  */
 
