@@ -25,7 +25,17 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-///TODO Documentation 
+
+/*
+ *  TODO @todo Documentation AddKnownsToLinearSystem.cc/.h,
+ *  AddLinkedNodesToLinearSystem.cc, AppendMatrix.cc, CreateMatrix.cc,
+ *  EvaluateLinAlgGeneral.cc, RemoveZeroRowsAndColumns.cc,
+ *  RemoveZerosFromMatrix.cc, ReorderMatrixByCuthillMcKee.cc,
+ *  ReorderMatrixByReverseCuthillMcKee.cc, ReportMatrixColumnMeasure.cc,
+ *  ReportMatrixInfo.cc, ReportMatrixRowMeasure.cc,
+ *  ReportRootMeanSquareError.cc, ResizeMatrix.cc, SelectSubMatrix.cc,
+ *  SolveLinearSystem.cc, SortMatrix.cc
+ */
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>

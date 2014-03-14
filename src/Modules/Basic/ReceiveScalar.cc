@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
+///TODO Documentation 
 
 #include <iostream>
 #include <Modules/Basic/ReceiveScalar.h>
