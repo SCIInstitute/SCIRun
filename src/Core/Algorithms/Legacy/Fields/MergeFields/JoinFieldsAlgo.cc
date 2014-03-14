@@ -26,12 +26,45 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MergeFields/JoinFields.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Containers/SearchGridT.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
-using namespace SCIRunAlgo;
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
+//#include <Core/Datatypes/FieldInformation.h>
+//#include <Core/Containers/SearchGridT.h>
+
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+AlgorithmParameterName JoinFieldsAlgo::MergeNodes("merge_nodes");
+AlgorithmParameterName JoinFieldsAlgo::MergeElems("merge_elems");
+AlgorithmParameterName JoinFieldsAlgo::Tolerance("tolerance");
+AlgorithmParameterName JoinFieldsAlgo::MatchNodeValues("match_node_values");
+AlgorithmParameterName JoinFieldsAlgo::MakeNoData("make_no_data");
+
+JoinFieldsAlgo::JoinFieldsAlgo()
+{
+  //! Merge duplicate nodes?
+  add_bool("merge_nodes",true);
+  //! Merge duplicate elements?
+  add_bool("merge_elems",false);
+  //! Tolerance for merging duplicate nodes?
+  add_scalar("tolerance",1e-6);
+  //! Only merge nodes whose value is the same
+  add_bool("match_node_values",false);
+  //! Create a field with no data
+  add_bool("make_no_data",false);
+}
 
 bool 
 JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
