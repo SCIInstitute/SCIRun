@@ -29,13 +29,14 @@
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-//#include <Core/Algorithms/Fields/MergeFields/JoinFields.h>
-//#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
-
-#include <vector>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
   //private:
@@ -54,27 +55,23 @@ ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
 
 JoinFields::JoinFields() : Module(staticInfo_)
 {
-  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(InputFields);
   INITIALIZE_PORT(OutputField);
 }
 
 void JoinFields::setStateDefaults()
 {
-  //guiclear_(get_ctx()->subVar("clear", false), 0),  
-  //guitolerance_(get_ctx()->subVar("tolerance"), 0.0001),
-  //guimergenodes_(get_ctx()->subVar("force-nodemerge"),1),
-  //guimergeelems_(get_ctx()->subVar("force-elemmerge"),0),
+  setStateBoolFromAlgo(JoinFieldsAlgo::MergeElems);
+  setStateBoolFromAlgo(JoinFieldsAlgo::MergeNodes);
+  setStateBoolFromAlgo(JoinFieldsAlgo::MatchNodeValues);
+  setStateBoolFromAlgo(JoinFieldsAlgo::MakeNoData);
+  setStateDoubleFromAlgo(JoinFieldsAlgo::Tolerance);
   //guiforcepointcloud_(get_ctx()->subVar("force-pointcloud"),0),
-  //guimatchval_(get_ctx()->subVar("matchval"),0),
-  //guimeshonly_(get_ctx()->subVar("meshonly"),0)  
 }
 
 void JoinFields::execute()
 {
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-  std::vector<SCIRun::FieldHandle> fields;
-
-  get_dynamic_input_handles("Field",fields,true);
+  auto fields = getRequiredDynamicInputs(InputFields);
 
   /*if (inputs_changed_ ||  guitolerance_.changed() ||
       guimergenodes_.changed() || guiforcepointcloud_.changed() ||
@@ -91,32 +88,35 @@ void JoinFields::execute()
     bool   matchval = false;
     bool   meshonly = false;
     
-    algo_.set_scalar("tolerance",guitolerance_.get());
-    algo_.set_bool("merge_nodes",guimergenodes_.get());
-    algo_.set_bool("merge_elems",guimergeelems_.get());
-    algo_.set_bool("match_node_values",guimatchval_.get());
-    algo_.set_bool("make_no_data",guimeshonly_.get());
+    setAlgoBoolFromState(JoinFieldsAlgo::MergeElems);
+    setAlgoBoolFromState(JoinFieldsAlgo::MatchNodeValues);
+    setAlgoBoolFromState(JoinFieldsAlgo::MergeNodes);
+    setAlgoBoolFromState(JoinFieldsAlgo::MakeNoData);
+    setAlgoDoubleFromState(JoinFieldsAlgo::Tolerance);
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     if (guiforcepointcloud_.get()) 
       forcepointcloud = true;
+#endif
 
-    std::vector<FieldHandle> ffields;
-    for (size_t j=0; j<fields.size(); j++)
+    BOOST_FOREACH(FieldHandle field, fields)
     {
-      if (fields[j].get_rep()) ffields.push_back(fields[j]);
-      else remark("One of the field inputs is empty");
+      if (!field) 
+        remark("One of the field inputs is empty");
     }
     
-    if(!(algo_.run(fields,output))) 
-      return;
+    
+    auto output = algo().run_generic(make_input((InputFields, fields)));
+    auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     if (forcepointcloud)
     {
       if(!(calgo_.run(output,output))) 
         return;
     }
-
-    send_output_handle("Output Field", output);
-  }
 #endif
+
+    sendOutput(OutputField, outputField);
+  }
 }
