@@ -55,5 +55,5 @@ ENDIF(BUILD_SHARED_LIBS)
 
 ADD_DEPENDENCIES(Core_Datatypes_Legacy_Base Boost_external)
 
-ADD_SUBDIRECTORY(Tests)
+SCIRUN_ADD_TEST_DIR(Tests)
 

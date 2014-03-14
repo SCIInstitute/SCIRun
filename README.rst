@@ -169,6 +169,11 @@ Unix Makefiles notes
   - make -j4 Boost_external && make -j4
 
 
+Documentation
+================
+
+For documentation, please see: http://sciinstitute.github.io/SCIRunGUIPrototype/
+
 Questions and Answers
 =====================
 

@@ -58,6 +58,11 @@ SET(Engine_Scheduler_HEADERS
   SchedulerInterfaces.h
   SerialModuleExecutionOrder.h
   SerialExecutionStrategy.h
+  DynamicExecutor/WorkQueue.h
+  DynamicExecutor/WorkUnitConsumer.h
+  DynamicExecutor/WorkUnitExecutor.h
+  DynamicExecutor/WorkUnitProducer.h
+  DynamicExecutor/WorkUnitProducerInterface.h
   share.h
 )
 
@@ -77,5 +82,5 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Engine_Scheduler)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_SUBDIRECTORY(Tests)
+SCIRUN_ADD_TEST_DIR(Tests)
 

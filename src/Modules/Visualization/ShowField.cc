@@ -33,7 +33,9 @@
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Mesh/MeshFacade.h>
 #include <Core/Datatypes/Color.h>
+#include <Core/Datatypes/ColorMap.h>
 #include <Core/GeometryPrimitives/BBox.h>
+#include <Core/Logging/Log.h>
 
 #include <boost/foreach.hpp>
 
@@ -49,6 +51,7 @@ ShowFieldModule::ShowFieldModule() :
     Module(staticInfo_)
 {
   INITIALIZE_PORT(Field);
+  INITIALIZE_PORT(ColorMapObject);
   INITIALIZE_PORT(SceneGraph);
 }
 
@@ -61,19 +64,21 @@ void ShowFieldModule::setStateDefaults()
   state->setValue(NodeTransparency, false);
   state->setValue(EdgeTransparency, false);
   state->setValue(FaceTransparency, false);
-  state->setTransientValue(DefaultMeshColor.name_, ColorRGB(255, 255, 255));
+  state->setValue(DefaultMeshColor, ColorRGB(255, 255, 255).toString());
 }
 
 void ShowFieldModule::execute()
 {
   boost::shared_ptr<SCIRun::Field> field = getRequiredInput(Field);
-  GeometryHandle geom = buildGeometryObject(field, get_state(), get_id());
+  boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap = getOptionalInput(ColorMapObject);
+  GeometryHandle geom = buildGeometryObject(field, colorMap, get_state(), get_id());
   sendOutput(SceneGraph, geom);
 }
 
 
 GeometryHandle ShowFieldModule::buildGeometryObject(
     boost::shared_ptr<SCIRun::Field> field,
+    boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
     ModuleStateHandle state, 
     const std::string& id)
 {
@@ -103,8 +108,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
   bool showFaces = state->getValue(ShowFieldModule::ShowFaces).getBool();
   bool invertNormals = state->getValue(ShowFieldModule::FaceInvertNormals).getBool();
   //bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
-  const ColorRGB meshColor = optional_any_cast_or_default<ColorRGB>(
-      state->getTransientValue(ShowFieldModule::DefaultMeshColor.name_));
+  const ColorRGB meshColor(state->getValue(ShowFieldModule::DefaultMeshColor).getString());
   float meshRed   = static_cast<float>(meshColor.r() / 255.0f);
   float meshGreen = static_cast<float>(meshColor.g() / 255.0f);
   float meshBlue  = static_cast<float>(meshColor.b() / 255.0f);
@@ -134,6 +138,25 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
 
 
   if (progressFunc) progressFunc(0.1);
+
+  // Build normalization bounds for field data. This simplifies the fragment
+  // shader which will improve rendering performance.
+  double valueRangeLow = std::numeric_limits<double>::max();
+  double valueRangeHigh = std::numeric_limits<double>::lowest();
+  BOOST_FOREACH(const NodeInfo<VMesh>& node, facade->nodes())
+  {
+    if (node.index() < vfield->num_values())
+    {
+      double val = 0.0;
+      vfield->get_value(val, node.index());
+      if (val > valueRangeHigh) valueRangeHigh = val;
+      if (val < valueRangeLow) valueRangeLow = val;
+    }
+  }
+  double valueRange = valueRangeHigh - valueRangeLow;
+  LOG_DEBUG("valueRange " << valueRange << std::endl);
+  LOG_DEBUG("valueRangeHigh " << valueRangeHigh << std::endl);
+  LOG_DEBUG("valueRangeLow " << valueRangeLow << std::endl);
 
   // Build vertex buffer.
   size_t i = 0;
@@ -176,11 +199,13 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     }
 
     // Add field data (aFieldData)
-    if (node.index() < vfield->num_values())
+    if (node.index() < vfield->num_values() && valueRange > 0.0)
     {
       double val = 0.0;
       vfield->get_value(val, node.index());
-      vbo[i+nodeOffset] = static_cast<float>(val);
+      vbo[i+nodeOffset] = static_cast<float>((val - valueRangeLow) / valueRange);
+      //std::cout << "value quant: " << vbo[i+nodeOffset] << std::endl;
+      //std::cout << "value: " << val << std::endl;
     }
     else
     {
@@ -189,6 +214,18 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     nodeOffset += 1;
 
     i += nodeOffset;
+  }
+
+  // Set value ranges for color mapping fields.
+  geom->mLowestValue = valueRangeLow;
+  geom->mHighestValue = valueRangeHigh;
+  if (colorMap)
+  {
+    geom->mColorMap = boost::optional<std::string>((*colorMap)->getColorMapName());
+  }
+  else
+  {
+    geom->mColorMap = boost::optional<std::string>();
   }
 
   // Add shared VBO to the geometry object.
@@ -219,9 +256,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
         GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
                                      "UniformColor", spire::Interface::LINES);
 
-    spire::GPUState gpuState;
-    gpuState.mLineWidth = 2.5f;
-    pass.addGPUState(gpuState);
+    //spire::GPUState gpuState;
+    //gpuState.mLineWidth = 2.5f;
+    //pass.addGPUState(gpuState);
 
     bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
     // Add appropriate uniforms to the pass (in this case, uColor).
@@ -250,29 +287,45 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     ///       and bind them here.
     if (vmesh->has_normals())
     {
+      std::string shaderToUse = "DirPhong";
+      if (colorMap)
+      {
+        shaderToUse = "DirPhongCMap";
+      }
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
-                                       "DirPhong", spire::Interface::TRIANGLES);
+                                       shaderToUse, spire::Interface::TRIANGLES);
 
       // Add common uniforms.
       pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
-      pass.addUniform("uDiffuseColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
+
+      if (!colorMap)
+        pass.addUniform("uDiffuseColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
+
       pass.addUniform("uSpecularColor", spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
       pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
     }
     else
     {
+      std::string shaderToUse = "UniformColor";
+      if (colorMap)
+      {
+        shaderToUse = "ColorMap";
+      }
       // No normals present in the model, construct a uniform pass
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName,
-                                       "UniformColor", spire::Interface::TRIANGLES);
+                                       shaderToUse, spire::Interface::TRIANGLES);
 
       // Apply misc user settings.
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.2f;
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
+
+      if (!colorMap)
+        pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
+
       geom->mPasses.emplace_back(pass);
     }
   }

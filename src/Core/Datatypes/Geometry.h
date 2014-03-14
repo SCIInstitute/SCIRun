@@ -36,7 +36,6 @@
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <spire/Interface.h>
-#include <spire/src/GPUStateManager.h>
 #include <Core/Datatypes/share.h>
 
 // The following include contains AbstractUniformStateItem which allows
@@ -108,8 +107,7 @@ namespace Datatypes {
           vboName(vbo),
           iboName(ibo),
           programName(program),
-          type(primType),
-          hasGPUState(false)
+          type(primType)
       {}
 
       std::string   passName;
@@ -117,9 +115,6 @@ namespace Datatypes {
       std::string   iboName;
       std::string   programName;
       spire::Interface::PRIMITIVE_TYPES type;
-      // Want Boost::optional here...
-      bool            hasGPUState;
-      spire::GPUState gpuState;
 
       template <typename T>
       void addUniform(const std::string& uniformName, T uniformData)
@@ -129,12 +124,6 @@ namespace Datatypes {
                 new spire::UniformStateItem<T>(uniformData))));
       }
 
-      void addGPUState(const spire::GPUState& state)
-      {
-        hasGPUState = true;
-        gpuState = state;
-      }
-
       // Tuple containing the name of the uniform and its contents.
       std::list<std::tuple<
           std::string, std::shared_ptr<spire::AbstractUniformStateItem>>> uniforms;
@@ -142,6 +131,12 @@ namespace Datatypes {
 
     /// List of passes to setup.
     std::list<SpireSubPass>  mPasses;
+
+    /// Optional colormap name.
+    boost::optional<std::string> mColorMap;
+
+    double mLowestValue;    ///< Lowest value a field takes on.
+    double mHighestValue;   ///< Highest value a field takes on.
 
     /// \xxx  Possibly implement a list of global uniforms. Only do this if
     ///       there is a clear need for global uniforms.

@@ -52,7 +52,7 @@ IF(BUILD_SHARED_LIBS)
   ADD_DEFINITIONS(-DBUILD_Core_Serialization_Network)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_SUBDIRECTORY(Tests)
+SCIRUN_ADD_TEST_DIR(Tests)
 
 TARGET_LINK_LIBRARIES(Core_Serialization_Network
   Dataflow_Network

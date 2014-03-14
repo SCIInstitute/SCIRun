@@ -72,16 +72,18 @@ public:
 
 protected Q_SLOTS:
   void menuMouseControlChanged(int index);
-  void autoViewClicked(bool checked);
+  void autoViewClicked();
 
 protected:
   virtual void closeEvent(QCloseEvent *evt) override;
+  virtual void showEvent(QShowEvent* event) override;
 private:
   void addToolBar();
 
   GLWidget*                     mGLWidget;  ///< GL widget containing context.
   std::weak_ptr<SRInterface>    mSpire;     ///< Instance of Spire.
   QToolBar*                     mToolBar;   ///< Tool bar.
+  bool shown_;
 
 };
 

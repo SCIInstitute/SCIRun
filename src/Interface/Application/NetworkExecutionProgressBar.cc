@@ -31,8 +31,9 @@
 #include <Interface/Application/NetworkExecutionProgressBar.h>
 
 using namespace SCIRun::Gui;
+using namespace SCIRun::Core::Thread;
 
-NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0), totalModules_(0)
+NetworkExecutionProgressBar::NetworkExecutionProgressBar(QWidget* parent) : numModulesDone_(0), totalModules_(0), mutex_("progress bar")
 {
   barAction_ = new QWidgetAction(parent);
   barAction_->setDefaultWidget(progressBar_ = new QProgressBar(parent));
@@ -54,6 +55,7 @@ QList<QAction*> NetworkExecutionProgressBar::actions() const
 
 void NetworkExecutionProgressBar::updateTotalModules(size_t count)
 {
+  Guard g(mutex_.get());
   if (count != totalModules_)
   {
     totalModules_ = count;
@@ -66,6 +68,7 @@ void NetworkExecutionProgressBar::updateTotalModules(size_t count)
 }
 void NetworkExecutionProgressBar::incrementModulesDone()
 {
+  Guard g(mutex_.get());
   if (numModulesDone_ < totalModules_)
   {
     numModulesDone_++;
@@ -76,6 +79,7 @@ void NetworkExecutionProgressBar::incrementModulesDone()
 
 void NetworkExecutionProgressBar::resetModulesDone()
 {
+  Guard g(mutex_.get());
   numModulesDone_ = 0;
   counterLabel_->setText(counterLabelString());
   progressBar_->setValue(numModulesDone_);
