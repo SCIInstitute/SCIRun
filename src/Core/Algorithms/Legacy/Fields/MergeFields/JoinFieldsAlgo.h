@@ -31,7 +31,6 @@
 #define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -43,7 +42,7 @@ namespace SCIRun {
         {
         public:
           JoinFieldsAlgo();
-          bool runImpl(const std::vector<FieldHandle>& input, FieldHandle& output) const;
+          bool runImpl(const FieldList& input, FieldHandle& output) const;
 
           static AlgorithmParameterName MergeNodes;
           static AlgorithmParameterName MergeElems;
@@ -51,7 +50,6 @@ namespace SCIRun {
           static AlgorithmParameterName MatchNodeValues;
           static AlgorithmParameterName MakeNoData;
           static AlgorithmInputName InputFields;
-          static AlgorithmOutputName OutputField;
 
           virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
         };

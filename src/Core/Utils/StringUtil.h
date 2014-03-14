@@ -55,6 +55,20 @@ std::vector<T> parseLineOfNumbers(const std::string& line)
   return numbers;
 }
 
+template <class T, class Iter>
+std::vector<boost::shared_ptr<T>> downcast_range(Iter begin, Iter end)
+{
+  std::vector<boost::shared_ptr<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::dynamic_pointer_cast<T>(p); });
+  return std::move(output);
+}
+
+template <class T, class Cont>
+std::vector<boost::shared_ptr<T>> downcast_range(const Cont& container)
+{
+  return downcast_range<T>(container.begin(), container.end());
+}
+
 }}
 
 #endif

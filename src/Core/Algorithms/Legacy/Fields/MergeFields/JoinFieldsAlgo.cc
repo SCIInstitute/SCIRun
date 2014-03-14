@@ -36,8 +36,9 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/PropertyManagerExtensions.h>
-//#include <Core/Datatypes/FieldInformation.h>
-//#include <Core/Containers/SearchGridT.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
+#include <boost/scoped_ptr.hpp>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -72,26 +73,20 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
   ScopedAlgorithmStatusReporter asr(this, "JoinFields");
 
   std::vector<FieldHandle> inputs;
-  for(size_t p=0; p < input.size(); p++)
-  {
-    if (input[p].get_rep())
-    {
-      inputs.push_back(input[p]);
-    }
-  }
+  std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
 
-  if (inputs.size() == 0)
+  if (inputs.empty())
   {
     error("No input fields given");
     return (false);
   }
 
-  bool match_node_values = get_bool("match_node_values");
-  bool make_no_data = get_bool("make_no_data");
-  bool merge_nodes = get_bool("merge_nodes");
-  bool merge_elems = get_bool("merge_elems");
+  bool match_node_values = get(MatchNodeValues).getBool();
+  bool make_no_data = get(MakeNoData).getBool();
+  bool merge_nodes = get(MergeNodes).getBool();
+  bool merge_elems = get(MergeElems).getBool();
   
-  double tol = get_scalar("tolerance");
+  double tol = get(Tolerance).getDouble();
   const double tol2 = tol*tol;
   
   // Check whether mesh types are the same
@@ -167,8 +162,8 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
   }
   
   BBox box;
-  Handle<SearchGridT<index_type> > node_grid;
-  Handle<SearchGridT<index_type> > elem_grid;
+  boost::scoped_ptr<SearchGridT<index_type> > node_grid;
+  boost::scoped_ptr<SearchGridT<index_type> > elem_grid;
 
   size_type ni = 0, nj = 0, nk = 0;    
         
@@ -204,7 +199,7 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    node_grid = new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max());
+    node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
 
     if (sx == 0) sx = 1;
     if (sy == 0) sy = 1;
@@ -230,7 +225,7 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
     if (sy == 0) sy = 1;
     if (sz == 0) sz = 1;
     
-    elem_grid = new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max());
+    elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
     
     ni = node_grid->get_ni()-1;
     nj = node_grid->get_nj()-1;
@@ -238,14 +233,14 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
   }
 
   MeshHandle mesh = CreateMesh(first);
-  if (mesh.get_rep() == 0)
+  if (!mesh)
   {
     error("Could not create output mesh");
     return (false);
   }
   
   output = CreateField(first,mesh);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
     return (false);
@@ -517,7 +512,7 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
           ofield->copy_values(ifield,0,elems_offset,num_elems);
         }
       }
-      else if (ofield->basis_order() == 1 & ifield->basis_order() == 1)
+      else if (ofield->basis_order() == 1 && ifield->basis_order() == 1)
       {
         ofield->resize_values();
         for (VMesh::Node::index_type j=0;j<num_nodes;j++)
@@ -533,11 +528,26 @@ JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& outp
     elems_offset += elems_count;
     nodes_offset += nodes_count;
     
-    update_progress(p+1,inputs.size());
+    update_progress_max(p+1, inputs.size());
   }
   
 
   return (true);
 }
 
+AlgorithmInputName JoinFieldsAlgo::InputFields("InputFields");
+
+AlgorithmOutput JoinFieldsAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputFields = input.getList<Field>(InputFields);
+  auto object = input.get<Field>(Variables::OutputField);
+
+  FieldHandle outputField;
+  if (!runImpl(inputFields, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}
 
