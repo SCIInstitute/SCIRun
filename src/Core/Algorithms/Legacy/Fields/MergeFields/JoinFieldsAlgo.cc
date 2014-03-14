@@ -55,22 +55,21 @@ AlgorithmParameterName JoinFieldsAlgo::MakeNoData("make_no_data");
 JoinFieldsAlgo::JoinFieldsAlgo()
 {
   //! Merge duplicate nodes?
-  add_bool("merge_nodes",true);
+  addParameter(MergeNodes, true);
   //! Merge duplicate elements?
-  add_bool("merge_elems",false);
+  addParameter(MergeElems, false);
   //! Tolerance for merging duplicate nodes?
-  add_scalar("tolerance",1e-6);
+  addParameter(Tolerance, 1e-6);
   //! Only merge nodes whose value is the same
-  add_bool("match_node_values",false);
+  addParameter(MatchNodeValues, false);
   //! Create a field with no data
-  add_bool("make_no_data",false);
+  addParameter(MakeNoData, false);
 }
 
 bool 
-JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
+JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& output) const
 {
-  // Mark that we are starting the algorithm
-  algo_start("JoinFields");
+  ScopedAlgorithmStatusReporter asr(this, "JoinFields");
 
   std::vector<FieldHandle> inputs;
   for(size_t p=0; p < input.size(); p++)
@@ -84,7 +83,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
   if (inputs.size() == 0)
   {
     error("No input fields given");
-    algo_end(); return (false);
+    return (false);
   }
 
   bool match_node_values = get_bool("match_node_values");
@@ -107,13 +106,13 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
     if (fi.get_mesh_type() != first.get_mesh_type())
     {
       error("Mesh elements need to be equal in order to join multiple fields together");
-      algo_end(); return (false);      
+      return (false);      
     }
   
     if (fi.mesh_basis_order() != first.mesh_basis_order())
     {
       error("Mesh elements need to be of the same order in for joining multiple fields together");
-      algo_end(); return (false);          
+      return (false);          
     }
   }
 
@@ -129,7 +128,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
       if (fi.field_basis_order() != first.field_basis_order())
       {
         error("Fields need to have the same basis order");
-        algo_end(); return (false);                        
+        return (false);                        
       }
       
       if (fi.get_data_type() != first.get_data_type())
@@ -142,7 +141,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
         else
         {
           error("Fields have different data types");
-          algo_end(); return (false);                  
+          return (false);                  
         }
       }
     }
@@ -156,7 +155,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
       if (!(fi.is_scalar()))
       {
         error("Node values can only be matched for scalar values");
-        algo_end(); return (false);
+        return (false);
       }
       
       if (fi.is_float() || fi.is_double())
@@ -242,14 +241,14 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
   if (mesh.get_rep() == 0)
   {
     error("Could not create output mesh");
-    algo_end(); return (false);
+    return (false);
   }
   
   output = CreateField(first,mesh);
   if (output.get_rep() == 0)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
 
   VMesh* omesh = output->vmesh();
@@ -538,7 +537,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
   }
   
 
-  algo_end(); return (true);
+  return (true);
 }
 
 
