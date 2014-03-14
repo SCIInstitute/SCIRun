@@ -35,6 +35,7 @@ SET(Modules_Fields_Tests_SRCS
   AlignMeshBoundingBoxesTests.cc
   GetFieldNodesTests.cc
   SetFieldNodesTests.cc
+  JoinFieldsTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Modules_Fields_Tests
