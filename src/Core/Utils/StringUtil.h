@@ -69,6 +69,21 @@ std::vector<boost::shared_ptr<T>> downcast_range(const Cont& container)
   return downcast_range<T>(container.begin(), container.end());
 }
 
+template <class T, class Iter>
+std::vector<boost::shared_ptr<T>> upcast_range(Iter begin, Iter end)
+{
+  //BOOST_STATIC_ASSERT(boost::is_base_of<T, typename Iter::value_type>::value);
+  std::vector<boost::shared_ptr<T>> output;
+  std::transform(begin, end, std::back_inserter(output), [](const typename Iter::value_type& p) { return boost::static_pointer_cast<T>(p); });
+  return std::move(output);
+}
+
+template <class T, class Cont>
+std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
+{
+  return upcast_range<T>(container.begin(), container.end());
+}
+
 }}
 
 #endif

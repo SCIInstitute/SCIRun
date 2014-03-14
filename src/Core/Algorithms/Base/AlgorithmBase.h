@@ -255,6 +255,14 @@ namespace Algorithms {
   public:
     AlgoInputBuilder();
     AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    template <typename T>
+    AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
+    {
+      //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
+      std::vector<Datatypes::DatatypeHandle> datas = upcast_range<Datatypes::Datatype>(vec);
+      map_[Name(name)] = datas;
+      return *this;
+    }
     AlgorithmInput build() const;
   private:
     AlgorithmData::Map map_;
