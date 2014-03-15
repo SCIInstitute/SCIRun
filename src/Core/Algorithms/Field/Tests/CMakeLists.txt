@@ -35,6 +35,7 @@ SET(Algorithms_Field_Tests_SRCS
   AlignMeshBoundingBoxesAlgoTests.cc
   SetGetFieldNodesAlgoTests.cc
   InterfaceWithCleaverAlgorithmTests.cc
+  JoinFieldsAlgoTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests

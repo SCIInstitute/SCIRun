@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/JoinFields.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Testing/ModuleTestBase/ModuleTestBase.h>
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H 
+using namespace SCIRun;
+using namespace SCIRun::Testing;
+using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Dataflow::Networks;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::DefaultValue;
+using ::testing::Return;
 
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/share.h>
+class JoinFieldsModuleTests : public ModuleTest
+{
 
-namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+};
 
-  class Datatype;
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
+TEST_F(JoinFieldsModuleTests, ThrowsForNullInput)
+{
+  auto cg = makeModule("JoinFields");
+  FieldHandle nullField;
+  stubPortNWithThisData(cg, 0, nullField);
 
-  template <typename T>
-  class Scalar;
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
-  class String;
-  class GeometryObject;
-  class ColorMap;
-}}
-
-  class Field;
-  class Mesh;
-  typedef boost::shared_ptr<Field> FieldHandle;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
+  EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }
 
-
-#endif
+TEST_F(JoinFieldsModuleTests, DISABLED_Foo)
+{
+  FAIL() << "TODO";
+}

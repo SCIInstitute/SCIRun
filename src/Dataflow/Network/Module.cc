@@ -447,6 +447,16 @@ void Module::setStateIntFromAlgo(AlgorithmParameterName name)
   get_state()->setValue(name, algo().get(name).getInt());
 }
 
+void Module::setStateDoubleFromAlgo(AlgorithmParameterName name)
+{
+  get_state()->setValue(name, algo().get(name).getDouble());
+}
+
+void Module::setAlgoDoubleFromState(AlgorithmParameterName name)
+{
+  algo().set(name, get_state()->getValue(name).getDouble());
+}
+
 ModuleInterface::ExecutionState Module::executionState() const
 {
   return executionState_;

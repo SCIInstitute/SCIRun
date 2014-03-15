@@ -3,7 +3,7 @@
 
    The MIT License
 
-   Copyright (c) 2012 Scientific Computing and Imaging Institute,
+   Copyright (c) 2009 Scientific Computing and Imaging Institute,
    University of Utah.
 
    
@@ -27,43 +27,33 @@
 */
 
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H 
+#ifndef CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H
+#define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
 
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/share.h>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-  class Datatype;
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
+        class SCISHARE JoinFieldsAlgo : public AlgorithmBase
+        {
+        public:
+          JoinFieldsAlgo();
+          bool runImpl(const FieldList& input, FieldHandle& output) const;
 
-  template <typename T>
-  class Scalar;
+          static AlgorithmParameterName MergeNodes;
+          static AlgorithmParameterName MergeElems;
+          static AlgorithmParameterName Tolerance;
+          static AlgorithmParameterName MatchNodeValues;
+          static AlgorithmParameterName MakeNoData;
+          static AlgorithmInputName InputFields;
 
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
+          virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+        };
 
-  class String;
-  class GeometryObject;
-  class ColorMap;
-}}
-
-  class Field;
-  class Mesh;
-  typedef boost::shared_ptr<Field> FieldHandle;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
-}
-
+}}}}
 
 #endif

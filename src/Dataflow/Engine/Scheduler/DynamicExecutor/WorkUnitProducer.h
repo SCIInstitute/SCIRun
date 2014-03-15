@@ -50,7 +50,7 @@ namespace SCIRun {
           ModuleProducer(const Networks::ExecutableLookup* lookup, const ExecutionBounds& bounds, 
             const Networks::NetworkInterface* network, Core::Thread::Mutex* lock, ModuleWorkQueuePtr work) :
           lookup_(lookup), bounds_(bounds), network_(network), lock_(lock),
-            work_(work), doneCount_(0), shouldLog_(false)
+            work_(work), doneCount_(0), shouldLog_(SCIRun::Core::Logging::Log::get().verbose())
           {
             log_.setVerbose(shouldLog_);
           }
@@ -78,11 +78,19 @@ namespace SCIRun {
                   if (shouldLog_)
                     log_ << Core::Logging::DEBUG_LOG << "Producer pushing module " << mod.second << std::endl;
                   
-                  work_->push(module);
-                  doneCount_.fetch_add(1);
-                  
-                  if (shouldLog_)
-                    log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
+                  if (doneIds_.find(mod.second) != doneIds_.end())
+                  {
+                    SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::INFO << "Module producer: wants to enqueue module " << mod.second << " a second time." << std::endl;
+                  }
+                  else
+                  {
+                    work_->push(module);
+                    doneIds_.insert(mod.second);
+                    doneCount_.fetch_add(1);
+
+                    if (shouldLog_)
+                      log_ << Core::Logging::DEBUG_LOG << "Producer status: " << doneCount_ << " out of " << network_->nmodules() << std::endl;
+                  }
                 }
               }
             }
@@ -126,6 +134,7 @@ namespace SCIRun {
           Core::Thread::Mutex* lock_;
           ModuleWorkQueuePtr work_;
           mutable boost::atomic<int> doneCount_;
+          mutable std::set<Networks::ModuleId> doneIds_;
           static Core::Logging::Log& log_;
           bool shouldLog_;
         };

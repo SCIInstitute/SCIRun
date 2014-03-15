@@ -26,40 +26,67 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/MergeFields/JoinFields.h>
-#include <Core/Datatypes/FieldInformation.h>
-#include <Core/Containers/SearchGridT.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Transform.h>
 
-using namespace SCIRunAlgo;
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/PropertyManagerExtensions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/GeometryPrimitives/SearchGridT.h>
+#include <boost/scoped_ptr.hpp>
+
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+AlgorithmParameterName JoinFieldsAlgo::MergeNodes("merge_nodes");
+AlgorithmParameterName JoinFieldsAlgo::MergeElems("merge_elems");
+AlgorithmParameterName JoinFieldsAlgo::Tolerance("tolerance");
+AlgorithmParameterName JoinFieldsAlgo::MatchNodeValues("match_node_values");
+AlgorithmParameterName JoinFieldsAlgo::MakeNoData("make_no_data");
+
+JoinFieldsAlgo::JoinFieldsAlgo()
+{
+  //! Merge duplicate nodes?
+  addParameter(MergeNodes, true);
+  //! Merge duplicate elements?
+  addParameter(MergeElems, false);
+  //! Tolerance for merging duplicate nodes?
+  addParameter(Tolerance, 1e-6);
+  //! Only merge nodes whose value is the same
+  addParameter(MatchNodeValues, false);
+  //! Create a field with no data
+  addParameter(MakeNoData, false);
+}
 
 bool 
-JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
+JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& output) const
 {
-  // Mark that we are starting the algorithm
-  algo_start("JoinFields");
+  ScopedAlgorithmStatusReporter asr(this, "JoinFields");
 
   std::vector<FieldHandle> inputs;
-  for(size_t p=0; p < input.size(); p++)
-  {
-    if (input[p].get_rep())
-    {
-      inputs.push_back(input[p]);
-    }
-  }
+  std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
 
-  if (inputs.size() == 0)
+  if (inputs.empty())
   {
     error("No input fields given");
-    algo_end(); return (false);
+    return (false);
   }
 
-  bool match_node_values = get_bool("match_node_values");
-  bool make_no_data = get_bool("make_no_data");
-  bool merge_nodes = get_bool("merge_nodes");
-  bool merge_elems = get_bool("merge_elems");
+  bool match_node_values = get(MatchNodeValues).getBool();
+  bool make_no_data = get(MakeNoData).getBool();
+  bool merge_nodes = get(MergeNodes).getBool();
+  bool merge_elems = get(MergeElems).getBool();
   
-  double tol = get_scalar("tolerance");
+  double tol = get(Tolerance).getDouble();
   const double tol2 = tol*tol;
   
   // Check whether mesh types are the same
@@ -74,13 +101,13 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
     if (fi.get_mesh_type() != first.get_mesh_type())
     {
       error("Mesh elements need to be equal in order to join multiple fields together");
-      algo_end(); return (false);      
+      return (false);      
     }
   
     if (fi.mesh_basis_order() != first.mesh_basis_order())
     {
       error("Mesh elements need to be of the same order in for joining multiple fields together");
-      algo_end(); return (false);          
+      return (false);          
     }
   }
 
@@ -96,7 +123,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
       if (fi.field_basis_order() != first.field_basis_order())
       {
         error("Fields need to have the same basis order");
-        algo_end(); return (false);                        
+        return (false);                        
       }
       
       if (fi.get_data_type() != first.get_data_type())
@@ -109,7 +136,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
         else
         {
           error("Fields have different data types");
-          algo_end(); return (false);                  
+          return (false);                  
         }
       }
     }
@@ -123,7 +150,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
       if (!(fi.is_scalar()))
       {
         error("Node values can only be matched for scalar values");
-        algo_end(); return (false);
+        return (false);
       }
       
       if (fi.is_float() || fi.is_double())
@@ -135,8 +162,8 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
   }
   
   BBox box;
-  Handle<SearchGridT<index_type> > node_grid;
-  Handle<SearchGridT<index_type> > elem_grid;
+  boost::scoped_ptr<SearchGridT<index_type> > node_grid;
+  boost::scoped_ptr<SearchGridT<index_type> > elem_grid;
 
   size_type ni = 0, nj = 0, nk = 0;    
         
@@ -172,7 +199,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
     size_type sy = static_cast<size_type>(ceil(diag.y()/trace*s));
     size_type sz = static_cast<size_type>(ceil(diag.z()/trace*s));
     
-    node_grid = new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max());
+    node_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
 
     if (sx == 0) sx = 1;
     if (sy == 0) sy = 1;
@@ -198,7 +225,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
     if (sy == 0) sy = 1;
     if (sz == 0) sz = 1;
     
-    elem_grid = new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max());
+    elem_grid.reset(new SearchGridT<index_type>(sx, sy, sz, box.min(), box.max()));
     
     ni = node_grid->get_ni()-1;
     nj = node_grid->get_nj()-1;
@@ -206,17 +233,17 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
   }
 
   MeshHandle mesh = CreateMesh(first);
-  if (mesh.get_rep() == 0)
+  if (!mesh)
   {
     error("Could not create output mesh");
-    algo_end(); return (false);
+    return (false);
   }
   
   output = CreateField(first,mesh);
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end(); return (false);
+    return (false);
   }
 
   VMesh* omesh = output->vmesh();
@@ -485,7 +512,7 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
           ofield->copy_values(ifield,0,elems_offset,num_elems);
         }
       }
-      else if (ofield->basis_order() == 1 & ifield->basis_order() == 1)
+      else if (ofield->basis_order() == 1 && ifield->basis_order() == 1)
       {
         ofield->resize_values();
         for (VMesh::Node::index_type j=0;j<num_nodes;j++)
@@ -501,11 +528,26 @@ JoinFieldsAlgo::run(std::vector<FieldHandle>& input, FieldHandle& output)
     elems_offset += elems_count;
     nodes_offset += nodes_count;
     
-    update_progress(p+1,inputs.size());
+    update_progress_max(p+1, inputs.size());
   }
   
 
-  algo_end(); return (true);
+  return (true);
 }
 
+AlgorithmInputName JoinFieldsAlgo::InputFields("InputFields");
+
+AlgorithmOutput JoinFieldsAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputFields = input.getList<Field>(InputFields);
+  auto object = input.get<Field>(Variables::OutputField);
+
+  FieldHandle outputField;
+  if (!runImpl(inputFields, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}
 

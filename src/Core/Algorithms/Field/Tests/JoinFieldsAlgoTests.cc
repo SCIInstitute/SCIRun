@@ -25,6 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+
+#if 0
  
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -210,3 +212,5 @@ INSTANTIATE_TEST_CASE_P(
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
 //
 #endif 
+
+#endif

@@ -6,7 +6,7 @@
    Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,44 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef INTERFACE_MODULES_JOIN_FIELDS_H
+#define INTERFACE_MODULES_JOIN_FIELDS_H
 
-#ifndef CORE_DATATYPES_DATATYPE_FWD_H
-#define CORE_DATATYPES_DATATYPE_FWD_H 
-
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <boost/make_shared.hpp>
-#include <boost/optional.hpp>
-#include <boost/any.hpp>
-#include <Core/Datatypes/MatrixFwd.h>
-#include <Core/Datatypes/share.h>
+#include "Interface/Modules/Fields/ui_JoinFields.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Datatypes {
+namespace Gui {
+  
+class SCISHARE JoinFieldsDialog : public ModuleDialogGeneric, 
+  public Ui::JoinFields
+{
+	Q_OBJECT
+	
+public:
+  JoinFieldsDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 
-  class Datatype;
-  typedef boost::shared_ptr<Datatype> DatatypeHandle;
-  typedef boost::shared_ptr<const Datatype> DatatypeConstHandle;
-  typedef boost::optional<DatatypeHandle> DatatypeHandleOption;
+private Q_SLOTS:
+  void push();
+private:
+};
 
-  template <typename T>
-  class Scalar;
-
-  typedef Scalar<int> Int32;
-  typedef Scalar<double> Double;
-
-  class String;
-  class GeometryObject;
-  class ColorMap;
-}}
-
-  class Field;
-  class Mesh;
-  typedef boost::shared_ptr<Field> FieldHandle;
-  typedef boost::shared_ptr<Mesh> MeshHandle;
-  typedef std::vector<FieldHandle> FieldList;
 }
-
+}
 
 #endif

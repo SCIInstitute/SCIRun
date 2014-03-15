@@ -26,38 +26,35 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_JOINFIELDS_H__
+#define MODULES_LEGACY_FIELDS_JOINFIELDS_H__
 
-#ifndef CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H
-#define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
-#include <Core/Datatypes/Field.h>
-#include <vector>
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
 
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
+      class SCISHARE JoinFields : public Dataflow::Networks::Module,
+        public Has1InputPort<DynamicPortTag<FieldPortTag>>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        JoinFields();
 
-namespace SCIRunAlgo {
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
+        virtual bool hasDynamicPorts() const override { return true; }
 
-class SCISHARE JoinFieldsAlgo : public AlgoBase
-{
-  public:
-    // Algorithm defaults
-    JoinFieldsAlgo()
-    {
-      //! Merge duplicate nodes?
-      add_bool("merge_nodes",true);
-      //! Merge duplicate elements?
-      add_bool("merge_elems",false);
-      //! Tolerance for merging duplicate nodes?
-      add_scalar("tolerance",1e-6);
-      //! Only merge nodes whose value is the same
-      add_bool("match_node_values",false);
-      //! Create a field with no data
-      add_bool("make_no_data",false);
+        INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
+        OUTPUT_PORT(0, OutputField, LegacyField);
+
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      };
+
     }
-    bool run(std::vector<SCIRun::FieldHandle>& input, SCIRun::FieldHandle& output);   
-};
-
+  }
 }
 
 #endif
