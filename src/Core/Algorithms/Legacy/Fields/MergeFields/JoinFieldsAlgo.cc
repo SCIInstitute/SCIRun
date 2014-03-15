@@ -68,7 +68,7 @@ JoinFieldsAlgo::JoinFieldsAlgo()
 }
 
 bool 
-JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& output) const
+JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "JoinFields");
 

@@ -40,15 +40,8 @@ using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
   //private:
-  //  GuiInt    guiclear_;
-  //  GuiDouble guitolerance_;
-  //  GuiInt    guimergenodes_;
-  //  GuiInt    guimergeelems_;
   //  GuiInt    guiforcepointcloud_;
-  //  GuiInt    guimatchval_;
-  //  GuiInt    guimeshonly_;
   //  
-  //  SCIRunAlgo::JoinFieldsAlgo algo_;
   //  SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo calgo_;
 
 ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
@@ -98,14 +91,7 @@ void JoinFields::execute()
     if (guiforcepointcloud_.get()) 
       forcepointcloud = true;
 #endif
-
-    BOOST_FOREACH(FieldHandle field, fields)
-    {
-      if (!field) 
-        remark("One of the field inputs is empty");
-    }
-    
-    
+        
     auto output = algo().run_generic(make_input((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 
