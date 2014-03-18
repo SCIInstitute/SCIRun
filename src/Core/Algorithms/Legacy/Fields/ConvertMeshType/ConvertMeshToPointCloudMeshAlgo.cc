@@ -26,35 +26,38 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+AlgorithmParameterName ConvertMeshToPointCloudMeshAlgo::Location("Location");
 
 ConvertMeshToPointCloudMeshAlgo::ConvertMeshToPointCloudMeshAlgo()
 {
   //! Do we want to get the location of the data nodes
   //! or the location of the nodes
-  add_option("location","node","node|data");
+  add_option(Location,"node","node|data");
 }
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-// This is the actual algorithm
-bool 
-ConvertMeshToPointCloudMeshAlgo::
-run(FieldHandle input, FieldHandle& output)
+bool ConvertMeshToPointCloudMeshAlgo::runImpl(FieldHandle input, FieldHandle& output) const
 {
-  algo_start("ConvertMeshToPointCloudMeshAlgo");
-  
-  //! Check whether we are extracting the element centers or the node centers
-  bool datalocation = (get_option("location") == std::string("data"));
+  ScopedAlgorithmStatusReporter asr(this, "ConvertMeshToPointCloudMeshAlgo");
   
   // check whether we have an input handle
-  if (input.get_rep() == 0)
+  if (!input)
   {
     error("No input field");
-    algo_end();
     return (false);
   }
 
@@ -65,7 +68,6 @@ run(FieldHandle input, FieldHandle& output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
-    algo_end();
     return (false);
   }
 
@@ -82,19 +84,23 @@ run(FieldHandle input, FieldHandle& output)
   fo.make_constantdata();
   
   // If input is nodata, output should be node data
-  if (fi.is_nodata()) fo.make_nodata();
+  if (fi.is_nodata()) 
+    fo.make_nodata();
+
+  //! Check whether we are extracting the element centers or the node centers
+  bool datalocation = get_option(Location) == "data";
   // If we extract locations of nodes (no data locations), constant data needs
   // to be voided as we cannot store it anywhere
-  if (!datalocation && fi.is_constantdata()) fo.make_nodata();
+  if (!datalocation && fi.is_constantdata()) 
+    fo.make_nodata();
   
   // Create the output field
   output = CreateField(fo);
   
   // If it fails return an error
-  if (output.get_rep() == 0)
+  if (!output)
   {
     error("Could not create output field");
-    algo_end();
     return (false);
   }
 
@@ -103,13 +109,12 @@ run(FieldHandle input, FieldHandle& output)
   VMesh*  imesh =  input->vmesh();  
   VField* ofield = output->vfield();
   VMesh*  omesh =  output->vmesh();
-  
+
   if (ifield->basis_order() == 0)
   {
     if (!datalocation)
     {
       error( "Asking for node based point cloud with element data. Must put element data to the nodes first.");
-      algo_end();
       return (false);
     }
 
@@ -140,7 +145,6 @@ run(FieldHandle input, FieldHandle& output)
       imesh->get_point(pnt,p);
       omesh->add_point(pnt);
     }
-      
   }
 
   // Copy the data values
@@ -148,12 +152,21 @@ run(FieldHandle input, FieldHandle& output)
   ofield->copy_values(ifield);        
 
   //! Copy properties of the property manager
-  output->copy_properties(input.get_rep());
+  CopyProperties(*input, *output);
 
   // Success
-  algo_end();  
   return (true);
 }
 
-} // End namespace SCIRunAlgo
+AlgorithmOutput ConvertMeshToPointCloudMeshAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto inputField = input.get<Field>(Variables::InputField);
 
+  FieldHandle outputField;
+  if (!runImpl(inputField, outputField))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output[Variables::OutputField] = outputField;
+  return output;
+}

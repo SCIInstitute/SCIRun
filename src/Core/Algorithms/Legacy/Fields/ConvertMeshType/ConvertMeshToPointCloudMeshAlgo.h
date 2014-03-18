@@ -46,6 +46,8 @@ class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
 
     bool runImpl(FieldHandle input, FieldHandle& output) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static AlgorithmParameterName Location;
 };
 
       }}}}
