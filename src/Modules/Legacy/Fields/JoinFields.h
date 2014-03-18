@@ -51,6 +51,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, OutputField, LegacyField);
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+        static Core::Algorithms::AlgorithmParameterName ForcePointCloud;
       };
 
     }

@@ -36,6 +36,7 @@
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 
@@ -45,6 +46,7 @@ using namespace SCIRun::Dataflow::Networks;
   //  SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo calgo_;
 
 ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
+AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
 
 JoinFields::JoinFields() : Module(staticInfo_)
 {
@@ -59,7 +61,7 @@ void JoinFields::setStateDefaults()
   setStateBoolFromAlgo(JoinFieldsAlgo::MatchNodeValues);
   setStateBoolFromAlgo(JoinFieldsAlgo::MakeNoData);
   setStateDoubleFromAlgo(JoinFieldsAlgo::Tolerance);
-  //guiforcepointcloud_(get_ctx()->subVar("force-pointcloud"),0),
+  get_state()->setValue(ForcePointCloud, false);
 }
 
 void JoinFields::execute()
@@ -77,7 +79,7 @@ void JoinFields::execute()
     double tolerance = 0.0;
     bool   mergenodes = false;
     bool   mergeelems = false;
-    bool   forcepointcloud = false;
+    bool   forcepointcloud = get_state()->getValue(ForcePointCloud).getBool();
     bool   matchval = false;
     bool   meshonly = false;
     
@@ -86,22 +88,17 @@ void JoinFields::execute()
     setAlgoBoolFromState(JoinFieldsAlgo::MergeNodes);
     setAlgoBoolFromState(JoinFieldsAlgo::MakeNoData);
     setAlgoDoubleFromState(JoinFieldsAlgo::Tolerance);
-
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-    if (guiforcepointcloud_.get()) 
-      forcepointcloud = true;
-#endif
         
     auto output = algo().run_generic(make_input((InputFields, fields)));
     auto outputField = output.get<Field>(Core::Algorithms::AlgorithmParameterName(OutputField));
 
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
     if (forcepointcloud)
     {
+#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
       if(!(calgo_.run(output,output))) 
         return;
-    }
 #endif
+    }
 
     sendOutput(OutputField, outputField);
   }
