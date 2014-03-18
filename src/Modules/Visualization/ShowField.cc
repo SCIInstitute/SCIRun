@@ -296,17 +296,17 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
                                        shaderToUse, spire::Interface::TRIANGLES);
 
-      // Add common uniforms.
-      pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, 1.0f));
-
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
       float transparency    = 1.0f;
-      if (faceTransparency) transparency = 0.2f;
+      if (faceTransparency) transparency = 0.1f;
+
+      // Add common uniforms.
+      pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, transparency));
 
       if (!colorMap)
         pass.addUniform("uDiffuseColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
 
-      pass.addUniform("uSpecularColor", spire::V4(1.0f, 1.0f, 1.0f, 1.0f));
+      pass.addUniform("uSpecularColor", spire::V4(1.0f, 1.0f, 1.0f, transparency));
       pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
     }
