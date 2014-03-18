@@ -29,21 +29,15 @@
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
-#endif
 
 using namespace SCIRun;
 using namespace SCIRun::Modules::Fields;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
-
-  //private:
-  //  GuiInt    guiforcepointcloud_;
-  //  
-  //  SCIRunAlgo::ConvertMeshToPointCloudMeshAlgo calgo_;
 
 ModuleLookupInfo JoinFields::staticInfo_("JoinFields", "NewField", "SCIRun");
 AlgorithmParameterName JoinFields::ForcePointCloud("ForcePointCloud");
@@ -94,10 +88,8 @@ void JoinFields::execute()
 
     if (forcepointcloud)
     {
-#ifdef SCIRUN4_ESSENTIAL_CODE_TO_BE_PORTED
-      if(!(calgo_.run(output,output))) 
-        return;
-#endif
+      ConvertMeshToPointCloudMeshAlgo calgo;
+      calgo.runImpl(outputField, outputField);
     }
 
     sendOutput(OutputField, outputField);

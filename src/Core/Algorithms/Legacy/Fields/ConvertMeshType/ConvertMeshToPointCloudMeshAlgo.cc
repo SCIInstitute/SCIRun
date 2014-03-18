@@ -29,6 +29,13 @@
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToPointCloudMesh.h>
 #include <Core/Datatypes/FieldInformation.h>
 
+ConvertMeshToPointCloudMeshAlgo::ConvertMeshToPointCloudMeshAlgo()
+{
+  //! Do we want to get the location of the data nodes
+  //! or the location of the nodes
+  add_option("location","node","node|data");
+}
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;
