@@ -41,7 +41,7 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::TestUtils;
 
-TEST(SetConductivitiesToTetMeshAlgorithm, Foo)
+TEST(SetConductivitiesToTetMeshAlgorithm, DISABLED_Foo)
 {
   SetConductivitiesToTetMeshAlgorithm algo;
   FAIL() << "Insert code here for the most basic test cases !"; 
