@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Core/Logging/Log.h>
@@ -47,7 +47,7 @@ using ::testing::NotNull;
 using ::testing::TestWithParam;
 using ::testing::Values; 
 
-class JoinFieldsAlgoTests : public ::testing::Test
+class ConvertMeshToPointCloudMeshAlgoTests : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -57,17 +57,13 @@ protected:
 };
 
 // parameters:
-// MergeNodes = Bool()
-// MergeElems = Bool()
-// MatchNodeValues = Bool()
-// MakeNoData = Bool()
-// Tolerance = Values(1e-1, 1e-3, ...)
+// Location = "node"|"data"
 
-TEST_F(JoinFieldsAlgoTests, CanLogErrorMessage)
+TEST_F(ConvertMeshToPointCloudMeshAlgoTests, CanLogErrorMessage)
 {
-  JoinFieldsAlgo algo;
+  ConvertMeshToPointCloudMeshAlgo algo;
 
-  FieldList input;
+  FieldHandle input;
   FieldHandle output;
 
   EXPECT_FALSE(algo.runImpl(input, output));
