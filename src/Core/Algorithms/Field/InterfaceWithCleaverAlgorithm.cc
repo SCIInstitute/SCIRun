@@ -26,7 +26,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
 Author            : Moritz Dannhauer
-Last modification : March 9 2014
+Last modification : March 16 2014
 */
 
 //TODO: fix include path to remove Externals/ part
@@ -56,9 +56,8 @@ using namespace SCIRun;
 using namespace SCIRun::Core;
 using namespace SCIRun::Core::Logging;
 
-const AlgorithmInputName InterfaceWithCleaverAlgorithm::InputField1("InputField1");
-const AlgorithmInputName InterfaceWithCleaverAlgorithm::InputField2("InputField2");
-const AlgorithmOutputName InterfaceWithCleaverAlgorithm::OutputField("OutputField");
+AlgorithmInputName InterfaceWithCleaverAlgorithm::InputFields("InputFields");
+AlgorithmOutputName InterfaceWithCleaverAlgorithm::OutputField("OutputField");
 AlgorithmParameterName InterfaceWithCleaverAlgorithm::VerboseCheckBox("VerboseCheckBox");
 AlgorithmParameterName InterfaceWithCleaverAlgorithm::PaddingCheckBox("PaddingCheckBox");
 AlgorithmParameterName InterfaceWithCleaverAlgorithm::AbsoluteVolumeScalingRadioButton("AbsoluteVolumeScalingRadioButton");
@@ -84,10 +83,146 @@ InterfaceWithCleaverAlgorithm::InterfaceWithCleaverAlgorithm()
 }
 
 
-FieldHandle InterfaceWithCleaverAlgorithm::run(FieldHandle field1, FieldHandle field2) const
+FieldHandle InterfaceWithCleaverAlgorithm::run(const std::vector<FieldHandle>& input) const
 {
   FieldHandle output;
-  VMesh*  imesh1   = field1->vmesh();
+   
+  std::vector<FieldHandle> inputs;
+  std::copy_if(input.begin(), input.end(), std::back_inserter(inputs), [](FieldHandle f) { return f; });
+
+  if (inputs.empty())
+  {
+    THROW_ALGORITHM_INPUT_ERROR(" No input fields given ");
+    return FieldHandle();
+  }
+  if (inputs.size()<2)
+  {
+      THROW_ALGORITHM_INPUT_ERROR(" At least 2 indicator functions stored as float values are needed to run cleaver! " );
+      return FieldHandle();
+  }
+  
+  std::vector<boost::shared_ptr<Cleaver::ScalarField>> fields;  
+  VMesh::dimension_type dims; int x=0,y=0,z=0; 
+  for (size_t p=1; p<inputs.size(); p++)
+  {
+    VMesh*  imesh1   = inputs[p]->vmesh();
+    
+    if( !imesh1->is_structuredmesh() )
+    {
+     THROW_ALGORITHM_INPUT_ERROR("needs to be structured mesh!");    
+    } else
+    {
+     VField* vfield1 = inputs[p]->vfield();
+     if (!vfield1->is_scalar())
+     {
+      THROW_ALGORITHM_INPUT_ERROR("values at the node needs to be scalar!");
+      return FieldHandle();
+     }
+
+     imesh1->get_dimensions( dims ); 
+     if (p==1)
+     {
+       x=dims[0]; y=dims[1]; z=dims[2];
+       if (x<1 || y<1 || z<1)
+       {
+        THROW_ALGORITHM_INPUT_ERROR(" Size of input fields should be non-zero !");
+       }
+     } else
+     {
+       if ( dims[0]!=x || dims[1]!=y || dims[2]!=z)
+       {
+         THROW_ALGORITHM_INPUT_ERROR(" Size of input fields is inconsistent !");
+       }
+     }
+     
+     if (dims.size()!=3)
+     {
+       THROW_ALGORITHM_INPUT_ERROR("need a three dimensional indicator function");
+       return FieldHandle();
+     }    
+
+     if (vfield1->is_float())
+     {
+      float* ptr = static_cast<float*>(vfield1->fdata_pointer());
+      if (ptr)
+      {
+        fields.push_back(boost::make_shared<Cleaver::FloatField>(dims[0], dims[1], dims[2], ptr)); 
+      } else
+      {
+        THROW_ALGORITHM_INPUT_ERROR(" float field is NULL pointer");
+        return FieldHandle();
+      }
+     }
+
+    }
+    
+  }
+  
+  boost::shared_ptr<Cleaver::Volume> volume(new Cleaver::Volume(toVectorOfRawPointers(fields)));
+
+  if ( get(VolumeScalingSpinBox_X).getDouble()>0 && get(VolumeScalingSpinBox_Y).getDouble()>0 && get(VolumeScalingSpinBox_Z).getDouble()>0 )
+  {
+    if (get(AbsoluteVolumeScalingRadioButton).getBool()) 
+        volume->setSize(get(VolumeScalingSpinBox_X).getDouble(),get(VolumeScalingSpinBox_Y).getDouble(),get(VolumeScalingSpinBox_Z).getDouble());
+      else
+	if (get(RelativeVolumeScalingRadioButton).getBool())
+	  volume->setSize(get(VolumeScalingSpinBox_X).getDouble()*volume->size().x, get(VolumeScalingSpinBox_Y).getDouble()*volume->size().y, get(VolumeScalingSpinBox_Z).getDouble()*volume->size().z);
+        else
+	 volume->setSize(dims[0],dims[1],dims[2]);
+   }
+    else
+    {
+      volume->setSize(dims[0],dims[1],dims[2]);
+      THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
+    }
+   
+    //boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).getBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).getBool()));    
+    //PADDING IS ALWAYS ON SINCE THERE IS EXIT CALLS IN THE CLEAVER LIB !!!!      
+    boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get(), get(VerboseCheckBox).getBool())); 
+    
+    FieldInformation fi("TetVolMesh",0,"double");   //create output field
+
+    output = CreateField(fi);
+    auto omesh = output->vmesh();
+    auto ofield = output->vfield();
+
+    auto nr_of_tets  = mesh->tets.size();
+    auto nr_of_verts = mesh->verts.size();
+
+    omesh->node_reserve(nr_of_verts);
+    omesh->elem_reserve(nr_of_tets);
+
+    for (auto i=0; i<nr_of_verts; i++)
+    {
+      omesh->add_point(Point(mesh->verts[i]->pos().x,mesh->verts[i]->pos().y,mesh->verts[i]->pos().z));
+    }
+
+    VMesh::Node::array_type vdata;
+    vdata.resize(4);
+    std::vector<double> values(nr_of_tets);
+
+    for (auto i=0; i<nr_of_tets; i++)
+    {    
+      vdata[0]=mesh->tets[i]->verts[0]->tm_v_index;
+      vdata[1]=mesh->tets[i]->verts[1]->tm_v_index;
+      vdata[2]=mesh->tets[i]->verts[2]->tm_v_index;
+      vdata[3]=mesh->tets[i]->verts[3]->tm_v_index;
+      omesh->add_elem(vdata);
+      auto mat_label = mesh->tets[i]->mat_label+1;
+      values[i]=mat_label;
+    }
+    ofield->resize_values();
+    ofield->set_values(values);
+    mesh->computeAngles();
+    std::ostringstream ostr1,ostr2,ostr3,ostr4,ostr5;
+    ostr1 << "Number of tetrahedral elements:" << ofield->vmesh()->num_elems();
+    ostr2 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes();
+    ostr3 << "Worst Angle (min):" <<  mesh->min_angle;
+    ostr4 << "Worst Angle (max):" <<  mesh->max_angle;
+    ostr5 << "Volume:" << volume->size().toString();
+    remark(ostr1.str()); remark(ostr2.str()); remark(ostr3.str()); remark(ostr4.str()); remark(ostr5.str());
+
+/*  VMesh*  imesh1   = field1->vmesh();
   VMesh*  imesh2   = field2->vmesh();
   
   if( !imesh1->is_structuredmesh() ||  !imesh2->is_structuredmesh() )
@@ -167,8 +302,7 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(FieldHandle field1, FieldHandle f
       THROW_ALGORITHM_INPUT_ERROR(" Invalid Scaling. Use Input sizes.");
     }
     
-    //boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(get(PaddingCheckBox).getBool() ?  ((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get() : volume.get(), get(VerboseCheckBox).getBool()));    
-    //PADDING IS ALWAYS ON SINCE THERE IS EXIT CALLS IN THE CLEAVER LIB !!!!      
+     //PADDING IS ALWAYS ON SINCE THERE IS EXIT CALLS IN THE CLEAVER LIB !!!!      
     boost::scoped_ptr<Cleaver::TetMesh> mesh(Cleaver::createMeshFromVolume(((boost::shared_ptr<Cleaver::AbstractVolume>) new Cleaver::PaddedVolume(volume.get())).get(), get(VerboseCheckBox).getBool())); 
     
     FieldInformation fi("TetVolMesh",0,"double");   //create output field
@@ -207,25 +341,23 @@ FieldHandle InterfaceWithCleaverAlgorithm::run(FieldHandle field1, FieldHandle f
     mesh->computeAngles();
     std::ostringstream ostr1,ostr2,ostr3,ostr4,ostr5;
     ostr1 << "Number of tetrahedral elements:" << ofield->vmesh()->num_elems();
-    ostr3 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes();
+    ostr2 << "Number of tetrahedral nodes:" << ofield->vmesh()->num_nodes();
     ostr3 << "Worst Angle (min):" <<  mesh->min_angle;
     ostr4 << "Worst Angle (max):" <<  mesh->max_angle;
     ostr5 << "Volume:" << volume->size().toString();
     remark(ostr1.str()); remark(ostr2.str()); remark(ostr3.str()); remark(ostr4.str()); remark(ostr5.str());
   }
- 
+ */
   return output;
 }
 
 AlgorithmOutput InterfaceWithCleaverAlgorithm::run_generic(const AlgorithmInput& input) const
-{
-  auto field1 = input.get<Field>(InputField1);
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(field1, "field1 is not ready");
-  auto field2 = input.get<Field>(InputField2);
-  ENSURE_ALGORITHM_INPUT_NOT_NULL(field2, "field2 is not ready");
-
+{ 
+  auto inputFields = input.getList<Field>(InputFields);
+  //ENSURE_ALGORITHM_INPUT_NOT_NULL(inputFields, "inputFields is not ready");
+  
   FieldHandle output_fld;
-  output_fld=run(field1,field2); 
+  output_fld=run(inputFields); 
   if ( !output_fld ) THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
 
   AlgorithmOutput output;

@@ -28,7 +28,6 @@
 
 #ifndef MODULES_FIELDS_InterfaceWithCleaver_H
 #define MODULES_FIELDS_InterfaceWithCleaver_H
-
 #include <Dataflow/Network/Module.h>
 #include <Modules/Fields/share.h>
 
@@ -37,21 +36,18 @@ namespace Modules {
 namespace Fields {
   
   class SCISHARE InterfaceWithCleaverModule : public SCIRun::Dataflow::Networks::Module,
-    public Has2InputPorts<FieldPortTag,FieldPortTag>,
+    public Has1InputPort<DynamicPortTag<FieldPortTag>>,
     public Has1OutputPort<FieldPortTag>
   {
   public:
     InterfaceWithCleaverModule();
     virtual void execute();
     virtual void setStateDefaults();
-    INPUT_PORT(0, InputField1, LegacyField);
-    INPUT_PORT(1, InputField2, LegacyField);
+    virtual bool hasDynamicPorts() const override { return true; }
+    INPUT_PORT_DYNAMIC(0, InputFields, LegacyField);
     OUTPUT_PORT(0, OutputField, LegacyField);
- /*   OUTPUT_PORT(1, NumNodes, Int32);
-    OUTPUT_PORT(2, NumElements, Int32);
-    OUTPUT_PORT(3, NumData, Int32);
-    OUTPUT_PORT(4, DataMin, Double);
-    OUTPUT_PORT(5, DataMax, Double);*/
+    
+    static Dataflow::Networks::ModuleLookupInfo staticInfo_;
   };
 }}}
 

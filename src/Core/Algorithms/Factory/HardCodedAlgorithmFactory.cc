@@ -36,6 +36,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
@@ -125,11 +126,12 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new BuildFEMatrixAlgo);
   else if (moduleName == "GetDomainBoundary")
     h.reset(new GetDomainBoundaryAlgo);
-  else if (name == "InterfaceWithCleaver")
+  else if (moduleName == "InterfaceWithCleaver")
     h.reset(new InterfaceWithCleaverAlgorithm);      
-  else if (name == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+  else if (moduleName == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new GetMeshDataAlgo);
-       
+  else if (moduleName == "SetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+    h.reset(new SetFieldDataAlgo);    
   else if (moduleName == "JoinFields")
     h.reset(new JoinFieldsAlgo);
     

@@ -60,6 +60,8 @@
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
+#include <Modules/Legacy/Fields/GetFieldData.h>
+#include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
@@ -176,6 +178,8 @@ namespace SCIRun {
           addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
           addModuleDesc<GetFieldData>("GetFieldData", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
+	  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeMesh", "SCIRun", "Real ported module", "...");
+    
 	}
 
         ModuleDescriptionMap descMap_;

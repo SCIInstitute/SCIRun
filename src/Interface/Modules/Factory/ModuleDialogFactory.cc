@@ -47,6 +47,7 @@
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
+#include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
@@ -124,6 +125,10 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
   if (moduleId.find("JoinFields") != std::string::npos)
     return new JoinFieldsDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SetFieldData") != std::string::npos)
+    return new SetFieldDataDialog(moduleId, state, parentToUse_);   
+  if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
+    return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);        
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

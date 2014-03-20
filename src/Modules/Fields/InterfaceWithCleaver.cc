@@ -38,10 +38,11 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms::Fields;
 
-InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(ModuleLookupInfo("InterfaceWithCleaver", "NewField", "SCIRun"))
+ModuleLookupInfo InterfaceWithCleaverModule::staticInfo_("InterfaceWithCleaver", "NewField", "SCIRun");
+
+InterfaceWithCleaverModule::InterfaceWithCleaverModule() : Module(staticInfo_)
 {
-    INITIALIZE_PORT(InputField1);
-    INITIALIZE_PORT(InputField2);
+    INITIALIZE_PORT(InputFields);
     INITIALIZE_PORT(OutputField);
 }
 
@@ -59,8 +60,7 @@ void InterfaceWithCleaverModule::setStateDefaults()
 
 void InterfaceWithCleaverModule::execute()
 {
-  auto field1 = getRequiredInput(InputField1);
-  auto field2 = getRequiredInput(InputField2);
+  auto fields = getRequiredDynamicInputs(InputFields);
 
   auto state = get_state();
   
@@ -74,7 +74,8 @@ void InterfaceWithCleaverModule::execute()
 
   algo().set(InterfaceWithCleaverAlgorithm::PaddingCheckBox, true);
 
-  auto output = algo().run_generic(make_input((InputField1, field1)(InputField2, field2)));
+  auto output = algo().run_generic(make_input((InputFields, fields)));
+  //auto output = algo().run_generic(make_input((InputField1, field1)(InputField2, field2)));
   
   sendOutputFromAlgorithm(OutputField,output);
 }

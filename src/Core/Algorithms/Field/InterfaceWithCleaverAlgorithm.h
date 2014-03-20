@@ -45,9 +45,9 @@ namespace Fields {
   {
   public:
     InterfaceWithCleaverAlgorithm();  
-    static const AlgorithmInputName InputField1;
-    static const AlgorithmInputName InputField2;
-    static const AlgorithmOutputName OutputField;
+
+    static AlgorithmInputName InputFields;
+    static AlgorithmOutputName OutputField;
     static AlgorithmParameterName VerboseCheckBox;
     static AlgorithmParameterName PaddingCheckBox;
     static AlgorithmParameterName AbsoluteVolumeScalingRadioButton;
@@ -56,8 +56,8 @@ namespace Fields {
     static AlgorithmParameterName VolumeScalingSpinBox_Y;
     static AlgorithmParameterName VolumeScalingSpinBox_Z;
     
-    FieldHandle run(FieldHandle field1, FieldHandle field2) const;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
+    FieldHandle run(const FieldList& input) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const override;
   };
 
 }}}}

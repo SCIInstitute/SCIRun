@@ -27,16 +27,21 @@
 */
 
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Algorithms/Fields/FieldData/SetFieldData.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
+//#include <Core/Datatypes/MatrixTypeConverter.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 
-namespace SCIRunAlgo {
+//namespace SCIRunAlgo {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
 
-template <class T>
+/*template <class T>
 bool SetFieldDataV(AlgoBase *algo, FieldHandle output, 
                    NrrdDataHandle nrrd, std::string datatype)
 {
@@ -488,9 +493,42 @@ run(FieldHandle input, MatrixHandle data, FieldHandle& output)
 
   algo_end(); return (true);
 }
+*/
+
+SetFieldDataAlgo::SetFieldDataAlgo()
+{
+  addParameter(keepTypeCheckBox, false);
+}
 
 
-bool 
+DenseMatrixHandle SetFieldDataAlgo::run(FieldHandle& input_field, DenseMatrixHandle& input_matrix) const
+{
+  DenseMatrixHandle output;
+  
+  return output;
+}
+
+AlgorithmParameterName SetFieldDataAlgo::keepTypeCheckBox("keepTypeCheckBox");
+AlgorithmInputName SetFieldDataAlgo::InputField("InputField");
+AlgorithmInputName SetFieldDataAlgo::InputMatrix("InputMatrix");
+AlgorithmOutputName SetFieldDataAlgo::OutputMatrix("OutputMatrix");
+
+AlgorithmOutput SetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+{
+
+  auto input_field = input.get<Field>(InputField);
+  auto input_matrix = input.get<DenseMatrix>(InputMatrix);
+ 
+  DenseMatrixHandle output_matrix;
+  output_matrix = run(input_field,input_matrix);
+  
+  AlgorithmOutput output;
+  output[OutputMatrix] = output_matrix;
+
+  return output;
+}
+
+/* bool 
 SetFieldDataAlgo::
 run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
 {
@@ -747,8 +785,8 @@ run(FieldHandle input, NrrdDataHandle data, FieldHandle& output)
   }
 
   error("Nrrd datatype is not supported");
-  algo_end(); return (false);
+  algo_end(); return (false); 
 }
 
-} // namespace SCIRunAlgo
+} // namespace SCIRunAlgo */
 

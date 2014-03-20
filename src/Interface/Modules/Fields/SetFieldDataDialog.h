@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+   License for the specific language governing rights and limitations under
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,34 +26,33 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H
-#define CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H 1
+#ifndef INTERFACE_MODULES_SETFIELD_DATA_H
+#define INTERFACE_MODULES_SETFIELD_DATA_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include "Interface/Modules/Fields/ui_SetFieldDataDialog.h"
+#include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <Interface/Modules/Fields/share.h>
 
 namespace SCIRun {
-  namespace Core {
-    namespace Algorithms {
-      namespace Fields {
-
-class SCISHARE SetFieldDataAlgo : public AlgorithmBase
+namespace Gui {
+  
+class SCISHARE SetFieldDataDialog : public ModuleDialogGeneric, 
+  public Ui::SetFieldDataDialog
 {
-  public:
-    SetFieldDataAlgo();
-    
-    Datatypes::DenseMatrixHandle run(FieldHandle& input_field, Datatypes::DenseMatrixHandle& input_matrix) const; 
-   /* bool GetScalarFieldDataV( FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;
-    bool GetVectorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const; 
-    bool GetTensorFieldDataV(FieldHandle& input, Core::Datatypes::DenseMatrixHandle& output) const;*/ 
+	Q_OBJECT
+	
+public:
+  SetFieldDataDialog(const std::string& name, 
+    SCIRun::Dataflow::Networks::ModuleStateHandle state,
+    QWidget* parent = 0);
+  virtual void pull();
 
-    static AlgorithmInputName InputField;
-    static AlgorithmInputName InputMatrix;
-    static AlgorithmOutputName OutputMatrix;
-    static AlgorithmParameterName keepTypeCheckBox;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
+private Q_SLOTS:
+  void push();
+private:
 };
 
-}}}}
+}
+}
 
 #endif
