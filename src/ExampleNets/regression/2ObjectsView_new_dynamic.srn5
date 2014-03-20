@@ -408,7 +408,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:3</moduleId1_>
@@ -441,6 +441,18 @@
 					<id>0</id>
 				</port1_>
 				<moduleId2_>ViewScene:5</moduleId2_>
+				<port2_>
+					<name>GeneralGeom</name>
+					<id>0</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>ShowField:8</moduleId1_>
+				<port1_>
+					<name>SceneGraph</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ViewScene:7</moduleId2_>
 				<port2_>
 					<name>GeneralGeom</name>
 					<id>0</id>
