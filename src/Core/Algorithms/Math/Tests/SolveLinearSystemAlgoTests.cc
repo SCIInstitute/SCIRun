@@ -98,8 +98,8 @@ void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
   EXPECT_EQ(428931, solution->nrows());
   EXPECT_EQ(1, solution->ncols());
 
-  auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + method + ".mat");
-  auto scirun4solution = reader.run(solutionFile.string());
+  auto scirun4solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + method + ".mat");
+  auto scirun4solution = reader.run(scirun4solutionFile.string());
   ASSERT_TRUE(scirun4solution.get() != nullptr);
   DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
 

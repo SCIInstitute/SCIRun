@@ -52,9 +52,9 @@ ShowFieldDialog::ShowFieldDialog(const std::string& name, ModuleStateHandle stat
   connect(enableTransparencyNodesCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(enableTransparencyEdgesCheckBox_1, SIGNAL(stateChanged(int)), this, SLOT(push()));
   connect(enableTransparencyFacesCheckBox_2, SIGNAL(stateChanged(int)), this, SLOT(push()));
+  connect(invertNormalsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(push()));
   buttonBox->setVisible(false);
   connect(defaultMeshColorButton_, SIGNAL(clicked()), this, SLOT(assignDefaultMeshColor()));
-  pushColor();
 }
 
 void ShowFieldDialog::push()
@@ -68,6 +68,7 @@ void ShowFieldDialog::push()
     state_->setValue(ShowFieldModule::NodeTransparency, enableTransparencyNodesCheckBox_->isChecked());
     state_->setValue(ShowFieldModule::EdgeTransparency, enableTransparencyEdgesCheckBox_1->isChecked());
     state_->setValue(ShowFieldModule::FaceTransparency, enableTransparencyFacesCheckBox_2->isChecked());
+    state_->setValue(ShowFieldModule::FaceInvertNormals, invertNormalsCheckBox->isChecked());
     pushColor();
   }
 }
@@ -81,6 +82,9 @@ void ShowFieldDialog::pull()
   enableTransparencyNodesCheckBox_->setChecked(state_->getValue(ShowFieldModule::NodeTransparency).getBool());
   enableTransparencyEdgesCheckBox_1->setChecked(state_->getValue(ShowFieldModule::EdgeTransparency).getBool());
   enableTransparencyFacesCheckBox_2->setChecked(state_->getValue(ShowFieldModule::FaceTransparency).getBool());
+  invertNormalsCheckBox->setChecked(state_->getValue(ShowFieldModule::FaceInvertNormals).getBool());
+  ColorRGB color(state_->getValue(ShowFieldModule::DefaultMeshColor).getString());
+  defaultMeshColor_ = QColor(color.r(), color.g(), color.b());
 }
 
 void ShowFieldDialog::assignDefaultMeshColor()
@@ -95,5 +99,5 @@ void ShowFieldDialog::assignDefaultMeshColor()
 
 void ShowFieldDialog::pushColor()
 {
-  state_->setTransientValue(ShowFieldModule::DefaultMeshColor.name_, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()));
+  state_->setValue(ShowFieldModule::DefaultMeshColor, ColorRGB(defaultMeshColor_.red(), defaultMeshColor_.green(), defaultMeshColor_.blue()).toString());
 }

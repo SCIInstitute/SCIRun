@@ -227,6 +227,12 @@ void Network::setModuleExecutionState(ModuleInterface::ExecutionState state)
     module->setExecutionState(state);
 }
 
+void Network::clear()
+{
+  connections_.clear();
+  modules_.clear();
+}
+
 ConnectionOutputPort::ConnectionOutputPort(ModuleHandle m, size_t index) : ModulePortIdPair(m, m->outputPorts().at(index)->id())
 {
 }

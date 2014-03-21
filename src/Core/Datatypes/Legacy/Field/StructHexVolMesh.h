@@ -73,8 +73,8 @@ template <class Basis>
 class StructHexVolMesh;
 
 //! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behaviour will allow
-//! for dynamically compiling the interfae if needed.
+//! returns no virtual interface. Altering this behavior will allow
+//! for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVStructHexVolMesh(MESH* mesh) { return (0); }
 
@@ -109,7 +109,7 @@ public:
   StructHexVolMesh();
   StructHexVolMesh(size_type i, size_type j, size_type k);
   StructHexVolMesh(const StructHexVolMesh<Basis> &copy);
-  virtual StructHexVolMesh *clone() { return new StructHexVolMesh<Basis>(*this); }
+  virtual StructHexVolMesh *clone() const { return new StructHexVolMesh<Basis>(*this); }
   virtual ~StructHexVolMesh() 
   {
     DEBUG_DESTRUCTOR("StructHexVolMesh")     

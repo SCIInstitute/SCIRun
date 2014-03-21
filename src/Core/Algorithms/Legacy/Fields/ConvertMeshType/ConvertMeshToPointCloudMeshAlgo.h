@@ -27,37 +27,30 @@
 */
 
 
-#ifndef CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H
-#define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
+#ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H
+#define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H 1
 
-#include <Core/Datatypes/Field.h>
-#include <vector>
+#include <Core/Algorithms/Base/AlgorithmBase.h>
+//! for Windows support
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-namespace SCIRunAlgo {
-
-class SCISHARE JoinFieldsAlgo : public AlgoBase
+class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
 {
   public:
-    // Algorithm defaults
-    JoinFieldsAlgo()
-    {
-      //! Merge duplicate nodes?
-      add_bool("merge_nodes",true);
-      //! Merge duplicate elements?
-      add_bool("merge_elems",false);
-      //! Tolerance for merging duplicate nodes?
-      add_scalar("tolerance",1e-6);
-      //! Only merge nodes whose value is the same
-      add_bool("match_node_values",false);
-      //! Create a field with no data
-      add_bool("make_no_data",false);
-    }
-    bool run(std::vector<SCIRun::FieldHandle>& input, SCIRun::FieldHandle& output);   
+    ConvertMeshToPointCloudMeshAlgo();
+
+    bool runImpl(FieldHandle input, FieldHandle& output) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static AlgorithmParameterName Location;
 };
 
-}
+      }}}}
 
-#endif
+#endif 
+

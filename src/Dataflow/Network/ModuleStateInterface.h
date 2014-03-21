@@ -34,6 +34,7 @@
 #include <boost/signals2/signal.hpp>
 #include <boost/optional.hpp>
 #include <boost/any.hpp>
+#include <boost/atomic.hpp>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Dataflow/Network/NetworkFwd.h>
 #include <Dataflow/Network/share.h>
@@ -96,8 +97,19 @@ namespace Networks {
   T optional_any_cast_or_default(const boost::optional<boost::any>& x)
   {
     return x ? any_cast_or_default_<T>(*x) : T();
-
   }
+  
+  class SCISHARE StateChangeObserver
+  {
+  public:
+    StateChangeObserver();
+    void initStateObserver(ModuleStateInterface* state);
+    void stateChanged();
+    void resetStateChanged();
+    bool newStatePresent() const;
+  private:
+    boost::atomic<bool> stateChanged_;
+  };
 
 }}}
 

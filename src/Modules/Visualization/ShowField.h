@@ -39,7 +39,7 @@ namespace Modules {
 namespace Visualization {
 
   class SCISHARE ShowFieldModule : public SCIRun::Dataflow::Networks::Module,
-    public Has1InputPort<FieldPortTag>,
+    public Has2InputPorts<FieldPortTag, ColorMapPortTag>,
     public Has1OutputPort<GeometryPortTag>
   {
   public:
@@ -52,9 +52,11 @@ namespace Visualization {
     static Core::Algorithms::AlgorithmParameterName NodeTransparency;
     static Core::Algorithms::AlgorithmParameterName EdgeTransparency;
     static Core::Algorithms::AlgorithmParameterName FaceTransparency;
+    static Core::Algorithms::AlgorithmParameterName FaceInvertNormals;
     static Core::Algorithms::AlgorithmParameterName DefaultMeshColor;
 
     INPUT_PORT(0, Field, LegacyField);
+    INPUT_PORT(1, ColorMapObject, ColorMap);
     OUTPUT_PORT(0, SceneGraph, GeometryObject);
   
     static Dataflow::Networks::ModuleLookupInfo staticInfo_;
@@ -68,6 +70,7 @@ namespace Visualization {
     /// \param id       Ends up becoming the name of the spire object.
     Core::Datatypes::GeometryHandle buildGeometryObject(
         boost::shared_ptr<SCIRun::Field> field,
+        boost::optional<boost::shared_ptr<SCIRun::Core::Datatypes::ColorMap>> colorMap,
         Dataflow::Networks::ModuleStateHandle state, const std::string& id);
 
 

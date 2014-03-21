@@ -27,6 +27,7 @@
 */
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
+#include <Core/Application/Preferences.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -35,7 +36,7 @@ using namespace SCIRun::Core::Datatypes;
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent)
+  : ModuleDialogGeneric(state, parent), shown_(false)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -61,6 +62,13 @@ ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle stat
   {
     /// \todo Display dialog.
     delete mGLWidget;
+  }
+
+  {
+    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    if (spire == nullptr)
+      return;
+    spire->setMouseMode(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? SRInterface::MOUSE_NEWSCIRUN : SRInterface::MOUSE_OLDSCIRUN);
   }
 }
 
@@ -92,11 +100,21 @@ void ViewSceneDialog::moduleExecuted()
     if (spire == nullptr)
       return;
 
+    std::vector<std::string> validObjects;
     for (auto it = geomData->begin(); it != geomData->end(); ++it)
     {
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
       spire->handleGeomObject(obj);
+      validObjects.push_back(obj->objectName);
     }
+    spire->gcInvalidObjects(validObjects);
+  }
+  else
+  {
+    std::shared_ptr<SRInterface> spire = mSpire.lock();
+    if (spire == nullptr)
+      return;
+    spire->removeAllGeomObjects();
   }
 }
 
@@ -108,13 +126,19 @@ void ViewSceneDialog::menuMouseControlChanged(int index)
     return;
 
   if (index == 0)
+  {
     spire->setMouseMode(SRInterface::MOUSE_OLDSCIRUN);
+    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = false;
+  }
   else
+  {
     spire->setMouseMode(SRInterface::MOUSE_NEWSCIRUN);
+    SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls = true;
+  }
 }
 
 //------------------------------------------------------------------------------
-void ViewSceneDialog::autoViewClicked(bool checked)
+void ViewSceneDialog::autoViewClicked()
 {
   std::shared_ptr<SRInterface> spireLock = mSpire.lock();
   spireLock->doAutoView();
@@ -136,10 +160,20 @@ void ViewSceneDialog::addToolBar()
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
   mToolBar->addWidget(autoViewBtn);
-  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked(bool)));
+  connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
 
   glLayout->addWidget(mToolBar);
 
   connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
+  menu->setCurrentIndex(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? 1 : 0);
 }
 
+void ViewSceneDialog::showEvent(QShowEvent *evt)
+{
+  ModuleDialogGeneric::showEvent(evt);
+  if (!shown_)
+  {
+    autoViewClicked();
+    shown_ = true;
+  }
+}

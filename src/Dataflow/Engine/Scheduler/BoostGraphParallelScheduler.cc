@@ -29,6 +29,7 @@
 #include <Dataflow/Engine/Scheduler/GraphNetworkAnalyzer.h>
 #include <Dataflow/Engine/Scheduler/BoostGraphParallelScheduler.h>
 #include <Dataflow/Network/NetworkInterface.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Dataflow::Engine;
 using namespace SCIRun::Dataflow::Networks;

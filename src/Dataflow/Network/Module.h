@@ -33,6 +33,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/atomic.hpp>
 #include <vector>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Datatypes/DatatypeFwd.h>
@@ -49,7 +50,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
   
-  class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, boost::noncopyable
+  class SCISHARE Module : public ModuleInterface, public Core::Logging::LegacyLoggerInterface, public StateChangeObserver, boost::noncopyable
   {
   public:
     Module(const ModuleLookupInfo& info, 
@@ -90,8 +91,8 @@ namespace Networks {
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
 
-    virtual ExecutionState executionState() const { return executionState_; }
-    virtual void setExecutionState(ExecutionState state) { executionState_ = state; }
+    virtual ExecutionState executionState() const;
+    virtual void setExecutionState(ExecutionState state);
 
   private:
     virtual SCIRun::Core::Datatypes::DatatypeHandleOption get_input_handle(const PortId& id);
@@ -116,10 +117,7 @@ namespace Networks {
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
 
-    virtual bool needToExecute() const  
-    {
-      return true; //TODO
-    }
+    virtual bool needToExecute() const;
 
     virtual bool hasDynamicPorts() const 
     {
@@ -228,8 +226,10 @@ namespace Networks {
 
     void setStateBoolFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setStateIntFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setStateDoubleFromAlgo(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoBoolFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
     void setAlgoIntFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
+    void setAlgoDoubleFromState(SCIRun::Core::Algorithms::AlgorithmParameterName name);
 
   private:
     template <class T>
@@ -239,6 +239,8 @@ namespace Networks {
     template <class T>
     boost::shared_ptr<T> checkInput(SCIRun::Core::Datatypes::DatatypeHandleOption inputOpt, const PortId& id);
 
+    boost::atomic<bool> inputsChanged_;
+    bool inputsChanged() const;
 
     friend class Builder;
     size_t add_input_port(InputPortHandle);
@@ -255,7 +257,7 @@ namespace Networks {
     ExecuteBeginsSignalType executeBegins_;
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
-    ExecutionState executionState_;
+    boost::atomic<ExecutionState> executionState_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;

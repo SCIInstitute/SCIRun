@@ -157,7 +157,7 @@ ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
 
 DatatypeHandle& AlgorithmData::operator[](const Name& name)
 {
-  return data_[name];
+  return boost::get<DatatypeHandle&>(data_[name]);
 }
 
 void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)

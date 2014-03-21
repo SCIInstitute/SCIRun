@@ -31,15 +31,17 @@
 #include <Interface/Application/PreferencesWindow.h>
 #include <Interface/Application/NetworkEditor.h>
 #include <Core/Application/Preferences.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 
 PreferencesWindow::PreferencesWindow(NetworkEditor* editor, QWidget* parent /* = 0 */) : QDialog(parent), networkEditor_(editor),
-  regressionMode_(false)
+  regressionMode_(false), saveBeforeExecute_(false)
 {
   setupUi(this);
   connect(regressionTestDataButton_, SIGNAL(clicked()), this, SLOT(updateRegressionTestDataDir()));
-  connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
+  //connect(moduleErrorDialogDisableCheckbox_, SIGNAL(stateChanged(int)), this, SLOT(updateModuleErrorDialogOption(int)));
+  connect(saveBeforeExecuteCheckBox_, SIGNAL(stateChanged(int)), this, SLOT(updateSaveBeforeExecuteOption(int)));
 }
 
 void PreferencesWindow::updateRegressionTestDataDir()
@@ -60,6 +62,23 @@ void PreferencesWindow::setRegressionTestDataDir()
 
 void PreferencesWindow::updateModuleErrorDialogOption(int state)
 {
-  SCIRun::Core::Preferences::Instance().moduleErrorDialogState = (state == 0);
-  //std::cout << "update module error: " << state << std::endl;
+  setDisableModuleErrorDialogs(SCIRun::Core::Preferences::Instance().moduleErrorDialogState = (state == 0));
+}
+
+void PreferencesWindow::updateSaveBeforeExecuteOption(int state)
+{
+  setSaveBeforeExecute(SCIRun::Core::Preferences::Instance().saveBeforeExecute = (state != 0));
+  LOG_DEBUG("saveBeforeExecute is " << (state != 0));
+}
+
+void PreferencesWindow::setSaveBeforeExecute(bool mode)
+{
+  saveBeforeExecute_ = mode;
+  saveBeforeExecuteCheckBox_->setChecked(mode);
+}
+
+void PreferencesWindow::setDisableModuleErrorDialogs(bool mode)
+{
+  disableModuleErrorDialogs_ = mode;
+  moduleErrorDialogDisableCheckbox_->setChecked(mode);
 }

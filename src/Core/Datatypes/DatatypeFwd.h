@@ -30,6 +30,7 @@
 #ifndef CORE_DATATYPES_DATATYPE_FWD_H
 #define CORE_DATATYPES_DATATYPE_FWD_H 
 
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/optional.hpp>
@@ -61,6 +62,7 @@ namespace Datatypes {
   class Mesh;
   typedef boost::shared_ptr<Field> FieldHandle;
   typedef boost::shared_ptr<Mesh> MeshHandle;
+  typedef std::vector<FieldHandle> FieldList;
 }
 
 
