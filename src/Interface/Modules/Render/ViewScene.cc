@@ -181,9 +181,23 @@ void ViewSceneDialog::addAutoViewButton()
   mToolBar->addSeparator();
 }
 
+class FixMacCheckBoxes : public QStyledItemDelegate
+{
+public:
+  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+  {
+    QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
+    refToNonConstOption.showDecorationSelected = false;
+    //refToNonConstOption.state &= ~QStyle::State_HasFocus & ~QStyle::State_MouseOver;
+
+    QStyledItemDelegate::paint(painter, refToNonConstOption, index);
+  }
+};
+
 void ViewSceneDialog::addObjectToggleMenu()
 {
   QComboBox* combo = new QComboBox();
+  combo->setItemDelegate(new FixMacCheckBoxes);
   combo->setModel(itemManager_->model());
   mToolBar->addWidget(combo);
   mToolBar->addSeparator();
