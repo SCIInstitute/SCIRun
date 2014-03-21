@@ -636,7 +636,7 @@ public:
   
   double get_size(typename Face::index_type idx) const
   {
-    // TODO: This code is incorrect need to create a better call in basis functions
+    // TODO @todo: This code is incorrect need to create a better call in basis functions
     // for doing this
     typename Node::array_type ra;
     get_nodes(ra,idx);
@@ -978,7 +978,7 @@ public:
                     result = point; 
                     node = INDEX(*it); 
                     dmin = dist; 
-                    //! If we are closer than eps^2 we found a node close enough
+                    /// If we are closer than eps^2 we found a node close enough
                     if (dmin < epsilon2_) 
                     {
                       pdist = sqrt(dmin);
@@ -1519,7 +1519,7 @@ public:
 				    const Core::Geometry::Point &p3, const Core::Geometry::Point &p4, const Core::Geometry::Point &p5,
 				    const Core::Geometry::Point &p6, const Core::Geometry::Point &p7);
   
-  //! must detach, if altering points!
+  /// must detach, if altering points!
   std::vector<Core::Geometry::Point>& get_points() { return points_; }
  
   int compute_checksum();
@@ -2060,7 +2060,7 @@ protected:
     }
   }
 
-  //! We should optimize this function more
+  /// We should optimize this function more
   template <class ARRAY,class INDEX>
   inline void get_node_neighbors(ARRAY &array, INDEX node) const
   {
@@ -2171,7 +2171,7 @@ protected:
     return (true); 
   }
 
-  /// TODO: Fix this function, needs to use search grid
+  /// TODO @todo: Fix this function, needs to use search grid
   template <class INDEX>
   bool locate_edge(INDEX &edge, const Core::Geometry::Point &p) const
   {
@@ -2201,7 +2201,7 @@ protected:
     return (found);
   }
 
-  /// TODO: Fix this function, needs to use search grid
+  /// TODO @todo: Fix this function, needs to use search grid
   template <class INDEX>
   bool locate_face(INDEX &face, const Core::Geometry::Point &p) const
   {
@@ -2231,7 +2231,7 @@ protected:
   template <class INDEX>
   bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
-    /// TODO: Generate bounding boxes for elements and integrate this into the
+    /// TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -2299,16 +2299,16 @@ protected:
   template <class INDEX, class ARRAY>
   bool locate_elem(INDEX &elem, ARRAY &coords, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    // TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p)) 
@@ -2476,7 +2476,7 @@ protected:
   };
 
   struct PFaceNode {
-    typename Node::index_type  nodes_[4];   //! 4 nodes makes a face.
+    typename Node::index_type  nodes_[4];   /// 4 nodes makes a face.
  
     PFaceNode() 
     {
@@ -3719,7 +3719,7 @@ template <class Basis>
 void
 HexVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
   const index_type idx = ci*8;
@@ -3759,7 +3759,7 @@ template <class Basis>
 void
 HexVolMesh<Basis>::insert_node_into_grid(typename Node::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

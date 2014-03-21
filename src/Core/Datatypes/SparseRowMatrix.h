@@ -47,7 +47,7 @@ namespace Datatypes {
     typedef Eigen::SparseMatrix<T, Eigen::RowMajor, index_type> EigenBase;
     typedef Eigen::Triplet<T> Triplet;
 
-    ///TODO: need C++11
+    ///TODO @todo @TODO @todo: need C++11
     //using Base::Base;
 
     SparseRowMatrixGeneric() : EigenBase() {}
@@ -108,13 +108,13 @@ namespace Datatypes {
       visitor.visit(*this);
     }
     
-    ///TODO: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
+    ///TODO @todo @TODO @todo: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
     bool isSymmetric() const
     {
      if (this->cols() != this->rows()) return false;
      return this->isApprox(this->transpose(),1e-16);
     }
-    ///TODO!
+    ///TODO @todo @TODO @todo!
 #if 0
     class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>
     {
@@ -235,9 +235,9 @@ namespace Datatypes {
     NonZeroIterator nonZerosEnd() { return NonZeroIterator(); }
 #endif
 
-    const MatrixBase<T>& castForPrinting() const { return *this; } //TODO: lame...figure out a better way
+    const MatrixBase<T>& castForPrinting() const { return *this; } //TODO @todo @TODO @todo: lame...figure out a better way
 
-    //! Persistent representation...
+    /// Persistent representation...
     virtual std::string dynamic_type_name() const { return type_id.type; }
     virtual void io(Piostream&);
     static PersistentTypeID type_id;

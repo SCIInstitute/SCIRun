@@ -183,7 +183,7 @@ SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<size_type>
 SCISHARE MeshHandle CreateMesh(mesh_info_type mesh, const std::vector<size_type>& x,const Core::Geometry::Point& min,const Core::Geometry::Point& max);
 
 
-//! General case locate, search each elem.
+/// General case locate, search each elem.
 template <class INDEX, class MESH>
 bool elem_locate(INDEX &elem,
      MESH &msh, const Core::Geometry::Point &p) 

@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #ifndef CORE_DATATYPES_SPARSEMATRIXFROMMAP_H
 #define CORE_DATATYPES_SPARSEMATRIXFROMMAP_H
 
@@ -42,7 +40,7 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      //TODO: refactor with some OO, please...
+      ///TODO @todo: refactor with some OO, please...
       class SCISHARE SparseRowMatrixFromMap
       {
       public:

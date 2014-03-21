@@ -30,8 +30,6 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-///TODO Documentation
-
 #ifndef CORE_GEOMETRY_VECTOR_H
 #define CORE_GEOMETRY_VECTOR_H 
 
@@ -45,7 +43,7 @@ namespace SCIRun {
 namespace Core {
 namespace Geometry {
 
-  //TODO: move to math header
+  ///TODO: @todo move to math header
   template <typename T>
   inline const T& Min(const T& t1, const T& t2, const T& t3)
   {

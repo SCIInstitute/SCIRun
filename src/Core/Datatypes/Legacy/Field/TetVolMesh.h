@@ -339,7 +339,7 @@ public:
         mesh_->synchronized_ |= sync_;
         // Unmark the the ones that were done
         mesh_->synchronizing_ &= ~(sync_);
-        //! Tell other threads we are done
+        /// Tell other threads we are done
         mesh_->synchronize_cond_.conditionBroadcast();
         mesh_->synchronize_lock_.unlock();
       }
@@ -1127,7 +1127,7 @@ public:
   }
 
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
                          Core::Geometry::Point &result, 
@@ -1139,7 +1139,7 @@ public:
   }
 
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double& pdist, 
                          Core::Geometry::Point &result, 
@@ -1152,10 +1152,10 @@ public:
 
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    //! Check whether the estimate given in idx is the point we are looking for    
+    /// Check whether the estimate given in idx is the point we are looking for    
     if ((elem > 0)&&(elem < sz))
     {
       if (inside(elem,p))
@@ -1475,7 +1475,7 @@ public:
 			   typename Elem::index_type ci,
 			   const Core::Geometry::Point &p);
 
-  //! must detach, if altering points!
+  /// must detach, if altering points!
   std::vector<Core::Geometry::Point>& get_points() { return points_; }
  
   int compute_checksum();
@@ -1909,7 +1909,7 @@ protected:
     }
   }
 
-  //! We should optimize this function more
+  /// We should optimize this function more
   template <class ARRAY, class INDEX>
   inline void get_node_neighbors(ARRAY &array, INDEX node) const
   {
@@ -2020,7 +2020,7 @@ protected:
     return (true); 
   }
 
-  // TODO: Fix this function, needs to use search grid
+  // TODO @todo: Fix this function, needs to use search grid
   template <class INDEX>
   inline bool locate_edge(INDEX &edge, const Core::Geometry::Point &p) const
   {
@@ -2050,7 +2050,7 @@ protected:
     return (found);
   }
 
-  // TODO: Fix this function, needs to use search grid
+  // TODO @todo: Fix this function, needs to use search grid
   template <class INDEX>
   inline bool locate_face(INDEX &face, const Core::Geometry::Point &p) const
   {
@@ -2080,7 +2080,7 @@ protected:
   template <class INDEX>
   inline bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    // TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -2148,7 +2148,7 @@ protected:
   template <class INDEX, class ARRAY>
   inline bool locate_elem(INDEX &elem, ARRAY& coords, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    // TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -2331,7 +2331,7 @@ protected:
   class PFaceNode {
     public:
     // The order of nodes_ corresponds with cells_[0] for CW/CCW purposes.
-    typename Node::index_type         nodes_[3];  //! 3 nodes makes a face.
+    typename Node::index_type         nodes_[3];  /// 3 nodes makes a face.
 
     PFaceNode() {
       nodes_[0] = MESH_NO_NEIGHBOR;
@@ -2451,7 +2451,7 @@ protected:
 
   class PEdgeCell {
     public:
-      //! list of all the cells this edge is in.
+      /// list of all the cells this edge is in.
       std::vector<index_type> cells_;
 
       bool shared() const { return cells_.size() > 1; }
@@ -3723,7 +3723,7 @@ template <class Basis>
 void
 TetVolMesh<Basis>::insert_elem_into_grid(typename Cell::index_type ci)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
   const index_type idx = ci*4;
@@ -3755,7 +3755,7 @@ template <class Basis>
 void
 TetVolMesh<Basis>::insert_node_into_grid(typename Node::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

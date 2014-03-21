@@ -150,7 +150,7 @@ public:
     Storage data_;
   };
 
-  //! Constructors
+  /// Constructors
   // Here's what the arguments for the constructor should be:
   //   r   = number of rows
   //   c   = number of columns
@@ -180,7 +180,7 @@ public:
   virtual SparseRowMatrixGeneric* clone() const;
   SparseRowMatrixGeneric& operator=(const SparseRowMatrixGeneric&);
 
-  //! Destructor
+  /// Destructor
   virtual ~SparseRowMatrixGeneric();
 
   virtual DenseMatrix *dense();
@@ -249,7 +249,7 @@ public:
 
   virtual void print(std::string&) const;
  
-  //! Persistent representation...
+  /// Persistent representation...
   virtual std::string dynamic_type_name() const { return type_id.type; }
   virtual void io(Piostream&);
   static PersistentTypeID type_id;
@@ -326,12 +326,12 @@ void
 SparseRowMatrixGeneric<T>::order_columns()
 {
 
-  //! This code should reorder the columns of a sparse matrix so they are
-  //! in ascending order. This code will purge duplicates as well by merging
-  //! them together.
+  /// This code should reorder the columns of a sparse matrix so they are
+  /// in ascending order. This code will purge duplicates as well by merging
+  /// them together.
 
-  //! Calculate the size of the buffer we need to reorder the data
-  //! This way we can use the stl sorting algorithm  
+  /// Calculate the size of the buffer we need to reorder the data
+  /// This way we can use the stl sorting algorithm  
   size_type max_num_cols = 0;
   for (index_type j = 0; j< this->nrows_; j++)
     if (rows_[j+1]-rows_[j] > max_num_cols)
@@ -345,7 +345,7 @@ SparseRowMatrixGeneric<T>::order_columns()
 
   index_type rr = rows_[0];
 
-  //! Sorting columns and removing duplicates
+  /// Sorting columns and removing duplicates
   for (index_type j = 0; j<this->nrows_; j++)
   {
     size_type num_cols = rows_[j+1]-rr;
@@ -809,7 +809,7 @@ SparseRowMatrixGeneric<T>::identity(size_type size)
   return new SparseRowMatrixGeneric(size, size, data, size);
 }
   
-// TODO: replace with for_each
+// TODO @todo: replace with for_each
 template <typename T>
 void 
 SparseRowMatrixGeneric<T>::scalar_multiply(T s)

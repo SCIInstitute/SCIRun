@@ -25,8 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
  
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 
@@ -47,7 +45,7 @@ namespace Datatypes {
     Datatype(const Datatype& other);
     Datatype& operator=(const Datatype& rhs);
 
-    //TODO
+    ///TODO @todo
     template <typename T>
     const T* as() const
     {

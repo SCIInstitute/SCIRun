@@ -26,8 +26,6 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
-
 #include <Core/Thread/ConditionVariable.h>
 
 using namespace SCIRun::Core::Thread;

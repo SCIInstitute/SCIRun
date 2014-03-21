@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #ifndef CORE_LOGGING_LOGGER_H
 #define CORE_LOGGING_LOGGER_H 
 

@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
+/**
  *TODO @todo Documentation Modules/Visualization/ CreateBasicColorMap.cc/.h,
  *  MatrixAsVectorField.cc/.h, MeshConstruction.h, ShowField.cc/.h,
  *  ShowString.cc/.h,

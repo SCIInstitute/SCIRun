@@ -57,7 +57,7 @@ namespace SCIRun {
 
 class TypeNameGenerator
 {
-  //TODO: callers of these can be compressed using macros.  worth it?
+///TODO @todo: callers of these can be compressed using macros.  worth it?
 public:
   static const std::string make_template_id(const std::string& templateName, const std::string& templateParam)
   {

@@ -56,7 +56,7 @@ namespace SCIRun {
 class SCISHARE Datatype : public Persistent, public UsedWithLockingHandle<RecursiveMutex>
 {
 public:
-  //! unique id for each instance
+  /// unique id for each instance
   int generation;
   Datatype();
   Datatype(const Datatype&);

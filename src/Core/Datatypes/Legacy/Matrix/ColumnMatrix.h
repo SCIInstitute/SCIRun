@@ -58,7 +58,7 @@ class ColumnMatrixGeneric : public Matrix<T> {
 public:
   explicit ColumnMatrixGeneric(size_type rows = 0);
   ColumnMatrixGeneric(const ColumnMatrixGeneric&);
-  //TODO in C++11--move ctors for all matrix types.
+  //TODO @todo in C++11--move ctors for all matrix types.
   //ColumnMatrixGeneric(ColumnMatrixGeneric&& move);
   ColumnMatrixGeneric& operator=(const ColumnMatrixGeneric&);
   virtual ColumnMatrixGeneric* clone() const;
@@ -77,7 +77,7 @@ public:
     ASSERTRANGE(r, 0, this->nrows_)
     return data_[r];
   }
-  //TODO: remove
+  //TODO @todo: remove
   void set_data(T* d) {data_ = d;} 
 
   T  get(index_type r) const      
@@ -412,7 +412,7 @@ void ColumnMatrixGeneric<T>::io(Piostream& stream)
 }
 
 
-// TODO: replace with for_each
+// TODO @todo: replace with for_each
 template <typename T>
 void 
 ColumnMatrixGeneric<T>::scalar_multiply(T s)

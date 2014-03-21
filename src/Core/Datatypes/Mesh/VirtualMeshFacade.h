@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #ifndef CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H
 #define CORE_DATATYPES_MESH_VIRTUALMESHFACADE_H 
 
@@ -46,7 +44,7 @@ namespace Datatypes {
     
     explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
-      //// TODO: necessary? interface to vmesh
+      /// TODO @todo: necessary? interface to vmesh
       //if (! vmesh->is_latvolmesh() 
       //  && ! vmesh->is_trisurfmesh() 
       //  && ! vmesh->is_tetvolmesh())
@@ -75,7 +73,7 @@ namespace Datatypes {
 
     virtual size_t numEdges() const
     {
-      //TODO: need to split out that Synchronize enum
+      ///TODO @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
       return vmesh_->num_edges();
     }

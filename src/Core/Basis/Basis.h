@@ -51,10 +51,10 @@ public:
   BasisSimple() {}
   virtual ~BasisSimple() {}
   
-  // TODO: exceptions being used to avoid virtual inheritance?
+  // TODO @todo: exceptions being used to avoid virtual inheritance?
   //
-  // TODO: SCIRun 5 porting note: ASSERTFAIL replaced by REPORT_NOT_IMPLEMENTED
-  // (should not need this in production code)
+  // TODO @todo: SCIRun 5 porting note: ASSERTFAIL replaced by 
+  // REPORT_NOT_IMPLEMENTED (should not need this in production code)
 
 
   /// get value at parametric coordinate 

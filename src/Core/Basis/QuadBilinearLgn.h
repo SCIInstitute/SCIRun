@@ -42,56 +42,56 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of QuadBilinearLgn 
+/// Class for describing unit geometry of QuadBilinearLgn 
 class QuadBilinearLgnUnitElement {
 public: 
-  //! Parametric coordinates of vertices of unit edge
+  /// Parametric coordinates of vertices of unit edge
   static SCISHARE double unit_vertices[4][2];
-  //! References to vertices of unit edge  
+  /// References to vertices of unit edge  
   static SCISHARE int unit_edges[4][2]; 
-  //! References to vertices of unit face 
+  /// References to vertices of unit face 
   static SCISHARE int unit_faces[1][4]; 
-  //! References to normal of unit face
+  /// References to normal of unit face
   static SCISHARE double unit_face_normals[1][3];
-  //! Center of the unit element
+  /// Center of the unit element
   static SCISHARE double unit_center[2];
 
   QuadBilinearLgnUnitElement() {}
   virtual ~QuadBilinearLgnUnitElement() {}
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension() 
     { return 2; }
   
-  //! return size of the domain
+  /// return size of the domain
   static double domain_size() 
     { return 1.0; }
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 4; }
   
-  //! return number of vertices in mesh
+  /// return number of vertices in mesh
   static int number_of_mesh_vertices() 
     { return 4; }
   
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 4; } 
 
-  //! return number of edges
+  /// return number of edges
   static int number_of_edges() 
     { return 4; }
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 4; }
   
-  //! return number of faces per cell 
+  /// return number of faces per cell 
   static int faces_of_cell() 
     { return 1; }
 
   static inline double length(int edge) 
-  { //!< return length
+  { ///< return length
     const double *v0 = unit_vertices[unit_edges[edge][0]];
     const double *v1 = unit_vertices[unit_edges[edge][1]];
     const double dx = v1[0] - v0[0];
@@ -99,20 +99,20 @@ public:
     return sqrt(dx*dx+dy*dy);
   } 
   
-  static double area(int /* face */) { return 1; } //!< return area
-  static double volume() { return 0.; } //!< return volume
+  static double area(int /* face */) { return 1; } ///< return area
+  static double volume() { return 0.; } ///< return volume
 };
 
 
-//! Class for creating geometrical approximations of Quad meshes
+/// Class for creating geometrical approximations of Quad meshes
 class QuadApprox {  
 public:
   QuadApprox() {}
   virtual ~QuadApprox() {}
    
-  //! Approximate edge for element by piecewise linear segments
-  //! return: coords gives parametric coordinates of the approximation.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate edge for element by piecewise linear segments
+  /// return: coords gives parametric coordinates of the approximation.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_edge(const unsigned edge, 
                    const unsigned div_per_unit, 
@@ -136,9 +136,9 @@ public:
     } 	      
   }
    
-  //! Approximate faces for element by piecewise linear elements
-  //! return: coords gives parametric coordinates at the approximation point.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate faces for element by piecewise linear elements
+  /// return: coords gives parametric coordinates at the approximation point.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_face(const unsigned /* face */, 
                    const unsigned div_per_unit, 
@@ -168,9 +168,9 @@ public:
   }
 };
  
-//! Class for searching of parametric coordinates related to a 
-//! value in Quad meshes and fields
-//! to do
+/// Class for searching of parametric coordinates related to a 
+/// value in Quad meshes and fields
+/// to do
 template <class ElemBasis>
 class QuadLocate : public Dim2Locate<ElemBasis> {
 public:
@@ -179,7 +179,7 @@ public:
   QuadLocate() {}
   virtual ~QuadLocate() {}
  
-  //! find value in interpolation for given value
+  /// find value in interpolation for given value
   template <class ElemData, class VECTOR>
   bool get_coords(const ElemBasis *pEB, VECTOR &coords, 
 		  const T& value, const ElemData &cd) const  
@@ -203,7 +203,7 @@ public:
   }
   
 protected:
-   //! find a reasonable initial guess 
+   /// find a reasonable initial guess 
   template <class ElemData, class VECTOR>
   void initial_guess(const ElemBasis *pElem, const T &val, const ElemData &cd, 
 		     VECTOR & guess) const
@@ -238,7 +238,7 @@ protected:
 };
 
 
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class QuadGaussian1
 {
@@ -259,7 +259,7 @@ template <class T>
 T QuadGaussian1<T>::GaussianWeights[1] = {1.0};
 
 
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class QuadGaussian2 
 {
@@ -282,7 +282,7 @@ T QuadGaussian2<T>::GaussianPoints[4][2] = {
 template <class T>
 T QuadGaussian2<T>::GaussianWeights[4] = {.25, .25, .25, .25};
 
-//! Class with weights and coordinates for 3rd order Gaussian integration
+/// Class with weights and coordinates for 3rd order Gaussian integration
 template <class T>
 class QuadGaussian3 
 {
@@ -310,8 +310,8 @@ T QuadGaussian3<T>::GaussianWeights[9] = {
 };
 
 
-//! Class for handling of element of type quad with 
-//! bilinear lagrangian interpolation
+/// Class for handling of element of type quad with 
+/// bilinear lagrangian interpolation
 template <class T>
 class QuadBilinearLgn : 
       public BasisSimple<T>, 
@@ -337,7 +337,7 @@ public:
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_linear_derivate_weights(coords,w); }
     
-  //! get value at parametric coordinate
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -351,7 +351,7 @@ public:
   }
 
 
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -374,7 +374,7 @@ public:
 	       w[7] * cd.node3());
   }  
 
-  //! get parametric coordinate for value within the element
+  /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const
@@ -383,21 +383,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }  
   
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc2d_length<CrvGaussian1<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned face, const ElemData &cd) const  
   {
     return get_area2<QuadGaussian2<double> >(this, face, cd);
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & /* cd */) const  
   {

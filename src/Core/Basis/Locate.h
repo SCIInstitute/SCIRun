@@ -67,7 +67,7 @@ namespace SCIRun {
   }
 
 
-    //! Inline templated inverse matrix
+    /// Inline templated inverse matrix
     template <class PointVector>
     double InverseMatrix3P(const PointVector& p, double *q) 
     {
@@ -115,7 +115,7 @@ namespace SCIRun {
   }
 
 
-    //! Inline templated determinant of matrix
+    /// Inline templated determinant of matrix
     template <class VectorOfPoints>
     double DetMatrix3P(const VectorOfPoints& p) 
     {
@@ -127,7 +127,7 @@ namespace SCIRun {
       return detp;
     }
 
-    //! Inline templated determinant of matrix
+    /// Inline templated determinant of matrix
     template <class VectorOfPoints>
     double ScaledDetMatrix3P(const VectorOfPoints& p) 
     {
@@ -143,14 +143,14 @@ namespace SCIRun {
     namespace Core {
       namespace Basis {
 
-  //! default case for volume calculation - currently not needed  
+  /// default case for volume calculation - currently not needed  
   template <class VECTOR, class T>
   inline double d_volume_type(const VECTOR& /*derivs*/, T* /*type*/)
   {
     return (0.0);
   }
 
-  //! Specific implementation for Point
+  /// Specific implementation for Point
   template<class VECTOR>
   inline double d_volume_type(const VECTOR& derivs, Geometry::Point* /*type*/)
   {
@@ -168,7 +168,7 @@ namespace SCIRun {
     return DetMatrix3x3(J);  
   }
 
-  //! calculate volume
+  /// calculate volume
   template <class VECTOR>
   inline double d_volume(const VECTOR& derivs)
   {
@@ -180,7 +180,7 @@ namespace SCIRun {
   {
     double volume=0.0;
   
-    //! impelementation that is pure on stack
+    /// impelementation that is pure on stack
     StackVector<double,3> coords;
     for(int i=0; i<ElemBasis::GaussianNum; i++) 
     {
@@ -195,7 +195,7 @@ namespace SCIRun {
     return volume*pEB->volume();
   }
  
-  //! area calculation on points
+  /// area calculation on points
   template <class VECTOR1, class VECTOR2>
     inline double d_area_type(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1, Geometry::Point* type)
   {
@@ -213,7 +213,7 @@ namespace SCIRun {
     return Cross(Jdv0, Jdv1).length();
   }
  
-  //! General template for any type of combination of containers
+  /// General template for any type of combination of containers
   template<class VECTOR1, class VECTOR2>
   inline double d_area(const VECTOR1& derivs, const VECTOR2& dv0, const VECTOR2& dv1)
   {
@@ -285,7 +285,7 @@ namespace SCIRun {
     return (area*pEB->area(face));
   }
  
-  //! arc length calculation on points
+  /// arc length calculation on points
    template <class VECTOR1, class VECTOR2>
   inline double d_arc_length(const VECTOR1& derivs, const VECTOR2& dv, Geometry::Point* type)
   {
@@ -534,27 +534,27 @@ namespace SCIRun {
   } 
  
 
-  //! Class for searching of parametric coordinates related to a 
-  //! value in 3d meshes and fields
-  //! More general function: find value in interpolation for given value
-  //! Step 1: get a good guess on the domain, evaluate equally spaced points 
-  //!         on the domain and use the closest as our starting point for 
-  //!         Newton iteration. (implemented in derived class)
-  //! Step 2: Newton iteration.
-  //!         x_n+1 =x_n + y(x_n) * y'(x_n)^-1       
+  /// Class for searching of parametric coordinates related to a 
+  /// value in 3d meshes and fields
+  /// More general function: find value in interpolation for given value
+  /// Step 1: get a good guess on the domain, evaluate equally spaced points 
+  ///         on the domain and use the closest as our starting point for 
+  ///         Newton iteration. (implemented in derived class)
+  /// Step 2: Newton iteration.
+  ///         x_n+1 =x_n + y(x_n) * y'(x_n)^-1       
 
   template <class ElemBasis>
   class Dim3Locate {
     public:
       typedef typename ElemBasis::value_type T;
-      static const double thresholdDist; //!< Thresholds for coordinates checks
-      static const double thresholdDist1; //!< 1+thresholdDist
-      static const int maxsteps; //!< maximal steps for Newton search
+      static const double thresholdDist; ///< Thresholds for coordinates checks
+      static const double thresholdDist1; ///< 1+thresholdDist
+      static const int maxsteps; ///< maximal steps for Newton search
 
       Dim3Locate() {}
       virtual ~Dim3Locate() {}
    
-      //! find value in interpolation for given value
+      /// find value in interpolation for given value
       template <class ElemData, class VECTOR>
       bool get_iterative(const ElemBasis *pEB, VECTOR &x, 
 			 const T& value, const ElemData &cd) const  
@@ -579,20 +579,20 @@ namespace SCIRun {
   template<class ElemBasis>
     const int Dim3Locate<ElemBasis>::maxsteps=100;
   
-  //! Class for searching of parametric coordinates related to a 
-  //! value in 2d meshes and fields
+  /// Class for searching of parametric coordinates related to a 
+  /// value in 2d meshes and fields
   template <class ElemBasis>
   class Dim2Locate {
     public:
       typedef typename ElemBasis::value_type T;
-      static const double thresholdDist; //!< Thresholds for coordinates checks
-      static const double thresholdDist1; //!< 1+thresholdDist
-      static const int maxsteps; //!< maximal steps for Newton search
+      static const double thresholdDist; ///< Thresholds for coordinates checks
+      static const double thresholdDist1; ///< 1+thresholdDist
+      static const int maxsteps; ///< maximal steps for Newton search
 
       Dim2Locate() {}
       virtual ~Dim2Locate() {}
    
-      //! find value in interpolation for given value
+      /// find value in interpolation for given value
       template <class ElemData, class VECTOR>
         bool get_iterative(const ElemBasis *pEB, VECTOR &x, 
          const T& value, const ElemData &cd) const  
@@ -619,21 +619,21 @@ namespace SCIRun {
     const int Dim2Locate<ElemBasis>::maxsteps=100;
   
 
-  //! Class for searching of parametric coordinates related to a 
-  //! value in 1d meshes and fields
+  /// Class for searching of parametric coordinates related to a 
+  /// value in 1d meshes and fields
   template <class ElemBasis>
   class Dim1Locate {
     public:
 
       typedef typename ElemBasis::value_type T;
-      static const double thresholdDist; //!< Thresholds for coordinates checks
-      static const double thresholdDist1; //!< 1+thresholdDist
-      static const int maxsteps; //!< maximal steps for Newton search
+      static const double thresholdDist; ///< Thresholds for coordinates checks
+      static const double thresholdDist1; ///< 1+thresholdDist
+      static const int maxsteps; ///< maximal steps for Newton search
 
       Dim1Locate() {}
       virtual ~Dim1Locate() {}
 
-      //! find value in interpolation for given value         
+      /// find value in interpolation for given value         
       template <class ElemData, class VECTOR>
         bool get_iterative(const ElemBasis *pElem, VECTOR &x, 
          const T& value, const ElemData &cd) const  

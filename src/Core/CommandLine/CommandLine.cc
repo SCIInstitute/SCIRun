@@ -68,7 +68,7 @@ public:
   po::variables_map parse(int argc, const char* argv[])
   {
     po::variables_map vm;
-    ///@detal basic_command_line_parser::allow_unregistered is needed when launching SCIRun from OS X
+    ///@details basic_command_line_parser::allow_unregistered is needed when launching SCIRun from OS X
     /// app bundles; the first argument in argv is the program path, the second is the
     /// process serial number (Carbon API ProcessSerialNumber struct), which matches
     /// -psn_<unique id> where the unique id matches[0-9_], for example -psn_0_1085705.

@@ -703,7 +703,7 @@ public:
   }
 
 
-  // TODO: Need to reformulate this one, closest element can have multiple 
+  // TODO @todo: Need to reformulate this one, closest element can have multiple 
   // intersection points
   virtual bool find_closest_elems(double& dist,
                                   Core::Geometry::Point& result,
@@ -783,7 +783,7 @@ public:
   
   /// Copy nodes from one mesh to another mesh
   /// Note: currently only for irregular meshes
-  /// TODO: Add regular meshes to the mix
+  /// TODO @todo: Add regular meshes to the mix
   inline void copy_nodes(VMesh* imesh, Node::index_type i, 
                           Node::index_type o,Node::size_type size)
   {
@@ -954,7 +954,7 @@ public:
   virtual double inscribed_circumscribed_radius_metric(Elem::index_type idx) const;
   
   
-  /// TODO: These should go: we have get_weights and get_derivate_weights
+  /// TODO @todo: These should go: we have get_weights and get_derivate_weights
   /// with basis_order call 
   /// Direct access to get weights functions in basis functions
   /// These four are for interpolation

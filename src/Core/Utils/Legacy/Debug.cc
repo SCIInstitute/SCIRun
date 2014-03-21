@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//TODO Documentation
-
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #include <Core/Utils/Legacy/Debug.h>
@@ -42,9 +40,9 @@ namespace SCIRun {
 Mutex* scirun_debug_object_mutex = 0;
 std::map<std::string,int>* scirun_debug_object_count_ = 0;
 
-// TODO:
-// Convert this utility to a Debug class which will eliminate the need
-// for this type of initialization.
+/// TODO: @todo
+/// Convert this utility to a Debug class which will eliminate the need
+/// for this type of initialization.
 
 void 
 debug_ensure_mutex()

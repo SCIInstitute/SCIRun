@@ -391,7 +391,7 @@ get_elems_pointer() const
    return (&(this->mesh_->faces_[0]));
 }
 
-// TODO: Fix this function so it does not need the vector conversion
+// TODO @todo: Fix this function so it does not need the vector conversion
 template <class MESH>
 void
 VTriSurfMesh<MESH>::insert_node_into_elem(VMesh::Elem::array_type& newelems, 

@@ -95,7 +95,7 @@ protected:
 
   bool in_name_set(const std::string &s) const;
 
-  //! Either the NrrdData owns the data or it wraps this external object.
+  /// Either the NrrdData owns the data or it wraps this external object.
   LockingHandle<Datatype> data_owner_;
 
   // To help with pio

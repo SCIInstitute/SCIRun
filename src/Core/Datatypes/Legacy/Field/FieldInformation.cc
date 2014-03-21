@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/Utils/Legacy/TypeDescription.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
@@ -37,7 +35,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 
-//TODO DAN: use std::replace for strings below.
+///TODO @todo DAN: use std::replace for strings below.
 
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
@@ -705,7 +703,7 @@ FieldTypeInformation::is_cubicdata()
   return ((basis_type.find("ubicHmt") != std::string::npos));
 }
 
-// TODO: an enum would be good for keeping track of basis order...
+/// TODO @todo: an enum would be good for keeping track of basis order...
 int
 FieldTypeInformation::field_basis_order()
 {

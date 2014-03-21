@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #define CORE_DATATYPES_MATRIX_H 
 
 #include <Core/Datatypes/Datatype.h>
@@ -39,7 +37,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  //TODO: use Eigen's Visitor type?
+  ///TODO @todo: use Eigen's Visitor type?
   template <typename T>
   struct MatrixVisitorGeneric
   {
@@ -85,7 +83,7 @@ namespace Datatypes {
 
   private:
     virtual void print(std::ostream&) const = 0;
-      //TODO: not much to go here for now.
+      //TODO @todo: not much to go here for now.
   };
 
   template <typename T>

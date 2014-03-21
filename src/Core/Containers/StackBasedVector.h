@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// This implements a subclass of the std::vector class, except that
-// the vector is statically allocated on the stack for performance.
+/// This implements a subclass of the std::vector class, except that
+/// the vector is statically allocated on the stack for performance.
 
 #ifndef CORE_CONTAINERS_STACKBASEDVECTOR_H
 #define CORE_CONTAINERS_STACKBASEDVECTOR_H 1
@@ -35,11 +35,11 @@
 #include <algorithm>
 #include <vector>
 
-//! This vector type is similar in performance to the StackVector, but checks
-//! for overflow. In case of overflow memory will be reserved to store data_ 
+/// This vector type is similar in performance to the StackVector, but checks
+/// for overflow. In case of overflow memory will be reserved to store data_ 
 
 
-// TODO: replace with STL container
+// TODO @todo: replace with STL container
 
 namespace SCIRun {
 

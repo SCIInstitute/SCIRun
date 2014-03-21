@@ -309,7 +309,7 @@ public:
         // Unmark the the ones that were done
         mesh_->synchronizing_ &= ~(sync_);
         mesh_->synchronize_lock_.unlock();
-        //! Tell other threads we are done
+        /// Tell other threads we are done
         mesh_->synchronize_cond_.conditionBroadcast();
       }
 
@@ -370,7 +370,7 @@ public:
 
   /// Has this mesh normals.
   // Note: normals point inward.
-  // TODO: this is inconsistent with TriSurfMesh - should both surfaces
+  // TODO @todo: this is inconsistent with TriSurfMesh - should both surfaces
   // have consistent normal direction?
   virtual bool has_normals() const { return (true); }
 
@@ -1859,7 +1859,7 @@ protected:
     /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
-    //! Check first guess
+    /// Check first guess
     if (node >= 0 && node < sz) 
     {
       if ((p - points_[node]).length2() < epsilon2_) return (true);
@@ -2129,7 +2129,7 @@ protected:
   void compute_elem_grid();
   void compute_bounding_box();
 
-  //! Used to recompute data for individual cells.  
+  /// Used to recompute data for individual cells.  
   void insert_elem_into_grid(typename Elem::index_type ci);
   void remove_elem_from_grid(typename Elem::index_type ci);
 
@@ -2225,7 +2225,7 @@ protected:
   typedef std::vector<std::vector<typename Elem::index_type> > NodeNeighborMap;
   NodeNeighborMap                       node_neighbors_;  
   
-  std::vector<Core::Geometry::Vector>                           normals_; //! normalized per node
+  std::vector<Core::Geometry::Vector>                           normals_; /// normalized per node
   boost::shared_ptr<SearchGridT<index_type> >  node_grid_; /// Lookup grid for nodes
   boost::shared_ptr<SearchGridT<index_type> >  elem_grid_; /// Lookup grid for elements
 
@@ -2245,7 +2245,7 @@ protected:
   double    epsilon2_; /// square of epsilon for squared distance comparisons
   
   /// Pointer to virtual interface
-  boost::shared_ptr<VMesh> vmesh_; //! Virtual function table
+  boost::shared_ptr<VMesh> vmesh_; /// Virtual function table
 
 #ifdef HAVE_HASH_MAP
   struct edgehash
@@ -2777,7 +2777,7 @@ QuadSurfMesh<Basis>::compute_normals()
 
   // build table of faces that touch each node
   std::vector<std::vector<typename Face::index_type> > node_in_faces(points_.size());
-  //! face normals (not normalized) so that magnitude is also the area.
+  /// face normals (not normalized) so that magnitude is also the area.
   std::vector<Core::Geometry::Vector> face_normals(faces_.size());
   // Computing normal per face.
   typename Node::array_type nodes(4);
@@ -3020,7 +3020,7 @@ template <class Basis>
 void
 QuadSurfMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  // TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   const index_type idx = ci*4;
   Core::Geometry::BBox box;
@@ -3052,7 +3052,7 @@ template <class Basis>
 void
 QuadSurfMesh<Basis>::insert_node_into_grid(typename Node::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

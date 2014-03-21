@@ -26,8 +26,6 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <cmath>
 #include <cstring>
 #include <iostream>

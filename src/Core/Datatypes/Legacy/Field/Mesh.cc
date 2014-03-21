@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/Containers/StackVector.h>
 #include <Core/Datatypes/Legacy/Field/FieldRNG.h>
 #include <Core/Datatypes/Legacy/Field/FieldVIndex.h>
@@ -407,9 +405,9 @@ Mesh::type_name(int n)
   return name;
 }
 
-//! This function should be overloaded with the actual function that
-//! retrieves the virtual interface. This function is thread safe, but
-//! is not const as it deals with handles which will alter ref counts.
+/// This function should be overloaded with the actual function that
+/// retrieves the virtual interface. This function is thread safe, but
+/// is not const as it deals with handles which will alter ref counts.
 VMesh* 
 Mesh::vmesh()
 {

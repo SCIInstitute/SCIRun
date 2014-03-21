@@ -26,8 +26,6 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
-
 #ifndef CORE_UTILS_FILEUTIL_H
 #define CORE_UTILS_FILEUTIL_H
 
@@ -56,7 +54,7 @@ inline bool fileContainsString(const std::string& filename, const std::string& s
 
 inline void replaceDelimitersWithWhitespace(std::string& line)
 {
-  // TODO: this code doesn't work under VS2010 - check with VS2012
+  /// TODO: @todo this code doesn't work under VS2010 - check with VS2012
 
   // replace comma's, tabs etc. with white spaces
 //  for (auto &c : line)

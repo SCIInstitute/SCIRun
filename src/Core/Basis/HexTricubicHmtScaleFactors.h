@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : HexTricubicHmtScaleFactors.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Mar 1 2005
+///    @file    HexTricubicHmtScaleFactors.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Mar 1 2005
 
 #ifndef CORE_BASIS_HEXTRICUBICHMTSCALEFACTORS_H
 #define CORE_BASIS_HEXTRICUBICHMTSCALEFACTORS_H 1

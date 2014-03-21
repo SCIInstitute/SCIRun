@@ -30,8 +30,6 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-///TODO Documentation
-
 #include <Core/GeometryPrimitives/Vector.h>
 #include <Core/Persistent/Persistent.h>
 

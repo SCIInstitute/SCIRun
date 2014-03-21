@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/GeometryPrimitives/Plane.h>
 
 namespace SCIRun {

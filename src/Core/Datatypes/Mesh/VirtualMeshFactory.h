@@ -30,8 +30,6 @@
 // PORTED SCIRUN v4 CODE //
 ///////////////////////////
 
-///TODO Documentation
-
 #ifndef CORE_DATATYPES_VIRTUALMESHFACTORY_H
 #define CORE_DATATYPES_VIRTUALMESHFACTORY_H 
 

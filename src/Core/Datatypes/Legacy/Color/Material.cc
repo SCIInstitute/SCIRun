@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/Util/Debug.h>
 #include <Core/Datatypes/Material.h>
 

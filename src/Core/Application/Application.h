@@ -75,7 +75,7 @@ public:
   std::string commandHelpString() const;
   std::string version() const;
 
-  ///TODO: following will be useful later
+  ///TODO @todo: following will be useful later
 #if 0
 public:
 	void log_start();

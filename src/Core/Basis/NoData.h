@@ -42,53 +42,53 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of NoDataBasis 
+/// Class for describing unit geometry of NoDataBasis 
 class NoDataUnitElement {
 public: 
   NoDataUnitElement() {}
   virtual ~NoDataUnitElement() {}
 
-  static double unit_vertices[1][1]; //!< Parametric coordinates of vertices 
-  static int unit_edges[1][1];    //!< References to vertices of unit edge 
+  static double unit_vertices[1][1]; ///< Parametric coordinates of vertices 
+  static int unit_edges[1][1];    ///< References to vertices of unit edge 
 
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension()
     { return -1; } 
   
-  //! return size of domain   
+  /// return size of domain   
   static double domain_size() 
     { return 0.0; }
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 0; }
   
-  //! return number of vertices in mesh
+  /// return number of vertices in mesh
   static int number_of_mesh_vertices() 
     { return 0; }
   
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 0; } 
 
-  //! return number of edges 
+  /// return number of edges 
   static int number_of_edges() 
     { return 0; } 
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 0; } 
   
-  //! return number of faces per cell 
+  /// return number of faces per cell 
   static int faces_of_cell() 
     { return 0; } 
 
-  static double volume() { return 0.; } //!< return volume
+  static double volume() { return 0.; } ///< return volume
 };
 
 
-//! Class for handling of element without storage for field variables
-template <class T> //! for compilation consistency
+/// Class for handling of element without storage for field variables
+template <class T> /// for compilation consistency
   class NoDataBasis : public BasisSimple<T>, 
                       public NoDataUnitElement,
                       public NoElementWeights

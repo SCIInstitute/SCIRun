@@ -63,21 +63,21 @@ class SCISHARE String : public PropertyManager {
   std::string str_;
 
 public:
-  //! Constructors
+  /// Constructors
   String();
   explicit String(const std::string& str);
   String(const String& str);
   explicit String(const char* str);
 
-  //! Destructor
+  /// Destructor
   virtual ~String();
   
-  //! Public member functions
+  /// Public member functions
   String* clone();
   inline void        set(const std::string& str);
   inline std::string get();
 
-  //! Persistent representation...
+  /// Persistent representation...
   virtual void io(Piostream&);
   static PersistentTypeID type_id;
   virtual std::string dynamic_type_name() const { return type_id.type; }  

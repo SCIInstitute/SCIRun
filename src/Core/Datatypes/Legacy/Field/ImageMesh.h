@@ -843,7 +843,7 @@ public:
   static Persistent *maker() { return new ImageMesh<Basis>(); }
   /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<ImageMesh<Basis>>();}
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle image_maker(size_type x, size_type y, const Core::Geometry::Point& min, const Core::Geometry::Point& max) 
     { return boost::make_shared<ImageMesh<Basis>>(x,y,min,max); }
 

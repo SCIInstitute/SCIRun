@@ -45,7 +45,7 @@ namespace SCIRun
 namespace Core
 {
 
-///@class  PYTHONINTERPRETER
+///@class  PythonInterpreter
 ///@brief  A wrapper class of the python interpreter.
 ///@details It calls the python interpreter on a separate thread.
 

@@ -26,8 +26,6 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
-
 #ifndef CORE_UTILS_LOCKABLE_H
 #define CORE_UTILS_LOCKABLE_H
 

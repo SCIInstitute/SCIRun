@@ -28,9 +28,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-///TODO Documentation
-
 ///@file LogFile.h
 
 

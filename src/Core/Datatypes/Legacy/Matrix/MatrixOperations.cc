@@ -273,7 +273,7 @@ operator*(const SparseRowMatrix& A, double b)
 }
 
   
-// TODO: does not check if invert operation was successful or not
+// TODO @todo: does not check if invert operation was successful or not
 MatrixHandle
 inv(MatrixHandle A)
 {

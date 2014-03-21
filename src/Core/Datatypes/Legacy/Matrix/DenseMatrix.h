@@ -69,7 +69,7 @@ template <typename T>
 class DenseMatrixGeneric : public Matrix<T> {
 
 public:
-  //! Constructors
+  /// Constructors
   DenseMatrixGeneric();
   DenseMatrixGeneric(size_type r, size_type c);
   DenseMatrixGeneric(size_type r, size_type c, T value);
@@ -80,10 +80,10 @@ public:
   explicit DenseMatrixGeneric(const Point& pnt);
   explicit DenseMatrixGeneric(const Tensor& tens);
 
-  //! Destructor
+  /// Destructor
   virtual ~DenseMatrixGeneric();
   
-  //! Public member functions
+  /// Public member functions
   virtual DenseMatrixGeneric* clone() const;
   DenseMatrixGeneric& operator=(const DenseMatrixGeneric&);
   
@@ -95,7 +95,7 @@ public:
   virtual T*   get_data_pointer() const;
   virtual size_type get_data_size() const;
 
-  //! slow setters/getter for polymorphic operations
+  /// slow setters/getter for polymorphic operations
   virtual void    zero();
   virtual T  get(index_type r, index_type c) const;
   virtual void    put(index_type r, index_type c, T val);
@@ -126,7 +126,7 @@ public:
   
  
 
-  //! fast accessors
+  /// fast accessors
   inline T* operator[](index_type r) 
   {
     return data[r];
@@ -144,12 +144,12 @@ public:
   inline T& operator()(index_type i, index_type j) { return data[i][j]; }
   inline const T& operator()(index_type i, index_type j) const { return data[i][j]; }
 
-  //! return false if not invertible.
+  /// return false if not invertible.
   virtual bool invert();
 
   void transpose_square_in_place();
 
-  //! throws an assertion if not square
+  /// throws an assertion if not square
   T determinant();
 
   static DenseMatrixGeneric *identity(size_type size);
@@ -158,12 +158,12 @@ public:
 
   virtual void print(std::string&) const;
   
-  //! Persistent representation...
+  /// Persistent representation...
   virtual std::string dynamic_type_name() const;
   virtual void io(Piostream&);
   static PersistentTypeID type_id;
 
-  //! Friend functions
+  /// Friend functions
   SCISHARE friend void Mult(DenseMatrix&, const DenseMatrix&, const DenseMatrix&);
 
 private:
@@ -230,7 +230,7 @@ DenseMatrixGeneric<T>::clone() const
 }
 
 
-//! constructors
+/// constructors
 template <typename T>
 DenseMatrixGeneric<T>::DenseMatrixGeneric() :
 data(0),
@@ -385,7 +385,7 @@ DenseMatrixGeneric<T>::~DenseMatrixGeneric()
 }
 
 
-//! assignment operator
+/// assignment operator
 template <typename T>
 DenseMatrixGeneric<T>&
 DenseMatrixGeneric<T>::operator=(const DenseMatrixGeneric& m)
@@ -687,7 +687,7 @@ DenseMatrixGeneric<T>::io(Piostream& stream)
 }
 
 
-// TODO: this needs to be refactored
+// TODO @todo: this needs to be refactored
 template <typename T>
 bool
 DenseMatrixGeneric<T>::invert()

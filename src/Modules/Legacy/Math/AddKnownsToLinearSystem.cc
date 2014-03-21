@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  TODO @todo Documentation AddKnownsToLinearSystem.cc/.h,
+/**
+ *  TODO @todo Documentation Modules/Legacy/Math AddKnownsToLinearSystem.cc/.h,
  *  AddLinkedNodesToLinearSystem.cc, AppendMatrix.cc, CreateMatrix.cc,
  *  EvaluateLinAlgGeneral.cc, RemoveZeroRowsAndColumns.cc,
  *  RemoveZerosFromMatrix.cc, ReorderMatrixByCuthillMcKee.cc,

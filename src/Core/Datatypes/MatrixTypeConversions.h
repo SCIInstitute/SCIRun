@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #ifndef CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H
 #define CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H 
 
@@ -71,7 +69,7 @@ namespace Datatypes {
     matrix_is();
   };
  
-  //TODO: move
+  ///TODO @todo: move
   class SCISHARE matrix_convert
   {
   public:

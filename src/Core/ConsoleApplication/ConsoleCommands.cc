@@ -26,8 +26,6 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/ConsoleApplication/ConsoleCommands.h>
 #include <Dataflow/Engine/Controller/NetworkEditorController.h>
 #include <Core/Application/Application.h>
@@ -48,7 +46,7 @@ bool LoadFileCommandConsole::execute()
     auto filename = *inputFile;
     //SCIRunMainWindow::Instance()->loadNetworkFile(QString::fromStdString(inputFile.get()));
 
-    //TODO: real logger
+    ///TODO @todo: real logger
     std::cout << "Attempting load of " + filename << std::endl;
 
     try
@@ -59,16 +57,16 @@ bool LoadFileCommandConsole::execute()
       {
         Application::Instance().controller()->clear();
         Application::Instance().controller()->loadNetwork(openedFile);
-        //TODO: real logger
+        ///TODO @todo: real logger
         std::cout << "File load done." << std::endl;
         return true;
       }
-      else //TODO: real logger
+      else ///TODO @todo: real logger
         std::cout << "File load failed." << std::endl;
     }
     catch (...)
     {
-      //TODO: real logger
+      ///TODO @todo: real logger
       std::cout << "File load failed." << std::endl;
     }
     return false;

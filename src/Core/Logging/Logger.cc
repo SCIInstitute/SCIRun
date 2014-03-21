@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <sstream>
 #include <Core/Logging/LoggerInterface.h>
 #include <Core/Logging/ScopedTimeRemarker.h>

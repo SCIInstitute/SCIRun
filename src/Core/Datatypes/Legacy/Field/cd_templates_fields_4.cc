@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
 #include <Core/Persistent/PersistentSTL.h>
 
 #include <Core/GeometryPrimitives/Tensor.h>

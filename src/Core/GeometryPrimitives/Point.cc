@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/Persistent/Persistent.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <iostream>

@@ -71,7 +71,7 @@ public:
   virtual size_type nrows() const = 0;
   virtual size_type ncols() const = 0;
   virtual void zero() = 0;
-  //TODO
+  //TODO @todo
   //virtual MatrixInterface<T>* make_transpose() const = 0;
 };
 
@@ -121,10 +121,10 @@ public:
   
   typedef T element_type;
 
-  //! Make a duplicate, needed to support detach from LockingHandle
+  /// Make a duplicate, needed to support detach from LockingHandle
   virtual Matrix* clone() const = 0;
 
-  //! Convert this matrix to the specified type.
+  /// Convert this matrix to the specified type.
   virtual DenseMatrix* dense() = 0;
   virtual SparseRowMatrixGeneric<T>* sparse() = 0;
   virtual ColumnMatrixGeneric<T>* column() = 0;
@@ -132,7 +132,7 @@ public:
 
   inline size_type nrows() const { return nrows_; }
   inline size_type ncols() const { return ncols_; }
-  //! return false if not invertible.
+  /// return false if not invertible.
   virtual inline bool invert() { return false; }
 
   virtual T   *get_data_pointer() const = 0;

@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/Datatypes/Legacy/Field/VFData.h>
 
 #include <Core/Exceptions/AssertionFailed.h>

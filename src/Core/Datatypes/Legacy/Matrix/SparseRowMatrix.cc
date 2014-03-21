@@ -41,7 +41,7 @@
 
 namespace SCIRun {
 
-  //TODO: defunct
+  //TODO @todo: defunct
 
 
 } // End namespace SCIRun

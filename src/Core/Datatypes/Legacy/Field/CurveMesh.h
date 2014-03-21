@@ -681,10 +681,10 @@ public:
     typename Node::iterator ni; begin(ni);
     typename Node::iterator nie; end(nie);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
     
-    //! Check first guess
+    /// Check first guess
     if (idx >= 0 && idx < sz) 
     {
       if ((p - points_[idx]).length2() < epsilon2_) return (true);
@@ -700,7 +700,7 @@ public:
         mindist = dist;
         idx = static_cast<INDEX>(*ni);
         
-        //! Exit if we cannot find one that is closer
+        /// Exit if we cannot find one that is closer
         if (mindist < epsilon2_ ) return (true);
       }
       ++ni;
@@ -1305,9 +1305,9 @@ protected:
   //////////////////////////////////////////////////////////////
   // Actual data stored in the mesh
   
-  //! Vector with the node locations
+  /// Vector with the node locations
   std::vector<Core::Geometry::Point>           points_;
-  //! Vector with connectivity data
+  /// Vector with connectivity data
   std::vector<index_type>      edges_;
   /// The basis function, contains additional information on elements
   Basis                   basis_;
@@ -1482,7 +1482,7 @@ CurveMesh<Basis>::cell_type_description()
 }
 
 
-//! Add an entry into the database for Pio
+/// Add an entry into the database for Pio
 template <class Basis>
 PersistentTypeID
 CurveMesh<Basis>::curvemesh_typeid(type_name(-1), "Mesh", CurveMesh<Basis>::maker);

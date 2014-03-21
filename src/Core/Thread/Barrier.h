@@ -26,13 +26,11 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
-
 #ifndef CORE_THREAD_BARRIER_H
 #define CORE_THREAD_BARRIER_H
 
 #include <boost/noncopyable.hpp>
-#include <boost/thread/barrier.hpp>  //TODO: pimpl?
+#include <boost/thread/barrier.hpp>  ///TODO: @todo pimpl?
 #include <Core/Thread/share.h>
 
 namespace SCIRun 

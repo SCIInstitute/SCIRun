@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <Core/Logging/Log.h>
 
 #include <log4cpp/Category.hh>

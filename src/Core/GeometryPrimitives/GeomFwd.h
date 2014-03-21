@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #ifndef CORE_GEOMETRY_GEOMFWD_H
 #define CORE_GEOMETRY_GEOMFWD_H 
 

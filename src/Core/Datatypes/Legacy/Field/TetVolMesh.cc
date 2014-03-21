@@ -528,7 +528,7 @@ VTetVolMesh<MESH>::set_nodes(VMesh::Node::array_type& nodes,
 }
 
 
-// TODO: Fix this function so it does not need the vector conversion
+// TODO @todo: Fix this function so it does not need the vector conversion
 template <class MESH>
 void
 VTetVolMesh<MESH>::insert_node_into_elem(VMesh::Elem::array_type& newelems, 

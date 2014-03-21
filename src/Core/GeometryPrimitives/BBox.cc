@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #include <cmath>
 #include <Core/GeometryPrimitives/BBox.h>
 #include <Core/Persistent/Persistent.h>

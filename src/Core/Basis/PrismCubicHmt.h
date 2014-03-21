@@ -38,20 +38,20 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of PrismCubicHmt
+/// Class for describing unit geometry of PrismCubicHmt
 class PrismCubicHmtUnitElement : public PrismLinearLgnUnitElement {
 public:
   PrismCubicHmtUnitElement() {}
   virtual ~PrismCubicHmtUnitElement() {}
 
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 24; } 
 };
 
 
-//! Class for handling of element of type prism with 
-//! cubic hermitian interpolation
+/// Class for handling of element of type prism with 
+/// cubic hermitian interpolation
 template <class T>
 class PrismCubicHmt : public BasisAddDerivatives<T>, 
                       public PrismApprox, 
@@ -76,7 +76,7 @@ public:
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_cubic_derivate_weights(coords,w); }
 
-  //! get value at parametric coordinate 
+  /// get value at parametric coordinate 
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -110,7 +110,7 @@ public:
 	       w[23] * this->derivs_[cd.node5_index()][2]);
   }
   
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -199,8 +199,8 @@ public:
 	       w[71] * this->derivs_[cd.node5_index()][2]);
   }  
 
-  //! get parametric coordinate for value within the element
-  //! iterative solution...
+  /// get parametric coordinate for value within the element
+  /// iterative solution...
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -210,14 +210,14 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }  
  
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc3d_length<CrvGaussian2<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned face, const ElemData &cd) const  
   {
@@ -227,7 +227,7 @@ public:
       return get_area3<QuadGaussian3<double> >(this, face, cd);
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & cd) const  
   {

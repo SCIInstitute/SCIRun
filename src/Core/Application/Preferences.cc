@@ -37,7 +37,7 @@ Preferences::Preferences() :
 {	
 }
 
-//TODO
+//TODO @todo
 //void PreferencesManager::initialize()
 //{
 //	Core::StateIO state_io;

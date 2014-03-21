@@ -45,7 +45,7 @@ class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes:
     Field(const Field& copy);
     virtual ~Field();
     
-    //! Clone field will generate a pointer to a new copy
+    /// Clone field will generate a pointer to a new copy
     virtual Field* clone() const = 0;
 
     virtual Field* deep_clone() const = 0;
@@ -81,7 +81,7 @@ class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes:
 
     virtual const TypeDescription* get_type_description(td_info_e td = FULL_TD_E) const = 0; 
     
-    //! Persistent I/O.
+    /// Persistent I/O.
     static  PersistentTypeID type_id;
     virtual void io(Piostream &stream);
     virtual std::string type_name() const;

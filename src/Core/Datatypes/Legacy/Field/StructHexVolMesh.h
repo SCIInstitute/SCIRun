@@ -311,7 +311,7 @@ public:
                          const Core::Geometry::Point& p,
                          double maxdist) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    // TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
 
     /// If there are no nodes we cannot find a closest point
@@ -836,7 +836,7 @@ public:
   template <class INDEX>
   inline bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    // TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (this->basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -905,7 +905,7 @@ public:
   template <class INDEX, class ARRAY>
   inline bool locate_elem(INDEX &elem, ARRAY& coords, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    /// TODO @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (this->basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -1455,7 +1455,7 @@ StructHexVolMesh<Basis>::polygon_area(const typename LatVolMesh<Basis>::Node::ar
   double area = 0;
   double an, ax, ay, az;  /// abs value of normal and its coords
   int   coord;           // coord to ignore: 1=x, 2=y, 3=z
-  index_type   i, j, k;         //! loop indices
+  index_type   i, j, k;         /// loop indices
   const size_type n = ni.size();
 
   /// select largest abs coordinate to ignore for projection
@@ -1728,7 +1728,7 @@ template <class Basis>
 void
 StructHexVolMesh<Basis>::insert_elem_into_grid(typename LatVolMesh<Basis>::Elem::index_type idx)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
   Core::Geometry::BBox box;
@@ -1766,7 +1766,7 @@ template <class Basis>
 void
 StructHexVolMesh<Basis>::insert_node_into_grid(typename LatVolMesh<Basis>::Node::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

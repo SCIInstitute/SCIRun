@@ -28,8 +28,6 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-//TODO Documentation
-
 // Core SCIRun Includes
 
 #include <Core/Thread/Legacy/Mutex.h>

@@ -26,8 +26,6 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
-
 #ifndef CORE_UTILS_EXCEPTION_H
 #define CORE_UTILS_EXCEPTION_H
 
@@ -53,9 +51,9 @@ namespace Core
   typedef boost::error_info<struct tag_error_message, std::string> ErrorMessage;
   typedef boost::error_info<struct tag_null_object, std::string> NullObjectInfo;
   typedef boost::error_info<struct tag_file_not_found, std::string> FileNotFound;
-  //TODO: discuss location/type
+  ///TODO: @todo discuss location/type
   typedef boost::error_info<struct tag_linear_algebra_error, std::string> LinearAlgebraErrorMessage;
-  //TODO: make macro for various types
+  ///TODO: @todo make macro for various types
   typedef boost::error_info<struct tag_double_out_of_range, boost::tuple<std::string, double, boost::numeric::interval<double> > > DoubleOutOfRangeInfo;
   typedef boost::error_info<struct tag_int_out_of_range, boost::tuple<std::string, int, boost::numeric::interval<int> > > IntOutOfRangeInfo;
 
@@ -75,7 +73,7 @@ namespace Core
   typedef boost::error_info<struct tag_invalid_argument_value, std::string> InvalidArgumentValueInfo;
   typedef boost::error_info<struct tag_not_implemented, std::string> NotImplementedInfo;
   
-  // TODO: move these exceptions to new exception header file once it exists
+  // /TODO: @todo move these exceptions to new exception header file once it exists
   struct SCISHARE DimensionMismatch : virtual ExceptionBase
   {
   };
@@ -84,7 +82,7 @@ namespace Core
   {
   };
   
-  // TODO: should not need this in production code.
+  // /TODO: @todo should not need this in production code.
   //
   // Any prototype code using this exception should be reviewed and improved!!!
   struct SCISHARE NotImplemented : virtual ExceptionBase
@@ -101,7 +99,7 @@ namespace Core
     SCIRun::Core::InvalidArgumentValueInfo::value_type( \
       std::string(message) )))
   
-// TODO: should not need this in production code.
+// /TODO: @todo should not need this in production code.
 //
 // Any prototype code using this exception should be reviewed and improved!!!
 #define REPORT_NOT_IMPLEMENTED(message) \

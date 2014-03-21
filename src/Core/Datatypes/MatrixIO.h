@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
-
 #ifndef CORE_DATATYPES_MATRIX_IO_H
 #define CORE_DATATYPES_MATRIX_IO_H 
 

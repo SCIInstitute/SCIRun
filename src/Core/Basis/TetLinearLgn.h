@@ -43,59 +43,59 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of TetLinearLgn 
+/// Class for describing unit geometry of TetLinearLgn 
 class TetLinearLgnUnitElement {
 public:
-  //! Parametric coordinates of vertices of unit edge
+  /// Parametric coordinates of vertices of unit edge
   static SCISHARE double unit_vertices[4][3];
-  //! References to vertices of unit edge 
+  /// References to vertices of unit edge 
   static SCISHARE int unit_edges[6][2]; 
-  //! References to vertices of unit face
+  /// References to vertices of unit face
   static SCISHARE int unit_faces[4][3];  
-  //! Normals of unit faces
+  /// Normals of unit faces
   static SCISHARE double unit_face_normals[4][3];
-  //! Precalculated area of faces
+  /// Precalculated area of faces
   static SCISHARE double unit_face_areas[4];
-  //! Center of the unit element
+  /// Center of the unit element
   static SCISHARE double unit_center[3];
 
   TetLinearLgnUnitElement() {}
   virtual ~TetLinearLgnUnitElement() {}
   
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension() 
     { return 3; } 
  
-  //! return size of the domain
+  /// return size of the domain
   static double domain_size() 
     { return 1.0/6.0; }
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 4; } 
   
-  //! return number of vertices in mesh
+  /// return number of vertices in mesh
   static int number_of_mesh_vertices() 
     { return 4; }
   
-  //! return number of edges 
+  /// return number of edges 
   static int number_of_edges() 
     { return 6; }
   
-  //! return degrees of freedom 
+  /// return degrees of freedom 
   static int dofs() 
     { return 4; } 
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 3; } 
   
-  //! return number of faces per cell 
+  /// return number of faces per cell 
   static int faces_of_cell() 
     { return 4; } 
 
   static inline double length(int edge)
-  { //!< return length
+  { ///< return length
     const double *v0 = unit_vertices[unit_edges[edge][0]];
     const double *v1 = unit_vertices[unit_edges[edge][1]];
     const double dx = v1[0] - v0[0];
@@ -103,21 +103,21 @@ public:
     const double dz = v1[2] - v0[2];
     return sqrt(dx*dx+dy*dy+dz*dz);
   } 
-  static double area(int face) { return unit_face_areas[face]; } //!< return area
-  static double volume() { return 1./6.; } //!< return volume
+  static double area(int face) { return unit_face_areas[face]; } ///< return area
+  static double volume() { return 1./6.; } ///< return volume
 };
 
 
-//! Class for creating geometrical approximations of Tet meshes
+/// Class for creating geometrical approximations of Tet meshes
 class TetApprox {  
 public:
 
   TetApprox() {}
   virtual ~TetApprox() {}
   
-  //! Approximate edge for element by piecewise linear segments
-  //! return: coords gives parametric coordinates of the approximation.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate edge for element by piecewise linear segments
+  /// return: coords gives parametric coordinates of the approximation.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_edge(const unsigned edge, 
                    const unsigned div_per_unit, 
@@ -147,14 +147,14 @@ public:
     } 	
   }
   
-  //! Approximate faces for element by piecewise linear elements
-  //! return number of vertices per face
+  /// Approximate faces for element by piecewise linear elements
+  /// return number of vertices per face
   virtual int get_approx_face_elements() const { return 3; }
 
 
-  //! Approximate faces for element by piecewise linear elements
-  //! return: coords gives parametric coordinates at the approximation point.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate faces for element by piecewise linear elements
+  /// return: coords gives parametric coordinates at the approximation point.
+  /// Use interpolate with coordinates to get the world coordinates.
   template <class VECTOR>
   void approx_face(const unsigned face, 
                    const unsigned div_per_unit, 
@@ -198,9 +198,9 @@ public:
   }
 };
 
-//! Class for searching of parametric coordinates related to a 
-//! value in Tet meshes and fields
-//! to do
+/// Class for searching of parametric coordinates related to a 
+/// value in Tet meshes and fields
+/// to do
 template <class ElemBasis>
 class TetLocate : public Dim3Locate<ElemBasis> {
 public:
@@ -209,7 +209,7 @@ public:
   TetLocate() {}
   virtual ~TetLocate() {}
  
-  //! find coodinate in interpolation for given value         
+  /// find coodinate in interpolation for given value         
   template <class ElemData, class VECTOR>
   bool get_coords(const ElemBasis *pEB, VECTOR &coords, 
 		  const T& value, const ElemData &cd) const  
@@ -233,7 +233,7 @@ protected:
     return false;
   }
   
-  //! find a reasonable initial guess 
+  /// find a reasonable initial guess 
   template <class ElemData, class VECTOR>
   void initial_guess(const ElemBasis *pElem, const T &val, const ElemData &cd, 
 		     VECTOR & guess) const
@@ -278,7 +278,7 @@ protected:
 
 
 
-//! Class with weights and coordinates for 1nd order Gaussian integration
+/// Class with weights and coordinates for 1nd order Gaussian integration
 template <class T>
 class TetGaussian1
 {
@@ -304,7 +304,7 @@ template <class T>
 T TetGaussian1<T>::GaussianWeights[] = {1.0};
 
 
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class TetGaussian2 
 {
@@ -336,7 +336,7 @@ template <class T>
 T TetGaussian2<T>::GaussianWeights[] = {.25, .25, .25, .25};
 
 
-//! Class with weights and coordinates for 3rd order Gaussian integration
+/// Class with weights and coordinates for 3rd order Gaussian integration
 template <class T>
 class TetGaussian3 
 {
@@ -377,8 +377,8 @@ T TetGaussian3<T>::GaussianWeights[] = {
 template <class T>
 int TetGaussian3<T>::GaussianNum = 11;
 
-//! Class for handling of element of type tetrahedron with 
-//! linear lagrangian interpolation
+/// Class for handling of element of type tetrahedron with 
+/// linear lagrangian interpolation
 template <class T>
 class TetLinearLgn : 
          public BasisSimple<T>, 
@@ -405,7 +405,7 @@ public:
     { get_linear_derivate_weights(coords,w); }
 
 
-  //! get value at parametric coordinate 
+  /// get value at parametric coordinate 
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -418,7 +418,7 @@ public:
 	       w[3] * cd.node3());
   }
   
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData,class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1& /*coords*/, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -430,7 +430,7 @@ public:
     derivs[2] = static_cast<typename VECTOR2::value_type>(-1. * cd.node0() + cd.node3());
   }
 
-  //! get parametric coordinate for value within the element
+  /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -439,21 +439,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }
  
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc3d_length<CrvGaussian1<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned face, const ElemData &cd) const  
   {
     return get_area3<TriGaussian2<double> >(this, face, cd);
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & cd) const  
   {

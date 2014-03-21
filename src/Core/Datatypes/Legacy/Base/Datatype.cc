@@ -46,7 +46,7 @@
 
 namespace SCIRun {
 
-// TODO: assuming we keep this class in the future,
+/// TODO @todo: assuming we keep this class in the future,
 // replace these with class static variables?
 static AtomicCounter* current_generation = 0;
 static Mutex init_lock("Datatypes generation counter initialization lock");

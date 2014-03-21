@@ -1263,7 +1263,7 @@ StructQuadSurfMesh<Basis>::inside3_p(typename ImageMesh<Basis>::Face::index_type
 
     /// If the area of any of the sub triangles is very small then the point
     /// is on the edge of the subtriangle.
-    /// TODO : How small is small ???
+    /// TODO @todo : How small is small ???
 ///     if( a0 < MIN_ELEMENT_VAL ||
 ///      a1 < MIN_ELEMENT_VAL ||
 ///      a2 < MIN_ELEMENT_VAL )
@@ -1394,7 +1394,7 @@ template <class Basis>
 void
 StructQuadSurfMesh<Basis>::insert_elem_into_grid(typename ImageMesh<Basis>::Elem::index_type idx)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   
   Core::Geometry::BBox box;
@@ -1425,7 +1425,7 @@ template <class Basis>
 void
 StructQuadSurfMesh<Basis>::insert_node_into_grid(typename ImageMesh<Basis>::Node::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }
@@ -1523,7 +1523,7 @@ template <class Basis>
 void
 StructQuadSurfMesh<Basis>::compute_normals()
 {
-  normals_.resize(points_.dim1(), points_.dim2()); //! 1 per node
+  normals_.resize(points_.dim1(), points_.dim2()); /// 1 per node
 
   /// build table of faces that touch each node
   Array2< std::vector<typename ImageMesh<Basis>::Face::index_type> >

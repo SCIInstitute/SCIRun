@@ -26,7 +26,8 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
+///TODO @todo Documentation Core/ConsoleApplication/ConsoleApplication.cc
+///  ConsoleCommandFactory.cc ConsoleCommands.cc
 
 #include <boost/make_shared.hpp>
 #include <Core/Application/Application.h>
