@@ -26,25 +26,30 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Core_Datatypes_Tests_SRCS
-  BundleTests.cc
-  DenseMatrixTests.cc
-  EigenDenseMatrixTests.cc
-  GeometryTests.cc
-  ScalarTests.cc
-  SparseRowMatrixTests.cc
-  StringTests.cc
-  SparseRowMatrixFromMapTest.cc
+SET(Core_Datatypes_Legacy_Bundle_SRCS
+  Bundle.cc
 )
 
-SCIRUN_ADD_UNIT_TEST(Core_Datatypes_Tests
-  ${Core_Datatypes_Tests_SRCS}
+SET(Core_Datatypes_Legacy_Bundle_HEADERS
+  Bundle.h
+  share.h
 )
 
-TARGET_LINK_LIBRARIES(Core_Datatypes_Tests
+ADD_LIBRARY(Core_Datatypes_Legacy_Bundle
+  ${Core_Datatypes_Legacy_Bundle_HEADERS}
+  ${Core_Datatypes_Legacy_Bundle_SRCS}
+)
+
+TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Bundle
+  Core_Persistent  
   Core_Datatypes
-  Core_Datatypes_Legacy_Bundle
-  gtest_main
-  gtest
-  gmock
 )
+
+IF(BUILD_SHARED_LIBS)
+  ADD_DEFINITIONS(-DBUILD_Core_Datatypes_Legacy_Bundle)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_DEPENDENCIES(Core_Datatypes_Legacy_Bundle Boost_external)
+
+#SCIRUN_ADD_TEST_DIR(Tests)
+

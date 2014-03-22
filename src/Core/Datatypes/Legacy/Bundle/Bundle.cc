@@ -27,23 +27,36 @@
 */
 
 #include <boost/algorithm/string.hpp>
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Utils/Legacy/Debug.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Datatypes/NrrdData.h>
+#endif
 
 using namespace SCIRun;
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 static Persistent* make_Bundle() {
   return new Bundle;
 }
 
 PersistentTypeID Bundle::type_id("Bundle", "PropertyManager", make_Bundle);
+#endif
 
 Bundle::Bundle()
 {
-  DEBUG_CONSTRUCTOR("Bundle")   
+  DEBUG_CONSTRUCTOR("Bundle");
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Bundle::Bundle(const Bundle& copy) :
   PropertyManager(copy),
   bundleName_(copy.bundleName_),
@@ -57,13 +70,14 @@ Bundle::~Bundle()
 {
   DEBUG_DESTRUCTOR("Bundle")   
 }
+#endif
 
-Bundle* Bundle::clone() 
+Bundle* Bundle::clone() const
 {
   return(new Bundle(*this));
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 int Bundle::findName(std::deque<std::string> &deq, const std::string& name)
 {
   for (unsigned int p = 0; p<deq.size(); p++)
@@ -578,3 +592,14 @@ std::string Bundle::getNrrdName(int index)
 
 
 
+#endif
+
+bool Bundle::empty() const
+{
+  return bundle_.empty();
+}
+
+size_t Bundle::size() const
+{
+  return bundle_.size();
+}

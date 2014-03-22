@@ -30,37 +30,22 @@
 #define SCIRUN_CORE_DATATYPES_BUNDLE_H 1
 
 #include <Core/Datatypes/Datatype.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/ColorMap.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/NrrdData.h>
-#include <Core/Datatypes/ColumnMatrix.h>
-#include <Core/Datatypes/SparseRowMatrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
-
-#include <Core/Containers/LockingHandle.h>
-
-#include <deque>
-#include <string>
-
-#include <Core/Datatypes/share.h>
+#include <Core/Datatypes/Legacy/Bundle/share.h>
 
 namespace SCIRun {
 
-class SCISHARE Bundle : public PropertyManager {
-  
+class SCISHARE Bundle : public Core::Datatypes::Datatype 
+{
   public:  
-  
-    //! Constructor
     Bundle();
-    Bundle(const Bundle& copy);
-    
-    //! Destructor
-    virtual ~Bundle();
+ 
+    virtual Bundle* clone() const;
 
-    //! SCIRun's way of copying
-    virtual Bundle* clone();
+    bool empty() const;
+    size_t size() const;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    Bundle(const Bundle& copy);
+    virtual ~Bundle();
 
     //! For writing bundles to file
     virtual void io(Piostream&);
@@ -302,11 +287,12 @@ class SCISHARE Bundle : public PropertyManager {
   
     //! Setting for the conversion between NRRD/MATRIX
     bool transposeNrrd_;
-  
+#endif
+  std::map<std::string, Core::Datatypes::DatatypeHandle> bundle_;
 };
 
-typedef LockingHandle<Bundle> BundleHandle;
-
+typedef boost::shared_ptr<Bundle> BundleHandle;
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline void Bundle::transposeNrrd(bool transpose)
 {
   transposeNrrd_ = transpose;
@@ -459,7 +445,7 @@ template<class PTYPE> inline bool Bundle::NrrdToMatrixHelper(
   // Improper dimensions
   return(false);
 }
-
+#endif
 } // end namespace SCIRun
 
 #endif 
