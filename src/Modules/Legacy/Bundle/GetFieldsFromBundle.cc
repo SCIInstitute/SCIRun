@@ -27,57 +27,55 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-class GetFieldsFromBundle : public Module {
-
-public:
-  GetFieldsFromBundle(GuiContext*);
-  virtual void execute();
-  
-private:
-  GuiString             guifield1name_;
-  GuiString             guifield2name_;
-  GuiString             guifield3name_;
-  GuiString             guifield4name_;
-  GuiString             guifield5name_;
-  GuiString             guifield6name_;
-  GuiString             guifields_;
+ModuleLookupInfo GetFieldsFromBundle::staticInfo_("GetFieldsFromBundle", "Bundle", "SCIRun");
+AlgorithmParameterName GetFieldsFromBundle::FieldNameList("FieldNameList");
+const AlgorithmParameterName GetFieldsFromBundle::FieldNames[] = {
+  AlgorithmParameterName("field1-name"), 
+  AlgorithmParameterName("field2-name"), 
+  AlgorithmParameterName("field3-name"), 
+  AlgorithmParameterName("field4-name"), 
+  AlgorithmParameterName("field5-name"), 
+  AlgorithmParameterName("field6-name")
 };
 
-
-DECLARE_MAKER(GetFieldsFromBundle)
-  GetFieldsFromBundle::GetFieldsFromBundle(GuiContext* ctx)
-    : Module("GetFieldsFromBundle", ctx, Filter, "Bundle", "SCIRun"),
-      guifield1name_(get_ctx()->subVar("field1-name"), "field1"),
-      guifield2name_(get_ctx()->subVar("field2-name"), "field2"),
-      guifield3name_(get_ctx()->subVar("field3-name"), "field3"),
-      guifield4name_(get_ctx()->subVar("field4-name"), "field4"),
-      guifield5name_(get_ctx()->subVar("field5-name"), "field5"),
-      guifield6name_(get_ctx()->subVar("field6-name"), "field6"),
-      guifields_(get_ctx()->subVar("field-selection",false), "")
+GetFieldsFromBundle::GetFieldsFromBundle() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputBundle);
+  INITIALIZE_PORT(OutputBundle);
+  INITIALIZE_PORT(field1);
+  INITIALIZE_PORT(field2);
+  INITIALIZE_PORT(field3);
+  INITIALIZE_PORT(field4);
+  INITIALIZE_PORT(field5);
+  INITIALIZE_PORT(field6);
 }
 
-
+void GetFieldsFromBundle::setStateDefaults()
+{
+  auto state = get_state();
+  state->setValue(FieldNameList, std::string());
+  
+  for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
+  {  
+    state->setValue(FieldNames[i], "field" + boost::lexical_cast<std::string>(i));
+  }
+}
 
 void GetFieldsFromBundle::execute()
 {
-  // Define input handle:
-  BundleHandle handle;
+  auto bundle = getRequiredInput(InputBundle);
   
-  // Get data from input port:
-  if (!(get_input_handle("bundle",handle,true))) return;
-  
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || guifield1name_.changed() || 
       guifield2name_.changed() || guifield3name_.changed() ||
       guifield4name_.changed() || guifield5name_.changed() ||
@@ -85,75 +83,40 @@ void GetFieldsFromBundle::execute()
       !oport_cached("field1")  || !oport_cached("field2") || 
       !oport_cached("field3")  || !oport_cached("field4") ||
       !oport_cached("field5")  || !oport_cached("field6"))
+#endif
+  if (needToExecute())
   {
     update_state(Executing);
 
-    FieldHandle fhandle;
-    std::string field1name = guifield1name_.get();
-    std::string field2name = guifield2name_.get();
-    std::string field3name = guifield3name_.get();
-    std::string field4name = guifield4name_.get();
-    std::string field5name = guifield5name_.get();
-    std::string field6name = guifield6name_.get();
-    std::string fieldlist;
-    
-    int numFields = handle->numFields();
-    for (int p = 0; p < numFields; p++)
+    auto state = get_state();
+    state->setValue(FieldNameList, makeFieldNameList(*bundle));
+
+    for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
     {
-      fieldlist += "{" + handle->getFieldName(p) + "} ";
+      auto fieldName = state->getValue(FieldNames[i]).getString();
+      if (bundle->isField(fieldName))
+      {
+        auto field = bundle->getField(fieldName);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+        sendOutput("field1",field);
+#endif
+      } 
     }
-
-    guifields_.set(fieldlist);
-    get_ctx()->reset();  
-  
-    // Send field1 if we found one that matches the name:
-    if (handle->isField(field1name))
-    {
-      fhandle = handle->getField(field1name);
-      send_output_handle("field1",fhandle);
-    } 
-    
-    // Send field2 if we found one that matches the name:
-    if (handle->isField(field2name))
-    {
-      fhandle = handle->getField(field2name);
-      send_output_handle("field2",fhandle);
-    } 
-    
-    // Send field3 if we found one that matches the name:
-    if (handle->isField(field3name))
-    {
-      fhandle = handle->getField(field3name);
-      send_output_handle("field3",fhandle);
-    } 
-
-    // Send field4 if we found one that matches the name:
-    if (handle->isField(field4name))
-    {
-      fhandle = handle->getField(field4name);
-      send_output_handle("field4",fhandle);
-    } 
-    
-    // Send field5 if we found one that matches the name:
-    if (handle->isField(field5name))
-    {
-      fhandle = handle->getField(field5name);
-      send_output_handle("field5",fhandle);
-    } 
-    
-    // Send field6 if we found one that matches the name:
-    if (handle->isField(field6name))
-    {
-      fhandle = handle->getField(field6name);
-      send_output_handle("field6",fhandle);
-    } 
         
-    send_output_handle("bundle",handle);
+    sendOutput(OutputBundle, bundle);
   }
 }
 
+std::string GetFieldsFromBundle::makeFieldNameList(const Bundle& bundle) const
+{
+  /*
+  std::string fieldlist;
 
-
-
-
-#endif
+  int numFields = bundle->numFields();
+  for (int p = 0; p < numFields; p++)
+  {
+  fieldlist += "{" + bundle->getFieldName(p) + "} ";
+  }
+  */
+  return "fpp";
+}
