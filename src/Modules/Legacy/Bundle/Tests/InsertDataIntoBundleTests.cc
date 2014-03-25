@@ -28,6 +28,7 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 
