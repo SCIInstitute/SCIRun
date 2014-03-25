@@ -351,6 +351,7 @@ namespace Modules
   struct SCISHARE FieldPortTag {};
   struct SCISHARE GeometryPortTag {};
   struct SCISHARE ColorMapPortTag {};
+  struct SCISHARE BundlePortTag {};
   struct SCISHARE DatatypePortTag {};
 
   template <typename Base>
@@ -443,6 +444,18 @@ namespace Modules
     }
   };
 
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4, class PortTypeTag5, class PortTypeTag6>
+  class Has7InputPorts : public NumInputPorts<7>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name, const std::string& port5Name, const std::string& port6Name)
+    {
+      auto ports = Has6InputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3, PortTypeTag4, PortTypeTag5>::inputPortDescription(port0Name, port1Name, port2Name, port3Name, port4Name, port5Name);
+      ports.push_back(Has1InputPort<PortTypeTag6>::inputPortDescription(port6Name)[0]);
+      return ports;
+    }
+  };
+
   template <class PortTypeTag>
   class Has1OutputPort : public NumOutputPorts<1>
   {
@@ -511,6 +524,18 @@ namespace Modules
     }
   };
 
+  template <class PortTypeTag0, class PortTypeTag1, class PortTypeTag2, class PortTypeTag3, class PortTypeTag4, class PortTypeTag5, class PortTypeTag6>
+  class Has7OutputPorts : public NumOutputPorts<7>
+  {
+  public:
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name, const std::string& port2Name, const std::string& port3Name, const std::string& port4Name, const std::string& port5Name, const std::string& port6Name)
+    {
+      auto ports = Has6OutputPorts<PortTypeTag0, PortTypeTag1, PortTypeTag2, PortTypeTag3, PortTypeTag4, PortTypeTag5>::outputPortDescription(port0Name, port1Name, port2Name, port3Name, port4Name, port5Name);
+      ports.push_back(Has1OutputPort<PortTypeTag6>::outputPortDescription(port6Name)[0]);
+      return ports;
+    }
+  };
+
 #define PORT_SPEC(type)   template <>\
   class Has1InputPort<type ##PortTag> : public NumInputPorts<1>\
   {\
@@ -551,6 +576,7 @@ namespace Modules
   PORT_SPEC(Field);
   PORT_SPEC(Geometry);
   PORT_SPEC(ColorMap);
+  PORT_SPEC(Bundle);
   PORT_SPEC(Datatype);
 
 #define ATTACH_NAMESPACE(type) Core::Datatypes::type

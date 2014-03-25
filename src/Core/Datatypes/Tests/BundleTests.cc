@@ -29,7 +29,7 @@
 #include <gtest/gtest.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 
-using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
 TEST(BundleTests, CanDefaultConstruct)
 {

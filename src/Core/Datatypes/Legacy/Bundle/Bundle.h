@@ -33,7 +33,8 @@
 #include <Core/Datatypes/Legacy/Bundle/share.h>
 
 namespace SCIRun {
-
+  namespace Core {
+    namespace Datatypes {
 class SCISHARE Bundle : public Core::Datatypes::Datatype 
 {
   public:  
@@ -446,6 +447,6 @@ template<class PTYPE> inline bool Bundle::NrrdToMatrixHelper(
   return(false);
 }
 #endif
-} // end namespace SCIRun
+}}}
 
 #endif 

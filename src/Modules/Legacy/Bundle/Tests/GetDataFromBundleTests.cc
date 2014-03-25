@@ -28,6 +28,7 @@
 
 #include <Testing/ModuleTestBase/ModuleTestBase.h>
 #include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 
@@ -39,9 +40,18 @@ class GetDataFromBundleModuleTest : public ModuleTest
 {
 };
 
-TEST_F(GetDataFromBundleModuleTest, ThrowsForNullBundles)
+TEST_F(GetDataFromBundleModuleTest, ThrowsForNullBundlesMatrix)
 {
   auto sls = makeModule("GetMatricesFromBundle");
+  BundleHandle nullBundle;
+  stubPortNWithThisData(sls, 0, nullBundle);
+
+  EXPECT_THROW(sls->execute(), NullHandleOnPortException);
+}
+
+TEST_F(GetDataFromBundleModuleTest, ThrowsForNullBundlesField)
+{
+  auto sls = makeModule("GetFieldsFromBundle");
   BundleHandle nullBundle;
   stubPortNWithThisData(sls, 0, nullBundle);
 

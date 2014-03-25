@@ -56,6 +56,7 @@ namespace Datatypes {
   class String;
   class GeometryObject;
   class ColorMap;
+  class Bundle;
 }}
 
   class Field;

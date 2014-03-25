@@ -42,6 +42,7 @@
 #endif
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 static Persistent* make_Bundle() {
