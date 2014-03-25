@@ -118,21 +118,9 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMa
 			update_progress((double)p/m);
 		}
 	} 
-
-	std::cout << "got here 10 " << std::endl;
-	
 	output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
-
-	std::cout << "got here 11 " << std::endl;
-	
 	output_rhs = rhsCol;
-	
-	std::cout << "got here 12 " << std::endl;
-	
 	output_stiff->makeCompressed();
-    
-	std::cout << "got here 13 " << std::endl;
-	
 	return true;
 }
 

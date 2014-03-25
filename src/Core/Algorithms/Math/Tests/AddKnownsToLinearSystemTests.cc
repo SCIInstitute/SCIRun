@@ -114,43 +114,44 @@ namespace {
 	DenseColumnMatrixHandle RHS_zero()
 	{
 		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
-		//m->setZero();
-		(*m)(0,0) = 1;
+		m->setZero();
+		/*(*m)(0,0) = 1;
 		(*m)(1,0) = 2;
-		(*m)(2,0) = 3;
+		(*m)(2,0) = 3;*/
 		return m;
 	}
 }
 
+TEST (AddKnownsToLinearSystemAlgo, bad_parameters_are_non_square_and_non_symmetric)
+{	
+	SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	
+	AddKnownsToLinearSystemAlgo algo;
 
+	// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
+	EXPECT_THROW (algo.run(LHS_not_sym(),RHS_zero(),x1(),output_stiff,output_rhs), AlgorithmInputException);
+	 
+	// this test makes sure an exception is thrown for a non square matrix
+	EXPECT_THROW (algo.run(LHS_non_sqr(),RHS_zero(),x1(),output_stiff,output_rhs), AlgorithmInputException);
+	
 
-TEST (AddKnownsToLinearSystemAlgo, testing_stiff_LHS_matrix)
+}
+
+TEST (AddKnownsToLinearSystemAlgo, using_good_parameters)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
 	
 	AddKnownsToLinearSystemAlgo algo;
 	
-	DenseMatrixHandle xone = x1();
-	DenseMatrixHandle xtwo = x2();
-
-	SparseRowMatrixHandle lhs = LHS();
-	SparseRowMatrixHandle lhs_not_sym = LHS_not_sym();
-	SparseRowMatrixHandle lhs_non_sqr = LHS_non_sqr();
-	DenseColumnMatrixHandle rhs_123 = RHS_zero();
-
-
-	// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
-	EXPECT_THROW (algo.run(LHS_not_sym(),RHS_zero(),x1(),output_stiff,output_rhs), AlgorithmInputException);
-	
-	// this test makes sure an exception is thrown for a non square matrix
-	EXPECT_THROW (algo.run(LHS_non_sqr(),RHS_zero(),x1(),output_stiff,output_rhs), AlgorithmInputException);
-	
-	
-	// TODO track down the segmentation fault
-	// this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS, and
-	//   that output_stiff is the correct values 
+	// this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
 	EXPECT_TRUE(algo.run(LHS(),RHS_zero(),x1(),output_stiff,output_rhs));
+}
+
+TEST (AddKnownsToLinearSystemAlgo, for_debugging)
+{	
+	system("pause");
 }
 
 // TODO test the output stiff
