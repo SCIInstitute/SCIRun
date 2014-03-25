@@ -166,7 +166,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    typedef std::map<Name, boost::variant<Datatypes::DatatypeHandle, std::vector<Datatypes::DatatypeHandle>>> Map;
+    typedef std::map<Name, std::vector<Datatypes::DatatypeHandle>> Map;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -177,7 +177,7 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       //TODO: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(boost::get<Datatypes::DatatypeHandle>(it->second));
+      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
@@ -185,7 +185,7 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       //TODO: log incorrect type if present but wrong type
-      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(boost::get<std::vector<Datatypes::DatatypeHandle>>(it->second));
+      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
     }
 
     //TODO: lame
@@ -255,6 +255,10 @@ namespace Algorithms {
   public:
     AlgoInputBuilder();
     AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, Datatypes::DatatypeHandle d)
+    {
+      return operator()(name.name(), d);
+    }
     template <typename T>
     AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
     {
@@ -262,6 +266,11 @@ namespace Algorithms {
       std::vector<Datatypes::DatatypeHandle> datas = upcast_range<Datatypes::Datatype>(vec);
       map_[Name(name)] = datas;
       return *this;
+    }
+    template <typename T>
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, const std::vector<T>& vec)
+    {
+      return operator()(name.name(), vec);
     }
     AlgorithmInput build() const;
   private:

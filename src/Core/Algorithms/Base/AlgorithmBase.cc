@@ -157,7 +157,10 @@ ScopedAlgorithmStatusReporter::~ScopedAlgorithmStatusReporter()
 
 DatatypeHandle& AlgorithmData::operator[](const Name& name)
 {
-  return boost::get<DatatypeHandle&>(data_[name]);
+  std::vector<DatatypeHandle>& vec = data_[name];
+  if (vec.empty())
+    vec.resize(1);
+  return vec[0];
 }
 
 void AlgorithmParameterList::add_option(const AlgorithmParameterName& key, const std::string& defval, const std::string& options)
@@ -223,7 +226,11 @@ AlgoInputBuilder::AlgoInputBuilder() {}
 
 AlgoInputBuilder& AlgoInputBuilder::operator()(const std::string& name, DatatypeHandle d)
 {
-  map_[Name(name)] = d;
+  std::vector<DatatypeHandle>& vec = map_[Name(name)];
+  if (vec.empty())
+    vec.push_back(d);
+  else
+    vec[0] = d;
   return *this;
 }
 
