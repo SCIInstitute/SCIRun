@@ -26,10 +26,8 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : 10/24/2013 ported from SCIRun4 and slightly improved
+   Last modification : 10/24/2013 ported from SCIRun4
 */
-
-
 
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -39,82 +37,103 @@
 #include <Core/Datatypes/SparseRowMatrixFromMap.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
+#include <Core/GeometryPrimitives/Point.h>
+#include <Core/GeometryPrimitives/Tensor.h>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <stdexcept>
+
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 
-
-bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMatrixHandle rhs, DenseMatrixHandle x, SparseRowMatrixHandle& output_stiff, 
-  DenseColumnMatrixHandle& output_rhs) const
+bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMatrixHandle rhs, DenseMatrixHandle x, 
+									  SparseRowMatrixHandle& output_stiff, DenseColumnMatrixHandle& output_rhs) const
 {
   SparseRowMatrixFromMap::Values additionalData;
 
-  if (!isSymmetricMatrix(*stiff))
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("LHS matrix is not symmetrical");
-  } 
-
-  unsigned int m=static_cast<unsigned int>(stiff->ncols()),n=static_cast<unsigned int>(stiff->nrows());
-  if (!rhs) 
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate new b matrix");  
-  } 
-  else if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))))
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("The dimensions of matrix rhs do not match the dimensions of matrix A"); 
-  }
-
-  auto rhsCol = matrix_cast::as_column(rhs);
-  if (!rhsCol) rhsCol = matrix_convert::to_column(rhs); 
-
-  if (!x)
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("No x vector was given");
-  } 
-  else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("The dimensions of matrix x do not match the dimensions of matrix A");
-  } 
-
-  auto xCol = matrix_cast::as_column(x);
-  if (!xCol) rhsCol = matrix_convert::to_column(x);  
-
-  index_type cnt = 0;
-
-  for (index_type p=0; p<m;p++)
-  {
-    if (IsFinite((*x).coeff(p)))
-    {  
-      for (index_type i=0; i<m; i++)
-      {
-        if (i!=p) 
-        {
-          (*rhsCol).coeffRef(i) -= (*stiff).coeff(i,p) * (*xCol).coeff(p); 
-          additionalData[i][p]=0.0;
-        }
-        else
-        {          
-          (*rhsCol)[p] = (*xCol).coeff(p);
-          additionalData[p][p]=1.0; 
-        }	    
-      }	           
+    if (!isSymmetricMatrix(*stiff))
+		THROW_ALGORITHM_INPUT_ERROR("LHS matrix is not symmetrical");
+       
+    unsigned int m = static_cast<unsigned int>(stiff->ncols()), 
+				 n = static_cast<unsigned int>(stiff->nrows());
+	
+	if (!rhs)
+	{
+        THROW_ALGORITHM_INPUT_ERROR("Could not allocate new b matrix");
+	}
+	else if ( !(((rhs->ncols() == m) && (rhs->nrows() == 1)) || ((rhs->ncols() == 1) && (rhs->nrows() == m))) )
+	{
+		THROW_ALGORITHM_INPUT_ERROR("The dimensions of matrix rhs do not match the dimensions of matrix A"); 
     }
-    cnt++;
-    if (cnt == 10)
-    {
-      cnt = 0;
-      update_progress((double)p/m);
-    }
-  } 
+    
+	auto rhsCol = matrix_cast::as_column(rhs);
+    if (!rhsCol) rhsCol = matrix_convert::to_column(rhs); 
+	
+    if (!x)
+	{
+		THROW_ALGORITHM_INPUT_ERROR("No x vector was given");
+	}
+	else if ( !(((x->ncols() == m) && (x->nrows() == 1)) || ((x->ncols() == 1) && (x->nrows() == m))) )
+	{
+		THROW_ALGORITHM_INPUT_ERROR("The dimensions of matrix x do not match the dimensions of matrix A");
+    } 
+	
+	auto xCol = matrix_cast::as_column(x);
+	if (!xCol) xCol = matrix_convert::to_column(x);  
+       
+	index_type cnt = 0;
+ 
+	for (index_type p=0; p<m;p++)
+	{
+		if (IsFinite((*x).coeff(p)))
+		{
+			//knowns++;
+			for (index_type i=0; i<m; i++)
+			{
+				if (i!=p) 
+				{
+					(*rhsCol).coeffRef(i) -= (*stiff).coeff(i,p) * (*xCol).coeff(p); 
 
-  output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
+					additionalData[i][p]=0.0;
+				}
+				else
+				{    
+					(*rhsCol)[p] = (*xCol).coeff(p);
 
-  output_rhs = rhsCol;
-  output_stiff->makeCompressed();
+					additionalData[p][p]=1.0; 
+				}	    
+			}	           
+		}
+		
+		cnt++;
+		if (cnt == 10)
+		{
+			cnt = 0;
+			update_progress((double)p/m);
+		}
+	} 
 
-  return true;
+	std::cout << "got here 10 " << std::endl;
+	
+	output_stiff = SparseRowMatrixFromMap::appendToSparseMatrix(m, n, *stiff, additionalData);
+
+	std::cout << "got here 11 " << std::endl;
+	
+	output_rhs = rhsCol;
+	
+	std::cout << "got here 12 " << std::endl;
+	
+	output_stiff->makeCompressed();
+    
+	std::cout << "got here 13 " << std::endl;
+	
+	return true;
 }
 
 AlgorithmInputName AddKnownsToLinearSystemAlgo::LHS_Matrix("LHS_Matrix");
@@ -125,24 +144,24 @@ AlgorithmInputName AddKnownsToLinearSystemAlgo::OutPutRHSVector("OutPutRHSVector
 
 AlgorithmOutput AddKnownsToLinearSystemAlgo::run_generic(const AlgorithmInput & input) const
 { 
+	auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
+	auto input_rhs = input.get<DenseColumnMatrix>(RHS_Vector);
+	auto input_x = input.get<DenseMatrix>(X_Vector);
+
+	if (input_lhs->nrows() != input_lhs->ncols()) 
+	{
+		THROW_ALGORITHM_INPUT_ERROR("Stiffness matrix input needs to be a sparse squared matrix! ");
+	}
+
+	SparseRowMatrixHandle output_lhs;
+	DenseColumnMatrixHandle output_rhs;
   
-  auto input_lhs = input.get<SparseRowMatrix>(LHS_Matrix);
-  auto input_rhs = input.get<DenseColumnMatrix>(RHS_Vector);
-  auto input_x = input.get<DenseMatrix>(X_Vector);
+	if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
+		THROW_ALGORITHM_INPUT_ERROR("False returned on legacy run call.");
 
-  if (input_lhs->nrows() != input_lhs->ncols()) 
-  {
-    THROW_ALGORITHM_PROCESSING_ERROR("Stiffness matrix input needs to be a sparse squared matrix! ");
-  }
+	AlgorithmOutput output; 
+	output[OutPutLHSMatrix] = output_lhs;
+	output[OutPutRHSVector] = output_rhs;
 
-  SparseRowMatrixHandle output_lhs;
-  DenseColumnMatrixHandle output_rhs;
-  if (!run(input_lhs,input_rhs,input_x,output_lhs,output_rhs))
-    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
-
-  AlgorithmOutput output;
-  output[OutPutLHSMatrix] = output_lhs;
-  output[OutPutRHSVector] = output_rhs;
-
-  return output;
+	return output;
 }
