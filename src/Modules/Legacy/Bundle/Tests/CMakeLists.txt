@@ -36,7 +36,7 @@ SCIRUN_ADD_UNIT_TEST(Modules_Bundle_Tests
 )
 
 TARGET_LINK_LIBRARIES(Modules_Bundle_Tests
-  Modules_Legacy_Bundle
+  #Modules_Legacy_Bundle
   Modules_Factory
   Testing_Utils
   Testing_ModuleTestBase
