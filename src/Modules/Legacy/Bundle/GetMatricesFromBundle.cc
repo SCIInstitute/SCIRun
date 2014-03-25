@@ -26,9 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/Matrix.h>
 
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/Matrix.h>
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/BundlePort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
@@ -182,3 +183,5 @@ GetMatricesFromBundle::execute()
     send_output_handle("bundle",handle);
   }
 }
+
+#endif

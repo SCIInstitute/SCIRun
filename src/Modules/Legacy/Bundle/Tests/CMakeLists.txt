@@ -3,7 +3,7 @@
 # 
 #  The MIT License
 # 
-#  Copyright (c) 2009 Scientific Computing and Imaging Institute,
+#  Copyright (c) 2012 Scientific Computing and Imaging Institute,
 #  University of Utah.
 # 
 #  
@@ -15,7 +15,7 @@
 #  Software is furnished to do so, subject to the following conditions:
 # 
 #  The above copyright notice and this permission notice shall be included
-#  in all copies or substantial portions of the Software.
+#  in all copies or substantial portions of the Software. 
 # 
 #  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
 #  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,41 +26,21 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-# CMakeLists.txt for Dataflow/Modules/Bundle
-
-SET(Modules_Legacy_Bundle_HEADERS
-  GetFieldsFromBundle.h
-  GetMatricesFromBundle.h
-)
-SET(Modules_Legacy_Bundle_SRCS
-  #CreateParameterBundle.cc
-  #InsertEnvironmentIntoBundle.cc
-  #InsertBundlesIntoBundle.cc
-  #InsertFieldsIntoBundle.cc
-  #InsertMatricesIntoBundle.cc
-  #InsertNrrdsIntoBundle.cc
-  #InsertColorMapsIntoBundle.cc
-  #InsertStringsIntoBundle.cc
-  #ReportBundleInfo.cc
-  #GetBundlesFromBundle.cc
-  GetFieldsFromBundle.cc
-  GetMatricesFromBundle.cc
-  #GetNrrdsFromBundle.cc
-  #GetColorMapsFromBundle.cc
-  #GetStringsFromBundle.cc
-  #JoinBundles.cc
+SET(Modules_Bundle_Tests_SRCS
+  GetDataFromBundleTests.cc
+  InsertDataIntoBundleTests.cc
 )
 
-ADD_LIBRARY(Modules_Legacy_Bundle ${Modules_Legacy_Bundle_HEADERS} ${Modules_Legacy_Bundle_SRCS})
-
-TARGET_LINK_LIBRARIES(Modules_Legacy_Bundle
-  Dataflow_Network
-  Core_Datatypes
-  #${SCI_TEEM_LIBRARY}
+SCIRUN_ADD_UNIT_TEST(Modules_Bundle_Tests
+  ${Modules_Bundle_Tests_SRCS}
 )
 
-IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Modules_Legacy_Bundle)
-ENDIF(BUILD_SHARED_LIBS)
-
-SCIRUN_ADD_TEST_DIR(Tests)
+TARGET_LINK_LIBRARIES(Modules_Bundle_Tests
+  Modules_Legacy_Bundle
+  Modules_Factory
+  Testing_Utils
+  Testing_ModuleTestBase
+  gtest_main
+  gtest
+  gmock
+)

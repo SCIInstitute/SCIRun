@@ -27,6 +27,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Datatypes/Bundle.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/MatrixTypeConverter.h>
@@ -155,3 +156,4 @@ void GetFieldsFromBundle::execute()
 
 
 
+#endif
