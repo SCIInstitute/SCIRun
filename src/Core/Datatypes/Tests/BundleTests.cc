@@ -27,9 +27,13 @@
 */
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
 
+using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
+using ::testing::NotNull;
 
 TEST(BundleTests, CanDefaultConstruct)
 {
@@ -40,6 +44,11 @@ TEST(BundleTests, CanDefaultConstruct)
 
 TEST(BundleTests, CanStoreFields)
 {
+  Bundle b;
+  FieldHandle f(new NullField);
+  b.set("foo", f);
+  EXPECT_TRUE(b.isField("foo"));
+  ASSERT_THAT(b.get("foo"), NotNull());
   FAIL() << "todo";
 }
 
@@ -65,7 +74,14 @@ TEST(BundleTests, IsSortedCaseInsensitively)
 
 TEST(BundleTests, CanGetElementsByName)
 {
-  FAIL() << "todo";
+  Bundle bundle;
+  const std::string name = "foo";
+  FieldHandle f(new NullField(name));
+  bundle.set(name, f);
+  ASSERT_TRUE(bundle.isField(name));
+  auto field = bundle.getField(name);
+  ASSERT_THAT(field, NotNull());
+  EXPECT_EQ(field, f);
 }
 
 TEST(BundleTests, CanOverwriteValuesOfSameName)

@@ -79,15 +79,6 @@ Bundle* Bundle::clone() const
 }
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-int Bundle::findName(std::deque<std::string> &deq, const std::string& name)
-{
-  for (unsigned int p = 0; p<deq.size(); p++)
-  {
-    if (boost::iequals(name, deq[p])) 
-      return p;
-  }
-  return(-1);
-}
 
 void Bundle::merge(LockingHandle<Bundle> C)
 {
@@ -603,4 +594,27 @@ bool Bundle::empty() const
 size_t Bundle::size() const
 {
   return bundle_.size();
+}
+
+void Bundle::set(const std::string& name, DatatypeHandle data)
+{
+  bundle_[name] = data;
+}
+
+DatatypeHandle Bundle::get(const std::string& name) const
+{
+  auto it = bundle_.find(name);
+  if (it != bundle_.end())
+    return it->second;
+  return DatatypeHandle();
+}
+
+FieldHandle Bundle::getField(const std::string& name) const
+{
+  return boost::dynamic_pointer_cast<Field>(get(name));
+}
+
+bool Bundle::isField(const std::string& name) const
+{
+  return getField(name) != nullptr;
 }

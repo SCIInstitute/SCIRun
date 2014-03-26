@@ -35,7 +35,8 @@
 namespace SCIRun {
   namespace Core {
     namespace Datatypes {
-class SCISHARE Bundle : public Core::Datatypes::Datatype 
+
+class SCISHARE Bundle : public Datatype 
 {
   public:  
     Bundle();
@@ -44,6 +45,13 @@ class SCISHARE Bundle : public Core::Datatypes::Datatype
 
     bool empty() const;
     size_t size() const;
+
+    DatatypeHandle get(const std::string& name) const;
+    void set(const std::string& name, DatatypeHandle data);
+
+    bool isField(const std::string& name) const;
+    FieldHandle getField(const std::string& name) const;
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     Bundle(const Bundle& copy);
     virtual ~Bundle();

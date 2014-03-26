@@ -118,6 +118,19 @@ SCISHARE FieldHandle CreateField(mesh_info_type mesh,
 SCISHARE FieldHandle CreateField(FieldInformation &info);
 SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
 
+class SCISHARE NullField : public Field
+{
+public:
+  explicit NullField(const std::string& name = "null") : Field() {}
+  virtual Field* clone() const { return 0; }
+  virtual Field* deep_clone() const { return 0; }
+  virtual MeshHandle mesh() const { return MeshHandle(); }
+  virtual VMesh* vmesh()   const { return 0; }
+  virtual VField* vfield() const { return 0; }
+  virtual int basis_order() const { return 0; }
+  virtual const TypeDescription* get_type_description(td_info_e td) const { return 0; }
+};
+
 }
 
 #endif

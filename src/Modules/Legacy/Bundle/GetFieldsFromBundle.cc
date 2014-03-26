@@ -98,6 +98,7 @@ void GetFieldsFromBundle::execute()
       {
         auto field = bundle->getField(fieldName);
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+          //need a way to send output down a port by index or parameterized name
         sendOutput("field1",field);
 #endif
       } 

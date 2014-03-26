@@ -31,6 +31,8 @@
 SET(Modules_Legacy_Bundle_HEADERS
   GetFieldsFromBundle.h
   GetMatricesFromBundle.h
+  #InsertFieldsIntoBundle.h
+  #InsertMatricesIntoBundle.h
 )
 SET(Modules_Legacy_Bundle_SRCS
   #CreateParameterBundle.cc
@@ -56,6 +58,7 @@ ADD_LIBRARY(Modules_Legacy_Bundle ${Modules_Legacy_Bundle_HEADERS} ${Modules_Leg
 TARGET_LINK_LIBRARIES(Modules_Legacy_Bundle
   Dataflow_Network
   Core_Datatypes
+  Core_Datatypes_Legacy_Bundle
   #${SCI_TEEM_LIBRARY}
 )
 
