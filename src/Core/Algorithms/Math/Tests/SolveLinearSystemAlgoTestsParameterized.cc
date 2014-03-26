@@ -175,8 +175,8 @@ protected:
 			A = matrix_cast::as_sparse(reader.run(Afile.string()));
 		}
 		ASSERT_TRUE(A.get() != nullptr);
-		EXPECT_EQ(428931, A->nrows());
-		EXPECT_EQ(428931, A->ncols());
+		EXPECT_EQ(10149, A->nrows());
+		EXPECT_EQ(10149, A->ncols());
 
 		DenseMatrixHandle rhs;
 		{
@@ -184,15 +184,15 @@ protected:
 			rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
 		}
 		ASSERT_TRUE(rhs.get() != nullptr);
-		EXPECT_EQ(428931, rhs->nrows());
+		EXPECT_EQ(10149, rhs->nrows());
 		EXPECT_EQ(1, rhs->ncols());
 
 		DenseColumnMatrixHandle x0;
 		ASSERT_FALSE(x0); // algo object will initialize x0 to the zero vector
 
 		SolveLinearSystemAlgo algo;
-		algo.set(Variables::MaxIterations, 500);
-		algo.set(Variables::TargetError, 7e-4);
+		algo.set(Variables::MaxIterations, 670);
+		algo.set(Variables::TargetError, ::std::tr1::get<1>(GetParam()));
 		algo.set_option(Variables::Method, ::std::tr1::get<0>(GetParam()));
 		algo.setUpdaterFunc([](double x) {});
 
@@ -202,11 +202,11 @@ protected:
 			ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
 		}
 		ASSERT_TRUE(solution.get() != nullptr);
-		EXPECT_EQ(428931, solution->nrows());
+		EXPECT_EQ(10149, solution->nrows());
 		EXPECT_EQ(1, solution->ncols());
 
         const std::string& c = ::std::tr1::get<0>(GetParam()); 
-		auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + c + ".mat");
+		auto solutionFile = TestResources::rootDir() / ("dan_sol_" + c + ".mat");
 
 		auto scirun4solution = reader.run(solutionFile.string());
 		ASSERT_TRUE(scirun4solution.get() != nullptr);
@@ -215,7 +215,7 @@ protected:
 		EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, ::std::tr1::get<1>(GetParam()));
 
 		WriteMatrixAlgorithm writer;
-		auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / ("portedSolution_" +  c + ".txt");
+		auto portedSolutionFile = TestResources::rootDir() / ("portedSolution_" +  c + ".txt");
 		writer.run(solution, portedSolutionFile.string());
 
 		auto diff = *expected - *solution;
@@ -227,7 +227,8 @@ protected:
 
 TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)
 {
-	EXPECT_NO_FATAL_FAILURE(SolveLinearSystemTestsAlgoParameterized); 
+	EXPECT_NO_FATAL_FAILURE(SolveLinearSystemTestsAlgoParameterized.SetUp()); 
+
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -238,9 +239,8 @@ INSTANTIATE_TEST_CASE_P(
 		"bigcg",
 		"jacobi",
 		"minres"
-		), 
-	//Range(1, 10, 0.1)) 
-	Values(0.15, 0.23, 0.001, 105, 2.4))
+		),  
+	Values(1e-1,1e-3,1e-5))
 	);
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform(){}
