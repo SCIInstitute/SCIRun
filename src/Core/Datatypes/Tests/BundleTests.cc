@@ -30,10 +30,13 @@
 #include <gmock/gmock.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseMatrix.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
 using ::testing::NotNull;
+using namespace ::testing;
 
 TEST(BundleTests, CanDefaultConstruct)
 {
@@ -49,27 +52,86 @@ TEST(BundleTests, CanStoreFields)
   b.set("foo", f);
   EXPECT_TRUE(b.isField("foo"));
   ASSERT_THAT(b.get("foo"), NotNull());
-  FAIL() << "todo";
 }
 
 TEST(BundleTests, CanStoreStrings)
 {
-  FAIL() << "todo";
+  Bundle b;
+  StringHandle s(new String("foo"));
+  b.set("foo", s);
+  EXPECT_TRUE(b.isString("foo"));
+  ASSERT_THAT(b.get("foo"), NotNull());
 }
 
 TEST(BundleTests, CanStoreMatrices)
 {
-  FAIL() << "todo";
+  Bundle b;
+  MatrixHandle m(new DenseMatrix(1,2));
+  b.set("foo", m);
+  EXPECT_TRUE(b.isMatrix("foo"));
+  ASSERT_THAT(b.get("foo"), NotNull());
 }
 
 TEST(BundleTests, CanStoreMultipleTypes)
 {
-  FAIL() << "todo";
+  Bundle b;
+  StringHandle s(new String("foo"));
+  b.set("str", s);
+  EXPECT_TRUE(b.isString("str"));
+  MatrixHandle m(new DenseMatrix(1,2));
+  b.set("mat", m);
+  EXPECT_TRUE(b.isMatrix("mat"));
+  FieldHandle f(new NullField);
+  b.set("field", f);
+  EXPECT_TRUE(b.isField("field"));
+
+  EXPECT_EQ(3, b.size());
 }
 
-TEST(BundleTests, IsSortedCaseInsensitively)
+TEST(BundleTests, CanCountMultipleTypes)
 {
-  FAIL() << "todo";
+  Bundle b;
+  StringHandle s(new String("foo"));
+  b.set("str", s);
+  MatrixHandle m1(new DenseMatrix(1,2));
+  b.set("mat1", m1);
+  MatrixHandle m2(new DenseMatrix(1,2));
+  b.set("mat2", m2);
+  FieldHandle f1(new NullField);
+  b.set("field1", f1);
+  FieldHandle f2(new NullField);
+  b.set("field2", f2);
+  FieldHandle f3(new NullField);
+  b.set("field3", f3);
+
+  EXPECT_EQ(6, b.size());
+  EXPECT_EQ(1, b.numStrings());
+  EXPECT_EQ(2, b.numMatrices());
+  EXPECT_EQ(3, b.numFields());
+}
+
+TEST(BundleTests, CanCopyConstruct)
+{
+  Bundle b1;
+  MatrixHandle m(new DenseMatrix(1,2));
+  b1.set("foo", m);
+  EXPECT_EQ(1, b1.size());
+  Bundle b2(b1);
+  EXPECT_EQ(1, b2.size());
+  b1.remove("foo");
+  EXPECT_EQ(0, b1.size());
+  EXPECT_EQ(1, b2.size());
+}
+
+// change from v4. MD saw no reason to restrict names by case
+TEST(BundleTests, IsSortedCaseSensitively)
+{
+  Bundle b;
+  MatrixHandle m1(new DenseMatrix(1,2));
+  b.set("foo", m1);
+  MatrixHandle m2(new DenseMatrix(1,2));
+  b.set("Foo", m2);
+  EXPECT_EQ(2, b.size());
 }
 
 TEST(BundleTests, CanGetElementsByName)
@@ -86,15 +148,50 @@ TEST(BundleTests, CanGetElementsByName)
 
 TEST(BundleTests, CanOverwriteValuesOfSameName)
 {
-  FAIL() << "todo";
-}
-
-TEST(BundleTests, CanOverwriteValuesOfSameNameCaseInsensitive)
-{
-  FAIL() << "todo";
+  Bundle b;
+  MatrixHandle m1(new DenseMatrix(1,2));
+  b.set("foo", m1);
+  EXPECT_EQ(1, b.size());
+  MatrixHandle m2(new DenseMatrix(2,2));
+  b.set("foo", m2);
+  EXPECT_EQ(1, b.size());
 }
 
 TEST(BundleTests, CanRemoveValuesByName)
 {
-  FAIL() << "todo";
+  Bundle b;
+  MatrixHandle m1(new DenseMatrix(1,2));
+  b.set("foo", m1);
+  EXPECT_EQ(1, b.size());
+  EXPECT_TRUE(b.remove("foo"));
+  EXPECT_TRUE(b.empty());
+  EXPECT_EQ(0, b.size());
+  EXPECT_FALSE(b.remove("foo"));
+  MatrixHandle m2(new DenseMatrix(2,2));
+  b.set("foo", m2);
+  EXPECT_EQ(1, b.size());
+}
+
+TEST(BundleTests, CanIterateOverEachType)
+{
+  Bundle b;
+  StringHandle s(new String("foo"));
+  b.set("str", s);
+  MatrixHandle m1(new DenseMatrix(1,2));
+  b.set("mat1", m1);
+  MatrixHandle m2(new DenseMatrix(1,2));
+  b.set("mat2", m2);
+  FieldHandle f1(new NullField);
+  b.set("field1", f1);
+  FieldHandle f2(new NullField);
+  b.set("field2", f2);
+  FieldHandle f3(new NullField);
+  b.set("field3", f3);
+
+  auto mats = b.getMatrices();
+  EXPECT_THAT(mats, ElementsAre(m1, m2));
+  auto strings = b.getStrings();
+  EXPECT_THAT(strings, ElementsAre(s));
+  auto fields = b.getFields();
+  EXPECT_THAT(fields, ElementsAre(f1, f2, f3));
 }

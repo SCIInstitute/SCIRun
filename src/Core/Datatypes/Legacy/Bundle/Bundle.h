@@ -36,6 +36,11 @@ namespace SCIRun {
   namespace Core {
     namespace Datatypes {
 
+      //TODO:
+      // 0. Bundle I/O
+      // 1. Store ColorMaps, Nrrds, and Bundles
+      // 2. Matrix <-> Nrrd interop. Should go in separate class.
+
 class SCISHARE Bundle : public Datatype 
 {
   public:  
@@ -51,6 +56,20 @@ class SCISHARE Bundle : public Datatype
 
     bool isField(const std::string& name) const;
     FieldHandle getField(const std::string& name) const;
+    size_t numFields() const;
+    std::vector<FieldHandle> getFields() const;
+
+    bool isMatrix(const std::string& name) const;
+    MatrixHandle getMatrix(const std::string& name) const;
+    size_t numMatrices() const;
+    std::vector<MatrixHandle> getMatrices() const;
+
+    bool isString(const std::string& name) const;
+    StringHandle getString(const std::string& name) const;
+    size_t numStrings() const;
+    std::vector<StringHandle> getStrings() const;
+
+    bool remove(const std::string& name);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     Bundle(const Bundle& copy);
@@ -60,27 +79,6 @@ class SCISHARE Bundle : public Datatype
     virtual void io(Piostream&);
     static PersistentTypeID type_id;
 
-    //! Basic functionality
-      
-    //! Get handle to an object from the bundle
-    template<class T> inline LockingHandle<T> get(const std::string& name);
-    
-    //! Add or replace an object in the bundle
-    template<class T> inline void set(const std::string& name, 
-                                        LockingHandle<T> &handle);
-    
-    //! Check whether an object is present 
-    template<class T> inline bool is(const std::string& name);
-    
-    //! Get the number of objects of a certain type
-    template<class T> inline int num();
-    
-    //! Get the name of an object
-    template<class T> inline std::string getName(int index);
-
-    //! Remove object
-    inline void rem(const std::string& name);
-    
     //! Merge two bundles together
     void merge(SCIRun::LockingHandle<Bundle> C);
 
@@ -96,21 +94,6 @@ class SCISHARE Bundle : public Datatype
     //!  numfields    -> The number of fields stored in the bundle 
     //!  getfieldname -> Get the nth name in the bundle for building a contents 
     //!                  list
-  
-    LockingHandle<Field> getField(const std::string& name) 
-      { return(get<Field>(name)); }
-      
-    void setField(const std::string& name, LockingHandle<Field> &field) 
-      { set<Field>(name,field); }
-      
-    void remField(const std::string& name)
-      { rem(name); }
-      
-    bool isField(const std::string& name)  
-      { return(is<Field>(name)); }
-      
-    int  numFields() 
-      { return(num<Field>()); }
           
     std::string getFieldName(int index) 
       { return(getName<Field>(index)); }
@@ -125,63 +108,9 @@ class SCISHARE Bundle : public Datatype
     //!  getmatrixname -> Get the nth name in the bundle for building a contents 
     //!                   list
   
-    MatrixHandle getMatrix(const std::string& name);
-      // Implementation in cc file, with NRRD/MATRIX compatibility
-      
-    void setMatrix(const std::string& name, MatrixHandle& matrix)
-      { set< Matrix<double> >(name,matrix); }
-    
-    void remMatrix(const std::string& name) 
-      { rem(name); }
-    
-    bool isMatrix(const std::string& name); 
-      // Implementation in cc file, with NRRD/MATRIX compatibility
-    
-    int  numMatrices();
-      // Implementation in cc file, with NRRD/MATRIX compatibility
-    
     std::string getMatrixName(int index);
       // Implementation in cc file, with NRRD/MATRIX compatibility
 
-    //! The basic functions for managing matrices
-    //!  getstring     -> Retrieve a Handle to a matrix stored in the bundle
-    //!  setstring     -> Add a matrix with a name, if it already exists the old
-    //!                   one is overwritten
-    //!  remstring     -> Remove a handle from the bundle
-    //!  isstring      -> Test whether a matrix is present in the bundle
-    //!  numstrings    -> The number of matrices stored in the bundle 
-    //!  getstringname -> Get the nth name in the bundle for building a contents 
-    //!                   list
-  
-    LockingHandle<String> getString(const std::string& name) 
-      { return(get<String>(name)); }
-      
-    void setString(const std::string& name, LockingHandle<String> &str) 
-      { set<String>(name,str); }
-      
-    void remString(const std::string& name) 
-      { rem(name); }
-    
-    bool isString(const std::string& name)  
-      { return(is<String>(name)); }
-    
-    int  numStrings() 
-      { return(num<String>()); }
-    
-    std::string getStringName(int index) 
-      { return(getName<String>(index)); }
-
-
-    //! The basic functions for managing nrrds
-    //!  getnrrd     -> Retrieve a Handle to a matrix stored in the bundle
-    //!  setnrrd     -> Add a nrrd with a name, if it already exists the old one 
-    //!                 is overwritten
-    //!  remnrrd     -> remove a handle from the bundle
-    //!  isnrrd      -> Test whether a nrrd is present in the bundle
-    //!  numnrrds    -> The number of nrrds stored in the bundle 
-    //!  getnrrdname -> Get the nth name in the bundle for building a contents 
-    //!                 list
-  
     LockingHandle<NrrdData> getNrrd(const std::string& name);
       // Implementation in cc file, with NRRD/MATRIX compatibility    
     
@@ -257,10 +186,6 @@ class SCISHARE Bundle : public Datatype
       { return(getName<Bundle>(index)); }
  
     
-    //! Get the number of elements in the Bundle
-    int getNumHandles() 
-      { return static_cast<int>(bundle_.size()); }
-    
     //! Get the name of the handles in the bundle     
     std::string getHandleName(int index) 
       { return bundleName_[static_cast<size_t>(index)]; }
@@ -276,9 +201,6 @@ class SCISHARE Bundle : public Datatype
  
   private:
     
-    //! find the handle in the bundle
-    int findName(std::deque<std::string> &deq, const std::string& name);
-    
     //! Functions for doing NRRD/MATRIX conversion
     template<class PTYPE> 
       inline bool NrrdToMatrixHelper(NrrdDataHandle dataH, MatrixHandle& matH);
@@ -288,12 +210,6 @@ class SCISHARE Bundle : public Datatype
     bool MatrixToNrrdConvertible(MatrixHandle matH);
     bool MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH);
 
-    //! The names of the elements in the bundle
-    std::deque<std::string> bundleName_;
-    
-    //! An array with handle to all the objects in the bundle
-    std::deque<LockingHandle<PropertyManager> > bundle_;
-  
     //! Setting for the conversion between NRRD/MATRIX
     bool transposeNrrd_;
 #endif
@@ -301,6 +217,7 @@ class SCISHARE Bundle : public Datatype
 };
 
 typedef boost::shared_ptr<Bundle> BundleHandle;
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 inline void Bundle::transposeNrrd(bool transpose)
 {
