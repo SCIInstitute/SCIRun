@@ -49,102 +49,6 @@ using namespace SCIRun::Core::Algorithms::DataIO;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun;
 using namespace ::testing;
-//
-//void CanSolveDarrellWithMethod(const std::string& method, double solutionError)
-//{
-//	auto Afile = TestResources::rootDir() / "CGDarrell" / "A.mat";
-//	auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
-//	if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
-//	{
-//		FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
-//			<< "Once that issue is done however, this will be a user setup error." << std::endl;
-//		return;
-//	}
-//
-//	ReadMatrixAlgorithm reader;
-//	SparseRowMatrixHandle A;
-//	{
-//		ScopedTimer t("reading sparse matrix");
-//		A = matrix_cast::as_sparse(reader.run(Afile.string()));
-//	}
-//	ASSERT_TRUE(A.get() != nullptr);
-//	EXPECT_EQ(428931, A->nrows());
-//	EXPECT_EQ(428931, A->ncols());
-//
-//	DenseMatrixHandle rhs;
-//	{
-//		ScopedTimer t("reading rhs");
-//		rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
-//	}
-//	ASSERT_TRUE(rhs.get() != nullptr);
-//	EXPECT_EQ(428931, rhs->nrows());
-//	EXPECT_EQ(1, rhs->ncols());
-//
-//	DenseColumnMatrixHandle x0;
-//	ASSERT_FALSE(x0); // algo object will initialize x0 to the zero vector
-//
-//	SolveLinearSystemAlgo algo;
-//	algo.set(Variables::MaxIterations, 500);
-//	algo.set(Variables::TargetError, 7e-4);
-//	algo.set_option(Variables::Method, method);
-//	algo.setUpdaterFunc([](double x) {});
-//
-//	DenseColumnMatrixHandle solution;
-//	{
-//		ScopedTimer t("Running solver");
-//		ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
-//	}
-//	ASSERT_TRUE(solution.get() != nullptr);
-//	EXPECT_EQ(428931, solution->nrows());
-//	EXPECT_EQ(1, solution->ncols());
-//
-//	auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + method + ".mat");
-//	auto scirun4solution = reader.run(solutionFile.string());
-//	ASSERT_TRUE(scirun4solution.get() != nullptr);
-//	DenseColumnMatrixHandle expected = matrix_convert::to_column(scirun4solution);
-//
-//	EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, solutionError);
-//
-//	WriteMatrixAlgorithm writer;
-//	auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / ("portedSolution_" + method + ".txt");
-//	writer.run(solution, portedSolutionFile.string());
-//
-//	auto diff = *expected - *solution;
-//	auto maxDiff = diff.maxCoeff();
-//	std::cout << "max diff is: " << maxDiff << std::endl;
-//}
-//
-//TEST(SolveLinearSystemTests, CanSolveDarrellWithMethod_CG)
-//{
-//	double solutionError;
-//	//TODO: investigate this significant difference
-//#ifdef WIN32
-//	solutionError = 0.15;
-//#else
-//	solutionError = 0.23;
-//#endif
-//	CanSolveDarrellWithMethod("cg", solutionError);
-//}
-//
-//TEST(SolveLinearSystemTests, CanSolveDarrellWithMethod_BICG)
-//{
-//	double solutionError = 0.001;
-//	CanSolveDarrellWithMethod("bicg", solutionError);
-//}
-//
-//TEST(SolveLinearSystemTests, CanSolveDarrellWithMethod_Jacobi)
-//{
-//	//TODO: doesn't converge for this system. Problem?
-//	double solutionError = 105;
-//	CanSolveDarrellWithMethod("jacobi", solutionError);
-//}
-//
-//TEST(SolveLinearSystemTests, CanSolveDarrellWithMethod_MINRES)
-//{
-//	//TODO: converges but not as accurate.
-//	double solutionError = 2.4;
-//	CanSolveDarrellWithMethod("minres", solutionError);
-//}
 
 #if GTEST_HAS_COMBINE 
 
@@ -159,8 +63,8 @@ public:
 protected:
 	virtual void SetUp()
 	{
-		auto Afile = TestResources::rootDir() / "CGDarrell" / "A.mat";
-		auto rhsFile = TestResources::rootDir() / "CGDarrell" / "RHS.mat";
+		auto Afile = TestResources::rootDir() / "moritz_A.mat";
+		auto rhsFile = TestResources::rootDir() / "moritz_b.mat";
 		if (!boost::filesystem::exists(Afile) || !boost::filesystem::exists(rhsFile))
 		{
 			FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
@@ -175,8 +79,8 @@ protected:
 			A = matrix_cast::as_sparse(reader.run(Afile.string()));
 		}
 		ASSERT_TRUE(A.get() != nullptr);
-		EXPECT_EQ(428931, A->nrows());
-		EXPECT_EQ(428931, A->ncols());
+		EXPECT_EQ(10149, A->nrows());
+		EXPECT_EQ(10149, A->ncols());
 
 		DenseMatrixHandle rhs;
 		{
@@ -184,15 +88,15 @@ protected:
 			rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
 		}
 		ASSERT_TRUE(rhs.get() != nullptr);
-		EXPECT_EQ(428931, rhs->nrows());
+		EXPECT_EQ(10149, rhs->nrows());
 		EXPECT_EQ(1, rhs->ncols());
 
 		DenseColumnMatrixHandle x0;
 		ASSERT_FALSE(x0); // algo object will initialize x0 to the zero vector
 
 		SolveLinearSystemAlgo algo;
-		algo.set(Variables::MaxIterations, 500);
-		algo.set(Variables::TargetError, 7e-4);
+		algo.set(Variables::MaxIterations, 667);
+		algo.set(Variables::TargetError, 1e-3);
 		algo.set_option(Variables::Method, ::std::tr1::get<0>(GetParam()));
 		algo.setUpdaterFunc([](double x) {});
 
@@ -202,11 +106,11 @@ protected:
 			ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
 		}
 		ASSERT_TRUE(solution.get() != nullptr);
-		EXPECT_EQ(428931, solution->nrows());
+		EXPECT_EQ(10149, solution->nrows());
 		EXPECT_EQ(1, solution->ncols());
 
         const std::string& c = ::std::tr1::get<0>(GetParam()); 
-		auto solutionFile = TestResources::rootDir() / "CGDarrell" / ("dan_sol_" + c + ".mat");
+		/*auto solutionFile = TestResources::rootDir() / ("dan_sol_" + c + ".mat");
 
 		auto scirun4solution = reader.run(solutionFile.string());
 		ASSERT_TRUE(scirun4solution.get() != nullptr);
@@ -215,19 +119,20 @@ protected:
 		EXPECT_COLUMN_MATRIX_EQ_BY_TWO_NORM(*expected, *solution, ::std::tr1::get<1>(GetParam()));
 
 		WriteMatrixAlgorithm writer;
-		auto portedSolutionFile = TestResources::rootDir() / "CGDarrell" / ("portedSolution_" +  c + ".txt");
+		auto portedSolutionFile = TestResources::rootDir() / ("portedSolution_" +  c + ".txt");
 		writer.run(solution, portedSolutionFile.string());
 
 		auto diff = *expected - *solution;
 		auto maxDiff = diff.maxCoeff();
 		std::cout << "max diff is: " << maxDiff << std::endl;
-	}
+		*/
+		}
 	virtual void TearDown(){}
 };
 
 TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)
 {
-	EXPECT_NO_FATAL_FAILURE(SolveLinearSystemTestsAlgoParameterized); 
+	EXPECT_NO_FATAL_FAILURE(SolveLinearSystemTestsAlgoParameterized);
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -235,12 +140,11 @@ INSTANTIATE_TEST_CASE_P(
 	SolveLinearSystemTestsAlgoParameterized,
 	Combine(Values(
 		"cg",
-		"bigcg",
+		"bicg",
 		"jacobi",
 		"minres"
 		), 
-	//Range(1, 10, 0.1)) 
-	Values(0.15, 0.23, 0.001, 105, 2.4))
+	Values(1e-1,1e-3,1e-4,1e-5))
 	);
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform(){}
