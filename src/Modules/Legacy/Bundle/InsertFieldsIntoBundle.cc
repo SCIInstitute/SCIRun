@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Bundle.h>
 
@@ -158,3 +159,4 @@ void InsertFieldsIntoBundle::execute()
   }
 }
 
+#endif

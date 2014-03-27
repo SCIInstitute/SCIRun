@@ -26,6 +26,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Bundle.h>
 
@@ -160,3 +161,4 @@ void InsertMatricesIntoBundle::execute()
 
 }
 
+#endif
