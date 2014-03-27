@@ -61,6 +61,10 @@
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Fields/FieldToMesh.h>
+#include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
+#include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
+#include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
+#include <Modules/Legacy/Bundle/InsertMatricesIntoBundle.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Modules/DataIO/ReadField.h>
@@ -95,6 +99,7 @@ using namespace SCIRun::Modules::StringProcessing;
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Modules::Render;
+using namespace SCIRun::Modules::Bundles;
 using namespace boost::assign;
 
 namespace SCIRun {
@@ -152,6 +157,10 @@ namespace SCIRun {
           addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
           addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
           addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
+          //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+          //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
+          //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)

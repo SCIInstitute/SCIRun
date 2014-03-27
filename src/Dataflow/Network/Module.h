@@ -658,6 +658,15 @@ namespace Modules
     }
   };
 
+  template <class ModuleType>
+  struct IPortDescriber<7, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputs()
+    {
+      return ModuleType::inputPortDescription(ModuleType::inputPort0Name(), ModuleType::inputPort1Name(), ModuleType::inputPort2Name(), ModuleType::inputPort3Name(), ModuleType::inputPort4Name(), ModuleType::inputPort5Name(), ModuleType::inputPort6Name());
+    }
+  };
+
   template <size_t numPorts, class ModuleType>
   struct OPortDescriber
   {
@@ -718,6 +727,15 @@ namespace Modules
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
     {
       return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name());
+    }
+  };
+
+  template <class ModuleType>
+  struct OPortDescriber<7, ModuleType>
+  {
+    static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputs()
+    {
+      return ModuleType::outputPortDescription(ModuleType::outputPort0Name(), ModuleType::outputPort1Name(), ModuleType::outputPort2Name(), ModuleType::outputPort3Name(), ModuleType::outputPort4Name(), ModuleType::outputPort5Name(), ModuleType::outputPort6Name());
     }
   };
 

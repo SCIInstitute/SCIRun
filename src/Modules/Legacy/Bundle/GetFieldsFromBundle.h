@@ -57,7 +57,6 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName FieldNameList;
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];
 
-      protected:
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
         std::string makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;

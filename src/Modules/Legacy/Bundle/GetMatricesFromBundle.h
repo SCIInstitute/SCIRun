@@ -54,6 +54,7 @@ namespace SCIRun {
         OUTPUT_PORT(5, matrix5, Matrix);
         OUTPUT_PORT(6, matrix6, Matrix);
 
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       };
 
     }

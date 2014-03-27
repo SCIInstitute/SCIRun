@@ -52,7 +52,6 @@ namespace SCIRun {
         static Core::Algorithms::AlgorithmParameterName FieldNameList;
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];
 
-      protected:
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
