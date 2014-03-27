@@ -43,6 +43,7 @@ ADD_LIBRARY(Core_Datatypes_Legacy_Bundle
 TARGET_LINK_LIBRARIES(Core_Datatypes_Legacy_Bundle
   Core_Persistent  
   Core_Datatypes
+  Core_Datatypes_Legacy_Field
 )
 
 IF(BUILD_SHARED_LIBS)
