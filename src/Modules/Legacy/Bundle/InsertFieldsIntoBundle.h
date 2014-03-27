@@ -44,17 +44,19 @@ namespace SCIRun {
         InsertFieldsIntoBundle();
         virtual void setStateDefaults();
         virtual void execute();
+        virtual bool hasDynamicPorts() const { return true; }
 
         INPUT_PORT(0, InputBundle, Bundle);
         INPUT_PORT_DYNAMIC(1, InputFields, LegacyField);
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
-        static Core::Algorithms::AlgorithmParameterName FieldNameList;
-        static const Core::Algorithms::AlgorithmParameterName FieldNames[];
+        static Core::Algorithms::AlgorithmParameterName BundleName;
+        static Core::Algorithms::AlgorithmParameterName FieldNames;
+        static Core::Algorithms::AlgorithmParameterName FieldReplace;
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+
       private:
-        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
       };
 
     }

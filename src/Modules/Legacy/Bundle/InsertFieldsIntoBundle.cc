@@ -26,41 +26,105 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Bundle.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/BundlePort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
+#include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Modules::Bundles;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 
-class InsertFieldsIntoBundle : public Module {
-public:
-  InsertFieldsIntoBundle(GuiContext*);
-  virtual void execute();
+ModuleLookupInfo InsertFieldsIntoBundle::staticInfo_("InsertFieldsIntoBundle", "Bundle", "SCIRun");
+AlgorithmParameterName InsertFieldsIntoBundle::FieldNames("FieldNames");
+AlgorithmParameterName InsertFieldsIntoBundle::FieldReplace("FieldReplace");
+
+InsertFieldsIntoBundle::InsertFieldsIntoBundle() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputBundle);
+  INITIALIZE_PORT(OutputBundle);
+  INITIALIZE_PORT(InputFields);
+}
+
+void InsertFieldsIntoBundle::setStateDefaults()
+{
+
+}
+
+void InsertFieldsIntoBundle::execute()
+{
+  auto bundleOption = getOptionalInput(InputBundle);
+  auto fields = getRequiredDynamicInputs(InputFields);
+
+  //if (inputs_changed_ || guifield1name_.changed() || 
+  //  guifield2name_.changed() || guifield3name_.changed() ||
+  //  guifield4name_.changed() || guifield5name_.changed() ||
+  //  guifield6name_.changed() || 
+  //  guireplace1_.changed() || guireplace2_.changed() ||
+  //  guireplace3_.changed() || guireplace4_.changed() ||
+  //  guireplace5_.changed() || guireplace6_.changed() ||
+  //  guibundlename_.changed() || !oport_cached("bundle"))
+  if (needToExecute())
+  {
+    update_state(Executing);
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    std::string bundlename = guibundlename_.get();
+#endif
+    BundleHandle bundle;
+    if (bundleOption && *bundleOption)
+    {
+      bundle.reset((*bundleOption)->clone());
+    }
+    else
+    {
+      bundle.reset(new Bundle());
+      if (!bundle)
+      {
+        THROW_ALGORITHM_PROCESSING_ERROR("Could not allocate new bundle");
+      }
+    }
+
+    auto fieldNames = get_state()->getValue(FieldNames).getList();
+    auto replace = get_state()->getValue(FieldReplace).getList();
+
+    for (int i = 0; i < fields.size(); ++i)
+    {
+      auto field = fields[i];
+      if (field)
+      {
+        auto name = i < fieldNames.size() ? fieldNames[i].getString() : ("field" + boost::lexical_cast<std::string>(i));
+        auto replaceField = i < replace.size() ? replace[i].getBool() : true;
+        if (replaceField || !bundle->isField(name))
+        {
+          bundle->set(name, field);
+        }
+      }
+    }
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    if (bundlename != "")
+    {
+      handle->set_property("name",bundlename,false);
+    }
+#endif
+
+    sendOutput(OutputBundle, bundle);
+  }
+}
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 private:
-  GuiString     guifield1name_;
-  GuiString     guifield2name_;
-  GuiString     guifield3name_;
-  GuiString     guifield4name_;
-  GuiString     guifield5name_;
   GuiString     guifield6name_;
   
-  GuiInt        guireplace1_;
-  GuiInt        guireplace2_;
-  GuiInt        guireplace3_;
-  GuiInt        guireplace4_;
-  GuiInt        guireplace5_;
   GuiInt        guireplace6_;
   
   GuiString     guibundlename_;
 };
 
 
-DECLARE_MAKER(InsertFieldsIntoBundle)
   InsertFieldsIntoBundle::InsertFieldsIntoBundle(GuiContext* ctx)
     : Module("InsertFieldsIntoBundle", ctx, Filter, "Bundle", "SCIRun"),
       guifield1name_(get_ctx()->subVar("field1-name"), "field1"),
@@ -77,86 +141,6 @@ DECLARE_MAKER(InsertFieldsIntoBundle)
       guireplace6_(get_ctx()->subVar("replace6"),1),
       guibundlename_(get_ctx()->subVar("bundlename",false), "")
 {
-}
-
-void InsertFieldsIntoBundle::execute()
-{
-  BundleHandle  handle;
-  FieldHandle field1, field2, field3;
-  FieldHandle field4, field5, field6;
-
-  get_input_handle("bundle",handle,false);
-  get_input_handle("field1",field1,false);
-  get_input_handle("field2",field2,false);
-  get_input_handle("field3",field3,false);
-  get_input_handle("field4",field4,false);
-  get_input_handle("field5",field5,false);
-  get_input_handle("field6",field6,false);
-  
-  if (inputs_changed_ || guifield1name_.changed() || 
-      guifield2name_.changed() || guifield3name_.changed() ||
-      guifield4name_.changed() || guifield5name_.changed() ||
-      guifield6name_.changed() || 
-      guireplace1_.changed() || guireplace2_.changed() ||
-      guireplace3_.changed() || guireplace4_.changed() ||
-      guireplace5_.changed() || guireplace6_.changed() ||
-      guibundlename_.changed() || !oport_cached("bundle"))
-  {
-    update_state(Executing);
-  
-    std::string field1name = guifield1name_.get();
-    std::string field2name = guifield2name_.get();
-    std::string field3name = guifield3name_.get();
-    std::string field4name = guifield4name_.get();
-    std::string field5name = guifield5name_.get();
-    std::string field6name = guifield6name_.get();
-    std::string bundlename = guibundlename_.get();
-
-    if (handle.get_rep())
-    {
-      handle.detach();
-    }
-    else
-    {
-      handle = new Bundle();
-      if (handle.get_rep() == 0)
-      {
-        error("Could not allocate new bundle");
-        return;
-      }
-    }
-    
-    if (field1.get_rep()
-        &&(guireplace1_.get()||!(handle->isField(field1name)))) 
-      handle->setField(field1name,field1);
-
-    if (field2.get_rep()
-        &&(guireplace2_.get()||!(handle->isField(field2name)))) 
-      handle->setField(field2name,field2);
-      
-    if (field3.get_rep()
-        &&(guireplace3_.get()||!(handle->isField(field3name)))) 
-      handle->setField(field3name,field3);
-
-    if (field4.get_rep()
-        &&(guireplace4_.get()||!(handle->isField(field4name)))) 
-      handle->setField(field4name,field4);
-
-    if (field5.get_rep()
-        &&(guireplace5_.get()||!(handle->isField(field5name)))) 
-      handle->setField(field5name,field5);
-
-    if (field6.get_rep()
-        &&(guireplace6_.get()||!(handle->isField(field6name)))) 
-      handle->setField(field6name,field6);
- 
-    if (bundlename != "")
-    {
-      handle->set_property("name",bundlename,false);
-    }
-
-    send_output_handle("bundle", handle);
-  }
 }
 
 #endif

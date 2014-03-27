@@ -84,7 +84,7 @@ void SimpleMapModuleState::setValue(const Name& parameterName, const SCIRun::Cor
   
   if (newValue)
   {
-    log << DEBUG_LOG << "----signaling from state map: " << parameterName.name_ << ", " << boost::lexical_cast<std::string>(value);
+    log << DEBUG_LOG << "----signaling from state map: " << parameterName.name_ << ", " << to_string(value);
     log.flush();
     stateChangedSignal_();
   }

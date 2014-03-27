@@ -81,6 +81,12 @@ AlgoOption AlgorithmParameter::getOption() const
   return opt ? *opt : AlgoOption();
 }
 
+std::vector<Variable> AlgorithmParameter::getList() const
+{
+  const std::vector<Variable>* v = boost::get<std::vector<Variable>>(&value_);
+  return v ? *v : std::vector<Variable>();
+}
+
 DatatypeHandle AlgorithmParameter::getDatatype() const
 {
   return data_;
@@ -252,4 +258,14 @@ std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Name
 AlgorithmInput SCIRun::Core::Algorithms::makeNullInput()
 {
   return AlgorithmInput();
+}
+
+bool SCIRun::Core::Algorithms::operator==(const Variable& lhs, const Variable& rhs)
+{
+  return lhs.name_ == rhs.name_ && lhs.value_ == rhs.value_ && lhs.data_ == rhs.data_;
+}
+
+std::ostream& SCIRun::Core::Algorithms::operator<<(std::ostream& out, const Variable& var)
+{
+  return out << "[" << var.name_ << ", " << var.value_ << "]";
 }

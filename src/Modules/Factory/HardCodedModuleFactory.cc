@@ -158,9 +158,10 @@ namespace SCIRun {
           addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
           addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
           //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
-          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
-          //addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
           //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
+          
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)

@@ -93,7 +93,8 @@ namespace Algorithms {
       double,
       std::string,
       bool,
-      AlgoOption
+      AlgoOption,
+      std::vector<Variable>
     > Value;
 
     Variable() {}
@@ -109,8 +110,12 @@ namespace Algorithms {
     std::string getString() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
+    std::vector<Variable> getList() const;
     AlgoOption getOption() const;
   };
+
+  SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   
   typedef Variable AlgorithmParameter;
 
