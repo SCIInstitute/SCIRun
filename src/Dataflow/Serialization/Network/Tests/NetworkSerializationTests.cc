@@ -184,7 +184,7 @@ TEST(SerializeNetworkTest, FullTestWithModuleState)
   Module::resetInstanceCount();
   ModuleFactoryHandle mf(new HardCodedModuleFactory);
   ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
+  ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(boost::optional<std::string>()));
   NetworkEditorController controller(mf, sf, exe, AlgorithmFactoryHandle());
   
   ModuleHandle matrix1Send = controller.addModule("SendTestMatrix");

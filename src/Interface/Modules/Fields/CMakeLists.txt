@@ -30,12 +30,14 @@
 SET(Interface_Modules_Fields_FORMS
   CreateLatVol.ui
   GetDomainBoundary.ui
+  JoinFields.ui
   ReportFieldInfoDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
   CreateLatVolDialog.h
   GetDomainBoundaryDialog.h
+  JoinFieldsDialog.h
   ReportFieldInfoDialog.h
   share.h
 )
@@ -43,6 +45,7 @@ SET(Interface_Modules_Fields_HEADERS
 SET(Interface_Modules_Fields_SOURCES 
   CreateLatVolDialog.cc
   GetDomainBoundaryDialog.cc
+  JoinFieldsDialog.cc
   ReportFieldInfoDialog.cc
 )
 

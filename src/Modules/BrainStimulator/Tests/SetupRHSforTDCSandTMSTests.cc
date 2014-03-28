@@ -61,7 +61,7 @@ TEST_F(SetupRHSforTDCSandTMSTests, ThrowsForNullInput)
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
 
-TEST_F(SetupRHSforTDCSandTMSTests, Foo)
+TEST_F(SetupRHSforTDCSandTMSTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }

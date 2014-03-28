@@ -50,7 +50,8 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     "  --input-file arg      SCIRun Network Input File\n"
     "  -s [ --script ] arg   SCIRun Python Script\n"
     "  --no_splash           Turn off splash screen\n"
-    "  --verbose             Turn on debug log information\n";
+    "  --verbose             Turn on debug log information\n"
+    "  --threadMode arg      network execution threading mode--DEVELOPER USE ONLY\n";
   
   EXPECT_EQ(expectedHelp, parser.describe());
   
@@ -117,5 +118,25 @@ TEST(ScirunCommandLineSpecTest, CanReadBasicOptions)
     EXPECT_TRUE(aph->executeNetworkAndQuit());
     EXPECT_FALSE(aph->executeNetwork());
     EXPECT_EQ("net.srn5", aph->inputFile().get());
+  }
+
+  {
+    const char* argv[] = {"scirun.exe", "--threadMode", "serial"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    ApplicationParametersHandle aph = parser.parse(argc, argv);
+
+    ASSERT_TRUE(aph->threadMode());
+    EXPECT_EQ("serial", *aph->threadMode());
+  }
+
+  {
+    const char* argv[] = {"scirun.exe", "--threadMode=serial"};
+    int argc = sizeof(argv)/sizeof(char*);
+
+    ApplicationParametersHandle aph = parser.parse(argc, argv);
+
+    ASSERT_TRUE(aph->threadMode());
+    EXPECT_EQ("serial", *aph->threadMode());
   }
 }

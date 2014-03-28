@@ -32,7 +32,7 @@
 #ifndef SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 #define SPIRE_APPSPECIFIC_SCIRUN_SRUNCAMERA_H
 
-#include "SRInterface.h"
+#include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
 
 #include <spire/src/Common.h>
 #include <arc-look-at/ArcLookAt.hpp>
@@ -82,7 +82,7 @@ public:
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (spire::PI / 180.0f);}
   static float getDefaultZNear()  {return 0.1f;}
-  static float getDefaultZFar()   {return 1350.0f;}
+  static float getDefaultZFar()   {return 100000.0f;}
   /// @}
 
 private:

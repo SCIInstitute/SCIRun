@@ -45,7 +45,6 @@
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Datatypes/Legacy/Base/TypeName.h>
 #include <Core/Datatypes/Legacy/Other/builtin.h>
-#include <Core/Datatypes/Datatype.h>
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/Thread/Mutex.h>
 #include <Core/Containers/Array1.h>

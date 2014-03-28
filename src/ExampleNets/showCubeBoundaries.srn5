@@ -344,8 +344,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>7</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(181,64,160)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>EdgeTransparency</name>
@@ -432,8 +444,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>7</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(30,212,97)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>EdgeTransparency</name>
@@ -520,8 +544,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>6</count>
+							<count>7</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>DefaultMeshColor</name>
+								</first>
+								<second>
+									<name>DefaultMeshColor</name>
+									<value>
+										<which>2</which>
+										<value>Color(93,220,93)</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>EdgeTransparency</name>

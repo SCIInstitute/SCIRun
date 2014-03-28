@@ -47,9 +47,11 @@ namespace SCIRun
         virtual bool hasData() const { return hasData_; }
         virtual void setHasData(bool dataPresent);
         virtual DatatypeSinkInterface* clone() const;
+        virtual bool hasChanged() const;
         void setData(SCIRun::Core::Datatypes::DatatypeHandle data);
       private:
         SCIRun::Core::Datatypes::DatatypeHandle data_;
+        SCIRun::Core::Datatypes::Datatype::id_type previousId_;
         bool hasData_;
       };
     

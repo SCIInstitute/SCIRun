@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,38 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection * Inverse View * World XForm
+uniform vec4    uColor;             // Uniform color
 
-#ifndef CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H
-#define CORE_ALGORITHMS_FIELDS_MERGEFIELDS_JOINFIELDS_H 1
+// Attributes
+attribute vec3  aPos;
+attribute float aFieldData;
 
-#include <Core/Datatypes/Field.h>
-#include <vector>
+// Outputs to the fragment shader.
+varying float    fFieldData;
 
-#include <Core/Algorithms/Util/AlgoBase.h>
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-class SCISHARE JoinFieldsAlgo : public AlgoBase
+void main( void )
 {
-  public:
-    // Algorithm defaults
-    JoinFieldsAlgo()
-    {
-      /// Merge duplicate nodes?
-      add_bool("merge_nodes",true);
-      /// Merge duplicate elements?
-      add_bool("merge_elems",false);
-      /// Tolerance for merging duplicate nodes?
-      add_scalar("tolerance",1e-6);
-      /// Only merge nodes whose value is the same
-      add_bool("match_node_values",false);
-      /// Create a field with no data
-      add_bool("make_no_data",false);
-    }
-    bool run(std::vector<SCIRun::FieldHandle>& input, SCIRun::FieldHandle& output);   
-};
-
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+  fFieldData  = aFieldData;
 }
-
-#endif

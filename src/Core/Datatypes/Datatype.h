@@ -31,13 +31,36 @@
 
 #include <Core/Persistent/Persistent.h>
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <boost/atomic.hpp>
 #include <Core/Datatypes/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  class SCISHARE Datatype : public Persistent
+  //TODO: split out
+  template <typename IdType, typename IdGenerator>
+  class HasId
+  {
+  public:
+    typedef IdType id_type;
+    HasId() : id_(generator_()) {}
+    IdType id() const
+    {
+      return id_;
+    }
+  private:
+    IdGenerator generator_;
+    const IdType id_;
+  };
+
+  struct SCISHARE AtomicCounter
+  {
+    int operator()() const;
+    static boost::atomic<int> counter_;
+  };
+
+  class SCISHARE Datatype : public Persistent, public HasId<int, AtomicCounter>
   {
   public:
     Datatype();
@@ -45,7 +68,13 @@ namespace Datatypes {
     Datatype(const Datatype& other);
     Datatype& operator=(const Datatype& rhs);
 
+<<<<<<< HEAD
     /// @todo
+=======
+    typedef HasId<int, AtomicCounter>::id_type id_type;
+
+    //TODO
+>>>>>>> ead7d0073d5f955de2d7e3e7d1e80122cf8aad18
     template <typename T>
     const T* as() const
     {

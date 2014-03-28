@@ -50,6 +50,7 @@ namespace SCIRun
 
       bool moduleErrorDialogState;
       bool saveBeforeExecute;
+      bool useNewViewSceneMouseControls;
 	
 	    //void save_state();
 	

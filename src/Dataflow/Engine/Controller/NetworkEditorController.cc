@@ -167,9 +167,8 @@ void NetworkEditorController::printNetwork() const
   //TODO: and make this switchable
   if (false)
   {
-    //TODO: use real logger here
     if (theNetwork_)
-      std::cout << theNetwork_->toString() << std::endl;
+      LOG_DEBUG(theNetwork_->toString() << std::endl);
   }
 }
 
@@ -290,7 +289,7 @@ void NetworkEditorController::loadNetwork(const NetworkFileHandle& xml)
     }
     catch (ExceptionBase& e)
     {
-      Log::get() << ERROR << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
+      Log::get() << ERROR_LOG << "File load failed: exception while processing xml network data: " << e.what() << std::endl;
       theNetwork_->clear();
       throw;
     }
@@ -305,7 +304,9 @@ void NetworkEditorController::clear()
 void NetworkEditorController::executeAll(const ExecutableLookup* lookup)
 {
   if (!currentExecutor_)
-    currentExecutor_ = executorFactory_->create(ExecutionStrategy::BASIC_PARALLEL); //TODO: read some setting for default executor type
+  {
+    currentExecutor_ = executorFactory_->createDefault();
+  }
 
   currentExecutor_->executeAll(*theNetwork_, lookup ? *lookup : *theNetwork_);
 

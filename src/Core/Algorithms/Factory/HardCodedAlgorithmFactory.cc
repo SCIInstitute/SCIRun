@@ -38,6 +38,7 @@
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
@@ -67,62 +68,68 @@ using namespace SCIRun::Core::Algorithms::Math;
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
-AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const AlgorithmCollaborator* algoCollaborator) const
+AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName, const AlgorithmCollaborator* algoCollaborator) const
 {
   AlgorithmHandle h;
 
-  if (name == "GetFieldBoundary")
+  if (moduleName == "GetFieldBoundary")
     h.reset(new GetFieldBoundaryAlgo);
-  else if (name == "SolveLinearSystem")
+  else if (moduleName == "SolveLinearSystem")
     h.reset(new SolveLinearSystemAlgo);
-  else if (name == "CalculateSignedDistanceToField")
+  else if (moduleName == "CalculateSignedDistanceToField")
     h.reset(new CalculateSignedDistanceFieldAlgo);
-  else if (name == "CalculateGradients")
+  else if (moduleName == "CalculateGradients")
     h.reset(new CalculateGradientsAlgo);
-  else if (name == "ConvertQuadSurfToTriSurf")
+  else if (moduleName == "ConvertQuadSurfToTriSurf")
     h.reset(new ConvertMeshToTriSurfMeshAlgo);
-  else if (name == "AlignMeshBoundingBoxes")
+  else if (moduleName == "AlignMeshBoundingBoxes")
     h.reset(new AlignMeshBoundingBoxesAlgo);
+<<<<<<< HEAD
   else if (name == "GetFieldNodes") /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+=======
+  else if (moduleName == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+>>>>>>> ead7d0073d5f955de2d7e3e7d1e80122cf8aad18
     h.reset(new GetMeshNodesAlgo);    
-  else if (name == "ElectrodeCoilSetup")
+  else if (moduleName == "ElectrodeCoilSetup")
     h.reset(new ElectrodeCoilSetupAlgorithm);     
-  else if (name == "SetConductivitiesToTetMesh")
+  else if (moduleName == "SetConductivitiesToTetMesh")
     h.reset(new SetConductivitiesToTetMeshAlgorithm); 
-  else if (name == "SetupRHSforTDCSandTMS")
+  else if (moduleName == "SetupRHSforTDCSandTMS")
     h.reset(new SetupRHSforTDCSandTMSAlgorithm);   
-  else if (name == "GenerateROIStatistics")
+  else if (moduleName == "GenerateROIStatistics")
     h.reset(new GenerateROIStatisticsAlgorithm);        
-  else if (name == "SetFieldNodes")
+  else if (moduleName == "SetFieldNodes")
     h.reset(new SetMeshNodesAlgo);
-  else if (name == "ReportFieldInfo")
+  else if (moduleName == "ReportFieldInfo")
     h.reset(new ReportFieldInfoAlgorithm);
-  else if (name == "ReportMatrixInfo")
+  else if (moduleName == "ReportMatrixInfo")
     h.reset(new ReportMatrixInfoAlgorithm);
-  else if (name == "AppendMatrix")
+  else if (moduleName == "AppendMatrix")
     h.reset(new AppendMatrixAlgorithm);
-  else if (name == "ReadMatrix")
+  else if (moduleName == "ReadMatrix")
     h.reset(new ReadMatrixAlgorithm);
-  else if (name == "WriteMatrix")
+  else if (moduleName == "WriteMatrix")
     h.reset(new WriteMatrixAlgorithm);
-  else if (name == "EvaluateLinearAlgebraUnary")
+  else if (moduleName == "EvaluateLinearAlgebraUnary")
     h.reset(new EvaluateLinearAlgebraUnaryAlgorithm);
-  else if (name == "EvaluateLinearAlgebraBinary")
+  else if (moduleName == "EvaluateLinearAlgebraBinary")
     h.reset(new EvaluateLinearAlgebraBinaryAlgorithm);
-  else if (name == "ConvertMeshToIrregularMesh")
+  else if (moduleName == "ConvertMeshToIrregularMesh")
     h.reset(new ConvertMeshToIrregularMeshAlgo);
-  else if (name == "ReadMesh")
+  else if (moduleName == "ReadMesh")
     h.reset(new TextToTriSurfFieldAlgorithm);
-  else if (name == "BuildTDCSMatrix")
+  else if (moduleName == "BuildTDCSMatrix")
     h.reset(new BuildTDCSMatrixAlgo);
-  else if (name == "AddKnownsToLinearSystem")
+  else if (moduleName == "AddKnownsToLinearSystem")
     h.reset(new AddKnownsToLinearSystemAlgo);  
-  else if (name == "CalculateVectorMagnitudes")
+  else if (moduleName == "CalculateVectorMagnitudes")
     h.reset(new CalculateVectorMagnitudesAlgo); 
-  else if (name == "BuildFEMatrix")
+  else if (moduleName == "BuildFEMatrix")
     h.reset(new BuildFEMatrixAlgo);
-  else if (name == "GetDomainBoundary")
+  else if (moduleName == "GetDomainBoundary")
     h.reset(new GetDomainBoundaryAlgo);
+  else if (moduleName == "JoinFields")
+    h.reset(new JoinFieldsAlgo);
     
   if (h && algoCollaborator)
   {

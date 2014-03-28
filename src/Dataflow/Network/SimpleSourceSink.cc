@@ -30,7 +30,7 @@ DEALINGS IN THE SOFTWARE.
 
 using namespace SCIRun::Dataflow::Networks;
 
-SimpleSink::SimpleSink() : hasData_(false)
+SimpleSink::SimpleSink() : previousId_(-1), hasData_(false)
 {
 }
 
@@ -53,6 +53,11 @@ void SimpleSink::setHasData(bool dataPresent)
 
 void SimpleSink::setData(SCIRun::Core::Datatypes::DatatypeHandle data)
 {
+  if (data_)
+    previousId_ = data_->id();
+  else if (data)
+    previousId_ = data->id();
+
   data_ = data;
   setHasData(true);
 }
@@ -60,6 +65,13 @@ void SimpleSink::setData(SCIRun::Core::Datatypes::DatatypeHandle data)
 DatatypeSinkInterface* SimpleSink::clone() const
 {
   return new SimpleSink;
+}
+
+bool SimpleSink::hasChanged() const 
+{
+  if (!data_)
+    return false;
+  return previousId_ == data_->id();
 }
 
 void SimpleSource::send(DatatypeSinkInterfaceHandle receiver, SCIRun::Core::Datatypes::DatatypeHandle data)

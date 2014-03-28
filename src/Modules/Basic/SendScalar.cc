@@ -26,16 +26,21 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+<<<<<<< HEAD
 ///TODO Documentation
 
 #include <iostream>
+=======
+>>>>>>> ead7d0073d5f955de2d7e3e7d1e80122cf8aad18
 #include <Core/Datatypes/Scalar.h>
 #include <Modules/Basic/SendScalar.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Modules::Basic;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 
 AlgorithmParameterName SendScalarModule::ValueToSend() { return AlgorithmParameterName("ValueToSend"); }
 
@@ -48,7 +53,22 @@ SendScalarModule::SendScalarModule()
 
 void SendScalarModule::execute()
 {
+<<<<<<< HEAD
   data_ = get_state()->getValue(ValueToSend()).getDouble();
   boost::shared_ptr<Double> output(new Double(data_));
   sendOutput(Scalar, output);
 }
+=======
+  if (needToExecute())
+  {
+    data_ = get_state()->getValue(ValueToSend()).getDouble();
+    LOG_DEBUG("Executing SendScalar with new value: " << data_);
+    boost::shared_ptr<Double> output(new Double(data_));
+    sendOutput(Scalar, output);
+  }
+  else
+  {
+    LOG_DEBUG("Executing SendScalar with old value, not sending anything: " << data_);
+  }
+}
+>>>>>>> ead7d0073d5f955de2d7e3e7d1e80122cf8aad18

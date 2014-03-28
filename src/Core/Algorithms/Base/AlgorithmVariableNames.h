@@ -63,6 +63,7 @@ public:
   static const AlgorithmOutputName ResultMatrix;
   static const AlgorithmOutputName MatrixLoaded;
   static const AlgorithmOutputName Solution;
+  static const AlgorithmOutputName OutputField;
 
 };
 

@@ -108,11 +108,19 @@ namespace Datatypes {
       visitor.visit(*this);
     }
     
+<<<<<<< HEAD
     /// @todo: this method is dangerous to use since isApprox converts this to Dense. We should add some checks to throw an exception if the matrix is too large to do this.
+=======
+>>>>>>> ead7d0073d5f955de2d7e3e7d1e80122cf8aad18
     bool isSymmetric() const
     {
-     if (this->cols() != this->rows()) return false;
-     return this->isApprox(this->transpose(),1e-16);
+      if (this->cols() != this->rows()) 
+        return false;
+      
+      if (this->rows() * this->cols() > 1e7)
+        THROW_INVALID_ARGUMENT("Dangerous call! This poorly implememented method will convert your sparse matrix to dense. It needs to be rewritten. To avoid memory wastage, throwing an exception here.");
+
+      return this->isApprox(this->transpose(),1e-16);
     }
     /// @todo!
 #if 0
@@ -264,55 +272,65 @@ namespace Datatypes {
 
 }}}
 
-template <typename T> inline bool ContainsValidValues (const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T> & m)
+template <typename T> 
+bool ContainsValidValues(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>& m)
 {
   for (int k = 0; k < m.outerSize(); ++k)
   {
     for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
     {
-      double tmp=it.value();
-      if ( !SCIRun::IsFinite(tmp) || SCIRun::IsNan(tmp) ) return false;
+      double tmp = it.value();
+      if (!SCIRun::IsFinite(tmp) || SCIRun::IsNan(tmp)) 
+        return false;
     }
   } 
   return true;
 }
 
-template <typename T> inline bool isSymmetricMatrix (const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T> & m)
+template <typename T> 
+bool isSymmetricMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>& m)
 {
-  if (m.rows() != m.cols()) return false;
+  if (m.rows() != m.cols()) 
+    return false;
 
   for (int k = 0; k < m.outerSize(); ++k)
   {
     for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
     {
-      if ( m.coeff(it.col(),it.row()) != m.coeff(it.row(),it.col()))  return false;
+      if (m.coeff(it.col(), it.row()) != it.value())  
+        return false;
     }
   }
   return true;
 }
 
-template <typename T> inline bool isPositiveDefiniteMatrix (const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T> & m)
+template <typename T> 
+bool isPositiveDefiniteMatrix(const SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>& m)
 {     
-  if (!isSymmetricMatrix(m)) return false;   //a matrix must be symmetric to be positive definite
+  if (!isSymmetricMatrix(m)) 
+    return false;   //a matrix must be symmetric to be positive definite
 
-  if ( !ContainsValidValues(m) ) return false; 
+  if ( !ContainsValidValues(m) ) 
+    return false; 
 
   for (int k = 0; k < m.outerSize(); ++k)  //all diagonal elements are positive? 
-    if ( m.coeff(k, k) <= 0 )  return false; 
+    if ( m.coeff(k, k) <= 0 )  
+      return false; 
 
   for (int k = 0; k < m.outerSize(); ++k)
   {
-    double tmp1=0.0, tmp2=0.0;
+    double tmp1 = 0.0, tmp2 = 0.0;
     for (typename SCIRun::Core::Datatypes::SparseRowMatrixGeneric<T>::InnerIterator it(m,k); it; ++it)
     {
-      if (it.col()!=it.row()) 
+      if (it.col() != it.row()) 
       {
-        tmp1+=std::fabs(m.coeff(it.row(),it.col())); //abs. sum over col 
-        tmp2+=std::fabs(m.coeff(it.col(),it.row())); //abs. sum over row 
+        tmp1 += std::fabs(it.value()); //abs. sum over col 
+        tmp2 += std::fabs(m.coeff(it.col(),it.row())); //abs. sum over row 
       }
     }       
 
-    if ( !((tmp1<m.coeff(k, k)) && (tmp2<m.coeff(k, k))) ) return false;
+    if ( !((tmp1 < m.coeff(k, k)) && (tmp2 < m.coeff(k, k))) ) 
+      return false;
   }
 
   return true;

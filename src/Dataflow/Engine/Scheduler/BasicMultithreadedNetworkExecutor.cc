@@ -61,7 +61,6 @@ namespace
           return [=]() { lookup_->lookupExecutable(mod.second)->execute(); };
         });
 
-        //std::cout << "Running group " << group << " of size " << tasks.size() << std::endl;
         Parallel::RunTasks([&](int i) { tasks[i](); }, tasks.size());
       }
       bounds_.executeFinishes_(lookup_->errorCode());

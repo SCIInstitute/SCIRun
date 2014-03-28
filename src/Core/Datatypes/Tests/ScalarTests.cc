@@ -28,10 +28,33 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <Core/Datatypes/Color.h>
 
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::DefaultValue;
 using ::testing::Return;
+<<<<<<< HEAD
 
 /// @todo DAN
+=======
+using namespace SCIRun::Core::Datatypes;
+
+//TODO DAN
+
+TEST(ColorTests, CanParseString)
+{
+  ColorRGB c(1,2,3);
+  const std::string expected = "Color(1,2,3)";
+  EXPECT_EQ(expected, c.toString());
+  ColorRGB c2(expected);
+  EXPECT_EQ(c, c2);
+}
+
+TEST(ColorTests, EmptyStringYieldsWhite)
+{
+  ColorRGB c(255,255,255);
+  ColorRGB c2("");
+  EXPECT_EQ(c, c2);
+}
+>>>>>>> ead7d0073d5f955de2d7e3e7d1e80122cf8aad18

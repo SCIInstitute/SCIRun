@@ -60,6 +60,7 @@
 #include <Modules/Legacy/Fields/GetFieldNodes.h>
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
+#include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
@@ -152,6 +153,7 @@ namespace SCIRun {
           addModuleDesc<SolveMinNormLeastSqSystem>("SolveMinNormLeastSqSystem", "Math", "SCIRun", "Real ported module", "...");
           addModuleDesc<CreateBasicColorMap>("CreateStandardColorMap", "Visualization", "SCIRun", "In progress", "...");
           addModuleDesc<GetDomainBoundary>("Real ported module: Many bugs and UI logic issues", "...");
+          addModuleDesc<JoinFields>("Real ported module: Many bugs and UI logic issues", "...");
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)

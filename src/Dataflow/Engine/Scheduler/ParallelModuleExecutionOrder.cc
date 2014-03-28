@@ -72,7 +72,7 @@ std::pair<ParallelModuleExecutionOrder::const_iterator, ParallelModuleExecutionO
 std::ostream& SCIRun::Dataflow::Engine::operator<<(std::ostream& out, const ParallelModuleExecutionOrder& order)
 {
   auto range = std::make_pair(order.begin(), order.end());
-  BOOST_FOREACH(const ParallelModuleExecutionOrder::ModulesByGroup::value_type& v, range)
+  BOOST_FOREACH(const ParallelModuleExecutionOrder::value_type& v, range)
   {
     out << v.first << " " << v.second << std::endl;
   }
