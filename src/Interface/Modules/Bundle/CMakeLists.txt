@@ -27,43 +27,37 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-SET(Interface_Modules_Factory_HEADERS
-  ModuleDialogFactory.h
+SET(Interface_Modules_Bundle_FORMS
+  InsertFieldsIntoBundleDialog.ui
+)
+
+SET(Interface_Modules_Bundle_HEADERS
+  InsertFieldsIntoBundleDialog.h
   share.h
 )
 
-SET(Interface_Modules_Factory_SOURCES 
-  ModuleDialogFactory.cc
+SET(Interface_Modules_Bundle_SOURCES 
+  InsertFieldsIntoBundleDialog.cc
 )
 
-#QT4_WRAP_UI(Interface_Modules_FORMS_HEADERS ${Interface_Modules_FORMS})
-#QT4_WRAP_CPP(Interface_Modules_HEADERS_MOC ${Interface_Modules_HEADERS})
+QT4_WRAP_UI(Interface_Modules_Bundle_FORMS_HEADERS ${Interface_Modules_Bundle_FORMS})
+QT4_WRAP_CPP(Interface_Modules_Bundle_HEADERS_MOC ${Interface_Modules_Bundle_HEADERS})
 
-ADD_LIBRARY(Interface_Modules_Factory 
-  ${Interface_Modules_Factory_HEADERS}
-#${Interface_Modules_FORMS_HEADERS}
-#${Interface_Modules_HEADERS_MOC}
-  ${Interface_Modules_Factory_SOURCES}
+ADD_LIBRARY(Interface_Modules_Bundle
+  ${Interface_Modules_Bundle_HEADERS}
+  ${Interface_Modules_Bundle_FORMS_HEADERS}
+  ${Interface_Modules_Bundle_HEADERS_MOC}
+  ${Interface_Modules_Bundle_SOURCES}
 )
 
-TARGET_LINK_LIBRARIES(Interface_Modules_Factory 
+TARGET_LINK_LIBRARIES(Interface_Modules_Bundle 
+  Modules_Legacy_Bundle
   Interface_Modules_Base
-  Interface_Modules_DataIO
-  Interface_Modules_Math
-  Interface_Modules_Fields
-  Interface_Modules_Bundle
-  Interface_Modules_FiniteElements
-  Interface_Modules_BrainStimulator
-  Interface_Modules_Render
-  Interface_Modules_String
-  Interface_Modules_Testing
-  Interface_Modules_Visualization
   ${SCI_BOOST_LIBRARY}
-  ${QT_LIBRARIES}
-)
+  ${QT_LIBRARIES})
 
 IF(BUILD_SHARED_LIBS)
-  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Factory)
+  ADD_DEFINITIONS(-DBUILD_Interface_Modules_Bundle)
 ENDIF(BUILD_SHARED_LIBS)
   
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

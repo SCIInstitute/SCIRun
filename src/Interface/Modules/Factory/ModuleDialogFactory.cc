@@ -57,6 +57,7 @@
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
+#include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -123,6 +124,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
   if (moduleId.find("JoinFields") != std::string::npos)
     return new JoinFieldsDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("InsertFieldsIntoBundle") != std::string::npos)
+    return new InsertFieldsIntoBundleDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }
