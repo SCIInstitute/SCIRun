@@ -27,7 +27,6 @@
 */
  
 #include <Testing/Utils/SCIRunUnitTests.h>
-
 #include <gtest/gtest.h>
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
@@ -43,11 +42,9 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::TestUtils;
-//using namespace SCIRun::Core::Geometry;
-//using namespace SCIRun::Core::Algorithms::DataIO;
 
 namespace {
-	/* 0 1 2 */
+	/* 0; 1; 2; */
 	DenseMatrixHandle x1()
 	{
 		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
@@ -56,14 +53,14 @@ namespace {
 				(*m)(i, j) = i;
 		return m;
 	}
-	
-	/* 0 0 0 0 */
-	DenseMatrixHandle x2()
+
+	/* makes how many rows given to be 0 */
+	DenseMatrixHandle x_zero(int rows)
 	{
-		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(4,1));
+		DenseMatrixHandle m(boost::make_shared<DenseMatrix>(rows,1));
 		for (int i = 0; i < m->rows(); ++ i)
 			for (int j = 0; j < m->cols(); ++ j)
-				(*m)(i, j) = 0;
+				(*m)(i, j) = i;
 		return m;
 	}
 	
@@ -109,20 +106,26 @@ namespace {
 		return m;
 	}
 	
-	/* right hand side (RHS) matrices for testing */
-	// all zeros
-	DenseColumnMatrixHandle RHS_zero()
+	/* right hand side (RHS) vector of 0s = rows */
+	DenseColumnMatrixHandle rhs_zero(int rows)
+	{
+		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(rows));
+		m->setZero();
+		return m;
+	}
+
+	/* right hand side (RHS) vector of [1;2;3] */
+	DenseColumnMatrixHandle rhs()
 	{
 		DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(3));
-		m->setZero();
-		/*(*m)(0,0) = 1;
+		(*m)(0,0) = 1;
 		(*m)(1,0) = 2;
-		(*m)(2,0) = 3;*/
+		(*m)(2,0) = 3;
 		return m;
 	}
 }
 
-TEST (AddKnownsToLinearSystemAlgo, bad_parameters_are_non_square_and_non_symmetric)
+TEST (AddKnownsToLinearSystemAlgo, bad_parameters)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -130,15 +133,13 @@ TEST (AddKnownsToLinearSystemAlgo, bad_parameters_are_non_square_and_non_symmetr
 	AddKnownsToLinearSystemAlgo algo;
 
 	// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
-	EXPECT_THROW (algo.run(LHS_not_sym(),RHS_zero(),x1(),output_stiff,output_rhs), AlgorithmInputException);
+	EXPECT_THROW (algo.run(LHS_not_sym(),rhs_zero(3),x1(),output_stiff,output_rhs), AlgorithmInputException);
 	 
 	// this test makes sure an exception is thrown for a non square matrix
-	EXPECT_THROW (algo.run(LHS_non_sqr(),RHS_zero(),x1(),output_stiff,output_rhs), AlgorithmInputException);
-	
-
+	EXPECT_THROW (algo.run(LHS_non_sqr(),rhs_zero(3),x1(),output_stiff,output_rhs), AlgorithmInputException);
 }
 
-TEST (AddKnownsToLinearSystemAlgo, using_good_parameters)
+TEST (AddKnownsToLinearSystemAlgo, good_parameters)
 {	
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
@@ -146,7 +147,54 @@ TEST (AddKnownsToLinearSystemAlgo, using_good_parameters)
 	AddKnownsToLinearSystemAlgo algo;
 	
 	// this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
-	EXPECT_TRUE(algo.run(LHS(),RHS_zero(),x1(),output_stiff,output_rhs));
+	EXPECT_TRUE(algo.run(LHS(),rhs_zero(3),x1(),output_stiff,output_rhs));
+}
+
+// This test checks if the output data of rhs is the same with different x vectors
+TEST (AddKnownsToLinearSystemAlgo, checking_values_1)
+{	
+	AddKnownsToLinearSystemAlgo algo;
+
+	SparseRowMatrixHandle output_stiff1;
+	DenseColumnMatrixHandle output_rhs1;
+	algo.run(LHS(),rhs_zero(),x1(),output_stiff1,output_rhs1);
+
+	for (int r=0; r < output_rhs1->rows(); r++)
+		std::cout << "rhs[" << r << "] = " << (*output_rhs1)[r] << std::endl;
+
+	for (int r=0; r < output_stiff1->rows(); r++)
+	{
+		for (int c=0; c < output_stiff1->cols(); c++)
+			std::cout << output_stiff1->coeff(r,c);
+		std::cout << std::endl;
+	}
+
+	// rerrunning algo.run with a new x vector. rhs should be the same
+	SparseRowMatrixHandle output_stiff2;
+	DenseColumnMatrixHandle output_rhs2;
+	algo.run(LHS(),rhs_zero(),x_zero(3),output_stiff2,output_rhs2);
+
+	for (int r=0; r < output_rhs2->rows(); r++)
+		std::cout << "rhs[" << r << "] = " << (*output_rhs2)[r] << std::endl;
+
+	for (int r=0; r < output_stiff2->rows(); r++)
+	{
+		for (int c=0; c < output_stiff2->cols(); c++)
+			std::cout << output_stiff2->coeff(r,c);
+		std::cout << std::endl;
+	}
+}
+
+// Seeing what happens when x = 0, = #'s
+TEST (AddKnownsToLinearSystemAlgo, checking_values_2)
+{	
+	AddKnownsToLinearSystemAlgo algo;
+	SparseRowMatrixHandle output_stiff;
+	DenseColumnMatrixHandle output_rhs;
+	algo.run(LHS(),rhs_zero(3),x_zero(3),output_stiff,output_rhs);
+	
+	
+
 }
 
 TEST (AddKnownsToLinearSystemAlgo, for_debugging)

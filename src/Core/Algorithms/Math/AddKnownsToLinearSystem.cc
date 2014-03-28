@@ -99,13 +99,11 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMa
 				if (i!=p) 
 				{
 					(*rhsCol).coeffRef(i) -= (*stiff).coeff(i,p) * (*xCol).coeff(p); 
-
 					additionalData[i][p]=0.0;
 				}
 				else
 				{    
 					(*rhsCol)[p] = (*xCol).coeff(p);
-
 					additionalData[p][p]=1.0; 
 				}	    
 			}	           
