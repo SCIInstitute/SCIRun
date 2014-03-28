@@ -39,14 +39,14 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
 {
   ScopedAlgorithmReporter r(this, "ConvertFieldBasis");
   
-  //! Safety check
+  /// Safety check
   if (input.get_rep() == 0)
   {
     error("No input field");
     return (false);
   }
   
-  //! Get the information of the input field
+  /// Get the information of the input field
   FieldInformation fo(input);
   
   std::string basistype;
@@ -424,7 +424,7 @@ run(FieldHandle input, FieldHandle& output, MatrixHandle& mapping)
         columns[2*idx+num_nodes+1] = nodes[1];
         values[2*idx+num_nodes+1]  = 0.5; 
         rows[idx+num_nodes] = 2*idx+num_nodes;
-        // TODO: Need to make this work
+        /// @todo: Need to make this work
         ofield->copy_weighted_value(ifield,&(columns[2*idx+num_nodes]),&(values[2*idx+num_nodes] ),2,idx);
       }
       rows[num_nodes+num_edges] = num_nodes+2*num_edges;

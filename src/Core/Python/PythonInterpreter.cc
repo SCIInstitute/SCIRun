@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-//TODO @todo Documentation Core/Python/PythonInterpreter.cc
+/// @todo Documentation Core/Python/PythonInterpreter.cc
 
 #ifdef _MSC_VER
 //#pragma warning( push )

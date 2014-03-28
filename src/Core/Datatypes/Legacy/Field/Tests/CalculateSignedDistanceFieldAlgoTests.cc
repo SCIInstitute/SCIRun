@@ -45,7 +45,7 @@ class CalculateSignedDistanceFieldAlgoTests : public ::testing::Test
 protected:
   virtual void SetUp()
   {
-    //TODO: needs a surface, I know that much...
+    /// @todo: needs a surface, I know that much...
   }
 
   FieldHandle field_;

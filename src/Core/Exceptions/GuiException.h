@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  DimensionMismatch.h
- *@brief Exception to indicate a failed bounds check
- *
- *@author
- *   McKay Davis
- *   Department of Computer Science
- *   University of Utah
- *@date  Feb 2005
- *
- */
+///
+///@file  DimensionMismatch.h
+///@brief Exception to indicate a failed bounds check
+///
+///@author
+///       McKay Davis
+///       Department of Computer Science
+///       University of Utah
+///@date  Feb 2005
+///
 
 #ifndef Core_Exceptions_GuiException_h
 #define Core_Exceptions_GuiException_h

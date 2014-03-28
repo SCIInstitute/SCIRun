@@ -39,7 +39,7 @@
 /// for overflow. In case of overflow memory will be reserved to store data_ 
 
 
-// TODO @todo: replace with STL container
+/// @todo: replace with STL container
 
 namespace SCIRun {
 

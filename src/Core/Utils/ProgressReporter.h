@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  ProgressReporter.h
- *
- *@author
- *   Yarden Livnat
- *   Department of Computer Science
- *   University of Utah
- *@date  July 2003
- *
- */
+///
+///@file  ProgressReporter.h
+///
+///@author
+///       Yarden Livnat
+///       Department of Computer Science
+///       University of Utah
+///@date  July 2003
+///
 
 
 #ifndef SCIRun_Core_Util_ProgressReporter_h
@@ -67,7 +66,7 @@ namespace SCIRun {
           inline void update_progress_max(T1 current, T2 max) const { update_progress(((double)current) / max); }
 
         protected:
-          //TODO: replace with C++11 atomic<int>?
+          /// @todo: replace with C++11 atomic<int>?
           //AtomicCounter         progress_current_;
           //int progressCurrent_;
           //int progressMax_;

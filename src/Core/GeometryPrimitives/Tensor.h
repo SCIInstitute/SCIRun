@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  Tensor.h
- *@brief Symmetric, positive definite tensors (diffusion, conductivity)
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- */
+///
+///@file  Tensor.h
+///@brief Symmetric, positive definite tensors (diffusion, conductivity)
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2001
+///
 
 #ifndef Geometry_Tensor_h
 #define Geometry_Tensor_h 1
@@ -116,7 +115,7 @@ public:
 			  const Vector &e3,
 			  double v1, double v2, double v3);
 
-  //! support dynamic compilation
+  /// support dynamic compilation
   static const std::string& get_h_file_path();
 
   friend SCISHARE void Pio(Piostream&, Tensor&);

@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Parallel2.h
- *@brief Automatically instantiate several threads, with 2 arguments
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 2000
- *
- */
+///
+///@file   Parallel2.h
+///@brief  Automatically instantiate several threads, with 2 arguments
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 2000
+///
 
 #ifndef Core_Thread_Parallel2_h
 #define Core_Thread_Parallel2_h

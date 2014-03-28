@@ -26,14 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
-//    @file    ExtractIsosurfaceByFunction.h
-//    @author  Michael Callahan &&
-//             Allen Sanderson
-//             SCI Institute
-//             University of Utah
-//    @date    March 2006
- */
+///    @file    ExtractIsosurfaceByFunction.h
+///    @author  Michael Callahan &&
+///             Allen Sanderson
+///             SCI Institute
+///             University of Utah
+///    @date    March 2006
 
 #include <Core/Parser/ArrayMathEngine.h>
 #include <Core/Algorithms/Fields/Mapping/ApplyMappingMatrix.h>
@@ -581,4 +579,4 @@ ExtractIsosurfaceByFunction::post_read()
 
 
 
-} //! End namespace SCIRun
+} // End namespace SCIRun

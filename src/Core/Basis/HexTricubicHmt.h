@@ -44,7 +44,7 @@ public:
   HexTricubicHmtUnitElement() {};
   virtual ~HexTricubicHmtUnitElement() {};
 
-  static int dofs() { return 64; } //!< return degrees of freedom
+  static int dofs() { return 64; } ///< return degrees of freedom
 };
 
 

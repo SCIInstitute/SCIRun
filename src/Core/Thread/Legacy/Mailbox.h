@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Mailbox.h
- *@brief Threadsafe FIFO
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   Mailbox.h
+///@brief  Threadsafe FIFO
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Mailbox_h
 #define Core_Thread_Mailbox_h

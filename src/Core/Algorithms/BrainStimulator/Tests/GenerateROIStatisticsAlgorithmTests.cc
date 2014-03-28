@@ -34,7 +34,7 @@
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;

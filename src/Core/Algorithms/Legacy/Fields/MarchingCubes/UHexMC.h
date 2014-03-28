@@ -39,7 +39,7 @@
 
 namespace SCIRun {
 
-//! A Marching Cube teselator for an Unstructured Hexagon cell     
+/// A Marching Cube teselator for an Unstructured Hexagon cell     
 
 class UHexMC : public BaseMC
 {

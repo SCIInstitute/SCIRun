@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Core/Logging ConsoleLogger.cc/.h DirectLogger.h
+/// @todo Documentation Core/Logging ConsoleLogger.cc/.h DirectLogger.h
 ///  Log.cc/Log.h Logger.cc LoggerFwd.h LoggerInterface.h ScopedTimeRemarker.h
 
 #include <iostream>

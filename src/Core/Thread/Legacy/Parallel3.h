@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Parallel3
- *@brief Automatically instantiate several threads, with 3 arguments
- *
- *   @author Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date June 3997
- *
- */
+///
+///@file   Parallel3
+///@brief  Automatically instantiate several threads, with 3 arguments
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 3997
+///
 
 #ifndef Core_Thread_Parallel3_h
 #define Core_Thread_Parallel3_h

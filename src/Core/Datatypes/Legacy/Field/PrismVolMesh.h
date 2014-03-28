@@ -334,7 +334,7 @@ public:
         mesh_->synchronized_ |= sync_;
         // Unmark the the ones that were done
         mesh_->synchronizing_ &= ~(sync_);
-        //! Tell other threads we are done
+        /// Tell other threads we are done
         mesh_->synchronize_cond_.conditionBroadcast();
         mesh_->synchronize_lock_.unlock();
       }
@@ -1349,7 +1349,7 @@ public:
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }
 
-  //! Find the closest elements to a point  
+  /// Find the closest elements to a point  
   template<class ARRAY>
   bool find_closest_elems(double& /*pdist*/, Core::Geometry::Point& /*result*/,
                           ARRAY& /*faces*/, const Core::Geometry::Point& /*p*/) const
@@ -1912,7 +1912,7 @@ protected:
     return (true); 
   }
 
-  // TODO: Fix this function, needs to use search grid
+  /// @todo: Fix this function, needs to use search grid
   template <class INDEX>
   bool locate_edge(INDEX &edge, const Core::Geometry::Point &p) const
   {
@@ -1942,7 +1942,7 @@ protected:
     return (found);
   }
 
-  // TODO: Fix this function, needs to use search grid
+  /// @todo: Fix this function, needs to use search grid
   template <class INDEX>
   bool locate_face(INDEX &face, const Core::Geometry::Point &p) const
   {
@@ -1972,7 +1972,7 @@ protected:
   template <class INDEX>
   bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -2040,13 +2040,13 @@ protected:
   template <class INDEX, class ARRAY>
   bool locate_elem(INDEX &elem, ARRAY& coords, const Core::Geometry::Point &p) const
   {
-    // TODO: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
 
     /// Check whether the estimate given in idx is the point we are looking for    
@@ -2394,8 +2394,8 @@ protected:
     }
   };
 
-  /** hash the egde's node_indecies such that edges with the same nodes
-   *  hash to the same value. nodes are sorted on edge construction. */
+  /// hash the egde's node_indecies such that edges with the same nodes
+  ///  hash to the same value. nodes are sorted on edge construction. 
   static const int sz_int = sizeof(int) * 8; // in bits
   struct FaceHash
   {
@@ -2406,7 +2406,7 @@ protected:
     static const size_t bucket_size = 4;
     static const size_t min_buckets = 8;
 
-    //! These are for our own use (making the hash function.
+    /// These are for our own use (making the hash function.
     static const int sz_quarter_int = (int)(sz_int / 4);
     static const int top4_mask = ((~((int)0)) << sz_quarter_int << sz_quarter_int << sz_quarter_int);
     static const int up4_mask = top4_mask ^ (~((int)0) << sz_quarter_int << sz_quarter_int);
@@ -2438,8 +2438,8 @@ protected:
 
   friend struct FaceHash; // needed by the gcc-2.95.3 compiler
 
-  /** hash the egde's node_indecies such that edges with the same nodes
-   *  hash to the same value. nodes are sorted on edge construction. */
+  /// hash the egde's node_indecies such that edges with the same nodes
+  ///  hash to the same value. nodes are sorted on edge construction. 
   struct EdgeHash {
     /// These are needed by the hash_map particularly
     // ANSI C++ allows us to initialize these variables in the
@@ -2486,12 +2486,12 @@ protected:
   typedef std::map<PEdge, typename Edge::index_type, EdgeHash> edge_ht;
 #endif
 
-  /** container for face storage. Must be computed each time
-    nodes or cells change. */
+  /// container for face storage. Must be computed each time
+  ///  nodes or cells change. 
   std::vector<PFace>            faces_;
   face_ht                  face_table_;
-  /** container for edge storage. Must be computed each time
-    nodes or cells change. */
+  /// container for edge storage. Must be computed each time
+  ///  nodes or cells change. 
   std::vector<PEdge>            edges_;
   edge_ht                  edge_table_;
 
@@ -3381,7 +3381,7 @@ template <class Basis>
 void
 PrismVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
   const index_type idx = ci*6;
@@ -3416,7 +3416,7 @@ template <class Basis>
 void
 PrismVolMesh<Basis>::insert_node_into_grid(typename Node::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

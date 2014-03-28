@@ -27,14 +27,14 @@
 */
 
 
-/**
- *@file FileUtils.h 
- * 
- *@author 
- *   Chris Moulding
- *   University of Utah
- *@date Sept 2000
- */
+///
+///@file FileUtils.h 
+/// 
+///@author 
+///      Chris Moulding
+///      University of Utah
+///@date Sept 2000
+///
 
 #ifndef FILEUTILS_H
 #define FILEUTILS_H 1
@@ -107,7 +107,7 @@ SCISHARE int copyFile(const boost::filesystem::path& src,
 SCISHARE int moveFile(const boost::filesystem::path& src,
                       const boost::filesystem::path& dest);
 SCISHARE int deleteFile(const boost::filesystem::path& filename);
-// TODO: re-implement with boost
+/// @todo: re-implement with boost
 // The strings are not references since windows has to convert
 // '/' to '\\', and we do that in the same string
 SCISHARE int copyDir(std::string src, std::string dest);

@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  Persistent.h
- *@brief Base class for persistent objects...
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  April 1994
- *
- */
+///
+///@file  Persistent.h
+///@brief Base class for persistent objects...
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  April 1994
+///
 
 #ifndef CORE_PERSISTENT_H
 #define CORE_PERSISTENT_H 1

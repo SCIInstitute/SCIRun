@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  Assert.h
- *@brief Utility for specifying data invariants (Assertions)
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  Feb. 1994
- *
- */
+///
+///@file  Assert.h
+///@brief Utility for specifying data invariants (Assertions)
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  Feb. 1994
+///
 
 #ifndef SCI_Containers_FancyAssert_h
 #define SCI_Containers_FancyAssert_h

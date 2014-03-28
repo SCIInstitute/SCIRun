@@ -43,7 +43,7 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing interfaces to basis elements
+/// Class for describing interfaces to basis elements
 template <class T>
 class BasisSimple 
 {
@@ -51,9 +51,9 @@ public:
   BasisSimple() {}
   virtual ~BasisSimple() {}
   
-  // TODO @todo: exceptions being used to avoid virtual inheritance?
+  /// @todo: exceptions being used to avoid virtual inheritance?
   //
-  // TODO @todo: SCIRun 5 porting note: ASSERTFAIL replaced by 
+  /// @todo: SCIRun 5 porting note: ASSERTFAIL replaced by 
   // REPORT_NOT_IMPLEMENTED (should not need this in production code)
 
 

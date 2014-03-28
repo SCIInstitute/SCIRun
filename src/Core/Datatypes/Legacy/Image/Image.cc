@@ -28,16 +28,14 @@
 
 
 
-/**
- *@file  Image.cc
- *
- *@author: 
- *   Sourced from MeshPort.cc by David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date
- *
- */
+///
+///@file  Image.cc
+///
+///@author 
+///   Sourced from MeshPort.cc by David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///
 
 
 #include <Core/Datatypes/Image.h>

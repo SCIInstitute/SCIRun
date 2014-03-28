@@ -29,16 +29,16 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_GETFIELDDATA_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_GETFIELDDATA_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/NrrdData.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -51,10 +51,10 @@ class SCISHARE GetFieldDataAlgo : public AlgoBase
     GetFieldDataAlgo()
     {}
     
-    //! Convert data into a matrix
+    /// Convert data into a matrix
     bool run(FieldHandle& input, MatrixHandle& output); 
 
-    //! Convert data into nrrddata
+    /// Convert data into nrrddata
     bool run(FieldHandle& input, NrrdDataHandle& output); 
 };
 

@@ -28,17 +28,17 @@
 
 
 
-/**
- *@file  Datatype.h
- *@brief The Datatype Data type
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@file  Datatype.h
+///@brief The Datatype Data type
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+///
+///
 
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 1

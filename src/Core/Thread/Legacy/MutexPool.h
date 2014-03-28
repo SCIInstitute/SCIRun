@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  MutexPool 
- *@brief A set of mutex objects
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: September 1999
- *
- */
+///
+///@file   MutexPool 
+///@brief  A set of mutex objects
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   September 1999
+///
 
 #ifndef Core_Thread_MutexPool_h
 #define Core_Thread_MutexPool_h

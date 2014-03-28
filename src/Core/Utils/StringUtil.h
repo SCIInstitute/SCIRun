@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
+/// @todo Documentation
 
 #ifndef CORE_UTILS_STRINGUTIL_H
 #define CORE_UTILS_STRINGUTIL_H 1

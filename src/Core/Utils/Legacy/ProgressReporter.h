@@ -29,16 +29,15 @@
 
 
 
-/**
- *@file  ProgressReporter.h:
- *
- *@author
- *   Yarden Livnat
- *   Department of Computer Science
- *   University of Utah
- *@date  July 2003
- *
- */
+///
+///@file  ProgressReporter.h:
+///
+///@author
+///       Yarden Livnat
+///       Department of Computer Science
+///       University of Utah
+///@date  July 2003
+///
 
 
 #ifndef SCIRun_Core_Util_ProgressReporter_h

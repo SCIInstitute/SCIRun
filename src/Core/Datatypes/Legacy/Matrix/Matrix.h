@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  Matrix.h
- *@brief Matrix definitions
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@file  Matrix.h
+///@brief Matrix definitions
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+/// 
 
 #ifndef CORE_DATATYPES_MATRIX_H
 #define CORE_DATATYPES_MATRIX_H 1
@@ -71,7 +70,7 @@ public:
   virtual size_type nrows() const = 0;
   virtual size_type ncols() const = 0;
   virtual void zero() = 0;
-  //TODO @todo
+  /// @todo
   //virtual MatrixInterface<T>* make_transpose() const = 0;
 };
 

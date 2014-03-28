@@ -63,7 +63,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
 
-//TODO: add unit test 
+/// @todo: add unit test 
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 
@@ -83,7 +83,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& name, const
     h.reset(new ConvertMeshToTriSurfMeshAlgo);
   else if (name == "AlignMeshBoundingBoxes")
     h.reset(new AlignMeshBoundingBoxesAlgo);
-  else if (name == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+  else if (name == "GetFieldNodes") /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new GetMeshNodesAlgo);    
   else if (name == "ElectrodeCoilSetup")
     h.reset(new ElectrodeCoilSetupAlgorithm);     

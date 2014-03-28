@@ -27,18 +27,17 @@
 */
 
 
-/**
- *@class CubicPWI
- *@brief Cubic piecewise interpolation
- *
- *@author
- *   Alexei Samsonov
- *   Department of Computer Science
- *   University of Utah
- *
- *@date   July 2000
- *
- */
+///
+///@class CubicPWI
+///@brief Cubic piecewise interpolation
+///
+///@author
+///       Alexei Samsonov
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  July 2000
+///
 
 #include <Core/Utils/Legacy/Assert.h>
 #include <Core/Math/CubicPWI.h>

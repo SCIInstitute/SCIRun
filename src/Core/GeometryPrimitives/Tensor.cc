@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  Tensor.cc
- *@brief Symmetric, positive definite tensors (diffusion, conductivity)
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date   March 2001
- *
- */
+///
+///@file  Tensor.cc
+///@brief Symmetric, positive definite tensors (diffusion, conductivity)
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2001
+///
 
 
 #include <Core/GeometryPrimitives/Tensor.h>
@@ -119,7 +118,7 @@ Tensor::Tensor(const double *t)
   have_eigens_=0;
 }
 
-//! Initialize the diagonal to this value
+/// Initialize the diagonal to this value
 Tensor::Tensor(double v) {
   have_eigens_=0;
   for (int i=0; i<3; i++) 
@@ -142,7 +141,7 @@ Tensor::Tensor(double v1, double v2, double v3, double v4, double v5, double v6)
   mat_[2][2] = v6;
 }
 
-//! Initialize the diagonal to this value
+/// Initialize the diagonal to this value
 Tensor::Tensor(int v) {
   have_eigens_=0;
   for (int i=0; i<3; i++) 

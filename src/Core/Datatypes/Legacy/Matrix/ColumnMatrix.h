@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  ColumnMatrix.h
- *@brief for RHS and LHS
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@file  ColumnMatrix.h
+///@brief for RHS and LHS
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+/// 
 
 #ifndef CORE_DATATYPES_COLUMNMATRIX_H
 #define CORE_DATATYPES_COLUMNMATRIX_H 1
@@ -58,7 +57,7 @@ class ColumnMatrixGeneric : public Matrix<T> {
 public:
   explicit ColumnMatrixGeneric(size_type rows = 0);
   ColumnMatrixGeneric(const ColumnMatrixGeneric&);
-  //TODO @todo in C++11--move ctors for all matrix types.
+  /// @todo in C++11--move ctors for all matrix types.
   //ColumnMatrixGeneric(ColumnMatrixGeneric&& move);
   ColumnMatrixGeneric& operator=(const ColumnMatrixGeneric&);
   virtual ColumnMatrixGeneric* clone() const;
@@ -77,7 +76,7 @@ public:
     ASSERTRANGE(r, 0, this->nrows_)
     return data_[r];
   }
-  //TODO @todo: remove
+  /// @todo: remove
   void set_data(T* d) {data_ = d;} 
 
   T  get(index_type r) const      
@@ -412,7 +411,7 @@ void ColumnMatrixGeneric<T>::io(Piostream& stream)
 }
 
 
-// TODO @todo: replace with for_each
+/// @todo: replace with for_each
 template <typename T>
 void 
 ColumnMatrixGeneric<T>::scalar_multiply(T s)

@@ -45,7 +45,7 @@ namespace Datatypes {
     Datatype(const Datatype& other);
     Datatype& operator=(const Datatype& rhs);
 
-    ///TODO @todo
+    /// @todo
     template <typename T>
     const T* as() const
     {

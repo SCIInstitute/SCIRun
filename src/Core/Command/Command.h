@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO @todo: Documentation Core/Command/Command.h 
+/// @todo: Documentation Core/Command/Command.h 
 ///  GlobalCommandBuilderFromCommandLine.cc 
 
 #ifndef CORE_COMMAND_COMMAND_H

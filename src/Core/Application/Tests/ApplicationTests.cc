@@ -28,7 +28,7 @@
 
 #include <gtest/gtest.h>
 
-//TODO: this won't link in debug mode due to Application::Instance impl
+/// @todo: this won't link in debug mode due to Application::Instance impl
 #if NDEBUG
 #include <Core/Application/Application.h>
 

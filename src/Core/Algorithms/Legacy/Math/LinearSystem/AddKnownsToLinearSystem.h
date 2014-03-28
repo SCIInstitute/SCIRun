@@ -29,13 +29,13 @@
 #ifndef CORE_ALGORITHMS_MATH_LINEARSYSTEM_ADDKNOWNSTOLINEARSYSTEM_H
 #define CORE_ALGORITHMS_MATH_LINEARSYSTEM_ADDKNOWNSTOLINEARSYSTEM_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Matrix.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRunAlgo {

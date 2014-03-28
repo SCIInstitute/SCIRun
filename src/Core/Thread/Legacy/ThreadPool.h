@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  ThreadPool
- *@brief A pool of threads
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: January 2000
- *
- */
+///
+///@file   ThreadPool
+///@brief  A pool of threads
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   January 2000
+///
 
 #ifndef Core_Thread_ThreadPool_h
 #define Core_Thread_ThreadPool_h

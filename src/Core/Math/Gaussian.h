@@ -27,19 +27,18 @@
 */
 
 
-/**
- *@class Gaussian
- *@brief Support for Gaussian distributions
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *
- *@date
- *   April 2002
- *
- */
+///
+///@class Gaussian
+///@brief Support for Gaussian distributions
+///
+///@author
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///
+///@date
+///       April 2002
+///
 
 
 #ifndef SCI_GAUSSIAN_H__

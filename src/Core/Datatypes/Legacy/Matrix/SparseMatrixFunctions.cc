@@ -27,15 +27,13 @@
 */
 
 
-/**
- *@file  SparseMatrixFunctions.cc 
- *
- *@author
- *   Department of Computer Science
- *   University of Utah
- *@date
- *
- */
+///
+///@file  SparseMatrixFunctions.cc 
+/// 
+///@author
+///       Department of Computer Science
+///       University of Utah
+/// 
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>

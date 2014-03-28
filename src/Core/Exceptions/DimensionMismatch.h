@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  DimensionMismatch.h
- *@brief Exception to indicate a failed bounds check
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  August 2000
- *
- */
+///
+///@file  DimensionMismatch.h
+///@brief Exception to indicate a failed bounds check
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  August 2000
+///
 
 #ifndef Core_Exceptions_DimensionMismatch_h
 #define Core_Exceptions_DimensionMismatch_h

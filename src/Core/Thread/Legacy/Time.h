@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Time.h 
- *@brief Utility class for dealing with time
- *
- *   @author Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date June 1997
- *
- */
+///
+///@file   Time.h 
+///@brief  Utility class for dealing with time
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Time_h
 #define Core_Thread_Time_h

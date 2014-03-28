@@ -29,17 +29,16 @@
 
 
 
-/**
- *@class Barrier
- *@brief Barrier synchronization primitive (default implementation)
- *
- *@author
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *@date June 1997
- *
- */
+///
+///@class Barrier
+///@brief Barrier synchronization primitive (default implementation)
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #include <Core/Thread/Legacy/RecursiveMutex.h>
 #include <Core/Thread/Legacy/Thread.h>

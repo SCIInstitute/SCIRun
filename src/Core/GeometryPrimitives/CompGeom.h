@@ -27,16 +27,15 @@
 */
 
 
-/**
- *@file  CompGeom.h
- *
- *@author
- *   Allen Sanderson
- *   SCI Institute
- *   University of Utah
- *@date  August 2005
- *
- */
+///
+///@file  CompGeom.h
+///
+///@author
+///       Allen Sanderson
+///       SCI Institute
+///       University of Utah
+///@date  August 2005
+///
 
 #ifndef CORE_GEOMETRY_COMPGEOM_H
 #define CORE_GEOMETRY_COMPGEOM_H 1

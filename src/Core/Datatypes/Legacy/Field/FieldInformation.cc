@@ -35,7 +35,7 @@ using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
 
-///TODO @todo DAN: use std::replace for strings below.
+/// @todo DAN: use std::replace for strings below.
 
 void
 FieldTypeInformation::insert_field_type_information(Field* field)
@@ -703,7 +703,7 @@ FieldTypeInformation::is_cubicdata()
   return ((basis_type.find("ubicHmt") != std::string::npos));
 }
 
-/// TODO @todo: an enum would be good for keeping track of basis order...
+/// @todo: an enum would be good for keeping track of basis order...
 int
 FieldTypeInformation::field_basis_order()
 {

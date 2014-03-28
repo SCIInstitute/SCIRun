@@ -27,18 +27,17 @@
 */
 
 
-/**
- *@class LinAlg 
- *@brief Tuned linear algebra routines
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *
- *@date  November 1995
- *
- */
+///
+///@class LinAlg 
+///@brief Tuned linear algebra routines
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  November 1995
+///
 
 #ifndef Math_LinAlg_h
 #define Math_LinAlg_h 1

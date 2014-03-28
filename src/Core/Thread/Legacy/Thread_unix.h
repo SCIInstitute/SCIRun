@@ -28,18 +28,17 @@
 
 
 
-/**
- *@file  Thread_unix.h 
- *@brief Header file for utiity functions for unix versions
- *		    of the thread class
- *
- *@author
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  June 1997
- *
- */
+///
+///@file  Thread_unix.h 
+///@brief Header file for utiity functions for unix versions
+///		    of the thread class
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #ifndef Core_Thread_Thread_unix_h
 #define Core_Thread_Thread_unix_h

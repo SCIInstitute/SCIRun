@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Guard.h
- *@brief Automatically lock/unlock a mutex or crowdmonitor.
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   Guard.h
+///@brief  Automatically lock/unlock a mutex or crowdmonitor.
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Guard_h
 #define Core_Thread_Guard_h

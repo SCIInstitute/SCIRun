@@ -26,18 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**@details
-  A structured curve is a dataset with regular topology but with
-  irregular geometry.  The line defined may have any shape but can not
-  be overlapping or self-intersecting.
-
-  The topology of structured curve is represented using a 1D vector with
-  the points being stored in an index based array. The ordering of the curve is
-  implicity defined based based upon its indexing.
-
-  For more information on datatypes see Schroeder, Martin, and Lorensen,
-  "The Visualization Toolkit", Prentice Hall, 1998.
-*/
+///@details
+///  A structured curve is a dataset with regular topology but with
+///  irregular geometry.  The line defined may have any shape but can not
+///  be overlapping or self-intersecting.
+///
+///  The topology of structured curve is represented using a 1D vector with
+///  the points being stored in an index based array. The ordering of the curve 
+///  is implicity defined based based upon its indexing.
+///
+///  For more information on datatypes see Schroeder, Martin, and Lorensen,
+///  "The Visualization Toolkit", Prentice Hall, 1998.
 
 
 #ifndef CORE_DATATYPES_STRUCTCURVEMESH_H

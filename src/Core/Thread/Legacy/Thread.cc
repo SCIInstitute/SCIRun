@@ -29,17 +29,16 @@
 
 
 
-/**
- *@file  Thread.cc
- *@brief The thread class
- *
- *@author
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  June 1997
- *
- */
+///
+///@file  Thread.cc
+///@brief The thread class
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #include <Core/Thread/Legacy/Thread.h>
 #include <Core/Exceptions/Exception.h>

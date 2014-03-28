@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Array3.h 
- *@brief Interface to dynamic 3D array class
- *
- *@author Steven G. Parker
- * 	  Department of Computer Science
- * 	  University of Utah
- *@date	  March 1994
- *
- */
+///
+///@file   Array3.h 
+///@brief  Interface to dynamic 3D array class
+///
+///@author Steven G. Parker
+/// 	   Department of Computer Science
+/// 	   University of Utah
+///@date   March 1994
+///
 
 #ifndef CORE_CONAINTERS_ARRAY3_H
 #define CORE_CONAINTERS_ARRAY3_H 1

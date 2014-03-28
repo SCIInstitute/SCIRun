@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  Persistent.h
- *@brief Base class for persistent objects...
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  April 1994
- *
- */
+///
+///@file  Persistent.h
+///@brief Base class for persistent objects...
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  April 1994
+///
 
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Persistent/Persistent.h>
@@ -241,7 +240,7 @@ Piostream::io(Persistent*& data, const PersistentTypeID& pid)
       Persistent* (*bc_maker1)() = 0;
       Persistent* (*bc_maker2)() = 0;
       
-      //TODO ULTRA HACKY CODE
+      /// @todo ULTRA HACKY CODE
       if (in_name == "Manager")
         return;
 

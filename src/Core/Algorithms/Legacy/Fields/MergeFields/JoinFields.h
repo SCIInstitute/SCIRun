@@ -44,15 +44,15 @@ class SCISHARE JoinFieldsAlgo : public AlgoBase
     // Algorithm defaults
     JoinFieldsAlgo()
     {
-      //! Merge duplicate nodes?
+      /// Merge duplicate nodes?
       add_bool("merge_nodes",true);
-      //! Merge duplicate elements?
+      /// Merge duplicate elements?
       add_bool("merge_elems",false);
-      //! Tolerance for merging duplicate nodes?
+      /// Tolerance for merging duplicate nodes?
       add_scalar("tolerance",1e-6);
-      //! Only merge nodes whose value is the same
+      /// Only merge nodes whose value is the same
       add_bool("match_node_values",false);
-      //! Create a field with no data
+      /// Create a field with no data
       add_bool("make_no_data",false);
     }
     bool run(std::vector<SCIRun::FieldHandle>& input, SCIRun::FieldHandle& output);   

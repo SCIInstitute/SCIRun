@@ -30,6 +30,6 @@
 //
 //namespace SCIRun {
 //
-//  //TODO @todo: defunct me
+//  /// @todo: defunct me
 //
 //} // End namespace SCIRun

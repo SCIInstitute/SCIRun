@@ -29,18 +29,17 @@
 
 
 
-/**
- *@class Mat
- *@brief Simple matrix calculations
- *
- *@author 
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *
- *@date  October 1994
- *
- */
+///
+///@class Mat
+///@brief Simple matrix calculations
+///
+///@author 
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  October 1994
+///
 
 #include <Core/Math/Mat.h>
 #include <stdio.h>

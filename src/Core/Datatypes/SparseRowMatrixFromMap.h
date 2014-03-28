@@ -40,7 +40,7 @@ namespace SCIRun
   {
     namespace Datatypes
     {
-      ///TODO @todo: refactor with some OO, please...
+      /// @todo: refactor with some OO, please...
       class SCISHARE SparseRowMatrixFromMap
       {
       public:

@@ -28,12 +28,11 @@
 
 
 
-/**
- *@file  ThrottledRunnable.h 
- *
- *@author McKay Davis
- *
- */
+///
+///@file   ThrottledRunnable.h 
+///
+///@author McKay Davis
+///
 
 #ifndef Core_Util_Throttled_Runnable_h
 #define Core_Util_Throttled_Runnable_h

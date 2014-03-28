@@ -27,16 +27,15 @@
 */
 
 
-/**
- *@file   PersistentSTL.h
- *@brief  Persistent i/o for STL containers
- *
- *@author David Hart, Alexei Samsonov
- *        Department of Computer Science
- *        University of Utah
- *@date	  Mar. 2000, Dec 2000
- * 
- */
+///
+///@file   PersistentSTL.h
+///@brief  Persistent i/o for STL containers
+///
+///@author David Hart, Alexei Samsonov
+///        Department of Computer Science
+///        University of Utah
+///@date   Mar. 2000, Dec 2000
+/// 
 
 #ifndef SCI_project_PersistentSTL_h
 #define SCI_project_PersistentSTL_h 1

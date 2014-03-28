@@ -29,16 +29,15 @@
 
 
  
-/**
- *@file  TCLTask.cc:
- *@brief Mutex that is lockable multiple times within the same thread
- *@author
- *   McKAy Davis / Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  August 1994
- *
- */
+///
+///@file  TCLTask.cc:
+///@brief Mutex that is lockable multiple times within the same thread
+///@author
+///       McKAy Davis / Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  August 1994
+///
 
 #include <Core/Thread/Legacy/ThreadLock.h>
 #include <Core/Utils/Legacy/Assert.h>

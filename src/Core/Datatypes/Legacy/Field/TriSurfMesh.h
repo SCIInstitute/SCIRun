@@ -342,7 +342,7 @@ public:
 
   /// Has this mesh normals.
   // Note: normals point outward.
-  // TODO @todo: this is inconsistent with QuadSurfMesh - should both surfaces
+  /// @todo: this is inconsistent with QuadSurfMesh - should both surfaces
   // have consistent normal direction?
   virtual bool has_normals() const { return (true); }
 
@@ -3479,7 +3479,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
-  // TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   const index_type idx = ci*3;
   Core::Geometry::BBox box;
@@ -3509,7 +3509,7 @@ template <class Basis>
 void
 TriSurfMesh<Basis>::insert_node_into_grid(typename Node::index_type ni)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

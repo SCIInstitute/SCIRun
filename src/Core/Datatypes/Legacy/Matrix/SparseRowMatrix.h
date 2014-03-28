@@ -28,19 +28,19 @@
 
 
 
-/**
- *@file  SparseRowMatrix.h
- *@brief Sparse Row Matrices
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  November 1994
- *
- *@details See http://math.nist.gov/MatrixMarket/formats.html#MMformat
- * for more information about this sparse matrix format.
- */
+///
+///@file  SparseRowMatrix.h
+///@brief Sparse Row Matrices
+/// 
+///@author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+///@date  November 1994
+///
+///@details See http://math.nist.gov/MatrixMarket/formats.html#MMformat
+/// for more information about this sparse matrix format.
+/// 
 
 
 #ifndef CORE_DATATYPES_SPARSEROWMATRIX_H
@@ -809,7 +809,7 @@ SparseRowMatrixGeneric<T>::identity(size_type size)
   return new SparseRowMatrixGeneric(size, size, data, size);
 }
   
-// TODO @todo: replace with for_each
+/// @todo: replace with for_each
 template <typename T>
 void 
 SparseRowMatrixGeneric<T>::scalar_multiply(T s)

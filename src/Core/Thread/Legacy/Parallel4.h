@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Parallel4.h
- *@brief Automatically instantiate several threads, with 4 arguments
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   Parallel4.h
+///@brief  Automatically instantiate several threads, with 4 arguments
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Parallel4_h
 #define Core_Thread_Parallel4_h

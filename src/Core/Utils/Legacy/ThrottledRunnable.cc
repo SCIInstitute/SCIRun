@@ -30,12 +30,11 @@
 
 
 
-/**
- *@file  ThrottledRunnable.cc 
- *
- *@author McKay Davis
- *
- */
+///
+///@file   ThrottledRunnable.cc 
+///
+///@author McKay Davis
+///
 
 #include <Core/Utils/Legacy/Timer.h>
 #include <Core/Utils/Legacy/ThrottledRunnable.h>

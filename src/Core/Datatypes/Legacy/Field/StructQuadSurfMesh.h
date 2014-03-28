@@ -26,19 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**@details
-  A structured grid is a dataset with regular topology but with irregular
-  geometry.  The grid may have any shape but can not be overlapping or
-  self-intersecting. The topology of a structured grid is represented
-  using a 2D, or 3D vector with the points being stored in an index
-  based array. The faces (quadrilaterals) and  cells (Hexahedron) are
-  implicitly define based based upon their indexing.
-
-  Structured grids are typically used in finite difference analysis.
-
-  For more information on datatypes see Schroeder, Martin, and Lorensen,
-  "The Visualization Toolkit", Prentice Hall, 1998.
-*/
+///@details
+///  A structured grid is a dataset with regular topology but with irregular
+///  geometry.  The grid may have any shape but can not be overlapping or
+///  self-intersecting. The topology of a structured grid is represented
+///  using a 2D, or 3D vector with the points being stored in an index
+///  based array. The faces (quadrilaterals) and  cells (Hexahedron) are
+///  implicitly define based based upon their indexing.
+///
+///  Structured grids are typically used in finite difference analysis.
+///
+///  For more information on datatypes see Schroeder, Martin, and Lorensen,
+///  "The Visualization Toolkit", Prentice Hall, 1998.
+///
 
 
 #ifndef CORE_DATATYPES_STRUCTQUADSURFMESH_H
@@ -1263,7 +1263,7 @@ StructQuadSurfMesh<Basis>::inside3_p(typename ImageMesh<Basis>::Face::index_type
 
     /// If the area of any of the sub triangles is very small then the point
     /// is on the edge of the subtriangle.
-    /// TODO @todo : How small is small ???
+    /// @todo : How small is small ???
 ///     if( a0 < MIN_ELEMENT_VAL ||
 ///      a1 < MIN_ELEMENT_VAL ||
 ///      a2 < MIN_ELEMENT_VAL )
@@ -1394,7 +1394,7 @@ template <class Basis>
 void
 StructQuadSurfMesh<Basis>::insert_elem_into_grid(typename ImageMesh<Basis>::Elem::index_type idx)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   
   Core::Geometry::BBox box;
@@ -1425,7 +1425,7 @@ template <class Basis>
 void
 StructQuadSurfMesh<Basis>::insert_node_into_grid(typename ImageMesh<Basis>::Node::index_type ni)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

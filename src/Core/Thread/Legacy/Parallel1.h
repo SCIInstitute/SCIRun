@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Parallel1.h
- *@brief Automatically instantiate several threads, with 1 argument
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 2000
- *
- */
+///
+///@file   Parallel1.h
+///@brief  Automatically instantiate several threads, with 1 argument
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 2000
+///
 
 #ifndef Core_Thread_Parallel1_h
 #define Core_Thread_Parallel1_h

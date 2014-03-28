@@ -26,10 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-//! Class definition of this one
+/// Class definition of this one
 #include <Core/Algorithms/Fields/TetGen/InterfaceWithTetGen.h>
 
-//! Need to find out what type of field we are dealing with
+/// Need to find out what type of field we are dealing with
 #include <Core/Datatypes/FieldInformation.h>
 
 #define TETLIBRARY   // Required definition for use of tetgen library

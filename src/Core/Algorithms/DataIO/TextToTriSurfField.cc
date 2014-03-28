@@ -437,7 +437,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
       }
     }
     
-    // TODO: change to FieldHandle when available...
+    /// @todo: change to FieldHandle when available...
     auto mesh = privateImpl.readField();
     return mesh;
   }
@@ -453,7 +453,7 @@ MeshHandle TextToTriSurfFieldAlgorithm::run(const std::string& filename)
     oss << "Locating input file " << filename << " failed " << e.what();
     error(oss.str());
   }
-  // TODO: other exceptions?
+  /// @todo: other exceptions?
   return MeshHandle();
 }
   

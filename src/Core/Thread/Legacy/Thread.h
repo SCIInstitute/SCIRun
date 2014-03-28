@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Thread.h
- *@brief The thread class
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+/// @file  Thread.h
+/// @brief The thread class
+/// 
+/// @author Steve Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date June 1997
+/// 
 
 #ifndef Core_Thread_Thread_h
 #define Core_Thread_Thread_h
@@ -364,7 +363,7 @@ private:
   Thread(const Thread&);
   Thread& operator=(const Thread&);
 };	
-} /// End namespace SCIRun
+} // End namespace SCIRun
 
 #endif
 

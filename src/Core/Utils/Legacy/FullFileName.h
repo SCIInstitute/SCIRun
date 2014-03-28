@@ -27,7 +27,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO Documentation
+/// @todo Documentation
 
 
 #ifndef CORE_UTIL_FILENAME_H
@@ -41,7 +41,7 @@
 
 namespace SCIRun {
 
-// TODO: most of the functionality in this class can be replaced with the
+/// @todo: most of the functionality in this class can be replaced with the
 // boost::filesystem::path class
 class SCISHARE FullFileName 
 {

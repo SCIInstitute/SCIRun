@@ -26,19 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/**
- *@file  DimensionMismatch.h
- *@brief Exception to indicate a failed bounds check
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  August 2000
- *
- */
+///
+///@file  DimensionMismatch.h
+///@brief Exception to indicate a failed bounds check
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  August 2000
+///
 
 #include <Core/Exceptions/DimensionMismatch.h>
 #include <stdio.h>

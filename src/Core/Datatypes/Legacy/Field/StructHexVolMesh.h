@@ -26,21 +26,23 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**@details
-  A structured grid is a dataset with regular topology but with irregular
-  geometry.
-
-  The grid may have any shape but can not be overlapping or self-intersecting.
-
-  The topology of a structured grid is represented using 2D, or 3D vector with
-  the points being stored in an index based array. The faces (quadrilaterals)
-  and cells (Hexahedron) are implicitly define based based upon their indexing.
-
-  Structured grids are typically used in finite difference analysis.
-
-  For more information on datatypes see Schroeder, Martin, and Lorensen,
-  "The Visualization Toolkit", Prentice Hall, 1998.
-*/
+///@details
+///  A structured grid is a dataset with regular topology but with irregular
+///  geometry.
+///
+///  The grid may have any shape but can not be overlapping or 
+///  self-intersecting.
+///
+///  The topology of a structured grid is represented using 2D, or 3D vector 
+///  with the points being stored in an index based array. The faces 
+///  (quadrilaterals) and cells (Hexahedron) are implicitly define based
+///  based upon their indexing.
+///
+///  Structured grids are typically used in finite difference analysis.
+///
+///  For more information on datatypes see Schroeder, Martin, and Lorensen,
+///  "The Visualization Toolkit", Prentice Hall, 1998.
+///
 
 
 #ifndef CORE_DATATYPES_STRUCTHEXVOLMESH_H
@@ -311,7 +313,7 @@ public:
                          const Core::Geometry::Point& p,
                          double maxdist) const
   {
-    // TODO @todo: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
 
     /// If there are no nodes we cannot find a closest point
@@ -836,7 +838,7 @@ public:
   template <class INDEX>
   inline bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
-    // TODO @todo: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (this->basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -905,7 +907,7 @@ public:
   template <class INDEX, class ARRAY>
   inline bool locate_elem(INDEX &elem, ARRAY& coords, const Core::Geometry::Point &p) const
   {
-    /// TODO @todo: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (this->basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -1728,7 +1730,7 @@ template <class Basis>
 void
 StructHexVolMesh<Basis>::insert_elem_into_grid(typename LatVolMesh<Basis>::Elem::index_type idx)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
   Core::Geometry::BBox box;
@@ -1766,7 +1768,7 @@ template <class Basis>
 void
 StructHexVolMesh<Basis>::insert_node_into_grid(typename LatVolMesh<Basis>::Node::index_type ni)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

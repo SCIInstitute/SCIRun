@@ -93,7 +93,7 @@ NetworkEditorControllerHandle Application::controller()
 {
   if (!private_->controller_)
   {
-    ///TODO @todo: these all get configured
+    /// @todo: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
     ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
@@ -122,7 +122,7 @@ std::string Application::commandHelpString() const
 
 std::string Application::version() const
 {
-	///TODO @todo:
+	/// @todo:
   ///return CORE_APPLICATION_VERSION;
   return "5.0.0 developer version";
 }

@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO @todo Documentation Core/Thread/ Barrier.cc/.h ConditionVariable.cc/.h
+/// @todo Documentation Core/Thread/ Barrier.cc/.h ConditionVariable.cc/.h
 ///  Mutex.cc/.h Parallel.cc/.h 
 
 #include <Core/Thread/Barrier.h>

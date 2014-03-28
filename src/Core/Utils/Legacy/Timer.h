@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  Timer.h
- *@brief Interface to portable timer utility classes
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  Feb. 1994
- *
- */
+///
+///@file  Timer.h
+///@brief Interface to portable timer utility classes
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  Feb. 1994
+///
 
 #if !defined(Timer_h)
 #define Timer_h

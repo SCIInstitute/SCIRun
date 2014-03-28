@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  ColumnMatrix.cc
- *@brief for RHS and LHS
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@file  ColumnMatrix.cc
+///@brief for RHS and LHS
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+/// 
 
 #include <cmath>
 #include <Core/Datatypes/ColumnMatrixFunctions.h>

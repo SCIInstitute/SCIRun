@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  Exception.h
- *@brief Base class for all SCI Exceptions
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date   July 1999
- *
- */
+///
+///@file  Exception.h
+///@brief Base class for all SCI Exceptions
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+///
 
 #ifndef Core_Exceptions_Exception_h
 #define Core_Exceptions_Exception_h

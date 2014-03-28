@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  InvalidState.h
- *@brief Generic exception for internal errors
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1999
- *
- */
+///
+///@file  InvalidState.h
+///@brief Generic exception for internal errors
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+///
 
 #include <Core/Exceptions/InvalidState.h>
 #include <iostream>

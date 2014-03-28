@@ -40,7 +40,7 @@ run(FieldHandle input, FieldHandle& output)
 {
   algo_start("ConvertMeshToPointCloudMeshAlgo");
   
-  //! Check whether we are extracting the element centers or the node centers
+  /// Check whether we are extracting the element centers or the node centers
   bool datalocation = (get_option("location") == std::string("data"));
   
   // check whether we have an input handle
@@ -140,7 +140,7 @@ run(FieldHandle input, FieldHandle& output)
   ofield->resize_values();
   ofield->copy_values(ifield);        
 
-  //! Copy properties of the property manager
+  /// Copy properties of the property manager
   output->copy_properties(input.get_rep());
 
   // Success

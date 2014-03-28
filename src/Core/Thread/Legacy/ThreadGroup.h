@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  ThreadGroup.h
- *@brief A set of threads
- *
- *   @author Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date June 1997
- *
- */
+///
+///@file   ThreadGroup.h
+///@brief  A set of threads
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_ThreadGroup_h
 #define Core_Thread_ThreadGroup_h

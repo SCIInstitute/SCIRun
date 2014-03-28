@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Core/Datatypes/Legacy/Color/ColorMap.cc 
+/// @todo Documentation Core/Datatypes/Legacy/Color/ColorMap.cc 
 ///  Material.cc/.h
 
 #include <Core/Datatypes/ColorMap.h>

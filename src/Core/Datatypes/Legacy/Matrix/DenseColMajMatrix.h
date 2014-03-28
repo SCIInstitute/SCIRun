@@ -26,19 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/**
- *@file  DenseColMajMatrix.h
- *@brief DenseColMaj matrices
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  October 1994
- *
- */
+///
+///@file  DenseColMajMatrix.h
+///@brief DenseColMaj matrices
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  October 1994
+/// 
 
 #ifndef CORE_DATATYPES_DENSECOLMAJMATRIX_H
 #define CORE_DATATYPES_DENSECOLMAJMATRIX_H 1
@@ -377,7 +374,7 @@ DenseColMajMatrixGeneric<T>::submatrix(index_type r1, index_type c1,
   DenseColMajMatrixGeneric *mat = new DenseColMajMatrixGeneric(r2 - r1 + 1, c2 - c1 + 1);
   for (index_type i = c1; i <= c2; i++)
   {
-    // TODO @todo: Test this.
+    /// @todo: Test this.
     memcpy(mat->dataptr_ + (i - c1) * (r2 - r1 + 1),
       dataptr_ + c1 * this->nrows_ + r1,
       (r2 - r1 + 1) * sizeof(double));

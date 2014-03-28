@@ -27,17 +27,17 @@
 */
 
 
-/**
- *@file  ScanlineMesh.h
- *@brief Templated Mesh defined on a 3D Regular Grid
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  January 2001
- *
- */
+///
+///@file  ScanlineMesh.h
+///@brief Templated Mesh defined on a 3D Regular Grid
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  January 2001
+///
+ 
 
 
 #ifndef CORE_DATATYPES_SCANLINEMESH_H

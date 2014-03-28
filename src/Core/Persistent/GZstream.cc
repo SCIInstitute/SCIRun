@@ -28,20 +28,19 @@
 
 
 
-/**
- *@file  Pstreams.cc
- *@brief Reading/writing persistent objects
- *
- *@authors
- *   Steven G. Parker,
- *   Modified by
- *   Michelle Miller
- *   Department of Computer Science
- *   University of Utah
- *@date  April 1994, Modified 
- *   Thu Feb 19 17:04:59 MST 1998
- *
- */
+///
+///@file  Pstreams.cc
+///@brief Reading/writing persistent objects
+///
+///@authors
+///       Steven G. Parker,
+///       Modified by
+///       Michelle Miller
+///       Department of Computer Science
+///       University of Utah
+///@date  April 1994, Modified 
+///   Thu Feb 19 17:04:59 MST 1998
+///
 
 #include <Core/Persistent/GZstream.h>
 

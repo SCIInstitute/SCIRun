@@ -29,17 +29,16 @@
 
 
 
-/**
- *@class MutexPool 
- *@brief A set of mutex objects
- *
- *@author
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *@date September 1999
- *
- */
+///
+///@class MutexPool 
+///@brief A set of mutex objects
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  September 1999
+///
 
 #include <Core/Thread/Legacy/MutexPool.h>
 #include <Core/Thread/Legacy/UsedWithLockingHandle.h>

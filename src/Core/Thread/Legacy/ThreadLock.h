@@ -28,17 +28,16 @@
 
 
  
-/**
- *@file  ThreadLock.h  
- *@brief Mutex that is lockable multiple times within the same thread
- *
- *@author
- *   McKay Davis / Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  August 1994
- *
- */
+///
+///@file  ThreadLock.h  
+///@brief Mutex that is lockable multiple times within the same thread
+///
+///@author
+///       McKay Davis / Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  August 1994
+///
 
 #ifndef SCIRun_Core_Thread_ThreadLock_h
 #define SCIRun_Core_Thread_ThreadLock_h

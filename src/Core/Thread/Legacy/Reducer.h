@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Reducer.h
- *@brief A barrier with reduction operations
- *
- *   @author Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date June 1997
- *
- */
+///
+///@file   Reducer.h
+///@brief  A barrier with reduction operations
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Reducer_h
 #define Core_Thread_Reducer_h

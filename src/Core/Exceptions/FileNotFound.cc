@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  FileNotFound.h
- *@brief Generic exception for internal errors
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1999
- *
- */
+///
+///@file  FileNotFound.h
+///@brief Generic exception for internal errors
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+///
 
 #include <Core/Exceptions/FileNotFound.h>
 #include <iostream>

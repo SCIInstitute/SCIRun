@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Mutex.h
- *@brief Standard locking primitive
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   Mutex.h
+///@brief  Standard locking primitive
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Mutex_h
 #define Core_Thread_Mutex_h

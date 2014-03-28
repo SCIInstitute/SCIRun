@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  ThreadError.h
- *@brief Exception class for unusual errors in the thread library
- *
- *   @author Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date August 1999
- *
- */
+///
+///@file   ThreadError.h
+///@brief  Exception class for unusual errors in the thread library
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   August 1999
+///
 
 #ifndef Core_Thread_ThreadError_h
 #define Core_Thread_ThreadError_h

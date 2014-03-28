@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  FieldIterator.h
- *@brief Some convenient simple iterators for fields.
- *
- *@author
- *   Marty Cole
- *   Department of Computer Science
- *   University of Utah
- *@date  January 2001
- *
- */
+///
+///@file  FieldIterator.h
+///@brief Some convenient simple iterators for fields.
+///
+///@author
+///       Marty Cole
+///       Department of Computer Science
+///       University of Utah
+///@date  January 2001
+///
 
 #ifndef Datatypes_FieldIterator_h
 #define Datatypes_FieldIterator_h

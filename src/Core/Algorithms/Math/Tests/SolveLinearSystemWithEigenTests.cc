@@ -219,7 +219,7 @@ TEST(SparseMatrixReadTest, RegexOfScirun4Format)
 
   if (!boost::filesystem::exists(file))
   {
-    FAIL() << "TODO: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
+    FAIL() << " @todo: Issue #142 will standardize these file locations other than being on Dan's hard drive." << std::endl
         << "Once that issue is done however, this will be a user setup error." << std::endl;
     return;
   }

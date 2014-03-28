@@ -348,7 +348,7 @@ void putenv_if_not_present(const std::string& key, const std::string& value)
   }
 }
 
-//TODO: add common state here
+/// @todo: add common state here
 class SciEnvironmentBuilder
 {
 public:
@@ -665,7 +665,7 @@ SCIRun::parse_rcfile( const char* rcfile )
 
 // find_and_parse_rcfile will search for the rcfile file in 
 // default locations and read it into the environemnt if possible.
-// TODO: boostify this
+/// @todo: boostify this
 void
 SCIRun::find_and_parse_rcfile(const std::string &rcfile)
 {

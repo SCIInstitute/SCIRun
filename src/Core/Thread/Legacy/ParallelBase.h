@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  ParallelBase.h
- *@brief Helper class to instantiate several threads
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   ParallelBase.h
+///@brief  Helper class to instantiate several threads
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_ParallelBase_h
 #define Core_Thread_ParallelBase_h

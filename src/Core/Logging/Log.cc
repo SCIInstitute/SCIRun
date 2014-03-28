@@ -72,7 +72,7 @@ namespace SCIRun
           }
           catch (log4cpp::ConfigureFailure& exception)
           {
-            // TODO: log?
+            /// @todo: log?
             std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
               << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
             layout1->setConversionPattern(backupPattern1);
@@ -88,7 +88,7 @@ namespace SCIRun
           }
           catch (log4cpp::ConfigureFailure& exception)
           {
-            // TODO: log?
+            /// @todo: log?
             std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
               << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
             layout2->setConversionPattern(backupPattern2);

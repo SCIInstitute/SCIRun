@@ -72,7 +72,7 @@ SetMeshNodesAlgo::run(FieldHandle input, DenseMatrixHandle matrix, FieldHandle& 
   FieldInformation fi(input);
   if (fi.is_regularmesh())
   {
-    //TODO: worth separating out into factory call for mocking purposes? probably not, just keep the concrete dependence
+    /// @todo: worth separating out into factory call for mocking purposes? probably not, just keep the concrete dependence
     ConvertMeshToIrregularMeshAlgo algo;
     algo.setUpdaterFunc(getUpdaterFunc());
 

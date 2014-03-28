@@ -40,7 +40,7 @@ namespace SCIRun {
 Mutex* scirun_debug_object_mutex = 0;
 std::map<std::string,int>* scirun_debug_object_count_ = 0;
 
-/// TODO: @todo
+/// @todo
 /// Convert this utility to a Debug class which will eliminate the need
 /// for this type of initialization.
 

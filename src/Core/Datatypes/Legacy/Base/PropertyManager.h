@@ -27,17 +27,17 @@
 */
 
 
-/**
- *@file  PropertyManager.h
- *
- *@author
- *   Yarden Livnat
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- *@brief Manage dynamic properties of persistent objects.
- */
+///
+///@file  PropertyManager.h
+///
+///@author
+///       Yarden Livnat
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2001
+///
+///@brief Manage dynamic properties of persistent objects.
+///
 
 #ifndef CORE_DATATYPES_PROPERTYMANAGER_H
 #define CORE_DATATYPES_PROPERTYMANAGER_H 1 

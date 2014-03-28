@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  MatrixOperations.cc
- *@brief Matrix Operations
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  August 2003
- *
- */
+///
+///@file  MatrixOperations.cc
+///@brief Matrix Operations
+/// 
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  August 2003
+/// 
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>
@@ -273,7 +272,7 @@ operator*(const SparseRowMatrix& A, double b)
 }
 
   
-// TODO @todo: does not check if invert operation was successful or not
+/// @todo: does not check if invert operation was successful or not
 MatrixHandle
 inv(MatrixHandle A)
 {

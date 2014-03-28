@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-///TODO @todo Documentation Core/Utils/Legacy/CheckSum.h Debug.cc/.h Dir.cc
+/// @todo Documentation Core/Utils/Legacy/CheckSum.h Debug.cc/.h Dir.cc
 ///  Endian.cc Environment.cc Environment_defaults.cc FullFileName.cc/.h
 ///  LogFile.h MemoryUtil.h StringUtil.cc/.h 
 

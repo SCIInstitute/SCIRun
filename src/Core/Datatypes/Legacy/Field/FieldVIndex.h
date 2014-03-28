@@ -176,7 +176,7 @@ inline FieldVIndexBase<T>& FieldVIndexBase<T>::operator-=(const FieldVIndexBase<
 }
 
 
-//! Distinct type for node index.
+/// Distinct type for node index.
 template <class T>
 struct VNodeIndex : public FieldVIndexBase<T> {
   VNodeIndex() :

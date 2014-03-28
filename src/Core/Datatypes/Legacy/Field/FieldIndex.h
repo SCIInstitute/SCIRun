@@ -27,14 +27,14 @@
 */
 
 
-/**
- *@author
- *   Marty Cole
- *   Department of Computer Science
- *   University of Utah
- *@date January 2001
- *
- */
+///
+///@author
+///      Marty Cole
+///      Department of Computer Science
+///      University of Utah
+///@date January 2001
+///
+///
 
 #ifndef Datatypes_FieldIndex_h
 #define Datatypes_FieldIndex_h

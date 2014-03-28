@@ -93,7 +93,7 @@ private:
   matrix_is();
 };
 
-//TODO @todo: these will be moved to a separate class to break compilation dependency on the subclasses of Matrix.
+/// @todo: these will be moved to a separate class to break compilation dependency on the subclasses of Matrix.
 
 template <typename T>
 DenseMatrix *

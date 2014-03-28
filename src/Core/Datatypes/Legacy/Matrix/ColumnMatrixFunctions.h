@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  ColumnMatrixFunctions.h
- *@brief for RHS and LHS
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@file  ColumnMatrixFunctions.h
+///@brief for RHS and LHS
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1994
+/// 
 
 #ifndef CORE_DATATYPES_COLUMNMATRIXFUNCTIONS_H
 #define CORE_DATATYPES_COLUMNMATRIXFUNCTIONS_H 

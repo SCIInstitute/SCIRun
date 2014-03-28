@@ -26,7 +26,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Core/Datatypes/Legacy/Bundle/Bundle.cc
+/// @todo Documentation Core/Datatypes/Legacy/Bundle/Bundle.cc
 
 #include <boost/algorithm/string.hpp>
 #include <Core/Datatypes/Bundle.h>

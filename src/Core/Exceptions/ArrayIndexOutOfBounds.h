@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  ArrayIndexOutOfBounds.h
- *@brief Exception to indicate a failed bounds check
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1999
- *
- */
+///
+///@file  ArrayIndexOutOfBounds.h
+///@brief Exception to indicate a failed bounds check
+/// 
+///@author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+///@date  July 1999
+/// 
 
 #ifndef Core_Exceptions_ArrayIndexOutOfBounds_h
 #define Core_Exceptions_ArrayIndexOutOfBounds_h

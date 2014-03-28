@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  WorkQueue.h
- *@brief Manage assignments of work
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   WorkQueue.h
+///@brief  Manage assignments of work
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_WorkQueue_h
 #define Core_Thread_WorkQueue_h

@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  DenseMatrix.h
- *@brief Dense matrices
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  October 1994
- *
- */
+///
+///@file  DenseMatrix.h
+///@brief Dense matrices
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  October 1994
+/// 
 
 #ifndef CORE_DATATYPES_DENSEMATRIX_H
 #define CORE_DATATYPES_DENSEMATRIX_H 1
@@ -687,7 +686,7 @@ DenseMatrixGeneric<T>::io(Piostream& stream)
 }
 
 
-// TODO @todo: this needs to be refactored
+/// @todo: this needs to be refactored
 template <typename T>
 bool
 DenseMatrixGeneric<T>::invert()

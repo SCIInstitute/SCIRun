@@ -29,17 +29,16 @@
 
 
 
-/**
- *@file  ThreadError.cc
- *@brief Exception class for unusual errors in the thread library
- *
- *@author
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *@date August 1999
- *
- */
+///
+///@file  ThreadError.cc
+///@brief Exception class for unusual errors in the thread library
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  August 1999
+///
 
 #include <Core/Thread/Legacy/ThreadError.h>
 namespace SCIRun {

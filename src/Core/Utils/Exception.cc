@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO @todo Documentation Core/Utils/Exception.cc/.h FileUtil.h 
+/// @todo Documentation Core/Utils/Exception.cc/.h FileUtil.h 
 /// Lockable.h
 
 #include <Core/Utils/Exception.h>
@@ -53,7 +53,7 @@ std::string ExceptionBase::typeName() const
 {
   try
   {
-    ///TODO @todo very hacky.
+    /// @todo very hacky.
     std::string name = typeid(*this).name();
 
     //static boost::regex r(".*class.*<.*struct (.+)>");

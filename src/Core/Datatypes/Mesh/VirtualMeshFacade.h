@@ -44,7 +44,7 @@ namespace Datatypes {
     
     explicit VirtualMeshFacade(boost::shared_ptr<VirtualMeshType> vmesh) : vmesh_(vmesh)
     {
-      /// TODO @todo: necessary? interface to vmesh
+      /// @todo: necessary? interface to vmesh
       //if (! vmesh->is_latvolmesh() 
       //  && ! vmesh->is_trisurfmesh() 
       //  && ! vmesh->is_tetvolmesh())
@@ -73,7 +73,7 @@ namespace Datatypes {
 
     virtual size_t numEdges() const
     {
-      ///TODO @todo: need to split out that Synchronize enum
+      /// @todo: need to split out that Synchronize enum
       vmesh_->synchronize(/*Mesh5::EDGES_E*/ 2);
       return vmesh_->num_edges();
     }

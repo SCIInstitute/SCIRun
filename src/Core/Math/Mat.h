@@ -28,18 +28,17 @@
 
 
 
-/**
- *@class Mat
- *@brief Simple matrix calculations
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *  
- *@date October 1994
- *
- */
+///
+///@class Mat
+///@brief Simple matrix calculations
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///  
+///@date  October 1994
+///
 
 #ifndef sci_Math_Mat_h
 #define sci_Math_Mat_h 1

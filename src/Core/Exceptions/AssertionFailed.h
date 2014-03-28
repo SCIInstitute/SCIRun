@@ -26,20 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@file AssertionFailed.h
- *@brief Exception for a failed assertion.  Note - this
- *	 version takes only a char*.  There is a FancyAssertionFailed that
- *	 takes std::string.  This is done to prevent include file pollution
- *	 with std::string
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1999
- *
- */
+///
+///@file AssertionFailed.h
+///@brief Exception for a failed assertion.  Note - this
+/// 	 version takes only a char*.  There is a FancyAssertionFailed that
+/// 	 takes std::string.  This is done to prevent include file pollution
+///	 with std::string
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+/// 
 
 #ifndef Core_Exceptions_AssertionFailed_h
 #define Core_Exceptions_AssertionFailed_h

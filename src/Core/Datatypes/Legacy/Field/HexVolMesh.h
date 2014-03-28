@@ -636,7 +636,7 @@ public:
   
   double get_size(typename Face::index_type idx) const
   {
-    // TODO @todo: This code is incorrect need to create a better call in basis functions
+    /// @todo: This code is incorrect need to create a better call in basis functions
     // for doing this
     typename Node::array_type ra;
     get_nodes(ra,idx);
@@ -2171,7 +2171,7 @@ protected:
     return (true); 
   }
 
-  /// TODO @todo: Fix this function, needs to use search grid
+  /// @todo: Fix this function, needs to use search grid
   template <class INDEX>
   bool locate_edge(INDEX &edge, const Core::Geometry::Point &p) const
   {
@@ -2201,7 +2201,7 @@ protected:
     return (found);
   }
 
-  /// TODO @todo: Fix this function, needs to use search grid
+  /// @todo: Fix this function, needs to use search grid
   template <class INDEX>
   bool locate_face(INDEX &face, const Core::Geometry::Point &p) const
   {
@@ -2231,7 +2231,7 @@ protected:
   template <class INDEX>
   bool locate_elem(INDEX &elem, const Core::Geometry::Point &p) const
   {
-    /// TODO @todo: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -2299,7 +2299,7 @@ protected:
   template <class INDEX, class ARRAY>
   bool locate_elem(INDEX &elem, ARRAY &coords, const Core::Geometry::Point &p) const
   {
-    // TODO @todo: Generate bounding boxes for elements and integrate this into the
+    /// @todo: Generate bounding boxes for elements and integrate this into the
     // basis function code.
     if (basis_.polynomial_order() > 1) return elem_locate(elem, *this, p);
 
@@ -2634,8 +2634,8 @@ protected:
         PEdgeNode(n1,n2) {}
   };
 
-  /** hash the egde's node_indecies such that edges with the same nodes
-   *  hash to the same value. nodes are sorted on edge construction. */
+  /// hash the egde's node_indecies such that edges with the same nodes
+  ///  hash to the same value. nodes are sorted on edge construction. 
   static const int sz_int = sizeof(int) * 8; // in bits
   struct FaceHash
   {
@@ -2759,13 +2759,13 @@ protected:
   typedef std::vector<PFaceCell> face_ct;
   typedef std::vector<PEdgeCell> edge_ct;
 
-  /** container for face storage. Must be computed each time
-    nodes or cells change. */
+  /// container for face storage. Must be computed each time
+  ///  nodes or cells change. 
     
   face_ct faces_;
   face_nt face_table_;
-  /** container for edge storage. Must be computed each time
-    nodes or cells change. */
+  /// container for edge storage. Must be computed each time
+  ///  nodes or cells change. 
   edge_ct edges_;
   edge_nt edge_table_;
 
@@ -3719,7 +3719,7 @@ template <class Basis>
 void
 HexVolMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ci)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
 
   const index_type idx = ci*8;
@@ -3759,7 +3759,7 @@ template <class Basis>
 void
 HexVolMesh<Basis>::insert_node_into_grid(typename Node::index_type ni)
 {
-  /// TODO @todo:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   node_grid_->insert(ni,points_[ni]);
 }

@@ -27,21 +27,17 @@
 */
 
 
-/**
- *@file  SparseRowMatrix.cc
- *
- *@author
- *   Department of Computer Science
- *   University of Utah
- *@date
- *
- */
-
-
+///
+///@file  SparseRowMatrix.cc
+/// 
+///@author
+///       Department of Computer Science
+///       University of Utah
+/// 
 
 namespace SCIRun {
 
-  //TODO @todo: defunct
+  /// @todo: defunct
 
 
 } // End namespace SCIRun

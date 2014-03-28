@@ -29,17 +29,16 @@
 
 
 
-/**
- *@file  WorkQueue.cc
- *@brief Manage assignments of work
- *
- *@author
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *@date: June 1997
- *
- */
+///
+///@file  WorkQueue.cc
+///@brief Manage assignments of work
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 
 #include <Core/Thread/Legacy/WorkQueue.h>

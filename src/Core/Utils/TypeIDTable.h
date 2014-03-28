@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-///TODO Documentation
+/// @todo Documentation
 
 #ifndef CORE_UTILS_TYPEIDTABLE_H
 #define CORE_UTILS_TYPEIDTABLE_H
@@ -68,8 +68,8 @@ namespace Utility
       {
         if (iter->second != info)
         {
-          //TODO: improve for testing
-          //TODO: use real logger here
+          /// @todo: improve for testing
+          /// @todo: use real logger here
           std::cerr << "WARNING: duplicate type exists: " << key << "\n";
           return false;
         }

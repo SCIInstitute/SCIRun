@@ -26,19 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/**
- *@class LinearPWI
- *@brief Linear piecewise interpolation
- *
- *@author
- *   Alexei Samsonov
- *   Department of Computer Science
- *   University of Utah
- *
- *@date July 2000
- *
- */
+///
+///@class LinearPWI
+///@brief Linear piecewise interpolation
+///
+///@author
+///       Alexei Samsonov
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  July 2000
+///
 
 #include <Core/Math/LinearPWI.h>
 #include <Core/Containers/Array1.h>

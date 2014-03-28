@@ -44,7 +44,7 @@ public:
   CrvCubicHmtUnitElement() {}
   virtual ~CrvCubicHmtUnitElement() {}
 
-  static int dofs() { return 4; } //!< return degrees of freedom
+  static int dofs() { return 4; } ///< return degrees of freedom
 };
 
 

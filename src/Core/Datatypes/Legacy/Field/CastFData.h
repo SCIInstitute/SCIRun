@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation
+/// @todo Documentation
 
 #ifndef CORE_DATATYPES_CASTFDATA_H
 #define CORE_DATATYPES_CASTFDATA_H 1

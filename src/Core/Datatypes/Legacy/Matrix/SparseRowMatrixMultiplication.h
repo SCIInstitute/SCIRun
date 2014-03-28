@@ -28,19 +28,19 @@
 
 
 
-/**
- *@file  SparseRowMatrix.h
- *@brief Sparse Row Matrices
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  November 1994
- *
- *@details See http://math.nist.gov/MatrixMarket/formats.html#MMformat
- * for more information about this sparse matrix format.
- */
+///
+///@file  SparseRowMatrix.h
+///@brief Sparse Row Matrices
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  November 1994
+/// 
+///@details See http://math.nist.gov/MatrixMarket/formats.html#MMformat
+/// for more information about this sparse matrix format.
+/// 
 
 
 #ifndef CORE_DATATYPES_SPARSEROWMATRIXMULTIPLICATION_H

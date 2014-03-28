@@ -64,7 +64,7 @@ using namespace SCIRun::Core::Commands;
     if (!params->disableGui())
       q->enqueue(cmdFactory_->create(ShowMainWindow));
     else
-      std::cout << "HEADLESS MODE" << std::endl;  ///TODO @todo obviously
+      std::cout << "HEADLESS MODE" << std::endl;  /// @todo obviously
 
     if (params->inputFile())
       q->enqueue(cmdFactory_->create(LoadNetworkFile));

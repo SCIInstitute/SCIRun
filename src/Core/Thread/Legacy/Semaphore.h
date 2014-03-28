@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  Semaphore
- *@breif Basic semaphore primitive
- *
- *   @author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   @date: June 1997
- *
- */
+///
+///@file   Semaphore
+///@breif  Basic semaphore primitive
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Semaphore_h
 #define Core_Thread_Semaphore_h

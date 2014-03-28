@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  Assert.h
- *@brief Utility for specifying data invariants (Assertions)
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  Feb. 1994
- *
- */
+///
+///@file  Assert.h
+///@brief Utility for specifying data invariants (Assertions)
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  Feb. 1994
+///
 
 #ifndef SCI_Containers_Assert_h
 #define SCI_Containers_Assert_h 1
@@ -48,7 +47,7 @@
 #include <Core/Exceptions/AssertionFailed.h>
 #include <Core/Exceptions/ArrayIndexOutOfBounds.h>
 
-//TODO: make sure default SCI_ASSERTION_LEVEL is consistent across platforms
+/// @todo: make sure default SCI_ASSERTION_LEVEL is consistent across platforms
 
 #define ASSERTFAIL(string) \
    SCI_THROW(SCIRun::AssertionFailed(string, __FILE__, __LINE__));

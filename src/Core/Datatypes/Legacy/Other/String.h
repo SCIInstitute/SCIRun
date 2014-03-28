@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  String.h
- *@brief String Object
- *
- *@author
- *   Jeroen Stinstra
- *   Department of Computer Science
- *   University of Utah
- *@date  October 2005
- *
- */
+///
+///@file  String.h
+///@brief String Object
+/// 
+///@author
+///       Jeroen Stinstra
+///       Department of Computer Science
+///       University of Utah
+///@date  October 2005
+/// 
 
 #ifndef CORE_DATATYPES_STRING_H
 #define CORE_DATATYPES_STRING_H 1

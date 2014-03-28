@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Core/PersistentFwd.h
+/// @todo Documentation Core/PersistentFwd.h
 
 #ifndef CORE_PERSISTENT_FWD_H
 #define CORE_PERSISTENT_FWD_H 

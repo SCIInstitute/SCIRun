@@ -29,17 +29,16 @@
 
 
 
-/**
- *@file  CleanupManager.cc
- *@brief Manage exitAll callbacks.
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  November 2004
- *
- */
+///
+///@file  CleanupManager.cc
+///@brief Manage exitAll callbacks.
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  November 2004
+///
 
 #include <Core/Thread/Legacy/CleanupManager.h>
 

@@ -69,7 +69,7 @@ namespace Datatypes {
     matrix_is();
   };
  
-  ///TODO @todo: move
+  /// @todo: move
   class SCISHARE matrix_convert
   {
   public:

@@ -1059,7 +1059,7 @@ public:
                     elem = INDEX(*it); 
                     dmin = dist; 
 
-                    //! If we are closer than eps^2 we found a node close enough
+                    /// If we are closer than eps^2 we found a node close enough
                     if (dmin < epsilon2_) 
                     {
                       pdist = sqrt(dmin);
@@ -1623,7 +1623,7 @@ template <class Basis>
 void
 PointCloudMesh<Basis>::insert_elem_into_grid(typename Elem::index_type ni)
 {
-  // TODO:  This can crash if you insert a new cell outside of the grid.
+  /// @todo:  This can crash if you insert a new cell outside of the grid.
   // Need to recompute grid at that point.
   grid_->insert(ni,points_[ni]);
 }
