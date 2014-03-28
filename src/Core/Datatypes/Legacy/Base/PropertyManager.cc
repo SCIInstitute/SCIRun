@@ -48,8 +48,7 @@ namespace SCIRun {
 
 /// @todo: should be using Guards here...
 PersistentTypeID 
-Pro
-pertyBase::type_id("PropertyBase", "Persistent", maker);
+PropertyBase::type_id("PropertyBase", "Persistent", maker);
 
 std::string PropertyBase::dynamic_type_name() const { return type_id.type; }
 
