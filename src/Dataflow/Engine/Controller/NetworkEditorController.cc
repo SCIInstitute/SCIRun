@@ -89,6 +89,7 @@ ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleNam
   ModuleLookupInfo info;
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
+  connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2));
   return realModule;
 }
 

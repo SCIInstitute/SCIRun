@@ -53,6 +53,12 @@ void InsertFieldsIntoBundle::setStateDefaults()
 
 }
 
+void InsertFieldsIntoBundle::portAddedSlot(const ModuleId& mid, const PortId& pid)
+{
+  if (mid == id_)
+    std::cout << "hello this port just got added to me: " << pid << std::endl;
+}
+
 void InsertFieldsIntoBundle::execute()
 {
   auto bundleOption = getOptionalInput(InputBundle);
