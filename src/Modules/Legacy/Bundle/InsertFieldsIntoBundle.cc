@@ -38,6 +38,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
 
 ModuleLookupInfo InsertFieldsIntoBundle::staticInfo_("InsertFieldsIntoBundle", "Bundle", "SCIRun");
+AlgorithmParameterName InsertFieldsIntoBundle::NumFields("NumFields");
 AlgorithmParameterName InsertFieldsIntoBundle::FieldNames("FieldNames");
 AlgorithmParameterName InsertFieldsIntoBundle::FieldReplace("FieldReplace");
 
@@ -55,8 +56,14 @@ void InsertFieldsIntoBundle::setStateDefaults()
 
 void InsertFieldsIntoBundle::portAddedSlot(const ModuleId& mid, const PortId& pid)
 {
+  //TODO: redesign with non-virtual slot method and virtual hook that ensures module id is the same as this
   if (mid == id_)
+  {
     std::cout << "hello this port just got added to me: " << pid << std::endl;
+    int fields = num_input_ports() - 2;
+    get_state()->setValue(NumFields, fields);
+//    tableWidget->setRows
+  }
 }
 
 void InsertFieldsIntoBundle::execute()
@@ -92,6 +99,7 @@ void InsertFieldsIntoBundle::execute()
       }
     }
 
+    //TODO: instead grab a vector of tuple<string,bool>. need to modify Variable::Value again
     auto fieldNames = get_state()->getValue(FieldNames).getList();
     auto replace = get_state()->getValue(FieldReplace).getList();
 

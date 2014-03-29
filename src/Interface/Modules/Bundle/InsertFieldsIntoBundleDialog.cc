@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Bundle/InsertFieldsIntoBundle.h>
 #include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
@@ -50,5 +51,7 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
 
 void InsertFieldsIntoBundleDialog::pull()
 {
+  auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).getInt();
+  std::cout << "bundle dialog: " << numFields << " num fields" << std::endl;
   //fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
 }

@@ -52,6 +52,7 @@ namespace SCIRun {
         OUTPUT_PORT(0, OutputBundle, Bundle);
 
         static Core::Algorithms::AlgorithmParameterName BundleName;
+        static Core::Algorithms::AlgorithmParameterName NumFields;
         static Core::Algorithms::AlgorithmParameterName FieldNames;
         static Core::Algorithms::AlgorithmParameterName FieldReplace;
 
