@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_LEGACY_FIELDS_GetFieldData_H__
-#define MODULES_LEGACY_FIELDS_GetFieldData_H__
+#ifndef MODULES_LEGACY_FIELDS_GetFieldDataModule_H__
+#define MODULES_LEGACY_FIELDS_GetFieldDataModule_H__
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>
@@ -36,18 +36,18 @@ namespace SCIRun {
   namespace Modules {
     namespace Fields {
 
-      class SCISHARE GetFieldData : public Dataflow::Networks::Module,
+      class SCISHARE GetFieldDataModule : public Dataflow::Networks::Module,
         public Has1InputPort<FieldPortTag>,
         public Has1OutputPort<MatrixPortTag>
       {
       public:
-        GetFieldData();
+        GetFieldDataModule();
 
         virtual void execute();
         virtual void setStateDefaults() {}
 
         INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, MatrixNodes, Matrix);
+        OUTPUT_PORT(0, OutputMatrix, Matrix);
       };
 
     }

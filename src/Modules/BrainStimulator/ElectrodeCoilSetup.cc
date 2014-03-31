@@ -43,11 +43,7 @@ using namespace SCIRun::Dataflow::Networks;
 
 ElectrodeCoilSetupModule::ElectrodeCoilSetupModule() : Module(ModuleLookupInfo("ElectrodeCoilSetup", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
- INITIALIZE_PORT(COIL);
- INITIALIZE_PORT(COIL2);
+ INITIALIZE_PORT(INPUTFIELDS);
  INITIALIZE_PORT(ELECTRODES_FIELD);
  INITIALIZE_PORT(COILS_FIELD);
 }
@@ -59,8 +55,8 @@ void ElectrodeCoilSetupModule::setStateDefaults()
 
 void ElectrodeCoilSetupModule::execute()
 {
-  auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
+  auto fields = getRequiredDynamicInputs(INPUTFIELDS);
+  //auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
    // UI input
   //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
 
@@ -69,7 +65,7 @@ void ElectrodeCoilSetupModule::execute()
  
   
   //algorithm input and run
-  auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
+  auto output = algo().run_generic(make_input((INPUTFIELDS, fields)));
 
   //algorithm output
   sendOutputFromAlgorithm(ELECTRODES_FIELD, output);

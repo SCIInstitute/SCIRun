@@ -38,7 +38,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #FieldData/ConvertFieldBasisType.h            
   #FieldData/CalculateLatVolGradientsAtNodes.h  
   #FieldData/GetFieldData.h
-  #FieldData/SetFieldData.h
+  FieldData/SetFieldData.h
   #FieldData/SetFieldDataToConstantValue.h
   #FieldData/SmoothVecFieldMedian.h
   DomainFields/GetDomainBoundaryAlgo.h
@@ -49,7 +49,8 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
-  MeshData/GetMeshData.h
+  #MeshData/GetMeshData.h
+  FieldData/GetFieldData.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -89,7 +90,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FieldData/ConvertIndicesToFieldData.cc
   #FieldData/GetFieldData.cc
   #FieldData/ConvertMappingMatrixToFieldData.cc
-  #FieldData/SetFieldData.cc
+  FieldData/SetFieldData.cc
   FieldData/SetFieldDataToConstantValue.cc
   #FieldData/SmoothVecFieldMedian.cc
   #FilterFieldData/DilateFieldData.cc
@@ -123,7 +124,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MergeFields/JoinFieldsAlgo.cc
   MeshData/GetMeshNodes.cc
   MeshData/SetMeshNodes.cc
-  MeshData/GetMeshData.cc
+  #MeshData/GetMeshData.cc
+  FieldData/GetFieldData.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
   #MeshData/GetMeshQualityField.cc

@@ -88,7 +88,7 @@ void SolveLinearSystemModule::execute()
 
     std::ostringstream ostr;
     ostr << "Running algorithm Parallel " << method << " Solver with tolerance " << tolerance << " and maximum iterations " << maxIterations;
-    remark(ostr.str());
+    remark("ostr");
 
     {
       ScopedTimeRemarker perf(this, "Linear solver");

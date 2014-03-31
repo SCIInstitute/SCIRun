@@ -45,7 +45,7 @@ SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(InputMatrix);
-  INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(OutputField);
 }
 
 void SetFieldDataModule::setStateDefaults()
@@ -66,6 +66,6 @@ void SetFieldDataModule::execute()
 
     auto output = algo().run_generic(make_input((InputField, input_field)(InputMatrix, input_matrix)));
 
-    sendOutputFromAlgorithm(OutputMatrix, output);
+    sendOutputFromAlgorithm(OutputField, output);
   }
 }

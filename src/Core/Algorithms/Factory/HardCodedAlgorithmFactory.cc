@@ -35,7 +35,7 @@
 #include <Core/Algorithms/Legacy/Fields/TransformMesh/AlignMeshBoundingBoxes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshNodes.h>
 #include <Core/Algorithms/Legacy/Fields/MeshData/SetMeshNodes.h>
-#include <Core/Algorithms/Legacy/Fields/MeshData/GetMeshData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldData.h>
 #include <Core/Algorithms/Legacy/Fields/ConvertMeshType/ConvertMeshToIrregularMesh.h>
 #include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
@@ -44,6 +44,7 @@
 #include <Core/Algorithms/Math/LinearSystem/SolveLinearSystemAlgo.h>
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
+#include <Core/Algorithms/Math/SelectSubMatrix.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
@@ -129,11 +130,13 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   else if (moduleName == "InterfaceWithCleaver")
     h.reset(new InterfaceWithCleaverAlgorithm);      
   else if (moduleName == "GetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
-    h.reset(new GetMeshDataAlgo);
+    h.reset(new GetFieldDataAlgo);
   else if (moduleName == "SetFieldData") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new SetFieldDataAlgo);    
   else if (moduleName == "JoinFields")
     h.reset(new JoinFieldsAlgo);
+  else if (moduleName == "SelectSubMatrix")
+    h.reset(new SelectSubMatrixAlgorithm);    
     
   if (h && algoCollaborator)
   {

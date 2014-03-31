@@ -33,6 +33,7 @@ SET(Interface_Modules_Fields_FORMS
   JoinFields.ui
   ReportFieldInfoDialog.ui
   InterfaceWithCleaverDialog.ui
+  SetFieldDataDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -41,6 +42,7 @@ SET(Interface_Modules_Fields_HEADERS
   JoinFieldsDialog.h
   ReportFieldInfoDialog.h
   InterfaceWithCleaverDialog.h
+  SetFieldDataDialog.h
   share.h
 )
 
@@ -50,6 +52,7 @@ SET(Interface_Modules_Fields_SOURCES
   JoinFieldsDialog.cc
   ReportFieldInfoDialog.cc
   InterfaceWithCleaverDialog.cc
+  SetFieldDataDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

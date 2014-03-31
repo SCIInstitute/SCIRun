@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>tDCSSimulator</class>
- <widget class="QWidget" name="tDCSSimulator">
+ <class>tDCSSimulatorDialog</class>
+ <widget class="QWidget" name="tDCSSimulatorDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>tDCSSimulator</string>
+   <string>tDCSSimulatorDialog</string>
   </property>
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">

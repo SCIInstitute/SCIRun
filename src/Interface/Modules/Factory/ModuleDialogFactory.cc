@@ -40,6 +40,7 @@
 #include <Interface/Modules/Math/ReportMatrixInfoDialog.h>
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
+#include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
@@ -128,7 +129,9 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("SetFieldData") != std::string::npos)
     return new SetFieldDataDialog(moduleId, state, parentToUse_);   
   if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
-    return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);        
+    return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);   
+  if (moduleId.find("SelectSubMatrix") != std::string::npos)
+    return new SelectSubMatrixDialog(moduleId, state, parentToUse_);          
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

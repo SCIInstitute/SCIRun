@@ -44,6 +44,7 @@
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/AppendMatrix.h>
+#include <Modules/Math/SelectSubMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
@@ -61,6 +62,7 @@
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
+//#include <Modules/Legacy/Fields/GetMeshData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Fields/FieldToMesh.h>
@@ -176,10 +178,10 @@ namespace SCIRun {
           addModuleDesc<SetupRHSforTDCSandTMSModule>("SetupRHSforTDCSandTMS", "BrainStimulator", "SCIRun", " in progress ", " set RHS for tDCS and TMS ");        
           addModuleDesc<AddKnownsToLinearSystem>("AddKnownsToLinearSystem", "Math", "SCIRun", " in progress ", " adds knowns to linear systems ");        
           addModuleDesc<CalculateVectorMagnitudes>("CalculateVectorMagnitudes", "ChangeFieldData", "SCIRun", "Real ported module", "...");
-          addModuleDesc<GetFieldData>("GetFieldData", "ChangeMesh", "SCIRun", "Real ported module", "...");
+          addModuleDesc<GetFieldDataModule>("GetFieldData", "ChangeMesh", "SCIRun", "Real ported module", "...");
           addModuleDesc<InterfaceWithCleaverModule>("InterfaceWithCleaver", "NewField", "SCIRun", "New Module to interact with cleaver", "...");
 	  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeMesh", "SCIRun", "Real ported module", "...");
-    
+	  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
 	}
 
         ModuleDescriptionMap descMap_;

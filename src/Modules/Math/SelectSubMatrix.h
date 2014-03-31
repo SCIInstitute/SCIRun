@@ -26,38 +26,30 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
+#ifndef MODULES_MATH_SelectSubMatrix_H
+#define MODULES_MATH_SelectSubMatrix_H
 
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
-
-//////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
-//////////////////////////////////////////////////////////////////////////
+#include <Dataflow/Network/Module.h>
+#include <Modules/Math/share.h>
 
 namespace SCIRun {
-namespace Core {
-namespace Algorithms {
-namespace BrainStimulator {
-  
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
+namespace Modules {
+namespace Math {
+
+  class SCISHARE SelectSubMatrixModule : public SCIRun::Dataflow::Networks::Module,
+    public Has3InputPorts<MatrixPortTag, MatrixPortTag, MatrixPortTag>,
+    public Has1OutputPort<MatrixPortTag>
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
+    SelectSubMatrixModule();
+    virtual void execute();
+    virtual void setStateDefaults();
 
-    AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName INPUTFIELDS;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
-    
+    INPUT_PORT(0, InputMatrix, DenseMatrix);
+    INPUT_PORT(1, RowIndicies, DenseMatrix);
+    INPUT_PORT(2, ColumnIndicies, DenseMatrix);
+    OUTPUT_PORT(0, ResultMatrix, DenseMatrix);
   };
-
-}}}}
+}}}
 
 #endif

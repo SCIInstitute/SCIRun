@@ -27,6 +27,7 @@
 #
 
 SET(Modules_Math_SRCS
+  SelectSubMatrix.cc
   #GetSubmatrix.cc 
   AppendMatrix.cc
   CreateMatrix.cc
@@ -40,6 +41,7 @@ SET(Modules_Math_SRCS
 )
 
 SET(Modules_Math_HEADERS
+  SelectSubMatrix.h
   #GetSubmatrix.h
   AppendMatrix.h
   CreateMatrix.h

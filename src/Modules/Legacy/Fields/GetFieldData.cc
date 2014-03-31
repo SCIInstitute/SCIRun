@@ -25,35 +25,76 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
 #include <Modules/Legacy/Fields/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Matrix.h>
 
 using namespace SCIRun::Modules::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun;
 
-GetFieldData::GetFieldData()
-  : Module(ModuleLookupInfo("GetFieldData", "ChangeMesh", "SCIRun"), false)
+GetFieldDataModule::GetFieldDataModule()
+  : Module(ModuleLookupInfo("GetFieldData", "NewField", "SCIRun"), false)
 {
   INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(MatrixNodes);
+  INITIALIZE_PORT(OutputMatrix);
 }
 
-void GetFieldData::execute()
+void GetFieldDataModule::execute()
 {
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+    //! Define dataflow handles:
+  FieldHandle input;
+  MatrixHandle matrixdata(0);
+  NrrdDataHandle nrrddata(0);
+  
+  //! Get data from port:
+  if(!(get_input_handle("Field",input,true))) return;
+
+  //! Data is only computed if the output port is connected:
+  bool need_matrix_data = oport_connected("Matrix Data");
+  bool need_nrrd_data   = oport_connected("Nrrd Data");
+
+  //! Only do work if needed:
+  if (inputs_changed_ ||
+      (!oport_cached("Matrix Data") && need_matrix_data) ||
+      (!oport_cached("Nrrd Data") && need_nrrd_data))
+  {    
+    update_state(Executing);
+    if( need_matrix_data) 
+    {
+      //! Run algorithm
+      if(!(algo_.run(input,matrixdata))) return;
+    }
+
+    if(need_nrrd_data )
+    {
+      //! Run algorithm
+      if(!(algo_.run(input,nrrddata))) return;
+    }
+
+    //! If port is not connected at time of execute, send down a null handle
+    //! send data downstream:
+    send_output_handle("Matrix Data", matrixdata);
+    send_output_handle("Nrrd Data", nrrddata);
+
+  }
+  #endif
+  
   FieldHandle input = getRequiredInput(InputField);
 
   //NO Nrrd support yet !!!
-
   //inputs_changed_ || !oport_cached("Matrix Nodes")
-  if (needToExecute())
-  {    
-    update_state(Executing);
-
+  //if (needToExecute())
+  //{    
+  //  update_state(Executing);
     auto output = algo().run_generic(make_input((InputField, input)));
 
-    sendOutputFromAlgorithm(MatrixNodes, output);
-  }
+    sendOutputFromAlgorithm(OutputMatrix, output);
+  //}
 }

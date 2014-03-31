@@ -28,6 +28,7 @@
 #
 
 SET(Interface_Modules_Math_FORMS
+  SelectSubMatrix.ui
   AppendMatrix.ui
   CreateMatrix.ui
   EvaluateLinearAlgebraBinary.ui
@@ -37,6 +38,7 @@ SET(Interface_Modules_Math_FORMS
 )
 
 SET(Interface_Modules_Math_HEADERS
+  SelectSubMatrixDialog.h
   AppendMatrixDialog.h
   CreateMatrixDialog.h
   EvaluateLinearAlgebraBinaryDialog.h
@@ -47,6 +49,7 @@ SET(Interface_Modules_Math_HEADERS
 )
 
 SET(Interface_Modules_Math_SOURCES 
+  SelectSubMatrixDialog.cc
   AppendMatrixDialog.cc
   CreateMatrixDialog.cc
   EvaluateLinearAlgebraBinaryDialog.cc

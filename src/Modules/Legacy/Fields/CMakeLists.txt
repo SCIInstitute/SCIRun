@@ -37,6 +37,8 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   ConvertQuadSurfToTriSurf.h
   AlignMeshBoundingBoxes.h
   SetFieldNodes.h
+  SetFieldData.h
+  GetFieldData.h
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
@@ -143,7 +145,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #ConvertIndicesToFieldData.cc
   #CreateFieldData.cc
   GetFieldData.cc
-  #SetFieldData.cc
+  SetFieldData.cc
   GetFieldNodes.cc
   SetFieldNodes.cc
   #MapFieldDataFromElemToNode.cc

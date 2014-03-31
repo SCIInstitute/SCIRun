@@ -27,6 +27,7 @@
 #
 
 SET(Algorithms_Math_SRCS
+  SelectSubMatrix.cc
   AppendMatrix.cc
   EvaluateLinearAlgebraUnaryAlgo.cc
   EvaluateLinearAlgebraBinaryAlgo.cc
@@ -38,6 +39,7 @@ SET(Algorithms_Math_SRCS
 )
 
 SET(Algorithms_Math_HEADERS
+  SelectSubMatrix.h
   AppendMatrix.h
   EvaluateLinearAlgebraUnaryAlgo.h
   EvaluateLinearAlgebraBinaryAlgo.h

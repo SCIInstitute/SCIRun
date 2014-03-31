@@ -26,36 +26,36 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-#define ALGORITHMS_MATH_ElectrodeCoilSetupAlgorithm_H
-
+#ifndef ALGORITHMS_MATH_SelectSubMatrix_H
+#define ALGORITHMS_MATH_SelectSubMatrix_H
+#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
-#include <Core/Algorithms/BrainStimulator/share.h>
-
-//////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
-//////////////////////////////////////////////////////////////////////////
+#include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {
 namespace Core {
 namespace Algorithms {
-namespace BrainStimulator {
+namespace Math {
   
-  class SCISHARE ElectrodeCoilSetupAlgorithm : public AlgorithmBase
+  class SCISHARE SelectSubMatrixAlgorithm : public AlgorithmBase
   {
   public:
-    //Outputs run(const Inputs& input, const Parameters& params = 0) const;
-
+    static AlgorithmInputName InputMatrix;
+    static AlgorithmOutputName RowIndicies;
+    static AlgorithmOutputName ColumnIndicies;
+    static AlgorithmParameterName rowCheckBox;
+    static AlgorithmParameterName columnCheckBox;
+    static AlgorithmParameterName rowStartSpinBox;
+    static AlgorithmParameterName columnStartSpinBox;
+    static AlgorithmParameterName columnEndSpinBox;
+    static AlgorithmParameterName rowEndSpinBox;
+    Datatypes::DenseMatrixHandle run(Datatypes::MatrixHandle input_matrix, Datatypes::MatrixHandle rows, Datatypes::MatrixHandle columns) const; 
+    SelectSubMatrixAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-
-    static const AlgorithmInputName INPUTFIELDS;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
-    
+   // bool run(Datatypes::DenseMatrixHandle& input_matrix, Datatypes::Handle& sub_matrix, Datatypes::MatrixHandle row_indices, Datatypes::MatrixHandle column_indices) const;
+    Datatypes::DenseMatrixHandle get_sub_matrix(Datatypes::MatrixHandle& input_matrix, Datatypes::MatrixHandle rows, Datatypes::MatrixHandle columns) const;
+    Datatypes::DenseMatrixHandle get_sub_matrix(Datatypes::MatrixHandle& input_matrix, std::vector<SCIRun::index_type>& rows, std::vector<SCIRun::index_type>& columns) const;
   };
 
 }}}}

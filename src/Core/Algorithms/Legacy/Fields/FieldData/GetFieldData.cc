@@ -24,32 +24,56 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   Author            : Moritz Dannhauer
+   Last modification : March 16 2014 (ported from SCIRun4)
+   TODO: Nrrd aoutput
 */
 
-#include <Core/Algorithms/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
 #include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/FieldInformation.h>
-
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
 //! Namespace used for SCIRun Algorithmic layer
-namespace SCIRunAlgo {
+//namespace SCIRunAlgo {
 
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
 
-bool 
-GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output);
+GetFieldDataAlgo::GetFieldDataAlgo()
+{
 
-bool 
-GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output);
+}
 
-bool 
-GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output);
+AlgorithmInputName GetFieldDataAlgo::InputField("InputField");
+AlgorithmOutputName GetFieldDataAlgo::OutputMatrix("OutputMatrix");
 
+AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto input_field = input.get<Field>(InputField);
+ 
+  DenseMatrixHandle output_matrix;
+  output_matrix = run(input_field);
+  
+  AlgorithmOutput output;
+  output[OutputMatrix] = output_matrix;
+
+  return output;
+}
 
 //! Function call to convert data from Field into Matrix data
-bool 
-GetFieldDataAlgo::
-run(FieldHandle& input, MatrixHandle& output)
+DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle& input_field) const
 {
+   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("GetFieldData");
   
   //! Check whether we have a field.
@@ -81,11 +105,37 @@ run(FieldHandle& input, MatrixHandle& output)
 
   error("Unknown data type");
   algo_end(); return (false);
+ #endif
+ 
+   DenseMatrixHandle output;
+    
+  //! Construct a class with all the type information of this field
+  //FieldInformation fi(input);
+  VField* vfield1 = input_field->vfield();
+
+  //! Check whether we have data
+  if (!input_field || !vfield1)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Could not obtain input field");
+  }
+  
+  if (vfield1->is_scalar()) 
+    return (GetScalarFieldDataV(input_field)); 
+  else
+    if (vfield1->is_vector())  
+      return (GetVectorFieldDataV(input_field)); 
+    else
+       if (vfield1->is_tensor())
+        return (GetTensorFieldDataV(input_field));       
+       else
+        {
+         THROW_ALGORITHM_INPUT_ERROR("Unknown field data type!");
+        }
+
 }
 
 
-bool 
-GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output)
+DenseMatrixHandle GetFieldDataAlgo::GetScalarFieldDataV(FieldHandle& input) const
 {
   //! Obtain virtual interface
   VField* vfield = input->vfield();
@@ -95,137 +145,127 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output)
   VMesh::size_type esize = vfield->num_evalues();
   
   //! Create output object
-  output = new DenseMatrix(size+esize,1);
-  if (output.get_rep() == 0)
-  {
-    algo->error("Could not allocate output matrix");
-    algo->algo_end(); return (false);
-  }
-
-  double* dataptr = output->get_data_pointer();
-  // get all the values as doubles
-  vfield->get_values(dataptr,size);
+  DenseMatrixHandle output(new DenseMatrix(size+esize, 1));
   
+  if (!output)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Could not allocate output matrix");
+    return DenseMatrixHandle();
+  }
+    
+  for (VMesh::Elem::index_type idx = 0; idx < size; idx++)
+  { 
+     vfield->get_value((*output)(idx, 0),idx);
+  }
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
-    vfield->get_evalues(dataptr+size,esize);
-  }
+    for (VMesh::Elem::index_type idx = size; idx < size+esize; idx++)
+    {
+      vfield->get_evalue((*output)(idx, 0),idx);
+    }
+  } 
+  #endif
   
-  algo->algo_end(); return (true);
+  return output;
 }
 
 
-bool 
-GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output)
+DenseMatrixHandle GetFieldDataAlgo::GetVectorFieldDataV(FieldHandle& input) const
 {
   VField* vfield = input->vfield();
   
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  output = new DenseMatrix(size+esize,3);
-  if (output.get_rep() == 0)
+  DenseMatrixHandle output(new DenseMatrix(size+esize, 3));
+
+  if (!output)
   {
-    algo->error("Could not allocate output matrix");
-    algo->algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("Could not allocate output matrix");
+    return DenseMatrixHandle();
   }
-  double* dataptr = output->get_data_pointer();
 
   Vector val;
-  int k = 0;
-  for (VMesh::index_type i=0; i<size; i++)
+  for (VMesh::index_type idx=0; idx<size; idx++)
   {
-    vfield->get_value(val,i);
-    dataptr[k] = val.x();
-    dataptr[k+1] = val.y();
-    dataptr[k+2] = val.z();
-    k+=3;
+    vfield->get_value(val,idx);
+    (*output)(idx, 0) = val.x();
+    (*output)(idx, 1) = val.y();
+    (*output)(idx, 2) = val.z();
   }
-  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
   {
     vfield->vmesh()->synchronize(Mesh::EDGES_E);
-
-    for (VMesh::index_type i=0; i<esize; i++)
+   
+    for (VMesh::index_type idx=size; idx<esize+size; idx++)
     {
-      vfield->get_evalue(val,i);
-      dataptr[k] = val.x();
-      dataptr[k+1] = val.y();
-      dataptr[k+2] = val.z();
-      k+=3;
+      vfield->get_evalue(val,idx);
+      (*output)(idx, 0) = val.x();
+      (*output)(idx, 1) = val.y();
+      (*output)(idx, 2) = val.z();
     }  
   }
-  algo->algo_end(); return (true);
+  #endif
+ 
+  return output;
 }
 
 
-bool
-GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, MatrixHandle& output)
+DenseMatrixHandle GetFieldDataAlgo::GetTensorFieldDataV(FieldHandle& input) const
 {
   VField* vfield = input->vfield();
   
   VMesh::size_type size = vfield->num_values();
   VMesh::size_type esize = vfield->num_evalues();
   
-  output = new DenseMatrix(size+esize,6);
-  if (output.get_rep() == 0)
+  DenseMatrixHandle output(new DenseMatrix(size+esize, 6));
+
+  if (!output)
   {
-    algo->error("Could not allocate output matrix");
-    algo->algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("Could not allocate output matrix");
+    return DenseMatrixHandle();
   }
-  double* dataptr = output->get_data_pointer();
 
   Tensor val;
-  int k = 0;
-  for (VMesh::index_type i=0; i<size; i++)
+  for (VMesh::index_type idx=0; idx<size; idx++)
   {
-    vfield->get_value(val,i);
-    dataptr[k] = static_cast<double>(val.mat_[0][0]);
-    dataptr[k+1] = static_cast<double>(val.mat_[0][1]);
-    dataptr[k+2] = static_cast<double>(val.mat_[0][2]);
-    dataptr[k+3] = static_cast<double>(val.mat_[1][1]);
-    dataptr[k+4] = static_cast<double>(val.mat_[1][2]);
-    dataptr[k+5] = static_cast<double>(val.mat_[2][2]);    
-    k+=6;
+    vfield->get_value(val,idx);
+    (*output)(idx, 0) = static_cast<double>(val.mat_[0][0]);
+    (*output)(idx, 1) = static_cast<double>(val.mat_[0][1]);
+    (*output)(idx, 2) = static_cast<double>(val.mat_[0][2]);
+    (*output)(idx, 3) = static_cast<double>(val.mat_[1][1]);
+    (*output)(idx, 4) = static_cast<double>(val.mat_[1][2]);
+    (*output)(idx, 5) = static_cast<double>(val.mat_[2][2]);   
   }
-  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (vfield->basis_order() == 2)
   {
-    vfield->vmesh()->synchronize(Mesh::EDGES_E);
-    
-    for (VMesh::index_type i=0; i<esize; i++)
+     vfield->vmesh()->synchronize(Mesh::EDGES_E);
+   
+    for (VMesh::index_type idx=size; idx<esize+size; idx++)
     {
-      vfield->get_evalue(val,i);
-      dataptr[k] = static_cast<double>(val.mat_[0][0]);
-      dataptr[k+1] = static_cast<double>(val.mat_[0][1]);
-      dataptr[k+2] = static_cast<double>(val.mat_[0][2]);
-      dataptr[k+3] = static_cast<double>(val.mat_[1][1]);
-      dataptr[k+4] = static_cast<double>(val.mat_[1][2]);
-      dataptr[k+5] = static_cast<double>(val.mat_[2][2]);    
-      k+=6;
+      vfield->get_evalue(val,idx);
+      (*output)(idx, 0) = static_cast<double>(val.mat_[0][0]);
+      (*output)(idx, 1) = static_cast<double>(val.mat_[0][1]);
+      (*output)(idx, 2) = static_cast<double>(val.mat_[0][2]);
+      (*output)(idx, 3) = static_cast<double>(val.mat_[1][1]);
+      (*output)(idx, 4) = static_cast<double>(val.mat_[1][2]);
+      (*output)(idx, 5) = static_cast<double>(val.mat_[2][2]);    
     }  
   }
-  algo->algo_end(); return (true);
+  #endif
+
+  return output;
 }
 
 
-
-bool 
-GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output);
-
-bool 
-GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output);
-
-bool 
-GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output);
-
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 //! Function call to convert data from Field into Matrix data
-bool 
-GetFieldDataAlgo::
-run(FieldHandle& input, NrrdDataHandle& output)
+bool GetFieldDataAlgo::run(FieldHandle& input)
 {
   algo_start("GetFieldData");
   
@@ -257,7 +297,7 @@ run(FieldHandle& input, NrrdDataHandle& output)
     return(GetTensorFieldDataV(this,input,output));
 
   error("Unknown data type");
-  algo_end(); return (false);
+  algo_end(); return (false);*/
 }
 
 bool 
@@ -430,7 +470,7 @@ GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
     }
   }
   
-  algo->algo_end(); return (true);
+  algo->algo_end(); return (true);*/
 }
 
 
@@ -489,7 +529,7 @@ GetVectorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
       k+=3;
     }  
   }
-  algo->algo_end(); return (true);
+  algo->algo_end(); return (true);*/
 }
 
 
@@ -555,8 +595,10 @@ GetTensorFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output)
     }  
   }
   algo->algo_end(); return (true);
+
 }
 
 
 
 } // namespace SCIRunAlgo
+#endif
