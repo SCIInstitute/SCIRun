@@ -26,7 +26,9 @@
    DEALINGS IN THE SOFTWARE.
    
    Author            : Moritz Dannhauer
-   Last modification : 10/24/2013 ported from SCIRun4
+   Author            : Spencer Frisby
+   Last modification : 4/1/2014
+   
 */
 
 #include <Core/Algorithms/Math/AddKnownsToLinearSystem.h>
@@ -91,6 +93,10 @@ bool AddKnownsToLinearSystemAlgo::run(SparseRowMatrixHandle stiff, DenseColumnMa
  
 	for (index_type p=0; p<m;p++)
 	{
+		// making sure the rhs is finite
+		if (!IsFinite((*rhsCol)[p]))
+			THROW_ALGORITHM_INPUT_ERROR("NaN exist in the RHS vector");
+
 		if (IsFinite((*x).coeff(p)))
 		{
 			//knowns++;
