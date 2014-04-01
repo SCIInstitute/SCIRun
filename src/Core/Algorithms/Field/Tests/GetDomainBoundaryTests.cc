@@ -71,10 +71,8 @@ protected:
     if (!useRange)
     {
       algo.set(GetDomainBoundaryAlgo::Domain, domainValue);
-      //algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
-	  algo.set(GetDomainBoundaryAlgo::MinRange, 0);
-      //algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MaxRange, 255);
+      algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
+      algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
 	  algo.set(GetDomainBoundaryAlgo::UseRange, true);
     }
 
@@ -98,42 +96,42 @@ protected:
 // expected values of -1 need to be figured out from the v4 GUI.
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_1)
 {
-  runTest(false, true, 1, 9024, 8574);//p
+  runTest(false, true, 1, 9024, 8574);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_1)
 {
-  runTest(false, false, 1, 9024, 8574);//p
+  runTest(false, false, 1, 8680, 8334);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_1)
 {
-  runTest(true, false, 1, -1, -1);//f, crashes GUI 
+  runTest(true, false, 1, 12328, 12324);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_1)
 {
-  runTest(true, true, 1, -1, -1);//f, crashes GUI
+  runTest(true, true, 1, 17264, 17700);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_4)
 {
-  runTest(false, false, 4, 9024, 8574);//p
+  runTest(false, false, 4, 0, 0);//f
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_4)
 {
-  runTest(true, false, 4, -1, -1);//f, crashes GUI
+  runTest(true, false, 4, 0, 0);//f
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
 {
-  runTest(false, true, 4, 9024, 8574);//p
+  runTest(false, true, 4, 9024, 8574);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
 {
-  runTest(true, true, 4, -1, -1);//f, crashes GUI
+  runTest(true, true, 4, 17264, 17700);//f, crashes GUI
 }
 
 TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)

@@ -145,4 +145,3 @@ TEST(SolveLinearSystemTests, CanSolveDarrell_MINRES)
   double solutionError = 2.4;
   CanSolveDarrellWithMethod("minres", solutionError);
 }
-
