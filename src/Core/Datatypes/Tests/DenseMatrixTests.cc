@@ -37,7 +37,7 @@
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Geometry;
-
+using namespace boost::assign;
 //#define DO_PRINTING
 
 #ifdef DO_PRINTING
@@ -190,4 +190,31 @@ TEST(DenseMatrixTests, HasNanTests)
 
   EXPECT_FALSE(actual.hasNaN());
   EXPECT_TRUE(actual.allFinite());
+}
+
+TEST(DenseMatrixTests, ConcatenateRowsFromIndices)
+{
+  DenseMatrix actual = MAKE_DENSE_MATRIX(
+    (1,0,0)
+    (0,2,0)
+    (0,0,3)
+    (4,0,0)
+    (0,5,0)
+    (0,0,6));
+
+  std::vector<int> rows;
+  rows += 1,3,5;
+
+  // select inputs are rows{1,3,5}
+  // (1, 0, 0) 
+  // (0, 2, 0)
+
+  DenseMatrix selectedRows(rows.size(),actual.cols());
+
+  for (int i = 0; i < rows.size(); ++i)
+    selectedRows.row(i) = actual.row(rows[i]);
+
+  DenseMatrix expected(3,3);
+  expected << 0,2,0,  4,0,0,  0,0,6;
+  EXPECT_EQ(expected, selectedRows);
 }
