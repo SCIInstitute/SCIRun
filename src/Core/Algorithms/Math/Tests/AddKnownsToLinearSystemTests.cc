@@ -46,16 +46,15 @@ using namespace SCIRun::TestUtils;
 
 namespace 
 {
-	// x vector [0; 1; 2;]
-	DenseMatrixHandle x_vector ()
+	// x vector [3; 4; 5;]
+	DenseMatrixHandle x_num ()
 	{
 		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
 		for (int i = 0; i < m->rows(); ++ i)
 			for (int j = 0; j < m->cols(); ++ j)
-				(*m)(i, j) = i;
+				(*m)(i, j) = i+3;
 		return m;
 	}
-
 	// x vector of zeros
 	DenseMatrixHandle x_zero (int rows)
 	{
@@ -65,9 +64,8 @@ namespace
 				(*m)(i, j) = 0;
 		return m;
 	}
-
 	// x vector [1; NaN; 2;] 
-	DenseMatrixHandle x_nan ()
+	DenseMatrixHandle x_one_nan ()
 	{
 		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(3,1));
 		(*m)(0, 0) = 1;
@@ -75,7 +73,6 @@ namespace
 		(*m)(2, 0) = 2;
 		return m;
 	}
-
 	// x vector [NaN; NaN; NaN;] 
 	DenseMatrixHandle x_all_nan ()
 	{
@@ -83,6 +80,15 @@ namespace
 		(*m)(0, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(1, 0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2, 0) = std::numeric_limits<double>::quiet_NaN();
+		return m;
+	}
+	// x vector of all ones
+	DenseMatrixHandle x_ones (int row, int col)
+	{
+		DenseMatrixHandle m (boost::make_shared<DenseMatrix>(row,col));
+		for (int i = 0; i < m->rows(); ++ i)
+			for (int j = 0; j < m->cols(); ++ j)
+				(*m)(i, j) = 1;
 		return m;
 	}
 	
@@ -189,10 +195,10 @@ TEST (AddKnownsToLinearSystemAlgo, Bad_LHS_Input)
 	AddKnownsToLinearSystemAlgo algo;
 
 	// this test makes sure an exception is thrown for non symmetrical, but square, LHS matrix
-	EXPECT_THROW (algo.run(LHS_not_sym(),rhs_zero(3),x_vector(),output_stiff,output_rhs), AlgorithmInputException);
+	EXPECT_THROW (algo.run(LHS_not_sym(),rhs_zero(3),x_num(),output_stiff,output_rhs), AlgorithmInputException);
 	 
 	// this test makes sure an exception is thrown for a non square matrix
-	EXPECT_THROW (algo.run(LHS_non_sqr(),rhs_zero(3),x_vector(),output_stiff,output_rhs), AlgorithmInputException);
+	EXPECT_THROW (algo.run(LHS_non_sqr(),rhs_zero(3),x_num(),output_stiff,output_rhs), AlgorithmInputException);
 }
 
 TEST (AddKnownsToLinearSystemAlgo, Good_LHS_Input)
@@ -202,7 +208,7 @@ TEST (AddKnownsToLinearSystemAlgo, Good_LHS_Input)
 	AddKnownsToLinearSystemAlgo algo;
 	
 	// this test makes sure no exceptions are thrown when a symmetric matric is used for the LHS
-	EXPECT_TRUE(algo.run(LHS(),rhs_zero(3),x_vector(),output_stiff,output_rhs));
+	EXPECT_TRUE(algo.run(LHS(),rhs_zero(3),x_num(),output_stiff,output_rhs));
 }
 
 TEST (AddKnownsToLinearSystemAlgo, Bad_RHS_Input)
@@ -212,46 +218,47 @@ TEST (AddKnownsToLinearSystemAlgo, Bad_RHS_Input)
 	AddKnownsToLinearSystemAlgo algo;
 	
 	// this test makes sure an exception is thrown for rhs containing NaN
-	EXPECT_THROW (algo.run(LHS(),rhs_nan(),x_vector(),output_stiff,output_rhs), AlgorithmInputException);
+	EXPECT_THROW (algo.run(LHS(),rhs_nan(),x_num(),output_stiff,output_rhs), AlgorithmInputException);
 }
 
 // Looking at what having NaN in x does, and different values of x does
 // RHS is always zero, LHS is always symmetric
 TEST (AddKnownsToLinearSystemAlgo, X_Contains_NaN)
 {	
-	AddKnownsToLinearSystemAlgo algo;
-	
-	// running algo.run with x having NaN
 	SparseRowMatrixHandle output_stiff;
 	DenseColumnMatrixHandle output_rhs;
-	DenseMatrixHandle x = x_nan();
+	AddKnownsToLinearSystemAlgo algo;
+	
+	DenseMatrixHandle x = x_one_nan();
 	algo.run(LHS(),rhs_zero(3),x,output_stiff,output_rhs);
 	std::cout << "x contains one NaN" << std::endl;
-	dispRHS(output_rhs);
 	dispX(x);
+	dispRHS(output_rhs);
 	dispLHS(output_stiff);
+
 	std::cout << "x contains all NaN" << std::endl;
 	algo.run(LHS(),rhs_zero(3),x_all_nan(),output_stiff,output_rhs);
 	dispRHS(output_rhs);
 	dispLHS(output_stiff);
 
-	// running algo.run with vector x = [0,1,2]
-	SparseRowMatrixHandle output_stiff1;
-	DenseColumnMatrixHandle output_rhs1;
-	DenseMatrixHandle x_N = x_vector();
-	algo.run(LHS(),rhs_zero(3),x_N,output_stiff1,output_rhs1);
-	dispX(x_N);
-	dispRHS(output_rhs1);
-	dispLHS(output_stiff1);
+	std::cout << "x contains numbers" << std::endl;
+	DenseMatrixHandle xNum = x_num();
+	algo.run(LHS(),rhs_zero(3),xNum,output_stiff,output_rhs);
+	dispX(xNum);
+	dispRHS(output_rhs);
+	dispLHS(output_stiff);
 
-	// rerrunning algo.run with x having all zeros
-	SparseRowMatrixHandle output_stiff2;
-	DenseColumnMatrixHandle output_rhs2;
+	std::cout << "x contains all 0s" << std::endl;
 	DenseMatrixHandle x_0 = x_zero(3);
-	algo.run(LHS(),rhs_zero(3),x_0,output_stiff2,output_rhs2);
-	dispX(x_0);
-	dispRHS(output_rhs2);
-	dispLHS(output_stiff2);
+	algo.run(LHS(),rhs_zero(3),x_0,output_stiff,output_rhs);
+	dispRHS(output_rhs);
+	dispLHS(output_stiff);
+
+	std::cout << "x contains all 1s" << std::endl;
+	DenseMatrixHandle x_1 = x_ones(3,1);
+	algo.run(LHS(),rhs_zero(3),x_1,output_stiff,output_rhs);
+	dispRHS(output_rhs);
+	dispLHS(output_stiff);
 }
 
 TEST (AddKnownsToLinearSystemAlgo, for_debugging)
