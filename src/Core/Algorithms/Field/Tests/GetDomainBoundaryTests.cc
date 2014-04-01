@@ -116,12 +116,12 @@ TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_1)
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_4)
 {
-  runTest(false, false, 4, 0, 0);//f
+  runTest(false, false, 4, 0, 0);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_4)
 {
-  runTest(true, false, 4, 0, 0);//f
+  runTest(true, false, 4, 0, 0);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
@@ -131,7 +131,7 @@ TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
 {
-  runTest(true, true, 4, 17264, 17700);//f, crashes GUI
+  runTest(true, true, 4, 17264, 17700);
 }
 
 TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)

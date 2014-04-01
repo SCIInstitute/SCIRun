@@ -56,9 +56,16 @@ using ::testing::Values;
 using ::testing::Combine;
 using ::testing::Range; 
 
-class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<const char*, int> > 
+class SolveLinearSystemTestsAlgoParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<const char*, const char*, int> > 
 {
 public:
+	ReadMatrixAlgorithm reader;
+	SparseRowMatrixHandle A;
+	DenseMatrixHandle rhs;
+	DenseColumnMatrixHandle x0;
+	SolveLinearSystemAlgo algo;
+	DenseColumnMatrixHandle solution;
+
 	~SolveLinearSystemTestsAlgoParameterized() {}
 protected:
 	virtual void SetUp()
@@ -72,52 +79,33 @@ protected:
 				<< "Once that issue is done however, this will be a user setup error." << std::endl;
 			return;
 		}
-
-		ReadMatrixAlgorithm reader;
-		SparseRowMatrixHandle A;
 		{
 			ScopedTimer t("reading sparse matrix");
 			A = matrix_cast::as_sparse(reader.run(Afile.string()));
 		}
-		ASSERT_TRUE(A.get() != nullptr);
-		EXPECT_EQ(10149, A->nrows());
-		EXPECT_EQ(10149, A->ncols());
-
-		DenseMatrixHandle rhs;
 		{
 			ScopedTimer t("reading rhs");
 			rhs = matrix_cast::as_dense(reader.run(rhsFile.string()));
 		}
-		ASSERT_TRUE(rhs.get() != nullptr);
-		EXPECT_EQ(10149, rhs->nrows());
-		EXPECT_EQ(1, rhs->ncols());
+		 // algo object will initialize x0 to the zero vector
 
-		DenseColumnMatrixHandle x0;
-		ASSERT_FALSE(x0); // algo object will initialize x0 to the zero vector
-
-		SolveLinearSystemAlgo algo;
-
+		algo.set(Variables::Preconditioner, ::std::tr1::get<1>(GetParam())); 
 		algo.set(Variables::MaxIterations, 670);
-		algo.set(Variables::TargetError, ::std::tr1::get<1>(GetParam()));
+		algo.set(Variables::TargetError, ::std::tr1::get<2>(GetParam()));
 
 		algo.set(Variables::MaxIterations, 667);
-		algo.set(Variables::TargetError, 1e-3);
+		algo.set(Variables::TargetError, 1e-4);
 
 		algo.set_option(Variables::Method, ::std::tr1::get<0>(GetParam()));
 		algo.setUpdaterFunc([](double x) {});
 
-		DenseColumnMatrixHandle solution;
+		/*
 		{
-			ScopedTimer t("Running solver");
-			ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
+			ScopedTimer t("Running solver");			
 		}
-		ASSERT_TRUE(solution.get() != nullptr);
-		EXPECT_EQ(10149, solution->nrows());
-		EXPECT_EQ(1, solution->ncols());
-
         const std::string& c = ::std::tr1::get<0>(GetParam()); 
 
-		/*auto solutionFile = TestResources::rootDir() / ("dan_sol_" + c + ".mat");
+		auto solutionFile = TestResources::rootDir() / ("dan_sol_" + c + ".mat");
 
 		auto scirun4solution = reader.run(solutionFile.string());
 		ASSERT_TRUE(scirun4solution.get() != nullptr);
@@ -132,7 +120,6 @@ protected:
 		auto diff = *expected - *solution;
 		auto maxDiff = diff.maxCoeff();
 		std::cout << "max diff is: " << maxDiff << std::endl;
-
 		*/
 		}
 	virtual void TearDown(){}
@@ -140,7 +127,22 @@ protected:
 
 TEST_P(SolveLinearSystemTestsAlgoParameterized, CanSolveDarrellParameterized)
 {
-	EXPECT_NO_FATAL_FAILURE(SolveLinearSystemTestsAlgoParameterized);
+	//EXPECT_NO_FATAL_FAILURE(SolveLinearSystemTestsAlgoParameterized);
+		ASSERT_TRUE(A.get() != nullptr);
+		EXPECT_EQ(10149, A->nrows());
+		EXPECT_EQ(10149, A->ncols());
+
+		ASSERT_TRUE(rhs.get() != nullptr);
+		EXPECT_EQ(10149, rhs->nrows());
+		EXPECT_EQ(1, rhs->ncols());
+
+		ASSERT_FALSE(x0);
+
+		ASSERT_TRUE(algo.run(A, matrix_convert::to_column(rhs), x0, solution));
+		
+		ASSERT_TRUE(solution.get() != nullptr);
+		EXPECT_EQ(10149, solution->nrows());
+		EXPECT_EQ(1, solution->ncols());
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -151,7 +153,8 @@ INSTANTIATE_TEST_CASE_P(
 		"bicg",
 		"jacobi",
 		"minres"
-		), 
+		),
+		Values("jacobi","none"),
 	Values(1e-1,1e-3,1e-4,1e-5))
 	);
 #else
