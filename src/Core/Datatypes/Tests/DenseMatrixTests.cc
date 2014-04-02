@@ -218,3 +218,17 @@ TEST(DenseMatrixTests, ConcatenateRowsFromIndices)
   expected << 0,2,0,  4,0,0,  0,0,6;
   EXPECT_EQ(expected, selectedRows);
 }
+
+TEST(DenseMatrixTests, CopyBlock)
+{
+  DenseMatrix m = MAKE_DENSE_MATRIX(
+    (1,0,0,0)
+    (0,2,0,0)
+    (0,0,3,0)
+    (0,0,0,4));
+
+  DenseMatrixHandle block(new DenseMatrix(m.block(1,1,2,2)));
+  DenseMatrix expected(2,2);
+  expected << 2,0,  0,3;
+  EXPECT_EQ(expected, *block);
+}
