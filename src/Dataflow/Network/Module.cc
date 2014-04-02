@@ -478,3 +478,8 @@ bool Module::inputsChanged() const
 {
   return inputsChanged_;
 }
+
+void Module::addPortConnection(boost::signals2::connection&& con)
+{
+  //portConnections_.emplace_back(con);
+}

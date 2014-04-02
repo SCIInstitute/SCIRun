@@ -114,6 +114,8 @@ namespace Networks {
     virtual boost::signals2::connection connectExecuteBegins(const ExecuteBeginsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectExecuteEnds(const ExecuteEndsSignalType::slot_type& subscriber);
     virtual boost::signals2::connection connectErrorListener(const ErrorSignalType::slot_type& subscriber);
+  
+    virtual void addPortConnection(boost::signals2::connection&& con) override;
 
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const { return algo_; }
 
@@ -258,6 +260,7 @@ namespace Networks {
     ExecuteEndsSignalType executeEnds_;
     ErrorSignalType errorSignal_;
     boost::atomic<ExecutionState> executionState_;
+    std::vector<boost::signals2::scoped_connection> portConnections_;
 
     SCIRun::Core::Logging::LoggerHandle log_;
     SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc updaterFunc_;
