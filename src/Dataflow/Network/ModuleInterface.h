@@ -131,7 +131,7 @@ namespace Networks {
   
     virtual void portAddedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
     virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
-  virtual void addPortConnection(boost::signals2::connection&& con) {}
+    virtual void addPortConnection(const boost::signals2::connection& con) = 0;
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

@@ -479,7 +479,7 @@ bool Module::inputsChanged() const
   return inputsChanged_;
 }
 
-void Module::addPortConnection(boost::signals2::connection&& con)
+void Module::addPortConnection(const boost::signals2::connection& con)
 {
-  //portConnections_.emplace_back(con);
+  portConnections_.emplace_back(new boost::signals2::scoped_connection(con));
 }
