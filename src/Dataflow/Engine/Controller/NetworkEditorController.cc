@@ -59,7 +59,8 @@ NetworkEditorController::NetworkEditorController(ModuleFactoryHandle mf, ModuleS
   stateFactory_(sf), 
   algoFactory_(af),
   executorFactory_(executorFactory),
-  modulePositionEditor_(mpg)
+  modulePositionEditor_(mpg),
+  signalSwitch_(true)
 {
   dynamicPortManager_.reset(new DynamicPortManager(connectionAdded_, connectionRemoved_, this));
 
@@ -75,10 +76,18 @@ NetworkEditorController::NetworkEditorController(SCIRun::Dataflow::Networks::Net
 {
 }
 
-ModuleHandle NetworkEditorController::addModule(const std::string& moduleName)
+ModuleHandle NetworkEditorController::addModule(const std::string& name)
 {
-  auto realModule = addModuleImpl(moduleName);
-  /*emit*/ moduleAdded_(moduleName, realModule);
+  return addModule(ModuleLookupInfo(name));
+}
+
+ModuleHandle NetworkEditorController::addModule(const ModuleLookupInfo& info)
+{
+  auto realModule = addModuleImpl(info.module_name_);
+  if (signalSwitch_)
+  {
+    /*emit*/ moduleAdded_(info.module_name_, realModule);
+  }
   printNetwork();
   return realModule;
 }
@@ -90,6 +99,7 @@ ModuleHandle NetworkEditorController::addModuleImpl(const std::string& moduleNam
   info.module_name_ = moduleName;
   ModuleHandle realModule = theNetwork_->add_module(info);
   connectPortAdded(boost::bind(&ModuleInterface::portAddedSlot, realModule.get(), _1, _2));
+  connectPortRemoved(boost::bind(&ModuleInterface::portRemovedSlot, realModule.get(), _1, _2));
   return realModule;
 }
 
@@ -358,4 +368,14 @@ DisableDynamicPortSwitch::~DisableDynamicPortSwitch()
 {
   if (dpm_ && first_)
     dpm_->enable();
+}
+
+void NetworkEditorController::disableSignals()
+{
+  signalSwitch_ = false;
+}
+
+void NetworkEditorController::enableSignals()
+{
+  signalSwitch_ = true;
 }

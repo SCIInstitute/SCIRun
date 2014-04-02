@@ -130,6 +130,7 @@ namespace Networks {
     virtual Core::Algorithms::AlgorithmHandle getAlgorithm() const = 0;
   
     virtual void portAddedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
+    virtual void portRemovedSlot(const Networks::ModuleId& mid, const Networks::PortId& pid) {}
   };
 
   struct SCISHARE DataPortException : virtual Core::ExceptionBase {};

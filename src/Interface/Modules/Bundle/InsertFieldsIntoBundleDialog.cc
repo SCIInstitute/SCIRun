@@ -52,6 +52,18 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
 void InsertFieldsIntoBundleDialog::pull()
 {
   auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).getInt();
-  std::cout << "bundle dialog: " << numFields << " num fields" << std::endl;
-  //fileNameLineEdit_->setText(QString::fromStdString(state_->getValue(Variables::Filename).getString()));
+  tableWidget->setRowCount(numFields);
+  for (int i = 0; i < numFields; ++i)
+  {
+    auto name = new QTableWidgetItem(tr("Field %1").arg(i+1));
+    tableWidget->setItem(i, 0, name);
+    auto check = new QTableWidgetItem();
+    check->setCheckState(Qt::Checked);
+    check->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEditable);
+    tableWidget->setItem(i, 1, check);
+    auto info = new QTableWidgetItem("[unknown, populated upon execute]");
+    //info->setFlags(Qt::NoItemFlags);
+    tableWidget->setItem(i, 2, info);
+  }
+  tableWidget->resizeColumnsToContents();
 }

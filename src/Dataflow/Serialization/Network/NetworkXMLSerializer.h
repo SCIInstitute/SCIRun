@@ -50,7 +50,7 @@ namespace Networks {
     ModuleFactoryHandle moduleFactory_;
     ModuleStateFactoryHandle stateFactory_;
     Core::Algorithms::AlgorithmFactoryHandle algoFactory_;
-    NetworkEditorControllerInterface* connectionMaker_;
+    NetworkEditorControllerInterface* controller_;
     ModulePositionEditor* mpg_;
   };
 
