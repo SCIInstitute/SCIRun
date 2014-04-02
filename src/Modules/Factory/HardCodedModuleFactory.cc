@@ -44,7 +44,6 @@
 #include <Modules/Math/EvaluateLinearAlgebraBinary.h>
 #include <Modules/Math/ReportMatrixInfo.h>
 #include <Modules/Math/AppendMatrix.h>
-#include <Modules/Math/SelectSubMatrix.h>
 #include <Modules/Math/CreateMatrix.h>
 #include <Modules/Math/SolveLinearSystem.h>
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
@@ -62,9 +61,9 @@
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
-//#include <Modules/Legacy/Fields/GetMeshData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
+#include <Modules/Math/SelectSubMatrix.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/DataIO/ReadMatrix.h>
 #include <Modules/DataIO/WriteMatrix.h>
@@ -84,7 +83,6 @@
 #include <Modules/Legacy/Math/AddKnownsToLinearSystem.h>
 #include <Modules/Legacy/FiniteElements/BuildTDCSMatrix.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>
-
 #include <Dataflow/Network/SimpleSourceSink.h>
 #include <Modules/Factory/share.h>
 

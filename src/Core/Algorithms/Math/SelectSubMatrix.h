@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef ALGORITHMS_MATH_SelectSubMatrix_H
-#define ALGORITHMS_MATH_SelectSubMatrix_H
+#ifndef ALGORITHMS_MATH_SELECTSUBMATRIX_H
+#define ALGORITHMS_MATH_SELECTSUBMATRIX_H
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <Core/Algorithms/Math/AlgorithmFwd.h>
@@ -50,12 +50,11 @@ namespace Math {
     static AlgorithmParameterName columnStartSpinBox;
     static AlgorithmParameterName columnEndSpinBox;
     static AlgorithmParameterName rowEndSpinBox;
-    Datatypes::DenseMatrixHandle run(Datatypes::MatrixHandle input_matrix, Datatypes::MatrixHandle rows, Datatypes::MatrixHandle columns) const; 
+    Datatypes::MatrixHandle run(Datatypes::MatrixHandle input_matrix, Datatypes::DenseMatrixHandle rows, Datatypes::DenseMatrixHandle columns) const; 
     SelectSubMatrixAlgorithm();
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
-   // bool run(Datatypes::DenseMatrixHandle& input_matrix, Datatypes::Handle& sub_matrix, Datatypes::MatrixHandle row_indices, Datatypes::MatrixHandle column_indices) const;
-    Datatypes::DenseMatrixHandle get_sub_matrix(Datatypes::MatrixHandle& input_matrix, Datatypes::MatrixHandle rows, Datatypes::MatrixHandle columns) const;
-    Datatypes::DenseMatrixHandle get_sub_matrix(Datatypes::MatrixHandle& input_matrix, std::vector<SCIRun::index_type>& rows, std::vector<SCIRun::index_type>& columns) const;
+    Datatypes::MatrixHandle get_sub_matrix(Datatypes::MatrixHandle& input_matrix, Datatypes::DenseMatrixHandle rows, Datatypes::DenseMatrixHandle cols) const;
+    Datatypes::MatrixHandle run(Datatypes::MatrixHandle& input_matrix, std::vector<SCIRun::index_type>& rows, std::vector<SCIRun::index_type>& cols) const;
   };
 
 }}}}

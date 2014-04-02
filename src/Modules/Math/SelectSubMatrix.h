@@ -26,8 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MODULES_MATH_SelectSubMatrix_H
-#define MODULES_MATH_SelectSubMatrix_H
+#ifndef MODULES_LEGACY_MATH_SELECTSUBMATRIX_H
+#define MODULES_LEGACY_MATH_SELECTSUBMATRIX_H
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Math/share.h>
