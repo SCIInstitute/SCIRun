@@ -630,6 +630,12 @@ std::vector<FieldHandle> Bundle::getFields() const
   return std::vector<FieldHandle>(range.begin(), range.end());
 }
 
+std::vector<std::string> Bundle::getFieldNames() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isField, this, _1));
+  return std::vector<std::string>(range.begin(), range.end());
+}
+
 MatrixHandle Bundle::getMatrix(const std::string& name) const
 {
   return boost::dynamic_pointer_cast<Matrix>(get(name));
@@ -651,6 +657,12 @@ std::vector<MatrixHandle> Bundle::getMatrices() const
   return std::vector<MatrixHandle>(range.begin(), range.end());
 }
 
+std::vector<std::string> Bundle::getMatrixNames() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isMatrix, this, _1));
+  return std::vector<std::string>(range.begin(), range.end());
+}
+
 StringHandle Bundle::getString(const std::string& name) const
 {
   return boost::dynamic_pointer_cast<String>(get(name));
@@ -670,6 +682,12 @@ std::vector<StringHandle> Bundle::getStrings() const
 {
   auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getString, this, _1)) | boost::adaptors::filtered([] (StringHandle s) { return s != nullptr; });
   return std::vector<StringHandle>(range.begin(), range.end());
+}
+
+std::vector<std::string> Bundle::getStringNames() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isString, this, _1));
+  return std::vector<std::string>(range.begin(), range.end());
 }
 
 bool Bundle::remove(const std::string& name)

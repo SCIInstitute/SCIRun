@@ -108,16 +108,10 @@ void GetFieldsFromBundle::execute()
   }
 }
 
-std::string GetFieldsFromBundle::makeFieldNameList(const Bundle& bundle) const
+std::vector<Variable> GetFieldsFromBundle::makeFieldNameList(const Bundle& bundle) const
 {
-  /*
-  std::string fieldlist;
-
-  int numFields = bundle->numFields();
-  for (int p = 0; p < numFields; p++)
-  {
-  fieldlist += "{" + bundle->getFieldName(p) + "} ";
-  }
-  */
-  return "fpp";
+  auto fieldNames = bundle.getFieldNames();
+  std::vector<Variable> vars;
+  std::transform(fieldNames.begin(), fieldNames.end(), std::back_inserter(vars), [](const std::string& str) { return Variable(Name(str), str); });
+  return vars;
 }

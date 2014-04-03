@@ -58,16 +58,19 @@ class SCISHARE Bundle : public Datatype
     FieldHandle getField(const std::string& name) const;
     size_t numFields() const;
     std::vector<FieldHandle> getFields() const;
+    std::vector<std::string> getFieldNames() const;
 
     bool isMatrix(const std::string& name) const;
     MatrixHandle getMatrix(const std::string& name) const;
     size_t numMatrices() const;
     std::vector<MatrixHandle> getMatrices() const;
+    std::vector<std::string> getMatrixNames() const;
 
     bool isString(const std::string& name) const;
     StringHandle getString(const std::string& name) const;
     size_t numStrings() const;
     std::vector<StringHandle> getStrings() const;
+    std::vector<std::string> getStringNames() const;
 
     bool remove(const std::string& name);
 

@@ -195,3 +195,25 @@ TEST(BundleTests, CanIterateOverEachType)
   auto fields = b.getFields();
   EXPECT_THAT(fields, ElementsAre(f1, f2, f3));
 }
+
+TEST(BundleTests, CanRetrieveNamesByType)
+{
+  Bundle b;
+  StringHandle s(new String("foo"));
+  b.set("str", s);
+  MatrixHandle m1(new DenseMatrix(1,2));
+  b.set("mat1", m1);
+  MatrixHandle m2(new DenseMatrix(1,2));
+  b.set("mat2", m2);
+  FieldHandle f1(new NullField);
+  b.set("field1", f1);
+  FieldHandle f2(new NullField);
+  b.set("field2", f2);
+  FieldHandle f3(new NullField);
+  b.set("field3", f3);
+
+  auto matNames = b.getMatrixNames();
+  EXPECT_THAT(matNames, ElementsAre("mat1", "mat2"));
+  auto fieldNames = b.getFieldNames();
+  EXPECT_THAT(fieldNames, ElementsAre("field1", "field2", "field3"));
+}

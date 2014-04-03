@@ -59,7 +59,7 @@ namespace SCIRun {
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
-        std::string makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
+        std::vector<Core::Algorithms::Variable> makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
         static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
       };
 
