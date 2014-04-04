@@ -212,7 +212,7 @@ public:
   MeshFacadeHandle getFacade() const
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
-  
+  } 
 
   virtual ~CurveMesh(); 
 
