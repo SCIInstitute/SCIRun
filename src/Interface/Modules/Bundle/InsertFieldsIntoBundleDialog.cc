@@ -51,7 +51,7 @@ InsertFieldsIntoBundleDialog::InsertFieldsIntoBundleDialog(const std::string& na
 
 void InsertFieldsIntoBundleDialog::pull()
 {
-  auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).getInt();
+  auto numFields = optional_any_cast_or_default<int>(state_->getTransientValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields.name()));
   tableWidget->setRowCount(numFields);
   for (int i = 0; i < numFields; ++i)
   {

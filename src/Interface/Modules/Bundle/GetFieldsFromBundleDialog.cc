@@ -34,6 +34,7 @@
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Modules::Bundles;
 
 GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -51,6 +52,22 @@ GetFieldsFromBundleDialog::GetFieldsFromBundleDialog(const std::string& name, Mo
 
 void GetFieldsFromBundleDialog::pull()
 {
+  auto names = optional_any_cast_or_default<std::string>(state_->getTransientValue(GetFieldsFromBundle::FieldNameList.name()));
+  fieldNameListTextEdit_->setText(QString::fromStdString(names));
+
+  field1NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[0]).getString()));
+  field2NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[1]).getString()));
+  field3NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[2]).getString()));
+  field4NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[3]).getString()));
+  field5NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[4]).getString()));
+  field6NameLineEdit_->setText(QString::fromStdString(state_->getValue(GetFieldsFromBundle::FieldNames[5]).getString()));
+  /*
+  for (int i = 0; i < GetFieldsFromBundle::NUM_BUNDLE_OUT; ++i)
+  {
+    field
+  }
+  */
+
   //auto numFields = state_->getValue(SCIRun::Modules::Bundles::InsertFieldsIntoBundle::NumFields).getInt();
   //tableWidget->setRowCount(numFields);
   //for (int i = 0; i < numFields; ++i)

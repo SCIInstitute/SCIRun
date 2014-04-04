@@ -56,11 +56,11 @@ namespace SCIRun {
 
         static Core::Algorithms::AlgorithmParameterName FieldNameList;
         static const Core::Algorithms::AlgorithmParameterName FieldNames[];
+        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
 
         static Dataflow::Networks::ModuleLookupInfo staticInfo_;
       private:
-        std::vector<Core::Algorithms::Variable> makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
-        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
+        std::string makeFieldNameList(const Core::Datatypes::Bundle& bundle) const;
       };
 
     }

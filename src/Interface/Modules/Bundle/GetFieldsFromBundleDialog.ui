@@ -52,7 +52,7 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="field1NameLineEdit_"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_2">
@@ -62,7 +62,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="lineEdit_2"/>
+       <widget class="QLineEdit" name="field2NameLineEdit_"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_3">
@@ -72,7 +72,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="lineEdit_3"/>
+       <widget class="QLineEdit" name="field3NameLineEdit_"/>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_4">
@@ -82,7 +82,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QLineEdit" name="lineEdit_4"/>
+       <widget class="QLineEdit" name="field4NameLineEdit_"/>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="label_5">
@@ -92,7 +92,7 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QLineEdit" name="lineEdit_5"/>
+       <widget class="QLineEdit" name="field5NameLineEdit_"/>
       </item>
       <item row="6" column="0">
        <widget class="QLabel" name="label_6">
@@ -102,7 +102,7 @@
        </widget>
       </item>
       <item row="6" column="1">
-       <widget class="QLineEdit" name="lineEdit_6"/>
+       <widget class="QLineEdit" name="field6NameLineEdit_"/>
       </item>
      </layout>
     </widget>
@@ -123,7 +123,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QTextEdit" name="textEdit">
+       <widget class="QTextEdit" name="fieldNameListTextEdit_">
         <property name="maximumSize">
          <size>
           <width>16777215</width>

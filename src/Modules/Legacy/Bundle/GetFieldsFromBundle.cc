@@ -63,7 +63,7 @@ GetFieldsFromBundle::GetFieldsFromBundle() : Module(staticInfo_)
 void GetFieldsFromBundle::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue(FieldNameList, std::string());
+  //state->setValue(FieldNameList, std::string());
   
   for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
   {  
@@ -89,29 +89,42 @@ void GetFieldsFromBundle::execute()
     update_state(Executing);
 
     auto state = get_state();
-    state->setValue(FieldNameList, makeFieldNameList(*bundle));
+    //TODO: why does this crash?
+    //state->setTransientValue(FieldNameList.name(), makeFieldNameList(*bundle));
 
+    FieldHandle outputs[NUM_BUNDLE_OUT];
     for (int i = 0; i < NUM_BUNDLE_OUT; ++i)
     {
       auto fieldName = state->getValue(FieldNames[i]).getString();
       if (bundle->isField(fieldName))
       {
         auto field = bundle->getField(fieldName);
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-          //need a way to send output down a port by index or parameterized name
-        sendOutput("field1",field);
-#endif
+        outputs[i] = field;
       } 
     }
         
     sendOutput(OutputBundle, bundle);
+
+    //TODO: fix duplication
+    if (outputs[0])
+      sendOutput(field1, outputs[0]);
+    if (outputs[1])
+      sendOutput(field2, outputs[1]);
+    if (outputs[2])
+      sendOutput(field3, outputs[2]);
+    if (outputs[3])
+      sendOutput(field4, outputs[3]);
+    if (outputs[4])
+      sendOutput(field5, outputs[4]);
+    if (outputs[5])
+      sendOutput(field6, outputs[5]);
   }
 }
 
-std::vector<Variable> GetFieldsFromBundle::makeFieldNameList(const Bundle& bundle) const
+std::string GetFieldsFromBundle::makeFieldNameList(const Bundle& bundle) const
 {
   auto fieldNames = bundle.getFieldNames();
-  std::vector<Variable> vars;
-  std::transform(fieldNames.begin(), fieldNames.end(), std::back_inserter(vars), [](const std::string& str) { return Variable(Name(str), str); });
-  return vars;
+  std::ostringstream vars;
+  std::copy(fieldNames.begin(), fieldNames.end(), std::ostream_iterator<std::string>(vars, "\n"));
+  return vars.str();
 }
