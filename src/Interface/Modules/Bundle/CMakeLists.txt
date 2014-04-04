@@ -28,15 +28,18 @@
 #
 
 SET(Interface_Modules_Bundle_FORMS
+  GetFieldsFromBundleDialog.ui
   InsertFieldsIntoBundleDialog.ui
 )
 
 SET(Interface_Modules_Bundle_HEADERS
+  GetFieldsFromBundleDialog.h
   InsertFieldsIntoBundleDialog.h
   share.h
 )
 
 SET(Interface_Modules_Bundle_SOURCES 
+  GetFieldsFromBundleDialog.cc
   InsertFieldsIntoBundleDialog.cc
 )
 
