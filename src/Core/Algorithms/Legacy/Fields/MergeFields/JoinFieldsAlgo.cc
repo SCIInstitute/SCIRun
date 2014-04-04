@@ -93,7 +93,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   FieldInformation first(inputs[0]);
   first.make_unstructuredmesh();
   
-  //! Make sure mesh and mesh basis order are equal
+  /// Make sure mesh and mesh basis order are equal
   for (size_t p=1; p<inputs.size(); p++)
   {
     FieldInformation fi(inputs[p]);

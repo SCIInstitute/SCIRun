@@ -28,14 +28,14 @@
 */
 
 
-/*
- *  ConvertMaskVectorToMappingMatrix
+/**
+ *@class ConvertMaskVectorToMappingMatrix
  *
- *  Written by:
+ *@author
  *   McKay Davis
  *   School of Computing
  *   University of Utah
- *   August, 2005
+ *@date  August, 2005
  *
  */
 

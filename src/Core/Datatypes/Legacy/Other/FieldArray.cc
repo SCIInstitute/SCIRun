@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Legacy/Other/ FieldArray.cc/.h
+
 #include <Core/Datatypes/FieldArray.h>
 
 namespace SCIRun {

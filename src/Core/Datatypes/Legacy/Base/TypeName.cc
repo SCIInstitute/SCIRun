@@ -27,18 +27,19 @@
 */
 
 
-/*
- *   TypeName.h :  specializations of template<class T> 
- *                 find_type_name() function for build-in 
- *                 and simple types not deriving from Core::Datatype
- *                 
- *   Created by:
- *   Alexei Samsonov
- *   Department of Computer Science
- *   University of Utah
- *   December 2000
- *
- */
+///
+///@file  TypeName.h 
+///@brief specializations of template<class T> 
+///       find_type_name() function for build-in 
+///       and simple types not deriving from Core::Datatype
+///                 
+///@author
+///       Alexei Samsonov
+///       Department of Computer Science
+///       University of Utah
+///@date  December 2000
+///
+///
 
 #include <string>
 

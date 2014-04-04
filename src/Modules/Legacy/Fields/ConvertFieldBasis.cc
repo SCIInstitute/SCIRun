@@ -25,14 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-//! Include the algorithm
+///TODO Documentation
+// Include the algorithm
 #include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
 
-//! The module class
+// The module class
 #include <Dataflow/Network/Module.h>
 
-//! We need to define the ports used
+// We need to define the ports used
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
@@ -89,7 +89,7 @@ ConvertFieldBasis::execute()
       (need_mapping & !oport_cached("Mapping")))
   {
     update_state(Executing);
-    //! Relay some information to user
+    /// Relay some information to user
     std::string name = input_field_handle->get_name();
     if (name == "") name = "--- no name ---";
     fldname_.set(name);
@@ -101,10 +101,10 @@ ConvertFieldBasis::execute()
     if (input_field_handle->vfield()->is_cubicdata()) inputbasis_.set("CubicData");
 
 
-    //! Set the method to use
+    // Set the method to use
     std::string basistype = outputbasis_.get();
     
-    //! For backwards compatibility
+    // For backwards compatibility
     if (basistype == "None") basistype = "nodata";
     algo_.set_option("basistype",basistype);
 
@@ -119,7 +119,7 @@ ConvertFieldBasis::execute()
     {
       if (!(algo_.run(input_field_handle,output_field_handle))) return;    
     }
-    //! send data downstream:
+    /// send data downstream:
     send_output_handle("Output", output_field_handle);    
     send_output_handle("Mapping", mapping_matrix_handle);    
   }

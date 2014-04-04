@@ -28,16 +28,16 @@
 
 
 
-/*
- *  FieldIterator.h: Some convenient simple iterators for fields.
- *
- *  Written by:
- *   Marty Cole
- *   Department of Computer Science
- *   University of Utah
- *   January 2001
- *
- */
+///
+///@file  FieldIterator.h
+///@brief Some convenient simple iterators for fields.
+///
+///@author
+///       Marty Cole
+///       Department of Computer Science
+///       University of Utah
+///@date  January 2001
+///
 
 #ifndef Datatypes_FieldIterator_h
 #define Datatypes_FieldIterator_h
@@ -49,13 +49,13 @@
 namespace SCIRun {
 
 
-//! Base type for FieldIterator types.
+/// Base type for FieldIterator types.
 template <class T>
 struct FieldIteratorBase {
   FieldIteratorBase(T i) :
     index_(i) {}
 
-  //! Field Iterators need to be able to increment.
+  /// Field Iterators need to be able to increment.
   inline 
   T operator ++() { return ++index_; }
   T operator --() { return --index_; }
@@ -77,14 +77,14 @@ public:
 #else
 private:
 #endif
-  //! Hide this in private to prevent it from being called.
+  /// Hide this in private to prevent it from being called.
   FieldIteratorBase<T> operator ++(int) {
     FieldIteratorBase<T> tmp(*this); ++index_; return tmp; }
   FieldIteratorBase<T> operator --(int) {
     FieldIteratorBase<T> tmp(*this); --index_; return tmp; }
 };
 
-//! Distinct type for node FieldIterator.
+/// Distinct type for node FieldIterator.
 template <class T>
 struct NodeIterator : public FieldIteratorBase<T> {
   NodeIterator() :
@@ -92,7 +92,7 @@ struct NodeIterator : public FieldIteratorBase<T> {
   NodeIterator(T iter) :
     FieldIteratorBase<T>(iter) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   NodeIndex<T> operator*() { return NodeIndex<T>(this->index_); }
   typedef NodeIndex<T> value_type;
@@ -100,7 +100,7 @@ struct NodeIterator : public FieldIteratorBase<T> {
   typedef NodeIndex<T>& reference;
 };
 
-//! Distinct type for edge Iterator.
+/// Distinct type for edge Iterator.
 template <class T>
 struct EdgeIterator : public FieldIteratorBase<T> {
   EdgeIterator() :
@@ -108,7 +108,7 @@ struct EdgeIterator : public FieldIteratorBase<T> {
   EdgeIterator(T index) :
     FieldIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   EdgeIndex<T> operator*() { return EdgeIndex<T>(this->index_); }
   typedef EdgeIndex<T> value_type;
@@ -116,7 +116,7 @@ struct EdgeIterator : public FieldIteratorBase<T> {
   typedef EdgeIndex<T>& reference;
 };
 
-//! Distinct type for face Iterator.
+/// Distinct type for face Iterator.
 template <class T>
 struct FaceIterator : public FieldIteratorBase<T> {
   FaceIterator() :
@@ -124,12 +124,12 @@ struct FaceIterator : public FieldIteratorBase<T> {
   FaceIterator(T index) :
     FieldIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   FaceIndex<T> operator*() { return FaceIndex<T>(this->index_); }
 };
 
-//! Distinct type for cell Iterator.
+/// Distinct type for cell Iterator.
 template <class T>
 struct CellIterator : public FieldIteratorBase<T> {
   CellIterator() :
@@ -137,7 +137,7 @@ struct CellIterator : public FieldIteratorBase<T> {
   CellIterator(T index) :
     FieldIteratorBase<T>(index) {}
 
-  //! Required interface for an FieldIterator.
+  /// Required interface for an FieldIterator.
   inline 
   CellIndex<T> operator*() { return CellIndex<T>(this->index_); }
 };

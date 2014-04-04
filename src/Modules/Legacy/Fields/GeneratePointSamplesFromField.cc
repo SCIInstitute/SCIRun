@@ -28,14 +28,14 @@
 
 
 
-/*
- *  GeneratePointSamplesFromField.cc
+/**
+ *@file  GeneratePointSamplesFromField.cc
  *
- *  Written by:
+ *@author
  *   Robert Van Uitert
  *   Diagnostic Radiology Department
  *   National Institutes of Health
- *   November 2004
+ *@date  November 2004
  *
  */
 

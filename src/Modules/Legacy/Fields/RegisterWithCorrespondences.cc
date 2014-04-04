@@ -26,13 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 
-/*
- *  RegisterWithCorrespondences.cc:
+/**
+ *@file  RegisterWithCorrespondences.cc
  *
- *  Written by:
+ *@author
  *   darrell
- *   TODAY'S DATE HERE
+ *  
+ * TODAY'S DATE HERE
  *
  */
 

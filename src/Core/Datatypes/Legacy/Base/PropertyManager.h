@@ -27,16 +27,17 @@
 */
 
 
-/* PropertyManager.h
- *
- *  Written by:
- *   Yarden Livnat
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- *  Manage dynamic properties of persistent objects.
- */
+///
+///@file  PropertyManager.h
+///
+///@author
+///       Yarden Livnat
+///       Department of Computer Science
+///       University of Utah
+///@date  March 2001
+///
+///@brief Manage dynamic properties of persistent objects.
+///
 
 #ifndef CORE_DATATYPES_PROPERTYMANAGER_H
 #define CORE_DATATYPES_PROPERTYMANAGER_H 1 
@@ -77,8 +78,8 @@ public:
     ASSERTFAIL( "Not defined."); }
 
 protected:
-  //! Transient properties are deleted when the PropertyManager that this
-  //! Property belongs to is thawed. 
+  /// Transient properties are deleted when the PropertyManager that this
+  /// Property belongs to is thawed. 
   bool transient_;
   static Persistent *maker();
 };
@@ -208,15 +209,15 @@ public:
   bool is_property( const std::string & );
   std::string get_property_name( size_t index );
 
-  //! -- mutability --
+  /// -- mutability --
 
-  //! Transient data may only be stored in a frozen PropertyManager.
+  /// Transient data may only be stored in a frozen PropertyManager.
   virtual void freeze();
   
-  //! thaw will remove all transient properties from the PropertyManager.
+  /// thaw will remove all transient properties from the PropertyManager.
   virtual void thaw();
   
-  //! query frozen state of a PropertyManager.
+  /// query frozen state of a PropertyManager.
   bool is_frozen() const { return frozen_; }
 
   void remove_property( const std::string & );
@@ -243,7 +244,7 @@ private:
   map_type properties_;
 
 protected:
-  //! A frozen PropertyManager may store transient data.
+/// A frozen PropertyManager may store transient data.
   void clear_transient();
 
   bool frozen_;

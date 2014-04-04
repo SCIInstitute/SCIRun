@@ -30,16 +30,16 @@
 #ifndef CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTOELEMS_H
 #define CORE_ALGORTIHMS_FIELDS_MAPPING_MAPFIELDDATAONTOELEMS_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
 #include <float.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -49,7 +49,7 @@ using namespace SCIRun;
 class SCISHARE MapFieldDataOntoElemsAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     MapFieldDataOntoElemsAlgo()
     {
       add_option("quantity","value","value|gradient|gradientnorm|flux");
@@ -60,7 +60,7 @@ class SCISHARE MapFieldDataOntoElemsAlgo : public AlgoBase
       add_scalar("max_distance",DBL_MAX);
     }
 
-    //! run the algorithm
+    /// run the algorithm
     bool run(FieldHandle source, FieldHandle weights, 
              FieldHandle destination, FieldHandle& output);
 

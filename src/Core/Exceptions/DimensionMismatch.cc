@@ -26,18 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  DimensionMismatch.h: Exception to indicate a failed bounds check
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   August 2000
- *
- */
+///
+///@file  DimensionMismatch.h
+///@brief Exception to indicate a failed bounds check
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  August 2000
+///
 
 #include <Core/Exceptions/DimensionMismatch.h>
 #include <stdio.h>

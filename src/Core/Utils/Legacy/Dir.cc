@@ -28,8 +28,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
 #include <Core/Utils/Legacy/Dir.h>
 #include <Core/Utils/Legacy/FileUtils.h>
 #include <Core/Exceptions/ErrnoException.h>

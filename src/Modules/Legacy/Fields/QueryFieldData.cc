@@ -27,15 +27,16 @@
 */
 
 
-/*
- *  QueryFieldData: Field data operations
+/**
+ *@class QueryFieldData
+ *@brief Field data operations
  *
- *  Written by:
+ *@author
  *   Allen R. Sanderson
  *   Michael Callahan
  *   SCI Institute
  *   University of Utah
- *   February 2006
+ *@date  February 2006
  *
  */
 

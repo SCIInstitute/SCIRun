@@ -27,15 +27,16 @@
 */
 
 
-/*
- *  ConvertMatricesToMesh: Store/retrieve values from an input matrix to/from 
+/**
+ *@class ConvertMatricesToMesh
+ *@brief Store/retrieve values from an input matrix to/from 
  *            the data of a field
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   February 2001
+ *@date  February 2001
  *
  */
 

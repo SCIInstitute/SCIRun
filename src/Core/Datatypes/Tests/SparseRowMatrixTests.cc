@@ -338,7 +338,7 @@ TEST(SparseRowMatrixBinaryOperationTests, CanSubtract)
   EXPECT_EQ(diff, Zero());
 }
 
-//TODO: compare to v4.
+/// @todo: compare to v4.
 //TEST(SparseRowMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
 //{
 //  SparseRowMatrix sum = matrix1() + matrix1();

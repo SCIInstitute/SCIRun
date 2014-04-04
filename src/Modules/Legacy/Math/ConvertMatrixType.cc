@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ConvertMatrixType: Unary matrix operations -- transpose, negate
+/**
+ *@class ConvertMatrixType
+ *@brief Unary matrix operations -- transpose, negate
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
  */
 

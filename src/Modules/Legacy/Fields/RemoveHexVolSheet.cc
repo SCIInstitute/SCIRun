@@ -26,14 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  InsertHexSheet.cc:  Remove a layer of hexes.
+/**
+ *@file  InsertHexSheet.cc
+ *@brief Remove a layer of hexes.
  *
- *  Written by:
+ *@author
  *   Jason Shepherd
  *   Department of Computer Science
  *   University of Utah
- *   May 2006
+ *@date  May 2006
  *
  */
 

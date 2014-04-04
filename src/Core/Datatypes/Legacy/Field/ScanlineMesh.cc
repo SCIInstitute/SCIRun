@@ -31,7 +31,7 @@
 #include <Core/Datatypes/Legacy/Field/StructCurveMesh.h>
 #include <Core/Basis/CrvElementWeights.h>
 
-//! Only include this class if we included Scanline Support
+/// Only include this class if we included Scanline Support
 #if (SCIRUN_SCANLINE_SUPPORT > 0 || SCIRUN_STRUCTCURVE_SUPPORT > 0)
 
 using namespace SCIRun::Core::Basis;
@@ -39,22 +39,22 @@ using namespace SCIRun::Core::Geometry;
 
 namespace SCIRun {
 
-//! This is the virtual interface to the curve mesh
-//! This class lives besides the real mesh class for now and solely profides
-//! an interface. In the future however when dynamic compilation is gone
-//! this should be put into the ScanlineMesh class.
+/// This is the virtual interface to the curve mesh
+/// This class lives besides the real mesh class for now and solely profides
+/// an interface. In the future however when dynamic compilation is gone
+/// this should be put into the ScanlineMesh class.
 template<class MESH> class VScanlineMesh;
 template<class MESH> class VStructCurveMesh;
 
-//! This class is not exposed to the general interface and only the VMesh class
-//! is accessed by other classes.
+/// This class is not exposed to the general interface and only the VMesh class
+/// is accessed by other classes.
 
 template<class MESH>
 class VScanlineMesh : public VMeshShared<MESH> {
 public:
   virtual bool is_scanlinemesh()       { return (true); }
 
-  //! constructor and descructor
+  /// constructor and descructor
   VScanlineMesh(MESH* mesh) : VMeshShared<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VScanlineMesh")   
@@ -108,14 +108,14 @@ public:
   virtual void get_delems(VMesh::DElem::array_type& delems, 
                           VMesh::Elem::index_type i) const;
 
-  //! Get the center of a certain mesh element
+  /// Get the center of a certain mesh element
   virtual void get_center(Point &point, VMesh::Node::index_type i) const;
   virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
   virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
   virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
-  //! Get the centers of a series of nodes
+  /// Get the centers of a series of nodes
   virtual void get_centers(Point* points,
 			   VMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points,
@@ -392,28 +392,28 @@ protected:
 
 };
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVScanlineMesh(ScanlineMesh<CrvLinearLgn<Point> >* mesh)
 {
   return new VScanlineMesh<ScanlineMesh<CrvLinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID ScanlineMesh_MeshID1(ScanlineMesh<CrvLinearLgn<Point> >::type_name(-1),
                   ScanlineMesh<CrvLinearLgn<Point> >::mesh_maker,
                   ScanlineMesh<CrvLinearLgn<Point> >::scanline_maker);
                   
 
 
-//! Functions for determining the number of indices that are used
+/// Functions for determining the number of indices that are used
 template <class MESH>
 void
 VScanlineMesh<MESH>::size(VMesh::Node::size_type& sz) const
@@ -452,7 +452,7 @@ VScanlineMesh<MESH>::size(VMesh::Elem::size_type& sz) const
   if (sz < 0) sz = 0;
 }
 
-//! Topology functions
+/// Topology functions
 
 
 template <class MESH>
@@ -1526,7 +1526,7 @@ public:
   virtual bool is_scanlinemesh()         { return (false); }
   virtual bool is_structcurvemesh()      { return (true); }
 
-  //! constructor and descructor
+  /// constructor and descructor
   VStructCurveMesh(MESH* mesh) :
     VScanlineMesh<MESH>(mesh),
     points_(mesh->get_points())
@@ -1632,7 +1632,7 @@ public:
   virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
-  //! Get the centers of a series of nodes
+  /// Get the centers of a series of nodes
   virtual void get_centers(Point* points, VMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points, VMesh::Elem::array_type& array) const;
   
@@ -1764,21 +1764,21 @@ protected:
 };
 
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVStructCurveMesh(StructCurveMesh<CrvLinearLgn<Point> >* mesh)
 {
   return new VStructCurveMesh<StructCurveMesh<CrvLinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID StructCurve_MeshID1(StructCurveMesh<CrvLinearLgn<Point> >::type_name(-1),
                   StructCurveMesh<CrvLinearLgn<Point> >::mesh_maker,
                   StructCurveMesh<CrvLinearLgn<Point> >::structcurve_maker);

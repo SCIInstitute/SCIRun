@@ -67,7 +67,7 @@ MatrixHandle EigenMatrixFromScirunAsciiFormatConverter::make(const std::string& 
   if (fileContainsString(matFile, "ColumnMatrix"))
     return makeColumn(matFile);
 
-  //TODO: no access to error(), need alternative for logging this exception
+  /// @todo: no access to error(), need alternative for logging this exception
   BOOST_THROW_EXCEPTION(AlgorithmInputException() << ErrorMessage("Unknown SCIRun matrix format"));
 }
 

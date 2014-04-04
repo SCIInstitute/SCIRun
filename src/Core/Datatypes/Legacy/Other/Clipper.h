@@ -26,10 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-//    File   : Clipper.h
-//    Author : Michael Callahan
-//    Date   : September 2001
+/*
+ *   @file    Clipper.h
+ *   @author  Michael Callahan
+ *   @date    September 2001
+ */
 
 #ifndef CORE_DATATYPES_CLIPPER_H
 #define CORE_DATATYPES_CLIPPER_H 1

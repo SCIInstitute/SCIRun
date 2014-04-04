@@ -51,10 +51,10 @@ public:
       ("version,v", "prints out version information")
       ("execute,e", "executes the given network on startup")
       ("Execute,E", "executes the given network on startup and quits when done")
-      ("datadir,d", po::value<std::string>(), "scirun data directory--TODO")
+      ("datadir,d", po::value<std::string>(), "scirun data directory-- @todo")
       ("regression,r", "regression test a network")
-      ("logfile,l", po::value<std::string>(), "add output messages to a logfile--TODO")
-      ("interactive,i", "interactive mode--TODO")
+      ("logfile,l", po::value<std::string>(), "add output messages to a logfile-- @todo")
+      ("interactive,i", "interactive mode-- @todo")
       ("headless,x", "disable GUI (Qt still needed, for now)")
       ("input-file", po::value<std::string>(), "SCIRun Network Input File")
       ("script,s", po::value<std::string>(), "SCIRun Python Script")
@@ -69,13 +69,13 @@ public:
   po::variables_map parse(int argc, const char* argv[])
   {
     po::variables_map vm;
-    // basic_command_line_parser::allow_unregistered is needed when launching SCIRun from OS X
-    // app bundles; the first argument in argv is the program path, the second is the
-    // process serial number (Carbon API ProcessSerialNumber struct), which matches
-    // -psn_<unique id> where the unique id matches[0-9_], for example -psn_0_1085705.
-    //
-    // If parsing and saving the process serial number flag is ever necessary, it may useful to look
-    // at Boost program options non-conventional syntax.
+    ///@details basic_command_line_parser::allow_unregistered is needed when launching SCIRun from OS X
+    /// app bundles; the first argument in argv is the program path, the second is the
+    /// process serial number (Carbon API ProcessSerialNumber struct), which matches
+    /// -psn_<unique id> where the unique id matches[0-9_], for example -psn_0_1085705.
+    ///
+    /// If parsing and saving the process serial number flag is ever necessary, it may useful to look
+    /// at Boost program options non-conventional syntax.
     po::store(po::command_line_parser(argc, argv).options(desc_).
                 positional(positional_).allow_unregistered().run(),
               vm);

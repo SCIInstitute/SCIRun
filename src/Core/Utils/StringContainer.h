@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+/// @todo Documentation
+
 #ifndef CORE_UTILS_STRINGCONTAINER_H
 #define CORE_UTILS_STRINGCONTAINER_H
 

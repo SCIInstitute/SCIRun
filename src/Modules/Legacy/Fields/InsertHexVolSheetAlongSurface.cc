@@ -26,14 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  InsertHexVolSheetAlongSurface.cc:  Insert a layer of hexes.
+/**
+ *@file  InsertHexVolSheetAlongSurface.cc 
+ *@brief Insert a layer of hexes.
  *
- *  Written by:
+ *@author
  *   Jason Shepherd
  *   Department of Computer Science
  *   University of Utah
- *   March 2006
+ *@date   March 2006
  *
  */
 

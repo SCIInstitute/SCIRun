@@ -29,18 +29,18 @@
 #ifndef CORE_ALGORITHMS_FIELDS_TRACEPOINTS_TRACEPOINTS_H
 #define CORE_ALGORITHMS_FIELDS_TRACEPOINTS_TRACEPOINTS_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
-// TODO: this was used by the TracePoints module, which
+/// @todo: this was used by the TracePoints module, which
 // has been deprecated in SCIRun 4.6.
 // Should this be deleted as well?
 
@@ -51,7 +51,7 @@ using namespace SCIRun;
 class SCISHARE TracePointsAlgo : public AlgoBase
 {
   public:
-    //! set defaults
+    /// set defaults
     TracePointsAlgo()
     {
       add_scalar("value",0.0);

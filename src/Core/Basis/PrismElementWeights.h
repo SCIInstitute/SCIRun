@@ -48,7 +48,7 @@ public:
     w[5] = +y * z;
   }
   
-  //! get derivative weight factors at parametric coordinate 
+  /// get derivative weight factors at parametric coordinate 
   template <class VECTOR>
   void get_linear_derivate_weights(const VECTOR& coords, double *w) const
   {
@@ -73,7 +73,7 @@ public:
     w[17]= y;
   }
 
-  //! get weight factors at parametric coordinate 
+  /// get weight factors at parametric coordinate 
   template< class VECTOR>
   void get_quadratic_weights(const VECTOR& coords, double *w) const
   {
@@ -95,7 +95,7 @@ public:
     w[14] = -4*y*(-1 + x + y)*z;
   }
 
-  //! get weight factors of derivative at parametric coordinate 
+  /// get weight factors of derivative at parametric coordinate 
   template< class VECTOR>
   void get_quadratic_derivate_weights(const VECTOR& coords, double *w) const
   {
@@ -184,7 +184,7 @@ public:
     w[23] = +y*(-1 + z)*z2;
   }
 
-  //! get derivative weight factors at parametric coordinate 
+  /// get derivative weight factors at parametric coordinate 
   template <class VECTOR>
   void get_cubic_derivate_weights(const VECTOR &coords, double *w) const
   {

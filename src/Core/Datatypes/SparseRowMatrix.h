@@ -47,13 +47,13 @@ namespace Datatypes {
     typedef Eigen::SparseMatrix<T, Eigen::RowMajor, index_type> EigenBase;
     typedef Eigen::Triplet<T> Triplet;
 
-    //TODO: need C++11
+    /// @todo: need C++11
     //using Base::Base;
 
     SparseRowMatrixGeneric() : EigenBase() {}
     SparseRowMatrixGeneric(int nrows, int ncols) : EigenBase(nrows, ncols) {}
 
-    //Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
+    ///Legacy construction compatibility. Useful for converting old code, but should be avoided in new code.
     SparseRowMatrixGeneric(int nrows, int ncols, const index_type* rowCounter, const index_type* columnCounter, size_t nnz) : EigenBase(nrows, ncols)
     {
       if (rowCounter[nrows] != nnz)
@@ -78,13 +78,13 @@ namespace Datatypes {
       this->setFromTriplets(triplets.begin(), triplets.end());
     }
 
-    // This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
+    /// This constructor allows you to construct SparseRowMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     SparseRowMatrixGeneric(const Eigen::SparseMatrixBase<OtherDerived>& other)
       : EigenBase(other)
     { }
 
-    // This method allows you to assign Eigen expressions to SparseRowMatrixGeneric
+    /// This method allows you to assign Eigen expressions to SparseRowMatrixGeneric
     template<typename OtherDerived>
     SparseRowMatrixGeneric& operator=(const Eigen::SparseMatrixBase<OtherDerived>& other)
     {
@@ -118,7 +118,7 @@ namespace Datatypes {
 
       return this->isApprox(this->transpose(),1e-16);
     }
-    //TODO!
+    /// @todo!
 #if 0
     class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>
     {
@@ -239,9 +239,9 @@ namespace Datatypes {
     NonZeroIterator nonZerosEnd() { return NonZeroIterator(); }
 #endif
 
-    const MatrixBase<T>& castForPrinting() const { return *this; } //TODO: lame...figure out a better way
+    const MatrixBase<T>& castForPrinting() const { return *this; } /// @todo: lame...figure out a better way
 
-    //! Persistent representation...
+    /// Persistent representation...
     virtual std::string dynamic_type_name() const { return type_id.type; }
     virtual void io(Piostream&);
     static PersistentTypeID type_id;

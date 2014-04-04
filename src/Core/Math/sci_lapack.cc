@@ -130,7 +130,7 @@ void sort_eigens(double *Er, double *Ei, int N, double **Evecs=0)
   typedef integer    integer_type;
   
 #else
-  // TODO: Are there other lapack libraries that we are likely to use?
+  /// @todo: Are there other lapack libraries that we are likely to use?
   // New netlib (v3.3 or greater) uses int as integer_type
 
   typedef int    integer_type;

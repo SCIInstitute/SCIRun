@@ -48,7 +48,7 @@ namespace Math {
       MULTIPLY
     };
 
-    //TODO: idea (type, name)
+    /// @todo: idea (type, name)
     // can generate a subclass of ModuleState with get/set for each.
     //ALGORITHM_PARAMETER(Operator, OperatorName);
 

@@ -38,8 +38,8 @@
 #include <spire/Interface.h>
 #include <Core/Datatypes/share.h>
 
-// The following include contains AbstractUniformStateItem which allows
-// us to store uniforms to be passed, at a later time, to spire.
+/// The following include contains AbstractUniformStateItem which allows
+/// us to store uniforms to be passed, at a later time, to spire.
 #include <spire/src/ShaderUniformStateManTemplates.h>
 
 

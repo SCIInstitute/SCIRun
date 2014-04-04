@@ -29,14 +29,15 @@
 #ifndef MODULES_LEGACY_FIELDS_CREATELATVOL_H__
 #define MODULES_LEGACY_FIELDS_CREATELATVOL_H__
 
-/*
- *  CreateLatVol.cc:  Make an ImageField that fits the source field.
+/**
+ *@file  CreateLatVol.cc
+ *@brief Make an ImageField that fits the source field.
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

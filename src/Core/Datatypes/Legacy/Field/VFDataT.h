@@ -179,8 +179,8 @@ VFData* CreateVFData(Array3<type>& fdata,std::vector<type>& efdata, std::vector<
 
 namespace SCIRun {
 
-//! Implementation layer of the functions we actually need. These classes are
-//! defined here to prevent overload of the header files:
+/// Implementation layer of the functions we actually need. These classes are
+/// defined here to prevent overload of the header files:
 
 template<class FDATA, class EFDATA, class HFDATA>
 class VFDataT : public VFData {

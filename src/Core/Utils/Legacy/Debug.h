@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_UTIL_DEBUG_H
 #define CORE_UTIL_DEBUG_H 1
 

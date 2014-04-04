@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+///TODO Documentation
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToTetVolMesh.h>
 
@@ -55,7 +55,7 @@ DECLARE_MAKER(ConvertHexVolToTetVol)
 ConvertHexVolToTetVol::ConvertHexVolToTetVol(GuiContext* ctx)
   : Module("ConvertHexVolToTetVol", ctx, Source, "ChangeMesh", "SCIRun")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

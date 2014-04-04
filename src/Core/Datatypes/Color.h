@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Color.h Colormap.h Datatype.h 
+///  DatatypeFwd.h Matrix.h MatrixComparison.h MatrixFwd.h MatrixIO.h 
+///  MatrixTypeConversion.h PropertyManagerExtensions.h Scalar.h 
+///  SparceRowMatrixFromMap.h 
 
 #ifndef CORE_DATATYPES_COLORRGB_H
 #define CORE_DATATYPES_COLORRGB_H 

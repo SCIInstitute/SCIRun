@@ -81,7 +81,7 @@ TEST(BuildFEMatrixAlgorithmTests, ThrowsForNullMesh)
   SparseRowMatrixHandle output;
 
   EXPECT_FALSE(algo.run(FieldHandle(), nullConductivityMatrix(), output));
-  //TODO: consider throwing an exception instead of returning false
+  /// @todo: consider throwing an exception instead of returning false
 }
 
 TEST(BuildFEMatrixAlgorithmTests, TestMeshSize1e1)

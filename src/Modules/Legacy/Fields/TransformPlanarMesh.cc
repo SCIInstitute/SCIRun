@@ -28,16 +28,16 @@
 
 
 
-/*
- *  TransformPlanarMesh.cc
+/**
+ *@file  TransformPlanarMesh.cc
  *
- *  Rotate and flip field to get it into "standard" view
+ *@brief Rotate and flip field to get it into "standard" view
  *
- *  Written by:
+ *@author
  *   Allen Sanderson
  *   Scientific Computing and Imaging Institute
  *   University of Utah
- *   April 2006
+ *@date  April 2006
  *
  */
 

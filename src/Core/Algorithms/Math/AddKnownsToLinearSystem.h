@@ -34,7 +34,7 @@
 #include <Core/Datatypes/MatrixFwd.h>
 //! Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Math/share.h>
 
 namespace SCIRun {

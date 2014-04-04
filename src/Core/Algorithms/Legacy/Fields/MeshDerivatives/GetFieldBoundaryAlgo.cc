@@ -69,31 +69,31 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
-  //! Define types we need for mapping
+  /// Define types we need for mapping
   typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
 
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  //! Check whether we have an input field
+  /// Check whether we have an input field
   if (!input)
   {
     error("No input field");
     return (false);
   }
 
-  //! Figure out what the input type and output type have to be
+  /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
   FieldInformation fo(input);
   
-  //! We do not yet support Quadratic and Cubic Meshes here
+  /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return (false);
   }
   
-  //! Figure out which type of field the output is:
+  /// Figure out which type of field the output is:
   bool found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_prism_element())  { fo.make_quadsurfmesh(); found_method = true; }
@@ -107,14 +107,14 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     return (true);
   }
   
-  //! Check whether we could make a conversion
+  /// Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
     return (false);
   }
 
-  //! Create the output field
+  /// Create the output field
   output = CreateField(fo);
   if (!output)
   {
@@ -122,7 +122,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
     return (false);
   }
   
-  //! Get the virtual interfaces:
+  /// Get the virtual interfaces:
   VMesh* imesh = input->vmesh();
   VMesh* omesh = output->vmesh();
   VField* ifield = input->vfield();
@@ -130,7 +130,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
   
-  //! These are all virtual iterators, virtual index_types and array_types
+  /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
   VMesh::DElem::array_type delems; 
@@ -142,8 +142,8 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
   onodes.clear();  
   Point point;
 
-  //! This algorithm was copy from the original dynamic compiled version
-  //! and was slightly adapted to work here:
+  /// This algorithm was copy from the original dynamic compiled version
+  /// and was slightly adapted to work here:
   
   imesh->begin(be); 
   imesh->end(ee);
@@ -275,7 +275,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
       VMesh::Elem::index_type idx1((*it).second);
       VMesh::Elem::index_type idx2((*it).first);  
       
-      //! Copying values
+      /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
       ++it;
     }
@@ -301,40 +301,40 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output, MatrixHandle& 
 }
 
 
-//! A copy of the algorithm without creating the mapping matrix. 
-//! Need this for the various algorithms that only use the boundary to
-//! project nodes on.
+/// A copy of the algorithm without creating the mapping matrix. 
+/// Need this for the various algorithms that only use the boundary to
+/// project nodes on.
 
 bool 
 GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
 {
   ScopedAlgorithmStatusReporter asr(this, "GetFieldBoundary");
 
-  //! Define types we need for mapping
+  /// Define types we need for mapping
   typedef boost::unordered_map<index_type,index_type,IndexHash> hash_map_type;
   
   hash_map_type node_map;
   hash_map_type elem_map;
   
-  //! Check whether we have an input field
+  /// Check whether we have an input field
   if (!input)
   {
     error("No input field");
     return (false);
   }
 
-  //! Figure out what the input type and output type have to be
+  /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
   FieldInformation fo(input);
   
-  //! We do not yet support Quadratic and Cubic Meshes here
+  /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     return (false);
   }
   
-  //! Figure out which type of field the output is:
+  /// Figure out which type of field the output is:
   bool found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_prism_element())  { fo.make_quadsurfmesh(); found_method = true; }
@@ -348,14 +348,14 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
     return (true);
   }
   
-  //! Check whether we could make a conversion
+  /// Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
     return (false);
   }
 
-  //! Create the output field
+  /// Create the output field
   output = CreateField(fo);
   if (!output)
   {
@@ -363,7 +363,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
     return (false);
   }
   
-  //! Get the virtual interfaces:
+  /// Get the virtual interfaces:
   VMesh* imesh = input->vmesh();
   VMesh* omesh = output->vmesh();
   VField* ifield = input->vfield();
@@ -371,7 +371,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
   
-  //! These are all virtual iterators, virtual index_types and array_types
+  /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
   VMesh::DElem::array_type delems; 
@@ -383,8 +383,8 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
   onodes.clear();  
   Point point;
 
-  //! This algorithm was copy from the original dynamic compiled version
-  //! and was slightly adapted to work here:
+  /// This algorithm was copy from the original dynamic compiled version
+  /// and was slightly adapted to work here:
   
   imesh->begin(be); 
   imesh->end(ee);
@@ -437,7 +437,7 @@ GetFieldBoundaryAlgo::run(FieldHandle input, FieldHandle& output)
       VMesh::Elem::index_type idx1((*it).second);
       VMesh::Elem::index_type idx2((*it).first);  
       
-      //! Copying values
+      /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
       ++it;
     }

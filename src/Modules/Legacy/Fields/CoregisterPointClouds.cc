@@ -28,14 +28,15 @@
 
 
 
-/*
- *  CoregisterPointClouds.cc:  CoregisterPointClouds two point clouds
+/**
+ *@file  CoregisterPointClouds.cc
+ *@brief CoregisterPointClouds two point clouds
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

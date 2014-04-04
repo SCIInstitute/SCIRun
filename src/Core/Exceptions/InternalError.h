@@ -29,16 +29,16 @@
 
 
 
-/*
- *  InternalError.h: Generic exception for internal errors
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1999
- *
- */
+///
+///@file  InternalError.h
+///@brief Generic exception for internal errors
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+///
 
 #ifndef Core_Exceptions_InternalError_h
 #define Core_Exceptions_InternalError_h

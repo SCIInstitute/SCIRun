@@ -66,7 +66,7 @@ protected:
     // How to set parameters on an algorithm (that come from the GUI)
     algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, includeOuterBoundary);
     
-    // TODO: this logic matches the wacky module behavior
+    /// @todo: this logic matches the wacky module behavior
     algo.set(GetDomainBoundaryAlgo::UseRange, useRange);
     if (!useRange)
     {

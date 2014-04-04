@@ -28,14 +28,15 @@
 
 
 
-/*
- *  GenerateLinearSegments.cc:  Unfinished modules
+/**
+ *@file  GenerateLinearSegments.cc
+ *@brief Unfinished modules
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

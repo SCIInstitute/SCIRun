@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
+
 #ifndef DATAFLOW_STATE_SENDSCALARMODULESTATE_H
 #define DATAFLOW_STATE_SENDSCALARMODULESTATE_H
 
@@ -33,7 +35,7 @@
 
 namespace SCIRun {
 namespace State {
-  //TODO 
+  //TODO @todo 
   class SendScalarState //: public AbstractModuleState...
   {
   public:

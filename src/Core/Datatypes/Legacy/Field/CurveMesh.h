@@ -29,8 +29,8 @@
 #ifndef CORE_DATATYPES_CURVEMESH_H
 #define CORE_DATATYPES_CURVEMESH_H 1
 
-//! Include what kind of support we want to have
-//! Need to fix this and couple it sci-defs
+/// Include what kind of support we want to have
+/// Need to fix this and couple it sci-defs
 #include <Core/Datatypes/Legacy/Field/MeshSupport.h>
 
 #include <Core/Containers/StackVector.h>
@@ -59,19 +59,19 @@
 namespace SCIRun {
 
 /////////////////////////////////////////////////////
-// Declarations for virtual interface
+/// Declarations for virtual interface
 
 template <class Basis> class CurveMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVCurveMesh(MESH*) { return (0); }
 
 #if (SCIRUN_CURVE_SUPPORT > 0)
-//! Declare that these can be found in a library that is already
-//! precompiled. So dynamic compilation will not instantiate them again.
+/// Declare that these can be found in a library that is already
+/// precompiled. So dynamic compilation will not instantiate them again.
 SCISHARE VMesh* CreateVCurveMesh(CurveMesh<Core::Basis::CrvLinearLgn<Core::Geometry::Point> >* mesh);
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
 SCISHARE VMesh* CreateVCurveMesh(CurveMesh<Core::Basis::CrvQuadraticLgn<Core::Geometry::Point> >* mesh);
@@ -84,13 +84,13 @@ SCISHARE VMesh* CreateVCurveMesh(CurveMesh<Core::Basis::CrvCubicHmt<Core::Geomet
 /////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////
-// Declarations for CurveMesh class
+/// Declarations for CurveMesh class
 
 template <class Basis>
 class CurveMesh : public Mesh
 {
 
-//! Make sure the virtual interface has access
+/// Make sure the virtual interface has access
 template<class MESH> friend class VCurveMesh;
 template<class MESH> friend class VMeshShared;
 template<class MESH> friend class VUnstructuredMesh;
@@ -106,7 +106,7 @@ public:
   typedef boost::shared_ptr<CurveMesh<Basis> > handle_type;
   typedef Basis                            basis_type;
 
-  //! Index and Iterator types required for Mesh Concept.
+  /// Index and Iterator types required for Mesh Concept.
   struct Node {
     typedef NodeIndex<under_type>       index_type;
     typedef NodeIterator<under_type>    iterator;
@@ -121,8 +121,8 @@ public:
     typedef std::vector<index_type>     array_type;
   };
 
-  //! For dynamic compilation to be compatible with
-  //! other mesh types
+  /// For dynamic compilation to be compatible with
+  /// other mesh types
   struct Face {
     typedef FaceIndex<under_type>       index_type;
     typedef FaceIterator<under_type>    iterator;
@@ -130,8 +130,8 @@ public:
     typedef std::vector<index_type>     array_type;
   };
 
-  //! For dynamic compilation to be compatible with
-  //! other mesh types
+  /// For dynamic compilation to be compatible with
+  /// other mesh types
   struct Cell {
     typedef CellIndex<under_type>       index_type;
     typedef CellIterator<under_type>    iterator;
@@ -139,22 +139,22 @@ public:
     typedef std::vector<index_type>     array_type;
   };
 
-  //! Elem refers to the most complex topological object
-  //! DElem refers to object just below Elem in the topological hierarchy
+  /// Elem refers to the most complex topological object
+  /// DElem refers to object just below Elem in the topological hierarchy
 
   typedef Edge Elem;
   typedef Node DElem;
 
-  //! Definition specific to this class (should at some point jsut
-  //! remove this and make it similar to the other classes)
+  /// Definition specific to this class (should at some point jsut
+  /// remove this and make it similar to the other classes)
   typedef std::pair<typename Node::index_type,
                typename Node::index_type> index_pair_type;
 
 
-  //! Somehow the information of how to interpolate inside an element
-  //! ended up in a separate class, as they need to share information
-  //! this construction was created to transfer data. 
-  //! Hopefully in the future this class will disappear again.
+  /// Somehow the information of how to interpolate inside an element
+  /// ended up in a separate class, as they need to share information
+  /// this construction was created to transfer data. 
+  /// Hopefully in the future this class will disappear again.
   friend class ElemData;
   
   class ElemData
@@ -192,9 +192,9 @@ public:
     }
 
   private:
-    //! reference of the mesh
+    /// reference of the mesh
     const CurveMesh<Basis>   &mesh_;
-    //! copy of index
+    /// copy of index
     const index_type         index_;
   };
 
@@ -202,64 +202,64 @@ public:
 
   CurveMesh();
   
-  //! Copy a mesh, needed for detaching the mesh from a field 
+  /// Copy a mesh, needed for detaching the mesh from a field 
   CurveMesh(const CurveMesh &copy);
   
-  //! Clone function for detaching the mesh and automatically generating
-  //! a new version if needed.
+  /// Clone function for detaching the mesh and automatically generating
+  /// a new version if needed.
   virtual CurveMesh *clone() const { return new CurveMesh(*this); }
 
   MeshFacadeHandle getFacade() const
   {
     return boost::make_shared<Core::Datatypes::VirtualMeshFacade<VMesh>>(vmesh_);
-  }
+  
 
   virtual ~CurveMesh(); 
 
-  //! Obtain the virtual interface pointer
+  /// Obtain the virtual interface pointer
   virtual VMesh* vmesh() { return (vmesh_.get()); }
 
-  //! This one should go at some point, should be reroute through the
-  //! virtual interface
+  /// This one should go at some point, should be reroute through the
+  /// virtual interface
   virtual int basis_order() { return (basis_.polynomial_order()); }
 
-  //! Topological dimension
+  /// Topological dimension
   virtual int dimensionality() const { return 1; }
   
-  //! What kind of mesh is this 
-  //! structured = no connectivity data
-  //! regular    = no node location data
+  /// What kind of mesh is this 
+  /// structured = no connectivity data
+  /// regular    = no node location data
   virtual int  topology_geometry() const 
     { return (Mesh::UNSTRUCTURED | Mesh::IRREGULAR); }
 
-  //! Get the bounding box of the field
+  /// Get the bounding box of the field
   virtual Core::Geometry::BBox get_bounding_box() const;
 
-  //! Return the transformation that takes a 0-1 space bounding box 
-  //! to the current bounding box of this mesh.  
+  /// Return the transformation that takes a 0-1 space bounding box 
+  /// to the current bounding box of this mesh.  
   virtual void get_canonical_transform(Core::Geometry::Transform &t) const;
 
   virtual void compute_bounding_box();
   
-  //! Transform a field
+  /// Transform a field
   virtual void transform(const Core::Geometry::Transform &t);
   
-  //! Check whether mesh can be altered by adding nodes or elements
+  /// Check whether mesh can be altered by adding nodes or elements
   virtual bool is_editable() const { return (true); }
 
-  //! Has this mesh normals.
+  /// Has this mesh normals.
   virtual bool has_normals() const { return (false); }  
 
-  //! Compute tables for doing topology, these need to be synchronized
-  //! before doing a lot of operations.
+  /// Compute tables for doing topology, these need to be synchronized
+  /// before doing a lot of operations.
   virtual bool synchronize(mask_type sync);
   virtual bool unsynchronize(mask_type sync);
   bool clear_synchronization();
 
-  //! Get the basis class
+  /// Get the basis class
   Basis& get_basis() { return basis_; }
   
-  //! begin/end iterators
+  /// begin/end iterators
   void begin(typename Node::iterator &) const;
   void begin(typename Edge::iterator &) const;
   void begin(typename Face::iterator &) const;
@@ -270,17 +270,17 @@ public:
   void end(typename Face::iterator &) const;
   void end(typename Cell::iterator &) const;
   
-  //! Get the iteration sizes
+  /// Get the iteration sizes
   void size(typename Node::size_type &) const;
   void size(typename Edge::size_type &) const;
   void size(typename Face::size_type &) const;
   void size(typename Cell::size_type &) const;
 
-  //! These are here to convert indices to unsigned int
-  //! counters. Some how the decision was made to use multi
-  //! dimensional indices in some fields, these functions
-  //! should deal with different pointer types.
-  //! Use the virtual interface to avoid all this non sense.
+  /// These are here to convert indices to unsigned int
+  /// counters. Some how the decision was made to use multi
+  /// dimensional indices in some fields, these functions
+  /// should deal with different pointer types.
+  /// Use the virtual interface to avoid all this non sense.
   inline void to_index(typename Node::index_type &index, index_type i) const 
     { index = i; }
   inline void to_index(typename Edge::index_type &index, index_type i) const 
@@ -291,7 +291,7 @@ public:
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
     
   
-  //! Get the child elements of the given index.
+  /// Get the child elements of the given index.
   void get_nodes(typename Node::array_type &array, 
                  typename Node::index_type idx) const
   { array.resize(1); array[0]= idx; }
@@ -372,8 +372,8 @@ public:
     
                 
   
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an edge.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an edge.
   template<class VECTOR>
   void pwl_approx_edge(VECTOR &coords,
                        typename Elem::index_type,
@@ -384,8 +384,8 @@ public:
     basis_.approx_edge(which_edge, div_per_unit, coords);
   }
 
-  //! Generate the list of points that make up a sufficiently accurate
-  //! piecewise linear approximation of an face.
+  /// Generate the list of points that make up a sufficiently accurate
+  /// piecewise linear approximation of an face.
   template<class VECTOR>
   void pwl_approx_face(VECTOR& /*coords*/,
                        typename Elem::index_type /*ci*/,
@@ -395,7 +395,7 @@ public:
     ASSERTFAIL("CurveMesh: cannot approximate faces");
   }
 
-  //! get the center point (in object space) of an element
+  /// get the center point (in object space) of an element
   void get_center(Core::Geometry::Point &result, typename Node::index_type idx) const
   { result = points_[idx]; }
   void get_center(Core::Geometry::Point &, typename Edge::index_type) const;
@@ -406,7 +406,7 @@ public:
 
   const Core::Geometry::Point &point(typename Node::index_type i) const { return points_[i]; }
 
-  //! Get the size of an element (length, area, volume)
+  /// Get the size of an element (length, area, volume)
   double get_size(typename Node::index_type /*idx*/) const 
     { return 0.0; }
   double get_size(typename Edge::index_type idx) const;
@@ -415,7 +415,7 @@ public:
   double get_size(typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
  
-  //! More specific names for get_size       
+  /// More specific names for get_size       
   double get_length(typename Edge::index_type idx) const
     { return get_size(idx); }
   double get_area(typename Face::index_type) const
@@ -423,9 +423,9 @@ public:
   double get_volume(typename Cell::index_type) const
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Get neighbors of an element or a node
-  //! THIS ONE IS FLAWED AS IN 3D SPACE  A NODE CAN BE CONNECTED TO
-  //! MANY ELEMENTS
+  /// Get neighbors of an element or a node
+  /// THIS ONE IS FLAWED AS IN 3D SPACE  A NODE CAN BE CONNECTED TO
+  /// MANY ELEMENTS
   bool get_neighbor(typename Elem::index_type &neighbor,
                     typename Elem::index_type edge,
                     typename DElem::index_type node) const  
@@ -433,7 +433,7 @@ public:
     return(get_elem_neighbor(neighbor,edge,node));
   }
 
-  //! These are more general neighbor functions      
+  /// These are more general neighbor functions      
   void get_neighbors(std::vector<typename Node::index_type> &array,
                      typename Node::index_type idx) const
   {
@@ -453,7 +453,7 @@ public:
     get_elem_neighbors(array,idx);
   }
 
-  //! Locate a point in a mesh, find which is the closest node
+  /// Locate a point in a mesh, find which is the closest node
   bool locate(typename Node::index_type &i, const Core::Geometry::Point &p) const
   { return(locate_node(i,p)); }
   bool locate(typename Edge::index_type &i, const Core::Geometry::Point &p) const
@@ -464,8 +464,8 @@ public:
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
 
-  //! These should become obsolete soon, they do not follow the concept
-  //! of the basis functions....
+  /// These should become obsolete soon, they do not follow the concept
+  /// of the basis functions....
   int get_weights(const Core::Geometry::Point &p, typename Node::array_type &l, double *w);
   int get_weights(const Core::Geometry::Point &p, typename Edge::array_type &l, double *w);
 
@@ -474,14 +474,14 @@ public:
   int get_weights(const Core::Geometry::Point &, typename Cell::array_type &, double *)
   { ASSERTFAIL("This mesh type does not have cells use \"elem\"."); }
 
-  //! Access the nodes of the mesh
+  /// Access the nodes of the mesh
   void get_point(Core::Geometry::Point &result, typename Node::index_type idx) const
     { get_center(result,idx); }
   void set_point(const Core::Geometry::Point &point, typename Node::index_type index)
     { points_[index] = point; }
   void get_random_point(Core::Geometry::Point &p, typename Elem::index_type i, FieldRNG &r) const;
 
-  //! Normals for visualizations
+  /// Normals for visualizations
   void get_normal(Core::Geometry::Vector&, typename Node::index_type) const
     { ASSERTFAIL("CurveMesh: This mesh type does not have node normals."); }
   
@@ -489,7 +489,7 @@ public:
   void get_normal(Core::Geometry::Vector&, VECTOR&, INDEX1, INDEX2) const
     { ASSERTFAIL("CurveMesh: This mesh type does not have element normals."); }
 
-  //! use these to build up a new contour mesh
+  /// use these to build up a new contour mesh
   typename Node::index_type add_node(const Core::Geometry::Point &p)
   {
     points_.push_back(p);
@@ -516,16 +516,16 @@ public:
     return static_cast<index_type>((edges_.size()>>1)-1);
   }
   
-  //! Functions to improve memory management. Often one knows how many
-  //! nodes/elements one needs, prereserving memory is often possible.
+  /// Functions to improve memory management. Often one knows how many
+  /// nodes/elements one needs, prereserving memory is often possible.
   void node_reserve(size_type s) { points_.reserve(static_cast<size_t>(s)); }
   void elem_reserve(size_type s) { edges_.reserve(static_cast<size_t>(2*s)); }
   void resize_nodes(size_type s) { points_.resize(static_cast<size_t>(s)); }
   void resize_elems(size_type s) { edges_.resize(static_cast<size_t>(2*s)); }
 
-  //! Get the local coordinates for a certain point within an element
-  //! This function uses a couple of newton iterations to find the local
-  //! coordinate of a point
+  /// Get the local coordinates for a certain point within an element
+  /// This function uses a couple of newton iterations to find the local
+  /// coordinate of a point
   template<class VECTOR, class INDEX>
   bool get_coords(VECTOR &coords,const Core::Geometry::Point &p,INDEX idx) const
   {
@@ -533,8 +533,8 @@ public:
     return basis_.get_coords(coords, p, ed);
   }
 
-  //! Find the location in the global coordinate system for a local coordinate
-  //! This function is the opposite of get_coords.
+  /// Find the location in the global coordinate system for a local coordinate
+  /// This function is the opposite of get_coords.
   template<class VECTOR, class INDEX>
   void interpolate(Core::Geometry::Point &pt, const VECTOR &coords, INDEX idx) const
   {
@@ -542,9 +542,9 @@ public:
     pt = basis_.interpolate(coords, ed);
   }
 
-  //! Interpolate the derivate of the function, This infact will return the
-  //! jacobian of the local to global coordinate transformation. This function
-  //! is mainly intended for the non linear elements
+  /// Interpolate the derivate of the function, This infact will return the
+  /// jacobian of the local to global coordinate transformation. This function
+  /// is mainly intended for the non linear elements
   template<class VECTOR1, class INDEX, class VECTOR2>
   void derivate(const VECTOR1 &coords, INDEX idx, VECTOR2 &J) const
   {
@@ -552,8 +552,8 @@ public:
     basis_.derivate(coords, ed, J);
   }
 
-  //! Get the determinant of the jacobian, which is the local volume of an element
-  //! and is intended to help with the integration of functions over an element.
+  /// Get the determinant of the jacobian, which is the local volume of an element
+  /// and is intended to help with the integration of functions over an element.
   template<class VECTOR, class INDEX>
   double det_jacobian(const VECTOR& coords, INDEX idx) const
   {
@@ -562,9 +562,9 @@ public:
     return (DetMatrix3x3(J));
   }
 
-  //! Get the jacobian of the transformation. In case one wants the non inverted
-  //! version of this matrix. This is currentl here for completeness of the 
-  //! interface
+  /// Get the jacobian of the transformation. In case one wants the non inverted
+  /// version of this matrix. This is currentl here for completeness of the 
+  /// interface
   template<class VECTOR, class INDEX>
   void jacobian(const VECTOR& coords, INDEX idx, double* J) const
   {
@@ -584,9 +584,9 @@ public:
     J[8] = Jv2.z();
   }
 
-  //! Get the inverse jacobian of the transformation. This one is needed to 
-  //! translate local gradients into global gradients. Hence it is crucial for
-  //! calculating gradients of fields, or constructing finite elements.        
+  /// Get the inverse jacobian of the transformation. This one is needed to 
+  /// translate local gradients into global gradients. Hence it is crucial for
+  /// calculating gradients of fields, or constructing finite elements.        
   template<class VECTOR, class INDEX>
   double inverse_jacobian(const VECTOR& coords, INDEX idx, double* Ji) const
   {
@@ -681,10 +681,10 @@ public:
     typename Node::iterator ni; begin(ni);
     typename Node::iterator nie; end(nie);
 
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
     
-    //! Check first guess
+    /// Check first guess
     if (idx >= 0 && idx < sz) 
     {
       if ((p - points_[idx]).length2() < epsilon2_) return (true);
@@ -700,7 +700,7 @@ public:
         mindist = dist;
         idx = static_cast<INDEX>(*ni);
         
-        //! Exit if we cannot find one that is closer
+        /// Exit if we cannot find one that is closer
         if (mindist < epsilon2_ ) return (true);
       }
       ++ni;
@@ -717,18 +717,18 @@ public:
     
     typename Elem::size_type sz; size(sz);
     
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
     
     double alpha;
     
-    //! Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for
     if (idx >= 0 && idx < sz) 
     {
       if (inside2_p(idx,p,alpha)) return (true);
     }
     
-    //! Loop over all nodes to find one that is located inside
+    /// Loop over all nodes to find one that is located inside
     typename Elem::iterator ei; begin(ei);
     typename Elem::iterator eie; end(eie);
 
@@ -750,7 +750,7 @@ public:
   {
     array.clear();
     
-    //! Loop over all nodes to find one 
+    /// Loop over all nodes to find one 
     typename Elem::iterator ei; begin(ei);
     typename Elem::iterator eie; end(eie);
     typename Node::array_type nodes;
@@ -780,19 +780,19 @@ public:
     
     typename Elem::size_type sz; size(sz);
     
-    //! If there are no nodes we cannot find a closest point
+    /// If there are no nodes we cannot find a closest point
     if (sz == 0) return (false);
     
     double alpha;
     coords.resize(1);
     
-    //! Check whether the estimate given in idx is the point we are looking for
+    /// Check whether the estimate given in idx is the point we are looking for
     if (idx >= 0 && idx < sz) 
     {
       if (inside2_p(idx,p,coords[0])) return (true);
     }
     
-    //! Loop over all nodes to find one that finds
+    /// Loop over all nodes to find one that finds
     typename Elem::iterator ei; begin(ei);
     typename Elem::iterator eie; end(eie);
 
@@ -811,7 +811,7 @@ public:
   }
 
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX>
   bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          INDEX &idx, const Core::Geometry::Point &point) const
@@ -819,7 +819,7 @@ public:
     return(find_closest_node(pdist,result,idx,point,-1.0));
   }
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX>
   bool find_closest_node(double& pdist, Core::Geometry::Point &result, 
                          INDEX &idx, const Core::Geometry::Point &point,
@@ -828,7 +828,7 @@ public:
     if (maxdist < 0.0) maxdist = DBL_MAX; else maxdist = maxdist*maxdist;
     typename Node::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
 
     Core::Geometry::Point r;
@@ -928,7 +928,7 @@ public:
     return (nodes.size() > 0);
   }
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double &pdist, 
                          Core::Geometry::Point &result, 
@@ -939,7 +939,7 @@ public:
     return (find_closest_elem(pdist,result,coords,idx,p,-1.0));
   }
 
-  //! Find the closest element to a point
+  /// Find the closest element to a point
   template <class INDEX, class ARRAY>
   bool find_closest_elem(double &pdist, 
                          Core::Geometry::Point &result, 
@@ -952,13 +952,13 @@ public:
     
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
 
     double dist;
 
     coords.resize(1);
-    //! Test the one in idx
+    /// Test the one in idx
     if (idx >= 0 && idx < sz)
     {
       double alpha;
@@ -1012,7 +1012,7 @@ public:
     return(find_closest_elem(pdist,result,coords,elem,p,-1.0));
   }  
   
-  //! Find the closest elements to a point
+  /// Find the closest elements to a point
   template<class ARRAY>
   bool find_closest_elems(double& pdist, Core::Geometry::Point &result, 
                           ARRAY &elems, const Core::Geometry::Point &p) const
@@ -1021,7 +1021,7 @@ public:
     
     typename Elem::size_type sz; size(sz);
 
-    //! If there are no nodes we cannot find the closest one
+    /// If there are no nodes we cannot find the closest one
     if (sz == 0) return (false);
 
     typename Elem::iterator ni; begin(ni);
@@ -1057,23 +1057,23 @@ public:
   double get_epsilon() const
   { return (epsilon_); }
   
-  //! Export this class using the old Pio system
+  /// Export this class using the old Pio system
   virtual void io(Piostream&);
 
   ///////////////////////////////////////////////////
   // STATIC VARIABLES AND FUNCTIONS
   
-  //! These IDs are created as soon as this class will be instantiated
-  //! The first one is for Pio and the second for the virtual interface
-  //! These are currently different as they serve different needs.
+  /// These IDs are created as soon as this class will be instantiated
+  /// The first one is for Pio and the second for the virtual interface
+  /// These are currently different as they serve different needs.
   static PersistentTypeID curvemesh_typeid;
   
-  //! Core functionality for getting the name of a templated mesh class
+  /// Core functionality for getting the name of a templated mesh class
   static const std::string type_name(int n = -1);
   virtual std::string dynamic_type_name() const { return curvemesh_typeid.type; }
 
-  //! Type description, used for finding names of the mesh class for
-  //! dynamic compilation purposes. Some of this should be obsolete
+  /// Type description, used for finding names of the mesh class for
+  /// dynamic compilation purposes. Some of this should be obsolete
   virtual const TypeDescription *get_type_description() const;
   static const TypeDescription* node_type_description();
   static const TypeDescription* edge_type_description();
@@ -1082,14 +1082,14 @@ public:
   static const TypeDescription* elem_type_description()
     { return edge_type_description(); }
 
-  //! This function returns a maker for Pio.
+  /// This function returns a maker for Pio.
   static Persistent *maker() { return new CurveMesh<Basis>(); }
-  //! This function returns a handle for the virtual interface.
+  /// This function returns a handle for the virtual interface.
   static MeshHandle mesh_maker() { return boost::make_shared<CurveMesh<Basis>>(); }
 
 
-  //! Functions local to CurveMesh, the latter are not thread safe
-  //! THESE ARE NOT WELL INTEGRATED YET
+  /// Functions local to CurveMesh, the latter are not thread safe
+  /// THESE ARE NOT WELL INTEGRATED YET
   typename Node::index_type delete_node(typename Node::index_type i1)
   {
     CHECKARRAYBOUNDS(static_cast<index_type>(i1),
@@ -1305,21 +1305,21 @@ protected:
   //////////////////////////////////////////////////////////////
   // Actual data stored in the mesh
   
-  //! Vector with the node locations
+  /// Vector with the node locations
   std::vector<Core::Geometry::Point>           points_;
-  //! Vector with connectivity data
+  /// Vector with connectivity data
   std::vector<index_type>      edges_;
-  //! The basis function, contains additional information on elements
+  /// The basis function, contains additional information on elements
   Basis                   basis_;
 
-  //! Record which parts of the mesh are synchronized
+  /// Record which parts of the mesh are synchronized
   mask_type               synchronized_;
-  //! Lock to synchronize between threads
+  /// Lock to synchronize between threads
   mutable Core::Thread::Mutex           synchronize_lock_;
 
-  //! Vector indicating which edges are conected to which
-  //! node. This is the reverse of the connectivity data
-  //! stored in the edges_ array.
+  /// Vector indicating which edges are conected to which
+  /// node. This is the reverse of the connectivity data
+  /// stored in the edges_ array.
   typedef std::vector<std::vector<typename Edge::index_type> > NodeNeighborMap;
   NodeNeighborMap         node_neighbors_;
   Core::Geometry::BBox                    bbox_; 
@@ -1327,9 +1327,9 @@ protected:
   double                  epsilon2_;
   double                  epsilon3_;
 
-  //! Pointer to virtual interface
-  //! This one is created as soon as the mesh is generated
-  //! Put this one in a handle as we have a virtual destructor
+  /// Pointer to virtual interface
+  /// This one is created as soon as the mesh is generated
+  /// Put this one in a handle as we have a virtual destructor
   boost::shared_ptr<VMesh>           vmesh_;
 };
 
@@ -1342,7 +1342,7 @@ CurveMesh<Basis>::CurveMesh() :
   epsilon2_(0.0)
 {
   DEBUG_CONSTRUCTOR("CurveMesh")   
-  //! Initialize the virtual interface when the mesh is created
+  /// Initialize the virtual interface when the mesh is created
   vmesh_.reset(CreateVCurveMesh(this));
 }
   
@@ -1357,9 +1357,9 @@ CurveMesh<Basis>::CurveMesh(const CurveMesh &copy) :
 {
   DEBUG_CONSTRUCTOR("CurveMesh")   
 
-  //! We need to lock before we can copy these as these
-  //! structures are generate dynamically when they are
-  //! needed.
+  /// We need to lock before we can copy these as these
+  /// structures are generate dynamically when they are
+  /// needed.
   copy.synchronize_lock_.lock();
   node_neighbors_ = copy.node_neighbors_;
   synchronized_ |= copy.synchronized_ & NODE_NEIGHBORS_E;
@@ -1370,9 +1370,9 @@ CurveMesh<Basis>::CurveMesh(const CurveMesh &copy) :
 
   copy.synchronize_lock_.unlock();
   
-  //! Create a new virtual interface for this copy
-  //! all pointers have changed hence create a new
-  //! virtual interface class
+  /// Create a new virtual interface for this copy
+  /// all pointers have changed hence create a new
+  /// virtual interface class
   vmesh_.reset(CreateVCurveMesh(this));
 }
   
@@ -1482,7 +1482,7 @@ CurveMesh<Basis>::cell_type_description()
 }
 
 
-//! Add an entry into the database for Pio
+/// Add an entry into the database for Pio
 template <class Basis>
 PersistentTypeID
 CurveMesh<Basis>::curvemesh_typeid(type_name(-1), "Mesh", CurveMesh<Basis>::maker);
@@ -1557,8 +1557,8 @@ CurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
     ++itr;
   }
   
-  //! If we have nodes on the edges they should be transformed in
-  //! the same way
+  /// If we have nodes on the edges they should be transformed in
+  /// the same way
   size_type num_enodes = static_cast<size_type>(basis_.size_node_values());
   for (size_type i=0; i<num_enodes; i++)
   {
@@ -1568,7 +1568,7 @@ CurveMesh<Basis>::transform(const Core::Geometry::Transform &t)
     basis_.set_node_value(p,i);
   }
   
-  //! Projecting derivates is more difficult
+  /// Projecting derivates is more difficult
 }
 
 
@@ -1665,9 +1665,9 @@ CurveMesh<Basis>::synchronize(mask_type sync)
 {
   synchronize_lock_.lock();
 
-  //! Test whether we need to synchronize for any of the neighor function
-  //! calls. If so compute the node_neighbor_ array, which we can use
-  //! for the element neighbors as well.
+  /// Test whether we need to synchronize for any of the neighor function
+  /// calls. If so compute the node_neighbor_ array, which we can use
+  /// for the element neighbors as well.
   
   if (sync & (Mesh::NODE_NEIGHBORS_E|Mesh::ELEM_NEIGHBORS_E) 
       && !(synchronized_ & Mesh::NODE_NEIGHBORS_E))
@@ -1710,7 +1710,7 @@ CurveMesh<Basis>::clear_synchronization()
   return (true);
 }
 
-//! Compute the inverse route of connectivity: from node to edge
+/// Compute the inverse route of connectivity: from node to edge
 template <class Basis>
 void
 CurveMesh<Basis>::compute_node_neighbors()

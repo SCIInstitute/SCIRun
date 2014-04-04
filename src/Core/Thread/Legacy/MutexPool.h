@@ -28,16 +28,15 @@
 
 
 
-/*
- *  MutexPool: A set of mutex objects
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: September 1999
- *
- */
+///
+///@file   MutexPool 
+///@brief  A set of mutex objects
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   September 1999
+///
 
 #ifndef Core_Thread_MutexPool_h
 #define Core_Thread_MutexPool_h
@@ -52,13 +51,13 @@
 namespace SCIRun {
 /**************************************
  
-CLASS
+@class
    MutexPool
    
 KEYWORDS
    Thread, Mutex
    
-DESCRIPTION
+@details
    A container class for a set of Mutex objects.  This can be used to
    limit the number of active mutexes down to a more reasonable set.
    However, this must be used very carefully, as it becomes easy to
@@ -67,40 +66,40 @@ DESCRIPTION
 	class SCISHARE MutexPool {
 	public:
 	    //////////
-	    // Create the mutex pool with size mutex objects.
+	    /// Create the mutex pool with size mutex objects.
 	    MutexPool(const char* name, int size);
 
 	    //////////
-	    // Destroy the mutex pool and all mutexes in it.
+	    /// Destroy the mutex pool and all mutexes in it.
 	    ~MutexPool();
 
 
 	    //////////
-	    // return the next available mutex
+	    /// return the next available mutex
 	    Mutex &getMutex();
 
 	private:
 	    //////////
-	    // return the next index in a round-robin fashion
+	    /// return the next index in a round-robin fashion
 	    int nextIndex();
 
 	    //////////
-	    // The next ID
+	    /// The next ID
 	    AtomicCounter nextID_;
 
  	    //////////
-	    // The number of Mutexes in the pool
+	    /// The number of Mutexes in the pool
 	    int size_;
 
  	    //////////
-	    // The array of Mutex objects.
+	    /// The array of Mutex objects.
       std::vector<boost::shared_ptr<Mutex> > pool_;
 
  	    //////////
-	    // Private copy ctor to prevent accidental copying
+	    /// Private copy ctor to prevent accidental copying
 	    MutexPool(const MutexPool&);
  	    //////////
-	    // Private assignment operator to prevent accidental assignment
+	    /// Private assignment operator to prevent accidental assignment
 	    MutexPool& operator=(const MutexPool&);
 	};
 } // End namespace SCIRun

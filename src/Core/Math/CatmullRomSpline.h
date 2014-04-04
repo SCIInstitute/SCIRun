@@ -28,16 +28,16 @@
 
 
 
-/*
- *  CatmullRomSpline.h: 
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   March 1994
- *
- */
+///
+///@class CatmullRomSpline 
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  March 1994
+///
 
 #ifndef SCI_Math_CatmullRomSpline_h
 #define SCI_Math_CatmullRomSpline_h

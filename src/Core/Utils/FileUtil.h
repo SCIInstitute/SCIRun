@@ -54,7 +54,7 @@ inline bool fileContainsString(const std::string& filename, const std::string& s
 
 inline void replaceDelimitersWithWhitespace(std::string& line)
 {
-  // TODO: this code doesn't work under VS2010 - check with VS2012
+  /// @todo this code doesn't work under VS2010 - check with VS2012
 
   // replace comma's, tabs etc. with white spaces
 //  for (auto &c : line)

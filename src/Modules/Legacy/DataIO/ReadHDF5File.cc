@@ -27,14 +27,14 @@
 */
 
 
-/*
- *  ReadHDF5File.cc
+/**
+ *@file  ReadHDF5File.cc
  *
- *  Written by:
+ *@author
  *   Allen Sanderson
  *   SCI Institute
  *   University of Utah
- *   May 2003
+ *@date   May 2003
  *
  */
 

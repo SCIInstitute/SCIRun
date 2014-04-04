@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO @todo Documentation HardCodedModuleFactory.cc/.h
+
 #include <iostream>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>

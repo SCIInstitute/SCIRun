@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+/// @todo Documentation Core/Application Preferences.h
+
 #ifndef CORE_APPLICATION_PREFERENCES_H
 #define CORE_APPLICATION_PREFERENCES_H
 
@@ -44,7 +46,7 @@ namespace SCIRun
 	    Preferences();
 	
     public:
-      //TODO: reuse Seg3D state vars
+      /// @todo: reuse Seg3D state vars
 
       bool moduleErrorDialogState;
       bool saveBeforeExecute;

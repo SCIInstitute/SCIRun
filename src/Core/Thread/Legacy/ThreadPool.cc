@@ -29,16 +29,16 @@
 
 
 
-/*
- *  ThreadPool: A pool of threads
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: January 2000
- *
- */
+///
+///@file  ThreadPool.cc
+///@brief A pool of threads
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  January 2000
+///
 
 #include <Core/Thread/Legacy/ThreadPool.h>
 #include <Core/Thread/Legacy/Barrier.h>

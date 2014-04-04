@@ -37,7 +37,7 @@ namespace SCIRunAlgo {
 
 using namespace SCIRun;
 
-// TODO: check for input field's current coordinate system?
+/// @todo: check for input field's current coordinate system?
 // Is there a way to check for input field's current coordinate system?
 
 bool 

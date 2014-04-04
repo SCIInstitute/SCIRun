@@ -144,7 +144,7 @@ public:
     bool inv_valid() { return inverse_valid; }
     void set_inv_valid(bool iv) { inverse_valid = iv; }
 
-    //! Persistent I/O.
+    /// Persistent I/O.
     static PersistentTypeID type_id;
     virtual void io(Piostream &stream);
     SCISHARE friend void Pio(Piostream&, Transform*&);

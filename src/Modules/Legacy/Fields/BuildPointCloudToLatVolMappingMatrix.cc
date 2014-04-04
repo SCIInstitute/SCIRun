@@ -28,15 +28,15 @@
 
 
 
-/*
- *  BuildPointCloudToLatVolMappingMatrix.cc:  
- *   Builds mapping matrix that projects data from a PointCloud to a LatVol
+/**
+ *@file  BuildPointCloudToLatVolMappingMatrix.cc  
+ *@brief Builds mapping matrix that projects data from a PointCloud to a LatVol
  *
- *  Written by:
+ *@author
  *   McKay Davis
  *   Scientific Computing and Imaging INstitute
  *   University of Utah
- *   May 2005
+ *@date  May 2005
  *
  */
 

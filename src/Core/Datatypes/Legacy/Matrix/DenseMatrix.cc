@@ -25,6 +25,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Datatypes/Legacy/Matrix/ DenseMatrix.cc
+///  MatrixAlgorithms.cc/.h MatrixFwd.h MatrixTypeConverter.cc/.h
+///
 
 #include <sci_defs/lapack_defs.h>
 #include <sci_defs/blas_defs.h>

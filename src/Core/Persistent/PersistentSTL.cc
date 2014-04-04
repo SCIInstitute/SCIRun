@@ -27,14 +27,14 @@ DEALINGS IN THE SOFTWARE.
 */
 
 
-/*
-* PersistentSTL.cc: Persistent i/o for STL containers
-*    Author: Michael Callahan
-*            Department of Computer Science
-*            University of Utah
-*            March 2001
-* 
-*/
+///
+///@file   PersistentSTL.cc
+///@brief  Persistent i/o for STL containers
+///@author Michael Callahan
+///        Department of Computer Science
+///        University of Utah
+///@date   March 2001
+/// 
 
 #include <iostream>
 #include <Core/Persistent/Persistent.h>
@@ -178,7 +178,7 @@ namespace SCIRun {
   }
 
 
-  //! Export indices 32/64 bit compatible
+  /// Export indices 32/64 bit compatible
   void Pio_index(Piostream& stream, std::vector<index_type>& data)
   {
     if (stream.reading())

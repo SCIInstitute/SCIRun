@@ -28,14 +28,15 @@
 
 
 
-/*
- *  ClipFieldToFieldOrWidget.cc:  Rotate and flip field to get it into "standard" view
+/**
+ *@file  ClipFieldToFieldOrWidget.cc
+ *@brief Rotate and flip field to get it into "standard" view
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

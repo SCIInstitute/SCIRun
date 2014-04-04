@@ -26,6 +26,12 @@
 //  DEALINGS IN THE SOFTWARE.
 //  
 
+/**
+ *TODO @todo Documentation Modules/Legacy/String CreateString.cc,
+ *  GetNetworkFileName.cc, JoinStrings.cc, PaintMatrixIntoString.cc,
+ *  PrintStringIntoString.cc, ReportStringInfo.cc
+ */
+
 #include <Core/Datatypes/String.h>
 #include <Dataflow/Network/Ports/StringPort.h>
 #include <Dataflow/Network/Module.h>

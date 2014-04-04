@@ -28,14 +28,15 @@
 
 
 
-/*
- *  MaskLatVolWithTriSurf.cc:  MaskLatVolWithTriSurf two point clouds
+/**
+ *@file  MaskLatVolWithTriSurf.cc 
+ *@brief MaskLatVolWithTriSurf two point clouds
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
  */
 

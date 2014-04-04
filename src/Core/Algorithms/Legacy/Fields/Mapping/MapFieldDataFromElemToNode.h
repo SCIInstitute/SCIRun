@@ -44,7 +44,7 @@ class SCISHARE MapFieldDataFromElemToNodeAlgo : public AlgoBase
     // Algorithm defaults
     MapFieldDataFromElemToNodeAlgo()
     {
-      //! Add option for how to do map data from elements to node
+      /// Add option for how to do map data from elements to node
       add_option("method","average","interpolate|average|min|max|sum|median");
     }
 

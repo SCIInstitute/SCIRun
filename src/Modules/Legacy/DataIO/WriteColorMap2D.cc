@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  WriteColorMap2.cc: Save persistent representation of a colormap to a file
+/**
+ *@file  WriteColorMap2.cc
+ *@brief Save persistent representation of a colormap to a file
  *
- *  Written by:
+ *@author
  *   Michael Callahan
  *   Department of Computer Science
  *   University of Utah
- *   September 2004
+ *@date  September 2004
  *
  */
 

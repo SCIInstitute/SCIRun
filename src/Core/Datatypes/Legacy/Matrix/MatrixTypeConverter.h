@@ -26,7 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
 #ifndef CORE_DATATYPES_MATRIX_TYPE_CONVERTER_H
 #define CORE_DATATYPES_MATRIX_TYPE_CONVERTER_H
 
@@ -94,7 +93,7 @@ private:
   matrix_is();
 };
 
-//TODO: these will be moved to a separate class to break compilation dependency on the subclasses of Matrix.
+/// @todo: these will be moved to a separate class to break compilation dependency on the subclasses of Matrix.
 
 template <typename T>
 DenseMatrix *

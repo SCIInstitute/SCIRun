@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : TriCubicHmt.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Oct 24 2005
+///   @file    TriCubicHmt.h
+///   @author  Martin Cole, Frank B. Sachse
+///   @date    Oct 24 2005
 
 #ifndef CORE_BASIS_TRICUBICHMT_H
 #define CORE_BASIS_TRICUBICHMT_H 1
@@ -40,7 +40,7 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of TriCubicHmt
+/// Class for describing unit geometry of TriCubicHmt
 
 class TriCubicHmtUnitElement : public TriLinearLgnUnitElement {
   public:
@@ -52,8 +52,8 @@ class TriCubicHmtUnitElement : public TriLinearLgnUnitElement {
     { return 12; } 
 };
 
-//! Class for handling of element of type triangle with 
-//! cubic hermitian interpolation
+/// Class for handling of element of type triangle with 
+/// cubic hermitian interpolation
 template <class T>
 class TriCubicHmt : public BasisAddDerivatives<T>, 
                       public TriApprox, 
@@ -78,7 +78,7 @@ public:
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_cubic_derivate_weights(coords,w); }  
       
-  //! get value at parametric coordinate
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -99,7 +99,7 @@ public:
 	       +w[11] * this->derivs_[cd.node2_index()][2]);
   }
   
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -135,7 +135,7 @@ public:
 	       +w[23] * this->derivs_[cd.node2_index()][2]);
   }
   
-  //! get the parametric coordinate for value within the element.
+  /// get the parametric coordinate for value within the element.
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -144,21 +144,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }
  
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc2d_length<CrvGaussian2<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned face, const ElemData &cd) const  
   {
     return get_area2<TriGaussian3<double> >(this, face, cd);
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & /* cd */) const  
   {

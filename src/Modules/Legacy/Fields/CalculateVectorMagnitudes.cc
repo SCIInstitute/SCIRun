@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///TODO Documentation
 #include <Modules/Legacy/Fields/CalculateVectorMagnitudes.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 

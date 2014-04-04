@@ -29,15 +29,15 @@
 #ifndef CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H
 #define CORE_ALGORITHMS_FIELDS_REFINEMESH_REFINEMESH_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -47,18 +47,18 @@ using namespace SCIRun;
 class SCISHARE RefineMeshAlgo : public AlgoBase
 {
   public:  
-    //! Set defaults
+    /// Set defaults
     RefineMeshAlgo()
     { 
-      //! Option for selecting which nodes to refine
+      /// Option for selecting which nodes to refine
       add_option("select","all","equal|lessthan|greaterthan|all|none");
       add_scalar("isoval",0.0);
       
-      //! option only affecting hex refinement
+      /// option only affecting hex refinement
       add_bool("hex_convex",false);
     }
     
-    //! Run the algorithm
+    /// Run the algorithm
     bool run(FieldHandle input, FieldHandle& output);
 };
 

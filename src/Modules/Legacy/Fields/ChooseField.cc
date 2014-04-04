@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  ChooseField.cc: Choose one input field to be passed downstream
+/**
+ *@file  ChooseField.cc
+ *@brief Choose one input field to be passed downstream
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   November 1994
+ *@date  November 1994
  *
  */
 

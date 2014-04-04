@@ -26,14 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  SetFieldProperty: Set a property for a Field
+/**
+ *@class SetFieldProperty
+ *@brief Set a property for a Field
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
  */
 

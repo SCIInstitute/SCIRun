@@ -26,6 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Datatypes/Legacy/Color/ColorMap.cc 
+///  Material.cc/.h
+
 #include <Core/Datatypes/ColorMap.h>
 #include <Core/Persistent/PersistentSTL.h>
 #include <Core/Math/MiscMath.h>

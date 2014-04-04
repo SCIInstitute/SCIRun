@@ -25,8 +25,6 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
 #ifndef CORE_DATATYPES_MATRIX_H
 #define CORE_DATATYPES_MATRIX_H 
 
@@ -39,7 +37,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  //TODO: use Eigen's Visitor type?
+  /// @todo: use Eigen's Visitor type?
   template <typename T>
   struct MatrixVisitorGeneric
   {
@@ -85,7 +83,7 @@ namespace Datatypes {
 
   private:
     virtual void print(std::ostream&) const = 0;
-      //TODO: not much to go here for now.
+      /// @todo: not much to go here for now.
   };
 
   template <typename T>

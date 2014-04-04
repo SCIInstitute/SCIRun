@@ -63,7 +63,7 @@ void runTest(int basis, int expectedMatrixRows, int expectedMatrixColumns, const
 
   ASSERT_TRUE(boundary.get() != nullptr);
 
-  //TODO: need assertions on boundary field
+  /// @todo: need assertions on boundary field
 
   if (basis != -1)
   {

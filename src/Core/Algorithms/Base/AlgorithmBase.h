@@ -87,7 +87,7 @@ namespace Algorithms {
   class SCISHARE Variable
   {
   public:
-    //TODO: expand this 
+    /// @todo: expand this 
     typedef boost::variant<
       int,
       double,
@@ -121,7 +121,7 @@ namespace Algorithms {
     ~AlgorithmLogger();
     void setLogger(Core::Logging::LoggerHandle logger);
 
-    //! functions for the algorithm, so it can forward errors if needed
+    /// functions for the algorithm, so it can forward errors if needed
     virtual void error(const std::string& error) const;
     virtual void warning(const std::string& warning) const;
     virtual void remark(const std::string& remark) const;
@@ -131,7 +131,7 @@ namespace Algorithms {
     Core::Logging::LoggerHandle defaultLogger_;
   };
 
-  //TODO: integrate with logger type above
+  /// @todo: integrate with logger type above
   class SCISHARE AlgorithmStatusReporter : public Core::Utility::ProgressReporter
   {
   public:
@@ -188,7 +188,7 @@ namespace Algorithms {
       return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(boost::get<std::vector<Datatypes::DatatypeHandle>>(it->second));
     }
 
-    //TODO: lame
+    /// @todo: lame
     void setTransient(boost::any t) { transient_ = t; }
     boost::any getTransient() const { return transient_; }
 
@@ -215,7 +215,7 @@ namespace Algorithms {
     virtual ~AlgorithmInterface() {}
     
     /*
-      TODO idea: make it mockable
+ @todo idea: make it mockable
   
     virtual OutputDatatypeHandleOptions run(InputDatatypeHandleOptions, ModuleParameterState) = 0;
 
@@ -229,7 +229,7 @@ namespace Algorithms {
     virtual const AlgorithmParameter& get(const AlgorithmParameterName& key) const = 0;
   };
 
-  //TODO: link this to ModuleState via meeting discussion
+  /// @todo: link this to ModuleState via meeting discussion
   class SCISHARE AlgorithmParameterList : public AlgorithmInterface
   {
   public:

@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  EvaluateLinAlgBinary: Binary matrix operations -- add, multiply
+/**
+ *@class EvaluateLinAlgBinary 
+ *@brief Binary matrix operations -- add, multiply
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   June 1999
+ *@date June 1999
  *
  */
 

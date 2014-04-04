@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Util/FancyAssert.h>
 
@@ -228,7 +228,7 @@ Add(DenseMatrix& out, double f1, const DenseMatrix& m1,
 }
 
 
-// TODO: This code does not look OK
+/// @todo: This code does not look OK
 void
 Add(double f1, DenseMatrix& out, const DenseMatrix& m1)
 {

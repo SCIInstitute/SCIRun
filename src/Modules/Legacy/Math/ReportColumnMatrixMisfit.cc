@@ -27,13 +27,14 @@
 */
 
 
-/*
- *  ReportColumnMatrixMisfit.cc: Compute and visualize error between two vectors
+/**
+ *@file  ReportColumnMatrixMisfit.cc
+ *@brief Compute and visualize error between two vectors
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   University of Utah
- *   June 1999
+ *@date  June 1999
  *
  */
 

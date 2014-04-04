@@ -28,8 +28,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-// LogFile.h
+///@file LogFile.h
 
 
 #ifndef CORE_UTIL_LOGFILE_H

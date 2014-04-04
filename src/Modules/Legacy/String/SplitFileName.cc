@@ -26,11 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/*
- *  SplitFileName.cc:
+/**
+ *@file  SplitFileName.cc
  *
- *  Written by:
+ *@author
  *   jeroen
+ *
  *   TODAY'S DATE HERE
  *
  */

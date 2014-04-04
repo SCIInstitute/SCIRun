@@ -63,7 +63,7 @@ namespace
 
     //ASSERT_TRUE(boundary);
 
-    ////TODO: need assertions on boundary field
+    /// @todo: need assertions on boundary field
 
     //if (basis != -1)
     //{
@@ -81,7 +81,7 @@ namespace
 
 TEST(ConvertMeshToTriSurfAlgoTests, DISABLED_Foo)
 {
-  FAIL() << "TODO";
+  FAIL() << " @todo";
   /*
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
   EXPECT_EQ(0, info.dataMin);

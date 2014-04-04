@@ -27,14 +27,15 @@
 */
 
 
-/*
- *  CreateGeometricTransform.cc:  Build a 4x4 geometric transformation matrix
+/**
+ *@file  CreateGeometricTransform.cc
+ *@breif Build a 4x4 geometric transformation matrix
  *
- *  Written by:
+ *@author
  *   David Weinstein
  *   Department of Computer Science
  *   University of Utah
- *   March 1999
+ *@date  March 1999
  *
  */
 

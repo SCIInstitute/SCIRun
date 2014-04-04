@@ -64,7 +64,7 @@ using namespace SCIRun::Core::Algorithms::Math;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Core::Algorithms::Math;
 
-//TODO: add unit test 
+/// @todo: add unit test 
 
 HardCodedAlgorithmFactory::HardCodedAlgorithmFactory() {}
 

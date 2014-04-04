@@ -26,16 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/* builtin.h
+/*
+ *@file  builtin.h
  *
- *  Written by:
+ *@author
  *   Yarden Livnat
  *   Department of Computer Science
  *   University of Utah
- *   March 2001
+ *@date  March 2001
  *
- *  Classes for built in datatypes
+ *@brief Classes for built in datatypes
  */
 
 #ifndef builtin_h

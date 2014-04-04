@@ -25,14 +25,14 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-//! Include the algorithm
+///TODO Documentation
+// Include the algorithm
 #include <Core/Algorithms/Fields/FieldData/ConvertFieldDataType.h>
 
-//! The module class
+// The module class
 #include <Dataflow/Network/Module.h>
 
-//! We need to define the ports used
+// We need to define the ports used
 #include <Dataflow/Network/Ports/FieldPort.h>
 
 
@@ -63,7 +63,7 @@ ConvertFieldDataType::ConvertFieldDataType(GuiContext* ctx)
     inputdatatype_(get_ctx()->subVar("inputdatatype", false), "---"),
     fldname_(get_ctx()->subVar("fldname", false), "---")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 
@@ -76,7 +76,7 @@ ConvertFieldDataType::~ConvertFieldDataType()
 void
 ConvertFieldDataType::execute()
 {
-  //! define input/output handles:
+  /// define input/output handles:
   FieldHandle input;
   FieldHandle output;
   get_input_handle("Input Field",input,true);
@@ -87,19 +87,19 @@ ConvertFieldDataType::execute()
       !oport_cached("Output Field"))
   {    
     update_state(Executing);
-    //! Set the method to use
+    /// Set the method to use
     algo_.set_option("datatype",outputdatatype_.get());
 
     if(!(algo_.run(input,output))) return;
     
     inputdatatype_.set(input->vfield()->get_data_type());
 
-    //! Relay some information to user
+    /// Relay some information to user
     std::string name = input->get_name();
     if (name == "") name = "--- no name ---";
     fldname_.set(name);
 
-    //! send data downstream:
+    /// send data downstream:
     send_output_handle("Output Field", output, true);    
   }
 }

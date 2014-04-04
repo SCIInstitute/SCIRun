@@ -26,19 +26,18 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/*
- *  Gaussian.cc: support choosing a random value from a 1D Gaussian
- *               distribution (rand), as well as evaluate the probability
- *               of a particular value occuring.
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   July 2000
- *
- */
+///
+///@class Gaussian
+///@brief Support choosing a random value from a 1D Gaussian
+///       distribution (rand), as well as evaluate the probability
+///       of a particular value occuring.
+///
+///@author 
+///       David Weinstein
+///       Department of Computer Science
+///       University of Utah
+///@date  July 2000
+///
 
 #include <Core/Math/Gaussian.h>
 #include <Core/Math/MusilRNG.h>
