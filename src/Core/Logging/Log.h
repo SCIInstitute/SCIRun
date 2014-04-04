@@ -52,7 +52,7 @@ namespace SCIRun
         EMERG,  // System is unusable (e.g. multiple parts down)
         ALERT,  // System is unusable (e.g. single part down)
         CRIT,   // Failure in non-primary system (e.g. backup site down)
-        ERROR,  // Non-urgent failures; relay to developers
+        ERROR_LOG,  // Non-urgent failures; relay to developers
         WARN,   // Not an error, but indicates error will occur if nothing done.
         NOTICE, // Events that are unusual, but not error conditions.
         INFO,   // Normal operational messages. No action required.
@@ -64,6 +64,7 @@ namespace SCIRun
       {
       public:
         static Log& get();
+        static Log& get(const std::string& name);
 
         class SCISHARE Stream
         {
@@ -87,6 +88,7 @@ namespace SCIRun
 
       private:
         Log();
+        explicit Log(const std::string& name);
         Log(const Log&)/* =delete*/;
         Log(Log&&)/* =delete*/;
         Log& operator=(const Log&)/* =delete*/;
@@ -112,6 +114,13 @@ namespace SCIRun
   }
 }
 
+//TODO: log4cpp crashes on Mac more easily, just macro these out on that platform for now.
+#ifdef _WIN32
 #define LOG_DEBUG(str) SCIRun::Core::Logging::Log::get() << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
+#else
+#define LOG_DEBUG(str)
+#endif
+
+#define LOG_DEBUG_TO(log, str) log << SCIRun::Core::Logging::DEBUG_LOG << str << std::endl
 
 #endif

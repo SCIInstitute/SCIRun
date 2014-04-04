@@ -100,8 +100,8 @@ public:
   virtual Core::Datatypes::DatatypeHandleOption getData() const;
   virtual bool isInput() const { return true; } //boo
   virtual bool isDynamic() const { return isDynamic_; }
-  
   virtual InputPortInterface* clone() const;
+  virtual bool hasChanged() const;
 private:
   DatatypeSinkInterfaceHandle sink_;
   bool isDynamic_;

@@ -106,7 +106,7 @@ public:
   StructQuadSurfMesh();
   StructQuadSurfMesh(size_type x, size_type y);
   StructQuadSurfMesh(const StructQuadSurfMesh<Basis> &copy);
-  virtual StructQuadSurfMesh *clone()
+  virtual StructQuadSurfMesh *clone() const
   { return new StructQuadSurfMesh<Basis>(*this); }
   virtual ~StructQuadSurfMesh() 
   {

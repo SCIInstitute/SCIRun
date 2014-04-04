@@ -61,43 +61,15 @@ namespace SCIRun
       public:
         LogImpl() : cppLogger_(log4cpp::Category::getRoot()), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
-          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} [%p] %m%n");
+          setAppenders();
+        }
 
-          log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
-          auto layout1 = new log4cpp::PatternLayout();
-          std::string backupPattern1 = layout1->getConversionPattern();
-          try
-          {
-            layout1->setConversionPattern(pattern);
-          }
-          catch (log4cpp::ConfigureFailure& exception)
-          {
-            /// @todo: log?
-            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-              << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
-            layout1->setConversionPattern(backupPattern1);
-          }
-          appender1->setLayout(layout1);
-
-          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
-          auto layout2 = new log4cpp::PatternLayout();
-          std::string backupPattern2 = layout1->getConversionPattern();
-          try
-          {
-            layout2->setConversionPattern(pattern);
-          }
-          catch (log4cpp::ConfigureFailure& exception)
-          {
-            /// @todo: log?
-            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
-              << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
-            layout2->setConversionPattern(backupPattern2);
-          }
-          appender2->setLayout(layout2);
-
-          log4cpp::Category& root = log4cpp::Category::getRoot();
-          root.addAppender(appender1);
-          root.addAppender(appender2);
+        LogImpl(const std::string& name) : cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
+        {
+          //TODO
+          setAppenders();
+          cppLogger_.setAdditivity(false);
+          cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
         }
 
         void log(LogLevel level, const std::string& msg)
@@ -113,7 +85,7 @@ namespace SCIRun
 
         bool verbose() const 
         {
-          return cppLogger_.getRootPriority() == log4cpp::Priority::DEBUG;
+          return cppLogger_.getPriority() == log4cpp::Priority::DEBUG;
         }
 
         void setVerbose(bool v)
@@ -136,7 +108,7 @@ namespace SCIRun
           case EMERG:  cpp_level = log4cpp::Priority::EMERG;  break;
           case ALERT:  cpp_level = log4cpp::Priority::ALERT;  break;
           case CRIT:   cpp_level = log4cpp::Priority::CRIT;   break;
-          case ERROR:  cpp_level = log4cpp::Priority::ERROR;  break;
+          case ERROR_LOG:  cpp_level = log4cpp::Priority::ERROR;  break;
           case WARN:   cpp_level = log4cpp::Priority::WARN;   break;
           case NOTICE: cpp_level = log4cpp::Priority::NOTICE; break;
           case INFO:   cpp_level = log4cpp::Priority::INFO;   break;
@@ -154,6 +126,46 @@ namespace SCIRun
       private:
         log4cpp::Category& cppLogger_;
         Log::Stream latestStream_;
+
+        void setAppenders()
+        {
+          std::string pattern("%d{%Y-%m-%d %H:%M:%S.%l} %c [%p] %m%n");
+
+          log4cpp::Appender *appender1 = new log4cpp::OstreamAppender("console", &std::cout);
+          auto layout1 = new log4cpp::PatternLayout();
+          std::string backupPattern1 = layout1->getConversionPattern();
+          try
+          {
+            layout1->setConversionPattern(pattern);
+          }
+          catch (log4cpp::ConfigureFailure& exception)
+          {
+            // TODO: log?
+            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+              << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
+            layout1->setConversionPattern(backupPattern1);
+          }
+          appender1->setLayout(layout1);
+
+          log4cpp::Appender *appender2 = new log4cpp::FileAppender("default", "scirun5.log");
+          auto layout2 = new log4cpp::PatternLayout();
+          std::string backupPattern2 = layout1->getConversionPattern();
+          try
+          {
+            layout2->setConversionPattern(pattern);
+          }
+          catch (log4cpp::ConfigureFailure& exception)
+          {
+            // TODO: log?
+            std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
+              << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
+            layout2->setConversionPattern(backupPattern2);
+          }
+          appender2->setLayout(layout2);
+
+          cppLogger_.addAppender(appender1);
+          cppLogger_.addAppender(appender2);
+        }
       };
     }
   }
@@ -163,10 +175,27 @@ Log::Log() : impl_(new LogImpl)
 {
 } 
 
+Log::Log(const std::string& name) : impl_(new LogImpl(name))
+{
+}
+
 Log& Log::get()
 {
   static Log logger;
   return logger;
+}
+
+Log& Log::get(const std::string& name)
+{
+  //TODO: make thread safe
+  static std::map<std::string, boost::shared_ptr<Log>> logs;
+  auto i = logs.find(name);
+  if (i == logs.end())
+  {
+    logs[name] = boost::shared_ptr<Log>(new Log(name));
+    return *logs[name];
+  }
+  return *i->second;
 }
 
 void Log::flush()

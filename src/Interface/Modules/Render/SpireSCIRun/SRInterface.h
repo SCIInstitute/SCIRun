@@ -37,8 +37,9 @@
 #include <Core/Datatypes/Geometry.h>
 #include <boost/shared_ptr.hpp>
 
-#include "../namespaces.h"
+#include <Interface/Modules/Render/namespaces.h>
 #include <spire/Interface.h>
+#include <gl-state/GLState.hpp>
 
 namespace SCIRun {
 namespace Gui {
@@ -102,6 +103,9 @@ public:
   /// Remove all SCIRun 5 objects.
   void removeAllGeomObjects();
 
+  /// Garbage collect all invalid objects not given in the valid objects vector.
+  void gcInvalidObjects(const std::vector<std::string>& validObjects);
+  
   /// Handles a new geometry object.
   void handleGeomObject(boost::shared_ptr<Core::Datatypes::GeometryObject> object);
 
@@ -123,10 +127,11 @@ private:
   {
   public:
     SRObject(const std::string& name, const spire::M44& objToWorld,
-             const Core::Geometry::BBox& bbox) :
+             const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap) :
         mName(name),
         mObjectToWorld(objToWorld),
-        mBBox(bbox)
+        mBBox(bbox),
+        mColorMap(colorMap)
     {}
 
     // Different types of uniform transformations that are associated
@@ -153,10 +158,14 @@ private:
     spire::M44            mObjectToWorld;
     std::list<SRPass>     mPasses;
     Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
+
+    boost::optional<std::string>    mColorMap;
   };
 
   // Begins the frame.
   void beginFrame();
+
+  void generateColormaps();
 
   std::shared_ptr<spire::Interface>           mSpire;
 
@@ -164,6 +173,9 @@ private:
 
   size_t                    mScreenWidth;     ///< Screen width in pixels.
   size_t                    mScreenHeight;    ///< Screen height in pixels.
+
+  GLuint                    mRainbowCMap;     ///< Rainbow color map.
+  GLuint                    mGrayscaleCMap;   ///< Grayscale color map.
 
   std::unique_ptr<SRCamera> mCamera;          ///< Primary camera.
   std::vector<SRObject>     mSRObjects;       ///< All SCIRun objects.

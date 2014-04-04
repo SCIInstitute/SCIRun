@@ -68,10 +68,12 @@ public:
 
   virtual DatatypeHandleOption receive() { return data_; }
   virtual DatatypeSinkInterface* clone() const { return new StubbedDatatypeSink; }
+  virtual bool hasChanged() const { return true; }
 
   void setData(DatatypeHandleOption data) { data_ = data; }
 private:
   DatatypeHandleOption data_;
+  int previousId_;
 };
 
 class MockAlgorithmFactory : public AlgorithmFactory
@@ -88,8 +90,11 @@ ModuleTest::ModuleTest() : factory_(new HardCodedModuleFactory)
 {
   Module::Builder::use_sink_type(boost::factory<StubbedDatatypeSink*>());
   Module::defaultAlgoFactory_.reset(new MockAlgorithmFactory);
+  DefaultValue<AlgorithmParameterName>::Set(AlgorithmParameterName());
   DefaultValue<AlgorithmParameter>::Set(AlgorithmParameter());
+  DefaultValue<const AlgorithmParameter&>::Set(algoParam_);
   DefaultValue<AlgorithmOutput>::Set(AlgorithmOutput());
+  DefaultValue<AlgorithmInput>::Set(AlgorithmInput());
   Core::Logging::Log::get().setVerbose(true);
 }
 
@@ -100,6 +105,7 @@ ModuleHandle ModuleTest::makeModule(const std::string& name)
 
 void ModuleTest::stubPortNWithThisData(ModuleHandle module, size_t portNum, DatatypeHandle data)
 {
+  //TODO: this doesn't work with dynamic ports beyond 1
   if (portNum < module->num_input_ports())
   {
     auto iport = module->inputPorts()[portNum];

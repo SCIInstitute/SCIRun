@@ -41,6 +41,7 @@
 #include <Core/Algorithms/Base/AlgorithmFwd.h>
 #include <Core/Datatypes/DatatypeFwd.h>
 #include <Core/Utils/ProgressReporter.h>
+#include <Core/Utils/StringUtil.h>
 #include <Core/Algorithms/Base/share.h>
 
 namespace SCIRun {
@@ -165,7 +166,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    typedef std::map<Name, Datatypes::DatatypeHandle> Map;
+    typedef std::map<Name, boost::variant<Datatypes::DatatypeHandle, std::vector<Datatypes::DatatypeHandle>>> Map;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -175,8 +176,16 @@ namespace Algorithms {
     boost::shared_ptr<T> get(const Name& name) const
     {
       auto it = data_.find(name);
-      /// @todo: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second);
+      //TODO: log incorrect type if present but wrong type
+      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(boost::get<Datatypes::DatatypeHandle>(it->second));
+    }
+
+    template <typename T>
+    std::vector<boost::shared_ptr<T>> getList(const Name& name) const
+    {
+      auto it = data_.find(name);
+      //TODO: log incorrect type if present but wrong type
+      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(boost::get<std::vector<Datatypes::DatatypeHandle>>(it->second));
     }
 
     /// @todo: lame
@@ -246,6 +255,14 @@ namespace Algorithms {
   public:
     AlgoInputBuilder();
     AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    template <typename T>
+    AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
+    {
+      //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
+      std::vector<Datatypes::DatatypeHandle> datas = upcast_range<Datatypes::Datatype>(vec);
+      map_[Name(name)] = datas;
+      return *this;
+    }
     AlgorithmInput build() const;
   private:
     AlgorithmData::Map map_;

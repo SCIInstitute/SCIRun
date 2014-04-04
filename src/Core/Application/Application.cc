@@ -96,7 +96,7 @@ NetworkEditorControllerHandle Application::controller()
     /// @todo: these all get configured
     ModuleFactoryHandle moduleFactory(new HardCodedModuleFactory);
     ModuleStateFactoryHandle sf(new SimpleMapModuleStateFactory);
-    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory);
+    ExecutionStrategyFactoryHandle exe(new DesktopExecutionStrategyFactory(parameters()->threadMode()));
     AlgorithmFactoryHandle algoFactory(new HardCodedAlgorithmFactory);
     private_->controller_.reset(new NetworkEditorController(moduleFactory, sf, exe, algoFactory));
   }

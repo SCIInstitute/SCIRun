@@ -60,6 +60,7 @@ namespace Networks {
 
     virtual void waitForData() = 0;
     virtual Core::Datatypes::DatatypeHandleOption receive() = 0;
+    virtual bool hasChanged() const = 0;
   };
 
 }}}

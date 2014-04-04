@@ -101,7 +101,7 @@ public:
   StructCurveMesh();
   explicit StructCurveMesh(size_type n);  
   StructCurveMesh(const StructCurveMesh &copy);
-  virtual StructCurveMesh *clone() { return new StructCurveMesh(*this); }
+  virtual StructCurveMesh *clone() const { return new StructCurveMesh(*this); }
   virtual ~StructCurveMesh() 
   {
     DEBUG_DESTRUCTOR("StructCurveMesh")   

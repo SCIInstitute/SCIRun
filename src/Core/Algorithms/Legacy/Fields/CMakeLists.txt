@@ -27,6 +27,7 @@
 #
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
+  ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
@@ -48,6 +49,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   TransformMesh/AlignMeshBoundingBoxes.h
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
+  MergeFields/JoinFieldsAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -59,7 +61,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #ClipMesh/ClipMeshByIsovalue.cc
   #ClipMesh/ClipMeshBySelection.cc
   #CollectFields/CollectPointClouds.cc
-  #ConvertMeshType/ConvertMeshToPointCloudMesh.cc
+  ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
@@ -118,7 +120,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #MedialAxis/MedialAxis.cc
   #MedialAxis/MedialAxis2.cc
   #MergeFields/AppendFields.cc
-  #MergeFields/JoinFields.cc
+  MergeFields/JoinFieldsAlgo.cc
   MeshData/GetMeshNodes.cc
   MeshData/SetMeshNodes.cc
   #MeshData/GetSurfaceNodeNormals.cc

@@ -133,6 +133,11 @@ InputPortInterface* InputPort::clone() const
   return new InputPort(module_, ConstructionParams(cloneId, typeName_, isDynamic_), sink);
 }
 
+bool InputPort::hasChanged() const
+{
+  return sink()->hasChanged();
+}
+
 OutputPort::OutputPort(ModuleInterface* module, const ConstructionParams& params, DatatypeSourceInterfaceHandle source)
   : Port(module, params), source_(source)
 {

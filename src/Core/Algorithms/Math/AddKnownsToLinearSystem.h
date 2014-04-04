@@ -30,13 +30,9 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_AddKnownsToLinearSystem_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_AddKnownsToLinearSystem_H 1
 
-/// Datatypes that the algorithm uses
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
+//! Datatypes that the algorithm uses
 #include <Core/Datatypes/MatrixFwd.h>
-#include <cmath>
-#include <Core/Math/MiscMath.h>
-/// Base class for algorithm
+//! Base class for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 /// for Windows support
 #include <Core/Algorithms/Math/share.h>
@@ -44,7 +40,7 @@
 namespace SCIRun {
 	namespace Core {
 		namespace Algorithms {
-			namespace FiniteElements {
+			namespace Math {
 
 class SCISHARE AddKnownsToLinearSystemAlgo : public AlgorithmBase
 {
@@ -56,8 +52,6 @@ class SCISHARE AddKnownsToLinearSystemAlgo : public AlgorithmBase
     static AlgorithmOutputName OutPutLHSMatrix;
     static AlgorithmOutputName OutPutRHSVector;
 
-  AddKnownsToLinearSystemAlgo();
-  ~AddKnownsToLinearSystemAlgo();
   bool run(Datatypes::SparseRowMatrixHandle stiff, Datatypes::DenseColumnMatrixHandle rhs, Datatypes::DenseMatrixHandle x, Datatypes::SparseRowMatrixHandle& output_stiff, Datatypes::DenseColumnMatrixHandle& output_rhs) const;
   virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
   

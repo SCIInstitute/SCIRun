@@ -68,4 +68,4 @@ ENDIF(BUILD_SHARED_LIBS)
 
 ADD_DEPENDENCIES(Core_Geometry_Primitives Boost_external)
 
-ADD_SUBDIRECTORY(Tests)
+SCIRUN_ADD_TEST_DIR(Tests)

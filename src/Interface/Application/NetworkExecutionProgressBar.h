@@ -30,6 +30,7 @@
 #define INTERFACE_APPLICATION_NETWORKEXECUTIONPROGRESSBAR_H
 
 #include <QObject>
+#include <Core/Thread/Mutex.h>
 
 namespace SCIRun {
 namespace Gui {
@@ -54,6 +55,7 @@ private:
   class QLabel* counterLabel_;
   size_t numModulesDone_;
   size_t totalModules_;
+  Core::Thread::Mutex mutex_;
 
   QString counterLabelString() const;
 };

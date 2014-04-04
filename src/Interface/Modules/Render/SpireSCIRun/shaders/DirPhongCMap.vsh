@@ -3,10 +3,10 @@
 
    The MIT License
 
-   Copyright (c) 2009 Scientific Computing and Imaging Institute,
+   Copyright (c) 2012 Scientific Computing and Imaging Institute,
    University of Utah.
 
-   
+
    Permission is hereby granted, free of charge, to any person obtaining a
    copy of this software and associated documentation files (the "Software"),
    to deal in the Software without restriction, including without limitation
@@ -26,42 +26,24 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+// Uniforms
+uniform mat4    uProjIVObject;      // Projection transform * Inverse View
+uniform mat4    uObject;            // Object -> World
 
-#ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H
-#define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H 1
+// Attributes
+attribute vec3  aPos;
+attribute vec3  aNormal;
+attribute float aFieldData;
 
-/// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+// Outputs to the fragment shader.
+varying vec3    vNormal;
+varying float   vFieldData;
 
-/// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-/// for Windows support
-#include <Core/Algorithms/Fields/share.h>
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-// Algorithm class with the function call that converts a field into a
-// pointcloud.
-class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgoBase
+void main( void )
 {
-  public:
-    /// Set defaults
-    ConvertMeshToPointCloudMeshAlgo()
-    {
-      /// Do we want to get the location of the data nodes
-      /// or the location of the nodes
-      add_option("location","node","node|data");
-    }
-
-    /// run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
-};
-
-} // end namespace SCIRunAlgo
-
-#endif 
-
+  // Todo: Add gamma correction factor of 2.2. For textures, we assume that it
+  // was generated in gamma space, and we need to convert it to linear space.
+  vNormal  = vec3(uObject * vec4(aNormal, 0.0));
+  vFieldData = aFieldData;
+  gl_Position = uProjIVObject * vec4(aPos, 1.0);
+}
