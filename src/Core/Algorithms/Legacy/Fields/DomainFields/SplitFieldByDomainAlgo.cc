@@ -26,56 +26,62 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DomainFields/SplitFieldByDomain.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
 
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <algorithm>
 
-SplitFieldByDomainAlgo()
+using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+AlgorithmParameterName SplitFieldByDomainAlgo::SortAscending("SortAscending");
+AlgorithmParameterName SplitFieldByDomainAlgo::SortBySize("SortBySize");
+
+SplitFieldByDomainAlgo::SplitFieldByDomainAlgo()
 {
-  // Sort the outcome by size
-  add_bool("sort_by_size",false);
-  add_bool("sort_ascending",false);
+  addParameter(SortBySize, false);
+  addParameter(SortAscending, false);
 } 
 
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
+namespace {
 
 class SortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
-    SortSizes(double* sizes) : sizes_(sizes) {}
+    explicit SortSizes(const double* sizes) : sizes_(sizes) {}
     
-    bool operator()(index_type i1, index_type i2)
+    bool operator()(index_type i1, index_type i2) const
     {
       return (sizes_[i1] > sizes_[i2]);
     }
 
   private:
-    double*      sizes_;
+    const double*      sizes_;
 };
 
 
 class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
-    AscSortSizes(double* sizes) : sizes_(sizes) {}
+    explicit AscSortSizes(const double* sizes) : sizes_(sizes) {}
     
-    bool operator()(index_type i1, index_type i2)
+    bool operator()(index_type i1, index_type i2) const
     {
       return (sizes_[i1] < sizes_[i2]);
     }
 
   private:
-    double*      sizes_;
+    const double*      sizes_;
 };
-
+}
 
 
 bool 
-SplitFieldByDomainAlgo::
-run( FieldHandle input, std::vector<FieldHandle>& output)
+SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& output) const
 {
   algo_start("SplitNodesByDomain");
   
@@ -237,6 +243,3 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
   
   algo_end(); return(true);
 }
-
-} // namespace SCIRunAlgo
-
