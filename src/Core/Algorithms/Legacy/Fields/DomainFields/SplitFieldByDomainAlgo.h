@@ -30,7 +30,6 @@
 #define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_SPLITFIELDBYDOMAIN_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <vector>
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
@@ -43,7 +42,7 @@ class SCISHARE SplitFieldByDomainAlgo : public AlgorithmBase
   public:
     SplitFieldByDomainAlgo();
 
-    bool runImpl(FieldHandle input, std::vector<FieldHandle>& output) const;  
+    bool runImpl(FieldHandle input, FieldList& output) const;  
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
 
     static AlgorithmParameterName SortBySize;

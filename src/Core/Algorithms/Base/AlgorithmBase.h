@@ -193,6 +193,12 @@ namespace Algorithms {
       return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
     }
 
+    template <typename T>
+    void setList(const Name& name, const std::vector<boost::shared_ptr<T>>& list)
+    {
+      data_[name].swap(upcast_range<Datatypes::Datatype>(list));
+    }
+
     //TODO: lame
     void setTransient(boost::any t) { transient_ = t; }
     boost::any getTransient() const { return transient_; }
@@ -268,8 +274,7 @@ namespace Algorithms {
     AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
     {
       //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
-      std::vector<Datatypes::DatatypeHandle> datas = upcast_range<Datatypes::Datatype>(vec);
-      map_[Name(name)] = datas;
+      map_[Name(name)].swap(upcast_range<Datatypes::Datatype>(vec));
       return *this;
     }
     template <typename T>

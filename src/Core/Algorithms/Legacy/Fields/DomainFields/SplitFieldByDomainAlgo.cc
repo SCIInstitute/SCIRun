@@ -27,6 +27,8 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
@@ -82,7 +84,7 @@ class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 
 
 bool 
-SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& output) const
+SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "SplitNodesByDomain");
   
@@ -248,4 +250,17 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
   }
   
   return(true);
+}
+
+AlgorithmOutput SplitFieldByDomainAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
+
+  FieldList list;
+  if (!runImpl(field, list))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output.setList(Variables::ListOfOutputFields, list);
+  return output;
 }
