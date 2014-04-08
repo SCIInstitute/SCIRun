@@ -40,6 +40,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
+  SplitFieldByDomain.h
   #ApplyMappingMatrix.h
 )
 
@@ -59,7 +60,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #MapFieldDataOntoElems.cc
   #CleanupTetMesh.cc
   #MatchDomainLabels.cc
-  #SplitFieldByDomain.cc
+  SplitFieldByDomain.cc
   AlignMeshBoundingBoxes.cc
   #ProjectPointsOntoMesh.cc
   #GetMeshQualityField.cc
