@@ -182,6 +182,7 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
   #Core_Algorithms_Converter
   Core_Basis
   Core_Datatypes
+  Core_Datatypes_Legacy_Bundle
   Core_Exceptions_Legacy
   #Core_Geom
   Core_Geometry_Primitives
