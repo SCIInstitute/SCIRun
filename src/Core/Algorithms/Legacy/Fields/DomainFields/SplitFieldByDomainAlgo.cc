@@ -27,7 +27,8 @@
 */
 
 #include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
-
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <algorithm>
 
@@ -52,7 +53,7 @@ namespace {
 class SortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
-    explicit SortSizes(const double* sizes) : sizes_(sizes) {}
+    explicit SortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
     
     bool operator()(index_type i1, index_type i2) const
     {
@@ -60,14 +61,14 @@ class SortSizes : public std::binary_function<index_type,index_type,bool>
     }
 
   private:
-    const double*      sizes_;
+    const std::vector<double>& sizes_;
 };
 
 
 class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
-    explicit AscSortSizes(const double* sizes) : sizes_(sizes) {}
+    explicit AscSortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
     
     bool operator()(index_type i1, index_type i2) const
     {
@@ -75,7 +76,7 @@ class AscSortSizes : public std::binary_function<index_type,index_type,bool>
     }
 
   private:
-    const double*      sizes_;
+    const std::vector<double>& sizes_;
 };
 }
 
@@ -83,11 +84,11 @@ class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 bool 
 SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& output) const
 {
-  algo_start("SplitNodesByDomain");
+  ScopedAlgorithmStatusReporter asr(this, "SplitNodesByDomain");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
-    algo_end(); error("No input field");
+    error("No input field");
     return (false);
   }
 
@@ -95,13 +96,13 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements.");
-    algo_end(); return (false);
+    return (false);
   }
 
   if (!(fi.is_constantdata()))
   {
     error("This function only works for data located at the elements");
-    algo_end(); return (false);
+    return (false);
   }
 
   fo.make_unstructuredmesh();
@@ -110,9 +111,9 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
   VField *field = input->vfield();
   VMesh  *mesh  = input->vmesh();
   
-  if (field == 0 || mesh == 0)
+  if (!field || !mesh)
   {
-    algo_end(); error("No input field");
+    error("No input field");
     return (false);
   }
 
@@ -139,25 +140,25 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
   index_type k = 0;
   
   int cnt = 0;
-  while(1)
+  while (true)
   {
     FieldHandle output_field = CreateField(fo);
     
-    if (output_field.get_rep() == 0)
+    if (!output_field)
     {
       error("Could not create output field");
       output.clear();
-      algo_end(); return(false); 
+      return(false); 
     }
    
     VField* ofield = output_field->vfield();
     VMesh *omesh = output_field->vmesh();
 
-    if (ofield == 0 || omesh == 0)
+    if (!ofield || !omesh)
     {
       error("Could not create output field");
       output.clear();
-      algo_end(); return(false); 
+      return(false); 
     }
     
     for (size_type p =0; p<num_nodes; p++) newidxarray[p] = true;
@@ -181,7 +182,12 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
           newnodes[p] = idxarray[node];
         }
         omesh->add_elem(newnodes);
-        cnt++; if (cnt == 400) { cnt = 0; update_progress(k,num_elems); }   
+        cnt++; 
+        if (cnt == 400) 
+        { 
+          cnt = 0; 
+          update_progress_max(k,num_elems); 
+        }   
         k++;
       }
     }
@@ -207,11 +213,11 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
   }
   
   
-  if (get_bool("sort_by_size"))
+  if (get(SortBySize).getBool())
   {
     std::vector<double> sizes(output.size());
     std::vector<index_type> order(output.size());
-    std::vector<FieldHandle> temp(output.size());
+    std::vector<FieldHandle> temp(output);
     
     for (size_t j=0; j<output.size(); j++)
     {
@@ -224,22 +230,22 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, std::vector<FieldHandle>& out
       }
       sizes[j] = size;
       order[j] = j;
-      temp[j] = output[j];
     }
   
-    if (get_bool("sort_ascending"))
+    if (get(SortAscending).getBool())
     {
-      std::sort(order.begin(),order.end(),AscSortSizes(&(sizes[0]))); 
+      std::sort(order.begin(),order.end(),AscSortSizes(sizes)); 
     }
     else
     {
-      std::sort(order.begin(),order.end(),SortSizes(&(sizes[0]))); 
+      std::sort(order.begin(),order.end(),SortSizes(sizes)); 
     }
+    // easier just to sort output directly?
     for (size_t j=0; j<output.size(); j++)
     {
       output[j] = temp[order[j]];
     }
   }
   
-  algo_end(); return(true);
+  return(true);
 }
