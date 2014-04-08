@@ -46,7 +46,7 @@
        <widget class="QComboBox" name="methodComboBox_">
         <item>
          <property name="text">
-          <string>Interpolate</string>
+          <string>Interpolation</string>
          </property>
         </item>
         <item>
