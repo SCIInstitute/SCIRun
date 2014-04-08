@@ -27,6 +27,7 @@
 */
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
+#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/CalculateGradientsAlgo.h>
@@ -136,7 +137,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   else if (moduleName == "JoinFields")
     h.reset(new JoinFieldsAlgo);
   else if (moduleName == "SelectSubMatrix")
-    h.reset(new SelectSubMatrixAlgorithm);    
+    h.reset(new SelectSubMatrixAlgorithm);  
+  else if (moduleName == "MapFieldDataFromElemToNode")
+    h.reset(new MapFieldDataFromElemToNodeAlgo);      
     
   if (h && algoCollaborator)
   {

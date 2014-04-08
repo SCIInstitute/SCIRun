@@ -39,7 +39,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
-ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "NewField", "SCIRun");
+ModuleLookupInfo SetFieldDataModule::staticInfo_("SetFieldData", "ChangeFieldData", "SCIRun");
 
 SetFieldDataModule::SetFieldDataModule() :  Module(staticInfo_)
 {

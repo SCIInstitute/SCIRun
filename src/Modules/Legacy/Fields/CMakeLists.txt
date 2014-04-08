@@ -43,6 +43,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetFieldNodes.h
   JoinFields.h
   #ApplyMappingMatrix.h
+  MapFieldDataFromElemToNode.h
 )
 
 SET(Dataflow_Modules_Legacy_Fields_SRCS
@@ -159,6 +160,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CollectFields.cc
   #ScaleFieldMeshAndData.cc
   #CalculateProfile.cc
+  MapFieldDataFromElemToNode.cc
 )
 
 IF(WITH_TETGEN)

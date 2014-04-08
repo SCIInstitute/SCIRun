@@ -50,6 +50,7 @@
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
@@ -131,7 +132,9 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
   if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
     return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);   
   if (moduleId.find("SelectSubMatrix") != std::string::npos)
-    return new SelectSubMatrixDialog(moduleId, state, parentToUse_);          
+    return new SelectSubMatrixDialog(moduleId, state, parentToUse_);  
+  if (moduleId.find("MapFieldDataFromElemToNode") != std::string::npos)
+    return new MapFieldDataFromElemToNodeDialog(moduleId, state, parentToUse_);            
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

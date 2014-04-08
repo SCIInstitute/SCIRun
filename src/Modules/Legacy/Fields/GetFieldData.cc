@@ -39,7 +39,7 @@ using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
 
 GetFieldDataModule::GetFieldDataModule()
-  : Module(ModuleLookupInfo("GetFieldData", "NewField", "SCIRun"), false)
+  : Module(ModuleLookupInfo("GetFieldData", "ChangeFieldData", "SCIRun"), false)
 {
   INITIALIZE_PORT(InputField);
   INITIALIZE_PORT(OutputMatrix);

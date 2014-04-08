@@ -51,6 +51,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MergeFields/JoinFieldsAlgo.h
   #MeshData/GetMeshData.h
   FieldData/GetFieldData.h
+  FieldData/MapFieldDataFromElemToNode.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -100,7 +101,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FindNodes/FindClosestNodeByValue.cc
   #Mapping/ApplyMappingMatrix.cc
   #Mapping/BuildMappingMatrix.cc
-  #Mapping/MapFieldDataFromElemToNode.cc
+  FieldData/MapFieldDataFromElemToNode.cc
   #Mapping/MapFieldDataFromNodeToElem.cc
   #Mapping/MapFieldDataFromSourceToDestination.cc
   #Mapping/MappingDataSource.cc

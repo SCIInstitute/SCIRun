@@ -36,6 +36,7 @@ SET(Algorithms_Field_Tests_SRCS
   SetGetFieldNodesAlgoTests.cc
   InterfaceWithCleaverAlgorithmTests.cc
   JoinFieldsAlgoTests.cc
+  MapFieldDataFromElemToNodeAlgoTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
