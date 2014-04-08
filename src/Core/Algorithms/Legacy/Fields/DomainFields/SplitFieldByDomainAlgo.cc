@@ -31,6 +31,13 @@
 #include <Core/Datatypes/FieldInformation.h>
 #include <algorithm>
 
+SplitFieldByDomainAlgo()
+{
+  // Sort the outcome by size
+  add_bool("sort_by_size",false);
+  add_bool("sort_ascending",false);
+} 
+
 namespace SCIRunAlgo {
 
 using namespace SCIRun;

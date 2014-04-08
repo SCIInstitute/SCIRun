@@ -27,15 +27,15 @@
 */
 
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
-#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomain.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Datatypes/Legacy/Bundle/Bundle.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
-//#include <Core/Datatypes/MatrixTypeConverter.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
-//using namespace SCIRun::Core::Algorithms;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Algorithms::Fields;
 using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
@@ -55,7 +55,8 @@ SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_, false)
 void SplitFieldByDomain::setStateDefaults()
 {
   auto state = get_state();
-  state->setValue()
+  state->setValue(SplitFieldByDomainAlgo::SortBySize, false);
+  state->setValue(SplitFieldByDomainAlgo::SortAscending, false);
 }
 
 void
@@ -74,63 +75,33 @@ SplitFieldByDomain::execute()
   {
     update_state(Executing);
 
-    algo().set("sort_by_size", gui_sort_by_size_.get());
-    algo().set("sort_ascending", gui_sort_ascending_.get());
+    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortBySize);
+    setAlgoBoolFromState(SplitFieldByDomainAlgo::SortAscending);
 
-    if(!(algo_.run(input,output))) 
-      return;
+    auto algoOutput = algo().run_generic(make_input((InputField, input)));
     
+    auto output = algoOutput.getList<Field>(Variables::ListOfOutputFields);
+
     BundleHandle boutput(new Bundle);
-    for (size_t j=0; j< output.size(); j++)
+    for (size_t j = 0; j < output.size(); ++j)
     {
       std::ostringstream oss;
       oss << "Field" << j;
-      boutput->setField(oss.str(),output[j]);
+      boutput->set(oss.str(), output[j]);
     }
 
-    std::vector<FieldHandle> output;
     FieldHandle nofield;
     
-    send_output_handle("All Fields",boutput);
+    sendOutput(All_Fields, boutput);
 
-    if (output.size() > 0) 
-      send_output_handle("Field1",output[0]); 
-    else 
-      send_output_handle("Field1",nofield); 
-
-    if (output.size() > 1) 
-      send_output_handle("Field2",output[1]);
-    else 
-      send_output_handle("Field2",nofield); 
-    
-    if (output.size() > 2) 
-      send_output_handle("Field3",output[2]);
-    else 
-      send_output_handle("Field3",nofield); 
-    
-    if (output.size() > 3) 
-      send_output_handle("Field4",output[3]);
-    else 
-      send_output_handle("Field4",nofield); 
-    
-    if (output.size() > 4) 
-      send_output_handle("Field5",output[4]);
-    else 
-      send_output_handle("Field5",nofield); 
-    
-    if (output.size() > 5) 
-      send_output_handle("Field6",output[5]);
-    else 
-      send_output_handle("Field6",nofield); 
-    
-    if (output.size() > 6) 
-      send_output_handle("Field7",output[6]);
-    else 
-      send_output_handle("Field7",nofield); 
-    
-    if (output.size() > 7) 
-      send_output_handle("Field8",output[7]);
-    else 
-      send_output_handle("Field8",nofield); 
+    //TODO: make array of output ports, somehow
+    sendOutput(Field1, output.size() > 0 ? output[0] : nofield);
+    sendOutput(Field2, output.size() > 1 ? output[1] : nofield);
+    sendOutput(Field3, output.size() > 2 ? output[2] : nofield);
+    sendOutput(Field4, output.size() > 3 ? output[3] : nofield);
+    sendOutput(Field5, output.size() > 4 ? output[4] : nofield);
+    sendOutput(Field6, output.size() > 5 ? output[5] : nofield);
+    sendOutput(Field7, output.size() > 6 ? output[6] : nofield);
+    sendOutput(Field8, output.size() > 7 ? output[7] : nofield);
   }
 }

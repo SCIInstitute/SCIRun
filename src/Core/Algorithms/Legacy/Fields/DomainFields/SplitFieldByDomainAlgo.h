@@ -29,38 +29,28 @@
 #ifndef CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_SPLITFIELDBYDOMAIN_H
 #define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_SPLITFIELDBYDOMAIN_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
-//! STL includes
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 #include <vector>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-//! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-
-namespace SCIRunAlgo {
-
-using namespace SCIRun;
-
-class SCISHARE SplitFieldByDomainAlgo : public AlgoBase
+class SCISHARE SplitFieldByDomainAlgo : public AlgorithmBase
 {
   public:
-    SplitFieldByDomainAlgo()
-    {
-      // Sort the outcome by size
-      add_bool("sort_by_size",false);
-      add_bool("sort_ascending",false);
-    } 
+    SplitFieldByDomainAlgo();
 
-    bool run(FieldHandle input, std::vector<FieldHandle>& output);  
+    bool runImpl(FieldHandle input, std::vector<FieldHandle>& output) const;  
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static AlgorithmParameterName SortBySize;
+    static AlgorithmParameterName SortAscending;
 };
 
-} // end namespace SCIRunAlgo
+}}}}
 
 #endif
 
