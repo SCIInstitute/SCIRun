@@ -59,6 +59,7 @@
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
+#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
@@ -161,7 +162,7 @@ namespace SCIRun {
           //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
           addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
           addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
-          
+          addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)

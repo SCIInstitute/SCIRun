@@ -41,15 +41,19 @@ using namespace SCIRun::Modules::Fields;
 
 ModuleLookupInfo SplitFieldByDomain::staticInfo_("SplitFieldByDomain", "NewField", "SCIRun");
 
-
-//GuiInt  gui_sort_by_size_;
-  //  GuiDouble gui_sort_ascending_;
-    //SCIRunAlgo::SplitFieldByDomainAlgo algo_;
-
-SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_, false)
-//  gui_sort_by_size_(get_ctx()->subVar("sort-by-size"),0),
-//  gui_sort_ascending_(get_ctx()->subVar("sort-ascending"),0)
+SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
 {
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(All_Fields);
+  INITIALIZE_PORT(Field1);
+  INITIALIZE_PORT(Field2);
+  INITIALIZE_PORT(Field3);
+  INITIALIZE_PORT(Field4);
+  INITIALIZE_PORT(Field5);
+  INITIALIZE_PORT(Field6);
+  INITIALIZE_PORT(Field7);
+  INITIALIZE_PORT(Field8);
+
 }
 
 void SplitFieldByDomain::setStateDefaults()
