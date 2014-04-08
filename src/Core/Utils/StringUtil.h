@@ -39,7 +39,15 @@ namespace SCIRun
 namespace Core
 {
     
-
+template <typename T>
+std::vector<T*> toVectorOfRawPointers(const std::vector<boost::shared_ptr<T>>& vec)
+{
+  std::vector<T*> raws;
+  raws.reserve(vec.size());
+  std::transform(vec.begin(), vec.end(), std::back_inserter(raws), [](boost::shared_ptr<T> ptr) { return ptr.get(); });
+  return raws;
+}
+  
 template <typename T>
 std::string to_string(const T& t)
 {
