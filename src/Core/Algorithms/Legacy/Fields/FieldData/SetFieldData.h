@@ -30,8 +30,8 @@
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_SETFIELDDATA_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-#include <Core/Algorithms/Legacy/Fields/share.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
   namespace Core {
