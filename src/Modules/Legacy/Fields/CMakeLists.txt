@@ -41,6 +41,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetFieldNodes.h
   JoinFields.h
   SplitFieldByDomain.h
+  CreateFieldData.h
   #ApplyMappingMatrix.h
 )
 
@@ -142,7 +143,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
   #ConvertIndicesToFieldData.cc
-  #CreateFieldData.cc
+  CreateFieldData.cc
   #GetFieldData.cc
   #SetFieldData.cc
   GetFieldNodes.cc

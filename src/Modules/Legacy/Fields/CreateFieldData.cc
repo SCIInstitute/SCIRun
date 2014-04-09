@@ -26,7 +26,9 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#include <Modules/Legacy/Fields/CreateFieldData.h>
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
@@ -190,3 +192,4 @@ CreateFieldData::presave()
 } // End namespace SCIRun
 
 
+#endif
