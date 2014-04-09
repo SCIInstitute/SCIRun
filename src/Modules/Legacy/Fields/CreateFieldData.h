@@ -43,8 +43,8 @@ namespace SCIRun {
       public:
         CreateFieldData();
 
-        virtual void execute() override {}
-        virtual void setStateDefaults() override {}
+        virtual void execute() override;
+        virtual void setStateDefaults() override;
         virtual bool hasDynamicPorts() const override { return true; }
 
         INPUT_PORT(0, InputField, LegacyField);

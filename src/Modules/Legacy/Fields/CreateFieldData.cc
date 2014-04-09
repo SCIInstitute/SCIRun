@@ -27,6 +27,10 @@
 */
 
 #include <Modules/Legacy/Fields/CreateFieldData.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+//#include <Core/Parser/ArrayMathEngine.h>
 
 using namespace SCIRun;
 using namespace SCIRun::Core::Datatypes;
@@ -36,6 +40,7 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Modules::Fields;
 
 ModuleLookupInfo CreateFieldData::staticInfo_("CreateFieldData", "ChangeFieldData", "SCIRun");
+AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
 
 CreateFieldData::CreateFieldData() : Module(staticInfo_)
 {
@@ -45,27 +50,13 @@ CreateFieldData::CreateFieldData() : Module(staticInfo_)
   INITIALIZE_PORT(DataArray);
 }
 
+void CreateFieldData::setStateDefaults()
+{
+  auto state = get_state();
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-// Include all code for the dynamic engine
-#include <Core/Datatypes/String.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Parser/ArrayMathEngine.h>
-
-#include <Dataflow/Network/Module.h>
-#include <Dataflow/Network/Ports/MatrixPort.h>
-#include <Dataflow/Network/Ports/FieldPort.h>
-#include <Dataflow/Network/Ports/StringPort.h>
-
-namespace SCIRun {
-
-class CreateFieldData : public Module {
-  public:
-    CreateFieldData(GuiContext*);
-    virtual ~CreateFieldData() {}
-    virtual void execute();
     virtual void presave();
-
     virtual void tcl_command(GuiArgs&, void*);
 
   private:
@@ -73,41 +64,32 @@ class CreateFieldData : public Module {
     GuiString guiformat_;       // scalar, vector, or tensor ?
     GuiString guibasis_;       // constant, linear, quadratic, ....
 
-};
-
-
-DECLARE_MAKER(CreateFieldData)
-CreateFieldData::CreateFieldData(GuiContext* ctx)
-  : Module("CreateFieldData", ctx, Source, "ChangeFieldData", "SCIRun"),
-  guifunction_(get_ctx()->subVar("function")),
+    guifunction_(get_ctx()->subVar("function")),
   guiformat_(get_ctx()->subVar("format")),  
   guibasis_(get_ctx()->subVar("basis"))
-{
-}
-
+#endif
 
 void
 CreateFieldData::execute()
 {
-  FieldHandle field;
-  StringHandle func;
-  std::vector<MatrixHandle> matrices;
+  auto field = getRequiredInput(InputField);
+  auto func = getOptionalInput(Function);
   
-  get_input_handle("Field",field,true);
-  if (get_input_handle("Function",func,false))
+  if (func && *func)
   {
-    if (func.get_rep())
-    {
-      guifunction_.set(func->get());
-      get_ctx()->reset();  
-    }
+    get_state()->setValue(FunctionString, (*func)->value());
   }
-  get_dynamic_input_handles("DataArray",matrices,false);
+  auto matrices = getRequiredDynamicInputs(DataArray);
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   TCLInterface::eval(get_id()+" update_text");
+#endif
   
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   if (inputs_changed_ || guiformat_.changed() || guibasis_.changed() 
                     || guifunction_.changed() || !oport_cached("Field"))
+#endif
+  if (needToExecute())
   {
     update_state(Executing);
     
@@ -119,6 +101,7 @@ CreateFieldData::execute()
       return;
     }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     NewArrayMathEngine engine;
     engine.set_progress_reporter(this);
     
@@ -168,17 +151,19 @@ CreateFieldData::execute()
     // over every data point
 
     if (!(engine.run())) return;
-    
+#endif
     // Get the result from the engine
     FieldHandle ofield;    
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     engine.get_field("RESULT",ofield);
+#endif
 
     // send new output if there is any: 
-    send_output_handle("Field", ofield);
+    sendOutput(OutputField, ofield);
   }
 }
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 void
 CreateFieldData::tcl_command(GuiArgs& args, void* userdata)
 {
