@@ -62,8 +62,7 @@ void SplitFieldByDomain::setStateDefaults()
   state->setValue(SplitFieldByDomainAlgo::SortAscending, false);
 }
 
-void
-SplitFieldByDomain::execute()
+void SplitFieldByDomain::execute()
 {
   auto input = getRequiredInput(InputField);
 

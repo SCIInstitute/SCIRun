@@ -123,6 +123,19 @@ TEST(BundleTests, CanCopyConstruct)
   EXPECT_EQ(1, b2.size());
 }
 
+TEST(BundleTests, CanClone)
+{
+  Bundle b1;
+  MatrixHandle m(new DenseMatrix(1,2));
+  b1.set("foo", m);
+  EXPECT_EQ(1, b1.size());
+  BundleHandle b2(b1.clone());
+  EXPECT_EQ(1, b2->size());
+  b1.remove("foo");
+  EXPECT_EQ(0, b1.size());
+  EXPECT_EQ(1, b2->size());
+}
+
 // change from v4. MD saw no reason to restrict names by case
 TEST(BundleTests, IsSortedCaseSensitively)
 {
