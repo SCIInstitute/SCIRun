@@ -75,9 +75,7 @@ class SCISHARE Bundle : public Datatype
     bool remove(const std::string& name);
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    Bundle(const Bundle& copy);
-    virtual ~Bundle();
-
+  
     //! For writing bundles to file
     virtual void io(Piostream&);
     static PersistentTypeID type_id;
@@ -228,55 +226,6 @@ inline void Bundle::transposeNrrd(bool transpose)
 }
 
 
-template<class T> inline LockingHandle<T> Bundle::get(const std::string& name)
-{
-  int index;
-  index = findName(bundleName_,name);
-  if (index == -1) return 0;
-  LockingHandle<T> handle = SCI_DATATYPE_CAST<T*>(bundle_[index].get_rep());
-  return(handle);
-}
-
-
-template<class T> inline void Bundle::set(const std::string& name,
-                                              LockingHandle<T> &handle)
-{
-  int index;
-  index = findName(bundleName_,name);
-  if (index == -1)
-  {
-    LockingHandle<PropertyManager> lhandle = 
-                            dynamic_cast<PropertyManager*>(handle.get_rep());
-    bundle_.push_back(lhandle);
-    bundleName_.push_back(name);
-  }
-  else
-  {
-    bundle_[index] = dynamic_cast<PropertyManager*>(handle.get_rep());
-    bundleName_[index] = name;
-  }
-}
-
-
-template<class T> inline bool Bundle::is(const std::string& name)
-{
-  int index;
-  if ((index = findName(bundleName_,name)) > -1)
-  {
-    if (SCI_DATATYPE_CAST<T*>(bundle_[index].get_rep()) != 0) return(true);
-  }
-  return(false);
-}
-
-
-template<class T> inline int Bundle::num()
-{
-  int cnt = 0;
-  for (size_t p=0;p<bundleName_.size();p++)
-    if (SCI_DATATYPE_CAST<T*>(bundle_[p].get_rep()) != 0) cnt++;
-  return(cnt);
-}
-
 
 template<class T> inline std::string Bundle::getName(int index)
 {
@@ -291,19 +240,6 @@ template<class T> inline std::string Bundle::getName(int index)
   return(std::string(""));
 }
 
-
-inline void Bundle::rem(const std::string& name)
-{
-  int index;
-  index = findName(bundleName_,name);
-  if (index > -1)
-  {
-    bundle_.erase(bundle_.begin()+index);
-    bundleName_.erase(bundleName_.begin()+index);
-  }
-}
-
-  
 template<class PTYPE> inline bool Bundle::NrrdToMatrixHelper(
                                     NrrdDataHandle dataH, MatrixHandle& matH)
 {
