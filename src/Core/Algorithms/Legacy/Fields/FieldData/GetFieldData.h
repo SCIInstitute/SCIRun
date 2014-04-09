@@ -49,7 +49,7 @@ class SCISHARE GetFieldDataAlgo : public AlgorithmBase
     Datatypes::DenseMatrixHandle GetScalarFieldDataV(FieldHandle& input) const;
     Datatypes::DenseMatrixHandle GetVectorFieldDataV(FieldHandle& input) const;
     Datatypes::DenseMatrixHandle GetTensorFieldDataV(FieldHandle& input) const;
-    Datatypes::DenseMatrixHandle run(FieldHandle& input_field) const; 
+    Datatypes::DenseMatrixHandle run(FieldHandle input_field) const; 
     virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const; 
     #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     bool GetScalarFieldDataV(AlgoBase *algo, FieldHandle& input, NrrdDataHandle& output) const;

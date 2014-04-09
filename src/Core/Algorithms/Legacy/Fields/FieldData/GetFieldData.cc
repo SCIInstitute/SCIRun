@@ -71,7 +71,7 @@ AlgorithmOutput GetFieldDataAlgo::run_generic(const AlgorithmInput& input) const
 }
 
 //! Function call to convert data from Field into Matrix data
-DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle& input_field) const
+DenseMatrixHandle GetFieldDataAlgo::run(FieldHandle input_field) const
 {
    #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   algo_start("GetFieldData");

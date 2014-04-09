@@ -37,6 +37,7 @@ SET(Algorithms_Field_Tests_SRCS
   InterfaceWithCleaverAlgorithmTests.cc
   JoinFieldsAlgoTests.cc
   MapFieldDataFromElemToNodeAlgoTests.cc
+  GetFieldDataAlgoTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
@@ -44,6 +45,7 @@ SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests
 )
 
 TARGET_LINK_LIBRARIES(Algorithms_Field_Tests
+  Algorithms_DataIO
   Algorithms_Field
   Core_Datatypes_Legacy_Field
   Core_Algorithms_Legacy_Fields
