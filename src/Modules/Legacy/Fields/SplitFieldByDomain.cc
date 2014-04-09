@@ -53,7 +53,6 @@ SplitFieldByDomain::SplitFieldByDomain() : Module(staticInfo_)
   INITIALIZE_PORT(Field6);
   INITIALIZE_PORT(Field7);
   INITIALIZE_PORT(Field8);
-
 }
 
 void SplitFieldByDomain::setStateDefaults()

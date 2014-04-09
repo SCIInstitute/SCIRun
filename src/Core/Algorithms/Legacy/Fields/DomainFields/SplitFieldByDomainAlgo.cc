@@ -249,6 +249,10 @@ SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
     }
   }
   
+  std::ostringstream ostr;
+  ostr << "Input field split into " << output.size() << " fields.";
+  remark(ostr.str());
+
   return(true);
 }
 
