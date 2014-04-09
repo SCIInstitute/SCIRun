@@ -88,7 +88,7 @@ std::vector<boost::shared_ptr<T>> upcast_range(Iter begin, Iter end)
   return std::move(output);
 }
 
-template <class T, class Cont>
+template <class T, class Cont> 
 std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
 {
   return upcast_range<T>(container.begin(), container.end());
