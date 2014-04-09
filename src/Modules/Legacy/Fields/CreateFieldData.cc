@@ -28,6 +28,23 @@
 
 #include <Modules/Legacy/Fields/CreateFieldData.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
+//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Modules::Fields;
+
+ModuleLookupInfo CreateFieldData::staticInfo_("CreateFieldData", "ChangeFieldData", "SCIRun");
+
+CreateFieldData::CreateFieldData() : Module(staticInfo_)
+{
+  INITIALIZE_PORT(InputField);
+  INITIALIZE_PORT(Function);
+  INITIALIZE_PORT(OutputField);
+  INITIALIZE_PORT(DataArray);
+}
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
