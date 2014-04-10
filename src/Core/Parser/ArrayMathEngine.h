@@ -66,7 +66,7 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
       public:
         std::string  array_name_;
         std::string  matrix_name_;
-        MatrixHandle matrix_;
+        Core::Datatypes::MatrixHandle matrix_;
         size_type    size_;
     };
 
@@ -99,44 +99,44 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
     NewArrayMathEngine() { pr_ = &(def_pr_); clear(); }
   
     // Setup a progress reporter
-    void set_progress_reporter(ProgressReporter* pr) { pr_ = pr; }
+    void set_progress_reporter(Core::Utility::ProgressReporter* pr) { pr_ = pr; }
   
     // Generate inputs for field data and field data properties
     bool add_input_fielddata(const std::string& name, 
-                             FieldHandle& field);
+                             FieldHandle field);
     bool add_input_fielddata_location(const std::string& name, 
-                                      FieldHandle& field);
+                                      FieldHandle field);
     bool add_input_fielddata_coordinates(const std::string& xname, 
                                          const std::string& yname,
                                          const std::string& zname, 
-                                         FieldHandle& field);
+                                         FieldHandle field);
     bool add_input_fielddata_location(const std::string& name, 
-                                      FieldHandle& field,
+                                      FieldHandle field,
                                       int basis_order);
     bool add_input_fielddata_coordinates(const std::string& xname, 
                                          const std::string& yname,
                                          const std::string& zname, 
-                                         FieldHandle& field,
+                                         FieldHandle field,
                                          int basis_order);
     bool add_input_fielddata_element(const std::string& name, 
-                                     FieldHandle& field);
+                                     FieldHandle field);
     bool add_input_fielddata_element(const std::string& name, 
-                                     FieldHandle& field,
+                                     FieldHandle field,
                                      int basis_order);
 
     bool add_input_fieldnodes(const std::string& name,
-                              FieldHandle& field);
+                              FieldHandle field);
     bool add_input_fieldnodes_coordinates(const std::string& xname,
                               const std::string& yname,
                               const std::string& zname,
-                              FieldHandle& field);
+                              FieldHandle field);
 
     // Generate input matrices
     bool add_input_matrix(const std::string& name,
-                          MatrixHandle& matrix);
+                          Core::Datatypes::MatrixHandle matrix);
 
     bool add_input_fullmatrix(const std::string& name,
-                          MatrixHandle& matrix);
+                          Core::Datatypes::MatrixHandle matrix);
 
     // Generate input arrays
     bool add_input_bool_array(const std::string& name,   std::vector<bool>* array);
@@ -150,20 +150,20 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
     // Setup an output Field that contains the altered field data
     // One can add change the basis_order and datatype if needed
     bool add_output_fielddata(const std::string& name, 
-                              FieldHandle& field,
+                              FieldHandle field,
                               int output_basis_order,
                               const std::string& output_datatype);
 
     // Setup an output Field that contains the altered field data
     // This one takes the input field datatype and basis order
     bool add_output_fielddata(const std::string& name, 
-                              FieldHandle& field);
+                              FieldHandle field);
 
 
     // Setup a field whose nodes need to be changed, the data is copied
     // and the field nodes are changed
     bool add_output_fieldnodes(const std::string& name, 
-                               FieldHandle& field);
+                               FieldHandle field);
     
     // Setup a matrix for output
     bool add_output_matrix(const std::string& name);
@@ -173,7 +173,7 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
                            size_type size);
 
     bool add_output_fullmatrix(const std::string& name,
-                               MatrixHandle& matrix);
+                               Core::Datatypes::MatrixHandle matrix);
 
     bool add_output_bool_array(const std::string& name,
                                std::vector<bool>* array);
@@ -190,15 +190,15 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
 
     // Extract handles to the results
     bool get_field(const std::string& name, FieldHandle& field);
-    bool get_matrix(const std::string& name, MatrixHandle& matrix);
+    bool get_matrix(const std::string& name, Core::Datatypes::MatrixHandle& matrix);
 
     // Clean up the engine
     void clear();
     
   private:
-    ProgressReporter  def_pr_;
+    Core::Utility::ProgressReporter  def_pr_;
     // Progress reporter for reporting error
-    ProgressReporter* pr_; 
+    Core::Utility::ProgressReporter* pr_; 
     
     // Parser program : the structure of the expressions and simple reduction
     // of the expressions to simple function calls
