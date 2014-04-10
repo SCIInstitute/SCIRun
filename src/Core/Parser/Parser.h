@@ -638,9 +638,9 @@ class ParserScriptVariable {
     void set_single_var() { flags_ |= SCRIPT_SINGLE_VAR_E; }
     void set_sequential_var() { flags_ |= SCRIPT_SEQUENTIAL_VAR_E; }
     
-    bool is_const_var() const { return (flags_ & SCRIPT_CONST_VAR_E); }
-    bool is_single_var() const { return (flags_ & SCRIPT_SINGLE_VAR_E); }
-    bool is_sequential_var() const { return (flags_ & SCRIPT_SEQUENTIAL_VAR_E); }
+    bool is_const_var() const { return (flags_ & SCRIPT_CONST_VAR_E) != 0; }
+    bool is_single_var() const { return (flags_ & SCRIPT_SINGLE_VAR_E) != 0; }
+    bool is_sequential_var() const { return (flags_ & SCRIPT_SEQUENTIAL_VAR_E) != 0; }
     
     // Get the name and the unique name
     const std::string& get_name() const  { return (name_); }

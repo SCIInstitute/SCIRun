@@ -30,6 +30,8 @@
 #define CORE_PARSER_ARRAYMATHPROGRAM_H 1
 
 #include <Core/Datatypes/DatatypeFwd.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
+#include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 
 //#include <Core/Thread/Thread.h>
 #include <Core/Thread/Barrier.h>
@@ -39,6 +41,7 @@
 #include <Core/Parser/Parser.h>
 
 #include <boost/function.hpp>
+#include <boost/variant.hpp>
 // Include files needed for Windows
 #include <Core/Parser/share.h>
 
@@ -109,24 +112,22 @@ class SCISHARE ArrayMathProgramCode {
     ArrayMathProgramCode() :
       function_(0), index_(0), size_(1) {}
     
-    // Set the function pointer
-    inline void set_function(bool (*function)(ArrayMathProgramCode& pc))
+    inline void set_function(ArrayMathFunctionPtr function)
     {
       function_ = function;
     }
 
-    // Get the function pointer
-    inline bool (*get_function())(ArrayMathProgramCode& pc)
+    inline ArrayMathFunctionPtr get_function() const
     {
       return (function_);
     }
 
-    // Tell the porgam where to temporary space has been allocated
+    // Tell the program where the temporary space has been allocated
     // for this part of the program
     inline void set_variable(size_t j, double* variable)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = reinterpret_cast<void*>(variable); 
+      variables_[j] = variable; 
     }
 
     // In case of a mesh, a pointer to the mesh can be stored in the
@@ -134,7 +135,7 @@ class SCISHARE ArrayMathProgramCode {
     inline void set_vmesh(size_t j, VMesh* vmesh)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = reinterpret_cast<void*>(vmesh); 
+      variables_[j] = vmesh; 
     }
 
     // In case of a field, a pointer to the field can be stored in the
@@ -142,23 +143,25 @@ class SCISHARE ArrayMathProgramCode {
     inline void set_vfield(size_t j, VField* vfield)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = reinterpret_cast<void*>(vfield); 
+      variables_[j] = vfield; 
     }
 
     // In case of a field, a pointer to a dense/column matrix can be stored in the
     // program code as well
-    inline void set_matrix(size_t j, Matrix<double>* vfield)
+    inline void set_matrix(size_t j, Core::Datatypes::MatrixHandle matrix)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
-      variables_[j] = reinterpret_cast<void*>(vfield); 
+      variables_[j] = matrix; 
     }
-    
+ 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     // In general case, set a pointer
     inline void set_pointer(size_t j, void* pointer)
     {
       if (j >= variables_.size()) variables_.resize(j+1);
       variables_[j] = pointer;     
     }
+#endif
 
     inline void set_bool_array(size_t j, std::vector<bool>* array)
     {
@@ -184,31 +187,31 @@ class SCISHARE ArrayMathProgramCode {
 
     // Set the size of the array that needs to be processed
     inline void set_size(size_type size) { size_ = size; } 
-    inline size_type get_size() { return(size_); }
+    inline size_type get_size() const { return(size_); }
 
     // These functions are called by the actual code segments
     // For Scalar, Vector and Tensor buffers
     inline double* get_variable(size_t j)
-      { return (reinterpret_cast<double*>(variables_[j])); }
+      { return boost::get<double*>(variables_[j]); }
     // For Mesh buffers
     inline VMesh*  get_vmesh(size_t j)
-      { return (reinterpret_cast<VMesh*>(variables_[j])); }
+      { return boost::get<VMesh*>(variables_[j]); }
     // For Field buffers
     inline VField* get_vfield(size_t j)
-      { return (reinterpret_cast<VField*>(variables_[j])); }
+      { return boost::get<VField*>(variables_[j]); }
     // For Matrix buffers
-    inline Matrix<double>* get_matrix(size_t j)
-      { return (reinterpret_cast<Matrix<double>*>(variables_[j])); }
+    inline Core::Datatypes::MatrixHandle get_matrix(size_t j)
+      { return boost::get<Core::Datatypes::MatrixHandle>(variables_[j]); }
 
     inline std::vector<bool>* get_bool_array(size_t j)
-      { return (reinterpret_cast<std::vector<bool>*>(variables_[j])); }
+      { return boost::get<std::vector<bool>*>(variables_[j]); }
     inline std::vector<int>* get_int_array(size_t j)
-      { return (reinterpret_cast<std::vector<int>*>(variables_[j])); }
+      { return boost::get<std::vector<int>*>(variables_[j]); }
     inline std::vector<double>* get_double_array(size_t j)
-      { return (reinterpret_cast<std::vector<double>*>(variables_[j])); }
+      { return boost::get<std::vector<double>*>(variables_[j]); }
 
     // Get the current index
-    inline index_type get_index()
+    inline index_type get_index() const
       { return (index_); }
 
     // Run this code segment
@@ -218,7 +221,7 @@ class SCISHARE ArrayMathProgramCode {
     inline bool run()
       { return (function_(*this)); }
       
-    void print();
+    void print() const;
 
   private:
     // This is the minimal information needed to run the parsed program
@@ -226,10 +229,19 @@ class SCISHARE ArrayMathProgramCode {
     // grouped together so they fit in a few pages of the memory manager
   
     // Function call to evaluate this piece of the code
-    bool (*function_)(ArrayMathProgramCode& pc);
+    ArrayMathFunctionPtr function_;
   
     // Location of where the data is stored
-    StackBasedVector<void*,3> variables_;
+    typedef boost::variant<
+      double*, 
+      Core::Datatypes::MatrixHandle, 
+      VField*,
+      VMesh*,
+      std::vector<bool>*,
+      std::vector<int>*,
+      std::vector<double>*
+    > variable_type;
+    StackBasedVector<variable_type,3> variables_;
 
     // Index in where we are in the selection
     index_type    index_;  
@@ -240,25 +252,15 @@ class SCISHARE ArrayMathProgramCode {
 
 
 
-class SCISHARE ArrayMathProgramVariable {
-
+class SCISHARE ArrayMathProgramVariable 
+{
   public:
-    // For handles
-    int ref_cnt;
-
-    // Constructor of the variable
     ArrayMathProgramVariable(const std::string& name, double* data) :
-      ref_cnt(0), name_(name), data_(data) {}
-
-    // Retrieve the data pointer from the central temporal
-    // storage
-    double* get_data()  { return (data_); }
+      name_(name), data_(data) {}
+    double* get_data() const  { return (data_); }
     
   private:
-    // Name of variable
     std::string name_;
-  
-    // Where the data needs to be store
     double*     data_;
 };
 
@@ -270,33 +272,33 @@ class SCISHARE ArrayMathProgramSource {
       vmesh_(0), vfield_(0), matrix_(0), bool_array_(0), int_array_(0), double_array_(0) {}
       
       void    set_vmesh(VMesh* vmesh)    { vmesh_ = vmesh; }
-      VMesh*  get_vmesh()                { return (vmesh_); }
-      bool    is_vmesh()                 { return (vmesh_ != 0); }
+      VMesh*  get_vmesh()   const             { return (vmesh_); }
+      bool    is_vmesh() const                { return (vmesh_ != 0); }
 
       void    set_vfield(VField* vfield) { vfield_ = vfield; }
-      VField* get_vfield()               { return (vfield_); }
-      bool    is_vfield()                { return (vfield_ != 0); }
+      VField* get_vfield() const               { return (vfield_); }
+      bool    is_vfield() const                { return (vfield_ != 0); }
 
-      void    set_matrix(Matrix<double>* matrix) { matrix_ = matrix; }
-      Matrix<double>* get_matrix()               { return (matrix_); }
-      bool    is_matrix()                { return (matrix_ != 0); }
+      void    set_matrix(Core::Datatypes::MatrixHandle matrix) { matrix_ = matrix; }
+      Core::Datatypes::MatrixHandle get_matrix()  const             { return (matrix_); }
+      bool    is_matrix()  const              { return (matrix_ != 0); }
 
       void    set_bool_array(std::vector<bool>* array) { bool_array_ = array; }
-      std::vector<bool>* get_bool_array()   { return (bool_array_); }
-      bool    is_bool_array()               { return (bool_array_ != 0); }
+      std::vector<bool>* get_bool_array() const   { return (bool_array_); }
+      bool    is_bool_array()  const             { return (bool_array_ != 0); }
 
       void    set_int_array(std::vector<int>* array)  { int_array_ = array; }
-      std::vector<int>* get_int_array()     { return (int_array_); }
-      bool    is_int_array()                { return (int_array_ != 0); }
+      std::vector<int>* get_int_array()  const   { return (int_array_); }
+      bool    is_int_array()   const             { return (int_array_ != 0); }
 
       void    set_double_array(std::vector<double>* array)  { double_array_ = array; }
-      std::vector<double>* get_double_array() { return (double_array_); }
-      bool    is_double_array()               { return (double_array_ != 0); }      
+      std::vector<double>* get_double_array() const { return (double_array_); }
+      bool    is_double_array()   const            { return (double_array_ != 0); }      
       
   private:
     VMesh*    vmesh_;
     VField*   vfield_;
-    Matrix<double>*   matrix_;
+    Core::Datatypes::MatrixHandle   matrix_;
     
     std::vector<bool>*    bool_array_;
     std::vector<int>*     int_array_;
@@ -307,10 +309,7 @@ class SCISHARE ArrayMathProgramSource {
 class SCISHARE ArrayMathProgram {
   
   public:
-    int ref_cnt;
-  
-    // Default constructor
-    ArrayMathProgram() : ref_cnt(0), barrier_("ArrayMathProgram")
+    ArrayMathProgram() : barrier_("ArrayMathProgram")
     {
       // Buffer size describes how many values of a sequential variable are
       // grouped together for vectorized execution
@@ -324,13 +323,13 @@ class SCISHARE ArrayMathProgram {
     
     // Constructor that allows overloading the default optimization parameters
     ArrayMathProgram(size_type array_size, 
-        size_type buffer_size,int num_proc = -1) : ref_cnt(0), barrier_("ArrayMathProgram")
+        size_type buffer_size,int num_proc = -1) : barrier_("ArrayMathProgram")
     {
       // Buffer size describes how many values of a sequential variable are
       // grouped together for vectorized execution
       buffer_size_ = buffer_size;
       // Number of processors to use
-      if (num_proc < 1) num_proc = Thread::numProcessors();
+      if (num_proc < 1) num_proc = Core::Thread::Parallel::numCores();
       num_proc_ = num_proc;
       
       // The size of the array
@@ -341,12 +340,12 @@ class SCISHARE ArrayMathProgram {
     // object as it depends on allocated buffer sizes and those are hard to change
     // when allocated
     // Get the number of entries that are processed at once
-    size_type get_buffer_size() { return (buffer_size_); }
+    size_type get_buffer_size() const { return (buffer_size_); }
     // Get the number of processors
-    int get_num_proc() { return (num_proc_); }
+    int get_num_proc() const { return (num_proc_); }
 
     // Set the size of the array to process
-    size_type get_array_size() { return (array_size_); }
+    size_type get_array_size() const { return (array_size_); }
     void set_array_size(size_type array_size) { array_size_ = array_size; }
     
     bool add_source(const std::string& name, VField* vfield);
