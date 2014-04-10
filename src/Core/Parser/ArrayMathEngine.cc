@@ -27,18 +27,24 @@
 //  
 
 #include <Core/Parser/ArrayMathEngine.h>
+#include <Core/Parser/ArrayMathFunctionCatalog.h>
 #include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 #include <sci_debug.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Geometry;
 
 bool
 NewArrayMathEngine::add_input_fielddata(const std::string& name, 
-                                        FieldHandle& field)
+                                        FieldHandle field)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -99,11 +105,11 @@ NewArrayMathEngine::add_input_fielddata(const std::string& name,
 
 bool
 NewArrayMathEngine::add_input_fielddata_location(const std::string& name, 
-                                        FieldHandle& field)
+                                        FieldHandle field)
 {
   std::string error_str;
   
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -173,11 +179,11 @@ NewArrayMathEngine::add_input_fielddata_location(const std::string& name,
 
 bool
 NewArrayMathEngine::add_input_fielddata_location(const std::string& name, 
-                                        FieldHandle& field,
+                                        FieldHandle field,
                                         int basis_order)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -256,10 +262,10 @@ bool
 NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
                                         const std::string& yname,
                                         const std::string& zname,
-                                        FieldHandle& field)
+                                        FieldHandle field)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+xname+"'.";
     pr_->error(error_str);
@@ -333,11 +339,11 @@ bool
 NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
                                         const std::string& yname,
                                         const std::string& zname,
-                                        FieldHandle& field,
+                                        FieldHandle field,
                                         int basis_order)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+xname+"'.";
     pr_->error(error_str);
@@ -418,11 +424,11 @@ NewArrayMathEngine::add_input_fielddata_coordinates(const std::string& xname,
 
 bool
 NewArrayMathEngine::add_input_fielddata_element(const std::string& name, 
-                                        FieldHandle& field)
+                                        FieldHandle field)
 {
   std::string error_str;
   
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -487,12 +493,12 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
 
 bool
 NewArrayMathEngine::add_input_fielddata_element(const std::string& name, 
-                                        FieldHandle& field,
+                                        FieldHandle field,
                                         int basis_order)
 {
   std::string error_str;
   
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -566,10 +572,10 @@ NewArrayMathEngine::add_input_fielddata_element(const std::string& name,
 
 bool
 NewArrayMathEngine::add_input_fieldnodes(const std::string& name, 
-                                        FieldHandle& field)
+                                        FieldHandle field)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -619,10 +625,10 @@ bool
 NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname, 
                                         const std::string& yname,
                                         const std::string& zname,
-                                        FieldHandle& field)
+                                        FieldHandle field)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+xname+"'.";
     pr_->error(error_str);
@@ -673,10 +679,10 @@ NewArrayMathEngine::add_input_fieldnodes_coordinates(const std::string& xname,
 
 bool
 NewArrayMathEngine::add_input_matrix(const std::string& name, 
-                                     MatrixHandle& matrix)
+                                     MatrixHandle matrix)
 {
   std::string error_str;
-  if (matrix.get_rep() == 0)
+  if (!matrix)
   {
     error_str = "No input matrix '"+name+"'.";
     pr_->error(error_str);
@@ -748,10 +754,10 @@ NewArrayMathEngine::add_input_matrix(const std::string& name,
 
 bool
 NewArrayMathEngine::add_input_fullmatrix(const std::string& name, 
-                                     MatrixHandle& matrix)
+                                     MatrixHandle matrix)
 {
   std::string error_str;
-  if (matrix.get_rep() == 0)
+  if (!matrix)
   {
     error_str = "No input matrix '"+name+"'.";
     pr_->error(error_str);
@@ -962,19 +968,21 @@ NewArrayMathEngine::add_index(const std::string& name)
 bool
 NewArrayMathEngine::add_size(const std::string& name)
 {
-  pre_expression_ += name+"="+to_string(array_size_)+";";
+  std::ostringstream ostr;
+  ostr << name << "=" << array_size_ << ";";
+  pre_expression_ += ostr.str();
   return (true);
 }
 
 
 bool
 NewArrayMathEngine::add_output_fielddata(const std::string& name, 
-                              FieldHandle& field,
+                              FieldHandle field,
                               int basis_order,
                               const std::string& output_datatype)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -1071,10 +1079,10 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
 
 bool
 NewArrayMathEngine::add_output_fielddata(const std::string& name, 
-                              FieldHandle& field)
+                              FieldHandle field)
 {
   std::string error_str;
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -1174,11 +1182,11 @@ NewArrayMathEngine::add_output_fielddata(const std::string& name,
 
 bool
 NewArrayMathEngine::add_output_fieldnodes(const std::string& name, 
-                                          FieldHandle& field)
+                                          FieldHandle field)
 {
   std::string error_str;
   
-  if (field.get_rep() == 0)
+  if (!field)
   {
     error_str = "No input field '"+name+"'.";
     pr_->error(error_str);
@@ -1311,7 +1319,7 @@ NewArrayMathEngine::add_output_matrix(const std::string& name,
 
 bool
 NewArrayMathEngine::add_output_fullmatrix(const std::string& name,
-                                      MatrixHandle& matrix)
+                                      MatrixHandle matrix)
 {
   std::string error_str;
   std::string tname =  "__"+name;
@@ -1572,7 +1580,7 @@ NewArrayMathEngine::run()
     
     MeshHandle mesh = field->mesh();
     field = CreateField(fi,mesh);
-    if (!(field.get_rep()))
+    if (!field)
     {
       error_str = "Could not allocate output field.";
       pr_->error(error_str);
@@ -1616,7 +1624,7 @@ NewArrayMathEngine::run()
         mesh = CreateMesh(fi,dims[0]);
       }
       
-      if (mesh.get_rep() == 0)
+      if (!mesh)
       {
         error_str = "Could not allocate output mesh.";
         pr_->error(error_str);
@@ -1635,8 +1643,8 @@ NewArrayMathEngine::run()
     }
     else
     {
-      mesh = field->mesh()->clone();
-      if (mesh.get_rep() == 0)
+      mesh.reset(field->mesh()->clone());
+      if (!mesh)
       {
         error_str = "Could not allocate output mesh.";
         pr_->error(error_str);
@@ -1645,7 +1653,7 @@ NewArrayMathEngine::run()
     }
   
     field = CreateField(fi,mesh);
-    if (!(field.get_rep()))
+    if (!field)
     {
       error_str = "Could not allocate output field.";
       pr_->error(error_str);
@@ -1668,7 +1676,7 @@ NewArrayMathEngine::run()
   // Create output fields (edit field data)
   for(size_t j=0; j< matrixdata_.size(); j++)
   {
-    if (matrixdata_[j].matrix_.get_rep())
+    if (matrixdata_[j].matrix_)
     {
       std::string matrixname = matrixdata_[j].matrix_name_;
       if(!(add_matrix_sink(mprogram_,matrixname,matrixdata_[j].matrix_,error_str))) 
@@ -1732,8 +1740,8 @@ NewArrayMathEngine::run()
         n = 6;
       }
 
-      MatrixHandle matrix = new DenseMatrix(m,n);
-      if (!(matrix.get_rep()))
+      MatrixHandle matrix(new DenseMatrix(m,n));
+      if (!matrix)
       {
         error_str = "Could not allocate output matrix.";
         pr_->error(error_str);
@@ -1828,6 +1836,3 @@ NewArrayMathEngine::clear()
   fieldmesh_.clear();
   matrixdata_.clear();
 }
-
-} // end namespace
-

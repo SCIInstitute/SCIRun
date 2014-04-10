@@ -29,12 +29,8 @@
 #ifndef CORE_PARSER_ARRAYMATHENGINE_H 
 #define CORE_PARSER_ARRAYMATHENGINE_H 1
 
-#include <Core/Utils/ProgressReporter.h>
-//#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-
-
+#include <Core/Logging/ConsoleLogger.h>
 #include <Core/Parser/ArrayMathInterpreter.h>
-//#include <Core/Parser/ArrayMathFunctionCatalog.h>
 #include <Core/Parser/Parser.h>
 
 // Include files needed for Windows
@@ -96,10 +92,7 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
     // THAT THE FUNCTIONS ARE GIVEN HERE
   
     // Make sure it starts with a clean definition file
-    NewArrayMathEngine() { pr_ = &(def_pr_); clear(); }
-  
-    // Setup a progress reporter
-    void set_progress_reporter(Core::Utility::ProgressReporter* pr) { pr_ = pr; }
+    NewArrayMathEngine() { clear(); }
   
     // Generate inputs for field data and field data properties
     bool add_input_fielddata(const std::string& name, 
@@ -196,10 +189,10 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
     void clear();
     
   private:
-    Core::Utility::ProgressReporter  def_pr_;
+    Core::Logging::ConsoleLogger def_pr_;
     // Progress reporter for reporting error
-    Core::Utility::ProgressReporter* pr_; 
-    
+    Core::Logging::LegacyLoggerInterface* pr_; 
+
     // Parser program : the structure of the expressions and simple reduction
     // of the expressions to simple function calls
     ParserProgramHandle    pprogram_;

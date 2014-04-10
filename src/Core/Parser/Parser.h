@@ -35,6 +35,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <boost/shared_ptr.hpp>
 
 // Include files needed for Windows
 #include <Core/Parser/share.h>

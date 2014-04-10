@@ -32,7 +32,6 @@
 #include <Core/Parser/Parser.h>
 #include <Core/Parser/ArrayMathInterpreter.h>
 
-#include <Core/Containers/LockingHandle.h>
 #include <Core/Thread/Mutex.h>
 
 // Include files needed for Windows
@@ -55,37 +54,37 @@ class SCISHARE ArrayMathFunctionCatalog : public ParserFunctionCatalog {
     
   public:    
     // Add a function to the general database
-    void add_function(bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type);
+    void add_function(ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type);
 
     // Add a function whose input variables can be in any particular order,
     // e.g. addition, this will allow the optimizer to recognize that two pieces
     // of the parser tree are equal e.g A+B equals B+A
-    void add_sym_function(bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type);
+    void add_sym_function(ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type);
 
     // Add a function that independently of the input will output a sequence
     // e.g. the rand function, will always generate a sequence
-    void add_seq_function(bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type);
+    void add_seq_function(ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type);
 
-    // Add a function that wil always output a single
-    void add_sgl_function(bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type);
+    // Add a function that will always output a single
+    void add_sgl_function(ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type);
 
     // Add a function that is always a constant
-    void add_cst_function(bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            
-            std::string return_type);            
+    void add_cst_function(ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type);
+
     static ParserFunctionCatalogHandle get_catalog();
 };
 
-typedef LockingHandle<ArrayMathFunctionCatalog> ArrayMathFunctionCatalogHandle;
+typedef boost::shared_ptr<ArrayMathFunctionCatalog> ArrayMathFunctionCatalogHandle;
 
 //-----------------------------------------------------------------------------
 // Functions for adding Functions to the ArrayMathFunctionCatalog
