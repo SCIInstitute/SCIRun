@@ -47,7 +47,7 @@ SET(Core_Parser_SRCS
   #ArrayMathFunctionBasic.cc
   #ArrayMathFunctionCatalog.cc
   #ArrayMathFunctionSourceSink.cc
-  #ArrayMathInterpreter.cc
+  ArrayMathInterpreter.cc
   ArrayMathEngine.cc
   #LinAlgFunctionSourceSink.cc
   #LinAlgFunctionScalar.cc
@@ -63,6 +63,7 @@ TARGET_LINK_LIBRARIES(Core_Parser
                       #Core_Thread 
                       #Core_Util
                       #Core_Algorithms_Math
+					  Core_Datatypes_Legacy_Field
                       Core_Datatypes)
 
 IF(BUILD_SHARED_LIBS)

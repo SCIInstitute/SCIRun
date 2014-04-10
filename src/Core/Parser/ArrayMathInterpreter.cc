@@ -26,31 +26,36 @@
 //  DEALINGS IN THE SOFTWARE.
 //  
 
-
-// For memory management
 #include <Core/Parser/ArrayMathInterpreter.h> 
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Thread/Parallel.h>
+#include <boost/bind.hpp>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Thread;
 
 ArrayMathFunction::ArrayMathFunction(
-      bool (*function)(ArrayMathProgramCode& pc),
+      ArrayMathFunctionPtr function,
       const std::string& function_id,
       const std::string& function_type,
       int function_flags  
-    ) : ParserFunction(function_id,function_type,function_flags)
+    ) : ParserFunction(function_id,function_type,function_flags), function_(function)
 {
-  function_ = function;
 }
 
 bool
 ArrayMathInterpreter::create_program(ArrayMathProgramHandle& mprogram, std::string& error)
 {
-  if (mprogram.get_rep() == 0)
+  if (!mprogram)
   {
-    mprogram = new ArrayMathProgram();
+    mprogram.reset(new ArrayMathProgram());
     
-    if (mprogram.get_rep() == 0)
+    if (!mprogram)
     {
       error = "INTERNAL ERROR - Could not allocate ArrayMathProgram.";
       return (false);
@@ -141,7 +146,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
   }
 
   // Determine how many space we need to reserve for sequential variables
-  int buffer_size = mprogram->get_buffer_size();
+  auto buffer_size = mprogram->get_buffer_size();
   int num_proc    = mprogram->get_num_proc();
       
   for (int np=0; np< num_proc; np++)
@@ -207,7 +212,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       }
       
       // Generate a new program variable
-      pvhandle = new ArrayMathProgramVariable(name,buffer);
+      pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
       buffer += 1;
     }
     else if (type == "V")
@@ -215,7 +220,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       // A Vector generated from only constants
       
       // Generate a new program variable where the value is stored
-      pvhandle = new ArrayMathProgramVariable(name,buffer);
+      pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
       buffer += 3;      
     }
     else if (type == "T")
@@ -223,14 +228,14 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       // A Tensor generated from only constants
       
       // Generate a new program variable where the value is stored
-      pvhandle = new ArrayMathProgramVariable(name,buffer);
+      pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
       buffer += 6;     
     }
     else
     {
       // Generate a new program variable where the value is stored
-      // This is a source or sinkl that does not need memory
-      pvhandle = new ArrayMathProgramVariable(name,0);
+      // This is a source or sink that does not need memory
+      pvhandle.reset(new ArrayMathProgramVariable(name,0));
     }
         
     // Add this variable to the code 
@@ -255,26 +260,26 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
     if (type == "S") 
     { 
       // Generate a new program variable
-      pvhandle = new ArrayMathProgramVariable(name,buffer);
+      pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
       buffer += 1;
     }
     else if (type == "V")
     {
       // Generate a new program variable where the value is stored
-      pvhandle = new ArrayMathProgramVariable(name,buffer);
+      pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
       buffer += 3;      
     }
     else if (type == "T")
     {
       // Generate a new program variable where the value is stored
-      pvhandle = new ArrayMathProgramVariable(name,buffer);
+      pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
       buffer += 6;     
     }
     else
     {
       // Generate a new program variable where the value is stored
-      // This is a source or sinkl that does not need memory
-      pvhandle = new ArrayMathProgramVariable(name,0);
+      // This is a source or sink that does not need memory
+      pvhandle.reset(new ArrayMathProgramVariable(name,0));
     }
     
     // Add this variable to the code 
@@ -304,26 +309,26 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       if (type == "S") 
       { 
         // Generate a new program variable
-        pvhandle = new ArrayMathProgramVariable(name,buffer);
+        pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
         buffer += 1*buffer_size;
       }
       else if (type == "V")
       {
         // Generate a new program variable where the value is stored
-        pvhandle = new ArrayMathProgramVariable(name,buffer);
+        pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
         buffer += 3*buffer_size;      
       }
       else if (type == "T")
       {
         // Generate a new program variable where the value is stored
-        pvhandle = new ArrayMathProgramVariable(name,buffer);
+        pvhandle.reset(new ArrayMathProgramVariable(name,buffer));
         buffer += 6*buffer_size;     
       }
       else 
       {
         // Generate a new program variable where the value is stored
-        // This is a source or sinkl that does not need memory
-        pvhandle = new ArrayMathProgramVariable(name,0);
+        // This is a source or sink that does not need memory
+        pvhandle.reset(new ArrayMathProgramVariable(name,0));
       }
       
       // Add this variable to the code 
@@ -348,8 +353,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
   {
     pprogram->get_const_function(j,fhandle);
     // Set the function pointer
-    ArrayMathFunction* func = 
-      dynamic_cast<ArrayMathFunction*>(fhandle->get_function());
+    auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
     ArrayMathProgramCode pc(func->get_function());
     pc.set_size(1);
     pc.set_index(0);
@@ -630,8 +634,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
     pprogram->get_single_function(j,fhandle);
 
     // Set the function pointer
-    ArrayMathFunction* func = 
-      dynamic_cast<ArrayMathFunction*>(fhandle->get_function());
+    auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
     ArrayMathProgramCode pc(func->get_function());
     
     pc.set_size(1);
@@ -918,8 +921,7 @@ ArrayMathInterpreter::translate(ParserProgramHandle& pprogram,
       pprogram->get_sequential_function(j,fhandle);
 
       // Set the function pointer
-      ArrayMathFunction* func = 
-        dynamic_cast<ArrayMathFunction*>(fhandle->get_function());
+      auto func = boost::dynamic_pointer_cast<ArrayMathFunction>(fhandle->get_function());
       ArrayMathProgramCode pc(func->get_function());
       
       ParserScriptVariableHandle ohandle = fhandle->get_output_var();
@@ -1228,7 +1230,7 @@ ArrayMathInterpreter::run(ArrayMathProgramHandle& mprogram,
 bool 
 ArrayMathInterpreter::add_fielddata_source(ArrayMathProgramHandle& pprogram,
                                            const std::string& name,
-                                           FieldHandle& field,
+                                           FieldHandle field,
                                            std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
@@ -1238,7 +1240,7 @@ ArrayMathInterpreter::add_fielddata_source(ArrayMathProgramHandle& pprogram,
 bool
 ArrayMathInterpreter::add_fieldmesh_source(ArrayMathProgramHandle& pprogram,
                                            const std::string& name,
-                                           FieldHandle& field,
+                                           FieldHandle field,
                                            std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
@@ -1249,11 +1251,11 @@ ArrayMathInterpreter::add_fieldmesh_source(ArrayMathProgramHandle& pprogram,
 bool
 ArrayMathInterpreter::add_matrix_source(ArrayMathProgramHandle& pprogram,
                                         const std::string& name, 
-                                        MatrixHandle& matrix,
+                                        MatrixHandle matrix,
                                         std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
-  return(pprogram->add_source(name,matrix.get_rep()));
+  return(pprogram->add_source(name,matrix));
 }
 
 bool
@@ -1290,7 +1292,7 @@ ArrayMathInterpreter::add_double_array_source(ArrayMathProgramHandle& pprogram,
 bool
 ArrayMathInterpreter::add_fielddata_sink(ArrayMathProgramHandle& pprogram,
                                          const std::string& name,
-                                         FieldHandle& field,
+                                         FieldHandle field,
                                          std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
@@ -1300,7 +1302,7 @@ ArrayMathInterpreter::add_fielddata_sink(ArrayMathProgramHandle& pprogram,
 bool 
 ArrayMathInterpreter::add_fieldmesh_sink(ArrayMathProgramHandle& pprogram,
                                          const std::string& name,
-                                         FieldHandle& field,
+                                         FieldHandle field,
                                          std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
@@ -1310,11 +1312,11 @@ ArrayMathInterpreter::add_fieldmesh_sink(ArrayMathProgramHandle& pprogram,
 bool 
 ArrayMathInterpreter::add_matrix_sink(ArrayMathProgramHandle& pprogram,
                                       const std::string& name,
-                                      MatrixHandle& matrix,
+                                      MatrixHandle matrix,
                                       std::string& error)
 {
   if(!(create_program(pprogram,error))) return (false);
-  return(pprogram->add_sink(name,matrix.get_rep()));
+  return(pprogram->add_sink(name,matrix));
 }
 
 bool 
@@ -1375,7 +1377,7 @@ ArrayMathProgram::add_source(const std::string& name, VMesh* vmesh)
 }
 
 bool 
-ArrayMathProgram::add_source(const std::string& name, Matrix<double>* matrix)
+ArrayMathProgram::add_source(const std::string& name, MatrixHandle matrix)
 {
   ArrayMathProgramSource ps; ps.set_matrix(matrix);
   input_sources_[name] = ps;
@@ -1424,7 +1426,7 @@ ArrayMathProgram::add_sink(const std::string& name, VMesh* vmesh)
 }
 
 bool 
-ArrayMathProgram::add_sink(const std::string& name, Matrix<double>* matrix)
+ArrayMathProgram::add_sink(const std::string& name, MatrixHandle matrix)
 {
   ArrayMathProgramSource ps; ps.set_matrix(matrix);
   output_sinks_[name] = ps;
@@ -1509,11 +1511,11 @@ ArrayMathProgram::run_sequential(size_t& error_line)
   error_line_.resize(num_proc_,0);
   success_.resize(num_proc_,true);
   
-  Thread::parallel(this,&ArrayMathProgram::run_parallel,num_proc_,num_proc_);
+  Parallel::RunTasks(boost::bind(&ArrayMathProgram::run_parallel, this, _1), num_proc_);
  
   for (int j=0; j<num_proc_; j++)
   {
-    if (success_[j] == false)
+    if (!success_[j])
     {
       error_line = error_line_[j];
       return (false);
@@ -1524,13 +1526,13 @@ ArrayMathProgram::run_sequential(size_t& error_line)
 }  
   
 void
-ArrayMathProgram::run_parallel(int proc, int nproc)
+ArrayMathProgram::run_parallel(int proc)
 {
-  index_type per_thread = array_size_/nproc;
+  index_type per_thread = array_size_/num_proc_;
   index_type start = proc*per_thread;
   index_type end   = (proc+1)*per_thread;
   index_type offset, sz;
-  if (proc+1 == nproc) end = array_size_;
+  if (proc+1 == num_proc_) end = array_size_;
   
   offset = start;
   success_[proc] = true;
@@ -1557,16 +1559,14 @@ ArrayMathProgram::run_parallel(int proc, int nproc)
     offset += sz;
   }
   
-  barrier_.wait(nproc);
+  barrier_.wait();
 }
 
 
 void
-ArrayMathProgramCode::print()
+ArrayMathProgramCode::print() const
 {
   std::cout << "function_ = "<<function_<<"\n";
   for (size_t j=0;j<variables_.size(); j++)
   std::cout << "variable["<<j<<"]_ = "<<variables_[j]<<"\n";
 }
-
-} // end namespace

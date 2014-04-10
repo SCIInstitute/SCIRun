@@ -106,7 +106,7 @@ class SCISHARE ArrayMathProgramCode {
   public:
   
     // Constructor
-    ArrayMathProgramCode(bool (*function)(ArrayMathProgramCode& pc)) :
+    ArrayMathProgramCode(ArrayMathFunctionPtr function) :
       function_(function), index_(0), size_(1) {} 
     
     ArrayMathProgramCode() :
@@ -447,7 +447,7 @@ class SCISHARE ArrayMathProgram {
     
     // For parallel code
   private:
-    void run_parallel(int proc, int nproc);
+    void run_parallel(int proc);
 
     // Error reporting parallel code
     std::vector<size_type>  error_line_;
@@ -504,11 +504,11 @@ class SCISHARE ArrayMathInterpreter {
 
 
     // Field data/node/element sinks  
-    bool add_fielddata_sink(ArrayMathProgramHandle pprogram,
+    bool add_fielddata_sink(ArrayMathProgramHandle& pprogram,
                             const std::string& name,
                             FieldHandle field,
                             std::string& error);
-    bool add_fieldmesh_sink(ArrayMathProgramHandle pprogram,
+    bool add_fieldmesh_sink(ArrayMathProgramHandle& pprogram,
                             const std::string& name,
                             FieldHandle field,
                             std::string& error);
@@ -519,17 +519,17 @@ class SCISHARE ArrayMathInterpreter {
                          Core::Datatypes::MatrixHandle matrix,
                          std::string& error);
 
-    bool add_bool_array_sink(ArrayMathProgramHandle pprogram,
+    bool add_bool_array_sink(ArrayMathProgramHandle& pprogram,
                          const std::string& name, 
                          std::vector<bool>* array,
                          std::string& error);
 
-    bool add_int_array_sink(ArrayMathProgramHandle pprogram,
+    bool add_int_array_sink(ArrayMathProgramHandle& pprogram,
                          const std::string& name, 
                          std::vector<int>* array,
                          std::string& error);
 
-    bool add_double_array_sink(ArrayMathProgramHandle pprogram,
+    bool add_double_array_sink(ArrayMathProgramHandle& pprogram,
                          const std::string& name, 
                          std::vector<double>* array,
                          std::string& error);
