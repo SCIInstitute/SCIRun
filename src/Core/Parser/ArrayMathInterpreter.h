@@ -33,7 +33,7 @@
 #include <Core/Datatypes/Legacy/Base/Types.h>
 #include <Core/Datatypes/Legacy/Field/FieldFwd.h>
 
-//#include <Core/Thread/Thread.h>
+#include <Core/Thread/Parallel.h>
 #include <Core/Thread/Barrier.h>
 
 #include <Core/Containers/StackBasedVector.h>
@@ -309,30 +309,23 @@ class SCISHARE ArrayMathProgramSource {
 class SCISHARE ArrayMathProgram {
   
   public:
-    ArrayMathProgram() : barrier_("ArrayMathProgram")
+    ArrayMathProgram() : num_proc_(Core::Thread::Parallel::NumCores()), barrier_("ArrayMathProgram", num_proc_)
     {
       // Buffer size describes how many values of a sequential variable are
       // grouped together for vectorized execution
       buffer_size_ = 128;
-      // Number of processors to use
-      num_proc_ = Thread::numProcessors();
-
-      // The size of the array
       array_size_ = 1;
     }
     
     // Constructor that allows overloading the default optimization parameters
     ArrayMathProgram(size_type array_size, 
-        size_type buffer_size,int num_proc = -1) : barrier_("ArrayMathProgram")
+      size_type buffer_size,int num_proc = -1) : 
+      num_proc_(num_proc < 1 ? Core::Thread::Parallel::NumCores() : num_proc),
+      barrier_("ArrayMathProgram", num_proc_)
     {
       // Buffer size describes how many values of a sequential variable are
       // grouped together for vectorized execution
       buffer_size_ = buffer_size;
-      // Number of processors to use
-      if (num_proc < 1) num_proc = Core::Thread::Parallel::numCores();
-      num_proc_ = num_proc;
-      
-      // The size of the array
       array_size_ = array_size;
     }
   
@@ -350,14 +343,14 @@ class SCISHARE ArrayMathProgram {
     
     bool add_source(const std::string& name, VField* vfield);
     bool add_source(const std::string& name, VMesh*  vmesh);
-    bool add_source(const std::string& name, Matrix<double>* matrix);
+    bool add_source(const std::string& name, Core::Datatypes::MatrixHandle matrix);
     bool add_source(const std::string& name, std::vector<bool>* array);
     bool add_source(const std::string& name, std::vector<int>* array);
     bool add_source(const std::string& name, std::vector<double>* array);
 
     bool add_sink(const std::string& name, VField* vfield);
     bool add_sink(const std::string& name, VMesh*  vmesh);
-    bool add_sink(const std::string& name, Matrix<double>* matrix);    
+    bool add_sink(const std::string& name, Core::Datatypes::MatrixHandle matrix);    
     bool add_sink(const std::string& name, std::vector<bool>* array);
     bool add_sink(const std::string& name, std::vector<int>* array);
     bool add_sink(const std::string& name, std::vector<double>* array);
@@ -390,26 +383,26 @@ class SCISHARE ArrayMathProgram {
 
     // Set variables which we use as temporal information structures
     // TODO: need to remove them at some point
-    void set_const_variable(size_t j, ArrayMathProgramVariableHandle& handle)
+    void set_const_variable(size_t j, ArrayMathProgramVariableHandle handle)
       { const_variables_[j] = handle; }
-    void set_single_variable(size_t j, ArrayMathProgramVariableHandle& handle)
+    void set_single_variable(size_t j, ArrayMathProgramVariableHandle handle)
       { single_variables_[j] = handle; }
-    void set_sequential_variable(size_t j, size_t np, ArrayMathProgramVariableHandle& handle)
+    void set_sequential_variable(size_t j, size_t np, ArrayMathProgramVariableHandle handle)
       { sequential_variables_[np][j] = handle; }
   
-    ArrayMathProgramVariableHandle get_const_variable(size_t j)
+    ArrayMathProgramVariableHandle get_const_variable(size_t j) const
       { return (const_variables_[j]); }
-    ArrayMathProgramVariableHandle get_single_variable(size_t j)
+    ArrayMathProgramVariableHandle get_single_variable(size_t j) const
       { return (single_variables_[j]); }
-    ArrayMathProgramVariableHandle get_sequential_variable(size_t j, size_t np)
+    ArrayMathProgramVariableHandle get_sequential_variable(size_t j, size_t np) const
       { return (sequential_variables_[np][j]); }
 
     // Set program code
-    void set_const_program_code(size_t j, ArrayMathProgramCode& pc)
+    void set_const_program_code(size_t j, ArrayMathProgramCode pc)
       { const_functions_[j] = pc; }
-    void set_single_program_code(size_t j, ArrayMathProgramCode& pc)
+    void set_single_program_code(size_t j, ArrayMathProgramCode pc)
       { single_functions_[j] = pc; }
-    void set_sequential_program_code(size_t j, size_t np, ArrayMathProgramCode& pc)
+    void set_sequential_program_code(size_t j, size_t np, ArrayMathProgramCode pc)
       { sequential_functions_[np][j] = pc; }
     
     // Code to find the pointers that are given for sources and sinks  
@@ -460,7 +453,7 @@ class SCISHARE ArrayMathProgram {
     std::vector<size_type>  error_line_;
     std::vector<bool>       success_;
 
-    Barrier barrier_;
+    Core::Thread::Barrier barrier_;
 };
 
 class SCISHARE ArrayMathInterpreter {
@@ -481,17 +474,17 @@ class SCISHARE ArrayMathInterpreter {
     // Field data/node/element sources
     bool add_fielddata_source(ArrayMathProgramHandle& pprogram,
                               const std::string& name,
-                              FieldHandle& field,
+                              FieldHandle field,
                               std::string& error);
     bool add_fieldmesh_source(ArrayMathProgramHandle& pprogram,
                               const std::string& name,
-                              FieldHandle& field,
+                              FieldHandle field,
                               std::string& error);
     
     // Matrix sources
     bool add_matrix_source(ArrayMathProgramHandle& pprogram,
                            const std::string& name, 
-                           MatrixHandle& matrix,
+                           Core::Datatypes::MatrixHandle matrix,
                            std::string& error);
 
     bool add_bool_array_source(ArrayMathProgramHandle& pprogram,
@@ -511,32 +504,32 @@ class SCISHARE ArrayMathInterpreter {
 
 
     // Field data/node/element sinks  
-    bool add_fielddata_sink(ArrayMathProgramHandle& pprogram,
+    bool add_fielddata_sink(ArrayMathProgramHandle pprogram,
                             const std::string& name,
-                            FieldHandle& field,
+                            FieldHandle field,
                             std::string& error);
-    bool add_fieldmesh_sink(ArrayMathProgramHandle& pprogram,
+    bool add_fieldmesh_sink(ArrayMathProgramHandle pprogram,
                             const std::string& name,
-                            FieldHandle& field,
+                            FieldHandle field,
                             std::string& error);
 
     // Matrix sinks
     bool add_matrix_sink(ArrayMathProgramHandle& pprogram,
                          const std::string& name, 
-                         MatrixHandle& matrix,
+                         Core::Datatypes::MatrixHandle matrix,
                          std::string& error);
 
-    bool add_bool_array_sink(ArrayMathProgramHandle& pprogram,
+    bool add_bool_array_sink(ArrayMathProgramHandle pprogram,
                          const std::string& name, 
                          std::vector<bool>* array,
                          std::string& error);
 
-    bool add_int_array_sink(ArrayMathProgramHandle& pprogram,
+    bool add_int_array_sink(ArrayMathProgramHandle pprogram,
                          const std::string& name, 
                          std::vector<int>* array,
                          std::string& error);
 
-    bool add_double_array_sink(ArrayMathProgramHandle& pprogram,
+    bool add_double_array_sink(ArrayMathProgramHandle pprogram,
                          const std::string& name, 
                          std::vector<double>* array,
                          std::string& error);
