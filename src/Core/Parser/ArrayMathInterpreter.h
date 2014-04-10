@@ -38,6 +38,7 @@
 
 #include <Core/Parser/Parser.h>
 
+#include <boost/function.hpp>
 // Include files needed for Windows
 #include <Core/Parser/share.h>
 
@@ -56,8 +57,8 @@ class ArrayMathProgramVariable;
 // As Program is stored in a large array we do not need a handle for that
 // one. These are helper classes that are located elsewhere in memory
 
-typedef Handle<ArrayMathProgramVariable> ArrayMathProgramVariableHandle;
-typedef Handle<ArrayMathProgram>         ArrayMathProgramHandle;
+typedef boost::shared_ptr<ArrayMathProgramVariable> ArrayMathProgramVariableHandle;
+typedef boost::shared_ptr<ArrayMathProgram>         ArrayMathProgramHandle;
 
 //-----------------------------------------------------------------------------
 // Functions for databasing the function calls that make up the program
@@ -67,27 +68,26 @@ typedef Handle<ArrayMathProgram>         ArrayMathProgramHandle;
 // additional flags and a pointer the the actual function that
 // needs to be called
 
+typedef boost::function<bool(ArrayMathProgramCode&)> ArrayMathFunctionPtr;
 
 class SCISHARE ArrayMathFunction : public ParserFunction {
   public:
     // Build a new function
     ArrayMathFunction(
-      bool (*function)(ArrayMathProgramCode& pc),
+      ArrayMathFunctionPtr function,
       const std::string& function_id,
       const std::string& function_type,
       int function_flags  
     );
 
-    // Virtual destructor so I can do dynamic casts on this class 
     virtual ~ArrayMathFunction() {}
     
-    // Get the pointer to the function
-    bool (*get_function())(ArrayMathProgramCode& pc) 
+    ArrayMathFunctionPtr get_function() const 
       { return (function_); } 
 
   private:
     // The function to call that needs to be called on the data
-    bool (*function_)(ArrayMathProgramCode& pc);
+    ArrayMathFunctionPtr function_;
 
 };
 
