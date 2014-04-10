@@ -57,6 +57,7 @@ public:
   static const AlgorithmInputName RHS;
   static const AlgorithmInputName MatrixToWrite;
   static const AlgorithmInputName InputField;
+  static const AlgorithmInputName ListOfInputFields;
 
   static const AlgorithmOutputName MatrixInfo;
   static const AlgorithmOutputName Result;
@@ -64,7 +65,7 @@ public:
   static const AlgorithmOutputName MatrixLoaded;
   static const AlgorithmOutputName Solution;
   static const AlgorithmOutputName OutputField;
-
+  static const AlgorithmOutputName ListOfOutputFields;
 };
 
 }}}

@@ -61,7 +61,7 @@ TEST_F(SetConductivitiesToTetMeshTests, ThrowsForNullInput)
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
 
-TEST_F(SetConductivitiesToTetMeshTests, Foo)
+TEST_F(SetConductivitiesToTetMeshTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }

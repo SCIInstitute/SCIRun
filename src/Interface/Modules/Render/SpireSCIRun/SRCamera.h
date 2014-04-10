@@ -82,7 +82,7 @@ public:
   /// @{
   static float getDefaultFOVY()   {return 32.0f * (spire::PI / 180.0f);}
   static float getDefaultZNear()  {return 0.1f;}
-  static float getDefaultZFar()   {return 1350.0f;}
+  static float getDefaultZFar()   {return 100000.0f;}
   /// @}
 
 private:

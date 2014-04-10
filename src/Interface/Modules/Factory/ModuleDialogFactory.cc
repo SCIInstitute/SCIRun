@@ -48,6 +48,7 @@
 #include <Interface/Modules/Fields/GetDomainBoundaryDialog.h>
 #include <Interface/Modules/Fields/ReportFieldInfoDialog.h>
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
+#include <Interface/Modules/Fields/SplitFieldByDomainDialog.h>
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
@@ -61,6 +62,8 @@
 #include <Interface/Modules/Visualization/ShowFieldDialog.h>
 #include <Interface/Modules/Visualization/CreateBasicColorMapDialog.h>
 #include <Interface/Modules/Render/ViewScene.h>
+#include <Interface/Modules/Bundle/InsertFieldsIntoBundleDialog.h>
+#include <Interface/Modules/Bundle/GetFieldsFromBundleDialog.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -127,14 +130,12 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetDomainBoundaryDialog(moduleId, state, parentToUse_);
   if (moduleId.find("JoinFields") != std::string::npos)
     return new JoinFieldsDialog(moduleId, state, parentToUse_);
-  if (moduleId.find("SetFieldData") != std::string::npos)
-    return new SetFieldDataDialog(moduleId, state, parentToUse_);   
-  if (moduleId.find("InterfaceWithCleaver") != std::string::npos)
-    return new InterfaceWithCleaverDialog(moduleId, state, parentToUse_);   
-  if (moduleId.find("SelectSubMatrix") != std::string::npos)
-    return new SelectSubMatrixDialog(moduleId, state, parentToUse_);  
-  if (moduleId.find("MapFieldDataFromElemToNode") != std::string::npos)
-    return new MapFieldDataFromElemToNodeDialog(moduleId, state, parentToUse_);            
+  if (moduleId.find("InsertFieldsIntoBundle") != std::string::npos)
+    return new InsertFieldsIntoBundleDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("GetFieldsFromBundle") != std::string::npos)
+    return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("SplitFieldByDomain") != std::string::npos)
+    return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

@@ -65,7 +65,7 @@ protected:
 
     // How to set parameters on an algorithm (that come from the GUI)
     algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, includeOuterBoundary);
-    
+
     // TODO: this logic matches the wacky module behavior
     algo.set(GetDomainBoundaryAlgo::UseRange, useRange);
     if (!useRange)
@@ -73,7 +73,7 @@ protected:
       algo.set(GetDomainBoundaryAlgo::Domain, domainValue);
       algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
       algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::UseRange, true);
+	  algo.set(GetDomainBoundaryAlgo::UseRange, true);
     }
 
     FieldHandle boundary;
@@ -96,44 +96,43 @@ protected:
 // expected values of -1 need to be figured out from the v4 GUI.
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_1)
 {
-  runTest(false, true, 1, 8680, 8334);
+  runTest(false, true, 1, 9024, 8574);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_1)
 {
-  runTest(false, false, 1, 9024, 8574);
+  runTest(false, false, 1, 8680, 8334);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_1)
 {
-  runTest(true, false, 1, 17264, 17700);
+  runTest(true, false, 1, 12328, 12324);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_1)
 {
-  runTest(true, true, 1, 12328, 12324);
+  runTest(true, true, 1, 17264, 17700);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_4)
 {
-  runTest(false, false, 4, 9024, 8574);
+  runTest(false, false, 4, 0, 0);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_4)
 {
-  runTest(true, false, 4, 17264, 17700);
+  runTest(true, false, 4, 0, 0);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
 {
-  runTest(false, true, 4, 0, 0);
+  runTest(false, true, 4, 9024, 8574);
 }
 
 TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
 {
-  runTest(true, true, 4, 0, 0);
+  runTest(true, true, 4, 17264, 17700);
 }
-
 
 TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 {
@@ -153,6 +152,7 @@ using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 class GetDomainBoundaryTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, int, int, int> >
+
 {
 public:
   FieldHandle boundary_;
@@ -182,10 +182,13 @@ protected:
       algo_.set(GetDomainBoundaryAlgo::MaxRange, ::std::tr1::get<3>(GetParam()));
       algo_.set(GetDomainBoundaryAlgo::UseRange, true);
     }
+	//algo_.set(GetDomainBoundaryAlgo::InnerBoundaryOnly, ::std::tr1::get<3>(GetParam()));
+	//algo_.set(GetDomainBoundaryAlgo::NoInnerBoundary, ::std::tr1::get<4>(GetParam()));
+	//algo_.set(GetDomainBoundaryAlgo::DisconnectBoundaries, ::std::tr1::get<5>(GetParam())); 
+    //ASSERT_TRUE(algo_.runImpl(latVol, unused, boundary));
   }
   virtual void TearDown()
   {  }
-
 };
 
 TEST_P(GetDomainBoundaryTestsParameterized, LatVolBoundry_Parameterized)
@@ -205,8 +208,7 @@ INSTANTIATE_TEST_CASE_P(
   GetDomainBoundaryTestsParameterized,
   Combine(Bool(), Bool(), Values(1,4), Values(1,4), Values(1,4)) 
   );
-
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-//
+
 #endif 

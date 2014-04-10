@@ -30,38 +30,27 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H 1
 
-//! Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
-
-//! Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
-
+#include <Core/Algorithms/Base/AlgorithmBase.h>
 //! for Windows support
-#include <Core/Algorithms/Fields/share.h>
+#include <Core/Algorithms/Legacy/Fields/share.h>
 
-namespace SCIRunAlgo {
+namespace SCIRun {
+  namespace Core {
+    namespace Algorithms {
+      namespace Fields {
 
-using namespace SCIRun;
-
-// Algorithm class with the function call that converts a field into a
-// pointcloud.
-class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgoBase
+class SCISHARE ConvertMeshToPointCloudMeshAlgo : public AlgorithmBase
 {
   public:
-    //! Set defaults
-    ConvertMeshToPointCloudMeshAlgo()
-    {
-      //! Do we want to get the location of the data nodes
-      //! or the location of the nodes
-      add_option("location","node","node|data");
-    }
+    ConvertMeshToPointCloudMeshAlgo();
 
-    //! run the algorithm
-    bool run(FieldHandle input, FieldHandle& output);
+    bool runImpl(FieldHandle input, FieldHandle& output) const;
+    virtual AlgorithmOutput run_generic(const AlgorithmInput& input) const override;
+
+    static AlgorithmParameterName Location;
 };
 
-} // end namespace SCIRunAlgo
+      }}}}
 
 #endif 
 
