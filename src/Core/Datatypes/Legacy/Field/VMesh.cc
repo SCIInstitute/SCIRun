@@ -35,12 +35,6 @@
 using namespace SCIRun;
 using namespace SCIRun::Core::Geometry;
 
-MeshHandle
-VMesh::mesh()
-{
-  return (MeshHandle());
-}
-
 void 
 VMesh::size(Node::size_type& size) const
 {

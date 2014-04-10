@@ -133,9 +133,6 @@ public:
   
   virtual ~VMeshShared() {}
   
-  virtual MeshHandle mesh();
-  virtual VMesh*     vmesh();  
-  
   virtual bool synchronize(unsigned int sync);
   virtual bool unsynchronize(unsigned int sync);
   virtual bool clear_synchronization();
@@ -166,20 +163,6 @@ protected:
 
 
 };
-
-template <class MESH>
-MeshHandle
-VMeshShared<MESH>::mesh()
-{
-  return (MeshHandle(mesh_));
-}
-
-template <class MESH>
-VMesh*
-VMeshShared<MESH>::vmesh()
-{
-  return (this);
-}
 
 template<class MESH>
 void 
