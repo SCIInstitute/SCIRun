@@ -38,6 +38,8 @@ SET(Algorithms_Field_Tests_SRCS
   JoinFieldsAlgoTests.cc
   MapFieldDataFromElemToNodeAlgoTests.cc
   GetFieldDataAlgoTests.cc
+  SetFieldDataAlgoTests.cc
+  LoadFieldsForAlgoCoreTests.cc
 )
 
 SCIRUN_ADD_UNIT_TEST(Algorithms_Field_Tests

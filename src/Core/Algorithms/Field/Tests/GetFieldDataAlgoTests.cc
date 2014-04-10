@@ -24,205 +24,22 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   
+   author: Moritz Dannhauer
+   last change: 04/10/2014
 */
  
 #include <gtest/gtest.h>
-#include <Testing/Utils/SCIRunUnitTests.h>
-#include <Core/Algorithms/DataIO/ReadMatrix.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/GetFieldData.h>
+#include <Core/Algorithms/Field/Tests/LoadFieldsForAlgoCoreTests.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
-#include <Core/Datatypes/MatrixTypeConversions.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/MatrixIO.h>
 #include <Core/Datatypes/MatrixComparison.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Utils/StringUtil.h>
-#include <Testing/Utils/MatrixTestUtilities.h>
 
-using namespace SCIRun;
-using namespace SCIRun::Core;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun::Core::Algorithms::DataIO;
-using namespace SCIRun::TestUtils;
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Algorithms::Fields;
-
-//TODO (DAN) : No way to import (ReadField) TriSurf (on nodes or elements) with defined tensors
-  
-  FieldHandle TriSurfOnNodeVector()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.fld");
-  }
-  
-  FieldHandle TriSurfOnNodeScalar()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.fld");
-  }
-  
-  FieldHandle TriSurfOnElemVector()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.fld");
-  }
-  
-  FieldHandle TriSurfOnElemScalar()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.fld");
-  }  
-  
-  FieldHandle TetMeshOnNodeVector()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.fld");
-  }
-  
-  FieldHandle TetMeshOnNodeScalar()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.fld");
-  }
-   
-  FieldHandle TetMeshOnNodeTensor()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.fld");
-  }
-  
-  FieldHandle TetMeshOnElemTensor()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_elem/tensor/tet_tensor_on_elem.fld");
-  }
-  
-  FieldHandle TetMeshOnElemVector()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.fld");
-  }
-  
-  FieldHandle TetMeshOnElemScalar()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.fld");
-  }
-    
-  FieldHandle PointCloudOnNodeScalar()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/point_cloud/scalar/pts_scalar.fld");
-  }
-
-  FieldHandle PointCloudOnNodeVector()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/point_cloud/vector/pts_vector.fld");
-  }
-  
-  FieldHandle PointCloudOnNodeTensor()
-  {     
-   return loadFieldFromFile(TestResources::rootDir() / "getfielddata/point_cloud/tensor/pts_tensor.fld");
-  }
-  
-
-  
-  DenseMatrixHandle TriSurfOnNodeVectorMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_node/vector/tri_vector_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;
-  }
-  
-  DenseMatrixHandle TriSurfOnNodeScalarMat()
-  {   
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;   
-  }
-  
-  DenseMatrixHandle TriSurfOnElemVectorMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_elem/vector/tri_vector_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;  
-  }
-  
-  DenseMatrixHandle TriSurfOnElemScalarMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tri_surf/data_defined_on_elem/scalar/tri_scalar_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat; 
-  }  
-  
-  DenseMatrixHandle TetMeshOnNodeVectorMat()
-  {   
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_node/vector/tet_vector_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;  
-  }
-  
-  DenseMatrixHandle TetMeshOnNodeScalarMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_node/scalar/tet_scalar_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat; 
-  }
-   
-  DenseMatrixHandle TetMeshOnNodeTensorMat()
-  {  
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_node/tensor/tet_tensor_on_node.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat; 
-  }
-  
-  DenseMatrixHandle TetMeshOnElemTensorMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_elem/tensor/tet_tensor_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat; 
-  }
-  
-  DenseMatrixHandle TetMeshOnElemVectorMat()
-  {    
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_elem/vector/tet_vector_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat; 
-  }
-  
-  DenseMatrixHandle TetMeshOnElemScalarMat()
-  {    
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/tet_mesh/data_defined_on_elem/scalar/tet_scalar_on_elem.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;
-  }
-    
-  DenseMatrixHandle PointCloudOnNodeScalarMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/point_cloud/scalar/pts_scalar.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;
-  }
-
-  DenseMatrixHandle PointCloudOnNodeVectorMat()
-  {   
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/point_cloud/vector/pts_vector.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;  
-  }
-  
-  DenseMatrixHandle PointCloudOnNodeTensorMat()
-  {     
-   ReadMatrixAlgorithm algo;
-   auto path = TestResources::rootDir() / "getfielddata/point_cloud/tensor/pts_tensor.mat";
-   auto mat = matrix_cast::as_dense(algo.run(path.string()));
-   return mat;
-  }
-  
 
 
 TEST(GetFieldDataTest, TriSurfOnNodeScalar)
