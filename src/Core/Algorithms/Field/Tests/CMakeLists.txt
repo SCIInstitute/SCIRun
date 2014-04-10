@@ -38,7 +38,7 @@ SET(Algorithms_Field_Tests_SRCS
   JoinFieldsAlgoTests.cc
   MapFieldDataFromElemToNodeAlgoTests.cc
   GetFieldDataAlgoTests.cc
-#  SetFieldDataAlgoTests.cc
+  SetFieldDataAlgoTests.cc
   LoadFieldsForAlgoCoreTests.cc
 )
 

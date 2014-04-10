@@ -401,7 +401,7 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle& data, si
  return true;
 }
 
-FieldHandle SetFieldDataAlgo::run(FieldHandle& input_field, DenseMatrixHandle& data) const
+FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle data) const
 {
   FieldHandle output;
   
