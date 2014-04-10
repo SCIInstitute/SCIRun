@@ -196,7 +196,7 @@ namespace Algorithms {
     template <typename T>
     void setList(const Name& name, const std::vector<boost::shared_ptr<T>>& list)
     {
-      data_[name].swap(upcast_range<Datatypes::Datatype>(list));
+      data_[name] = upcast_range<Datatypes::Datatype>(list);
     }
 
     //TODO: lame
@@ -274,7 +274,7 @@ namespace Algorithms {
     AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
     {
       //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
-      map_[Name(name)].swap(upcast_range<Datatypes::Datatype>(vec));
+      map_[Name(name)] = upcast_range<Datatypes::Datatype>(vec);
       return *this;
     }
     template <typename T>
