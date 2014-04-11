@@ -28,11 +28,12 @@
 
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
 #include <Core/Thread/Mutex.h>
-#include <math.h>
+#include <Core/Math/MiscMath.h>
 
 namespace ArrayMathFunctions {
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Thread;
   
 //--------------------------------------------------------------------------
 // Simple Scalar functions
@@ -754,7 +755,10 @@ bool min_ss(SCIRun::ArrayMathProgramCode& pc)
 }
 
 
-SCIRun::Mutex RandomMutex("Mutex for rand() and random() functions");
+//TODO:
+// replace with boost/std random number generators
+
+Mutex RandomMutex("Mutex for rand() and random() functions");
 
 bool random_value_(SCIRun::ArrayMathProgramCode& pc)
 { 
@@ -780,7 +784,7 @@ bool random_value_(SCIRun::ArrayMathProgramCode& pc)
 }
 
 
-} // end namsespace 
+}
 
 namespace SCIRun {
 
@@ -844,7 +848,5 @@ InsertScalarArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
   catalog->add_seq_function(ArrayMathFunctions::random_value_,"randv$","S");
 
 }
-
-
 
 } // end namespace

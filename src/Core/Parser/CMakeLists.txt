@@ -40,13 +40,13 @@ SET(Core_Parser_HEADERS
 )
 
 SET(Core_Parser_SRCS
-  #ArrayMathFunctionElement.cc
-  #ArrayMathFunctionTensor.cc
-  #ArrayMathFunctionVector.cc
-  #ArrayMathFunctionScalar.cc
-  #ArrayMathFunctionBasic.cc
-  #ArrayMathFunctionCatalog.cc
-  #ArrayMathFunctionSourceSink.cc
+  ArrayMathFunctionElement.cc
+  ArrayMathFunctionTensor.cc
+  ArrayMathFunctionVector.cc
+  ArrayMathFunctionScalar.cc
+  ArrayMathFunctionBasic.cc
+  ArrayMathFunctionCatalog.cc
+  ArrayMathFunctionSourceSink.cc
   ArrayMathInterpreter.cc
   ArrayMathEngine.cc
   #LinAlgFunctionSourceSink.cc

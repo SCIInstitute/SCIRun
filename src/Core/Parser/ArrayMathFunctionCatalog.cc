@@ -27,8 +27,10 @@
 //  
 
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
+#include <Core/Thread/Mutex.h>
 
-namespace SCIRun {
+using namespace SCIRun;
+using namespace SCIRun::Core::Thread;
 
 //-----------------------------------------------------------------------------
 // Setup main ParserFunctionCatalog
@@ -38,23 +40,23 @@ ParserFunctionCatalogHandle
 ArrayMathFunctionCatalog::get_catalog()
 {
   static Mutex lock_("ArrayMathFunctionCatalog");
-  static ArrayMathFunctionCatalogHandle catalog_(0);
+  static ArrayMathFunctionCatalogHandle catalog_;
 
-  lock_.lock();
-  if (catalog_.get_rep() == 0)
   {
-    catalog_ = new ArrayMathFunctionCatalog;
-    InsertBasicArrayMathFunctionCatalog(catalog_);
-    InsertSourceSinkArrayMathFunctionCatalog(catalog_);
-    InsertScalarArrayMathFunctionCatalog(catalog_);
-    InsertVectorArrayMathFunctionCatalog(catalog_);
-    InsertTensorArrayMathFunctionCatalog(catalog_);
-    InsertElementArrayMathFunctionCatalog(catalog_);
+    Guard g(lock_.get());
+    if (!catalog_)
+    {
+      catalog_.reset(new ArrayMathFunctionCatalog);
+      InsertBasicArrayMathFunctionCatalog(catalog_);
+      InsertSourceSinkArrayMathFunctionCatalog(catalog_);
+      InsertScalarArrayMathFunctionCatalog(catalog_);
+      InsertVectorArrayMathFunctionCatalog(catalog_);
+      InsertTensorArrayMathFunctionCatalog(catalog_);
+      InsertElementArrayMathFunctionCatalog(catalog_);
+    }
   }
-  lock_.unlock();
   
-  ParserFunctionCatalogHandle handle = catalog_.get_rep();
-  return (handle);
+  return catalog_;
 }
 
 //-----------------------------------------------------------------------------
@@ -65,63 +67,52 @@ ArrayMathFunctionCatalog::get_catalog()
 // into different classes
 void
 ArrayMathFunctionCatalog::add_function(
-            bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type)
+            ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type)
 {
-  // Adding function to catalog
-  ParserFunctionCatalog::add_function(new ArrayMathFunction(function,function_id,return_type,0));
+  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, 0));
 }
 
 
 // A symmetric function can have its arguments entered in any combination
-// that matches the types. Argmuments can be swapped to match types, or
-// arguments can be swapped to optimize code by removing duplicate functio
+// that matches the types. Arguments can be swapped to match types, or
+// arguments can be swapped to optimize code by removing duplicate function
 // calls
 
 void
 ArrayMathFunctionCatalog::add_sym_function(
-            bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type)
+            ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type)
 {
-  // Adding function to catalog
-  ParserFunctionCatalog::add_function(new ArrayMathFunction(function,function_id,return_type,
-                            PARSER_SYMMETRIC_FUNCTION_E));
+  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_SYMMETRIC_FUNCTION_E));
 }
 
 
 void
 ArrayMathFunctionCatalog::add_seq_function(
-            bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type)
+            ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type)
 {
-  // Adding function to catalog
-  ParserFunctionCatalog::add_function(new ArrayMathFunction(function,function_id,return_type,
-                            PARSER_SEQUENTIAL_FUNCTION_E));
+  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_SEQUENTIAL_FUNCTION_E));
 }
 
 void
 ArrayMathFunctionCatalog::add_sgl_function(
-            bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type)
+            ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type)
 {
-  // Adding function to catalog
-  ParserFunctionCatalog::add_function(new ArrayMathFunction(function,function_id,return_type,
-                            PARSER_SINGLE_FUNCTION_E));
+  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_SINGLE_FUNCTION_E));
 }
 
 void
 ArrayMathFunctionCatalog::add_cst_function(
-            bool (*function)(ArrayMathProgramCode& pc),
-            std::string function_id,
-            std::string return_type)
+            ArrayMathFunctionPtr function,
+            const std::string& function_id,
+            const std::string& return_type)
 {
-  // Adding function to catalog
-  ParserFunctionCatalog::add_function(new ArrayMathFunction(function,function_id,return_type,
-                            PARSER_CONST_FUNCTION_E));
-}
-
+  ParserFunctionCatalog::add_function(boost::make_shared<ArrayMathFunction>(function, function_id, return_type, PARSER_CONST_FUNCTION_E));
 }
