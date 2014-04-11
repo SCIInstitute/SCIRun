@@ -40,6 +40,8 @@ using namespace SCIRun::Modules::Fields;
 
 ModuleLookupInfo CreateFieldData::staticInfo_("CreateFieldData", "ChangeFieldData", "SCIRun");
 AlgorithmParameterName CreateFieldData::FunctionString("FunctionString");
+AlgorithmParameterName CreateFieldData::FormatString("FormatString");
+AlgorithmParameterName CreateFieldData::BasisString("BasisString");
 
 CreateFieldData::CreateFieldData() : Module(staticInfo_)
 {
@@ -99,14 +101,14 @@ CreateFieldData::execute()
       error("This module cannot handle more than 23 input matrices.");
       return;
     }
+    auto state = get_state();
 
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     NewArrayMathEngine engine;
-    engine.set_progress_reporter(this);
+    engine.setLogger(this);
     
-    std::string format = guiformat_.get();
+    std::string format = state->getValue(FormatString).getString();
     if (format == "") format = "double";
-    std::string basis = guibasis_.get();
+    std::string basis = state->getValue(BasisString).getString();
     if (basis == "") basis = "Linear";
 
     // Add as well the output object
@@ -125,7 +127,7 @@ CreateFieldData::execute()
   
     for (size_t p = 0; p < matrices.size(); p++)
     {
-      if (matrices[p].get_rep() == 0)
+      if (!matrices[p])
       {
         error("No matrix was found on input port.");
         return;      
@@ -142,7 +144,7 @@ CreateFieldData::execute()
     if(!(engine.add_index("INDEX"))) return;
     if(!(engine.add_size("SIZE"))) return;
 
-    std::string function = guifunction_.get();
+    std::string function = state->getValue(FunctionString).getString();
     if(!(engine.add_expressions(function))) return;
     
     // Actual engine call, which does the dynamic compilation, the creation of the
@@ -150,12 +152,10 @@ CreateFieldData::execute()
     // over every data point
 
     if (!(engine.run())) return;
-#endif
+
     // Get the result from the engine
     FieldHandle ofield;    
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     engine.get_field("RESULT",ofield);
-#endif
 
     // send new output if there is any: 
     sendOutput(OutputField, ofield);

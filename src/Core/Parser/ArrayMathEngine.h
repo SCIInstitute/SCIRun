@@ -92,7 +92,9 @@ class SCISHARE NewArrayMathEngine : public Parser, public ArrayMathInterpreter
     // THAT THE FUNCTIONS ARE GIVEN HERE
   
     // Make sure it starts with a clean definition file
-    NewArrayMathEngine() { clear(); }
+    NewArrayMathEngine() { clear(); pr_ = &def_pr_; }
+  
+    void setLogger(Core::Logging::LegacyLoggerInterface* logger) { pr_ = logger; }
   
     // Generate inputs for field data and field data properties
     bool add_input_fielddata(const std::string& name, 

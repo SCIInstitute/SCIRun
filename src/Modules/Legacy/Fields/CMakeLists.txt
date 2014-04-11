@@ -190,7 +190,7 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
   #Core_GeomInterface
   #Core_ImportExport
   Core_Math
-  #Core_Parser
+  Core_Parser
   #Core_Persistent
   #Core_Thread
   Core_Util_Legacy
