@@ -103,10 +103,6 @@ enum {
   SCRIPT_OPTIONAL_VAR_E   = 16
 };
 
-
-// Render human readable output
-std::string ParserVariableType(std::string type);
-
 class SCISHARE ParserVariable {
   public:
     // In order to use handles, we need to add reference counting

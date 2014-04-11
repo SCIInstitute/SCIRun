@@ -35,11 +35,12 @@
 #include <Core/Math/MiscMath.h>
 
 #include <cmath>
-#if 0
+
 namespace ArrayMathFunctions {
 
 using namespace SCIRun;
-  
+
+#if 0
 //--------------------------------------------------------------------------
 // Simple Vector functions
 
@@ -592,7 +593,7 @@ bool frobenius_t(SCIRun::ArrayMathProgramCode& pc)
 
   return (true);
 }
-#if 0
+
 bool frobenius2_t(SCIRun::ArrayMathProgramCode& pc)
 {
   double ten[7]; double eval[3]; double evec[9];
@@ -1275,6 +1276,7 @@ namespace SCIRun {
 void
 InsertTensorArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
 {
+#if 0
   // Constructors for vectors (or points for some SCIRun applications)
   catalog->add_function(ArrayMathFunctions::tensor_ssssss,"tensor$S:S:S:S:S:S","T");
   catalog->add_function(ArrayMathFunctions::tensor_vvvsss,"tensor$V:V:V:S:S:S","T");
@@ -1292,7 +1294,7 @@ InsertTensorArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
   // Function always returns the same tensor
   catalog->add_cst_function(ArrayMathFunctions::tensor_,"Tensor$","T");
   catalog->add_cst_function(ArrayMathFunctions::tensor_,"tensor$","T");
- #if 0
+
   // Test nan inf
   catalog->add_function(ArrayMathFunctions::isnan_t,"isnan$T","S");
   catalog->add_function(ArrayMathFunctions::isfinite_t,"isfinite$T","S");
@@ -1333,13 +1335,10 @@ InsertTensorArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
   catalog->add_function(ArrayMathFunctions::B_t,"B$T","S");
   catalog->add_function(ArrayMathFunctions::quality_t,"Q$T","S");
   catalog->add_function(ArrayMathFunctions::quality_t,"quality$T","S");
-#endif
+  
   catalog->add_function(ArrayMathFunctions::frobenius_t,"frobenius$T","S");
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   catalog->add_function(ArrayMathFunctions::frobenius2_t,"frobenius2$T","S");
-
   catalog->add_function(ArrayMathFunctions::fracanisotropy_t,"fracanisotropy$T","S");
-
 
   catalog->add_function(ArrayMathFunctions::min_t,"min$T","S");
   catalog->add_function(ArrayMathFunctions::max_t,"max$T","S");
@@ -1375,11 +1374,8 @@ InsertTensorArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
   catalog->add_sym_function(ArrayMathFunctions::eq_tt,"eq$T:T","S");
   catalog->add_sym_function(ArrayMathFunctions::neq_tt,"neq$T:T","S");
   #endif
-
 }
-
-
 
 } // end namespace
 
-#endif
+

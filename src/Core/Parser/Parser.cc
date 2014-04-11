@@ -36,6 +36,61 @@
 
 using namespace SCIRun;
 
+namespace
+{
+  std::string
+  ParserVariableType(const std::string& type)
+  {
+  if (type == "U") return "Unknown";
+  if (type == "S") return "Scalar";
+  if (type == "V") return "Vector";
+  if (type == "T") return "Tensor";
+  if (type == "M") return "Matrix";
+  if (type == "A") return "String";
+  if (type == "L") return "List";
+  if (type == "FD") return "FieldData";
+  if (type == "FM") return "FieldMesh";
+  if (type == "FN") return "FieldNode";
+  if (type == "FE") return "FieldElement";
+  if (type == "AB") return "Boolean Vector";
+  if (type == "AD") return "Double Vector";
+  if (type == "AI") return "Integer Vector";
+  return "Unknown";
+  }
+  
+  std::string
+  ParserFunctionID(const std::string& name)
+  {
+  std::string fid = name + "$";
+  return (fid);
+  }
+  
+  std::string
+  ParserFunctionID(const std::string& name, const std::string& arg1)
+  {
+  std::string fid = name + "$" + arg1;
+  return (fid);
+  }
+  
+  std::string
+  ParserFunctionID(const std::string& name, const std::string& arg1, const std::string& arg2)
+  {
+  std::string fid = name + "$" + arg1 +":" + arg2;
+  return (fid);
+  }
+  
+  std::string
+  ParserFunctionID(const std::string& name, const std::vector<std::string>& args)
+  {
+  std::string fid = name + "$";
+  for (size_t j=0; j<args.size();j++)
+    {
+    fid += args[j];
+    if (j < (args.size()-1) ) fid += ":";
+    }
+  return (fid);
+  }
+}
 void ParserNode::print(int level) const
 {
   // Depending on the level alter the indentation
@@ -60,7 +115,6 @@ void ParserNode::print(int level) const
       break;
   }
 }
-
 
 // Print function for debugging
 void
@@ -179,63 +233,6 @@ ParserScriptVariable::print() const
   if (kind_ == SCRIPT_CONSTANT_SCALAR_E) std::cout << ", value="<<scalar_value_;
   else if (kind_ == SCRIPT_CONSTANT_STRING_E) std::cout << ", value="<<string_value_; 
   std::cout << "\n";
-}
-
-
-std::string 
-ParserVariableType(const std::string& type)
-{
-  if (type == "U") return "Unknown";
-  if (type == "S") return "Scalar";
-  if (type == "V") return "Vector";
-  if (type == "T") return "Tensor";
-  if (type == "M") return "Matrix";
-  if (type == "A") return "String";
-  if (type == "L") return "List";
-  if (type == "FD") return "FieldData";
-  if (type == "FM") return "FieldMesh";
-  if (type == "FN") return "FieldNode";
-  if (type == "FE") return "FieldElement";
-  if (type == "AB") return "Boolean Vector";
-  if (type == "AD") return "Double Vector";
-  if (type == "AI") return "Integer Vector";
-  return "Unknown";
-}
-
-namespace 
-{
-std::string
-ParserFunctionID(const std::string& name)
-{
-  std::string fid = name + "$";
-  return (fid);
-}
-
-std::string
-ParserFunctionID(const std::string& name, const std::string& arg1)
-{
-  std::string fid = name + "$" + arg1;
-  return (fid);
-}
-
-std::string
-ParserFunctionID(const std::string& name, const std::string& arg1, const std::string& arg2)
-{
-  std::string fid = name + "$" + arg1 +":" + arg2;
-  return (fid);
-}
-
-std::string
-ParserFunctionID(const std::string& name, const std::vector<std::string>& args)
-{
-  std::string fid = name + "$";
-  for (size_t j=0; j<args.size();j++) 
-  {
-    fid += args[j];
-    if (j < (args.size()-1) ) fid += ":";
-  }
-  return (fid);
-}
 }
 
 ParserFunctionCatalog::ParserFunctionCatalog() : lock_("ParserFunctionCatalog lock") {}
