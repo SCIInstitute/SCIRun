@@ -27,17 +27,21 @@
 //  
 
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 #include <Core/Parser/ArrayMathInterpreter.h>
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
 
 namespace ArrayMathFunctions {
-
-using namespace SCIRun;
-
 
 //--------------------------------------------------------------------------
 // Source functions
@@ -281,9 +285,12 @@ bool get_scalar_m(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   
   // We store the matrix pointer so we can get other properties as well
-  Matrix<double>* matrix = pc.get_matrix(1);
+  auto matrix = pc.get_matrix(1);
+  if (!matrix_is::dense(matrix))
+    return false;
+  
   // One virtual call to get the data
-  double* data1 = matrix->get_data_pointer();
+  double* data1 = matrix_cast::as_dense(matrix)->data();
 
   // Safety check
   if (matrix->ncols() != 1) return (false);
@@ -351,7 +358,7 @@ bool get_scalar_ad(ArrayMathProgramCode& pc)
 
   while (data0 != data0_end) 
   {
-    *data0 = static_cast<double>(array[idx]); data0++; idx++;
+    *data0 = array[idx]; data0++; idx++;
   }
   
   return (true);
@@ -363,9 +370,11 @@ bool get_vector_m(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0); 
   
   // We store the matrix pointer so we can get other properties as well
-  Matrix<double>* matrix = pc.get_matrix(1);
+  auto matrix = pc.get_matrix(1);
+  if (!matrix_is::dense(matrix))
+    return false;
   // One virtual call to get the data
-  double* data1 = matrix->get_data_pointer();
+  double* data1 = matrix_cast::as_dense(matrix)->data();
 
   // Safety check
   if (matrix->ncols() != 3) return (false);
@@ -390,9 +399,11 @@ bool get_tensor_m(ArrayMathProgramCode& pc)
 { 
   double* data0 = pc.get_variable(0); 
   // We store the matrix pointer so we can get other properties as well
-  Matrix<double>* matrix = pc.get_matrix(1);
+  auto matrix = pc.get_matrix(1);
+  if (!matrix_is::dense(matrix))
+    return false;
   // One virtual call to get the data
-  double* data1 = matrix->get_data_pointer();
+  double* data1 = matrix_cast::as_dense(matrix)->data();
   
   // The different tensor storages invoke a different piece of code
   if (matrix->ncols() == 6)
@@ -520,8 +531,11 @@ bool to_fieldnode_v(ArrayMathProgramCode& pc)
 bool to_matrix_s(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
-  Matrix<double>* matrix = pc.get_matrix(0);
-  double* data0 = matrix->get_data_pointer();
+  auto matrix = pc.get_matrix(0);
+  if (!matrix_is::dense(matrix))
+    return false;
+  
+  double* data0 = matrix_cast::as_dense(matrix)->data();
   double* data1 = pc.get_variable(1); 
 
   if (matrix->ncols() != 1) return (false);
@@ -542,9 +556,11 @@ bool to_matrix_s(ArrayMathProgramCode& pc)
 bool to_matrix_v(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
-  Matrix<double>* matrix = pc.get_matrix(0);
-  double* data0 = matrix->get_data_pointer();
-  double* data1 = pc.get_variable(1); 
+  auto matrix = pc.get_matrix(0);
+  if (!matrix_is::dense(matrix))
+    return false;
+  double* data0 = matrix_cast::as_dense(matrix)->data();
+  double* data1 = pc.get_variable(1);
 
   if (matrix->ncols() != 3) return (false);
 
@@ -566,9 +582,11 @@ bool to_matrix_v(ArrayMathProgramCode& pc)
 bool to_matrix_t(ArrayMathProgramCode& pc)
 { 
   // Get the pointer to the matrix object where we need to store the data
-  Matrix<double>* matrix = pc.get_matrix(0);
-  double* data0 = matrix->get_data_pointer();
-  double* data1 = pc.get_variable(1); 
+  auto matrix = pc.get_matrix(0);
+  if (!matrix_is::dense(matrix))
+    return false;
+  double* data0 = matrix_cast::as_dense(matrix)->data();
+  double* data1 = pc.get_variable(1);
 
   if (matrix->ncols() == 6)
   {
@@ -637,7 +655,7 @@ bool get_matrix_element_m(ArrayMathProgramCode& pc)
   double* data0 = pc.get_variable(0);
   double* data0_end = data0 + (pc.get_size());
   
-  Matrix<double>* data1 = pc.get_matrix(1);
+  auto data1 = pc.get_matrix(1);
   index_type   idx = pc.get_index();
  
   size_type    m = data1->nrows();
@@ -662,7 +680,7 @@ bool set_matrix_element_s(ArrayMathProgramCode& pc)
   double* data1 = pc.get_variable(1);
   double* data1_end = data1 + (pc.get_size());
   
-  Matrix<double>* data0 = pc.get_matrix(0);
+  auto data0 = pc.get_matrix(0);
   index_type   idx = pc.get_index();
  
   size_type m = data0->nrows();
