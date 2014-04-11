@@ -60,8 +60,6 @@ SET(Core_Parser_SRCS
 
 ADD_LIBRARY(Core_Parser ${Core_Parser_HEADERS} ${Core_Parser_SRCS})
 TARGET_LINK_LIBRARIES(Core_Parser 
-                      #Core_Thread 
-                      #Core_Util
                       #Core_Algorithms_Math
 					  Core_Datatypes_Legacy_Field
                       Core_Datatypes)
