@@ -28,15 +28,15 @@
 
 
 #include <Core/Parser/Parser.h> 
-#include <math.h>
+#include <Core/Datatypes/Legacy/Base/Types.h>
 #include <iostream>
 #include <sci_debug.h>
- 
-namespace SCIRun {
+#include <boost/math/constants/constants.hpp>
+#include <boost/algorithm/string.hpp>
 
-// Print function for debugging
-void
-ParserNode::print(int level)
+using namespace SCIRun;
+
+void ParserNode::print(int level) const
 {
   // Depending on the level alter the indentation
   for (int lev=1;lev<level;lev++) std::cout << "  ";
@@ -64,7 +64,7 @@ ParserNode::print(int level)
 
 // Print function for debugging
 void
-ParserTree::print()
+ParserTree::print() const
 {
   std::cout << "NEW VARIABLE NAME ("<<ParserVariableType(type_) <<"):"<<varname_<<"\n";
   // Print the contents of the tree
@@ -74,12 +74,12 @@ ParserTree::print()
 
 // Print function for debugging
 void
-ParserProgram::print()
+ParserProgram::print() const
 {
   std::cout << "PARSED PROGRAM\n";
 
   std::cout << "--- INPUT VARIABLES ---\n";
-  ParserVariableList::iterator it, it_end;
+  ParserVariableList::const_iterator it, it_end;
   it = input_variables_.begin();
   it_end = input_variables_.end();
   size_t j = 0;
@@ -109,8 +109,8 @@ ParserProgram::print()
     expressions_[j].second->print();
   }
 
-  std::vector<ParserScriptVariableHandle>::iterator pit, pit_end;
-  std::vector<ParserScriptFunctionHandle>::iterator fit, fit_end;
+  std::vector<ParserScriptVariableHandle>::const_iterator pit, pit_end;
+  std::vector<ParserScriptFunctionHandle>::const_iterator fit, fit_end;
 
   std::cout << "\n";
   std::cout << "--- CONST VAR LIST ---\n";
@@ -146,9 +146,9 @@ ParserProgram::print()
 
 
 void
-ParserFunctionCatalog::print()
+ParserFunctionCatalog::print() const
 {
-  ParserFunctionList::iterator it, it_end;
+  ParserFunctionList::const_iterator it, it_end;
   it = functions_.begin();
   it_end = functions_.end();
   
@@ -161,7 +161,7 @@ ParserFunctionCatalog::print()
 }
 
 void
-ParserScriptFunction::print()
+ParserScriptFunction::print() const
 {
   std::cout << "  "<< output_variable_->get_uname() <<" = "<< name_ << "(";
   for (size_t j=0;j< input_variables_.size(); j++)
@@ -173,7 +173,7 @@ ParserScriptFunction::print()
 }
 
 void
-ParserScriptVariable::print()
+ParserScriptVariable::print() const
 {
   std::cout << "  "<<uname_<<"("<<name_<<")"<<" type="<<type_<<", flags="<<flags_;
   if (kind_ == SCRIPT_CONSTANT_SCALAR_E) std::cout << ", value="<<scalar_value_;
@@ -183,49 +183,50 @@ ParserScriptVariable::print()
 
 
 std::string 
-ParserVariableType(std::string type)
+ParserVariableType(const std::string& type)
 {
-  if (type == "U") return (std::string("Unknown"));
-  if (type == "S") return (std::string("Scalar"));
-  if (type == "V") return (std::string("Vector"));
-  if (type == "T") return (std::string("Tensor"));
-  if (type == "M") return (std::string("Matrix"));
-  if (type == "A") return (std::string("String"));
-  if (type == "L") return (std::string("List"));
-  if (type == "FD") return (std::string("FieldData"));
-  if (type == "FM") return (std::string("FieldMesh"));
-  if (type == "FN") return (std::string("FieldNode"));
-  if (type == "FE") return (std::string("FieldElement"));
-  if (type == "AB") return (std::string("Boolean Vector"));
-  if (type == "AD") return (std::string("Double Vector"));
-  if (type == "AI") return (std::string("Integer Vector"));
-  return (std::string("Unknown"));
+  if (type == "U") return "Unknown";
+  if (type == "S") return "Scalar";
+  if (type == "V") return "Vector";
+  if (type == "T") return "Tensor";
+  if (type == "M") return "Matrix";
+  if (type == "A") return "String";
+  if (type == "L") return "List";
+  if (type == "FD") return "FieldData";
+  if (type == "FM") return "FieldMesh";
+  if (type == "FN") return "FieldNode";
+  if (type == "FE") return "FieldElement";
+  if (type == "AB") return "Boolean Vector";
+  if (type == "AD") return "Double Vector";
+  if (type == "AI") return "Integer Vector";
+  return "Unknown";
 }
 
-
+namespace 
+{
 std::string
-ParserFunctionID(std::string name)
+ParserFunctionID(const std::string& name)
 {
   std::string fid = name + "$";
   return (fid);
 }
 
 std::string
-ParserFunctionID(std::string name, std::string arg1)
+ParserFunctionID(const std::string& name, const std::string& arg1)
 {
   std::string fid = name + "$" + arg1;
   return (fid);
 }
 
 std::string
-ParserFunctionID(std::string name, std::string arg1, std::string arg2)
+ParserFunctionID(const std::string& name, const std::string& arg1, const std::string& arg2)
 {
   std::string fid = name + "$" + arg1 +":" + arg2;
   return (fid);
 }
 
 std::string
-ParserFunctionID(std::string name, std::vector<std::string> args)
+ParserFunctionID(const std::string& name, const std::vector<std::string>& args)
 {
   std::string fid = name + "$";
   for (size_t j=0; j<args.size();j++) 
@@ -235,19 +236,21 @@ ParserFunctionID(std::string name, std::vector<std::string> args)
   }
   return (fid);
 }
+}
+
+ParserFunctionCatalog::ParserFunctionCatalog() : lock_("ParserFunctionCatalog lock") {}
 
 void
-ParserFunctionCatalog::add_function(ParserFunction* function)
+ParserFunctionCatalog::add_function(ParserFunctionHandle function)
 {
-  lock.lock();
+  Core::Thread::Guard g(lock_.get());
   std::string funid = function->get_function_id();
   functions_[funid] = function;
-  lock.unlock();
 }
 
 bool
-ParserFunctionCatalog::find_function(std::string fid,
-                                     ParserFunction*& function)
+ParserFunctionCatalog::find_function(const std::string& fid,
+                                     ParserFunctionHandle& function)
 {
   ParserFunctionList::iterator it = functions_.find(fid);
   if (it == functions_.end()) return (false);
@@ -260,7 +263,7 @@ ParserFunctionCatalog::find_function(std::string fid,
 void
 ParserScriptVariable::compute_dependence()
 {
-  if (parent_.get_rep())
+  if (parent_)
   {
     dependence_ = parent_->get_name() + "(";
     size_t num_input_vars = parent_->num_input_vars();
@@ -287,16 +290,6 @@ ParserScriptVariable::compute_dependence()
   }
 }
 
-typedef union {
-  unsigned long long i;
-  double d;
-} ullong_double_type;
-
-const ullong_double_type nan_value_d = {0x7fffffffffffffffull};
-const ullong_double_type inf_value_d = {0x7ff0000000000000ull};
-
-
-// Constructor
 Parser::Parser()
 {
   // Initialize operators we need to scan for
@@ -335,21 +328,19 @@ Parser::Parser()
   add_numerical_constant("TRUE",1.0);
   add_numerical_constant("FALSE",0.0);
 
-  // C++ does not have a default symbol for NaN
-  add_numerical_constant("nan",nan_value_d.d);
-  add_numerical_constant("NaN",nan_value_d.d);
-  add_numerical_constant("Nan",nan_value_d.d);
-  add_numerical_constant("NAN",nan_value_d.d);
+  add_numerical_constant("nan",std::numeric_limits<double>::quiet_NaN());
+  add_numerical_constant("NaN",std::numeric_limits<double>::quiet_NaN());
+  add_numerical_constant("Nan",std::numeric_limits<double>::quiet_NaN());
+  add_numerical_constant("NAN",std::numeric_limits<double>::quiet_NaN());
 
-  // C++ does not have a default symbol for Inf
-  add_numerical_constant("inf",inf_value_d.d);
-  add_numerical_constant("Inf",inf_value_d.d);
-  add_numerical_constant("INF",inf_value_d.d);
+  add_numerical_constant("inf",std::numeric_limits<double>::infinity());
+  add_numerical_constant("Inf",std::numeric_limits<double>::infinity());
+  add_numerical_constant("INF",std::numeric_limits<double>::infinity());
 
-  add_numerical_constant("pi",M_PI);
-  add_numerical_constant("Pi",M_PI);
-  add_numerical_constant("PI",M_PI);
-  add_numerical_constant("M_PI",M_PI);
+  add_numerical_constant("pi",boost::math::double_constants::pi);
+  add_numerical_constant("Pi",boost::math::double_constants::pi);
+  add_numerical_constant("PI",boost::math::double_constants::pi);
+  add_numerical_constant("M_PI",boost::math::double_constants::pi);
 }
 
 
@@ -357,14 +348,14 @@ Parser::Parser()
 // The main function for parsing strings into code
 bool
 Parser::parse(ParserProgramHandle& program,
-              std::string expressions,
+              std::string& expressions,
               std::string& error)
 {
   // Clean error string
   error = "";
   
   // Generate a new program if we need one
-  if (program.get_rep() == 0) program = new ParserProgram();
+  if (!program) program.reset(new ParserProgram());
 
   // Remove comments from the program, so we only have expressions
   remove_comments(expressions);
@@ -415,14 +406,14 @@ Parser::parse(ParserProgramHandle& program,
     
     // A new tree which binds the variable name of the output together
     // with the top node of the parsing tree
-    ParserTreeHandle tree_handle = new ParserTree(varname,node_handle);
+    ParserTreeHandle tree_handle(new ParserTree(varname,node_handle));
     
     // Add the code to the program.
     program->add_expression(expression,tree_handle);
 
     // Note we store both the raw code as well as the parsed code,
     // to improve error reporting where we can list the faulty raw expression
-    // and the error together. That way the user should be able to recongize
+    // and the error together. That way the user should be able to recognize
     // the faulty line more easily
   }
   
@@ -482,18 +473,18 @@ Parser::scan_expression(std::string& expressions,
 
 
 bool
-Parser::split_expression(std::string expression,
+Parser::split_expression(std::string& expression,
                           std::string& varname,
                           std::string& vartree)
 {
   // Remove spaces from string
-  strip_surrounding_spaces(expression);
+  boost::trim(expression);
   
   // Scan to see if the first text is a variable name
   if (!(scan_variable_name(expression,varname))) return (false);
   
   // There can be spaces between the variable name and the equal sign
-  strip_surrounding_spaces(expression);
+  boost::trim(expression);
 
   // if we have a subexpression store it in here
   std::string subs;
@@ -501,14 +492,14 @@ Parser::split_expression(std::string expression,
   // Check whether we are using subscripts on lefthand side
   if(scan_subs_expression(expression,subs))
   {
-    strip_surrounding_spaces(expression);
+    boost::trim(expression);
   }
 
   // Scan for the equal sign
   if (!(scan_equal_sign(expression))) return (false);
 
   // Strip spaces again
-  strip_surrounding_spaces(expression);
+  boost::trim(expression);
   
   // The remainder is the code for building the variable
   vartree = expression;
@@ -524,7 +515,7 @@ Parser::split_expression(std::string expression,
     if (indices_end.size() == 0)
     {
       vartree = "assign("+varname+","+vartree;
-      for (size_t j=0; j<indices_start.size();j++) vartree += std::string(",") + indices_start[j];
+      for (size_t j=0; j<indices_start.size();j++) vartree += "," + indices_start[j];
       vartree += ")";
     }
     else if (indices_step.size() == 0)
@@ -532,8 +523,8 @@ Parser::split_expression(std::string expression,
       vartree = "assign_range("+varname+","+vartree;
       for (size_t j=0; j<indices_start.size();j++) 
       {
-        vartree += std::string(",") + indices_start[j];
-        vartree += std::string(",") + indices_end[j];
+        vartree += "," + indices_start[j];
+        vartree += "," + indices_end[j];
       }
       vartree += ")";
     }
@@ -542,55 +533,50 @@ Parser::split_expression(std::string expression,
       vartree = "assign_steprange("+varname+","+vartree;
       for (size_t j=0; j<indices_start.size();j++) 
       {
-        vartree += std::string(",") + indices_start[j];
-        vartree += std::string(",") + indices_step[j];
-        vartree += std::string(",") + indices_end[j];
+        vartree += "," + indices_start[j];
+        vartree += "," + indices_step[j];
+        vartree += "," + indices_end[j];
       }
       vartree += ")";
     }
 
     
   }
-
-  // DEBUG CALL
-#ifdef DEBUG
-//  std::cerr << "vartree="<< vartree << "\n";  
-#endif
-
+  
   // Success
   return (true);
 }
 
-// The main function for disecting code into a tree
+// The main function for dissecting code into a tree
 bool
-Parser::parse_expression_tree(std::string expression, 
+Parser::parse_expression_tree(std::string& expression, 
                               ParserNodeHandle& handle,
                               std::string& error)
 {
   // Clear handle so what was in it is cleared
   handle = 0;
   
-  // Extra check to make sure parentices levels match and
+  // Extra check to make sure parentheses levels match and
   // to check whether strings are properly marked
   // This function will return a syntax error if there is one
   if (!(check_syntax(expression,error))) return (false);
 
   // Strip any spaces at the start or and of the end of the expression
-  strip_surrounding_spaces(expression);
+  boost::trim(expression);
 
-  // Remove any parentices that open at the start and close at the end
+  // Remove any parentheses that open at the start and close at the end
   // These are not strictly needed and hence should be removed
   while (remove_global_parentices(expression))
   {
     // remove all spaces at the start of the expression
-    strip_surrounding_spaces(expression);
+    boost::trim(expression);
   }
   
   // Remainder is the remainder of the text that needs to be scanned
   std::string remainder = expression;
 
-  // After removing the parentices spaces can be left in the front
-  strip_surrounding_spaces(remainder);
+  // After removing the parentheses spaces can be left in the front
+  boost::trim(remainder);
 
   // Component is an expression, a variable name, a function or a constant
   std::string component;
@@ -617,50 +603,50 @@ Parser::parse_expression_tree(std::string expression,
     // Scan whether the expression starts with an unary operator
     unary_operator = "";
     scan_pre_unary_operator(remainder,unary_operator);
-    strip_surrounding_spaces(remainder);
+    boost::trim(remainder);
 
     if (scan_variable_name(remainder,component))
     {
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       scan_subs_expression(remainder, subs);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
 
       scan_post_unary_operator(remainder,post_unary_operator);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       components.push_back(unary_operator+component+subs+post_unary_operator);
     }
     else if (scan_constant_value(remainder,component))
     {
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       scan_post_unary_operator(remainder,post_unary_operator);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       components.push_back(unary_operator+component+post_unary_operator);
     }
     else if (scan_constant_string(remainder,component))
     {
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       scan_post_unary_operator(remainder,post_unary_operator);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       components.push_back(unary_operator+component+post_unary_operator);
     }
     else if (scan_function(remainder,component))
     {
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       scan_post_unary_operator(remainder,post_unary_operator);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
 
       scan_subs_expression(remainder, subs);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       components.push_back(unary_operator+component+subs+post_unary_operator);
     }
     else if (scan_sub_expression(remainder,component))
     {
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       scan_post_unary_operator(remainder,post_unary_operator);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
 
       scan_subs_expression(remainder, subs);
-      strip_surrounding_spaces(remainder);
+      boost::trim(remainder);
       components.push_back(unary_operator+component+subs+post_unary_operator);
     }    
     else
@@ -669,7 +655,7 @@ Parser::parse_expression_tree(std::string expression,
       return (false);
     }
 
-    strip_surrounding_spaces(remainder);
+    boost::trim(remainder);
     if (remainder.size() == 0) break;
     binary_operator = "";
     
@@ -685,7 +671,7 @@ Parser::parse_expression_tree(std::string expression,
     get_binary_priority(binary_operator,priority);
     binary_priority.push_back(priority);
     
-    strip_surrounding_spaces(remainder);
+    boost::trim(remainder);
     if (remainder.size() == 0)
     {
       error = "SYNTAX ERROR - invalid syntax detected at the end of '"+expression+"'";
@@ -710,7 +696,7 @@ Parser::parse_expression_tree(std::string expression,
       get_unary_function_name(unary_operator,fun_name);
       if (fun_name != "pos")
       {
-        pre_function_handle = new ParserNode(PARSER_FUNCTION_E,fun_name);
+        pre_function_handle.reset(new ParserNode(PARSER_FUNCTION_E,fun_name));
       }
     }
     
@@ -724,7 +710,7 @@ Parser::parse_expression_tree(std::string expression,
       {
         if (str == (*cit).first)
         {
-          component_handles[k] = new ParserNode(PARSER_CONSTANT_SCALAR_E,str);
+          component_handles[k].reset(new ParserNode(PARSER_CONSTANT_SCALAR_E,str));
           component_handles[k]->set_type("S"); // Scalar type
           break;
         }
@@ -732,17 +718,17 @@ Parser::parse_expression_tree(std::string expression,
       }
       if (cit == cit_end) 
       {
-        component_handles[k] = new ParserNode(PARSER_VARIABLE_E,str);
+        component_handles[k].reset(new ParserNode(PARSER_VARIABLE_E,str));
       }
     }
     else if (scan_constant_value(component,str))
     {
-      component_handles[k] = new ParserNode(PARSER_CONSTANT_SCALAR_E,str);
+      component_handles[k].reset(new ParserNode(PARSER_CONSTANT_SCALAR_E,str));
       component_handles[k]->set_type("S"); // Scalar type
     }
     else if (scan_constant_string(component,str))
     {
-      component_handles[k] = new ParserNode(PARSER_CONSTANT_STRING_E,str);
+      component_handles[k].reset(new ParserNode(PARSER_CONSTANT_STRING_E,str));
       component_handles[k]->set_type("A"); // String type
     }
     else if (scan_function(component,str))
@@ -751,7 +737,7 @@ Parser::parse_expression_tree(std::string expression,
       std::vector<std::string> fun_args;
       split_function(str,fun_name,fun_args);
       
-      component_handles[k] = new ParserNode(PARSER_FUNCTION_E,fun_name);
+      component_handles[k].reset(new ParserNode(PARSER_FUNCTION_E,fun_name));
       for (size_t j=0;j<fun_args.size();j++)
       {
         ParserNodeHandle subhandle;
@@ -779,9 +765,9 @@ Parser::parse_expression_tree(std::string expression,
       split_subs(subs,start_args,step_args,end_args,str);
 
       std::string subs_expression;
-      if (end_args.size() == 0)
+      if (end_args.empty())
       {
-        subs_function_handle = new ParserNode(PARSER_FUNCTION_E,"subs");
+        subs_function_handle.reset(new ParserNode(PARSER_FUNCTION_E,"subs"));
         for (size_t j=0;j<start_args.size();j++)
         {
           ParserNodeHandle subhandle;
@@ -792,9 +778,9 @@ Parser::parse_expression_tree(std::string expression,
           subs_function_handle->set_arg(j+1,subhandle);
         }
       }
-      else if (step_args.size() == 0)
+      else if (step_args.empty())
       {
-        subs_function_handle = new ParserNode(PARSER_FUNCTION_E,"subs_range");      
+        subs_function_handle.reset(new ParserNode(PARSER_FUNCTION_E,"subs_range"));
         for (size_t j=0;j<start_args.size();j++)
         {
           ParserNodeHandle subhandle;
@@ -812,7 +798,7 @@ Parser::parse_expression_tree(std::string expression,
       }
       else
       {
-        subs_function_handle = new ParserNode(PARSER_FUNCTION_E,"subs_steprange");
+        subs_function_handle.reset(new ParserNode(PARSER_FUNCTION_E,"subs_steprange"));
         for (size_t j=0;j<start_args.size();j++)
         {
           ParserNodeHandle subhandle;
@@ -839,24 +825,24 @@ Parser::parse_expression_tree(std::string expression,
     {
       std::string fun_name;
       get_unary_function_name(unary_operator,fun_name);
-      post_function_handle = new ParserNode(PARSER_FUNCTION_E,fun_name);
+      post_function_handle.reset(new ParserNode(PARSER_FUNCTION_E,fun_name));
     }
    
-    if (subs_function_handle.get_rep())
+    if (subs_function_handle)
     {
       ParserNodeHandle subhandle = component_handles[k];
       component_handles[k] = subs_function_handle;
       component_handles[k]->set_arg(0,subhandle);         
     }
    
-    if (post_function_handle.get_rep())
+    if (post_function_handle)
     {
       ParserNodeHandle subhandle = component_handles[k];
       component_handles[k] = post_function_handle;
       component_handles[k]->set_arg(0,subhandle);     
     }
 
-    if (pre_function_handle.get_rep())
+    if (pre_function_handle)
     {
       ParserNodeHandle subhandle = component_handles[k];
       component_handles[k] = pre_function_handle;
@@ -888,11 +874,11 @@ Parser::parse_expression_tree(std::string expression,
         if (priority == binary_priority[j])
         {
           get_binary_function_name(binary_operators[j],fun_name);
-          ParserNodeHandle nhandle = new ParserNode(PARSER_FUNCTION_E,fun_name);
+          ParserNodeHandle nhandle(new ParserNode(PARSER_FUNCTION_E,fun_name));
           size_t k1 = j;
-          while (component_handles[k1].get_rep() == 0) k1--;
+          while (!component_handles[k1]) k1--;
           size_t k2 = j+1;
-          while (component_handles[k2].get_rep() == 0) k2++;
+          while (!component_handles[k2]) k2++;
                     
           nhandle->set_arg(0,component_handles[k1]);
           nhandle->set_arg(1,component_handles[k2]);
@@ -1647,7 +1633,7 @@ Parser::split_function(std::string& expression,
             // Get the last argument
             end = idx;
             std::string arg = expression.substr(start,end-start);
-            strip_surrounding_spaces(arg);
+            boost::trim(arg);
             if (arg.size()) fun_args.push_back(arg);          
             break;
           }
@@ -1660,7 +1646,7 @@ Parser::split_function(std::string& expression,
           {
             end = idx;
             std::string arg = expression.substr(start,end-start);
-            strip_surrounding_spaces(arg);
+            boost::trim(arg);
             fun_args.push_back(arg);
             start = idx+1;
           }
@@ -1738,7 +1724,7 @@ Parser::split_subs(std::string& expression,
           // Get the last argument
           end = idx;
           std::string arg = expression.substr(start,end-start);
-          strip_surrounding_spaces(arg);
+          boost::trim(arg);
 
           if (arg.size())
           {
@@ -1771,7 +1757,7 @@ Parser::split_subs(std::string& expression,
         {
           end = idx;
           std::string arg = expression.substr(start,end-start);
-          strip_surrounding_spaces(arg);
+          boost::trim(arg);
           
           if  (col_count == 0)
           {
@@ -1801,7 +1787,7 @@ Parser::split_subs(std::string& expression,
         {
           end = idx;
           std::string arg = expression.substr(start,end-start);
-          strip_surrounding_spaces(arg);
+          boost::trim(arg);
 
           if  (col_count == 0)
           {
@@ -1939,7 +1925,7 @@ Parser::remove_comments(std::string& expression)
 }
 
 void
-Parser::add_binary_operator(std::string op, std::string funname, int priority)
+Parser::add_binary_operator(const std::string& op, const std::string& funname, int priority)
 {
   // Define a new operator, by setting the function name and priority
   // A function name can be for instance 'add' or 'sub' to represent '+' or '-'
@@ -1951,7 +1937,7 @@ Parser::add_binary_operator(std::string op, std::string funname, int priority)
 }
 
 void 
-Parser::add_unary_pre_operator(std::string op, std::string funname)
+Parser::add_unary_pre_operator(const std::string& op, const std::string& funname)
 {
   UnaryOperator unop;
   unop.operator_ = op;
@@ -1960,7 +1946,7 @@ Parser::add_unary_pre_operator(std::string op, std::string funname)
 }
   
 void 
-Parser::add_unary_post_operator(std::string op, std::string funname)
+Parser::add_unary_post_operator(const std::string& op, const std::string& funname)
 {
   UnaryOperator unop;
   unop.operator_ = op;
@@ -1970,32 +1956,32 @@ Parser::add_unary_post_operator(std::string op, std::string funname)
 
 
 void
-Parser::add_numerical_constant(std::string name,double val)
+Parser::add_numerical_constant(const std::string& name,double val)
 {
   numerical_constants_[name] = val;
 }
 
 bool 
 Parser::add_input_variable(ParserProgramHandle& program, 
-                           std::string name, std::string type, int flags)
+                           const std::string& name, const std::string& type, int flags)
 {
-  if (program.get_rep() == 0) program = new ParserProgram();
+  if (!program) program.reset(new ParserProgram());
   program->add_input_variable(name,type,flags);
   return (true);
 }
 
 bool 
 Parser::add_output_variable(ParserProgramHandle& program, 
-                           std::string name, std::string type, int flags)
+                           const std::string& name, const std::string& type, int flags)
 {
-  if (program.get_rep() == 0) program = new ParserProgram();
+  if (!program) program.reset(new ParserProgram());
   program->add_output_variable(name,type,flags);
   return (true);
 }
 
 bool
-Parser::get_input_variable_type(ParserProgramHandle& program, 
-                                std::string name, 
+Parser::get_input_variable_type(ParserProgramHandle program, 
+                                const std::string& name, 
                                 std::string& type)
 {
   ParserVariableList varlist;
@@ -2008,8 +1994,8 @@ Parser::get_input_variable_type(ParserProgramHandle& program,
 }
 
 bool
-Parser::get_input_variable_type(ParserProgramHandle& program, 
-                                std::string name, 
+Parser::get_input_variable_type(ParserProgramHandle program, 
+                                const std::string& name, 
                                 std::string& type,
                                 int& flags)
 {
@@ -2024,8 +2010,8 @@ Parser::get_input_variable_type(ParserProgramHandle& program,
 }
 
 bool
-Parser::get_output_variable_type(ParserProgramHandle& program, 
-                                std::string name, 
+Parser::get_output_variable_type(ParserProgramHandle program, 
+                                const std::string& name, 
                                 std::string& type)
 {
   ParserVariableList varlist;
@@ -2038,8 +2024,8 @@ Parser::get_output_variable_type(ParserProgramHandle& program,
 }
 
 bool
-Parser::get_output_variable_type(ParserProgramHandle& program, 
-                                std::string name, 
+Parser::get_output_variable_type(ParserProgramHandle program, 
+                                const std::string& name, 
                                 std::string& type,
                                 int& flags)
 {
@@ -2058,17 +2044,17 @@ Parser::get_output_variable_type(ParserProgramHandle& program,
 // and that types match
 
 bool
-Parser::validate(ParserProgramHandle& program,
-                 ParserFunctionCatalogHandle& catalog, 
+Parser::validate(ParserProgramHandle program,
+                 ParserFunctionCatalogHandle catalog, 
                  std::string& error)
 {
-  if (program.get_rep() == 0)
+  if (!program)
   {
     error = "INTERNAL ERROR - Program was empty.";
     return (false);
   } 
   
-  if (catalog.get_rep() == 0)
+  if (!catalog)
   {
     error = "INTERNAL ERROR - Function Catalog was empty.";
     return (false);
@@ -2088,14 +2074,14 @@ Parser::validate(ParserProgramHandle& program,
     ParserTreeHandle handle;
     program->get_expression(j,expression,handle);
   
-    if (handle.get_rep() == 0)
+    if (!handle)
     {
       error = "INTERNAL ERROR: Encountered incomplete expression '"+expression+"'.";
       return (false);    
     }
   
     ParserNodeHandle nhandle = handle->get_expression_tree();
-    if (nhandle.get_rep() == 0)
+    if (!nhandle)
     {
       error = "INTERNAL ERROR: Encountered incomplete expression '"+expression+"'.";
       return (false);
@@ -2113,7 +2099,7 @@ Parser::validate(ParserProgramHandle& program,
     
     // Add the output variable name to the list so the next function can call it
     std::string varname = handle->get_varname();
-    var_list[varname] = new ParserVariable(varname,vartype);
+    var_list[varname].reset(new ParserVariable(varname,vartype));
   }
   
   // Validate output types
@@ -2162,8 +2148,8 @@ Parser::validate(ParserProgramHandle& program,
 
 
 bool 
-Parser::recursive_validate(ParserNodeHandle& handle,
-                           ParserFunctionCatalogHandle& fhandle,
+Parser::recursive_validate(ParserNodeHandle handle,
+                           ParserFunctionCatalogHandle fhandle,
                            ParserVariableList& var_list,
                            std::string& error,
                            std::string& expression)
@@ -2216,7 +2202,7 @@ Parser::recursive_validate(ParserNodeHandle& handle,
           arg_types[j] = chandle->get_type();
         }
         
-        ParserFunction* function = 0;
+        ParserFunctionHandle function;
         std::string fid = ParserFunctionID(funname,arg_types);
 
         if(!(fhandle->find_function(fid,function)))
@@ -2266,12 +2252,12 @@ Parser::recursive_validate(ParserNodeHandle& handle,
 
 
 bool
-Parser::optimize(ParserProgramHandle& program, 
+Parser::optimize(ParserProgramHandle program, 
                  std::string& error)
 {
   // Generate a new script, a script is a list of single functions that need
   // to be evaluated. The optimizer throws all the expressions together and splits
-  // them in atomical pieces. This way we can sort out duplicate pieces and make
+  // them in atomic pieces. This way we can sort out duplicate pieces and make
   // sure we can easily allocate temporarily spaces for intermediate results
   // This is especially needed for vectorized expressions and matrix algebra
     
@@ -2310,7 +2296,7 @@ Parser::optimize(ParserProgramHandle& program,
   while (it != it_end)
   {
     name = (*it).first;
-    uname_num = to_string(cnt); cnt++;
+    uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
     uname = "$I" + uname_num;
     
     // Get the variable attributes
@@ -2322,7 +2308,7 @@ Parser::optimize(ParserProgramHandle& program,
     // it has an unique name as well, as input and output
     // variables can share names. Likewise a variable can
     // be overwritten anytime
-    vhandle = new ParserScriptVariable(name,uname,type,flags);
+    vhandle.reset(new ParserScriptVariable(name,uname,type,flags));
     
     // Add the variable to the general list of variables
     variables.push_back(vhandle);
@@ -2333,7 +2319,7 @@ Parser::optimize(ParserProgramHandle& program,
     ++it;
   }
   
-  // Phase 2: run throught the full tree and setup intermediate variables
+  // Phase 2: run through the full tree and setup intermediate variables
   //  for each phase of the computation and translate constant strings and
   //  doubles as well into variables.
 
@@ -2352,16 +2338,16 @@ Parser::optimize(ParserProgramHandle& program,
     // We later convert this one into an output variable
     // if needed
 
-    ParserNodeHandle nhandle = thandle->get_expression_tree();
+    ParserNodeHandle nhandle(thandle->get_expression_tree());
 
     switch(nhandle->get_kind())
     {
       case PARSER_FUNCTION_E :
         {
-          uname_num = to_string(cnt); cnt++;
+          uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
           uname = "$N"+uname_num;        
         
-          ohandle = new ParserScriptVariable(uname,type,0);        
+          ohandle.reset(new ParserScriptVariable(uname,type,0));
           
           // Build function tables and add variable description
           if (!(optimize_process_node(nhandle,variables,named_variables,
@@ -2403,7 +2389,8 @@ Parser::optimize(ParserProgramHandle& program,
             ++cit;
           }
           
-          if (cit == cit_end) from_string(value,val);
+          if (cit == cit_end) 
+            val = boost::lexical_cast<double>(value);
         
           std::list<ParserScriptVariableHandle>::iterator it, it_end;
           it = variables.begin();
@@ -2423,11 +2410,11 @@ Parser::optimize(ParserProgramHandle& program,
             ++it;
           }
         
-          if (ohandle.get_rep() == 0)
+          if (!ohandle)
           {
-            uname_num = to_string(cnt); cnt++;
+            uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
             uname = "$D"+uname_num;
-            ohandle = new ParserScriptVariable(uname,val);
+            ohandle.reset(new ParserScriptVariable(uname,val));
             variables.push_back(ohandle);
           }
         }
@@ -2440,7 +2427,7 @@ Parser::optimize(ParserProgramHandle& program,
           std::list<ParserScriptVariableHandle>::iterator it, it_end;
           it = variables.begin();
           it_end = variables.end();
-          ohandle = 0;
+          ohandle.reset();
           
           while (it != it_end)
           {
@@ -2455,11 +2442,11 @@ Parser::optimize(ParserProgramHandle& program,
             ++it;
           }
         
-          if (ohandle.get_rep() == 0)
+          if (!ohandle)
           {
-            uname_num = to_string(cnt); cnt++;
+            uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
             uname = "$S"+uname_num;
-            ohandle = new ParserScriptVariable(uname,value);
+            ohandle.reset(new ParserScriptVariable(uname,value));
             variables.push_back(ohandle);
           }
         }
@@ -2568,7 +2555,6 @@ Parser::optimize(ParserProgramHandle& program,
       error = "INTERNAL ERROR - Could not find an output variable, whereas it should exist";
       return (false);
     }
-//    (*nit).second->set_kind(SCRIPT_OUTPUT_E);
     (*nit).second->set_name(varname);
     
     ParserScriptVariableHandle nhandle = (*nit).second;
@@ -2581,16 +2567,16 @@ Parser::optimize(ParserProgramHandle& program,
       {
       
         // Need to add in extra function call
-        uname_num = to_string(cnt); cnt++;
+        uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
         uname = "$T"+uname_num;        
       
-        uhandle = new ParserScriptVariable(uname,type,SCRIPT_SEQUENTIAL_VAR_E|SCRIPT_USED_VAR_E|SCRIPT_CONST_VAR_E);          
+        uhandle.reset(new ParserScriptVariable(uname,type,SCRIPT_SEQUENTIAL_VAR_E|SCRIPT_USED_VAR_E|SCRIPT_CONST_VAR_E));
         variables.push_back(uhandle);
         
         // Build the function call to generate the new variable
         std::string fun_id = ParserFunctionID("seq",type);
     
-        ParserFunction* fun_ptr = 0;
+        ParserFunctionHandle fun_ptr;
         if(!(program->get_catalog()->find_function(fun_id,fun_ptr)))
         {
           error = "INTERNAL ERROR - Sequencer was not defined for type '"+
@@ -2599,7 +2585,7 @@ Parser::optimize(ParserProgramHandle& program,
         }
     
         ParserScriptFunctionHandle parhandle = nhandle->get_parent();
-        ParserScriptFunctionHandle fhandle = new ParserScriptFunction("seq",fun_ptr);
+        ParserScriptFunctionHandle fhandle(new ParserScriptFunction("seq",fun_ptr));
         if (nflags & SCRIPT_CONST_VAR_E) fhandle->set_flags(SCRIPT_USED_VAR_E|SCRIPT_CONST_VAR_E);
         else fhandle->set_flags(SCRIPT_USED_VAR_E|SCRIPT_SINGLE_VAR_E);
         fhandle->set_input_var(0,nhandle);
@@ -2607,7 +2593,7 @@ Parser::optimize(ParserProgramHandle& program,
         fhandle->set_output_var(uhandle);
         uhandle->set_parent(fhandle);
       
-        // Now search for additional occurances of whandle in the sequential list
+        // Now search for additional occurrences of whandle in the sequential list
         // and replace them with uhandle
         ParserScriptVariableHandle xhandle;
         
@@ -2619,7 +2605,7 @@ Parser::optimize(ParserProgramHandle& program,
           for(size_t k = 0; k<num;k++)
           {
             xhandle = (*fit)->get_input_var(k);
-            if (xhandle.get_rep() == nhandle.get_rep())
+            if (xhandle == nhandle)
             {
               (*fit)->set_input_var(k,uhandle);
             }
@@ -2660,7 +2646,7 @@ Parser::optimize(ParserProgramHandle& program,
         
         while(fit != fit_end)
         {
-          if ((*fit).get_rep() == parhandle.get_rep()) { ++fit; break; } 
+          if ((*fit) == parhandle) { ++fit; break; } 
           ++fit;
         }
         
@@ -2681,7 +2667,7 @@ Parser::optimize(ParserProgramHandle& program,
     // Mark variable as used as we actually make use of it
     (*pit)->set_flags(SCRIPT_USED_VAR_E);
     ParserScriptFunctionHandle fhandle = (*pit)->get_parent();
-    if (fhandle.get_rep()) optimize_mark_used(fhandle);
+    if (fhandle) optimize_mark_used(fhandle);
     
     ++pit;
   }
@@ -2716,7 +2702,7 @@ Parser::optimize(ParserProgramHandle& program,
         // Clear the used flag for this variable
         handle->clear_flags();
         ParserScriptFunctionHandle fhandle = handle->get_parent();
-        if (fhandle.get_rep() == 0)
+        if (!fhandle)
         {
           error = "INTERNAL ERROR -  Duplicate input variable.";
           return (false);
@@ -2834,7 +2820,7 @@ Parser::optimize(ParserProgramHandle& program,
   ParserScriptFunctionHandle fhandle;
 
   
-  // Sort functions in three different catagories
+  // Sort functions in three different categories
   while(fit != fit_end)
   {
     size_t num_input_vars = (*fit)->num_input_vars();
@@ -2847,16 +2833,16 @@ Parser::optimize(ParserProgramHandle& program,
       if (!(flags& SCRIPT_SEQUENTIAL_VAR_E))
       {
         // Need to add in extra function call
-        uname_num = to_string(cnt); cnt++;
+        uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
         uname = "$T"+uname_num;        
       
-        uhandle = new ParserScriptVariable(uname,type,SCRIPT_SEQUENTIAL_VAR_E|SCRIPT_USED_VAR_E|SCRIPT_CONST_VAR_E);          
+        uhandle.reset(new ParserScriptVariable(uname,type,SCRIPT_SEQUENTIAL_VAR_E|SCRIPT_USED_VAR_E|SCRIPT_CONST_VAR_E));
         sequential_variable_list.push_back(uhandle);
         
         // Build the function call to generate the new variable
         std::string fun_id = ParserFunctionID("seq",type);
     
-        ParserFunction* fun_ptr = 0;
+        ParserFunctionHandle fun_ptr;
         if(!(program->get_catalog()->find_function(fun_id,fun_ptr)))
         {
           error = "INTERNAL ERROR - Sequencer was not defined for type '"+
@@ -2864,7 +2850,7 @@ Parser::optimize(ParserProgramHandle& program,
           return (false);
         }
     
-        fhandle = new ParserScriptFunction("seq",fun_ptr);
+        fhandle.reset(new ParserScriptFunction("seq",fun_ptr));
         fhandle->set_input_var(0,whandle);
         fhandle->set_output_var(uhandle);
         uhandle->set_parent(fhandle);
@@ -2873,7 +2859,7 @@ Parser::optimize(ParserProgramHandle& program,
         if (flags & SCRIPT_SINGLE_VAR_E) single_function_list.push_back(fhandle);
         else const_function_list.push_back(fhandle);
     
-        // Now search for additional occurances of whandle in the sequential list
+        // Now search for additional occurrences of whandle in the sequential list
         // and replace them with uhandle
         
         fit2 = sequential_function_list.begin();
@@ -2883,7 +2869,7 @@ Parser::optimize(ParserProgramHandle& program,
           for(size_t k = 0; k<num;k++)
           {
             xhandle = (*fit2)->get_input_var(k);
-            if (xhandle.get_rep() == whandle.get_rep())
+            if (xhandle == whandle)
             {
               (*fit2)->set_input_var(k,uhandle);
             }
@@ -2933,7 +2919,7 @@ Parser::optimize_mark_used(ParserScriptFunctionHandle& fhandle)
     ParserScriptVariableHandle vhandle = fhandle->get_input_var(j);
     vhandle->set_flags(SCRIPT_USED_VAR_E);
     ParserScriptFunctionHandle phandle = vhandle->get_parent();
-    if (phandle.get_rep()) optimize_mark_used(phandle);
+    if (phandle) optimize_mark_used(phandle);
   }
   fhandle->set_flags(SCRIPT_USED_VAR_E);
 }
@@ -2957,10 +2943,10 @@ Parser::optimize_process_node(ParserNodeHandle& nhandle,
     return (false);
   }
   std::string funname = nhandle->get_value();
-  ParserFunction* function = nhandle->get_function();
+  ParserFunctionHandle function = nhandle->get_function();
   
   int fflags = function->get_flags();
-  ParserScriptFunctionHandle fhandle = new ParserScriptFunction(funname,function);
+  ParserScriptFunctionHandle fhandle(new ParserScriptFunction(funname,function));
 
   if (fflags & PARSER_SEQUENTIAL_FUNCTION_E)
   {
@@ -2990,8 +2976,8 @@ Parser::optimize_process_node(ParserNodeHandle& nhandle,
   size_t num_args = nhandle->num_args();
   for (size_t j=0; j < num_args; j++)
   {
-    ParserScriptVariableHandle iohandle = 0;
-    ParserNodeHandle ihandle = nhandle->get_arg(j);
+    ParserScriptVariableHandle iohandle;
+    ParserNodeHandle ihandle(nhandle->get_arg(j));
     int ikind = ihandle->get_kind();
     
     switch(ikind)
@@ -2999,10 +2985,10 @@ Parser::optimize_process_node(ParserNodeHandle& nhandle,
       case PARSER_FUNCTION_E :
         {
           std::string type = ihandle->get_type();
-          uname_num = to_string(cnt); cnt++;
+          uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
           uname = "$T"+uname_num;
         
-          iohandle = new ParserScriptVariable(uname,type,0);
+          iohandle.reset(new ParserScriptVariable(uname,type,0));
           variables.push_back(iohandle);
           
           if(!(optimize_process_node(ihandle,variables, named_variables,
@@ -3040,7 +3026,8 @@ Parser::optimize_process_node(ParserNodeHandle& nhandle,
             ++cit;
           }
           
-          if (cit == cit_end) from_string(value,val);
+          if (cit == cit_end) 
+            val = boost::lexical_cast<double>(value);
                 
           std::list<ParserScriptVariableHandle>::iterator it, it_end;
           it = variables.begin();
@@ -3058,11 +3045,11 @@ Parser::optimize_process_node(ParserNodeHandle& nhandle,
             ++it;
           }
         
-          if (iohandle.get_rep() == 0)
+          if (!iohandle)
           {
-            uname_num = to_string(cnt); cnt++;
+            uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
             uname = "$D"+uname_num;
-            iohandle = new ParserScriptVariable(uname,val);
+            iohandle.reset(new ParserScriptVariable(uname,val));
             variables.push_back(iohandle);
           }
         }
@@ -3088,11 +3075,11 @@ Parser::optimize_process_node(ParserNodeHandle& nhandle,
             ++it;
           }
         
-          if (iohandle.get_rep() == 0)
+          if (!iohandle)
           {
-            uname_num = to_string(cnt); cnt++;
+            uname_num = boost::lexical_cast<std::string>(cnt); cnt++;
             uname = "$S"+uname_num;
-            iohandle = new ParserScriptVariable(uname,value);
+            iohandle.reset(new ParserScriptVariable(uname,value));
             
             variables.push_back(iohandle);
           }
@@ -3230,8 +3217,3 @@ ParserProgram::get_sequential_function(size_t j,ParserScriptFunctionHandle& hand
   handle = sequential_functions_[j];
   return (true);
 } 
-
-
-} // End namespace SCIRun
-
-

@@ -30,12 +30,9 @@
 #define CORE_PARSER_PARSER_H 1
  
 #include <Core/Utils/StringUtil.h>
- 
+#include <Core/Thread/Mutex.h>
 #include <map>
-#include <string>
-#include <vector>
 #include <list>
-#include <boost/shared_ptr.hpp>
 
 // Include files needed for Windows
 #include <Core/Parser/share.h>
@@ -60,7 +57,6 @@ class ParserNode;
 class ParserTree;
 class ParserProgram;
 class ParserVariable;
-class ParserFunctionID;
 class ParserFunction;
 class ParserFunctionCatalog;
 class ParserScriptFunction;
@@ -158,6 +154,7 @@ class SCISHARE ParserVariable {
     int flags_; 
 };
 
+typedef boost::shared_ptr<class ParserFunction> ParserFunctionHandle;
 
 class SCISHARE ParserNode 
 {
@@ -165,15 +162,13 @@ class SCISHARE ParserNode
     ParserNode(int kind, const std::string& value) :
       kind_(kind),
       type_("U"),
-      value_(value),
-      function_(0)
+      value_(value)
     {}  
 
     ParserNode(int kind, const std::string& value, const std::string& type) :
       kind_(kind),
       type_(type),
-      value_(value),
-      function_(0)
+      value_(value)
     {}  
 
     // Retrieve the kind of the node (this is function, constant, string, etc)
@@ -189,7 +184,7 @@ class SCISHARE ParserNode
     void set_value(const std::string& value) { value_ = value; }
     
     // Get a pointer to one of the arguments of a function
-    ParserNode* get_arg(size_t j)  { return (args_[j].get()); }
+    ParserNodeHandle get_arg(size_t j)  { return args_[j]; }
     
     // Set the argument to a sub tree
     void set_arg(size_t j, ParserNodeHandle handle)
@@ -206,9 +201,9 @@ class SCISHARE ParserNode
     }
     
     // Set a copy to the function pointer, this is used later by the interpreter
-    void set_function(ParserFunction* func) { function_ = func; }
+    void set_function(ParserFunctionHandle func) { function_ = func; }
     // Retrieve the function pointer
-    ParserFunction* get_function()          { return (function_); }
+    ParserFunctionHandle get_function()          { return (function_); }
     
     // Set the type of the node (this is used by the validator)
     void set_type(const std::string& type) { type_ = type; }
@@ -217,7 +212,7 @@ class SCISHARE ParserNode
     size_t num_args() { return (args_.size()); }
 
     // For debugging
-    void print(int level);
+    void print(int level) const;
 
   private:
     // Define the kind of the node, this can be a constant, a variable, or
@@ -236,7 +231,7 @@ class SCISHARE ParserNode
     // Argument trees of the function arguments
     std::vector<ParserNodeHandle> args_;
     // Pointer to where the function is
-    ParserFunction*               function_;
+    ParserFunctionHandle function_;
 };
 
 
@@ -258,7 +253,7 @@ class SCISHARE ParserTree {
     std::string get_varname()    { return (varname_); }
 
     // Retrieve the tree for computing the expression
-    ParserNode* get_expression_tree() { return (expression_.get()); }
+    ParserNodeHandle get_expression_tree() { return expression_; }
     // Set expression tree
     void set_expression_tree(ParserNodeHandle handle) { expression_ = handle; }
 
@@ -269,7 +264,7 @@ class SCISHARE ParserTree {
     const std::string& get_type() { return (type_); } 
 
     // For debugging
-    void print();
+    void print() const;
 
   private:
     // The name of the variable that needs to be assigned
@@ -378,7 +373,7 @@ class SCISHARE ParserProgram {
 
 
     // For debugging
-    void print();
+    void print() const;
 
   private:
     // Short cut to the parser function catalog
@@ -412,22 +407,8 @@ class SCISHARE ParserProgram {
     std::vector<ParserScriptFunctionHandle> sequential_functions_;
 };
 
-
-std::string 
-ParserFunctionID(const std::string& name);
-
-std::string 
-ParserFunctionID(const std::string& name, int arg1);
-
-std::string 
-ParserFunctionID(const std::string& name, int arg1, int arg2);
-
-std::string 
-ParserFunctionID(const std::string& name, std::vector<int> args);
-
-
 enum {
-  // Define a function as sequential it will be evaluted for each instance in
+  // Define a function as sequential it will be evaluated for each instance in
   // the sequence. This one is used for functions without parameters like rand
   // so they trigger for each case
   PARSER_SEQUENTIAL_FUNCTION_E = 1,
@@ -473,8 +454,6 @@ class SCISHARE ParserFunction
     int function_flags_;
 };
 
-typedef boost::shared_ptr<ParserFunction> ParserFunctionHandle;
-
 // The list of functions
 typedef std::map<std::string,ParserFunctionHandle> ParserFunctionList;
 
@@ -485,9 +464,7 @@ typedef std::map<std::string,ParserFunctionHandle> ParserFunctionList;
 class SCISHARE ParserFunctionCatalog
 {
   public:
-    ParserFunctionCatalog() 
-      //: UsedWithLockingHandleAndMutex("ParserFunctionCatalog lock") 
-      {}
+    ParserFunctionCatalog(); 
 
     // Add definitions of functions to the list
     // Various calls with different amounts of arguments
@@ -498,11 +475,12 @@ class SCISHARE ParserFunctionCatalog
                        ParserFunctionHandle& function);
 
     // For debugging
-    void print();
+    void print() const;
   private:
   
     // List of functions and their return type
     ParserFunctionList functions_;
+    Core::Thread::Mutex lock_;
 };
 
 
@@ -551,7 +529,7 @@ class ParserScriptFunction
     void clear_flags()          { flags_ = 0; }
   
     // For debugging
-    void print();
+    void print() const;
   
   private:  
     // The name of the function
@@ -665,7 +643,7 @@ class ParserScriptVariable {
     void set_var_number(int var_number) { var_number_ = var_number; }
     
     // For debugging
-    void print();
+    void print() const;
     
   private:
     // The function that created this variable
@@ -722,16 +700,16 @@ class SCISHARE Parser {
   public:
     Parser();
   
-    bool parse(ParserProgramHandle program,
-               const std::string& expressions,
+    bool parse(ParserProgramHandle& program,
+               std::string& expressions,
                std::string& error);
 
-    bool add_input_variable(ParserProgramHandle program, 
+    bool add_input_variable(ParserProgramHandle& program, 
                             const std::string& name, 
                             const std::string& type, 
                             int flags = 0);
 
-    bool add_output_variable(ParserProgramHandle program, 
+    bool add_output_variable(ParserProgramHandle& program, 
                              const std::string& name, 
                              const std::string& type = "U",
                              int flags = 0);
@@ -792,12 +770,12 @@ class SCISHARE Parser {
     // The part to the right of the equal sign
     // The variable name is checked to see whether it is valid
     // The expression part is not parsed by this function that is done separately
-    bool split_expression(const std::string& expression,
+    bool split_expression(std::string& expression,
                           std::string& varname,
                           std::string& vartree);
   
     // Parse the parts on the right hand side of the equal sign of the expression
-    bool parse_expression_tree(const std::string& expression,
+    bool parse_expression_tree(std::string& expression,
                                ParserNodeHandle& ehandle,
                                std::string& error);
                                
@@ -895,8 +873,8 @@ class SCISHARE Parser {
     
     //------------------------------------------------------------
     // Sub functions for validation
-    bool recursive_validate(ParserNodeHandle& handle,
-                            ParserFunctionCatalogHandle& fhandle,
+    bool recursive_validate(ParserNodeHandle handle,
+                            ParserFunctionCatalogHandle fhandle,
                             ParserVariableList& var_list,
                             std::string& error,
                             std::string& expression);

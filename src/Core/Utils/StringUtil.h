@@ -30,6 +30,8 @@
 #define CORE_UTILS_STRINGUTIL_H 1
 
 #include <sstream>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 #include <Core/Utils/share.h>
 
 namespace SCIRun 

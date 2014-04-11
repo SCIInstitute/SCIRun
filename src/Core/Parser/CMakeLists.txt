@@ -55,7 +55,7 @@ SET(Core_Parser_SRCS
   #LinAlgFunctionCatalog.cc
   #LinAlgInterpreter.cc
   #LinAlgEngine.cc
-  #Parser.cc
+  Parser.cc
 )
 
 ADD_LIBRARY(Core_Parser ${Core_Parser_HEADERS} ${Core_Parser_SRCS})
