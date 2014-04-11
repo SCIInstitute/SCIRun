@@ -27,12 +27,16 @@
 //  
 
 #include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Field.h>
-#include <Core/Datatypes/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/Mesh.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
 
 #include <Core/Parser/ArrayMathInterpreter.h>
 #include <Core/Parser/ArrayMathFunctionCatalog.h>
 
+using namespace SCIRun;
+using namespace SCIRun::Core::Geometry;
 
 namespace ArrayMathFunctions {
 
@@ -55,7 +59,7 @@ bool center_fn(SCIRun::ArrayMathProgramCode& pc)
 
   while(data0 != data0_end) 
   {
-    SCIRun::Point p;
+    Point p;
     data1->get_center(p,idx); idx++;
     *data0 = p.x(); data0++;
     *data0 = p.y(); data0++;
@@ -80,7 +84,7 @@ bool center_fe(SCIRun::ArrayMathProgramCode& pc)
 
   while(data0 != data0_end) 
   {
-    SCIRun::Point p;
+    Point p;
     data1->get_center(p,idx); idx++;
     *data0 = p.x(); data0++;
     *data0 = p.y(); data0++;
@@ -149,7 +153,7 @@ bool normal_fn(SCIRun::ArrayMathProgramCode& pc)
 
   while(data0 != data0_end) 
   {
-    SCIRun::Vector v;
+    Vector v;
     data1->get_normal(v,idx); idx++;
     *data0 = v.x(); data0++;
     *data0 = v.y(); data0++;
@@ -177,7 +181,7 @@ bool normal_fe(SCIRun::ArrayMathProgramCode& pc)
 
   while(data0 != data0_end) 
   {
-    SCIRun::Vector v;
+    Vector v;
     data1->get_normal(v,coords,idx); idx++;
     *data0 = v.x(); data0++;
     *data0 = v.y(); data0++;
