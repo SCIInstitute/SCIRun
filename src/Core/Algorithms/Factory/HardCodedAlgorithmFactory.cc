@@ -59,6 +59,7 @@
 #include <Core/Algorithms/BrainStimulator/GenerateROIStatisticsAlgorithm.h>
 #include <Core/Algorithms/BrainStimulator/SetupRHSforTDCSandTMSAlgorithm.h>
 #include <Core/Algorithms/Field/InterfaceWithCleaverAlgorithm.h>
+#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
 
 using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::Fields;
@@ -139,7 +140,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
   else if (moduleName == "SelectSubMatrix")
     h.reset(new SelectSubMatrixAlgorithm);  
   else if (moduleName == "MapFieldDataFromElemToNode")
-    h.reset(new MapFieldDataFromElemToNodeAlgo);      
+    h.reset(new MapFieldDataFromElemToNodeAlgo);  
+  else if (moduleName == "ApplyMappingMatrix")
+    h.reset(new ApplyMappingMatrixAlgo);       
     
   if (h && algoCollaborator)
   {

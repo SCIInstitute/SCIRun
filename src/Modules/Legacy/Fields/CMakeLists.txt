@@ -42,7 +42,7 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
-  #ApplyMappingMatrix.h
+  ApplyMappingMatrix.h
   MapFieldDataFromElemToNode.h
 )
 
@@ -67,7 +67,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #ProjectPointsOntoMesh.cc
   #GetMeshQualityField.cc
   #ApplyFilterToFieldData.cc
-  #ApplyMappingMatrix.cc
+  ApplyMappingMatrix.cc
   #CalculateNodeNormals.cc
   #BuildMappingMatrix.cc
   #BuildMatrixOfSurfaceNormals.cc

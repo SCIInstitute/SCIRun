@@ -25,37 +25,33 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-#include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
-#include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
 
-using namespace SCIRun::Modules::Fields;
-using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
-using namespace SCIRun::Core::Datatypes;
-using namespace SCIRun;
+#ifndef MODULES_LEGACY_FIELDS_ApplyMappingMatrixModule_H__
+#define MODULES_LEGACY_FIELDS_ApplyMappingMatrixModule_H__
 
-ApplyMappingMatrixModule::ApplyMappingMatrixModule()
-  : Module(ModuleLookupInfo("ApplyMappingMatrix", "ChangeFieldData", "SCIRun"), false)
-{
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputMatrix);
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
+
+namespace SCIRun {
+  namespace Modules {
+    namespace Fields {
+
+      class SCISHARE ApplyMappingMatrixModule : public Dataflow::Networks::Module,
+        public Has1InputPort<FieldPortTag>,
+        public Has1OutputPort<MatrixPortTag>
+      {
+      public:
+        ApplyMappingMatrixModule();
+
+        virtual void execute();
+        virtual void setStateDefaults() {}
+
+        INPUT_PORT(0, InputField, LegacyField);
+        OUTPUT_PORT(0, OutputMatrix, Matrix);
+      };
+
+    }
+  }
 }
 
-void ApplyMappingMatrixModule::execute()
-{
-  FieldHandle input = getRequiredInput(InputField);
-
-  //NO Nrrd support yet !!!
-  //inputs_changed_ || !oport_cached("Matrix Nodes")
-  //if (needToExecute())
-  //{    
-  //  update_state(Executing);
-    auto output = algo().run_generic(make_input((InputField, input)));
-
-    sendOutputFromAlgorithm(OutputMatrix, output);
-  //}
-}
+#endif
