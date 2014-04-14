@@ -93,7 +93,8 @@ namespace Algorithms {
       double,
       std::string,
       bool,
-      AlgoOption
+      AlgoOption,
+      std::vector<Variable>
     > Value;
 
     Variable() {}
@@ -109,8 +110,12 @@ namespace Algorithms {
     std::string getString() const;
     bool getBool() const;
     Datatypes::DatatypeHandle getDatatype() const;
+    std::vector<Variable> getList() const;
     AlgoOption getOption() const;
   };
+
+  SCISHARE bool operator==(const Variable& lhs, const Variable& rhs);
+  SCISHARE std::ostream& operator<<(std::ostream& out, const Variable& var);
   
   typedef Variable AlgorithmParameter;
 
@@ -166,7 +171,7 @@ namespace Algorithms {
   class SCISHARE AlgorithmData
   {
   public:
-    typedef std::map<Name, boost::variant<Datatypes::DatatypeHandle, std::vector<Datatypes::DatatypeHandle>>> Map;
+    typedef std::map<Name, std::vector<Datatypes::DatatypeHandle>> Map;
     AlgorithmData() {}
     explicit AlgorithmData(const Map& m) : data_(m) {}
 
@@ -177,7 +182,7 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       //TODO: log incorrect type if present but wrong type
-      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(boost::get<Datatypes::DatatypeHandle>(it->second));
+      return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(it->second[0]);
     }
 
     template <typename T>
@@ -185,7 +190,13 @@ namespace Algorithms {
     {
       auto it = data_.find(name);
       //TODO: log incorrect type if present but wrong type
-      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(boost::get<std::vector<Datatypes::DatatypeHandle>>(it->second));
+      return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(it->second);
+    }
+
+    template <typename T>
+    void setList(const Name& name, const std::vector<boost::shared_ptr<T>>& list)
+    {
+      data_[name] = upcast_range<Datatypes::Datatype>(list);
     }
 
     //TODO: lame
@@ -255,13 +266,21 @@ namespace Algorithms {
   public:
     AlgoInputBuilder();
     AlgoInputBuilder& operator()(const std::string& name, Datatypes::DatatypeHandle d);
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, Datatypes::DatatypeHandle d)
+    {
+      return operator()(name.name(), d);
+    }
     template <typename T>
     AlgoInputBuilder& operator()(const std::string& name, const std::vector<T>& vec)
     {
       //BOOST_STATIC_ASSERT(boost::is_base_of<Datatypes::Datatype,T>::value);
-      std::vector<Datatypes::DatatypeHandle> datas = upcast_range<Datatypes::Datatype>(vec);
-      map_[Name(name)] = datas;
+      map_[Name(name)] = upcast_range<Datatypes::Datatype>(vec);
       return *this;
+    }
+    template <typename T>
+    AlgoInputBuilder& operator()(const AlgorithmParameterName& name, const std::vector<T>& vec)
+    {
+      return operator()(name.name(), vec);
     }
     AlgorithmInput build() const;
   private:

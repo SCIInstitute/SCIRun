@@ -37,6 +37,7 @@
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/set.hpp>
 #include <boost/serialization/variant.hpp>
+#include <boost/serialization/vector.hpp>
 #include <Dataflow/Serialization/Network/share.h>
 
 namespace SCIRun {

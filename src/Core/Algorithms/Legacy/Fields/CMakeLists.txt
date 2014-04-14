@@ -50,6 +50,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
+  DomainFields/SplitFieldByDomainAlgo.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -79,7 +80,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DomainFields/GetDomainStructure.cc
   #DomainFields/MatchDomainLabels.cc
   #DomainFields/SplitNodesByDomain.cc
-  #DomainFields/SplitFieldByDomain.cc
+  DomainFields/SplitFieldByDomainAlgo.cc
   FieldData/CalculateGradientsAlgo.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc

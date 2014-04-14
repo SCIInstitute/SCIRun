@@ -70,13 +70,8 @@ void JoinFields::execute()
   {
     update_state(Executing);
 
-    double tolerance = 0.0;
-    bool   mergenodes = false;
-    bool   mergeelems = false;
-    bool   forcepointcloud = get_state()->getValue(ForcePointCloud).getBool();
-    bool   matchval = false;
-    bool   meshonly = false;
-    
+    bool forcepointcloud = get_state()->getValue(ForcePointCloud).getBool();
+  
     setAlgoBoolFromState(JoinFieldsAlgo::MergeElems);
     setAlgoBoolFromState(JoinFieldsAlgo::MatchNodeValues);
     setAlgoBoolFromState(JoinFieldsAlgo::MergeNodes);
