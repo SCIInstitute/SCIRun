@@ -200,48 +200,43 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   //! used datatypes and hence have no specific algorithm in place).
   //! Similarly floats are casted to doubles.
        
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER      
- if (isrc->vfield()->is_double()) 
-    if (ApplyMappingMatrixT<double>(this,ifsrc,ofield,matrix))
-       return output;  
-
-   
   if (isrc->vfield()->is_char()) 
     if (ApplyMappingMatrixT<char>(this,ifsrc,ofield,matrix))
        return output;
-             
   if (isrc->vfield()->is_unsigned_char()) 
-    return (ApplyMappingMatrixT<unsigned char>(this,ifsrc,ofield,matrix));
-
+    if (ApplyMappingMatrixT<unsigned char>(this,ifsrc,ofield,matrix))
+        return output;
   if (isrc->vfield()->is_short()) 
-    return (ApplyMappingMatrixT<short>(this,ifsrc,ofield,matrix));
+    if (ApplyMappingMatrixT<short>(this,ifsrc,ofield,matrix))
+        return output;  
   if (isrc->vfield()->is_unsigned_short()) 
-    return (ApplyMappingMatrixT<unsigned short>(this,ifsrc,ofield,matrix));
-
+    if (ApplyMappingMatrixT<unsigned short>(this,ifsrc,ofield,matrix))
+       return output;
   if (isrc->vfield()->is_int()) 
-    return (ApplyMappingMatrixT<int>(this,ifsrc,ofield,matrix));
+    if (ApplyMappingMatrixT<int>(this,ifsrc,ofield,matrix))
+       return output;
   if (isrc->vfield()->is_unsigned_int()) 
-    return (ApplyMappingMatrixT<unsigned int>(this,ifsrc,ofield,matrix));
-  
+    if (ApplyMappingMatrixT<unsigned int>(this,ifsrc,ofield,matrix))
+       return output;
   if (isrc->vfield()->is_longlong()) 
-    return (ApplyMappingMatrixT<long long>(this,ifsrc,ofield,matrix));
+    if (ApplyMappingMatrixT<long long>(this,ifsrc,ofield,matrix))
+       return output;
   if (isrc->vfield()->is_unsigned_longlong()) 
-    return (ApplyMappingMatrixT<unsigned long long>(this,ifsrc,ofield,matrix));
-
+    if (ApplyMappingMatrixT<unsigned long long>(this,ifsrc,ofield,matrix))
+       return output;
   if (isrc->vfield()->is_float()) 
-    return (ApplyMappingMatrixT<float>(this,ifsrc,ofield,matrix));
+    if (ApplyMappingMatrixT<float>(this,ifsrc,ofield,matrix))
+       return output; 
   if (isrc->vfield()->is_double()) 
-    return (ApplyMappingMatrixT<double>(this,ifsrc,ofield,matrix));
-
+    if (ApplyMappingMatrixT<double>(this,ifsrc,ofield,matrix))
+       return output;  
   if (isrc->vfield()->is_vector()) 
-    return (ApplyMappingMatrixT<Vector>(this,ifsrc,ofield,matrix));
+    if (ApplyMappingMatrixT<Vector>(this,ifsrc,ofield,matrix))
+       return output;    
   if (isrc->vfield()->is_tensor()) 
-    return (ApplyMappingMatrixT<Tensor>(this,ifsrc,ofield,matrix));
+    if (ApplyMappingMatrixT<Tensor>(this,ifsrc,ofield,matrix))
+       return output;
 
-
-  error("Encountered an unknown data type");
-  algo_end(); return (false);
-  #endif
   return output;
 }
 

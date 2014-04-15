@@ -41,6 +41,7 @@
 #include <Interface/Modules/Math/CreateMatrixDialog.h>
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
+#include <Interface/Modules/Math/SelectSubMatrixDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>

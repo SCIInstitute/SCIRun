@@ -141,6 +141,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new JoinFieldsAlgo);
   else if (moduleName == "SplitFieldByDomain")
     h.reset(new SplitFieldByDomainAlgo);
+  else if (moduleName == "ApplyMappingMatrix")
+    h.reset(new ApplyMappingMatrixAlgo); 
     
   if (h && algoCollaborator)
   {
