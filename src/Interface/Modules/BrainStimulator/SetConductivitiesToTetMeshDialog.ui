@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>669</width>
-    <height>302</height>
+    <width>691</width>
+    <height>233</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>650</width>
-     <height>281</height>
+     <width>671</width>
+     <height>211</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -29,25 +29,12 @@
     <attribute name="title">
      <string>Volume Conductor</string>
     </attribute>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>260</x>
-       <y>220</y>
-       <width>131</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>NEXT STEP &gt;&gt;</string>
-     </property>
-    </widget>
     <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>241</width>
+       <width>261</width>
        <height>161</height>
       </rect>
      </property>
@@ -62,7 +49,7 @@
           <rect>
            <x>10</x>
            <y>30</y>
-           <width>221</width>
+           <width>241</width>
            <height>121</height>
           </rect>
          </property>
@@ -73,17 +60,17 @@
          </row>
          <row>
           <property name="text">
+           <string>Skull</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
            <string>CSF</string>
           </property>
          </row>
          <row>
           <property name="text">
-           <string>Eye</string>
-          </property>
-         </row>
-         <row>
-          <property name="text">
-           <string>Air</string>
+           <string>Brain</string>
           </property>
          </row>
          <row>
@@ -103,17 +90,17 @@
          </item>
          <item row="1" column="0">
           <property name="text">
-           <string>1.79</string>
+           <string>0.01</string>
           </property>
          </item>
          <item row="2" column="0">
           <property name="text">
-           <string>1.4</string>
+           <string>1.79</string>
           </property>
          </item>
          <item row="3" column="0">
           <property name="text">
-           <string>1e-15</string>
+           <string>0.33</string>
           </property>
          </item>
          <item row="4" column="0">
@@ -129,7 +116,7 @@
     <widget class="QWidget" name="verticalLayoutWidget_2">
      <property name="geometry">
       <rect>
-       <x>260</x>
+       <x>280</x>
        <y>0</y>
        <width>371</width>
        <height>161</height>
@@ -144,10 +131,10 @@
         <widget class="QTableWidget" name="tableWidget_3">
          <property name="geometry">
           <rect>
-           <x>10</x>
-           <y>30</y>
-           <width>351</width>
-           <height>121</height>
+           <x>0</x>
+           <y>20</y>
+           <width>361</width>
+           <height>141</height>
           </rect>
          </property>
          <row>

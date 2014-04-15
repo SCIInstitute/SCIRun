@@ -199,12 +199,13 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   //! casting the data on input (these should be the less frequently
   //! used datatypes and hence have no specific algorithm in place).
   //! Similarly floats are casted to doubles.
-
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER  
-if (isrc->vfield()->is_double()) 
+       
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER      
+ if (isrc->vfield()->is_double()) 
     if (ApplyMappingMatrixT<double>(this,ifsrc,ofield,matrix))
        return output;  
-        
+
+   
   if (isrc->vfield()->is_char()) 
     if (ApplyMappingMatrixT<char>(this,ifsrc,ofield,matrix))
        return output;
