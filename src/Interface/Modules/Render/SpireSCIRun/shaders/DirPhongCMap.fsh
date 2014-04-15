@@ -63,6 +63,6 @@ void main()
   diffuseColor.a = uAmbientColor.a;
 
   spec              = pow(spec, uSpecularPower);
-  gl_FragColor      = pow(diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor, vec4(1.0/2.2));
+  gl_FragColor      = diffuse * spec * uSpecularColor + diffuse * diffuseColor + uAmbientColor;
 }
 
