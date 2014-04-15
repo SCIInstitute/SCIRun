@@ -41,21 +41,20 @@ using namespace SCIRun;
 ApplyMappingMatrixModule::ApplyMappingMatrixModule()
   : Module(ModuleLookupInfo("ApplyMappingMatrix", "ChangeFieldData", "SCIRun"), false)
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputMatrix);
+  INITIALIZE_PORT(Source);
+  INITIALIZE_PORT(Destination);
+  INITIALIZE_PORT(Mapping);
+  INITIALIZE_PORT(Output);
 }
 
 void ApplyMappingMatrixModule::execute()
 {
-  FieldHandle input = getRequiredInput(InputField);
+  auto src = getRequiredInput(Source);
+  auto dest = getRequiredInput(Destination);
+  auto mapp = getRequiredInput(Mapping);
 
-  //NO Nrrd support yet !!!
-  //inputs_changed_ || !oport_cached("Matrix Nodes")
-  //if (needToExecute())
-  //{    
-  //  update_state(Executing);
-    auto output = algo().run_generic(make_input((InputField, input)));
-
-    sendOutputFromAlgorithm(OutputMatrix, output);
-  //}
+  auto out = algo().run_generic(make_input((Source, src)(Destination, dest)(Mapping, mapp)));
+ 
+  sendOutputFromAlgorithm(Output, out);
+  
 }

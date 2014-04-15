@@ -37,8 +37,8 @@ namespace SCIRun {
     namespace Fields {
 
       class SCISHARE ApplyMappingMatrixModule : public Dataflow::Networks::Module,
-        public Has1InputPort<FieldPortTag>,
-        public Has1OutputPort<MatrixPortTag>
+        public Has3InputPorts<FieldPortTag,FieldPortTag,MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
       {
       public:
         ApplyMappingMatrixModule();
@@ -46,8 +46,10 @@ namespace SCIRun {
         virtual void execute();
         virtual void setStateDefaults() {}
 
-        INPUT_PORT(0, InputField, LegacyField);
-        OUTPUT_PORT(0, OutputMatrix, Matrix);
+        INPUT_PORT(0, Source, LegacyField);
+	INPUT_PORT(1, Destination, LegacyField);
+	INPUT_PORT(2, Mapping, Matrix);
+        OUTPUT_PORT(0, Output, LegacyField);
       };
 
     }

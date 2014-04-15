@@ -24,6 +24,10 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   
+   author: Moritz Dannhauer
+   last change: 04/14/14
+   TODO: 
 */
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
@@ -34,10 +38,10 @@
 #include <Core/Datatypes/Legacy/Field/VMesh.h>
 #include <Core/Datatypes/Legacy/Field/VField.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
-
+#include <Core/Datatypes/MatrixTypeConversions.h>
 #include <Core/GeometryPrimitives/Point.h>
 #include <Core/GeometryPrimitives/Tensor.h>
-
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -90,59 +94,57 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
 
 //! Actual Algorithm class
 
-bool 
-ApplyMappingMatrixAlgo::
-run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& output) const
+ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo() 
 {
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  algo_start("ApplyMappingMatrix");
-  
-  //! safety check
-  if (isrc.get_rep() == 0)
+
+}
+
+FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping) const
+{
+  FieldHandle output;
+ 
+  if (!isrc)
   {
-    error("No input source field");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("No input source field");
+    return FieldHandle();
   }
 
-  //! safety check
-  if (idst.get_rep() == 0)
+  if (!isrc)
   {
-    error("No input source field");
-    algo_end(); return (false);
-  }
-
-  if (mapping.get_rep() == 0)
-  {
-    error("No mapping source field");
-    algo_end(); return (false);
-  }
-
-  MatrixHandle matrixH = mapping->sparse();
-  SparseRowMatrix* matrix = matrixH->sparse();
-  if (matrix == 0)
-  {
-    error("Mapping matrix needs to be sparse");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("No input destination field");
+    return FieldHandle();
   }
   
-
+  if (!isrc)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("No input mapping field");
+    return FieldHandle();
+  }
+  
+  auto matrix = matrix_cast::as_sparse(mapping); 
+  
+  if (!matrix)
+  {
+    THROW_ALGORITHM_INPUT_ERROR("Mapping matrix needs to be sparse");
+    return FieldHandle();
+  }
+  
   VField* ifsrc =  isrc->vfield();
   VField* ifdst =  idst->vfield();
-  //VMesh*  imsrc =  isrc->vmesh();
   VMesh*  imdst =  idst->vmesh();
-
+  
   //! Get information about field types
   FieldInformation fi(isrc);
   FieldInformation fo(idst);
+
   fo.set_data_type(fi.get_data_type());
-  
   size_type m = mapping->nrows();
-  size_type n = mapping->ncols();
-  
+  size_type n = mapping->ncols();  
+
   size_type dst_num_nodes = imdst->num_nodes();
   size_type dst_num_elems = imdst->num_elems();
   size_type dst_num_values = ifdst->num_values();
-  size_type src_num_values = ifsrc->num_values();
+  size_type src_num_values = ifsrc->num_values();  
 
   if (dst_num_values == m)
   {
@@ -158,18 +160,23 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
   }
   else
   {
-    error("The number of columns in the matrix does not match number of nodes or elements in the destination field");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("The number of columns in the matrix does not match number of nodes or elements in the destination field");
+    return FieldHandle();
   }
   
   if (src_num_values != n)
   {
     std::cerr << "n="<<n<<"\n";
     std::cerr << "num_values="<<src_num_values<<"\n";
-    error("The number of columns in the matrix does not match number of values in the source field");
-    algo_end(); return (false);
+    THROW_ALGORITHM_INPUT_ERROR("The number of columns in the matrix does not match number of values in the source field");
+    return FieldHandle();
   }
-
+  
+  //! Create output field
+  output = CreateField(fo,idst->mesh());
+  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+ 
   //! Create output field
   output = CreateField(fo,idst->mesh());
  
@@ -224,7 +231,7 @@ run(FieldHandle& isrc, FieldHandle& idst, MatrixHandle& mapping, FieldHandle& ou
   error("Encountered an unknown data type");
   algo_end(); return (false);
   #endif
-  return true;
+  return output;
 }
 
 
@@ -236,9 +243,18 @@ AlgorithmOutputName ApplyMappingMatrixAlgo::Output("Output");
 AlgorithmOutput ApplyMappingMatrixAlgo::run_generic(const AlgorithmInput & input) const
 {
  AlgorithmOutput output;
+ 
+  auto src = input.get<Field>(Source);
+  auto dest = input.get<Field>(Destination);
+  auto mapp = input.get<Matrix>(Mapping);
+ 
+  FieldHandle output_field;
+  output_field = run(src,dest,mapp);
+  
+  output[Output] = output_field;
+
  return output;
 }
 
-ApplyMappingMatrixAlgo::ApplyMappingMatrixAlgo() {}
-ApplyMappingMatrixAlgo::~ApplyMappingMatrixAlgo() {}
+//ApplyMappingMatrixAlgo::~ApplyMappingMatrixAlgo() {}
 //} // namespace SCIRunAlgo

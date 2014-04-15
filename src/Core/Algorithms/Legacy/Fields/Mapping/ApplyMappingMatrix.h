@@ -59,10 +59,10 @@ class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
     static AlgorithmOutputName Output;  
     // Algorithm defaults
     ApplyMappingMatrixAlgo();
-    ~ApplyMappingMatrixAlgo();
+    //~ApplyMappingMatrixAlgo();
 
     // Algorithm Functions
-    bool run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping, FieldHandle& output) const;
+    FieldHandle run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping) const;
     virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
 };
 
