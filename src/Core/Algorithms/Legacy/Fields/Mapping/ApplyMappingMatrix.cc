@@ -175,20 +175,16 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   //! Create output field
   output = CreateField(fo,idst->mesh());
   
-  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
- 
-  //! Create output field
-  output = CreateField(fo,idst->mesh());
- 
   VField* ofield = output->vfield();
-  ofield->resize_values();
+  ofield->resize_values();  
   
-  //! Check whether output field was created
-  if (output.get_rep() == 0)
+  if (!output)
   {
-    error("Could not create output field");
-    algo_end(); return(false);
+    THROW_ALGORITHM_INPUT_ERROR("Could not create output field");
+    return FieldHandle();
   } 
+  
+  #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   
   //! Simple table to deal with the various data type formats
   //! Note that not every data type is handled, all char, shorts etc,
