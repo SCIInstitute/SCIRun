@@ -56,21 +56,21 @@ using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Geometry;
 //! Internal function to this algorithm: no need for this function to be
 //! public. It is called from the algorithm class only.
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 template <class DATA> 
 bool 
-ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
+ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     VField* input, VField* output,
                     SparseRowMatrix* mapping);
 
 //! This is the basic algorithm behind the mapping algorithm
 template <class DATA> 
 bool 
-ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
+ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     VField* input, VField* output,
                     SparseRowMatrix* mapping)
 {
-  double* vals = mapping->get_vals();
+  /*double* vals = mapping->get_vals();
   index_type* rows = mapping->get_rows();
   index_type* columns = mapping->get_cols();
   size_type m = mapping->nrows();
@@ -85,12 +85,12 @@ ApplyMappingMatrixT(ApplyMappingMatrixAlgo* algo,
 
     output->set_value(val,idx);
     cnt++; if (cnt==400) algo->update_progress(idx,m);
-  }
+  }*/
   
   //! Algorithm succeeded
-  algo->algo_end(); return (true);
+  return (true);
 }
- #endif
+
 
 //! Actual Algorithm class
 
@@ -185,7 +185,6 @@ FieldHandle ApplyMappingMatrixAlgo::run(FieldHandle& isrc, FieldHandle& idst, Ma
   } 
   
   #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-  
   //! Simple table to deal with the various data type formats
   //! Note that not every data type is handled, all char, shorts etc,
   //! are automatically handled by the int, and unsigned int case, by
