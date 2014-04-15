@@ -56,7 +56,7 @@ TEST_F(BuildTDCSMatrixTests, ThrowsForNullInput)
   EXPECT_THROW(csdf->execute(), NullHandleOnPortException);
 }
 
-TEST_F(BuildTDCSMatrixTests, Foo)
+TEST_F(BuildTDCSMatrixTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }

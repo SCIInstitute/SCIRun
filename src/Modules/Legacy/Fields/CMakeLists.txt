@@ -42,6 +42,9 @@ SET(Dataflow_Modules_Legacy_Fields_HEADERS
   GetDomainBoundary.h
   GetFieldNodes.h
   JoinFields.h
+  SplitFieldByDomain.h
+  CreateFieldData.h
+  #ApplyMappingMatrix.h
   ApplyMappingMatrix.h
   MapFieldDataFromElemToNode.h
 )
@@ -62,7 +65,7 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #MapFieldDataOntoElems.cc
   #CleanupTetMesh.cc
   #MatchDomainLabels.cc
-  #SplitFieldByDomain.cc
+  SplitFieldByDomain.cc
   AlignMeshBoundingBoxes.cc
   #ProjectPointsOntoMesh.cc
   #GetMeshQualityField.cc
@@ -144,6 +147,9 @@ SET(Dataflow_Modules_Legacy_Fields_SRCS
   #CalculateIsInsideField.cc
   #CalculateInsideWhichField.cc
   #ConvertIndicesToFieldData.cc
+  CreateFieldData.cc
+  #GetFieldData.cc
+  #SetFieldData.cc
   #CreateFieldData.cc
   GetFieldData.cc
   SetFieldData.cc
@@ -185,13 +191,14 @@ TARGET_LINK_LIBRARIES(Dataflow_Modules_Legacy_Fields
   #Core_Algorithms_Converter
   Core_Basis
   Core_Datatypes
+  Core_Datatypes_Legacy_Bundle
   Core_Exceptions_Legacy
   #Core_Geom
   Core_Geometry_Primitives
   #Core_GeomInterface
   #Core_ImportExport
   Core_Math
-  #Core_Parser
+  Core_Parser
   #Core_Persistent
   #Core_Thread
   Core_Util_Legacy

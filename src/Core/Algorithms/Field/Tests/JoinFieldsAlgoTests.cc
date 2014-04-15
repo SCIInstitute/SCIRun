@@ -26,8 +26,6 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#if 0
- 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -35,7 +33,8 @@
 #include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
-#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Core/Logging/Log.h>
@@ -49,7 +48,7 @@ using ::testing::NotNull;
 using ::testing::TestWithParam;
 using ::testing::Values; 
 
-class GetDomainBoundaryTests : public ::testing::Test
+class JoinFieldsAlgoTests : public ::testing::Test
 {
 protected:
   virtual void SetUp()
@@ -57,96 +56,75 @@ protected:
     SCIRun::Core::Logging::Log::get().setVerbose(true);
   }
 
-  void runTest(bool includeOuterBoundary, bool useRange, int domainValue,
-    int expectedBoundaryNodes, int expectedBoundaryElements)
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)
   {
-    FieldHandle latVol = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
-    ASSERT_TRUE(latVol->vmesh()->is_latvolmesh());
-
-    GetDomainBoundaryAlgo algo;
-
-    // How to set parameters on an algorithm (that come from the GUI)
-    algo.set(GetDomainBoundaryAlgo::AddOuterBoundary, includeOuterBoundary);
-    
-    // TODO: this logic matches the wacky module behavior
-    algo.set(GetDomainBoundaryAlgo::UseRange, useRange);
-    if (!useRange)
-    {
-      algo.set(GetDomainBoundaryAlgo::Domain, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MinRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::MaxRange, domainValue);
-      algo.set(GetDomainBoundaryAlgo::UseRange, true);
-    }
-
-    FieldHandle boundary;
-    SparseRowMatrixHandle unused;
-    algo.runImpl(latVol, unused, boundary);
-
-    ASSERT_THAT(boundary, NotNull());
-
-    EXPECT_EQ(expectedBoundaryNodes, boundary->vmesh()->num_nodes());
-    EXPECT_EQ(expectedBoundaryElements, boundary->vmesh()->num_elems());
-    EXPECT_TRUE(boundary->vmesh()->is_quadsurfmesh());
+    FieldInformation lfi("LatVolMesh", 1, "double");
+    Point minb(-1.0, -1.0, -1.0);
+    Point maxb(1.0, 1.0, 1.0);
+    MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+    FieldHandle ofh = CreateField(lfi,mesh);
+    ofh->vfield()->clear_all_values();
+    return ofh;
   }
 };
 
-// manual, undesirable way to test many different value combinations.
-// includeOuterBoundary = Bool()
-// useRange = Bool()
-// domainValue = Values(0,1,2,3,4)
 
-// expected values of -1 need to be figured out from the v4 GUI.
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_1)
+
+// parameters:
+// MergeNodes = Bool()
+// MergeElems = Bool()
+// MatchNodeValues = Bool()
+// MakeNoData = Bool()
+// Tolerance = Values(1e-1, 1e-3, ...)
+
+TEST_F(JoinFieldsAlgoTests, CanLogErrorMessage)
 {
-  runTest(false, true, 1, 8680, 8334);
+  JoinFieldsAlgo algo;
+
+  FieldList input;
+  FieldHandle output;
+
+  EXPECT_FALSE(algo.runImpl(input, output));
 }
 
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_1)
+TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
 {
-  runTest(false, false, 1, 9024, 8574);
+  JoinFieldsAlgo algo;
+
+  FieldList input;
+  input.push_back(CreateEmptyLatVol(2,3,4));
+  EXPECT_EQ(2*3*4, input[0]->vmesh()->num_nodes());
+  input.push_back(CreateEmptyLatVol(5,6,7));
+  EXPECT_EQ(5*6*7, input[1]->vmesh()->num_nodes());
+  input.push_back(CreateEmptyLatVol(8,9,10));
+  EXPECT_EQ(8*9*10, input[2]->vmesh()->num_nodes());
+
+  FieldHandle output;
+  EXPECT_TRUE(algo.runImpl(input, output));
+  EXPECT_EQ(914, output->vmesh()->num_nodes());
+
+  input.push_back(CreateEmptyLatVol(11,12,13));
+  EXPECT_EQ(11*12*13, input[3]->vmesh()->num_nodes());
+  EXPECT_TRUE(algo.runImpl(input, output));
+  EXPECT_EQ(2588, output->vmesh()->num_nodes());
 }
 
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_1)
+TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
 {
-  runTest(true, false, 1, 17264, 17700);
+  JoinFieldsAlgo algo;
+
+  FieldList input;
+  input.push_back(CreateEmptyLatVol(2,3,4));
+  input.push_back(CreateEmptyLatVol(5,6,7));
+  input.push_back(CreateEmptyLatVol(8,9,10));
+
+  auto outputObj = algo.run_generic(make_input((JoinFieldsAlgo::InputFields, input)));
+
+  FieldHandle output = outputObj.get<Field>(Core::Algorithms::Variables::OutputField);
+  EXPECT_EQ(914, output->vmesh()->num_nodes());
 }
 
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_1)
-{
-  runTest(true, true, 1, 12328, 12324);
-}
-
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_False_4)
-{
-  runTest(false, false, 4, 9024, 8574);
-}
-
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_False_4)
-{
-  runTest(true, false, 4, 17264, 17700);
-}
-
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_False_True_4)
-{
-  runTest(false, true, 4, 0, 0);
-}
-
-TEST_F(GetDomainBoundaryTests, LatVolBoundary_True_True_4)
-{
-  runTest(true, true, 4, 0, 0);
-}
-
-
-TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
-{
-  GetDomainBoundaryAlgo algo;
-
-  FieldHandle input, output;
-  SparseRowMatrixHandle elemLink;
-
-  EXPECT_FALSE(algo.runImpl(input, elemLink, output));
-}
-
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 #if GTEST_HAS_COMBINE
 
 /*Get Parameterized Tests
@@ -154,12 +132,11 @@ TEST_F(GetDomainBoundaryTests, CanLogErrorMessage)
 using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
-class GetDomainBoundaryTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, int, int, int> >
+class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, double> >
 {
 public:
   FieldHandle boundary_;
-  SparseRowMatrixHandle unused_;
-  GetDomainBoundaryAlgo algo_;
+  JoinFieldsAlgo algo_;
   FieldHandle latVol_;
   GetDomainBoundaryTestsParameterized() 
   {

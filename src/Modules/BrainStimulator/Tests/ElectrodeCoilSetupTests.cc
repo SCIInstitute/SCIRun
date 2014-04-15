@@ -61,7 +61,7 @@ TEST_F(ElectrodeCoilSetupTests, ThrowsForNullInput)
   EXPECT_THROW(tdcs->execute(), NullHandleOnPortException);
 }
 
-TEST_F(ElectrodeCoilSetupTests, Foo)
+TEST_F(ElectrodeCoilSetupTests, DISABLED_Foo)
 {
   FAIL() << "TODO";
 }

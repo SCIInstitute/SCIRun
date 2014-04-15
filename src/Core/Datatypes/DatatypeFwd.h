@@ -56,6 +56,9 @@ namespace Datatypes {
   class String;
   class GeometryObject;
   class ColorMap;
+  class Bundle;
+
+  typedef boost::shared_ptr<String> StringHandle;
 }}
 
   class Field;

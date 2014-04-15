@@ -68,7 +68,7 @@ JoinFieldsAlgo::JoinFieldsAlgo()
 }
 
 bool 
-JoinFieldsAlgo::runImpl(const std::vector<FieldHandle>& input, FieldHandle& output) const
+JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
 {
   ScopedAlgorithmStatusReporter asr(this, "JoinFields");
 
@@ -540,7 +540,6 @@ AlgorithmInputName JoinFieldsAlgo::InputFields("InputFields");
 AlgorithmOutput JoinFieldsAlgo::run_generic(const AlgorithmInput& input) const
 {
   auto inputFields = input.getList<Field>(InputFields);
-  auto object = input.get<Field>(Variables::OutputField);
 
   FieldHandle outputField;
   if (!runImpl(inputFields, outputField))

@@ -57,6 +57,7 @@ void PortColorLookup::init()
     ("Field", "yellow")
     ("Geometry", "magenta")
     ("ColorMap", "purple")
+    ("Bundle", "orange")
     ("Datatype", "black");
 }
 

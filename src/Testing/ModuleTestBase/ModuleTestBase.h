@@ -49,6 +49,7 @@ namespace SCIRun
       void connectDummyOutputConnection(Dataflow::Networks::ModuleHandle module, size_t portNum);
     private:
       Dataflow::Networks::ModuleFactoryHandle factory_;
+      Core::Algorithms::AlgorithmParameter algoParam_;
     };
 
     SCISHARE FieldHandle CreateEmptyLatVol();

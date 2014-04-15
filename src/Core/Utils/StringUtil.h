@@ -96,4 +96,16 @@ std::vector<boost::shared_ptr<T>> upcast_range(const Cont& container)
 
 }}
 
+namespace std
+{
+  template <class T>
+  std::ostream& operator<<(std::ostream& o, const std::vector<T>& vec)
+  {
+    o << "[";
+    std::copy(vec.begin(), vec.end(), std::ostream_iterator<T>(o, " "));
+    o << "]";
+    return o;
+  }
+}
+
 #endif

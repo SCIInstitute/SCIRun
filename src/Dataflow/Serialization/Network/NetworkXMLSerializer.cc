@@ -42,8 +42,23 @@ using namespace SCIRun::Dataflow::Networks;
 using namespace SCIRun::Dataflow::State;
 using namespace SCIRun::Core::Algorithms;
 
+class ScopedControllerSignalDisabler
+{
+public:
+  ScopedControllerSignalDisabler(NetworkEditorControllerInterface* nec) : nec_(nec)
+  {
+    nec_->disableSignals();
+  }
+  ~ScopedControllerSignalDisabler() 
+  {
+    nec_->enableSignals();
+  }
+private:
+  NetworkEditorControllerInterface* nec_;
+};
+
 NetworkXMLConverter::NetworkXMLConverter(ModuleFactoryHandle moduleFactory, ModuleStateFactoryHandle stateFactory, AlgorithmFactoryHandle algoFactory, NetworkEditorControllerInterface* nec, ModulePositionEditor* mpg)
-  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), connectionMaker_(nec), mpg_(mpg)
+  : moduleFactory_(moduleFactory), stateFactory_(stateFactory), algoFactory_(algoFactory), controller_(nec), mpg_(mpg)
 {
 }
 
@@ -51,14 +66,17 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
 {
   //TODO: need to use NEC here to manage signal/slots for dynamic ports.
   NetworkHandle network(boost::make_shared<Network>(moduleFactory_, stateFactory_, algoFactory_));
-  connectionMaker_->setNetwork(network);
+  controller_->setNetwork(network);
 
-  BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
   {
-    ModuleHandle module = network->add_module(modPair.second.module);
-    module->set_id(modPair.first);
-    ModuleStateHandle state(modPair.second.state.clone());
-    module->set_state(state);
+    ScopedControllerSignalDisabler scsd(controller_);
+    BOOST_FOREACH(const ModuleMapXML::value_type& modPair, data.modules)
+    {
+      ModuleHandle module = controller_->addModule(modPair.second.module);
+      module->set_id(modPair.first);
+      ModuleStateHandle state(modPair.second.state.clone());
+      module->set_state(state);
+    }
   }
 
   std::vector<ConnectionDescriptionXML> connectionsSorted(data.connections);
@@ -69,7 +87,7 @@ NetworkHandle NetworkXMLConverter::from_xml_data(const NetworkXML& data)
     ModuleHandle from = network->lookupModule(conn.out_.moduleId_);
     ModuleHandle to = network->lookupModule(conn.in_.moduleId_);
 
-    connectionMaker_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
+    controller_->requestConnection(from->getOutputPort(conn.out_.portId_).get(), to->getInputPort(conn.in_.portId_).get());
   }
 
   return network;

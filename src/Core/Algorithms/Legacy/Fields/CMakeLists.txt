@@ -27,6 +27,7 @@
 #
 
 SET(Core_Algorithms_Legacy_Fields_HEADERS
+  ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
   Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
@@ -49,6 +50,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/SetMeshNodes.h
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
+  DomainFields/SplitFieldByDomainAlgo.h
   #MeshData/GetMeshData.h
   FieldData/GetFieldData.h
   FieldData/MapFieldDataFromElemToNode.h
@@ -62,7 +64,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #ClipMesh/ClipMeshByIsovalue.cc
   #ClipMesh/ClipMeshBySelection.cc
   #CollectFields/CollectPointClouds.cc
-  #ConvertMeshType/ConvertMeshToPointCloudMesh.cc
+  ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToTetVolMesh.cc
   ConvertMeshType/ConvertMeshToTriSurfMeshAlgo.cc
   #ConvertMeshType/ConvertMeshToUnstructuredMesh.cc
@@ -80,7 +82,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #DomainFields/GetDomainStructure.cc
   #DomainFields/MatchDomainLabels.cc
   #DomainFields/SplitNodesByDomain.cc
-  #DomainFields/SplitFieldByDomain.cc
+  DomainFields/SplitFieldByDomainAlgo.cc
   FieldData/CalculateGradientsAlgo.cc
   #FieldData/CalculateLatVolGradientsAtNodes.cc
   FieldData/CalculateVectorMagnitudesAlgo.cc

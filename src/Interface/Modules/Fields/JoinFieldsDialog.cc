@@ -27,12 +27,13 @@
 */
 
 #include <Interface/Modules/Fields/JoinFieldsDialog.h>
-//#include <Core/Algorithms/Legacy/Fields/DomainFields/GetDomainBoundaryAlgo.h>
+#include <Modules/Legacy/Fields/JoinFields.h>
+#include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
-//using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Algorithms::Fields;
 
 JoinFieldsDialog::JoinFieldsDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -42,55 +43,40 @@ JoinFieldsDialog::JoinFieldsDialog(const std::string& name, ModuleStateHandle st
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  //connect(compartmentRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  //connect(compartmentsRangeRadioButton_, SIGNAL(clicked()), this, SLOT(push()));
-  //connect(disconnectBoundariesCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  //connect(excludeInnerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  //connect(includeInnerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
-  //connect(maxCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  //connect(minCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  //connect(valueCompartmentSpinner_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  //connect(outerBoundaryCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(forcePointCloudCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(mergeDuplicateElementsCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(mergeDuplicateNodesCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(mergeMeshOnlyCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(onlyMergeSameValueCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
+  connect(nodeToleranceDoubleSpinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
 }
 
 void JoinFieldsDialog::push()
 {
-  //if (!pulling_)
-  //{
-  //  state_->setValue(GetDomainBoundaryAlgo::AddOuterBoundary, outerBoundaryCheckBox_->isChecked());
-  //  state_->setValue(GetDomainBoundaryAlgo::InnerBoundaryOnly, includeInnerBoundaryCheckBox_->isChecked());
-  //  state_->setValue(GetDomainBoundaryAlgo::DisconnectBoundaries, disconnectBoundariesCheckBox_->isChecked());
-  //  state_->setValue(GetDomainBoundaryAlgo::NoInnerBoundary, excludeInnerBoundaryCheckBox_->isChecked());
-  //  state_->setValue(GetDomainBoundaryAlgo::UseRange, !compartmentRadioButton_->isChecked());
-  //  state_->setValue(GetDomainBoundaryAlgo::UseRange, compartmentsRangeRadioButton_->isChecked());
-  //  state_->setValue(GetDomainBoundaryAlgo::MinRange, minCompartmentSpinner_->value());
-  //  state_->setValue(GetDomainBoundaryAlgo::MaxRange, maxCompartmentSpinner_->value());
-  //  state_->setValue(GetDomainBoundaryAlgo::Domain, valueCompartmentSpinner_->value());
-  //}
+  if (!pulling_)
+  {
+    state_->setValue(JoinFieldsAlgo::MergeNodes, mergeDuplicateNodesCheckBox_->isChecked());
+    state_->setValue(JoinFieldsAlgo::MergeElems, mergeDuplicateElementsCheckBox_->isChecked());
+    state_->setValue(SCIRun::Modules::Fields::JoinFields::ForcePointCloud, forcePointCloudCheckBox_->isChecked());
+    state_->setValue(JoinFieldsAlgo::MakeNoData, mergeMeshOnlyCheckBox_->isChecked());
+    state_->setValue(JoinFieldsAlgo::MatchNodeValues, onlyMergeSameValueCheckBox_->isChecked());
+    state_->setValue(JoinFieldsAlgo::Tolerance, nodeToleranceDoubleSpinBox_->value());
+  }
 }
 
 //BIG DAN TODO: extract class for Widget/StateVar interaction. Starting to look like Seg3D code...
 
 void JoinFieldsDialog::pull()
 {
-  //Pulling p(this);
-  //
-  //int newValue = state_->getValue(GetDomainBoundaryAlgo::MinRange).getInt();
-  //if (newValue != minCompartmentSpinner_->value())
-  //  minCompartmentSpinner_->setValue(newValue);
+  Pulling p(this);
+  
+  double newValue = state_->getValue(JoinFieldsAlgo::Tolerance).getDouble();
+  if (newValue != nodeToleranceDoubleSpinBox_->value())
+    nodeToleranceDoubleSpinBox_->setValue(newValue);
 
-  //newValue = state_->getValue(GetDomainBoundaryAlgo::MaxRange).getInt();
-  //if (newValue != maxCompartmentSpinner_->value())
-  //  maxCompartmentSpinner_->setValue(newValue);
-
-  //newValue = state_->getValue(GetDomainBoundaryAlgo::Domain).getInt();
-  //if (newValue != valueCompartmentSpinner_->value())
-  //  valueCompartmentSpinner_->setValue(newValue);
-  //
-  //outerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::AddOuterBoundary).getBool());
-  //includeInnerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::InnerBoundaryOnly).getBool());
-  //disconnectBoundariesCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::DisconnectBoundaries).getBool());
-  //excludeInnerBoundaryCheckBox_->setChecked(state_->getValue(GetDomainBoundaryAlgo::NoInnerBoundary).getBool());
-  //compartmentRadioButton_->setChecked(!state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
-  //compartmentsRangeRadioButton_->setChecked(state_->getValue(GetDomainBoundaryAlgo::UseRange).getBool());
+  mergeDuplicateNodesCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MergeNodes).getBool());
+  mergeDuplicateElementsCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MergeElems).getBool());
+  mergeMeshOnlyCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MakeNoData).getBool());
+  onlyMergeSameValueCheckBox_->setChecked(state_->getValue(JoinFieldsAlgo::MatchNodeValues).getBool());
+  forcePointCloudCheckBox_->setChecked(state_->getValue(SCIRun::Modules::Fields::JoinFields::ForcePointCloud).getBool());
 }
