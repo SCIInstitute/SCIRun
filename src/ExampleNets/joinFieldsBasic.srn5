@@ -4,7 +4,7 @@
 <networkFile class_id="0" tracking_level="0" version="0">
 	<networkInfo class_id="1" tracking_level="0" version="0">
 		<modules class_id="2" tracking_level="0" version="0">
-			<count>6</count>
+			<count>7</count>
 			<item_version>0</item_version>
 			<item class_id="3" tracking_level="0" version="0">
 				<first>CreateLatVol:0</first>
@@ -280,8 +280,20 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>5</count>
+							<count>6</count>
 							<item_version>0</item_version>
+							<item>
+								<first>
+									<name>ForcePointCloud</name>
+								</first>
+								<second>
+									<name>ForcePointCloud</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
 							<item>
 								<first>
 									<name>make_no_data</name>
@@ -342,6 +354,22 @@
 									</value>
 								</second>
 							</item>
+						</stateMap>
+					</state>
+				</second>
+			</item>
+			<item>
+				<first>ReportFieldInfo:6</first>
+				<second>
+					<module>
+						<package_name_>SCIRun</package_name_>
+						<category_name_>MiscField</category_name_>
+						<module_name_>ReportFieldInfo</module_name_>
+					</module>
+					<state>
+						<stateMap>
+							<count>0</count>
+							<item_version>0</item_version>
 						</stateMap>
 					</state>
 				</second>
@@ -476,7 +504,7 @@
 			</item>
 		</modules>
 		<connections class_id="12" tracking_level="0" version="0">
-			<count>5</count>
+			<count>6</count>
 			<item_version>0</item_version>
 			<item class_id="13" tracking_level="0" version="0">
 				<moduleId1_>CreateLatVol:0</moduleId1_>
@@ -487,7 +515,7 @@
 				<moduleId2_>JoinFields:2</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
-					<id>2</id>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -499,7 +527,7 @@
 				<moduleId2_>JoinFields:2</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
-					<id>3</id>
+					<id>1</id>
 				</port2_>
 			</item>
 			<item>
@@ -511,7 +539,19 @@
 				<moduleId2_>JoinFields:2</moduleId2_>
 				<port2_>
 					<name>InputFields</name>
-					<id>4</id>
+					<id>2</id>
+				</port2_>
+			</item>
+			<item>
+				<moduleId1_>JoinFields:2</moduleId1_>
+				<port1_>
+					<name>OutputField</name>
+					<id>0</id>
+				</port1_>
+				<moduleId2_>ReportFieldInfo:6</moduleId2_>
+				<port2_>
+					<name>InputField</name>
+					<id>0</id>
 				</port2_>
 			</item>
 			<item>
@@ -541,7 +581,7 @@
 		</connections>
 	</networkInfo>
 	<modulePositions class_id="15" tracking_level="0" version="0">
-		<count>6</count>
+		<count>7</count>
 		<item_version>0</item_version>
 		<item class_id="16" tracking_level="0" version="0">
 			<first>CreateLatVol:0</first>
@@ -567,8 +607,15 @@
 		<item>
 			<first>JoinFields:2</first>
 			<second>
-				<first>-867</first>
-				<second>-166</second>
+				<first>-877</first>
+				<second>-163</second>
+			</second>
+		</item>
+		<item>
+			<first>ReportFieldInfo:6</first>
+			<second>
+				<first>-687</first>
+				<second>-36</second>
 			</second>
 		</item>
 		<item>

@@ -26,55 +26,71 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <Core/Algorithms/Fields/DomainFields/SplitFieldByDomain.h>
-
-#include <Core/Datatypes/FieldInformation.h>
+#include <Core/Algorithms/Legacy/Fields/DomainFields/SplitFieldByDomainAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
 #include <algorithm>
 
-namespace SCIRunAlgo {
-
 using namespace SCIRun;
+using namespace SCIRun::Core::Algorithms::Fields;
+using namespace SCIRun::Core::Geometry;
+using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+
+AlgorithmParameterName SplitFieldByDomainAlgo::SortAscending("SortAscending");
+AlgorithmParameterName SplitFieldByDomainAlgo::SortBySize("SortBySize");
+
+SplitFieldByDomainAlgo::SplitFieldByDomainAlgo()
+{
+  addParameter(SortBySize, false);
+  addParameter(SortAscending, false);
+} 
+
+namespace {
 
 class SortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
-    SortSizes(double* sizes) : sizes_(sizes) {}
+    explicit SortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
     
-    bool operator()(index_type i1, index_type i2)
+    bool operator()(index_type i1, index_type i2) const
     {
       return (sizes_[i1] > sizes_[i2]);
     }
 
   private:
-    double*      sizes_;
+    const std::vector<double>& sizes_;
 };
 
 
 class AscSortSizes : public std::binary_function<index_type,index_type,bool>
 {
   public:
-    AscSortSizes(double* sizes) : sizes_(sizes) {}
+    explicit AscSortSizes(const std::vector<double>& sizes) : sizes_(sizes) {}
     
-    bool operator()(index_type i1, index_type i2)
+    bool operator()(index_type i1, index_type i2) const
     {
       return (sizes_[i1] < sizes_[i2]);
     }
 
   private:
-    double*      sizes_;
+    const std::vector<double>& sizes_;
 };
-
+}
 
 
 bool 
-SplitFieldByDomainAlgo::
-run( FieldHandle input, std::vector<FieldHandle>& output)
+SplitFieldByDomainAlgo::runImpl(FieldHandle input, FieldList& output) const
 {
-  algo_start("SplitNodesByDomain");
+  ScopedAlgorithmStatusReporter asr(this, "SplitNodesByDomain");
   
-  if (input.get_rep() == 0)
+  if (!input)
   {
-    algo_end(); error("No input field");
+    error("No input field");
     return (false);
   }
 
@@ -82,13 +98,13 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements.");
-    algo_end(); return (false);
+    return (false);
   }
 
   if (!(fi.is_constantdata()))
   {
     error("This function only works for data located at the elements");
-    algo_end(); return (false);
+    return (false);
   }
 
   fo.make_unstructuredmesh();
@@ -97,9 +113,9 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
   VField *field = input->vfield();
   VMesh  *mesh  = input->vmesh();
   
-  if (field == 0 || mesh == 0)
+  if (!field || !mesh)
   {
-    algo_end(); error("No input field");
+    error("No input field");
     return (false);
   }
 
@@ -126,25 +142,25 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
   index_type k = 0;
   
   int cnt = 0;
-  while(1)
+  while (true)
   {
     FieldHandle output_field = CreateField(fo);
     
-    if (output_field.get_rep() == 0)
+    if (!output_field)
     {
       error("Could not create output field");
       output.clear();
-      algo_end(); return(false); 
+      return(false); 
     }
    
     VField* ofield = output_field->vfield();
     VMesh *omesh = output_field->vmesh();
 
-    if (ofield == 0 || omesh == 0)
+    if (!ofield || !omesh)
     {
       error("Could not create output field");
       output.clear();
-      algo_end(); return(false); 
+      return(false); 
     }
     
     for (size_type p =0; p<num_nodes; p++) newidxarray[p] = true;
@@ -168,7 +184,12 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
           newnodes[p] = idxarray[node];
         }
         omesh->add_elem(newnodes);
-        cnt++; if (cnt == 400) { cnt = 0; update_progress(k,num_elems); }   
+        cnt++; 
+        if (cnt == 400) 
+        { 
+          cnt = 0; 
+          update_progress_max(k,num_elems); 
+        }   
         k++;
       }
     }
@@ -194,11 +215,11 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
   }
   
   
-  if (get_bool("sort_by_size"))
+  if (get(SortBySize).getBool())
   {
     std::vector<double> sizes(output.size());
     std::vector<index_type> order(output.size());
-    std::vector<FieldHandle> temp(output.size());
+    std::vector<FieldHandle> temp(output);
     
     for (size_t j=0; j<output.size(); j++)
     {
@@ -211,25 +232,39 @@ run( FieldHandle input, std::vector<FieldHandle>& output)
       }
       sizes[j] = size;
       order[j] = j;
-      temp[j] = output[j];
     }
   
-    if (get_bool("sort_ascending"))
+    if (get(SortAscending).getBool())
     {
-      std::sort(order.begin(),order.end(),AscSortSizes(&(sizes[0]))); 
+      std::sort(order.begin(),order.end(),AscSortSizes(sizes)); 
     }
     else
     {
-      std::sort(order.begin(),order.end(),SortSizes(&(sizes[0]))); 
+      std::sort(order.begin(),order.end(),SortSizes(sizes)); 
     }
+    // easier just to sort output directly?
     for (size_t j=0; j<output.size(); j++)
     {
       output[j] = temp[order[j]];
     }
   }
   
-  algo_end(); return(true);
+  std::ostringstream ostr;
+  ostr << "Input field split into " << output.size() << " fields.";
+  remark(ostr.str());
+
+  return(true);
 }
 
-} // namespace SCIRunAlgo
+AlgorithmOutput SplitFieldByDomainAlgo::run_generic(const AlgorithmInput& input) const
+{
+  auto field = input.get<Field>(Variables::InputField);
 
+  FieldList list;
+  if (!runImpl(field, list))
+    THROW_ALGORITHM_PROCESSING_ERROR("False returned on legacy run call.");
+
+  AlgorithmOutput output;
+  output.setList(Variables::ListOfOutputFields, list);
+  return output;
+}

@@ -34,6 +34,7 @@
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Algorithms/Base/AlgorithmPreconditions.h>
 #include <Core/Algorithms/Legacy/Fields/MergeFields/JoinFieldsAlgo.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Testing/Utils/SCIRunUnitTests.h>
 #include <Testing/Utils/MatrixTestUtilities.h>
 #include <Core/Logging/Log.h>
@@ -54,7 +55,20 @@ protected:
   {
     SCIRun::Core::Logging::Log::get().setVerbose(true);
   }
+
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)
+  {
+    FieldInformation lfi("LatVolMesh", 1, "double");
+    Point minb(-1.0, -1.0, -1.0);
+    Point maxb(1.0, 1.0, 1.0);
+    MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+    FieldHandle ofh = CreateField(lfi,mesh);
+    ofh->vfield()->clear_all_values();
+    return ofh;
+  }
 };
+
+
 
 // parameters:
 // MergeNodes = Bool()
@@ -71,7 +85,45 @@ TEST_F(JoinFieldsAlgoTests, CanLogErrorMessage)
   EXPECT_FALSE(algo.runImpl(input, output));
 }
 
-//#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVols)
+{
+  JoinFieldsAlgo algo;
+
+  FieldList input;
+  input.push_back(CreateEmptyLatVol(2,3,4));
+  EXPECT_EQ(2*3*4, input[0]->vmesh()->num_nodes());
+  input.push_back(CreateEmptyLatVol(5,6,7));
+  EXPECT_EQ(5*6*7, input[1]->vmesh()->num_nodes());
+  input.push_back(CreateEmptyLatVol(8,9,10));
+  EXPECT_EQ(8*9*10, input[2]->vmesh()->num_nodes());
+
+  FieldHandle output;
+  EXPECT_TRUE(algo.runImpl(input, output));
+  EXPECT_EQ(914, output->vmesh()->num_nodes());
+
+  input.push_back(CreateEmptyLatVol(11,12,13));
+  EXPECT_EQ(11*12*13, input[3]->vmesh()->num_nodes());
+  EXPECT_TRUE(algo.runImpl(input, output));
+  EXPECT_EQ(2588, output->vmesh()->num_nodes());
+}
+
+TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
+{
+  JoinFieldsAlgo algo;
+
+  FieldList input;
+  input.push_back(CreateEmptyLatVol(2,3,4));
+  input.push_back(CreateEmptyLatVol(5,6,7));
+  input.push_back(CreateEmptyLatVol(8,9,10));
+
+  auto outputObj = algo.run_generic(make_input((JoinFieldsAlgo::InputFields, input)));
+
+  FieldHandle output = outputObj.get<Field>(Core::Algorithms::Variables::OutputField);
+  EXPECT_EQ(914, output->vmesh()->num_nodes());
+}
+
+#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+
 #if GTEST_HAS_COMBINE
 
 /*Get Parameterized Tests
@@ -138,4 +190,4 @@ TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
 //
 #endif 
 
-//#endif
+#endif

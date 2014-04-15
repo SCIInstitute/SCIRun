@@ -52,6 +52,8 @@
 
 //TODO: needs to inherit from ModuleWidget somehow
 class QToolBar;
+class QStandardItemModel;
+class QStandardItem;
 
 namespace SCIRun {
 namespace Gui {
@@ -79,12 +81,35 @@ protected:
   virtual void showEvent(QShowEvent* event) override;
 private:
   void addToolBar();
+  void addMouseMenu();
+  void addAutoViewButton();
+  void addObjectToggleMenu();
 
   GLWidget*                     mGLWidget;  ///< GL widget containing context.
   std::weak_ptr<SRInterface>    mSpire;     ///< Instance of Spire.
   QToolBar*                     mToolBar;   ///< Tool bar.
   bool shown_;
+  std::shared_ptr<class ViewSceneItemManager> itemManager_;
+};
 
+class ViewSceneItemManager : public QObject
+{
+  Q_OBJECT
+public:
+  ViewSceneItemManager();
+  QStandardItemModel* model() { return model_; }
+public Q_SLOTS:
+  void addItem(const QString& name);
+  void removeItem(const QString& name);
+  void removeAll();
+Q_SIGNALS:
+  void itemSelected(const QString& name);
+  void itemUnselected(const QString& name);
+private Q_SLOTS:
+  void slotChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
+private:
+  QStandardItemModel* model_;
+  std::vector<QStandardItem*> items_;
 };
 
 }
