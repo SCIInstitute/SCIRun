@@ -27,7 +27,7 @@
    
    author: Moritz Dannhauer
    last change: 04/14/14
-   TODO: 
+   TODO: improve the pointer arithmetic (from SCIRun4) in template class
 */
 
 #include <Core/Algorithms/Legacy/Fields/Mapping/ApplyMappingMatrix.h>
@@ -70,24 +70,23 @@ ApplyMappingMatrixT(const ApplyMappingMatrixAlgo* algo,
                     VField* input, VField* output,
                     SparseRowMatrix* mapping)
 {
-  /*double* vals = mapping->get_vals();
-  index_type* rows = mapping->get_rows();
-  index_type* columns = mapping->get_cols();
-  size_type m = mapping->nrows();
+  double* vals = mapping->valuePtr();
+  const index_type* rows = mapping->get_rows();
+  const index_type* columns = mapping->get_cols();
+  const size_type m = mapping->nrows();
 
-  int cnt = 0; 
-  for(index_type idx=0; idx<m;idx++)
-  { 
-    DATA val(0);
-    index_type rr = rows[idx];
-    size_type  ss = rows[idx+1]-rows[idx];
-    input->get_weighted_value(val,&(columns[rr]),&(vals[rr]),ss);
-
-    output->set_value(val,idx);
-    cnt++; if (cnt==400) algo->update_progress(idx,m);
-  }*/
+ for (index_type idx=0; idx<m; idx++)
+ {
+  DATA val(0);
+  index_type rr = rows[idx];
+  size_type  ss = rows[idx+1]-rows[idx];
+  input->get_weighted_value(val,&(columns[rr]),&(vals[rr]),ss);
   
-  //! Algorithm succeeded
+  output->set_value(val,idx);
+  //cnt++; if (cnt==400) algo->update_progress(idx,m);
+  
+ }
+
   return (true);
 }
 
