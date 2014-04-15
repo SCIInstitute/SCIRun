@@ -114,6 +114,14 @@
    return mat;   
   }
   
+  DenseMatrixHandle TriSurfOnNodeTensorMat()
+  {   
+   /*ReadMatrixAlgorithm algo;
+   auto path = TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.mat";
+   auto mat = matrix_cast::as_dense(algo.run(path.string())); */
+   return DenseMatrixHandle();   
+  }
+  
   DenseMatrixHandle TriSurfOnElemVectorMat()
   {     
    ReadMatrixAlgorithm algo;
@@ -129,6 +137,14 @@
    auto mat = matrix_cast::as_dense(algo.run(path.string()));
    return mat; 
   }  
+  
+  DenseMatrixHandle TriSurfOnElemTensorMat()
+  {   
+   /*ReadMatrixAlgorithm algo;
+   auto path = TestResources::rootDir() / "_etfielddata/tri_surf/data_defined_on_node/scalar/tri_scalar_on_node.mat";
+   auto mat = matrix_cast::as_dense(algo.run(path.string())); */
+   return DenseMatrixHandle();   
+  }
   
   DenseMatrixHandle TetMeshOnNodeVectorMat()
   {   

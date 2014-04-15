@@ -401,9 +401,8 @@ bool SetFieldDataAlgo::settensordata(VField* ofield, DenseMatrixHandle& data, si
  return true;
 }
 
-FieldHandle SetFieldDataAlgo::run(FieldHandle& input_field, DenseMatrixHandle& data) const
+FieldHandle SetFieldDataAlgo::run(FieldHandle input_field, DenseMatrixHandle data) const
 {
-  FieldHandle output;
   
   if (!input_field)
   {
@@ -434,8 +433,7 @@ FieldHandle SetFieldDataAlgo::run(FieldHandle& input_field, DenseMatrixHandle& d
     return FieldHandle();
   }
   
-  MeshHandle mesh_handle=imesh->mesh();
-  output = CreateField(fi,mesh_handle);
+  FieldHandle output = CreateField(fi,input_field->mesh());
 
   if (!output) 
   {
