@@ -62,8 +62,11 @@
 #include <Modules/Legacy/Fields/GetDomainBoundary.h>
 #include <Modules/Legacy/Fields/JoinFields.h>
 #include <Modules/Legacy/Fields/SplitFieldByDomain.h>
+#include <Modules/Legacy/Fields/CreateFieldData.h>
+#include <Modules/Legacy/Fields/SplitFieldByDomain.h>
 #include <Modules/Legacy/Fields/GetFieldData.h>
 #include <Modules/Legacy/Fields/SetFieldData.h>
+#include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Math/SelectSubMatrix.h>
 #include <Modules/Fields/FieldToMesh.h>
@@ -167,6 +170,12 @@ namespace SCIRun {
           addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
           addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
           addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
+          addModuleDesc<CreateFieldData>("Real ported module", "...");
+          //addModuleDesc<GetMatricesFromBundle>("Real ported module: improved UI", "...");
+          //addModuleDesc<InsertMatricesIntoBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<GetFieldsFromBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<InsertFieldsIntoBundle>("Real ported module: improved UI", "...");
+          addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
 
           //TODO: possibly use different build setting for these.
           if (includeTestingModules_)
@@ -193,6 +202,7 @@ namespace SCIRun {
 	  addModuleDesc<SetFieldDataModule>("SetFieldData", "ChangeFieldData", "SCIRun", "Real ported module", "...");
 	  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
 	  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
+	  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
 	}
 
         ModuleDescriptionMap descMap_;

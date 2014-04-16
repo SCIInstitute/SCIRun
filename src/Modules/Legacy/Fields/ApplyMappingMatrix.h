@@ -26,47 +26,34 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MODULES_LEGACY_FIELDS_ApplyMappingMatrixModule_H__
+#define MODULES_LEGACY_FIELDS_ApplyMappingMatrixModule_H__
 
-
-#ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
-#define CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H 1
-
-//! STL datatypes needed
-#include <algorithm>
-
-//! Datatypes used
-//#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Math/MiscMath.h>
-//! Base for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Legacy/Fields/share.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Fields/share.h>
 
 namespace SCIRun {
-    namespace Core {
-       namespace Algorithms {
-              namespace Fields {
+  namespace Modules {
+    namespace Fields {
 
-class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
-{
-  public:
-    static AlgorithmInputName Source;
-    static AlgorithmInputName Destination;
-    static AlgorithmInputName Mapping;
-    static AlgorithmOutputName Output;  
-    // Algorithm defaults
-    ApplyMappingMatrixAlgo();
-    //~ApplyMappingMatrixAlgo();
+      class SCISHARE ApplyMappingMatrixModule : public Dataflow::Networks::Module,
+        public Has3InputPorts<FieldPortTag,FieldPortTag,MatrixPortTag>,
+        public Has1OutputPort<FieldPortTag>
+      {
+      public:
+        ApplyMappingMatrixModule();
 
-    // Algorithm Functions
-    FieldHandle run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping) const;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-};
+        virtual void execute();
+        virtual void setStateDefaults() {}
 
-} // namespace SCIRunAlgo
-}}}
+        INPUT_PORT(0, Source, LegacyField);
+	INPUT_PORT(1, Destination, LegacyField);
+	INPUT_PORT(2, Mapping, Matrix);
+        OUTPUT_PORT(0, Output, LegacyField);
+      };
 
-#endif // ApplyMappingMatrix_h
+    }
+  }
+}
+
+#endif

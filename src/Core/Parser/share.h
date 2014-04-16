@@ -26,47 +26,13 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-#ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
-#define CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H 1
-
-//! STL datatypes needed
-#include <algorithm>
-
-//! Datatypes used
-//#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/Legacy/Field/Mesh.h>
-#include <Core/Math/MiscMath.h>
-//! Base for algorithm
-#include <Core/Algorithms/Base/AlgorithmBase.h>
-
-//! for Windows support
-#include <Core/Algorithms/Legacy/Fields/share.h>
-
-namespace SCIRun {
-    namespace Core {
-       namespace Algorithms {
-              namespace Fields {
-
-class SCISHARE ApplyMappingMatrixAlgo : public AlgorithmBase
-{
-  public:
-    static AlgorithmInputName Source;
-    static AlgorithmInputName Destination;
-    static AlgorithmInputName Mapping;
-    static AlgorithmOutputName Output;  
-    // Algorithm defaults
-    ApplyMappingMatrixAlgo();
-    //~ApplyMappingMatrixAlgo();
-
-    // Algorithm Functions
-    FieldHandle run(FieldHandle& isrc, FieldHandle& idst, Datatypes::MatrixHandle& mapping) const;
-    virtual AlgorithmOutput run_generic(const AlgorithmInput &) const;
-};
-
-} // namespace SCIRunAlgo
-}}}
-
-#endif // ApplyMappingMatrix_h
+#undef SCISHARE
+#if defined(_WIN32) && !defined(BUILD_SCIRUN_STATIC)
+#ifdef BUILD_Core_Parser
+#define SCISHARE __declspec(dllexport)
+#else
+#define SCISHARE __declspec(dllimport)
+#endif
+#else
+#define SCISHARE
+#endif

@@ -29,6 +29,7 @@
 SET(Core_Algorithms_Legacy_Fields_HEADERS
   ConvertMeshType/ConvertMeshToPointCloudMeshAlgo.h
   DistanceField/CalculateSignedDistanceField.h
+  Mapping/ApplyMappingMatrix.h
   #Mapping/ApplyMappingMatrix.h
   #FieldData/CalculateFieldDataMetric.h         
   #FieldData/ConvertIndicesToFieldData.h
@@ -51,10 +52,12 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   MeshData/GetMeshNodes.h
   MergeFields/JoinFieldsAlgo.h
   DomainFields/SplitFieldByDomainAlgo.h
+  #MeshData/GetMeshData.h
+  FieldData/GetFieldData.h
+  FieldData/MapFieldDataFromElemToNode.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
-  Mapping/ApplyMappingMatrix.cc
   #RegisterWithCorrespondences.cc
   #MeshData/FlipSurfaceNormals.cc
   #Cleanup/CleanupTetMesh.cc
@@ -98,7 +101,6 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #FilterFieldData/TriSurfPhaseFilter.cc
   #FindNodes/FindClosestNode.cc
   #FindNodes/FindClosestNodeByValue.cc
-  #Mapping/ApplyMappingMatrix.cc
   #Mapping/BuildMappingMatrix.cc
   FieldData/MapFieldDataFromElemToNode.cc
   #Mapping/MapFieldDataFromNodeToElem.cc
@@ -126,6 +128,7 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   MeshData/SetMeshNodes.cc
   #MeshData/GetMeshData.cc
   FieldData/GetFieldData.cc
+  Mapping/ApplyMappingMatrix.cc
   #MeshData/GetSurfaceNodeNormals.cc
   #MeshData/GetSurfaceElemNormals.cc
   #MeshData/GetMeshQualityField.cc
