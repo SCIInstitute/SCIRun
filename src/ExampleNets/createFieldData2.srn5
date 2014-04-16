@@ -26,7 +26,7 @@
 									<name>FunctionString</name>
 									<value class_id="11" tracking_level="0" version="0">
 										<which>2</which>
-										<value>RESULT = X^2+Y^2+Z^2;</value>
+										<value>RESULT =sin( (X^2+Y^2+Z^2)*100);</value>
 									</value>
 								</second>
 							</item>
@@ -90,7 +90,7 @@
 									<name>XSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>100</value>
 									</value>
 								</second>
 							</item>
@@ -102,7 +102,7 @@
 									<name>YSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>100</value>
 									</value>
 								</second>
 							</item>
@@ -114,7 +114,7 @@
 									<name>ZSize</name>
 									<value>
 										<which>0</which>
-										<value>16</value>
+										<value>100</value>
 									</value>
 								</second>
 							</item>
@@ -192,7 +192,7 @@
 					</module>
 					<state>
 						<stateMap>
-							<count>7</count>
+							<count>8</count>
 							<item_version>0</item_version>
 							<item>
 								<first>
@@ -220,37 +220,49 @@
 							</item>
 							<item>
 								<first>
-									<name>FaceTransparency</name>
+									<name>FaceInvertNormals</name>
 								</first>
 								<second>
-									<name>FaceTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>NodeTransparency</name>
-								</first>
-								<second>
-									<name>NodeTransparency</name>
-									<value>
-										<which>3</which>
-										<value>0</value>
-									</value>
-								</second>
-							</item>
-							<item>
-								<first>
-									<name>ShowEdges</name>
-								</first>
-								<second>
-									<name>ShowEdges</name>
+									<name>FaceInvertNormals</name>
 									<value>
 										<which>3</which>
 										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>FaceTransparency</name>
+								</first>
+								<second>
+									<name>FaceTransparency</name>
+									<value>
+										<which>3</which>
+										<value>1</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>NodeTransparency</name>
+								</first>
+								<second>
+									<name>NodeTransparency</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
+									</value>
+								</second>
+							</item>
+							<item>
+								<first>
+									<name>ShowEdges</name>
+								</first>
+								<second>
+									<name>ShowEdges</name>
+									<value>
+										<which>3</which>
+										<value>0</value>
 									</value>
 								</second>
 							</item>
