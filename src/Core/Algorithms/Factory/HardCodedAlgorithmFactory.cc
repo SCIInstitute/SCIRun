@@ -143,6 +143,8 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new SplitFieldByDomainAlgo);
   else if (moduleName == "ApplyMappingMatrix")
     h.reset(new ApplyMappingMatrixAlgo); 
+  else if (moduleName == "SelectSubMatrix")
+    h.reset(new SelectSubMatrixAlgorithm);   
     
   if (h && algoCollaborator)
   {
