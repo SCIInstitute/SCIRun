@@ -40,7 +40,7 @@ namespace ArrayMathFunctions {
 
 using namespace SCIRun;
 
-#if 0
+
 //--------------------------------------------------------------------------
 // Simple Vector functions
 
@@ -435,27 +435,44 @@ bool eigval3_t(SCIRun::ArrayMathProgramCode& pc)
 
   return (true);
 }
+/*
+  bool trace_t_bug(SCIRun::ArrayMathProgramCode& pc)
+  {
+  
+  double eval[3];// = {0};
+  while (true)
+    {
+
+  double* data0 = pc.get_variable(0);
+     double result = eval[0]+eval[1]+eval[2];
+    *data0 = result;
+    }
+  return (true);
+  }
+*/
 
 bool trace_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
-  double* data0 = pc.get_variable(0); 
+  double* data0 = pc.get_variable(0);
   double* data1 = pc.get_variable(1);
 
   double* data1_end = data1 + 6*pc.get_size();
-  
-  while (data1 != data1_end) 
+
+  while (data1 != data1_end)
   {
+
     ten[0] = 1.0; ten[1] = data1[0]; ten[2] = data1[1];
     ten[3] = data1[2]; ten[4] = data1[3];
     ten[5] = data1[4]; ten[6] = data1[5];
+
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     tenEigensolve_d(eval, evec, ten);
 #endif
-
+  
     data0[0] = eval[0]+eval[1]+eval[2];
-    
+  
     data0 ++; data1 +=6;
   }
 
@@ -464,7 +481,7 @@ bool trace_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool det_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -491,7 +508,7 @@ bool det_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool B_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -517,7 +534,7 @@ bool B_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool S_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -543,7 +560,7 @@ bool S_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool quality_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -570,7 +587,7 @@ bool quality_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool frobenius_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -596,7 +613,7 @@ bool frobenius_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool frobenius2_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -623,7 +640,7 @@ bool frobenius2_t(SCIRun::ArrayMathProgramCode& pc)
 
 bool fracanisotropy_t(SCIRun::ArrayMathProgramCode& pc)
 {
-  double ten[7]; double eval[3]; double evec[9];
+  double ten[7]; double eval[3] = {0}; double evec[9];
 
   double* data0 = pc.get_variable(0); 
   double* data1 = pc.get_variable(1);
@@ -1268,7 +1285,7 @@ bool acosh_t(SCIRun::ArrayMathProgramCode& pc)
   
   return (true);
 }
-#endif
+
 } // end namsespace 
 
 namespace SCIRun {
@@ -1276,7 +1293,6 @@ namespace SCIRun {
 void
 InsertTensorArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
 {
-#if 0
   // Constructors for vectors (or points for some SCIRun applications)
   catalog->add_function(ArrayMathFunctions::tensor_ssssss,"tensor$S:S:S:S:S:S","T");
   catalog->add_function(ArrayMathFunctions::tensor_vvvsss,"tensor$V:V:V:S:S:S","T");
@@ -1373,7 +1389,6 @@ InsertTensorArrayMathFunctionCatalog(ArrayMathFunctionCatalogHandle& catalog)
 
   catalog->add_sym_function(ArrayMathFunctions::eq_tt,"eq$T:T","S");
   catalog->add_sym_function(ArrayMathFunctions::neq_tt,"neq$T:T","S");
-  #endif
 }
 
 } // end namespace
