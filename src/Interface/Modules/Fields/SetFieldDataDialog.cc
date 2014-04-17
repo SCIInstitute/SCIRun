@@ -41,7 +41,6 @@ SetFieldDataDialog::SetFieldDataDialog(const std::string& name, ModuleStateHandl
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
   fixSize();
-  connect(keepTypeCheckBox_, SIGNAL(clicked()), this, SLOT(push()));
 }
 
 void SetFieldDataDialog::push()

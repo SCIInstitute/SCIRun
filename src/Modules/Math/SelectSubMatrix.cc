@@ -157,7 +157,6 @@ void SelectSubMatrixModule::execute()
   auto rowindicies = getOptionalInput(RowIndicies);
   auto columnindicies = getOptionalInput(ColumnIndicies);
   //auto param = get_state()->getValue(Variables::RowsOrColumns).getInt();
-
   //algo().set(Variables::RowsOrColumns, param);
   auto output = algo().run_generic(make_input((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
 

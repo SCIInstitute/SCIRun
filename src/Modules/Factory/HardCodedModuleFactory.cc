@@ -33,7 +33,6 @@
 #include <Modules/Factory/HardCodedModuleFactory.h>
 #include <Dataflow/Network/ModuleDescription.h>
 #include <Dataflow/Network/Module.h>
-
 #include <Modules/Basic/ReceiveScalar.h>
 #include <Modules/Basic/SendScalar.h>
 #include <Modules/Basic/ReceiveTestMatrix.h>

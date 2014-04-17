@@ -47,16 +47,10 @@ namespace BrainStimulator {
 
     AlgorithmOutput run_generic(const AlgorithmInput& input) const;
 
-    static const AlgorithmInputName ELECTRODE_COIL_POSITIONS_AND_NORMAL;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION;
-    static const AlgorithmInputName ELECTRODE_TRIANGULATION2;
-    static const AlgorithmInputName COIL;
-    static const AlgorithmInputName COIL2;
-    static const AlgorithmOutputName ELECTRODES_FIELD;
-    static const AlgorithmOutputName COILS_FIELD;
-
-  private:
-  
+    static AlgorithmInputName MESH;
+    static AlgorithmInputName INHOMOGENEOUS_SKULL;
+    static AlgorithmInputName ANISOTROPIC_WM;
+    static AlgorithmOutputName OUTPUTMESH;
     
   };
 

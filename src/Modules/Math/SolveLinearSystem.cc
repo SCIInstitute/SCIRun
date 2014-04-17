@@ -95,6 +95,7 @@ void SolveLinearSystemModule::execute()
       remark("Using preconditioner: " + precond);
 
       auto output = algo().run_generic(make_input((LHS, A)(RHS, rhsCol)));
+      
       sendOutputFromAlgorithm(Solution, output);
     }
   }

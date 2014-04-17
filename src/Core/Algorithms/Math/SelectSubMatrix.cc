@@ -96,7 +96,7 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(MatrixHandle& input_matrix
 
 MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatrixHandle row_indices, DenseMatrixHandle col_indices) const
 {  
-
+        std::cout << "lll!" << std::endl;
   if (!input_matrix || input_matrix->nrows()==0 || input_matrix->ncols()==0)
   {
     remark(" No valid inputs: input matrix or row,column matrix contain NULL pointer ");
@@ -111,12 +111,16 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
   index_type col_start = get(columnStartSpinBox).getInt();
   index_type col_end = get(columnEndSpinBox).getInt();
   
+  row_select=true;
+  
   if ( !row_select && !col_select )  //pipe input through
    if ( !row_indices && !col_indices)
     { 
-      return input_matrix;
+      if(!input_matrix) return input_matrix;
     }
-    
+  
+ if(row_select)  std::cout << "dfdfd!" << row_end << std::endl;  else std::cout << "no!" << row_end << std::endl; 
+ 
   if (row_indices || col_indices)
     {
       if (row_select || col_select)
@@ -151,7 +155,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
      col_end=input_matrix->ncols();
     }
  }   
-  
+  std::cout << "vvvv!" << std::endl; 
   if ( row_start<0 || col_start<0 ||  row_end>input_matrix->nrows() || col_end>input_matrix->ncols()) 
     {
      remark(" Specified matrix indices from UI settings exceed matrix dimensions ");
@@ -160,18 +164,23 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
     
   if (row_indices || col_indices) 
   {   
+     std::cout << "aaaaaa!" << std::endl; 
     sub_matrix=get_sub_matrix(input_matrix,row_indices,col_indices);
     if (!sub_matrix) return MatrixHandle(); 
   } 
   else  //GUI input only
-  {     
+  {   
+    row_end=6733586;  
+    std::cout << "ja" << std::endl;
     if(matrix_is::sparse(input_matrix))
-     {
+     { 
+     std::cout << "1!" << std::endl;
        SparseRowMatrixHandle mat (new  SparseRowMatrix(matrix_cast::as_sparse(input_matrix)->block(row_start,col_start,row_end,col_end)));
        return mat;
      } else
      if(matrix_is::dense(input_matrix))
       {
+        std::cout << "!" << row_start << " " << col_start << " " << row_end << " " <<  col_end << std::endl;
         DenseMatrixHandle mat (new  DenseMatrix(matrix_cast::as_dense(input_matrix)->block(row_start,col_start,row_end,col_end)));
 	return mat;
       }  else

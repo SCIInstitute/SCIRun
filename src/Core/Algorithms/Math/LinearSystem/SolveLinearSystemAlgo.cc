@@ -1218,7 +1218,9 @@ AlgorithmOutput SolveLinearSystemAlgo::run_generic(const AlgorithmInput& input) 
     BOOST_THROW_EXCEPTION(AlgorithmProcessingException() << ErrorMessage("SolveLinearSystem Algo returned false--need to improve error conditions so it throws before returning."));
   }
   
+  DenseMatrixHandle sol = matrix_cast::as_dense(solution);
+  
   AlgorithmOutput output;
-  output[Variables::Solution] = solution;
+  output[Variables::Solution] = sol;
   return output;
 }

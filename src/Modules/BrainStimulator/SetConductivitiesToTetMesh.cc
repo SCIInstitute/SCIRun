@@ -38,18 +38,16 @@
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Algorithms;
 using namespace SCIRun::Core::Algorithms::BrainStimulator;
 using namespace SCIRun::Dataflow::Networks;
 
 SetConductivitiesToTetMeshModule::SetConductivitiesToTetMeshModule() : Module(ModuleLookupInfo("SetConductivitiesToTetMesh", "BrainStimulator", "SCIRun"))
 {
- INITIALIZE_PORT(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION);
- INITIALIZE_PORT(ELECTRODE_TRIANGULATION2);
- INITIALIZE_PORT(COIL);
- INITIALIZE_PORT(COIL2);
- INITIALIZE_PORT(ELECTRODES_FIELD);
- INITIALIZE_PORT(COILS_FIELD);
+ INITIALIZE_PORT(MESH);
+ INITIALIZE_PORT(INHOMOGENEOUS_SKULL);
+ INITIALIZE_PORT(ANISOTROPIC_WM);
+ INITIALIZE_PORT(OUTPUTMESH);
 }
 
 void SetConductivitiesToTetMeshModule::setStateDefaults()
@@ -59,8 +57,9 @@ void SetConductivitiesToTetMeshModule::setStateDefaults()
 
 void SetConductivitiesToTetMeshModule::execute()
 {
-  auto elc_coil_pos_and_normal = getRequiredInput(ELECTRODE_COIL_POSITIONS_AND_NORMAL);
-  auto elc_tri_mesh = getRequiredInput(ELECTRODE_TRIANGULATION);
+  auto mesh = getRequiredInput(MESH);
+  auto skull = getOptionalInput(INHOMOGENEOUS_SKULL);
+  auto wm = getOptionalInput(ANISOTROPIC_WM);
    // UI input
   //auto param = get_state()->getValue(Variables::AppendMatrixOption).getInt();
 
@@ -69,9 +68,9 @@ void SetConductivitiesToTetMeshModule::execute()
  
   
   //algorithm input and run
-  auto output = algo().run_generic(make_input((ELECTRODE_COIL_POSITIONS_AND_NORMAL, elc_coil_pos_and_normal)(ELECTRODE_TRIANGULATION, elc_tri_mesh)));
+  auto output = algo().run_generic(make_input((MESH, mesh)(INHOMOGENEOUS_SKULL, optionalAlgoInput(skull))(ANISOTROPIC_WM, optionalAlgoInput(wm))));
 
   //algorithm output
-  sendOutputFromAlgorithm(ELECTRODES_FIELD, output);
-  sendOutputFromAlgorithm(COILS_FIELD, output);
+  sendOutputFromAlgorithm(OUTPUTMESH, output);
+
 }
