@@ -54,14 +54,6 @@ void main()
   vec3  invLightDir = -uLightDirWorld;
   vec3  normal      = normalize(vNormal);
   float diffuse     = max(0.0, dot(normal, invLightDir));
-  float diffuseInv  = max(0.0, dot(-normal, invLightDir));
-
-  if (diffuse < diffuseInv)
-  {
-    diffuse = diffuseInv;
-    normal = -normal;
-  }
-
   vec3  reflection  = reflect(invLightDir, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
