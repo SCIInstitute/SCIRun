@@ -31,16 +31,31 @@
 
 #include <QDialog>
 #include <Dataflow/Network/NetworkFwd.h>
+#include <boost/atomic.hpp>
+#include <boost/noncopyable.hpp>
 #include <Interface/Modules/Base/share.h>
 
 namespace SCIRun {
 namespace Gui {
   
-  class SCISHARE ModuleDialogGeneric : public QDialog
+  class SCISHARE WidgetSlotManager
+  {
+  public:
+    explicit WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state);
+    virtual ~WidgetSlotManager();
+    virtual void push() = 0;
+    virtual void pull() = 0;
+  protected:
+    SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+  };
+
+  typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
+
+  class SCISHARE ModuleDialogGeneric : public QDialog, boost::noncopyable
   {
     Q_OBJECT
   public:
-    virtual ~ModuleDialogGeneric() {}
+    virtual ~ModuleDialogGeneric();
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
     //virtual int moduleExecutionTime() = 0;
@@ -49,6 +64,7 @@ namespace Gui {
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
     virtual void pull() = 0;
+    virtual void pull_newVersionToReplaceOld();
   Q_SIGNALS:
     void executionTimeChanged(int time);
     void executeButtonPressed();
@@ -58,13 +74,16 @@ namespace Gui {
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
 
     //TODO: need a better push/pull model
-    bool pulling_;
+    boost::atomic<bool> pulling_;
     struct Pulling
     {
       explicit Pulling(ModuleDialogGeneric* m) : m_(m) { m->pulling_ = true; }
       ~Pulling() { m_->pulling_ = false; }
       ModuleDialogGeneric* m_;
     };
+    void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
+  private:
+    std::vector<WidgetSlotManagerPtr> slotManagers_;
   };
 
 }

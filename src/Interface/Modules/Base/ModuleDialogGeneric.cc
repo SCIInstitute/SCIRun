@@ -26,9 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#include <boost/bind.hpp>
 #include <Dataflow/Network/ModuleStateInterface.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
+#include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 
 using namespace SCIRun::Gui;
 
@@ -39,7 +40,13 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
   setModal(false);
 
   if (state_)
-    state_->connect_state_changed(boost::bind(&ModuleDialogGeneric::pull, this));
+  {
+    state_->connect_state_changed([this]() { pull(); });
+  }
+}
+
+ModuleDialogGeneric::~ModuleDialogGeneric()
+{
 }
 
 void ModuleDialogGeneric::fixSize()
@@ -48,4 +55,23 @@ void ModuleDialogGeneric::fixSize()
   {
     setFixedSize(minimumWidth(), minimumHeight());
   }
+}
+
+void ModuleDialogGeneric::addWidgetSlotManager(WidgetSlotManagerPtr ptr) 
+{ 
+  slotManagers_.push_back(ptr); 
+}
+
+void ModuleDialogGeneric::pull_newVersionToReplaceOld()
+{
+  Pulling p(this);
+  BOOST_FOREACH(WidgetSlotManagerPtr wsm, slotManagers_)
+    wsm->pull();
+}
+
+WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state) : state_(state) 
+{
+}
+WidgetSlotManager::~WidgetSlotManager() 
+{
 }

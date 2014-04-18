@@ -29,10 +29,35 @@
 #include <Interface/Modules/Fields/CreateFieldDataDialog.h>
 #include <Modules/Legacy/Fields/CreateFieldData.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Algorithms;
 typedef SCIRun::Modules::Fields::CreateFieldData CreateFieldDataModule;
+
+class TextEditSlotManager : public WidgetSlotManager
+{
+public:
+  TextEditSlotManager(ModuleStateHandle state, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
+      WidgetSlotManager(state), stateKey_(stateKey), textEdit_(textEdit) 
+      {
+      }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    LOG_DEBUG("In new version of pull code: " << newValue.toStdString());
+    if (newValue != textEdit_->toPlainText())
+      textEdit_->setPlainText(newValue);
+  }
+  virtual void push() override
+  {
+    //TODO
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QTextEdit* textEdit_;
+};
 
 CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
@@ -45,6 +70,8 @@ CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStat
   connect(functionTextEdit_, SIGNAL(textChanged()), this, SLOT(push()));
   connect(fieldOutputDataComboBox_, SIGNAL(activated(const QString&)), this, SLOT(push()));
   connect(fieldOutputBasisComboBox_, SIGNAL(activated(const QString&)), this, SLOT(push()));
+
+  addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, CreateFieldDataModule::FunctionString, functionTextEdit_));
 }
 
 void CreateFieldDataDialog::push()
@@ -61,10 +88,11 @@ void CreateFieldDataDialog::push()
 
 void CreateFieldDataDialog::pull()
 {
-  Pulling p(this);
-  auto newValue = QString::fromStdString(state_->getValue(CreateFieldDataModule::FunctionString).getString());
-  if (newValue != functionTextEdit_->toPlainText())
-    functionTextEdit_->setPlainText(newValue);
-  
+  pull_newVersionToReplaceOld();
+  //Pulling p(this);
+  //auto newValue = QString::fromStdString(state_->getValue(CreateFieldDataModule::FunctionString).getString());
+  //if (newValue != functionTextEdit_->toPlainText())
+  //  functionTextEdit_->setPlainText(newValue);
+  //
   //hook up format, basis later.
 }
