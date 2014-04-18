@@ -34,7 +34,7 @@
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {

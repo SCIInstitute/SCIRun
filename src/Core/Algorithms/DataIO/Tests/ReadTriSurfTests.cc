@@ -26,7 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-//TODO DAN
+/// @todo DAN
 #if 0
 
 #include <cmath>
@@ -58,7 +58,7 @@ TEST(ReadTriSurfTests, ReadFromFilePoints)
   VirtualMeshHandle vmesh = mesh->vmesh();
   ASSERT_TRUE(vmesh);
   ASSERT_TRUE(vmesh->is_trisurfmesh());
-  // TODO: code needs to be enabled
+  /// @todo: code needs to be enabled
   //ASSERT_TRUE(vmesh->is_unstructuredmesh());
 }
 
@@ -72,7 +72,7 @@ TEST(ReadTriSurfTests, ReadFromFileFaces)
   VirtualMeshHandle vmesh = mesh->vmesh();
   ASSERT_TRUE(vmesh);
   ASSERT_TRUE(vmesh->is_trisurfmesh());
-  // TODO: code needs to be enabled
+  /// @todo: code needs to be enabled
   //ASSERT_TRUE(vmesh->is_unstructuredmesh());
 }
 

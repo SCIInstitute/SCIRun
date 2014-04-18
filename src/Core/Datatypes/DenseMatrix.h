@@ -31,7 +31,7 @@
 #define CORE_DATATYPES_DENSE_MATRIX_H 
 
 #include <Core/Datatypes/Matrix.h>
-#include <Core/GeometryPrimitives/Transform.h> //TODO
+#include <Core/GeometryPrimitives/Transform.h> /// @todo
 #include <Eigen/Dense>
 
 namespace SCIRun {
@@ -46,7 +46,7 @@ namespace Datatypes {
     typedef DenseMatrixGeneric<T> this_type;
     typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor | Eigen::AutoAlign> EigenBase;
 
-    //TODO: don't like this default ctor, since it doesn't act like a vector.
+    /// @todo: don't like this default ctor, since it doesn't act like a vector.
     //DenseMatrixGeneric() : Base() {}
     DenseMatrixGeneric(size_t nrows = 0, size_t ncols = 0) : EigenBase(nrows, ncols) {}
 
@@ -55,7 +55,7 @@ namespace Datatypes {
       this->fill(val);
     }
 
-    // This constructor allows you to construct DenseMatrixGeneric from Eigen expressions
+    /// This constructor allows you to construct DenseMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     DenseMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
       : EigenBase(other)
@@ -63,7 +63,7 @@ namespace Datatypes {
 
     explicit DenseMatrixGeneric(const Geometry::Transform& t);
 
-    // This method allows you to assign Eigen expressions to DenseMatrixGeneric
+    /// This method allows you to assign Eigen expressions to DenseMatrixGeneric
     template<typename OtherDerived>
     DenseMatrixGeneric& operator=(const Eigen::MatrixBase<OtherDerived>& other)
     {
@@ -84,7 +84,7 @@ namespace Datatypes {
       visitor.visit(*this);
     }
 
-    //! Persistent representation...
+    /// Persistent representation...
     virtual std::string dynamic_type_name() const;
     virtual void io(Piostream&);
     static PersistentTypeID type_id;
@@ -109,7 +109,7 @@ namespace Datatypes {
   private:
     virtual void print(std::ostream& o) const
     {
-      //TODO!!
+      /// @todo!!
       //o << static_cast<const EigenBase&>(m);
       for (size_t i = 0; i < nrows(); ++i)
       {

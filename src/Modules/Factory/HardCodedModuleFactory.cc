@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation HardCodedModuleFactory.cc
+
 #include <iostream>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
@@ -121,12 +123,12 @@ namespace SCIRun {
       public:
         ModuleDescriptionLookup() : includeTestingModules_(false)
         {
-          //TODO: is BUILD_TESTING off when we build releases?
+          /// @todo: is BUILD_TESTING off when we build releases?
         #ifdef BUILD_TESTING
           includeTestingModules_ = true;
         #endif
-          //TODO: make EVEN MORE generic...macros? xml?
-          //TODO: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
+          /// @todo: make EVEN MORE generic...macros? xml?
+          /// @todo: at least remove duplication of Name,Package,Category here since we should be able to infer from header somehow.
 
           addModuleDesc<ReadMatrixModule>("ReadMatrix", "DataIO", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
           addModuleDesc<WriteMatrixModule>("WriteMatrix", "DataIO", "SCIRun", "Functional, outputs text files or binary .mat only.", "...");
@@ -166,7 +168,7 @@ namespace SCIRun {
           addModuleDesc<SplitFieldByDomain>("Real ported module", "...");
           addModuleDesc<CreateFieldData>("Real ported module", "...");
 
-          //TODO: possibly use different build setting for these.
+          /// @todo: possibly use different build setting for these.
           if (includeTestingModules_)
           {
             addModuleDesc<SendScalarModule>("SendScalar", "Testing", "SCIRun", "Functional, needs GUI and algorithm work.", "...");
@@ -196,7 +198,7 @@ namespace SCIRun {
           auto iter = lookup_.find(info);
           if (iter == lookup_.end())
           {
-            //TODO: log
+            /// @todo: log
             std::ostringstream ostr;
             ostr << "Error: Undefined module \"" << info.module_name_ << "\"";
             THROW_INVALID_ARGUMENT(ostr.str());
@@ -208,7 +210,7 @@ namespace SCIRun {
         Lookup lookup_;
         bool includeTestingModules_;
 
-        //TODO: remove this function and use static MLI from each module
+        /// @todo: remove this function and use static MLI from each module
         template <class ModuleType>
         void addModuleDesc(const std::string& name, const std::string& category, const std::string& package, const std::string& status, const std::string& desc)
         {

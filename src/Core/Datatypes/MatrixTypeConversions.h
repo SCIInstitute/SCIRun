@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Core/Datatypes/MatrixTypeConversion.h
 
 #ifndef CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H
 #define CORE_DATATYPES_MATRIX_TYPE_CONVERSIONS_H 
@@ -39,8 +39,8 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  // No conversion is done.
-  // NULL is returned if the matrix is not of the appropriate type.
+  /// No conversion is done.
+  /// NULL is returned if the matrix is not of the appropriate type.
   class SCISHARE matrix_cast
   {
   public:
@@ -70,7 +70,7 @@ namespace Datatypes {
     matrix_is();
   };
  
-  //TODO: move
+  /// @todo: move
   class SCISHARE matrix_convert
   {
   public:

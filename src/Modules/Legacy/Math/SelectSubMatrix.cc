@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Math/SelectSubMatrix.cc
 
 #include <Core/Algorithms/Math/SelectMatrix/SelectSubMatrix.h>
 #include <Core/Algorithms/Math/SelectMatrix/SelectMatrixRows.h>

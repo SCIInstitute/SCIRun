@@ -76,38 +76,38 @@ class SCISHARE Bundle : public Datatype
 
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
   
-    //! For writing bundles to file
+    /// For writing bundles to file
     virtual void io(Piostream&);
     static PersistentTypeID type_id;
 
-    //! Merge two bundles together
+    /// Merge two bundles together
     void merge(SCIRun::LockingHandle<Bundle> C);
 
-    //! Transpose when doing a matrix to nrrd conversion
+    /// Transpose when doing a matrix to nrrd conversion
     void transposeNrrd(bool on);
 
     // The basic functions for managing fields
-    //!  getfield     -> Retrieve a Handle to a field stored in the bundle
-    //!  setfield     -> Add a field with a name, if it already exists the 
-    //!                  old one is overwritten
-    //!  remfield     -> Remove a handle from the bundle
-    //!  isfield      -> Test whether a field is present in the bundle
-    //!  numfields    -> The number of fields stored in the bundle 
-    //!  getfieldname -> Get the nth name in the bundle for building a contents 
-    //!                  list
+    ///  getfield     -> Retrieve a Handle to a field stored in the bundle
+    ///  setfield     -> Add a field with a name, if it already exists the 
+    ///                  old one is overwritten
+    ///  remfield     -> Remove a handle from the bundle
+    ///  isfield      -> Test whether a field is present in the bundle
+    ///  numfields    -> The number of fields stored in the bundle 
+    ///  getfieldname -> Get the nth name in the bundle for building a contents 
+    ///                  list
           
     std::string getFieldName(int index) 
       { return(getName<Field>(index)); }
   
-    //! The basic functions for managing matrices
-    //!  getmatrix     -> Retrieve a Handle to a matrix stored in the bundle
-    //!  setmatrix     -> Add a matrix with a name, if it already exists the old 
-    //!                   one is overwritten
-    //!  remmatrix     -> Remove a handle from the bundle
-    //!  ismatrix      -> Test whether a matrix is present in the bundle
-    //!  nummatrices   -> The number of matrices stored in the bundle 
-    //!  getmatrixname -> Get the nth name in the bundle for building a contents 
-    //!                   list
+    /// The basic functions for managing matrices
+    ///  getmatrix     -> Retrieve a Handle to a matrix stored in the bundle
+    ///  setmatrix     -> Add a matrix with a name, if it already exists the old 
+    ///                   one is overwritten
+    ///  remmatrix     -> Remove a handle from the bundle
+    ///  ismatrix      -> Test whether a matrix is present in the bundle
+    ///  nummatrices   -> The number of matrices stored in the bundle 
+    ///  getmatrixname -> Get the nth name in the bundle for building a contents 
+    ///                   list
   
     std::string getMatrixName(int index);
       // Implementation in cc file, with NRRD/MATRIX compatibility
@@ -130,15 +130,15 @@ class SCISHARE Bundle : public Datatype
     std::string getNrrdName(int index);
       // Implementation in cc file, with NRRD/MATRIX compatibility
 
-    //! The basic functions for managing colormaps
-    //!  getcolormap     -> Retrieve a Handle to a colormap stored in the bundle
-    //!  setcolormap     -> Add a colormap with a name, if it already exists the
-    //!                     old one is overwritten
-    //!  remcolormap     -> Remove a handle from the bundle
-    //!  iscolormap      -> Test whether a colormap is present in the bundle
-    //!  numcolormaps    -> The number of colormaps stored in the bundle 
-    //!  getcolormapname -> Get the nth name in the bundle for building a 
-    //!                     contents list
+    /// The basic functions for managing colormaps
+    ///  getcolormap     -> Retrieve a Handle to a colormap stored in the bundle
+    ///  setcolormap     -> Add a colormap with a name, if it already exists the
+    ///                     old one is overwritten
+    ///  remcolormap     -> Remove a handle from the bundle
+    ///  iscolormap      -> Test whether a colormap is present in the bundle
+    ///  numcolormaps    -> The number of colormaps stored in the bundle 
+    ///  getcolormapname -> Get the nth name in the bundle for building a 
+    ///                     contents list
 
     LockingHandle<ColorMap> getColorMap(const std::string& name) 
       { return(get<ColorMap>(name)); }
@@ -158,15 +158,15 @@ class SCISHARE Bundle : public Datatype
     std::string getColorMapName(int index) 
       { return(getName<ColorMap>(index)); }
   
-    //! The basic functions for managing bundles
-    //!  getbundle     -> Retrieve a Handle to a bundle stored in the bundle
-    //!  setbundle     -> Add a bundle with a name, if it already exists the old
-    //!                   one is overwritten
-    //!  rembundle     -> Remove a handle from the bundle
-    //!  isbundle      -> Test whether a bundle is present in the bundle
-    //!  numbundles    -> The number of bundles stored in the bundle 
-    //!  getbundleName -> Get the nth name in the bundle for building a contents 
-    //!                   list
+    /// The basic functions for managing bundles
+    ///  getbundle     -> Retrieve a Handle to a bundle stored in the bundle
+    ///  setbundle     -> Add a bundle with a name, if it already exists the old
+    ///                   one is overwritten
+    ///  rembundle     -> Remove a handle from the bundle
+    ///  isbundle      -> Test whether a bundle is present in the bundle
+    ///  numbundles    -> The number of bundles stored in the bundle 
+    ///  getbundleName -> Get the nth name in the bundle for building a contents 
+    ///                   list
 
     LockingHandle<Bundle> getBundle(const std::string& name) 
       { return(get<Bundle>(name)); }
@@ -186,23 +186,22 @@ class SCISHARE Bundle : public Datatype
     std::string getBundleName(int index) 
       { return(getName<Bundle>(index)); }
  
-    
-    //! Get the name of the handles in the bundle     
+    /// Get the name of the handles in the bundle     
     std::string getHandleName(int index) 
       { return bundleName_[static_cast<size_t>(index)]; }
       
-    //! Get one of the handles in the bundle  
+    /// Get one of the handles in the bundle  
     LockingHandle<PropertyManager> gethandle(int index) 
       { return bundle_[static_cast<size_t>(index)]; }
     
-    //! Get the type of a handle (for BundleInfo)
+    /// Get the type of a handle (for BundleInfo)
     std::string    getHandleType(int index);
 
     virtual std::string dynamic_type_name() const { return type_id.type; }
  
   private:
     
-    //! Functions for doing NRRD/MATRIX conversion
+    /// Functions for doing NRRD/MATRIX conversion
     template<class PTYPE> 
       inline bool NrrdToMatrixHelper(NrrdDataHandle dataH, MatrixHandle& matH);
     
@@ -211,7 +210,7 @@ class SCISHARE Bundle : public Datatype
     bool MatrixToNrrdConvertible(MatrixHandle matH);
     bool MatrixToNrrd(MatrixHandle matH,NrrdDataHandle &nrrdH);
 
-    //! Setting for the conversion between NRRD/MATRIX
+    /// Setting for the conversion between NRRD/MATRIX
     bool transposeNrrd_;
 #endif
   std::map<std::string, Core::Datatypes::DatatypeHandle> bundle_;

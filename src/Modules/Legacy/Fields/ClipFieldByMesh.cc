@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
+/// @todo Documentation Modules/Legacy/Fields/ClipFieldByMesh.cc
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Matrix.h>

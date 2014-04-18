@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Logging/Log.cc
 
 #include <Core/Logging/Log.h>
 
@@ -66,7 +67,7 @@ namespace SCIRun
 
         LogImpl(const std::string& name) : cppLogger_(log4cpp::Category::getInstance(name)), latestStream_(new LogStreamImpl(cppLogger_.infoStream()))
         {
-          //TODO
+          /// @todo
           setAppenders();
           cppLogger_.setAdditivity(false);
           cppLogger_.setPriority(log4cpp::Priority::INFO);  //?
@@ -140,7 +141,7 @@ namespace SCIRun
           }
           catch (log4cpp::ConfigureFailure& exception)
           {
-            // TODO: log?
+            /// @todo: log?
             std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
               << "Restoring original pattern: (" << backupPattern1 << ")" << std::endl;
             layout1->setConversionPattern(backupPattern1);
@@ -156,7 +157,7 @@ namespace SCIRun
           }
           catch (log4cpp::ConfigureFailure& exception)
           {
-            // TODO: log?
+            /// @todo: log?
             std::cerr << "Caught ConfigureFailure exception: " << exception.what() << std::endl
               << "Restoring original pattern: (" << backupPattern2 << ")" << std::endl;
             layout2->setConversionPattern(backupPattern2);
@@ -187,7 +188,7 @@ Log& Log::get()
 
 Log& Log::get(const std::string& name)
 {
-  //TODO: make thread safe
+  /// @todo: make thread safe
   static std::map<std::string, boost::shared_ptr<Log>> logs;
   auto i = logs.find(name);
   if (i == logs.end())

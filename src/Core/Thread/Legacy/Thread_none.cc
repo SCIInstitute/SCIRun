@@ -28,16 +28,16 @@
 
 
 
-/*
- *  Thread_irix.cc: Irix implementation of the Thread library
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file  Thread_irix.cc
+///@brief Irix implementation of the Thread library
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 /*
  * User signals:

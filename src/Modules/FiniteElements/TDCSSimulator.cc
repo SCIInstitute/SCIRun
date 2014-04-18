@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Dcocumentation Modules/FiniteElements/TDSSimulator.cc
+
 #include <Modules/FiniteElements/TDCSSimulator.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 
@@ -39,7 +41,7 @@ TDCSSimulatorModule::TDCSSimulatorModule() : Module(ModuleLookupInfo("tDCSSimula
 
 void TDCSSimulatorModule::setStateDefaults()
 {
-  //TODO
+  /// @todo
 }
 
 void TDCSSimulatorModule::execute()

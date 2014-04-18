@@ -26,6 +26,8 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+/// @todo Documentation Core/Utils/Exception.cc 
+
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>
 
@@ -50,7 +52,7 @@ std::string ExceptionBase::typeName() const
 {
   try
   {
-    //TODO very hacky.
+    /// @todo very hacky.
     std::string name = typeid(*this).name();
 
     //static boost::regex r(".*class.*<.*struct (.+)>");

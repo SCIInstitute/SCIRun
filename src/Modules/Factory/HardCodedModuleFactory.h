@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Modules/Factory/HardCodedModuleFactory.h
+
 #ifndef HARD_CODED_MODULE_FACTORY_H
 #define HARD_CODED_MODULE_FACTORY_H
 

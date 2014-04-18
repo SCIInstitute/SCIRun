@@ -27,13 +27,14 @@
 */
 
 
-/* FileUtils.h 
- * 
- * written by 
- *   Chris Moulding
- *   Sept 2000
- *   University of Utah
- */
+///
+///@file FileUtils.h 
+/// 
+///@author 
+///      Chris Moulding
+///      University of Utah
+///@date Sept 2000
+///
 
 #ifndef FILEUTILS_H
 #define FILEUTILS_H 1
@@ -49,18 +50,18 @@
 namespace SCIRun {
 
 ////////////////////////////////////
-// InsertStringInFile()
-// Inserts "insert" in front of all occurrances of 
-// "match" within the file named "filename"
+/// InsertStringInFile()
+/// Inserts "insert" in front of all occurrances of 
+/// "match" within the file named "filename"
 
 SCISHARE void InsertStringInFile(char* filename, const char* match, const char* insert);
 
 
 ////////////////////////////////////
-// GetFilenamesEndingWith()
-// returns a std::map of strings that contains
-// all the files with extension "ext" inside
-// the directory named "dir"
+/// GetFilenamesEndingWith()
+/// returns a std::map of strings that contains
+/// all the files with extension "ext" inside
+/// the directory named "dir"
 
 SCISHARE std::map<int,char*>* GetFilenamesEndingWith(const char* dir,
                                                      const char* ext);
@@ -68,9 +69,9 @@ SCISHARE std::map<int,char*>* GetFilenamesEndingWith(const char* dir,
 SCISHARE std::vector<std::string> GetFilenamesStartingWith(const std::string & dir,
                                                       const std::string & prefix);
 
-// Return all of the filenames that appear to be in the same numeric
-// sequence as the reference one.  This means all the letters in each
-// are the same and only the numbers are different.  No sorting is done.
+/// Return all of the filenames that appear to be in the same numeric
+/// sequence as the reference one.  This means all the letters in each
+/// are the same and only the numbers are different.  No sorting is done.
 SCISHARE std::vector<std::string> GetFilenamesInSequence(const std::string &dir,
                                                     const std::string &ref);
 
@@ -106,7 +107,7 @@ SCISHARE int copyFile(const boost::filesystem::path& src,
 SCISHARE int moveFile(const boost::filesystem::path& src,
                       const boost::filesystem::path& dest);
 SCISHARE int deleteFile(const boost::filesystem::path& filename);
-// TODO: re-implement with boost
+/// @todo: re-implement with boost
 // The strings are not references since windows has to convert
 // '/' to '\\', and we do that in the same string
 SCISHARE int copyDir(std::string src, std::string dest);

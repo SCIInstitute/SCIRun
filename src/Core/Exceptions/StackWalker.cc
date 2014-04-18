@@ -1024,7 +1024,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT *context, PReadPro
       // show procedure info (SymGetSymFromAddr64())
       if (this->m_sw->pSGSFA(this->m_hProcess, s.AddrPC.Offset, &(csEntry.offsetFromSmybol), pSym) != FALSE)
       {
-        // TODO: Mache dies sicher...!
+        /// @todo: Mache dies sicher...!
         strcpy_s(csEntry.name, pSym->Name);
         // UnDecorateSymbolName()
         this->m_sw->pUDSN( pSym->Name, csEntry.undName, STACKWALK_MAX_NAMELEN, UNDNAME_NAME_ONLY );
@@ -1041,7 +1041,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT *context, PReadPro
         if (this->m_sw->pSGLFA(this->m_hProcess, s.AddrPC.Offset, &(csEntry.offsetFromLine), &Line) != FALSE)
         {
           csEntry.lineNumber = Line.LineNumber;
-          // TODO: Mache dies sicher...!
+          /// @todo: Mache dies sicher...!
           strcpy_s(csEntry.lineFileName, Line.FileName);
         }
         else
@@ -1090,7 +1090,7 @@ BOOL StackWalker::ShowCallstack(HANDLE hThread, const CONTEXT *context, PReadPro
           break;
         }
 
-        // TODO: Mache dies sicher...!
+        /// @todo: Mache dies sicher...!
         strcpy_s(csEntry.moduleName, Module.ModuleName);
         csEntry.baseOfImage = Module.BaseOfImage;
         strcpy_s(csEntry.loadedImageName, Module.LoadedImageName);

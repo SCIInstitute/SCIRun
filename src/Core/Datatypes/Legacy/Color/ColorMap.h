@@ -28,16 +28,16 @@
 
 
 
-/*
- *  ColorMap.h: ColorMap definitions
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   November 1994
- *
- */
+///
+///@file  ColorMap.h
+///@brief ColorMap definitions
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  November 1994
+///
 
 #ifndef CORE_DATATYPES_COLORMAP_H
 #define CORE_DATATYPES_COLORMAP_H 1

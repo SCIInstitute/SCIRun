@@ -39,7 +39,7 @@
 
 namespace SCIRun {
 
-//! A Marching Square tesselator for a curve line
+/// A Marching Square tesselator for a curve line
 
 class EdgeMC :  public BaseMC
 {

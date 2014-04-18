@@ -47,13 +47,13 @@ namespace Datatypes {
 
     DenseColumnMatrixGeneric(size_t nrows = 0) : EigenBase(nrows) {}
 
-    // This constructor allows you to construct DenseColumnMatrixGeneric from Eigen expressions
+    /// This constructor allows you to construct DenseColumnMatrixGeneric from Eigen expressions
     template<typename OtherDerived>
     DenseColumnMatrixGeneric(const Eigen::MatrixBase<OtherDerived>& other)
       : EigenBase(other)
     { }
 
-    // This method allows you to assign Eigen expressions to DenseColumnMatrixGeneric
+    /// This method allows you to assign Eigen expressions to DenseColumnMatrixGeneric
     template<typename OtherDerived>
     DenseColumnMatrixGeneric& operator=(const Eigen::MatrixBase<OtherDerived>& other)
     {
@@ -82,7 +82,7 @@ namespace Datatypes {
       (*this)(i,j) = val;
     }
 
-    // Persistent representation...
+    /// Persistent representation...
     virtual std::string dynamic_type_name() const { return type_id.type; }
     virtual void io(Piostream&);
     static PersistentTypeID type_id;

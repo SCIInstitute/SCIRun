@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : TriQuadraticLgn.h
-//    Author : Martin Cole, Frank Sachse
-//    Date   : Dec 04 2004
+///   @file    TriQuadraticLgn.h
+///   @author  Martin Cole, Frank Sachse
+///   @date    Dec 04 2004
  
 #ifndef CORE_BASIS_TRIQUADRATICLGN_H
 #define CORE_BASIS_TRIQUADRATICLGN_H 1
@@ -39,21 +39,21 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of TriQuadraticLgn 
+/// Class for describing unit geometry of TriQuadraticLgn 
   class TriQuadraticLgnUnitElement : public TriLinearLgnUnitElement {
 public: 
-  static SCISHARE double unit_vertices[6][2]; //!< Parametric coordinates of vertices of unit edge
+  static SCISHARE double unit_vertices[6][2]; ///< Parametric coordinates of vertices of unit edge
   
   TriQuadraticLgnUnitElement() {}
   virtual ~TriQuadraticLgnUnitElement() {}
     
-  static int number_of_vertices() { return 6; } //!< return number of vertices
-  static int dofs() { return 6; } //!< return degrees of freedom
+  static int number_of_vertices() { return 6; } ///< return number of vertices
+  static int dofs() { return 6; } ///< return degrees of freedom
 };
   
   
-//! Class for handling of element of type triangle with 
-//! linear quadratic interpolation
+/// Class for handling of element of type triangle with 
+/// linear quadratic interpolation
 template <class T>
 class TriQuadraticLgn : public BasisAddNodes<T>, 
                         public TriApprox, 
@@ -79,7 +79,7 @@ public:
     { get_quadratic_derivate_weights(coords,w); }
     
         
-  //! get value at parametric coordinate
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -95,7 +95,7 @@ public:
 	       w[5] * this->nodes_[cd.edge2_index()]);
   }
 
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -122,7 +122,7 @@ public:
     + w[11] *this->nodes_[cd.edge2_index()]);
   }
 
-  //! get the parametric coordinate for value within the element
+  /// get the parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -131,21 +131,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }
  
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc2d_length<CrvGaussian2<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned face, const ElemData &cd) const  
   {
     return get_area2<TriGaussian3<double> >(this, face, cd);
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & /* cd */) const  
   {

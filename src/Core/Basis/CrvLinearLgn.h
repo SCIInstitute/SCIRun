@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : CrvLinearLgn.h
-//    Author : Martin Cole, Frank B. Sachse
-//    Date   : Dec 03 2004
+///    @file    CrvLinearLgn.h
+///    @author  Martin Cole, Frank B. Sachse
+///    @date    Dec 03 2004
 
 #ifndef CORE_BASIS_CRVLINEARLGN_H
 #define CORE_BASIS_CRVLINEARLGN_H 1
@@ -46,64 +46,64 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of CrvLinearLgn 
+/// Class for describing unit geometry of CrvLinearLgn 
 class CrvLinearLgnUnitElement {
 public: 
-  static SCISHARE double unit_vertices[2][1]; //!< Parametric coordinates of vertices 
-  static SCISHARE int unit_edges[1][2];    //!< References to vertices of unit edge 
+  static SCISHARE double unit_vertices[2][1]; ///< Parametric coordinates of vertices 
+  static SCISHARE int unit_edges[1][2];    ///< References to vertices of unit edge 
   static SCISHARE double unit_center[1];
 
   CrvLinearLgnUnitElement() {}
   virtual ~CrvLinearLgnUnitElement() {}
 
-  //! return dimension of domain 
+  /// return dimension of domain 
   static int domain_dimension() 
     { return 1; } 
  
-   //! return size of the domain
+   /// return size of the domain
   static double domain_size() 
   { return 1.0; }
   
-  //! return number of vertices
+  /// return number of vertices
   static int number_of_vertices() 
     { return 2; }
     
-  //! return number of vertices in mesh
+  /// return number of vertices in mesh
   static int number_of_mesh_vertices() 
     { return 2; }
   
-  //! return degrees of freedom
+  /// return degrees of freedom
   static int dofs() 
     { return 2; }
 
-  //! return number of edges 
+  /// return number of edges 
   static int number_of_edges() 
     { return 1; } 
   
-  //! return number of vertices per face 
+  /// return number of vertices per face 
   static int vertices_of_face() 
     { return 0; } 
   
-  //! return number of faces per cell 
+  /// return number of faces per cell 
   static int faces_of_cell() 
     { return 0; } 
 
-  static double length(int /* edge */) { return 1.; } //!< return length
-  static double area(int /* face */) { return 0.; } //!< return area
-  static double volume() { return 0.; } //!< return volume
+  static double length(int /* edge */) { return 1.; } ///< return length
+  static double area(int /* face */) { return 0.; } ///< return area
+  static double volume() { return 0.; } ///< return volume
 
 };
 
 
-//! Class for creating geometrical approximations of Crv meshes
+/// Class for creating geometrical approximations of Crv meshes
 class CrvApprox {
 public:  
   CrvApprox() {}
   virtual ~CrvApprox() {}
   
-  //! Approximate edge for element by piecewise linear segments
-  //! return: coords gives parametric coordinates of the approximation.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate edge for element by piecewise linear segments
+  /// return: coords gives parametric coordinates of the approximation.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_edge(const unsigned /*edge*/, 
                    const unsigned div_per_unit, 
@@ -119,9 +119,9 @@ public:
     }
   }
   
-  //! Approximate faces for element by piecewise linear elements
-  //! return: coords gives parametric coordinates at the approximation point.
-  //! Use interpolate with coordinates to get the world coordinates.
+  /// Approximate faces for element by piecewise linear elements
+  /// return: coords gives parametric coordinates at the approximation point.
+  /// Use interpolate with coordinates to get the world coordinates.
   template<class VECTOR>
   void approx_face(const unsigned /*face*/, 
                    const unsigned /*div_per_unit*/, 
@@ -133,8 +133,8 @@ public:
 };
 
 
-//! Class for searching of parametric coordinates related to a 
-//! value in Crv meshes and fields
+/// Class for searching of parametric coordinates related to a 
+/// value in Crv meshes and fields
 template <class ElemBasis>
 class CrvLocate : public Dim1Locate<ElemBasis> {
 public:
@@ -143,7 +143,7 @@ public:
   CrvLocate() {}
   virtual ~CrvLocate() {}
  
-  //! find coordinate in interpolation for given value         
+  /// find coordinate in interpolation for given value         
   template <class ElemData, class VECTOR>
   bool get_coords(const ElemBasis *pEB, VECTOR &coords, 
 		  const T& value, const ElemData &cd) const  
@@ -165,8 +165,8 @@ public:
   }
 
 protected:
-  //! find a reasonable initial guess for starting Newton iteration.
-  //! Reasonable means near and with a derivative!=0 
+  /// find a reasonable initial guess for starting Newton iteration.
+  /// Reasonable means near and with a derivative!=0 
   template <class ElemData, class VECTOR>
   void initial_guess(const ElemBasis *pElem, const T &val, 
 		     const ElemData &cd, VECTOR &guess) const
@@ -194,7 +194,7 @@ protected:
   }
 };
 
-//! Class with weights and coordinates for 1st order Gaussian integration
+/// Class with weights and coordinates for 1st order Gaussian integration
 template <class T>
 class CrvGaussian1 
 {
@@ -213,7 +213,7 @@ T CrvGaussian1<T>::GaussianPoints[1][1] = {{0.5}};
 template <class T>
 T CrvGaussian1<T>::GaussianWeights[1] = {1.};
 
-//! Class with weights and coordinates for 2nd order Gaussian integration
+/// Class with weights and coordinates for 2nd order Gaussian integration
 template <class T>
 class CrvGaussian2 
 {
@@ -232,7 +232,7 @@ T CrvGaussian2<T>::GaussianPoints[2][1] = {{0.211324865405}, {0.788675134595}};
 template <class T>
 T CrvGaussian2<T>::GaussianWeights[2] = {.5, .5};
 
-//! Class with weights and coordinates for 3rd order Gaussian integration
+/// Class with weights and coordinates for 3rd order Gaussian integration
 template <class T>
 class CrvGaussian3 
 {
@@ -255,8 +255,8 @@ T CrvGaussian3<T>::GaussianWeights[3] =
 
 
 
-//! Class for handling of element of type curve with 
-//! linear lagrangian interpolation
+/// Class for handling of element of type curve with 
+/// linear lagrangian interpolation
 template <class T>
 class CrvLinearLgn : 
           public BasisSimple<T>, 
@@ -284,7 +284,7 @@ public:
     { get_linear_derivate_weights(coords,w); }
 
 
-  //! get value at parametric coordinate
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -293,7 +293,7 @@ public:
     return (T)(w[0] * cd.node0() + w[1] * cd.node1());
   }
 
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1& /*coords*/, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -302,7 +302,7 @@ public:
     derivs[0] = static_cast<typename VECTOR2::value_type>(cd.node1()-cd.node0());
   }
 
-  //! get parametric coordinate for value within the element
+  /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -311,21 +311,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }
  
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc1d_length<CrvGaussian1<double> >(this, edge, cd);
   }
 
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned /* face */, const ElemData & /* cd */) const  
   {
     return 0.;
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & /* cd */) const  
   {

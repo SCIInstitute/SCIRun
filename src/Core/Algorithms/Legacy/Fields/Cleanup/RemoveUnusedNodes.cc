@@ -140,7 +140,7 @@ run(FieldHandle input, FieldHandle& output)
     }
   }
      
-  //! Copy properties of the property manager
+  /// Copy properties of the property manager
 	output->copy_properties(input.get_rep());
    
   // Success:

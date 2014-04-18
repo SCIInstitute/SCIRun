@@ -28,16 +28,16 @@
 
 
 
-/*
- *  ConditionVariable: Condition variable primitive
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file  ConditionVariable
+///@brief Condition variable primitive
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 #ifndef Core_Thread_ConditionVariable_h
 #define Core_Thread_ConditionVariable_h
@@ -57,13 +57,13 @@ struct CrowdMonitor_private;
 
 /**************************************
  
-  CLASS
+ @class
   ConditionVariable
 
   KEYWORDS
   Thread
 
-  DESCRIPTION
+ @details
   Condition variable primitive.  When a thread calls the
   <i>wait</i> method,which will block until another thread calls
   the <i>conditionSignal</i> or <i>conditionBroadcast</i> methods.  When
@@ -80,44 +80,44 @@ struct CrowdMonitor_private;
 class SCISHARE ConditionVariable {
 public:
   //////////
-  // Create a condition variable. <i>name</i> should be a static
-  // string which describes the primitive for debugging purposes.
+  /// Create a condition variable. <i>name</i> should be a static
+  /// string which describes the primitive for debugging purposes.
   ConditionVariable(const char* name);
     
   //////////
-  // Destroy the condition variable
+  /// Destroy the condition variable
   ~ConditionVariable();
     
   //////////
-  // Wait for a condition.  This method atomically unlocks
-  // <b>mutex</b>, and blocks.  The <b>mutex</b> is typically
-  // used to guard access to the resource that the thread is
-  // waiting for.
+  /// Wait for a condition.  This method atomically unlocks
+  /// <b>mutex</b>, and blocks.  The <b>mutex</b> is typically
+  /// used to guard access to the resource that the thread is
+  /// waiting for.
   void wait(Mutex& m);
   void wait(RecursiveMutex& m);
 
   //////////
-  // Wait for a condition.  This method atomically unlocks
-  // <b>mutex</b>, and blocks.  The <b>mutex</b> is typically
-  // used to guard access to the resource that the thread is
-  // waiting for.  If the time abstime is reached before
-  // the ConditionVariable is signaled, this will return
-  // false.  Otherewise it will return true.
+  /// Wait for a condition.  This method atomically unlocks
+  /// <b>mutex</b>, and blocks.  The <b>mutex</b> is typically
+  /// used to guard access to the resource that the thread is
+  /// waiting for.  If the time abstime is reached before
+  /// the ConditionVariable is signaled, this will return
+  /// false.  Otherewise it will return true.
   bool timedWait(Mutex& m, const struct ::timespec* abstime);
   bool timedWait(RecursiveMutex& m, const struct ::timespec* abstime);
     
   //////////
-  // Signal a condition.  This will unblock one of the waiting
-  // threads. No guarantee is made as to which thread will be
-  // unblocked, but thread implementations typically give
-  // preference to the thread that has waited the longest.
+  /// Signal a condition.  This will unblock one of the waiting
+  /// threads. No guarantee is made as to which thread will be
+  /// unblocked, but thread implementations typically give
+  /// preference to the thread that has waited the longest.
   void conditionSignal();
 
   //////////
-  // Signal a condition.  This will unblock all of the waiting
-  // threads. Note that only the number of waiting threads will
-  // be unblocked. No guarantee is made that these are the same
-  // N threads that were blocked at the time of the broadcast.
+  /// Signal a condition.  This will unblock all of the waiting
+  /// threads. Note that only the number of waiting threads will
+  /// be unblocked. No guarantee is made that these are the same
+  /// N threads that were blocked at the time of the broadcast.
   void conditionBroadcast();
 
 private:

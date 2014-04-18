@@ -79,7 +79,7 @@ TEST(AppendMatrixAlgorithmTests, CanAppendColumns)
 
 TEST(AppendMatrixAlgorithmTests, ReturnsNullWithSizeMismatch)
 {
-  //TODO: should return with error.
+  /// @todo: should return with error.
   AppendMatrixAlgorithm algo;
 
   DenseMatrixHandle m1(matrix1());

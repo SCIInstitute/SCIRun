@@ -30,15 +30,15 @@
 #ifndef CORE_ALGORITHMS_FINITEELEMENTS_DEFINEPERIODICBOUNDARIES_H
 #define CORE_ALGORITHMS_FINITEELEMENTS_DEFINEPERIODICBOUNDARIES_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/FiniteElements/share.h>
 
 namespace SCIRunAlgo {
@@ -56,15 +56,15 @@ class SCISHARE DefinePeriodicBoundariesAlgo : public AlgoBase
   public:
     DefinePeriodicBoundariesAlgo()
     {
-      //! Link boundaries across x coordinate
+      /// Link boundaries across x coordinate
       add_bool("link_x_boundary",true);
-      //! Link boundaries across y coordinate
+      /// Link boundaries across y coordinate
       add_bool("link_y_boundary",true);
-      //! Link boundaries across z coordinate
+      /// Link boundaries across z coordinate
       add_bool("link_z_boundary",true);
-      //! Which tolerance to use for matching nodes (-1.0 will use epsilon of mesh)
+      /// Which tolerance to use for matching nodes (-1.0 will use epsilon of mesh)
       add_scalar("tolerance",-1.0);
-      //! Whether to build the PeriodicNodeLink Mapping matrix
+      /// Whether to build the PeriodicNodeLink Mapping matrix
       add_bool("build_periodic_nodelink",true);
       add_bool("build_periodic_delemlink",true);
     }

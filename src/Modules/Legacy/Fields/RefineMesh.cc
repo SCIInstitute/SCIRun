@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/RefineMesh.cc
 
 #include <Core/Algorithms/Fields/RefineMesh/RefineMesh.h>
 #include <Core/Datatypes/Matrix.h>
@@ -44,7 +45,7 @@ class RefineMesh : public Module
     virtual ~RefineMesh() {}
     virtual void execute();
 
-    //! Fix backwards compatibility
+    /// Fix backwards compatibility
     virtual void post_read();
 
   private:

@@ -35,27 +35,27 @@ using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Basis;
 
 
-//! Only include this class if we included LatVol Support
+/// Only include this class if we included LatVol Support
 #if (SCIRUN_LATVOL_SUPPORT > 0) || (SCIRUN_STRUCTHEXVOL_SUPPORT > 0)
 
 namespace SCIRun {
 
-//! This is the virtual interface to the curve mesh
-//! This class lives besides the real mesh class for now and solely profides
-//! an interface. In the future however when dynamic compilation is gone
-//! this should be put into the LatVolMesh class.
+/// This is the virtual interface to the curve mesh
+/// This class lives besides the real mesh class for now and solely profides
+/// an interface. In the future however when dynamic compilation is gone
+/// this should be put into the LatVolMesh class.
 template<class MESH> class VLatVolMesh;
 template<class MESH> class VStructHexVolMesh;
 
-//! This class is not exposed to the general interface and only the VMesh class
-//! is accessed by other classes.
+/// This class is not exposed to the general interface and only the VMesh class
+/// is accessed by other classes.
 
 template<class MESH>
 class VLatVolMesh : public VMeshShared<MESH> {
 public:
   virtual bool is_latvolmesh()         { return (true); }
 
-  //! constructor and descructor
+  /// constructor and descructor
   VLatVolMesh(MESH* mesh) : VMeshShared<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VLatVolMesh")    
@@ -156,7 +156,7 @@ public:
   virtual bool get_edge(VMesh::Edge::index_type& edge, 
                         VMesh::Node::array_type& nodes) const;
 
-  //! Get the center of a certain mesh element
+  /// Get the center of a certain mesh element
   virtual void get_center(Point &point, VMesh::Node::index_type i) const;
   virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
   virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
@@ -165,7 +165,7 @@ public:
   virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
-  //! Get the centers of a series of nodes
+  /// Get the centers of a series of nodes
   virtual void get_centers(Point* points, VMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points, VMesh::Elem::array_type& array) const;
 
@@ -265,10 +265,10 @@ public:
   virtual Transform get_transform() const;
   virtual void set_transform(const Transform& t);
 
-  //! Get all the information needed for interpolation:
-  //! this includes weights and node indices
-  //! As linear interpolation needs far less data from the mesh
-  //! these classes are spilt out in linear, quadratic and cubic
+  /// Get all the information needed for interpolation:
+  /// this includes weights and node indices
+  /// As linear interpolation needs far less data from the mesh
+  /// these classes are spilt out in linear, quadratic and cubic
   
   virtual void get_interpolate_weights(const Point& point, 
                                        VMesh::ElemInterpolate& ei,
@@ -1127,27 +1127,27 @@ protected:
 };
 
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVLatVolMesh(LatVolMesh<HexTrilinearLgn<Point> >* mesh)
 {
   return new VLatVolMesh<LatVolMesh<HexTrilinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID LatVolMesh_MeshID1(LatVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
                   LatVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
                   LatVolMesh<HexTrilinearLgn<Point> >::latvol_maker);
                   
 
-//! Functions for determining the number of indices that are used
+/// Functions for determining the number of indices that are used
 template <class MESH>
 void
 VLatVolMesh<MESH>::size(VMesh::Node::size_type& sz) const
@@ -1211,7 +1211,7 @@ VLatVolMesh<MESH>::size(VMesh::Elem::size_type& sz) const
   if (sz < 0) sz = 0;
 }
 
-//! Topology functions
+/// Topology functions
 
 
 template <class MESH>
@@ -2821,7 +2821,7 @@ public:
   virtual bool is_latvolmesh()         { return (false); }
   virtual bool is_structhexvolmesh()   { return (true); }
 
-  //! constructor and descructor
+  /// constructor and descructor
   VStructHexVolMesh(MESH* mesh) :
     VLatVolMesh<MESH>(mesh),
     points_(mesh->get_points())
@@ -2928,7 +2928,7 @@ public:
   virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
-  //! Get the centers of a series of nodes
+  /// Get the centers of a series of nodes
   virtual void get_centers(Point* points, VMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points, VMesh::Elem::array_type& array) const;
 
@@ -3099,21 +3099,21 @@ protected:
 };
 
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVStructHexVolMesh(StructHexVolMesh<HexTrilinearLgn<Point> >* mesh)
 {
   return new VStructHexVolMesh<StructHexVolMesh<HexTrilinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID StructHexVolMesh_MeshID1(StructHexVolMesh<HexTrilinearLgn<Point> >::type_name(-1),
                   StructHexVolMesh<HexTrilinearLgn<Point> >::mesh_maker,
                   StructHexVolMesh<HexTrilinearLgn<Point> >::structhexvol_maker);

@@ -30,14 +30,14 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_CalculateMESHCENTER_H
 #define CORE_ALGORITHMS_FIELDS_MESHDERIVATIVES_CalculateMESHCENTER_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -47,14 +47,14 @@ using namespace SCIRun;
 class SCISHARE CalculateMeshCenterAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     CalculateMeshCenterAlgo()
     {
-      //! The output type
+      /// The output type
       add_option("method","weighted-elem-center","node-center|elem-center|weighted-elem-center|bounding-box-center|mid-node-index|mid-elem-index");
     }
   
-    //! run the algorithm
+    /// run the algorithm
     bool run(FieldHandle input, FieldHandle& output);
 };
 

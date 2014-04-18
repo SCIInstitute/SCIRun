@@ -28,16 +28,16 @@
 
 
 
-/*
- *  CreateLatVol.cc:  Make an ImageField that fits the source field.
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   March 2001
- *
- */
+///
+///@file  CreateLatVol.cc
+///@brief Make an ImageField that fits the source field.
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Core/GeometryPrimitives/Point.h>
@@ -80,7 +80,7 @@ void CreateLatVol::setStateDefaults()
   state->setValue(ElementSizeNormalized, true);
 }
 
-//TODO: extract algorithm class!!!!!!!!!!!!!!!!!!!!
+/// @todo: extract algorithm class!!!!!!!!!!!!!!!!!!!!
 
 void
 CreateLatVol::execute()

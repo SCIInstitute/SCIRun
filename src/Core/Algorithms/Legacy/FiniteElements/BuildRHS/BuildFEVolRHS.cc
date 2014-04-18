@@ -226,7 +226,7 @@ create_numerical_integration(std::vector<VMesh::coords_type> &p,
 }
 
 
-//! build line of the local stiffness matrix
+/// build line of the local stiffness matrix
 
 bool
 FEMVolRHSBuilder::
@@ -374,7 +374,7 @@ FEMVolRHSBuilder
                    
         // Volume elements can return negative determinants if the order of elements
         // is put in a different order
-        // TODO: It seems to be that a negative determinant is not necessarily bad, 
+        /// @todo: It seems to be that a negative determinant is not necessarily bad, 
         // we should be more flexible on thiis point
         if (detJ <= 0.0) 
         {
@@ -478,7 +478,7 @@ setup()
   // Local degrees of freedom per element
   local_dimension = local_dimension_nodes + 
                     local_dimension_add_nodes + 
-                    local_dimension_derivatives; //!< degrees of freedom (dofs) of system
+                    local_dimension_derivatives; ///< degrees of freedom (dofs) of system
 
   VMesh::Node::size_type mns;
   mesh_->size(mns);
@@ -543,7 +543,7 @@ parallel(int proc_num)
 	for (int q=0; q<numprocessors_;q++) 
 	if (success_[q] == false) return;
 
-	//! distributing dofs among processors
+	/// distributing dofs among processors
 	const index_type start_gd = (global_dimension * proc_num)/numprocessors_;
 	const index_type end_gd  = (global_dimension * (proc_num+1))/numprocessors_;
 
@@ -552,7 +552,7 @@ parallel(int proc_num)
 	VMesh::Edge::array_type ea;
 	std::vector<index_type> neib_dofs;
 
-	//! loop over system dofs for this thread
+	/// loop over system dofs for this thread
 	int cnt = 0;
 	size_type size_gd = end_gd-start_gd;
   try
@@ -560,30 +560,30 @@ parallel(int proc_num)
   
 		for (VMesh::Node::index_type i = start_gd; i<end_gd; i++)
 		{
-			//! check for nodes
+			/// check for nodes
 			if (i<global_dimension_nodes)
 			{
-				//! get neighboring cells for node
+				/// get neighboring cells for node
 				mesh_->get_elems(ca, i);
 			}
 			else if (i<global_dimension_nodes+global_dimension_add_nodes)
 			{
-				//! check for additional nodes at edges
-				//! get neighboring cells for node
+				/// check for additional nodes at edges
+				/// get neighboring cells for node
 				VMesh::Edge::index_type ii(i-global_dimension_nodes);
         mesh_->get_elems(ca,ii);
 			}
 			else
 			{
-				//! check for derivatives - to do
+				/// check for derivatives - to do
 			}
 		
 			for(size_t j = 0; j < ca.size(); j++)
 			{
-				//! check for additional nodes at edges
+				/// check for additional nodes at edges
 				if (global_dimension_add_nodes)
 				{
-					//! get neighboring edges
+					/// get neighboring edges
 					mesh_->get_edges(ea, ca[j]);
 				}
 			}
@@ -606,7 +606,7 @@ parallel(int proc_num)
 	std::vector<std::vector<double> > precompute;		
 	index_type st = 0;
   
-  //! check point
+  /// check point
   barrier_.wait(numprocessors_);
 
 	// Bail out if one of the processes failed
@@ -615,7 +615,7 @@ parallel(int proc_num)
 		
 	try
 	{	
-		//! the main thread makes the matrix
+		/// the main thread makes the matrix
 		if (proc_num == 0)
 		{
       rhsmatrix_ = new DenseMatrix(global_dimension, 1);
@@ -629,7 +629,7 @@ parallel(int proc_num)
 	  success_[proc_num] = false;
 	}	
 
-  //! check point
+  /// check point
   barrier_.wait(numprocessors_);
 
 	// Bail out if one of the processes failed
@@ -646,7 +646,7 @@ parallel(int proc_num)
     
     double l_val;
 					
-		//! loop over system dofs for this thread
+		/// loop over system dofs for this thread
 		cnt = 0;
 		
 		size_gd = end_gd-start_gd;
@@ -658,30 +658,30 @@ parallel(int proc_num)
       
 			if (i < global_dimension_nodes)
 			{
-				//! check for nodes
-				//! get neighboring cells for node
+				/// check for nodes
+				/// get neighboring cells for node
 				mesh_->get_elems(ca,i);
 			}
 			else if (i < global_dimension_nodes + global_dimension_add_nodes)
 			{
-				//! check for additional nodes at edges
-				//! get neighboring cells for additional nodes
+				/// check for additional nodes at edges
+				/// get neighboring cells for additional nodes
 				VMesh::Edge::index_type ii(i-global_dimension_nodes);
 				mesh_->get_elems(ca,ii);
 			}
 			else
 			{
-				//! check for derivatives - to do
+				/// check for derivatives - to do
 			}
 		
-			//! loop over elements attributed elements
+			/// loop over elements attributed elements
 			
 			if (mesh_->is_regularmesh())
 			{
         
 				for (size_t j = 0; j < ca.size(); j++)
 				{
-					mesh_->get_nodes(na, ca[j]); //!< get neighboring nodes
+					mesh_->get_nodes(na, ca[j]); ///< get neighboring nodes
           for(size_t k = 0; k < na.size(); k++)
 					{
 						if (na[k] == i) 
@@ -697,12 +697,12 @@ parallel(int proc_num)
         
 				for (size_t j = 0; j < ca.size(); j++)
 				{
-					mesh_->get_nodes(na, ca[j]); //!< get neighboring nodes
+					mesh_->get_nodes(na, ca[j]); ///< get neighboring nodes
 
-					//! check for additional nodes at edges
+					/// check for additional nodes at edges
 					if (global_dimension_add_nodes)
 					{
-						mesh_->get_edges(ea, ca[j]); //!< get neighboring edges
+						mesh_->get_edges(ea, ca[j]); ///< get neighboring edges
 					}
 					
 					//ASSERT(static_cast<int>(neib_dofs.size()) == local_dimension);

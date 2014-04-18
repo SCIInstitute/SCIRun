@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : CrvQuadraticLgn.h
-//    Author : Marty Cole, Frank B. Sachse
-//    Date   : Nov 30 2004
+///    @file    CrvQuadraticLgn.h
+///    @author  Marty Cole, Frank B. Sachse
+///    @date    Nov 30 2004
 
 #ifndef CORE_BASIS_CRVQUADRATICLGN_H
 #define CORE_BASIS_CRVQUADRATICLGN_H 1
@@ -39,22 +39,22 @@ namespace SCIRun {
 namespace Core {
 namespace Basis {
 
-//! Class for describing unit geometry of CrvLinearLgn 
+/// Class for describing unit geometry of CrvLinearLgn 
 class SCISHARE CrvQuadraticLgnUnitElement : public CrvLinearLgnUnitElement {
 public: 
-  static double unit_vertices[3][1]; //!< Parametric coordinates of vertices of unit edge
+  static double unit_vertices[3][1]; ///< Parametric coordinates of vertices of unit edge
 
   CrvQuadraticLgnUnitElement() {}
   virtual ~CrvQuadraticLgnUnitElement() {}
   
-  static int number_of_vertices() { return 3; } //!< return number of vertices
-  static int dofs() { return 3; } //!< return degrees of freedom
+  static int number_of_vertices() { return 3; } ///< return number of vertices
+  static int dofs() { return 3; } ///< return degrees of freedom
 };
 
  
 
-//! Class for handling of element of type curve with 
-//! quadratic lagrangian interpolation
+/// Class for handling of element of type curve with 
+/// quadratic lagrangian interpolation
 template <class T>
   class CrvQuadraticLgn : public BasisAddNodes<T>, 
                           public CrvApprox, 
@@ -79,7 +79,7 @@ public:
   inline void get_derivate_weights(const VECTOR& coords, double *w) const
     { get_quadratic_derivate_weights(coords,w); }
       
-  //! get value at parametric coordinate
+  /// get value at parametric coordinate
   template <class ElemData, class VECTOR>
   T interpolate(const VECTOR &coords, const ElemData &cd) const
   {
@@ -92,10 +92,10 @@ public:
 	      w[2] * this->nodes_[cd.edge0_index()]);
   }
     
-  //! get derivative weight factors at parametric coordinate 
+  /// get derivative weight factors at parametric coordinate 
 
 
-  //! get first derivative at parametric coordinate
+  /// get first derivative at parametric coordinate
   template <class ElemData, class VECTOR1, class VECTOR2>
   void derivate(const VECTOR1 &coords, const ElemData &cd, 
 		VECTOR2 &derivs) const
@@ -110,7 +110,7 @@ public:
       + w[2] * this->nodes_[cd.edge0_index()]);
   }
   
-  //! get parametric coordinate for value within the element
+  /// get parametric coordinate for value within the element
   template <class ElemData, class VECTOR>
   bool get_coords(VECTOR &coords, const T& value, 
 		  const ElemData &cd) const  
@@ -119,21 +119,21 @@ public:
     return CL.get_coords(this, coords, value, cd);
   }
      
-  //! get arc length for edge
+  /// get arc length for edge
   template <class ElemData>
   double get_arc_length(const unsigned edge, const ElemData &cd) const  
   {
     return get_arc1d_length<CrvGaussian2<double> >(this, edge, cd);
   }
  
-  //! get area
+  /// get area
   template <class ElemData>
     double get_area(const unsigned /* face */, const ElemData & /* cd */) const  
   {
     return 0.;
   }
  
-  //! get volume
+  /// get volume
   template <class ElemData>
     double get_volume(const ElemData & /* cd */) const  
   {

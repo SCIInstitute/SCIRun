@@ -24,10 +24,12 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
-//  
-//    File   : NrrdToITK.cc
-//    Author : McKay Davis
-//    Date   : Sun Oct 22 23:09:46 2006
+
+/*  
+ *@file    NrrdToITK.cc
+ *@author  McKay Davis
+ *@date    Sun Oct 22 23:09:46 2006
+ */
 
 #include <Core/Datatypes/NrrdToITK.h>
 #include <Core/Util/StringUtil.h>

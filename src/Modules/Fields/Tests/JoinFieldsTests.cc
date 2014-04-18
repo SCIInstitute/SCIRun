@@ -54,7 +54,7 @@ TEST_F(JoinFieldsModuleTests, DISABLED_ThrowsForNullInput)
 {
   auto cg = makeModule("JoinFields");
   FieldHandle nullField;
-  //TODO: this doesn't work with dynamic ports beyond 1
+  /// @todo: this doesn't work with dynamic ports beyond 1
   stubPortNWithThisData(cg, 0, nullField);
   EXPECT_THROW(cg->execute(), NullHandleOnPortException);
 }

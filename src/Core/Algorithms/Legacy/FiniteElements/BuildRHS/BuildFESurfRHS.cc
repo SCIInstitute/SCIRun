@@ -51,15 +51,15 @@ struct IndexHash {
 
 
 
-//! A copy of the algorithm without creating the mapping matrix. 
-//! Need this for the various algorithms that only use the boundary to
-//! project nodes on.
+/// A copy of the algorithm without creating the mapping matrix. 
+/// Need this for the various algorithms that only use the boundary to
+/// project nodes on.
 
 bool 
 BuildFESurfRHSAlgo::
 run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
 {
-  //! Define types we need for mapping
+  /// Define types we need for mapping
 #ifdef HAVE_HASH_MAP
   typedef hash_map<index_type,index_type,IndexHash> hash_map_type;
 #else
@@ -70,25 +70,25 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   
   algo_start("BuildFESurfRHS");
   
-  //! Check whether we have an input field
+  /// Check whether we have an input field
   if (input.get_rep() == 0)
   {
     error("No input field");
     algo_end(); return (false);
   }
 
-  //! Figure out what the input type and output type have to be
+  /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
   FieldInformation fo(input);
   
-  //! We do not yet support Quadratic and Cubic Meshes here
+  /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements");
     algo_end(); return (false);
   }
   
-  //! Figure out which type of field the output is:
+  /// Figure out which type of field the output is:
   bool found_method = false;
   if (fi.is_hex_element())    { fo.make_quadsurfmesh(); found_method = true; }
   if (fi.is_prism_element())  { fo.make_quadsurfmesh(); found_method = true; }
@@ -102,14 +102,14 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
     algo_end(); return (true);
   }
   
-  //! Check whether we could make a conversion
+  /// Check whether we could make a conversion
   if (!found_method)
   {
     error("No method available for mesh of type: " + fi.get_mesh_type());
     algo_end(); return (false);
   }
 
-  //! Create the output field
+  /// Create the output field
   output = CreateField(fo);
   if (output.get_rep() == 0)
   {
@@ -117,7 +117,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
     algo_end(); return (false);
   }
   
-  //! Get the virtual interfaces:
+  /// Get the virtual interfaces:
   VMesh* imesh = input->vmesh();
   VMesh* omesh = output->vmesh();
   VField* ifield = input->vfield();
@@ -125,7 +125,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   
   imesh->synchronize(Mesh::DELEMS_E|Mesh::ELEM_NEIGHBORS_E);
   
-  //! These are all virtual iterators, virtual index_types and array_types
+  /// These are all virtual iterators, virtual index_types and array_types
   VMesh::Elem::iterator be, ee;
   VMesh::Elem::index_type nci, ci;
   VMesh::DElem::array_type delems; 
@@ -137,7 +137,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
   onodes.clear();  
   Point point;
   
-  //! Create numerical integration scheme
+  /// Create numerical integration scheme
   int int_basis = 2;
   std::vector<VMesh::coords_type> points;
   std::vector<double> weights;
@@ -279,7 +279,7 @@ run(FieldHandle input, FieldHandle& output,  MatrixHandle& mat_output)
       VMesh::Elem::index_type idx1((*it).second);
       VMesh::Elem::index_type idx2((*it).first);  
       
-      //! Copying values
+      /// Copying values
       ofield->copy_value(ifield,idx1,idx2);
       ++it;
     }

@@ -29,11 +29,11 @@
 */
 
 
-// TODO: NEED TO GO OVER THESE FUNCTIONS
+/// @todo: NEED TO GO OVER THESE FUNCTIONS
 // THIS CODE CONTAINS SOME REALLY SCARY CONSTRUCTS AND SHOULD BE REPLACED
 // BY BETTER CODE
 
-/* FileUtils.cc */
+/*@file FileUtils.cc */
 
 #include <errno.h>
 #include <stdio.h>
@@ -84,7 +84,7 @@ namespace SCIRun {
 void
 InsertStringInFile(char* filename, const char* match, const char* add_text)
 {
-  // TODO: rewrite in C++
+  /// @todo: rewrite in C++
   char* newfilename = new char[strlen(filename)+2];
   char c;
   sprintf(newfilename,"%s~",filename);
@@ -643,7 +643,7 @@ int deleteFile(const bfs::path& filename)
 }
 
   
-// TODO: boostify this
+/// @todo: boostify this
 int copyDir(std::string src, std::string dest)
 {
 #ifdef _WIN32

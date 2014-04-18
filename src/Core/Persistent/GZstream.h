@@ -26,18 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  Pstream.h: reading/writing persistent objects
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   June 2007
- *
- */
+///
+///@file  Pstream.h
+///@brief reading/writing persistent objects
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///@date  June 2007
+///
 
 #ifndef SCI_project_GZstream_h
 #define SCI_project_GZstream_h 1

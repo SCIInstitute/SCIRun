@@ -178,7 +178,7 @@ TEST(MatrixCalculatorFunctionalTest, ManualExecutionOfMultiNodeNetwork)
   
   EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
-  //TODO: turn this into a convenience network printing function
+  /// @todo: turn this into a convenience network printing function
   //for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
   //{
   //  ModuleHandle m = matrixMathNetwork.module(i);

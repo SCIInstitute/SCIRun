@@ -25,9 +25,12 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : InterfaceWithTetGen.cc
-//    Author : Martin Cole
-//    Date   : Wed Mar 22 07:56:22 2006
+
+///
+///    @file    InterfaceWithTetGen.cc
+///    @author  Martin Cole
+///    @date    Wed Mar 22 07:56:22 2006
+///
 
 #include <Core/Thread/Mutex.h>
 

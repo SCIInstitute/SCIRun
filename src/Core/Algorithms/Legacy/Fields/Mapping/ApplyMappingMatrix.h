@@ -31,18 +31,18 @@
 #ifndef CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H
 #define CORE_ALGORITHMS_FIELDS_MAPPING_APPLYMAPPINGMATRIX_H 1
 
-//! STL datatypes needed
+/// STL datatypes needed
 #include <algorithm>
 
-//! Datatypes used
+/// Datatypes used
 //#include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Core/Datatypes/Legacy/Field/Mesh.h>
 #include <Core/Math/MiscMath.h>
-//! Base for algorithm
+/// Base for algorithm
 #include <Core/Algorithms/Base/AlgorithmBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {

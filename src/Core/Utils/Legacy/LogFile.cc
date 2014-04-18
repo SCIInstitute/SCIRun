@@ -28,7 +28,7 @@
 */
 
 
-// LogFile.cc
+/// @todo Documentation Core/Utils/Legacy/LogFile.cc
 
 
 #include <Core/Utils/Legacy/LogFile.h>

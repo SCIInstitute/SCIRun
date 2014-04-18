@@ -178,7 +178,7 @@ protected:
   
     EXPECT_EQ(9, matrixMathNetwork.nmodules());
 
-    //TODO: turn this into a convenience network printing function
+    /// @todo: turn this into a convenience network printing function
     //for (size_t i = 0; i < matrixMathNetwork.nmodules(); ++i)
     //{
     //  ModuleHandle m = matrixMathNetwork.module(i);
@@ -222,7 +222,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculator)
   ExecutionBounds bounds;
   executor.executeAll(matrixMathNetwork, order, bounds);
 
-  //TODO: let executor thread finish.  should be an event generated or something.
+  /// @todo: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 
   //grab reporting module state
@@ -276,7 +276,7 @@ TEST_F(SchedulingWithBoostGraph, NetworkFromMatrixCalculatorMultiThreaded)
   BasicParallelExecutionStrategy strategy;
   strategy.executeAll(matrixMathNetwork, matrixMathNetwork);
 
-  //TODO: let executor thread finish.  should be an event generated or something.
+  /// @todo: let executor thread finish.  should be an event generated or something.
   boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 
   //grab reporting module state
@@ -408,7 +408,7 @@ namespace ThreadingPrototype
       << u.runtime;
   }
 
-  typedef std::queue<UnitPtr> WorkQueue;  //TODO: will need to be thread-safe
+  typedef std::queue<UnitPtr> WorkQueue;  /// @todo: will need to be thread-safe
   typedef std::list<UnitPtr> WaitingList;
   typedef std::list<UnitPtr> DoneList;
 
