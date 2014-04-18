@@ -105,7 +105,7 @@ TEST_F(PortTests, InputPortTakesAtMostOneConnection)
   EXPECT_THROW(Connection c(outputPort2, inputPort, "test"), InvalidArgumentException);
 }
 
-//TODO: this verification pushed up to higher layer.
+/// @todo: this verification pushed up to higher layer.
 TEST_F(PortTests, DISABLED_CannotConnectPortsWithDifferentDatatypes)
 {
   Port::ConstructionParams pcp1(PortId(0, "ForwardMatrix"), "Matrix", false);

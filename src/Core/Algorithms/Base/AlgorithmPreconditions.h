@@ -46,7 +46,7 @@ namespace Algorithms {
   {
   };
 
-  struct SCISHARE AlgorithmParameterNotFound : virtual AlgorithmProcessingException //TODO??
+  struct SCISHARE AlgorithmParameterNotFound : virtual AlgorithmProcessingException /// @todo??
   {
   };
 

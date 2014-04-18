@@ -34,7 +34,7 @@
 namespace SCIRun {
 namespace Modules {
 namespace Basic {
-  //TODO
+  /// @todo
 
 
 }}}

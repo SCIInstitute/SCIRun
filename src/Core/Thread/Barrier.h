@@ -30,7 +30,7 @@
 #define CORE_THREAD_BARRIER_H
 
 #include <boost/noncopyable.hpp>
-#include <boost/thread/barrier.hpp>  //TODO: pimpl?
+#include <boost/thread/barrier.hpp>  /// @todo pimpl?
 #include <Core/Thread/share.h>
 
 namespace SCIRun 

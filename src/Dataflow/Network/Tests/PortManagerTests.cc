@@ -30,4 +30,4 @@
 
 using namespace SCIRun::Dataflow::Networks;
 
-//TODO: test this easy class
+/// @todo: test this easy class

@@ -63,7 +63,7 @@ namespace
 
     //ASSERT_TRUE(boundary);
 
-    ////TODO: need assertions on boundary field
+    /// @todo: need assertions on boundary field
 
     //if (basis != -1)
     //{

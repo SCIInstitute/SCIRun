@@ -32,7 +32,7 @@
 #include <Core/Datatypes/Legacy/Field/VMeshShared.h>
 
 
-//! Only include this class if we included Image Support
+/// Only include this class if we included Image Support
 #if (SCIRUN_IMAGE_SUPPORT > 0) || (SCIRUN_STRUCTQUADSURF_SUPPORT > 0)
 
 using namespace SCIRun::Core::Basis;
@@ -41,15 +41,15 @@ using namespace SCIRun::Core::Geometry;
 namespace SCIRun {
 
 
-//! This is the virtual interface to the curve mesh
-//! This class lives besides the real mesh class for now and solely provides
-//! an interface. In the future however when dynamic compilation is gone
-//! this should be put into the ImageMesh class.
+/// This is the virtual interface to the curve mesh
+/// This class lives besides the real mesh class for now and solely provides
+/// an interface. In the future however when dynamic compilation is gone
+/// this should be put into the ImageMesh class.
 template<class MESH> class VImageMesh;
 template<class MESH> class VStructQuadSurfMesh;
 
-//! This class is not exposed to the general interface and only the VMesh class
-//! is accessed by other classes.
+/// This class is not exposed to the general interface and only the VMesh class
+/// is accessed by other classes.
 
 template<class MESH>
 class VImageMesh : public VMeshShared<MESH> {
@@ -126,7 +126,7 @@ class VImageMesh : public VMeshShared<MESH> {
     virtual void get_delems(VMesh::DElem::array_type& delems, 
                             VMesh::Elem::index_type i) const;
 
-    //! Get the center of a certain mesh element
+    /// Get the center of a certain mesh element
     virtual void get_center(Point &point, VMesh::Node::index_type i) const;
     virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
     virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
@@ -134,7 +134,7 @@ class VImageMesh : public VMeshShared<MESH> {
     virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
     virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
-    //! Get the centers of a series of nodes
+    /// Get the centers of a series of nodes
     virtual void get_centers(Point* points, 
                              VMesh::Node::array_type& array) const;
     virtual void get_centers(Point* points, 
@@ -557,31 +557,31 @@ class VImageMesh : public VMeshShared<MESH> {
 
 };
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVImageMesh(ImageMesh<QuadBilinearLgn<Point> >* mesh)
 {
   return new VImageMesh<ImageMesh<QuadBilinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID ImageMesh_MeshID1(ImageMesh<QuadBilinearLgn<Point> >::type_name(-1),
                   ImageMesh<QuadBilinearLgn<Point> >::mesh_maker,
                   ImageMesh<QuadBilinearLgn<Point> >::image_maker);
                   
 
-//! Most of the topology functions are completely redone as we now use single
-//! valued iterators and indices
+/// Most of the topology functions are completely redone as we now use single
+/// valued iterators and indices
 
 
-//! Functions for determining the number of indices that are used
+/// Functions for determining the number of indices that are used
 template <class MESH>
 void
 VImageMesh<MESH>::
@@ -639,7 +639,7 @@ size(VMesh::Elem::size_type& sz) const
   if (sz < 0) sz = 0;
 }
 
-//! Topology functions
+/// Topology functions
 
 
 template <class MESH>
@@ -2010,7 +2010,7 @@ public:
   virtual bool is_structquadsurfmesh() { return (true); }
   virtual bool is_imagemesh()          { return (false); }
 
-  //! constructor and descructor
+  /// constructor and descructor
   VStructQuadSurfMesh(MESH* mesh) :
     VImageMesh<MESH>(mesh),
     points_(mesh->get_points())
@@ -2078,7 +2078,7 @@ public:
   };
   
   
-  //! Get the center of a certain mesh element
+  /// Get the center of a certain mesh element
   virtual void get_center(Point &point, VMesh::Node::index_type i) const;
   virtual void get_center(Point &point, VMesh::ENode::index_type i) const;
   virtual void get_center(Point &point, VMesh::Edge::index_type i) const;
@@ -2086,7 +2086,7 @@ public:
   virtual void get_center(Point &point, VMesh::Elem::index_type i) const;
   virtual void get_center(Point &point, VMesh::DElem::index_type i) const;
 
-  //! Get the centers of a series of nodes
+  /// Get the centers of a series of nodes
   virtual void get_centers(Point* points, 
                            VMesh::Node::array_type& array) const;
   virtual void get_centers(Point* points, 
@@ -2255,21 +2255,21 @@ protected:
   Array2<Point>&     points_;
 };
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVStructQuadSurfMesh(StructQuadSurfMesh<QuadBilinearLgn<Point> >* mesh)
 {
   return new VStructQuadSurfMesh<StructQuadSurfMesh<QuadBilinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID StructQuadSurfMesh_MeshID1(StructQuadSurfMesh<QuadBilinearLgn<Point> >::type_name(-1),
                   StructQuadSurfMesh<QuadBilinearLgn<Point> >::mesh_maker,
                   StructQuadSurfMesh<QuadBilinearLgn<Point> >::structquadsurf_maker);

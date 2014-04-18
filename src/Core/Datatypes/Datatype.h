@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-
+/// @todo Documentation Core/Datatypes/Datatype.h 
 #ifndef CORE_DATATYPES_DATATYPE_H
 #define CORE_DATATYPES_DATATYPE_H 
 
@@ -39,7 +38,7 @@ namespace SCIRun {
 namespace Core {
 namespace Datatypes {
 
-  //TODO: split out
+  /// @todo: split out
   template <typename IdType, typename IdGenerator>
   class HasId
   {
@@ -71,7 +70,7 @@ namespace Datatypes {
 
     typedef HasId<int, AtomicCounter>::id_type id_type;
 
-    //TODO
+    /// @todo
     template <typename T>
     const T* as() const
     {

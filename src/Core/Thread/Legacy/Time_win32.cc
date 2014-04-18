@@ -28,16 +28,16 @@
 */  
 
 
-/*
- *  Time_win32.cc: Generic unix implementation of the Time class
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file  Time_win32.cc
+///@brief Generic unix implementation of the Time class
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
 
 
 #include <Core/Thread/Legacy/Time.h>

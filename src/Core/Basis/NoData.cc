@@ -25,9 +25,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 //  
-//    File   : NoData.cc
-//    Author : Martin Cole
-//    Date   : Mon Aug 23 10:33:51 2004
+///   @file    NoData.cc
+///   @author  Martin Cole
+///   @date    Mon Aug 23 10:33:51 2004
 
 #include <Core/Basis/NoData.h>
 

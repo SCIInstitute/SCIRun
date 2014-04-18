@@ -55,15 +55,15 @@ AlgorithmParameterName JoinFieldsAlgo::MakeNoData("make_no_data");
 
 JoinFieldsAlgo::JoinFieldsAlgo()
 {
-  //! Merge duplicate nodes?
+  /// Merge duplicate nodes?
   addParameter(MergeNodes, true);
-  //! Merge duplicate elements?
+  /// Merge duplicate elements?
   addParameter(MergeElems, false);
-  //! Tolerance for merging duplicate nodes?
+  /// Tolerance for merging duplicate nodes?
   addParameter(Tolerance, 1e-6);
-  //! Only merge nodes whose value is the same
+  /// Only merge nodes whose value is the same
   addParameter(MatchNodeValues, false);
-  //! Create a field with no data
+  /// Create a field with no data
   addParameter(MakeNoData, false);
 }
 
@@ -93,7 +93,7 @@ JoinFieldsAlgo::runImpl(const FieldList& input, FieldHandle& output) const
   FieldInformation first(inputs[0]);
   first.make_unstructuredmesh();
   
-  //! Make sure mesh and mesh basis order are equal
+  /// Make sure mesh and mesh basis order are equal
   for (size_t p=1; p<inputs.size(); p++)
   {
     FieldInformation fi(inputs[p]);

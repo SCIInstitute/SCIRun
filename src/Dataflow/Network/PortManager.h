@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/PortManager.h
+
 
 #ifndef DATAFLOW_NETWORK_PORTMANAGER_H
 #define DATAFLOW_NETWORK_PORTMANAGER_H 
@@ -83,7 +85,7 @@ size_t
 PortManager<T>::add(const T& item)
 { 
   ports_[item->id()] = item;
-  //TODO: who should manage port indexes?
+  /// @todo: who should manage port indexes?
   //item->setIndex(size() - 1);
   auto index = size() - 1;
   return index;
@@ -113,7 +115,7 @@ PortManager<T>::operator[](const PortId& id) const
   auto it = ports_.find(id);
   if (it == ports_.end())
   {
-    //TODO: need a way to detect and create arbitrary dynamic ports from serialized files.
+    /// @todo: need a way to detect and create arbitrary dynamic ports from serialized files.
     //if (id.dynamic)
     //  std::cout << "DYNAMIC PORT NEEDS TO INSERT ITSELF HERE SOMEHOW" << std::endl;
     //else

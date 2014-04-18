@@ -29,12 +29,12 @@
 
 #include <Core/Algorithms/Fields/ResampleMesh/ResampleRegularMesh.h>
 
-//! For mapping matrices
+/// For mapping matrices
 #include <Core/Datatypes/NrrdData.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
 
-//! STL classes needed
+/// STL classes needed
 #include <sci_hash_map.h>
 #include <algorithm>
 #include <set>

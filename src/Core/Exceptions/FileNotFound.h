@@ -29,16 +29,16 @@
 
 
 
-/*
- *  FileNotFound.h: Exactly what you think
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1999
- *
- */
+///
+///@file  FileNotFound.h
+///@brief Exactly what you think
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+///
 
 #ifndef Core_Exceptions_FileNotFound_h
 #define Core_Exceptions_FileNotFound_h

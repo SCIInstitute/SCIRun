@@ -28,16 +28,16 @@
 
 
 
-/*
- *  Color.cc: Simple RGB color model
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   June 1994
- *
- */
+///
+///@file  Color.cc
+///@brief Simple RGB color model
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1994
+///
 
 #include <Core/Datatypes/Color.h>
 #include <Core/Persistent/Persistent.h>

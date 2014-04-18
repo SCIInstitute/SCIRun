@@ -30,15 +30,15 @@
 #ifndef CORE_ALGORITHMS_FIELDS_CREATEMESH_CREATEMESHFROMNRRD_H
 #define CORE_ALGORITHMS_FIELDS_CREATEMESH_CREATEMESHFROMNRRD_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/NrrdData.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -48,14 +48,14 @@ using namespace SCIRun;
 class SCISHARE CreateMeshFromNrrdAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     CreateMeshFromNrrdAlgo()
     {
       add_option("quad_or_tet","Tet","Auto|Tet|Quad");
       add_option("struct_or_unstruct","PointCloud","Auto|PointCloud|StructCurve");
     }
 
-    //! run the algorithm
+    /// run the algorithm
     bool run(NrrdDataHandle pHandle,
              NrrdDataHandle cHandle,
              FieldHandle& fHandle);

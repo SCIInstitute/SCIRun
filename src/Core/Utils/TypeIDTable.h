@@ -25,6 +25,7 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
+/// @todo Documentation Core/Utils/TypeIDTable.h
 
 #ifndef CORE_UTILS_TYPEIDTABLE_H
 #define CORE_UTILS_TYPEIDTABLE_H
@@ -40,7 +41,7 @@ namespace Core
 {
 namespace Utility
 {
-  // A thread-safe map used for constructor lookup in Mesh/Field factories.
+  /// A thread-safe map used for constructor lookup in Mesh/Field factories.
 
   template <class CtorInfo>
   class TypeIDTable : boost::noncopyable
@@ -66,8 +67,8 @@ namespace Utility
       {
         if (iter->second != info)
         {
-          //TODO: improve for testing
-          //TODO: use real logger here
+          /// @todo: improve for testing
+          /// @todo: use real logger here
           std::cerr << "WARNING: duplicate type exists: " << key << "\n";
           return false;
         }

@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  EvaluateLinAlgBinary: Binary matrix operations -- add, multiply
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+///
+///@class EvaluateLinAlgBinary 
+///@brief Binary matrix operations -- add, multiply
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date June 1999
+///
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/ColumnMatrix.h>

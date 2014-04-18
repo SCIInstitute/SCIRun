@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Datatypes/Legacy/Field/VFDataT.h
 
 #include <Core/Datatypes/Legacy/Field/VFData.h>
 
@@ -179,8 +180,8 @@ VFData* CreateVFData(Array3<type>& fdata,std::vector<type>& efdata, std::vector<
 
 namespace SCIRun {
 
-//! Implementation layer of the functions we actually need. These classes are
-//! defined here to prevent overload of the header files:
+/// Implementation layer of the functions we actually need. These classes are
+/// defined here to prevent overload of the header files:
 
 template<class FDATA, class EFDATA, class HFDATA>
 class VFDataT : public VFData {

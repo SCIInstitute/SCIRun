@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Modules/String/CreatString.h
+
 #ifndef MODULES_STRING_CREATE_STRING_H
 #define MODULES_STRING_CREATE_STRING_H
 

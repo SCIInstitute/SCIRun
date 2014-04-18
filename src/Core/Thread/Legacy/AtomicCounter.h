@@ -29,13 +29,13 @@
 
 
 /*
- *  AtomicCounter: Thread-safe integer variable
+ *@file  AtomicCounter.h
+ *@brief Thread-safe integer variable
  *
- *  Written by:
- *   Author: Steve Parker
+ *   @author Steve Parker
  *   Department of Computer Science
  *   University of Utah
- *   Date: June 1997
+ *   @date  June 1997
  *
  */
 
@@ -49,14 +49,14 @@ namespace SCIRun {
 class AtomicCounter_private;
 
 /**************************************
- 
- CLASS
+
+@class
  AtomicCounter
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Provides a simple atomic counter.  This will work just like an
  integer, but guarantees atomicty of the ++ and -- operators.
  Despite their convenience, you do not want to make a large number
@@ -70,50 +70,50 @@ class AtomicCounter_private;
 class SCISHARE AtomicCounter {
 public:
   //////////
-  // Create an atomic counter with an unspecified initial value.
-  // <tt>name</tt> should be a static string which describes the
-  // primitive for debugging purposes.
+  /// Create an atomic counter with an unspecified initial value.
+  /// <tt>name</tt> should be a static string which describes the
+  /// primitive for debugging purposes.
   AtomicCounter(const char* name);
 
   //////////
-  // Create an atomic counter with an initial value.  name should
-  // be a static string which describes the primitive for debugging
-  // purposes.
+  /// Create an atomic counter with an initial value.  name should
+  /// be a static string which describes the primitive for debugging
+  /// purposes.
   AtomicCounter(const char* name, int value);
 
   //////////
-  // Destroy the atomic counter.
+  /// Destroy the atomic counter.
   ~AtomicCounter();
 
   //////////
-  // Allows the atomic counter to be used in expressions like
-  // a normal integer.  Note that multiple calls to this function
-  // may return different values if other threads are manipulating
-  // the counter.
+  /// Allows the atomic counter to be used in expressions like
+  /// a normal integer.  Note that multiple calls to this function
+  /// may return different values if other threads are manipulating
+  /// the counter.
   operator int() const;
 
   //////////
-  // Increment the counter and return the new value.
-  // This does not return AtomicCounter& like a normal ++
-  // operator would, because it would destroy atomicity
+  /// Increment the counter and return the new value.
+  /// This does not return AtomicCounter& like a normal ++
+  /// operator would, because it would destroy atomicity
   int operator++();
     
   //////////
-  //	Increment the counter and return the old value
+  ///	Increment the counter and return the old value
   int operator++(int);
 
   //////////
-  // Decrement the counter and return the new value
-  // This does not return AtomicCounter& like a normal --
-  // operator would, because it would destroy atomicity
+  /// Decrement the counter and return the new value
+  /// This does not return AtomicCounter& like a normal --
+  /// operator would, because it would destroy atomicity
   int operator--();
     
   //////////
-  // Decrement the counter and return the old value
+  /// Decrement the counter and return the old value
   int operator--(int);
 
   //////////
-  // Set the counter to a new value
+  /// Set the counter to a new value
   void set(int);
 
 private:

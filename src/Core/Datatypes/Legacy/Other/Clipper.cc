@@ -26,10 +26,11 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-//    File   : BoxClipper.cc
-//    Author : Michael Callahan
-//    Date   : September 2001
+/*
+ *   @file    BoxClipper.cc
+ *   @author  Michael Callahan
+ *   @date    September 2001
+ */
 
 #include <Core/Geometry/Transform.h>
 #include <Core/Geometry/Point.h>

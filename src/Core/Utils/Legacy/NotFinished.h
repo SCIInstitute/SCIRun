@@ -29,13 +29,14 @@
 
 
 /*
- *  NotFinished.h:  Consistent way to keep track of holes in the code...
+ *@file  NotFinished.h
+ *@brief Consistent way to keep track of holes in the code...
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   March 1994
+ *@date  March 1994
  *
  */
 

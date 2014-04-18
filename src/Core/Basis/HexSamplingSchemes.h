@@ -26,6 +26,10 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Basis/ HexSamplingSchemes.h 
+///  PntSamplingSchemes.h PrismSamplingShemes.h QuadSamplingSchemes.h 
+///  TriSamplingSchemes
+
 #ifndef CORE_BASIS_HEXSAMPLINGSCHEMES_H
 #define CORE_BASIS_HEXSAMPLINGSCHEMES_H 1
 

@@ -48,7 +48,7 @@ TEST(ParallelTests, CanDoubleNumberInParallel)
   EXPECT_EQ(expectedSum * 2, std::accumulate(nums.begin(), nums.end(), 0, std::plus<int>()));
 }
 
-//TODO
+/// @todo
 #if 0
 TEST(ParallelTests, CanDoubleNumberWithParallelForEach)
 {

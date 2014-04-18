@@ -27,15 +27,14 @@
 */
 
 
-/*
- *
- *  Written by:
- *   Marty Cole
- *   Department of Computer Science
- *   University of Utah
- *   January 2001
- *
- */
+///
+///@author
+///      Marty Cole
+///      Department of Computer Science
+///      University of Utah
+///@date January 2001
+///
+///
 
 #ifndef Datatypes_FieldIndex_h
 #define Datatypes_FieldIndex_h
@@ -47,7 +46,7 @@
 
 namespace SCIRun {
 
-//! Base type for index types.
+/// Base type for index types.
 template <class T>
 class FieldIndexBase {
 public:
@@ -56,7 +55,7 @@ public:
   FieldIndexBase(T i) :
     index_(i) {}
 
-  //! Required interface for an Index.
+  /// Required interface for an Index.
   operator T const &() const { return index_; }
   
   std::ostream& str_render(std::ostream& os) const {
@@ -68,7 +67,7 @@ public:
 };
 
 
-//! Distinct type for node index.
+/// Distinct type for node index.
 template <class T>
 struct NodeIndex : public FieldIndexBase<T> {
   NodeIndex() :
@@ -77,7 +76,7 @@ struct NodeIndex : public FieldIndexBase<T> {
     FieldIndexBase<T>(index) {}
 };
 
-//! Distinct type for edge index.
+/// Distinct type for edge index.
 template <class T>
 struct EdgeIndex : public FieldIndexBase<T> {
   EdgeIndex() :
@@ -86,7 +85,7 @@ struct EdgeIndex : public FieldIndexBase<T> {
     FieldIndexBase<T>(index) {}
 };
 
-//! Distinct type for face index.
+/// Distinct type for face index.
 template <class T>
 struct FaceIndex : public FieldIndexBase<T> {
   FaceIndex() :
@@ -95,7 +94,7 @@ struct FaceIndex : public FieldIndexBase<T> {
     FieldIndexBase<T>(index) {}
 };
 
-//! Distinct type for cell index.
+/// Distinct type for cell index.
 template <class T>
 struct CellIndex : public FieldIndexBase<T> {
   CellIndex() :

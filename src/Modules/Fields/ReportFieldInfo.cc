@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Fields/ReportFieldInfo.cc
 
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Scalar.h>
@@ -57,7 +58,7 @@ void ReportFieldInfoModule::execute()
   get_state()->setTransientValue("ReportedInfo", output.getTransient());
 
   auto info = optional_any_cast_or_default<SCIRun::Core::Algorithms::Fields::ReportFieldInfoAlgorithm::Outputs>(output.getTransient());
-  //TODO: requires knowledge of algorithm type
+  /// @todo: requires knowledge of algorithm type
   sendOutput(FieldType, boost::make_shared<String>(info.type));
   sendOutput(NumNodes, boost::make_shared<Int32>(info.numnodes_));
   sendOutput(NumElements, boost::make_shared<Int32>(info.numelements_));

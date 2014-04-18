@@ -28,16 +28,17 @@
 
 
 
-/*
- *  Thread_pthreads.cc: Posix threads implementation of the thread library
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file  Thread_pthreads.cc
+///@brief Posix threads implementation of the thread library
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  June 1997
+///
+
 #include <algorithm>
 #include <cstring>
 #include <errno.h>
@@ -661,16 +662,16 @@ handle_siguser2(int)
     }
   }
 
-  //! Make sure the exiting information is stored on the local stack
-  //! In case we cannot access the structures any more
+  /// Make sure the exiting information is stored on the local stack
+  /// In case we cannot access the structures any more
   //  bool exiting = self->priv_->exiting;
   self->priv_->is_blocked = true;
   self->priv_->block_sema.down();
   
-  //   //! Make sure the thread will not revive
+  //   /// Make sure the thread will not revive
   //   if (exiting) for (;;) sched_yield();
   
-  //! If not exiting tell we are running again
+  /// If not exiting tell we are running again
   self->priv_->is_blocked = false;
 }
 

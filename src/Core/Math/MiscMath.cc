@@ -28,16 +28,16 @@
 
 
 
-/*
- *  MiscMath.cc
- *
- *  Written by:
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *   June 2004
- *
- */
+///
+///@class MiscMath
+///
+///@author
+///       Michael Callahan
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  June 2004
+///
 
 #include <Core/Math/MiscMath.h>
 

@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Core/Datatypes/Geometry.h
 
 #ifndef CORE_DATATYPES_GEOMETRY_H
 #define CORE_DATATYPES_GEOMETRY_H 
@@ -38,8 +38,8 @@
 #include <spire/Interface.h>
 #include <Core/Datatypes/share.h>
 
-// The following include contains AbstractUniformStateItem which allows
-// us to store uniforms to be passed, at a later time, to spire.
+/// The following include contains AbstractUniformStateItem which allows
+/// us to store uniforms to be passed, at a later time, to spire.
 #include <spire/src/ShaderUniformStateManTemplates.h>
 
 

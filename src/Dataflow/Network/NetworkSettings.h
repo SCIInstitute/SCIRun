@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/NetworkSettings.h
+
 #ifndef DATAFLOW_NETWORK_NETWORK_SETTINGS_H
 #define DATAFLOW_NETWORK_NETWORK_SETTINGS_H 
 

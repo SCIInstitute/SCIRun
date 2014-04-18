@@ -36,7 +36,7 @@
 //namespace Modules {
 //namespace DataIO {
 //  
-//  // TODO: convert to ReadField once field support is in place
+//  /// @todo: convert to ReadField once field support is in place
 //  class SCISHARE ReadMeshModule : public SCIRun::Dataflow::Networks::Module,
 //    public Has1InputPort<StringPortTag>,
 //    public Has2OutputPorts<MeshPortTag, StringPortTag>

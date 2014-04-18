@@ -25,14 +25,15 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/MapFieldDataFromNodeToElem.cc
 
-//! Include the algorithm
+// Include the algorithm
 #include <Core/Algorithms/Fields/Mapping/MapFieldDataFromNodeToElem.h>
 
-//! The module class
+// The module class
 #include <Dataflow/Network/Module.h>
 
-//! We need to define the ports used
+// We need to define the ports used
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>
 
@@ -58,7 +59,7 @@ MapFieldDataFromNodeToElem::MapFieldDataFromNodeToElem(GuiContext* ctx)
   : Module("MapFieldDataFromNodeToElem", ctx, Source, "ChangeFieldData", "SCIRun"),
     method_(get_ctx()->subVar("method"))
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 
@@ -66,24 +67,24 @@ MapFieldDataFromNodeToElem::MapFieldDataFromNodeToElem(GuiContext* ctx)
 void
 MapFieldDataFromNodeToElem::execute()
 {
-  //! define input/output handles:
+  /// define input/output handles:
   FieldHandle input;
   FieldHandle output;
   
-  //! get data from ports:
+  /// get data from ports:
   if (!(get_input_handle("Field",input,true))) return;
   
   // Only do work if needed:
   if (inputs_changed_ || method_.changed() || !oport_cached("Field"))
   {
     update_state(Executing);
-    //! Set the method to use
+    /// Set the method to use
     algo_.set_option("method",method_.get());
     
-    //! Run the algorithm
+    /// Run the algorithm
     if (!(algo_.run(input,output))) return;
  
-    //! send data downstream:
+    /// send data downstream:
     send_output_handle("Field", output); 
   }
 }

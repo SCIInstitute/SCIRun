@@ -64,7 +64,7 @@ bool GetMeshNodesAlgo::run(FieldHandle& input, DenseMatrixHandle& output) const
 
   FieldInformation fi(input);
 
-  //TODO: refactor duplication
+  /// @todo: refactor duplication
   if (fi.is_regularmesh())
   {
     Point p;

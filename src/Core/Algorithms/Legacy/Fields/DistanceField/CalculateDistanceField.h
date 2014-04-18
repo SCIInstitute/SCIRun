@@ -29,14 +29,14 @@
 #ifndef CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEDISTANCEFIELD_H
 #define CORE_ALGORITHMS_FIELDS_DISTANCEFIELD_CALCULATEDISTANCEFIELD_H 1
 
-//! Datatypes that the algorithm uses
+/// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+/// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+/// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -46,7 +46,7 @@ using namespace SCIRun;
 class SCISHARE CalculateDistanceFieldAlgo : public AlgoBase 
 {
   public:
-    //! Set defaults
+    /// Set defaults
     CalculateDistanceFieldAlgo()
     {
       add_bool("truncate",false);
@@ -55,7 +55,7 @@ class SCISHARE CalculateDistanceFieldAlgo : public AlgoBase
       add_option("datatype","double","char|unsigned char|short|unsigned short|int|unsigned int|float|double");
     }
 
-    //! run the algorithm
+    /// run the algorithm
     bool run(FieldHandle input, FieldHandle object, FieldHandle& output);
     bool run(FieldHandle input, FieldHandle object, FieldHandle& distance, FieldHandle& value);
 };
