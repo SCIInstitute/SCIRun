@@ -65,7 +65,7 @@ void runTest(.../*int basis, const std::string& expectedBasisTypeTemplate, const
 
 TEST(CalculateGradientsAlgoTests, DISABLED_Foo)
 {
-  FAIL() << " @todo";
+  FAIL() << "TODO";
   runTest(-1, "NoDataBasis", "None (nodata basis)", 0);
   runTest(0, "ConstantBasis", "Cells (constant basis)", 24);
   runTest(1, "HexTrilinearLgn", "Nodes (linear basis)", 60);

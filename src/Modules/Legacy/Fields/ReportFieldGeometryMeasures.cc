@@ -28,16 +28,15 @@
 
 
 
-/**
- *@file  ReportFieldGeometryMeasures.cc 
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- */
+///
+///@file  ReportFieldGeometryMeasures.cc 
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
@@ -92,7 +91,7 @@ ReportFieldGeometryMeasures::execute()
 
   VMesh* mesh = fieldhandle->vmesh();
 
-  //! This is a hack for now, it is definitely not an optimal way
+  /// This is a hack for now, it is definitely not an optimal way
   int syncflag = 0;
   std::string simplex =simplexString_.get();
   

@@ -34,7 +34,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 
 //////////////////////////////////////////////////////////////////////////
-// TODO MORITZ
+/// @todo MORITZ
 //////////////////////////////////////////////////////////////////////////
 using namespace SCIRun::Modules::BrainStimulator;
 using namespace SCIRun::Core::Datatypes;
@@ -54,7 +54,7 @@ GenerateROIStatisticsModule::GenerateROIStatisticsModule() : Module(ModuleLookup
 
 void GenerateROIStatisticsModule::setStateDefaults()
 {
-  //TODO
+  /// @todo
 }
 
 void GenerateROIStatisticsModule::execute()

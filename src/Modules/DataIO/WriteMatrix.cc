@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Modules/DataIO/WriteMatrix.cc
 
 #include <Modules/DataIO/WriteMatrix.h>
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
@@ -45,7 +44,7 @@ WriteMatrixModule::WriteMatrixModule() : Module(ModuleLookupInfo("WriteMatrix", 
   INITIALIZE_PORT(MatrixToWrite);
 }
 
-//TODO: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
+/// @todo: unit test. Requires algorithm injection/factory for mocking, to be able to isolate the "optional file argument" part.
 void WriteMatrixModule::execute()
 {
   auto matrix = getRequiredInput(MatrixToWrite);

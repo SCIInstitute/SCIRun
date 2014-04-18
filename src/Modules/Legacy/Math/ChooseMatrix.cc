@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  ChooseMatrix.cc
- *@brief Choose one input field to be passed downstream
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date  November 1994
- *
- */
+///
+///@file  ChooseMatrix.cc
+///@brief Choose one input field to be passed downstream
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  November 1994
+///
 
 #include <Dataflow/Network/ChooseModule.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>

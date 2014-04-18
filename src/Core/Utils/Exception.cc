@@ -26,8 +26,7 @@
  DEALINGS IN THE SOFTWARE.
  */
 
-/// @todo Documentation Core/Utils/Exception.cc/.h FileUtil.h 
-/// Lockable.h
+/// @todo Documentation Core/Utils/Exception.cc 
 
 #include <Core/Utils/Exception.h>
 #include <boost/regex.hpp>

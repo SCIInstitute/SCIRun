@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ConvertQuadSurfToTriSurf.h
 
-///TODO Documentation
 #ifndef MODULES_LEGACY_FIELDS_ConvertQuadSurfToTriSurf_H__
 #define MODULES_LEGACY_FIELDS_ConvertQuadSurfToTriSurf_H__
 

@@ -25,24 +25,25 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/DataIO/WriteField.cc
 
 
-/**
- *@file  WriteField.cc
- *@brief Save persistent representation of a field to a file
- *
- *@author
- *   Elisha R. Hughes
- *   CVRTI
- *   University of Utah
- *  based on:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- *@date November 2004
- */
+///
+///@file  WriteField.cc
+///@brief Save persistent representation of a field to a file
+///
+///@author
+///   Elisha R. Hughes
+///   CVRTI
+///   University of Utah
+///  based on:
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///   July 1994
+///
+///@date November 2004
+///
 
 #include <Modules/DataIO/WriteField.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>

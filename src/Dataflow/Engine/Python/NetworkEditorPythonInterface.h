@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Python/NetworkEditorPythonInterface.cc
 
-///TODO Documentation
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONINTERFACE_H
 
@@ -89,7 +89,7 @@ namespace SCIRun
     virtual size_t size() const = 0;
   };
 
-  //TODO idea: write addmodule.ShowMesh in python
+  /// @todo idea: write addmodule.ShowMesh in python
   class SCISHARE AddModule
   {
   public:

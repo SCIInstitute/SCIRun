@@ -26,17 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@class EvaluateLinAlgUnary
- *@brief Unary matrix operations -- just transpose for now
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date  June 1999
- *
- */
+///
+///@class EvaluateLinAlgUnary
+///@brief Unary matrix operations -- just transpose for now
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  June 1999
+///
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>

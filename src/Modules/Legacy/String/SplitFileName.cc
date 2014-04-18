@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@file  SplitFileName.cc
- *
- *@author
- *   jeroen
- *
- *   TODAY'S DATE HERE
- *
- */
+/// @todo Documentation Modules/Legacy/String/SplitFileName
+///
+///@file  SplitFileName.cc
+///
+///@author
+///   jeroen
+///
+///   TODAY'S DATE HERE
+///
 
 #include <Dataflow/Network/Module.h>
 

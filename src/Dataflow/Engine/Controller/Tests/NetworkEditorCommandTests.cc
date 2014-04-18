@@ -58,7 +58,7 @@ protected:
   SerialNetworkExecutorHandle null_;
 };
 
-//TODO: don't need these yet, i'm using a simpler serialization-based undo/redo stack.
+/// @todo: don't need these yet, i'm using a simpler serialization-based undo/redo stack.
 #if 0
 TEST_F(NetworkEditorCommandTests, ModuleAddCommandAddsAModule)
 {

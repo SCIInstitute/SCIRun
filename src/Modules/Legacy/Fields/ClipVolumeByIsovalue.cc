@@ -26,18 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@file  ClipVolumeByIsovalue.cc
- *@brief Clip out parts of a field.
- *
- *@author
- *   Allen R. Sanderson
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- */
+///
+///@file  ClipVolumeByIsovalue.cc
+///@brief Clip out parts of a field.
+///
+///@author
+///   Allen R. Sanderson
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 
 #include <Dataflow/Network/Module.h>

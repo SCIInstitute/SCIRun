@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Python/NetworkEditorPythonAPI.cc
 
-///TODO Documentation
 #include <Python.h>
 #include <iostream>
 #include <Dataflow/Engine/Python/NetworkEditorPythonInterface.h>
@@ -148,7 +148,7 @@ std::string NetworkEditorPythonAPI::quit(bool force)
   }
 }
 
-//TODO: bizarre reason for this return type and casting. but it works.
+/// @todo: bizarre reason for this return type and casting. but it works.
 boost::shared_ptr<PyPort> SCIRun::operator>>(const PyPort& from, const PyPort& to)
 {
   from.connect(to);

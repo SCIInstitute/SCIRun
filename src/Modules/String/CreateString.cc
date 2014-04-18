@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Modules/String/CreateString.cc
+/// @todo Documentation Modules/String/CreateString.cc
 
 #include <iostream>
 #include <Modules/String/CreateString.h>

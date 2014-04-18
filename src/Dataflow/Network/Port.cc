@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/Port.cc
+
 #include <iostream>
 #include <boost/foreach.hpp>
 #include <Dataflow/Network/Port.h>
@@ -62,7 +64,7 @@ void Port::detach(Connection* conn)
   auto pos = std::find(connections_.begin(), connections_.end(), conn);
   if (pos == connections_.end())
   {
-    //TODO: use real logger here
+    /// @todo: use real logger here
     std::cerr << "Port::detach: Connection not found";
   }
   connections_.erase(pos);

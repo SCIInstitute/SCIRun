@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Dataflow/Network/ModuleInterface.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_INTERFACE_H
 #define DATAFLOW_NETWORK_MODULE_INTERFACE_H 
@@ -47,7 +46,7 @@ namespace Networks {
   public:
     virtual ~ModuleInfoProvider() {}
 
-    //TODO: kind of ridiculous interface/duplication. Should pull out a subinterface for "PortView" and just return one of those for input/output
+    /// @todo: kind of ridiculous interface/duplication. Should pull out a subinterface for "PortView" and just return one of those for input/output
     virtual bool hasOutputPort(const PortId& id) const = 0;
     virtual OutputPortHandle getOutputPort(const PortId& id) const = 0;
     virtual std::vector<OutputPortHandle> findOutputPortsWithName(const std::string& name) const = 0;
@@ -78,7 +77,7 @@ namespace Networks {
   
   typedef boost::function<void(bool)> UiToggleFunc;
 
-  //TODO: interface is getting bloated, segregate it.
+  /// @todo: interface is getting bloated, segregate it.
   class SCISHARE ModuleInterface : public ModuleInfoProvider, public ModuleDisplayInterface, public ExecutableObject, public Core::Algorithms::AlgorithmCollaborator
   {
   public:
@@ -98,7 +97,7 @@ namespace Networks {
     virtual ExecutionState executionState() const = 0;
     virtual void setExecutionState(ExecutionState state) = 0;
 
-    //TODO for deserialization
+    /// @todo for deserialization
     virtual void set_id(const std::string& id) = 0;
     virtual void set_state(ModuleStateHandle state) = 0;
 
@@ -109,20 +108,20 @@ namespace Networks {
     virtual void setLogger(SCIRun::Core::Logging::LoggerHandle log) = 0;
     virtual SCIRun::Core::Logging::LoggerHandle getLogger() const = 0;
     
-    //TODO functions
+    /// @todo functions
     virtual SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc getUpdaterFunc() const = 0;
     virtual void setUpdaterFunc(SCIRun::Core::Algorithms::AlgorithmStatusReporter::UpdaterFunc func) = 0;
     virtual void setUiToggleFunc(UiToggleFunc func) = 0;
 
-    // TODO: name too clunky.
+    /// @todo: name too clunky.
     virtual void preExecutionInitialization() {}
 
-    // TODO: name too clunky.
+    /// @todo: name too clunky.
     /// Called before the module is to be destroyed. More importantly, called
     /// before the UI widget is to be destroyed.
     virtual void preDestruction() {}
 
-    //TODO:
+    /// @todo:
     // need to hook up input ports for new data coming in, and output ports for cached state.
     virtual bool needToExecute() const = 0;
 

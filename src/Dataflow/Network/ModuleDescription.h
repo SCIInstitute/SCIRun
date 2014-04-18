@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Dataflow/Network/ModuleDescription.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_DESCRIPTION_H
 #define DATAFLOW_NETWORK_MODULE_DESCRIPTION_H 
@@ -50,7 +49,7 @@ namespace Networks {
       //std::cout << "PortId(" << num << "," << n << "," << dyn << ")" << std::endl;
     }
     std::string name;
-    size_t id; //TODO: need smart way to set
+    size_t id; /// @todo: need smart way to set
     std::string toString() const;
   };
 

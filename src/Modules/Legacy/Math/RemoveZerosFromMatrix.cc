@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Modules/Legacy/Math/RemoveZerosFromMatrix.cc
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/MatrixPort.h>

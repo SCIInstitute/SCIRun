@@ -25,7 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-/// @todo Documentation
+/// @todo Documentation Core/Datatypes/Legacy/Matrix/DenseMatrixFunctions.cc
+
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Util/FancyAssert.h>
 

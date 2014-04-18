@@ -27,16 +27,15 @@
 */
 
 
-/**
- *@file  ReportColumnMatrixMisfit.cc
- *@brief Compute and visualize error between two vectors
- *
- *@author
- *   David Weinstein
- *   University of Utah
- *@date  June 1999
- *
- */
+///
+///@file  ReportColumnMatrixMisfit.cc
+///@brief Compute and visualize error between two vectors
+///
+///@author
+///   David Weinstein
+///   University of Utah
+///@date  June 1999
+///
 
 
 

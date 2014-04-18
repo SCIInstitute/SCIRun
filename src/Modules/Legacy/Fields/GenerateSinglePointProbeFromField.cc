@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/GenerateSinglePointProbeFromField.cc
 
-///TODO Documentation
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/DenseMatrix.h>

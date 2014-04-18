@@ -26,22 +26,19 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date   July 1994
- *
- */
+/// 
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date   July 1994
+/// 
 
+///@details
+///  Limitations:
+///    Uses .tcl file with "filename" and "filetype"
+///    Input port must be of type SimpleIPort
 
-/**@details
- * Limitations:
- *   Uses .tcl file with "filename" and "filetype"
- *   Input port must be of type SimpleIPort
- */
 
 #include <Dataflow/GuiInterface/GuiVar.h>
 

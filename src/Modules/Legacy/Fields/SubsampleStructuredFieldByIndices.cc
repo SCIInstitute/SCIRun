@@ -26,14 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *    @file    SubsampleStructuredFieldByIndices.h
- *    @author  Michael Callahan &&
- *             Allen Sanderson
- *             SCI Institute
- *             University of Utah
- *    @date    March 2006
- */
+///
+///    @file    SubsampleStructuredFieldByIndices.h
+///    @author  Michael Callahan &&
+///             Allen Sanderson
+///             SCI Institute
+///             University of Utah
+///    @date    March 2006
+///
 
 #include <Core/Datatypes/DenseMatrix.h>
 

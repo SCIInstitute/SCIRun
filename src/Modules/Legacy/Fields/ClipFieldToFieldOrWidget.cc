@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  ClipFieldToFieldOrWidget.cc
- *@brief Rotate and flip field to get it into "standard" view
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- */
+///
+///@file  ClipFieldToFieldOrWidget.cc
+///@brief Rotate and flip field to get it into "standard" view
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Clipper.h>

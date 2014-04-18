@@ -44,11 +44,11 @@ using namespace SCIRun::TestUtils;
 TEST(SetFieldNodesAlgoTests, DISABLED_Foo)
 {
   SetMeshNodesAlgo algo;
-  FAIL() << " @todo"; 
+  FAIL() << "TODO"; 
 }
 
 TEST(GetFieldNodesAlgoTests, DISABLED_Foo)
 {
   GetMeshNodesAlgo algo;
-  FAIL() << " @todo"; 
+  FAIL() << "TODO"; 
 }

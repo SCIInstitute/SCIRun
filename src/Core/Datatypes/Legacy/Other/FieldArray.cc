@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/// @todo Documentation Core/Datatypes/Legacy/Other/ FieldArray.cc/.h
+/// @todo Documentation Core/Datatypes/Legacy/Other/FieldArray.cc
 
 #include <Core/Datatypes/FieldArray.h>
 

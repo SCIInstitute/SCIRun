@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  CreateGeometricTransform.cc
- *@breif Build a 4x4 geometric transformation matrix
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date  March 1999
- *
- */
+///
+///@file  CreateGeometricTransform.cc
+///@brief Build a 4x4 geometric transformation matrix
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  March 1999
+///
 
 #include <Dataflow/Network/Ports/MatrixPort.h>
 #include <Dataflow/Network/Ports/GeometryPort.h>

@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Scheduler/BoostGraphSerialScheduler.h
 
-///TODO Documentation
 #ifndef ENGINE_SCHEDULER_SERIALSCHEDULER_H
 #define ENGINE_SCHEDULER_SERIALSCHEDULER_H
 

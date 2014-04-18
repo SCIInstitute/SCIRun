@@ -81,7 +81,7 @@ namespace
 
 TEST(ConvertMeshToTriSurfAlgoTests, DISABLED_Foo)
 {
-  FAIL() << " @todo";
+  FAIL() << "TODO";
   /*
   EXPECT_EQ("GenericField<LatVolMesh<HexTrilinearLgn<Point> > ,NoDataBasis<double> ,FData3d<double,LatVolMesh<HexTrilinearLgn<Point> > > > ", info.type);
   EXPECT_EQ(0, info.dataMin);

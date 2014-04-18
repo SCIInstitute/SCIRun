@@ -42,5 +42,5 @@ using namespace SCIRun::TestUtils;
 TEST(AlignMeshBoundingBoxesAlgoTests, DISABLED_Foo)
 {
   AlignMeshBoundingBoxesAlgo algo;
-  FAIL() << " @todo"; 
+  FAIL() << "TODO"; 
 }

@@ -25,8 +25,7 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
  */
-
-/// @todo Documentation
+/// @todo Documentation Core/Utils/TypeIDTable.h
 
 #ifndef CORE_UTILS_TYPEIDTABLE_H
 #define CORE_UTILS_TYPEIDTABLE_H

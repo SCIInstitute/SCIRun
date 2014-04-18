@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/GenerateMedialAxisPoints.cc
 
-///TODO Documentation
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>
 #include <Dataflow/Network/Ports/FieldPort.h>

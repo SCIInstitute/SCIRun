@@ -25,7 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-///TODO Documentation
+/// @todo Documentation Modules/Legacy/Fields/ConvertFieldBasis.cc
+
 // Include the algorithm
 #include <Core/Algorithms/Fields/FieldData/ConvertFieldBasisType.h>
 
@@ -63,7 +64,7 @@ ConvertFieldBasis::ConvertFieldBasis(GuiContext* ctx)
     inputbasis_(get_ctx()->subVar("inputdataat", false), "---"),
     fldname_(get_ctx()->subVar("fldname", false), "---")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 
@@ -77,7 +78,7 @@ ConvertFieldBasis::~ConvertFieldBasis()
 void
 ConvertFieldBasis::execute()
 {
-  //! Get the input field handle from the port.
+  /// Get the input field handle from the port.
   FieldHandle input_field_handle;
   get_input_handle( "Input",  input_field_handle, true );
 

@@ -26,10 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *TODO @todo Documentation Dataflow/Engine/Python/ NetworkEditorPythonAPI.cc/.h,
- *  NetworkEditorPythoninterFace.h, SciRunPythonModule.h 
- */
+/// @todo Documentation Dataflow/Engine/Python/NetworkEditorPythonAPI.cc
 
 #ifndef ENGINE_PYTHON_NETWORKEDITORPYTHONAPI_H
 #define ENGINE_PYTHON_NETWORKEDITORPYTHONAPI_H
@@ -55,7 +52,7 @@ namespace SCIRun {
     static std::string quit(bool force);
 
     static void setImpl(boost::shared_ptr<NetworkEditorPythonInterface> impl);
-    //TODO: smelly!
+    /// @todo: smelly!
     static void setExecutionContext(Dataflow::Networks::ExecutableLookup* lookup);
   private:
     NetworkEditorPythonAPI();

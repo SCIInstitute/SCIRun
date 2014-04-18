@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Utils/Legacy/Debug.h
 
 #ifndef CORE_UTIL_DEBUG_H
 #define CORE_UTIL_DEBUG_H 1

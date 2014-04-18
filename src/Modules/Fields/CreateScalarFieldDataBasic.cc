@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Fields/CreateScalarFieldDataBasic.cc
 
 #include <Modules/Fields/CreateScalarFieldDataBasic.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
@@ -52,7 +53,7 @@ void CreateScalarFieldDataBasic::setStateDefaults()
   state->setValue(ValueFunc, std::string());
 }
 
-//TODO: expand this module and then move it to test module category. then it can be used with python to regression test many combinations of latvol visualization!
+/// @todo: expand this module and then move it to test module category. then it can be used with python to regression test many combinations of latvol visualization!
 void CreateScalarFieldDataBasic::execute()
 {
   auto field = getRequiredInput(InputField);

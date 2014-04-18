@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Modules/Math/AppendMatrix.h
 
 #ifndef MODULES_MATH_APPENDMATRIX_H
 #define MODULES_MATH_APPENDMATRIX_H

@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/SetFieldNodes.cc
 
-///TODO Documentation
 #include <Modules/Legacy/Fields/SetFieldNodes.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>

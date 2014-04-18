@@ -29,15 +29,13 @@
 #ifndef MODULES_DATAIO_GENERIC_WRITER_H
 #define MODULES_DATAIO_GENERIC_WRITER_H
 
-/**
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@author
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///@date  July 1994
+///
 
 #include <boost/filesystem.hpp>
 #include <Dataflow/Network/Module.h>
@@ -73,7 +71,7 @@ protected:
   //GuiInt			confirm_once_;
   bool        exporting_;
 
-  virtual bool overwrite() { return true; } //TODO
+  virtual bool overwrite() { return true; } /// @todo
   virtual bool call_exporter(const std::string &filename);
 };
 
@@ -120,7 +118,7 @@ void
 GenericWriter<HType, PortTag>::execute()
 {
   // If there is an optional input string set the filename to it in the GUI.
-  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+  /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
     filename_ = get_state()->getValue(stateFilename_).getString();

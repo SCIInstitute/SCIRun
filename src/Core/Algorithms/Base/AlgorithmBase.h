@@ -176,7 +176,7 @@ namespace Algorithms {
     boost::shared_ptr<T> get(const Name& name) const
     {
       auto it = data_.find(name);
-      //TODO: log incorrect type if present but wrong type
+      /// @todo: log incorrect type if present but wrong type
       return it == data_.end() ? boost::shared_ptr<T>() : boost::dynamic_pointer_cast<T>(boost::get<Datatypes::DatatypeHandle>(it->second));
     }
 
@@ -184,7 +184,7 @@ namespace Algorithms {
     std::vector<boost::shared_ptr<T>> getList(const Name& name) const
     {
       auto it = data_.find(name);
-      //TODO: log incorrect type if present but wrong type
+      /// @todo: log incorrect type if present but wrong type
       return it == data_.end() ? std::vector<boost::shared_ptr<T>>() : downcast_range<T>(boost::get<std::vector<Datatypes::DatatypeHandle>>(it->second));
     }
 

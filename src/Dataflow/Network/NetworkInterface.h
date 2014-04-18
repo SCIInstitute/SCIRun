@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/NetworkInterface.h
+
 
 #ifndef DATAFLOW_NETWORK_NETWORK_INTERFACE_H
 #define DATAFLOW_NETWORK_NETWORK_INTERFACE_H 
@@ -42,7 +44,7 @@ namespace SCIRun {
 namespace Dataflow {
 namespace Networks {
 
-  //TODO: hacky duplication...
+  /// @todo: hacky duplication...
   class SCISHARE ExecutableLookup
   {
   public:
@@ -57,7 +59,7 @@ namespace Networks {
   {
     ConnectionOutputPort(ModuleHandle m, const PortId& p) : ModulePortIdPair(m,p) {}
 
-    //TODO: only used in test code
+    /// @todo: only used in test code
     ConnectionOutputPort(ModuleHandle m, size_t index);
   };
   
@@ -65,7 +67,7 @@ namespace Networks {
   {
     ConnectionInputPort(ModuleHandle m,  const PortId& p) : ModulePortIdPair(m,p) {}
 
-    //TODO: only used in test code
+    /// @todo: only used in test code
     ConnectionInputPort(ModuleHandle m, size_t index);
   };
 

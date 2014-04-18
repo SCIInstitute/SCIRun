@@ -25,8 +25,7 @@
   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
   DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Modules/Legacy/DataIO/WriteFieldArray.cc
 
 #include <Dataflow/Network/Ports/FieldArrayPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>

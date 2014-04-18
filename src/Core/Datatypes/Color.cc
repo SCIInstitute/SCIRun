@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+///@todo Documentation Core/Datatypes/Color.cc
+
 #include <sstream>
 #include <Core/Datatypes/Color.h>
 #include <boost/regex.hpp>

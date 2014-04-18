@@ -26,17 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@class SetFieldOrMeshStringProperty
- *@brief Set a property for a Field (or its Mesh)
- *
- *@author
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *@date   June 1999
- *
- */
+///
+///@class SetFieldOrMeshStringProperty
+///@brief Set a property for a Field (or its Mesh)
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date   June 1999
+///
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Network/Module.h>

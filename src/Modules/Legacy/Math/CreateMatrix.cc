@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Modules/Legacy/Math/CreateMatrix.cc
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Datatypes/Matrix.h>
@@ -98,7 +97,7 @@ CreateMatrix::execute()
   
   double *ptr = mat->get_data_pointer();
  
-  //TODO: quick bug fix, this module is due for rewrite.
+  /// @todo: quick bug fix, this module is due for rewrite.
   for (index_type p = 0; p < nums.size(); p++)
   { 
     ptr[p] = nums[p];

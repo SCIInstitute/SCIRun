@@ -27,16 +27,15 @@
 */
 
 
-/**
- *@file  GeneratePointSamplesFromFieldOrWidget.cc
- *@brief From a mesh, seed some number of dipoles
- *
- *@author
- *   David Weinstein
- *   University of Utah
- *@date  October 2000
- *
- */
+///
+///@file  GeneratePointSamplesFromFieldOrWidget.cc
+///@brief From a mesh, seed some number of dipoles
+///
+///@author
+///   David Weinstein
+///   University of Utah
+///@date  October 2000
+///
  
 #include <Core/Algorithms/Fields/SampleField/GeneratePointSamplesFromField.h>
 
@@ -638,7 +637,7 @@ GeneratePointSamplesFromFieldOrWidget::execute_random(FieldHandle ifield)
 void
 GeneratePointSamplesFromFieldOrWidget::execute()
 {
-  //! Get the input field handle from the port.
+  /// Get the input field handle from the port.
   FieldHandle field_in_handle;
   get_input_handle("Field to Sample", field_in_handle, true);
 

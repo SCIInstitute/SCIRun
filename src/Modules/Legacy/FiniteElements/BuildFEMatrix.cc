@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/FiniteElements/BuildFEMatrix.cc
 
-///TODO Documentation
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>
 #include <Modules/Legacy/FiniteElements/BuildFEMatrix.h>

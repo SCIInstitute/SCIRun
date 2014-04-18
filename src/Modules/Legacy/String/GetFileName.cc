@@ -26,15 +26,14 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@file  GetFileName.cc
- *
- *@author
- *   jeroen
- *   
- *   TODAY'S DATE HERE
- *
- */
+/// @todo Documentation Modules/Legacy/String/GetFileName.
+///
+///@file  GetFileName.cc
+///
+///@author
+///   jeroen
+///   
+///   TODAY'S DATE HERE
 
 #include <Dataflow/Network/Module.h>
 #include <Dataflow/Network/Ports/StringPort.h>
@@ -108,8 +107,8 @@ GetFileName::execute()
     send_output_handle("Full Filename", handle);
   }
 
-  //! If no data or an input change recreate the field. I.e Only
-  //! execute when neeed.
+  /// If no data or an input change recreate the field. I.e Only
+  /// execute when neeed.
   if( gui_number_in_series_.changed( true ) ||
       !oport_cached("Number in Series") )
   {

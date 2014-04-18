@@ -26,15 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/**
- *@file  ComputeSVD.cc
- *
- *@author
- *   Burak Erem
- *@date  November 27, 2011
- *
- */
+///
+///@file  ComputeSVD.cc
+///
+///@author
+///   Burak Erem
+///@date  November 27, 2011
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>

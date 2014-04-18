@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Math/RemoveZeroRowsAndColumns.cc
 
-///TODO Documentation
 #include <Core/Algorithms/Math/SelectMatrix/SelectSubMatrix.h>
 #include <Core/Algorithms/Math/FindMatrix/FindMatrix.h>
 #include <Core/Algorithms/Math/MappingMatrix/ConvertMappingOrderIntoMappingMatrix.h>

@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  ReadPath.cc
- *@brief Read a persistent camera path from a file
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+/// @file  ReadPath.cc
+/// @brief Read a persistent camera path from a file
+/// 
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 1994
+/// 
 
 #include <Dataflow/Network/Ports/PathPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>

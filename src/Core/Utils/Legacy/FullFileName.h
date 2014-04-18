@@ -26,9 +26,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-/// @todo Documentation
-
+/// @todo Documentation Core/Util/Legacy/FullFileName.h
 
 #ifndef CORE_UTIL_FILENAME_H
 #define CORE_UTIL_FILENAME_H 1

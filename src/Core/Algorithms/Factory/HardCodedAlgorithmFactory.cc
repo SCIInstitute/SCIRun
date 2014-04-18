@@ -84,7 +84,7 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new ConvertMeshToTriSurfMeshAlgo);
   else if (moduleName == "AlignMeshBoundingBoxes")
     h.reset(new AlignMeshBoundingBoxesAlgo);
-  else if (moduleName == "GetFieldNodes") //TODO: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
+  else if (moduleName == "GetFieldNodes") /// @todo: interesting case of module/algo name mismatch. Could be a problem if I want to make this factory more generic
     h.reset(new GetMeshNodesAlgo);    
   else if (moduleName == "ElectrodeCoilSetup")
     h.reset(new ElectrodeCoilSetupAlgorithm);     

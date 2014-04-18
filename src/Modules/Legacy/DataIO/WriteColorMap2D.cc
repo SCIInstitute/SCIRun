@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  WriteColorMap2.cc
- *@brief Save persistent representation of a colormap to a file
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  September 2004
- *
- */
+///
+///@file  WriteColorMap2.cc
+///@brief Save persistent representation of a colormap to a file
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  September 2004
+///
 
 #include <Dataflow/Network/Ports/ColorMap2Port.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>

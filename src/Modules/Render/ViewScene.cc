@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Modules/Render/ViewScene.cc/.h
+/// @todo Documentation Modules/Render/ViewScene.cc
 
 #include <Modules/Render/ViewScene.h>
 #include <Core/Datatypes/String.h>
@@ -59,7 +59,7 @@ void ViewScene::setStateDefaults()
 
 void ViewScene::preExecutionInitialization()
 {
-  // TODO: Detect if we are running headless; if so, cerate a system-specifc
+  /// @todo: Detect if we are running headless; if so, cerate a system-specifc
   //       OpenGL context *and* spire. Otherwise, just lookup via transient
   //       values.
 }

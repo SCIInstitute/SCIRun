@@ -25,8 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
-///TODO Documentation
+/// @todo Documentation Modules/Basic/SendScalar.h
 
 #ifndef MODULES_BASIC_SEND_SCALAR_H
 #define MODULES_BASIC_SEND_SCALAR_H

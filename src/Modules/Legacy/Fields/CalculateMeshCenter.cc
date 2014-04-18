@@ -23,8 +23,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+/// @todo Documentation Modules/Legacy/Fields/CalculateMeshCenter.cc
 
-///TODO Documentation
 #include <Core/Algorithms/Fields/MeshDerivatives/CalculateMeshCenter.h>
 
 #include <Core/Datatypes/Field.h>

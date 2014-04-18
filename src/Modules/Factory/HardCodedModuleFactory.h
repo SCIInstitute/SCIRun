@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Modules/Factory/HardCodedModuleFactory.h
 
 #ifndef HARD_CODED_MODULE_FACTORY_H
 #define HARD_CODED_MODULE_FACTORY_H
@@ -49,7 +50,6 @@ namespace SCIRun {
       private:
         SCIRun::Dataflow::Networks::ModuleStateFactoryHandle stateFactory_;
         boost::shared_ptr<class HardCodedModuleFactoryImpl> impl_;
-///TODO Documentation
       };
     }
   }

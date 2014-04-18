@@ -28,17 +28,16 @@
 
 
 
-/**
- *@file  GenerateLinearSegments.cc
- *@brief Unfinished modules
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- */
+///
+///@file  GenerateLinearSegments.cc
+///@brief Unfinished modules
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Mesh.h>

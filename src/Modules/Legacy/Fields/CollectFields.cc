@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/CollectFields.cc
 
-///TODO Documentation
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Thread/Mutex.h>

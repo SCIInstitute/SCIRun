@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/SetFieldDataToConstantValue.cc
 
-///TODO Documentation
 #include <Core/Algorithms/Legacy/Fields/FieldData/SetFieldDataToConstantValue.h>
 
 #include <Dataflow/Network/Module.h>

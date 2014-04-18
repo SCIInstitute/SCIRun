@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  ReadField.cc
- *@brief Read a persistent field from a file
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+/// @file  ReadField.cc
+/// @brief Read a persistent field from a file
+/// 
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 1994
+/// 
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>

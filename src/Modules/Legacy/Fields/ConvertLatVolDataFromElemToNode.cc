@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ConvertLatVolDataFromElemToNode.cc
 
-///TODO Documentation
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertLatVolDataFromElemToNode.h>
 
 #include <Dataflow/Network/Ports/FieldPort.h>
@@ -66,10 +66,10 @@ ConvertLatVolDataFromElemToNode::execute()
   {
     update_state(Executing);
     
-    //! Run algorithm
+    /// Run algorithm
     if(!(algo_.run(input,output))) return;
     
-    //! Send output
+    /// Send output
     send_output_handle("Node Field", output);
   }
 }

@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ClipFieldByFunction.cc
 
-///TODO Documentation
 // Include all code for the dynamic engine
 #include <Core/Datatypes/String.h>
 #include <Core/Datatypes/Matrix.h>
@@ -122,7 +122,7 @@ void ClipFieldByFunction::execute()
     int field_basis_order = field->vfield()->basis_order();
 
     ///-----------------------
-    //! Backwards compatiblity
+    /// Backwards compatiblity
     if (get_old_version() == "1.0")
     {
 //      if (field_basis_order == 0) method = "element";

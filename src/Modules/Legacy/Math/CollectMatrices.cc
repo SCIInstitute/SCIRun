@@ -26,18 +26,17 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *@cless CollectMatrices
- *@brief Matrix operations -- concatenate, replace
- *
- *@author
- *   David Weinstein &
- *   Chris Butson
- *   Department of Computer Science
- *   University of Utah
- *@date  July 2002
- *
- */
+///
+///@cless CollectMatrices
+///@brief Matrix operations -- concatenate, replace
+///
+///@author
+///   David Weinstein &
+///   Chris Butson
+///   Department of Computer Science
+///   University of Utah
+///@date  July 2002
+///
 
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
@@ -79,7 +78,7 @@ CollectMatrices::CollectMatrices(GuiContext* ctx)
 }
 
 
-//TODO: match output matrix type with input type.
+/// @todo: match output matrix type with input type.
 void
 CollectMatrices::execute()
 {

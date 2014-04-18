@@ -27,10 +27,10 @@
 */
 
 
-/**
- *@file  ChooseString.cc
- *@brief Choose one input field to be passed downstream
- */
+///
+///@file  ChooseString.cc
+///@brief Choose one input field to be passed downstream
+///
 
 #include <Dataflow/Network/ChooseModule.h>
 #include <Core/Datatypes/String.h>

@@ -26,19 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/**
- *@file  MergeFields.cc
- *@brief Insert a field into a TetVolMesh
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  January 2006
- *
- */
+///
+///@file  MergeFields.cc
+///@brief Insert a field into a TetVolMesh
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  January 2006
+///
 
 #include <Core/Util/StringUtil.h>
 #include <Core/Geometry/CompGeom.h>
@@ -270,7 +267,7 @@ MergeFields::execute()
 
             if (mindist > 1.0e-6) { points.push_back(e0 + dir * mindist); }
 
-            // TODO:  Handle falling outside of mesh better.  May not be convex.
+            /// @todo:  Handle falling outside of mesh better.  May not be convex.
             if (!tmesh->get_neighbor(neighbor, elem, minface)) { break; }
             elem = neighbor;
           }
@@ -334,7 +331,7 @@ MergeFields::execute()
             // Intersects all of the edges in the tetvol with the triangle.
             // Add each intersection between (0,1) to the results.
 
-            // TODO: We only need to test the edges that are 'close', not all
+            /// @todo: We only need to test the edges that are 'close', not all
             // of them.  Augment the locate grid and use that to speed this up.
 
             VMesh::Edge::iterator edge_iter, edge_iter_end;
@@ -460,7 +457,7 @@ MergeFields::execute()
           insertpoints.push_back(closest[0]);
           tmesh->find_closest_elem(dist,closest[1], elem_end, p[0]);
 
-          // TODO: Find closest could and will land on degeneracies meaning
+          /// @todo: Find closest could and will land on degeneracies meaning
           // that our choice of elements there is arbitrary.  Need to walk
           // along near surface elements (breadth first search) instead of
           // exact elements.

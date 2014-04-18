@@ -26,18 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-/**
- *@file  ReadColorMap2.cc
- *@brief Read a persistent colormap from a file
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  Sept 2004
- *
- */
+///
+/// @file  ReadColorMap2.cc
+/// @brief Read a persistent colormap from a file
+/// 
+/// @author
+///    Michael Callahan
+///    Department of Computer Science
+///    University of Utah
+/// @date  Sept 2004
+///
 
 #include <Dataflow/Network/Ports/ColorMap2Port.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>

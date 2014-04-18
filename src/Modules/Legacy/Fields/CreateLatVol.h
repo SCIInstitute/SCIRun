@@ -29,17 +29,16 @@
 #ifndef MODULES_LEGACY_FIELDS_CREATELATVOL_H__
 #define MODULES_LEGACY_FIELDS_CREATELATVOL_H__
 
-/**
- *@file  CreateLatVol.cc
- *@brief Make an ImageField that fits the source field.
- *
- *@author
- *   Michael Callahan
- *   Department of Computer Science
- *   University of Utah
- *@date  March 2001
- *
- */
+///
+///@file  CreateLatVol.cc
+///@brief Make an ImageField that fits the source field.
+///
+///@author
+///   Michael Callahan
+///   Department of Computer Science
+///   University of Utah
+///@date  March 2001
+///
 
 #include <Dataflow/Network/Module.h>
 #include <Modules/Legacy/Fields/share.h>

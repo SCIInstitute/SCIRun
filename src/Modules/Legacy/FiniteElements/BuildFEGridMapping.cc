@@ -26,12 +26,7 @@
   DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *  TODO @todo Documentation Modules/Legacy/FiniteElements/
- *  BuildFEGridMappin.cc, BuildFEGridMappingByDomain.cc, BuildFEMatrix.cc/.h,
- *  BuildFESurfRHS.cc, BuildFEVolRHS.cc, BuildTDCSMatrix.cc/.h,
- *  DefinePeriodicBounaries.cc
- */
+/// @todo Documentation Modules/Legacy/FiniteElements/BuildFEGridMapping.cc
 
 #include <Core/Algorithms/FiniteElements/Mapping/BuildFEGridMapping.h>
 

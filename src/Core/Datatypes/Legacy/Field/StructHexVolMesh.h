@@ -74,9 +74,9 @@ namespace SCIRun {
 template <class Basis>
 class StructHexVolMesh;
 
-//! make sure any other mesh other than the preinstantiate ones
-//! returns no virtual interface. Altering this behavior will allow
-//! for dynamically compiling the interface if needed.
+/// make sure any other mesh other than the preinstantiate ones
+/// returns no virtual interface. Altering this behavior will allow
+/// for dynamically compiling the interface if needed.
 template<class MESH>
 VMesh* CreateVStructHexVolMesh(MESH* mesh) { return (0); }
 

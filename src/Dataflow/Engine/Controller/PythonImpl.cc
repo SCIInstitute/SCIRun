@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Dataflow/Engine/Controller/PythonImpl.cc
 
-///TODO Documentation
 #ifdef BUILD_WITH_PYTHON
 
 #include <boost/range/adaptor/transformed.hpp>
@@ -86,7 +86,7 @@ namespace
     NetworkEditorController& nec_;
   };
 
-  //TODO: need to test with dynamic ports
+  /// @todo: need to test with dynamic ports
   class PyPortsImpl : public PyPorts
   {
   public:
@@ -197,7 +197,7 @@ namespace
 
         auto v = state->getValue(apn);
 
-        //TODO: extract
+        /// @todo: extract
         if ( const int* p = boost::get<int>( &v.value_ ) )
           return boost::python::object(*p);
         else if ( const std::string* p = boost::get<std::string>( &v.value_ ) )
@@ -253,7 +253,7 @@ namespace
     {
       AlgorithmParameter::Value value;
 
-      //TODO: yucky
+      /// @todo: yucky
       {
         boost::python::extract<int> e(object);
         if (e.check())
@@ -339,7 +339,7 @@ std::string PythonImpl::saveNetwork(const std::string& filename)
 {
   try
   {
-    //TODO: duplicated code from SCIRunMainWindow. Obviously belongs in a separate class.
+    /// @todo: duplicated code from SCIRunMainWindow. Obviously belongs in a separate class.
     NetworkFileHandle file = nec_.saveNetwork();
     XMLSerializer::save_xml(*file, filename, "networkFile");
     return filename + " saved.";

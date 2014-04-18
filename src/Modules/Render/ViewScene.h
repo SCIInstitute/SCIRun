@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-///TODO @todo Documentation Modules/Render/ViewScene.h/.cc
+/// @todo Documentation Modules/Render/ViewScene.h
 
 #ifndef MODULES_RENDER_VIEWSCENE_H
 #define MODULES_RENDER_VIEWSCENE_H

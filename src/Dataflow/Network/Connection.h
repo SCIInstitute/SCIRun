@@ -25,7 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-///TODO Documentation
+/// @todo Documentation Dataflow/Network/Connection.h
+
 #ifndef DATAFLOW_NETWORK_CONNECTION_H
 #define DATAFLOW_NETWORK_CONNECTION_H 
 

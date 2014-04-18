@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/Network.cc
+
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
@@ -138,7 +140,7 @@ bool Network::disconnect(const ConnectionId& id)
 
 void Network::disable_connection(const ConnectionId&)
 {
-  //TODO
+  /// @todo
 }
 
 size_t Network::nmodules() const
@@ -213,7 +215,7 @@ int Network::errorCode() const
 void Network::incrementErrorCode(const ModuleId& moduleId)
 {
   errorCode_++;
-  //TODO: store errored modules in a list or something
+  /// @todo: store errored modules in a list or something
 }
 
 NetworkGlobalSettings& Network::settings()

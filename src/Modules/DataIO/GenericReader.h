@@ -27,15 +27,13 @@
 */
 
 
-/**
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+///@author
+///   Steven G. Parker
+///   Department of Computer Science
+///   University of Utah
+///@date  July 1994
+///
 
 #ifndef MODULES_DATAIO_GENERIC_READER_H
 #define MODULES_DATAIO_GENERIC_READER_H
@@ -135,7 +133,7 @@ GenericReader<HType, PortTag>::execute()
 #endif
 
   // If there is an optional input string set the filename to it in the GUI.
-  //TODO: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
+  /// @todo: this will be a common pattern for file loading. Perhaps it will be a base class method someday...
   auto fileOption = getOptionalInput(Filename);
   if (!fileOption)
     filename_ = get_state()->getValue(SCIRun::Core::Algorithms::Variables::Filename).getString();

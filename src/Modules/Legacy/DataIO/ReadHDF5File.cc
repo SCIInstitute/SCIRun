@@ -27,16 +27,15 @@
 */
 
 
-/**
- *@file  ReadHDF5File.cc
- *
- *@author
- *   Allen Sanderson
- *   SCI Institute
- *   University of Utah
- *@date   May 2003
- *
- */
+///
+/// @file  ReadHDF5File.cc
+/// 
+/// @author
+///    Allen Sanderson
+///    SCI Institute
+///    University of Utah
+/// @date   May 2003
+/// 
 
 
 #include <sci_defs/hdf5_defs.h>
@@ -439,8 +438,8 @@ void ReadHDF5File::execute() {
 
   if( mSlabHandle.get_rep() ) {
 
-    //! The matrix is optional. If present make sure it is a nx4 matrix.
-    //! The row indices is the axis index. The column is the data.
+    /// The matrix is optional. If present make sure it is a nx4 matrix.
+    /// The row indices is the axis index. The column is the data.
     if( ( mSlabHandle->ncols() != 4) )
     {
       error( "Input slab matrix is not a nx4 matrix" );
@@ -452,8 +451,8 @@ void ReadHDF5File::execute() {
       return;
     }
 
-    //! Sanity check. Make sure the gui dimensions match the matrix
-    //! dimensions.
+    /// Sanity check. Make sure the gui dimensions match the matrix
+    /// dimensions.
     for( int ic=0; ic<mSlabHandle->nrows(); ic++ ) {
       if( gui_dims_[ic]->get() != (int) mSlabHandle->get(ic, 3) )
       {
@@ -470,7 +469,7 @@ void ReadHDF5File::execute() {
 
     bool update = false;
 
-    //! Update the slab entries.
+    /// Update the slab entries.
     for( int ic=0; ic<mSlabHandle->nrows(); ic++ ) {
 
       if( gui_starts_[ic]->get()  != (int) mSlabHandle->get(ic, 0) ||

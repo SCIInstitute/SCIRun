@@ -26,16 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-/**
- *  TODO @todo Documentation Modules/Legacy/Math AddKnownsToLinearSystem.cc/.h,
- *  AddLinkedNodesToLinearSystem.cc, AppendMatrix.cc, CreateMatrix.cc,
- *  EvaluateLinAlgGeneral.cc, RemoveZeroRowsAndColumns.cc,
- *  RemoveZerosFromMatrix.cc, ReorderMatrixByCuthillMcKee.cc,
- *  ReorderMatrixByReverseCuthillMcKee.cc, ReportMatrixColumnMeasure.cc,
- *  ReportMatrixInfo.cc, ReportMatrixRowMeasure.cc,
- *  ReportRootMeanSquareError.cc, ResizeMatrix.cc, SelectSubMatrix.cc,
- *  SolveLinearSystem.cc, SortMatrix.cc
- */
+/// @todo Documentation Modules/Legacy/Math/AddKnownsToLinearSystem.cc
+
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/Legacy/Field/Field.h>

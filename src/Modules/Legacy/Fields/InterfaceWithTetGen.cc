@@ -26,11 +26,11 @@
 //  DEALINGS IN THE SOFTWARE.
 //  
 
-/**
-    @file    InterfaceWithTetGen.cc
-    @author  Martin Cole
-    @date    Wed Mar 22 07:56:22 2006
- */
+///
+///    @file    InterfaceWithTetGen.cc
+///    @author  Martin Cole
+///    @date    Wed Mar 22 07:56:22 2006
+///
 
 #include <Core/Thread/Mutex.h>
 

@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Math/ReorderMatrixByReverseCuthillMcKee.cc
 
-///TODO Documentation
 #include <Core/Algorithms/Math/ReorderMatrix/ReorderMatrix.h>
 
 #include <Dataflow/Network/Ports/MatrixPort.h>

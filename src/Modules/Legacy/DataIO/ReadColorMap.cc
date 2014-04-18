@@ -27,17 +27,16 @@
 */
 
 
-/**
- *@file  ReadColorMap.cc
- *@brief Read a persistent colormap from a file
- *
- *@author
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *@date  July 1994
- *
- */
+///
+/// @file  ReadColorMap.cc
+/// @brief Read a persistent colormap from a file
+///
+/// @author
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+/// @date  July 1994
+/// 
 
 #include <Dataflow/Network/Ports/ColorMapPort.h>
 #include <Dataflow/Modules/DataIO/GenericReader.h>

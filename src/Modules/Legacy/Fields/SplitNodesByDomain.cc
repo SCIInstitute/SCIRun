@@ -25,8 +25,8 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/SplitNodesByDomain.cc
 
-///TODO Documentation
 #include <Core/Algorithms/Fields/DomainFields/SplitNodesByDomain.h>
 
 #include <Core/Datatypes/Field.h>
