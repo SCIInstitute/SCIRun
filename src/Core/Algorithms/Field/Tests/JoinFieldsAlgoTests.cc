@@ -61,14 +61,12 @@ protected:
     FieldInformation lfi("LatVolMesh", 1, "double");
     Point minb(-1.0, -1.0, -1.0);
     Point maxb(1.0, 1.0, 1.0);
-    MeshHandle mesh = CreateMesh(lfi,sizex, sizey, sizez, minb, maxb);
+    MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
     FieldHandle ofh = CreateField(lfi,mesh);
     ofh->vfield()->clear_all_values();
     return ofh;
   }
 };
-
-
 
 // parameters:
 // MergeNodes = Bool()
@@ -122,72 +120,79 @@ TEST_F(JoinFieldsAlgoTests, CanJoinMultipleLatVolsGeneric)
   EXPECT_EQ(914, output->vmesh()->num_nodes());
 }
 
-#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
+//#if SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 #if GTEST_HAS_COMBINE
 
-/*Get Parameterized Tests
-*/
+/*Get Parameterized Tests*/
+
 using ::testing::Bool;
 using ::testing::Values;
 using ::testing::Combine;
 
-class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, bool, double> >
+class JoinFieldsAlgoTestsParameterized : public ::testing::TestWithParam < ::std::tr1::tuple<bool, bool, bool, bool, double> >
 {
 public:
-  FieldHandle latVol1_;
-  FieldHandle latVol2_;
-
-  JoinFieldsAlgo algo_;
-  FieldList fieldList_; 
-
-  JoinFieldsAlgoTestsParameterized() 
-  {
-    latVol1_ = loadFieldFromFile(TestResources::rootDir() / "latVolWithNormData.fld");
-    SCIRun::Core::Logging::Log::get().setVerbose(true);
-  } 
-
+JoinFieldsAlgo algo_;
+FieldList input;
+FieldHandle output; 
 protected:
   virtual void SetUp()
   {
-	FieldList fl;
-	//create 2 latVol's
-	//SCIRun::Modules::Fields lv1;
-	//CreateLatVol() lv2; 
-
-	//lv1.set(lv1.XSize(2)); 
-	
-    ASSERT_TRUE(latVol1_->vmesh()->is_latvolmesh());
-    // How to set parameters on an algorithm (that come from the GUI)
-    algo_.set(algo_.MergeNodes,      ::std::tr1::get<0>(GetParam()));
-	algo_.set(algo_.MergeElems,      ::std::tr1::get<1>(GetParam()));
-    algo_.set(algo_.InputFields,     ::std::tr1::get<2>(GetParam()));
-    algo_.set(algo_.MatchNodeValues, ::std::tr1::get<3>(GetParam()));
-    algo_.set(algo_.MakeNoData,      ::std::tr1::get<4>(GetParam()));
-    algo_.set(algo_.Tolerance,       ::std::tr1::get<5>(GetParam()));
+    SCIRun::Core::Logging::Log::get().setVerbose(true);
+	// How to set parameters on an algorithm (that come from the GUI)
+    algo_.set(JoinFieldsAlgo::MergeNodes,      ::std::tr1::get<0>(GetParam()));
+	algo_.set(JoinFieldsAlgo::MergeElems,      ::std::tr1::get<1>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MatchNodeValues, ::std::tr1::get<2>(GetParam()));
+    algo_.set(JoinFieldsAlgo::MakeNoData,      ::std::tr1::get<3>(GetParam()));
+    algo_.set(JoinFieldsAlgo::Tolerance,       ::std::tr1::get<4>(GetParam()));
   }
-  virtual void TearDown()
-  {  }
 
+  FieldHandle CreateEmptyLatVol(size_type sizex = 3, size_type sizey = 4, size_type sizez = 5)
+  {
+    FieldInformation lfi("LatVolMesh", 1, "double");
+    Point minb(-1.0, -1.0, -1.0);
+    Point maxb(1.0, 1.0, 1.0);
+    MeshHandle mesh = CreateMesh(lfi, sizex, sizey, sizez, minb, maxb);
+    FieldHandle ofh = CreateField(lfi,mesh);
+    ofh->vfield()->clear_all_values();
+    return ofh;
+  }  
+  virtual void TearDown(){}
 };
 
 TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized)
 {
-  //boundary_.reset();
-  //ASSERT_TRUE(algo_.runImpl(latVol1_));
-  //ASSERT_THAT(boundary_, NotNull());
-  //EXPECT_TRUE(boundary_->vmesh()->is_quadsurfmesh());
+	input.push_back(CreateEmptyLatVol(2,3,4));
+	input.push_back(CreateEmptyLatVol(5,6,7));
+	input.push_back(CreateEmptyLatVol(8,9,10));
+
+	algo_.runImpl(input, output); 
+	
+	EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
+	
+}
+
+TEST_P(JoinFieldsAlgoTestsParameterized, JoinFieldsAlgo_Parameterized_generic)
+{
+	input.push_back(CreateEmptyLatVol(2,3,4));
+	input.push_back(CreateEmptyLatVol(5,6,7));
+	input.push_back(CreateEmptyLatVol(8,9,10));
+
+	auto outputObj = algo_.run_generic(make_input((JoinFieldsAlgo::InputFields, input)));
+	FieldHandle output = outputObj.get<Field>(Core::Algorithms::Variables::OutputField);
+	EXPECT_EQ(output->vmesh()->num_nodes(), output->vmesh()->num_nodes());
 }
 
 INSTANTIATE_TEST_CASE_P(
   JoinFieldsAlgo_Parameterized,
   JoinFieldsAlgoTestsParameterized,
-  Combine(Bool(), Bool(), Bool(), Bool(), Bool(), Values(1e-1,1e-3)) 
+  Combine(Bool(), Bool(), Bool(), Bool(), Values(1e-1,1e-3)) 
   );
 
 #else
 TEST(DummyTest, CombineIsNotSupportedOnThisPlatform){}
-//
+
 #endif 
 
-#endif
+//#endif
