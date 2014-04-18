@@ -48,8 +48,6 @@ namespace Datatypes {
     std::string value_;
   };
 
-  typedef boost::shared_ptr<String> StringHandle;
-
 }}}
 
 

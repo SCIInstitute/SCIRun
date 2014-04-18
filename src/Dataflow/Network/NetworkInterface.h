@@ -109,8 +109,10 @@ namespace Networks {
     virtual ~NetworkEditorControllerInterface() {}
     virtual NetworkHandle getNetwork() const = 0;
     virtual void setNetwork(NetworkHandle nh) = 0;
+    virtual ModuleHandle addModule(const ModuleLookupInfo& info) = 0;
+    virtual void enableSignals() = 0;
+    virtual void disableSignals() = 0;
   };
-
 
 }}}
 

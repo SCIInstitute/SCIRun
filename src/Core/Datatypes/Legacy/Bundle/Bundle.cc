@@ -29,52 +29,56 @@
 /// @todo Documentation Core/Datatypes/Legacy/Bundle/Bundle.cc
 
 #include <boost/algorithm/string.hpp>
-#include <Core/Datatypes/Bundle.h>
-#include <Core/Datatypes/MatrixTypeConverter.h>
+#include <Core/Datatypes/Legacy/Bundle/Bundle.h>
+#include <Core/Datatypes/MatrixTypeConversions.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/ColorMap.h>
+#include <Core/Datatypes/Matrix.h>
+#include <Core/Datatypes/String.h>
+#include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrix.h>
+#include <Core/Datatypes/DenseMatrix.h>
+
+#include <boost/range/algorithm/count_if.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/bind/bind.hpp>
+
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
+#include <Core/Datatypes/NrrdData.h>
+#endif
 
 using namespace SCIRun;
+using namespace SCIRun::Core::Datatypes;
 
-
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 static Persistent* make_Bundle() {
   return new Bundle;
 }
 
 PersistentTypeID Bundle::type_id("Bundle", "PropertyManager", make_Bundle);
+#endif
 
 Bundle::Bundle()
 {
-  DEBUG_CONSTRUCTOR("Bundle")   
 }
 
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 Bundle::Bundle(const Bundle& copy) :
   PropertyManager(copy),
   bundleName_(copy.bundleName_),
   bundle_(copy.bundle_),
   transposeNrrd_(copy.transposeNrrd_)
 {
-  DEBUG_CONSTRUCTOR("Bundle")   
 }
 
-Bundle::~Bundle() 
-{
-  DEBUG_DESTRUCTOR("Bundle")   
-}
+#endif
 
-Bundle* Bundle::clone() 
+Bundle* Bundle::clone() const
 {
   return(new Bundle(*this));
 }
 
-
-int Bundle::findName(std::deque<std::string> &deq, const std::string& name)
-{
-  for (unsigned int p = 0; p<deq.size(); p++)
-  {
-    if (boost::iequals(name, deq[p])) 
-      return p;
-  }
-  return(-1);
-}
+#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
 
 void Bundle::merge(LockingHandle<Bundle> C)
 {
@@ -580,3 +584,115 @@ std::string Bundle::getNrrdName(int index)
 
 
 
+#endif
+
+bool Bundle::empty() const
+{
+  return bundle_.empty();
+}
+
+size_t Bundle::size() const
+{
+  return bundle_.size();
+}
+
+void Bundle::set(const std::string& name, DatatypeHandle data)
+{
+  bundle_[name] = data;
+}
+
+DatatypeHandle Bundle::get(const std::string& name) const
+{
+  auto it = bundle_.find(name);
+  if (it != bundle_.end())
+    return it->second;
+  return DatatypeHandle();
+}
+
+//TODO: extract into teplate impl, but do it here to avoid including every type in Bundle.h
+
+FieldHandle Bundle::getField(const std::string& name) const
+{
+  return boost::dynamic_pointer_cast<Field>(get(name));
+}
+
+bool Bundle::isField(const std::string& name) const
+{
+  return getField(name) != nullptr;
+}
+
+size_t Bundle::numFields() const
+{
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isField, this, _1));
+}
+
+std::vector<FieldHandle> Bundle::getFields() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getField, this, _1)) | boost::adaptors::filtered([] (FieldHandle f) { return f != nullptr; });
+  return std::vector<FieldHandle>(range.begin(), range.end());
+}
+
+std::vector<std::string> Bundle::getFieldNames() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isField, this, _1));
+  return std::vector<std::string>(range.begin(), range.end());
+}
+
+MatrixHandle Bundle::getMatrix(const std::string& name) const
+{
+  return boost::dynamic_pointer_cast<Matrix>(get(name));
+}
+
+bool Bundle::isMatrix(const std::string& name) const
+{
+  return getMatrix(name) != nullptr;
+}
+
+size_t Bundle::numMatrices() const
+{
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isMatrix, this, _1));
+}
+
+std::vector<MatrixHandle> Bundle::getMatrices() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getMatrix, this, _1)) | boost::adaptors::filtered([] (MatrixHandle m) { return m != nullptr; });
+  return std::vector<MatrixHandle>(range.begin(), range.end());
+}
+
+std::vector<std::string> Bundle::getMatrixNames() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isMatrix, this, _1));
+  return std::vector<std::string>(range.begin(), range.end());
+}
+
+StringHandle Bundle::getString(const std::string& name) const
+{
+  return boost::dynamic_pointer_cast<String>(get(name));
+}
+
+bool Bundle::isString(const std::string& name) const
+{
+  return getString(name) != nullptr;
+}
+
+size_t Bundle::numStrings() const
+{
+  return boost::count_if(bundle_ | boost::adaptors::map_keys, boost::bind(&Bundle::isString, this, _1));
+}
+
+std::vector<StringHandle> Bundle::getStrings() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::transformed(boost::bind(&Bundle::getString, this, _1)) | boost::adaptors::filtered([] (StringHandle s) { return s != nullptr; });
+  return std::vector<StringHandle>(range.begin(), range.end());
+}
+
+std::vector<std::string> Bundle::getStringNames() const
+{
+  auto range = bundle_ | boost::adaptors::map_keys | boost::adaptors::filtered(boost::bind(&Bundle::isString, this, _1));
+  return std::vector<std::string>(range.begin(), range.end());
+}
+
+bool Bundle::remove(const std::string& name)
+{
+  return bundle_.erase(name) == 1;
+}

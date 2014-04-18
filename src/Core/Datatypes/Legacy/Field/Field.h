@@ -53,12 +53,8 @@ class SCISHARE Field : public Core::Datatypes::Datatype, public Core::Datatypes:
     /// Get pointers to associated structures
     /// mesh -> handle to mesh
     /// vmesh -> handle to virtual mesh interface
-    /// field -> handle to this object
     /// vfield -> handle to virtual field interface
     virtual MeshHandle mesh() const = 0;
-#ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
-    inline  FieldHandle field() { return (this); }
-#endif
 
     virtual VMesh* vmesh()   const = 0;
     virtual VField* vfield() const = 0;
@@ -117,6 +113,19 @@ SCISHARE FieldHandle CreateField(mesh_info_type mesh,
 
 SCISHARE FieldHandle CreateField(FieldInformation &info);
 SCISHARE FieldHandle CreateField(FieldInformation &info,MeshHandle mesh);
+
+class SCISHARE NullField : public Field
+{
+public:
+  explicit NullField(const std::string& name = "null") : Field() {}
+  virtual Field* clone() const { return 0; }
+  virtual Field* deep_clone() const { return 0; }
+  virtual MeshHandle mesh() const { return MeshHandle(); }
+  virtual VMesh* vmesh()   const { return 0; }
+  virtual VField* vfield() const { return 0; }
+  virtual int basis_order() const { return 0; }
+  virtual const TypeDescription* get_type_description(td_info_e td) const { return 0; }
+};
 
 }
 

@@ -26,41 +26,39 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_SPLITFIELDBYDOMAIN_H
-#define CORE_ALGORITHMS_FIELDS_DOMAINFIELDS_SPLITFIELDBYDOMAIN_H 1
+#ifndef MODULES_LEGACY_BUNDLE_INSERTMATRICESINTOBUNDLE_H__
+#define MODULES_LEGACY_BUNDLE_INSERTMATRICESINTOBUNDLE_H__
 
-/// Datatypes that the algorithm uses
-#include <Core/Datatypes/Mesh.h>
-#include <Core/Datatypes/Field.h>
+#include <Dataflow/Network/Module.h>
+#include <Modules/Legacy/Bundle/share.h>
 
-/// Base class for algorithm
-#include <Core/Algorithms/Util/AlgoBase.h>
+namespace SCIRun {
+  namespace Modules {
+    namespace Bundles {
 
-/// STL includes
-#include <vector>
+      class SCISHARE InsertMatricesIntoBundle : public Dataflow::Networks::Module,
+        public Has2InputPorts<BundlePortTag, DynamicPortTag<MatrixPortTag>>,
+        public Has1OutputPort<BundlePortTag>
+      {
+      public:
+        InsertMatricesIntoBundle();
+        virtual void setStateDefaults();
+        virtual void execute();
 
-/// for Windows support
-#include <Core/Algorithms/Fields/share.h>
+        INPUT_PORT(0, InputBundle, Bundle);
+        INPUT_PORT_DYNAMIC(1, InputFields, Matrix);
+        OUTPUT_PORT(0, OutputBundle, Bundle);
 
+        static Core::Algorithms::AlgorithmParameterName FieldNameList;
+        static const Core::Algorithms::AlgorithmParameterName FieldNames[];
 
-namespace SCIRunAlgo {
+        static Dataflow::Networks::ModuleLookupInfo staticInfo_;
+      private:
+        static const int NUM_BUNDLE_OUT = 6; //TODO: get from class def
+      };
 
-using namespace SCIRun;
-
-class SCISHARE SplitFieldByDomainAlgo : public AlgoBase
-{
-  public:
-    SplitFieldByDomainAlgo()
-    {
-      // Sort the outcome by size
-      add_bool("sort_by_size",false);
-      add_bool("sort_ascending",false);
-    } 
-
-    bool run(FieldHandle input, std::vector<FieldHandle>& output);  
-};
-
-} // end namespace SCIRunAlgo
+    }
+  }
+}
 
 #endif
-

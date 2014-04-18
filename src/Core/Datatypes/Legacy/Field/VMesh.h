@@ -259,16 +259,10 @@ public:
     DEBUG_DESTRUCTOR("VMesh")  
   }
 
-  /// Get the mesh associated with the virtual interface
-  /// These functions will return the respective mesh or vmesh
-  /// class.
-  virtual MeshHandle mesh();
-  /// A call to it self
-  inline  VMesh* vmesh() { return (this); }
-
   /// iterators for the virtual topology indices. These are not strictly needed
   /// but make the concepts in line with previous version. All iterators now
   /// go from 0 to number of elements, using consecutive unique numbers   
+
   inline void begin(Node::iterator &it) const
     { it = 0; }
   inline void begin(ENode::iterator &it) const
@@ -311,9 +305,15 @@ public:
   virtual void size(Elem::size_type& size) const;
   virtual void size(DElem::size_type& size) const;
     
+<<<<<<< HEAD
   /// We have been using the num_#type#() in other functions as well to
   /// determine the number of nodes, edges etc. These are just shortcuts to
   /// make porgrams more readable
+=======
+  //! We have been using the num_#type#() in other functions as well to
+  //! determine the number of nodes, edges etc. These are just shortcuts to
+  //! make programs more readable
+>>>>>>> 4091d597b6b287c054388c87cf822f69dfefee83
   inline size_type num_nodes() const
     { Node::index_type s; size(s); return(static_cast<size_t>(s)); }
   inline size_type num_enodes() const

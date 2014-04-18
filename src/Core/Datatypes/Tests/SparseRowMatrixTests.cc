@@ -561,3 +561,18 @@ TEST(SparseRowMatrixTest, TestLegacyConstructor)
   EXPECT_EQ(ncols, m.ncols());
   EXPECT_EQ(nnz, m.nonZeros());
 }
+
+TEST(SparseRowMatrixTest, CopyBlock)
+{
+  auto m = MAKE_SPARSE_MATRIX_HANDLE(
+    (1,0,0,0)
+    (0,2,0,0)
+    (0,0,3,0)
+    (0,0,0,4));
+
+  SparseRowMatrixHandle block(new SparseRowMatrix(m->block(1,1,2,2)));
+  DenseMatrix expected(2,2);
+  expected << 2,0,  0,3;
+  auto expectedSparse = toSparseHandle(expected);
+  EXPECT_EQ(*expectedSparse, *block);
+}

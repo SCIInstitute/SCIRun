@@ -97,6 +97,15 @@ namespace Datatypes {
       return this->isApprox(this->transpose());
     }
 
+    virtual T get(int i, int j) const override
+    {
+      return (*this)(i,j);
+    }
+    virtual void put(int i, int j, const T& val) override
+    {
+      (*this)(i,j) = val;
+    }
+  
   private:
     virtual void print(std::ostream& o) const
     {

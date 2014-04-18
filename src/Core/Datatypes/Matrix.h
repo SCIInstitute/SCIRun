@@ -80,6 +80,9 @@ namespace Datatypes {
       m.print(o);
       return o;
     }
+  
+    virtual T get(int i, int j) const = 0;
+    virtual void put(int i, int j, const T& val) = 0;
 
     static PersistentTypeID type_id;
 

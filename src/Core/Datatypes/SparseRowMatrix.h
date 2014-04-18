@@ -118,6 +118,16 @@ namespace Datatypes {
 
       return this->isApprox(this->transpose(),1e-16);
     }
+  
+    virtual T get(int i, int j) const override
+    {
+      return this->coeff(i,j);
+    }
+    virtual void put(int i, int j, const T& val) override
+    {
+      this->coeffRef(i,j) = val;
+    }
+  
     /// @todo!
 #if 0
     class NonZeroIterator : public std::iterator<std::forward_iterator_tag, value_type>

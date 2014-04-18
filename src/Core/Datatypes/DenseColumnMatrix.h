@@ -73,6 +73,14 @@ namespace Datatypes {
 
     virtual size_t nrows() const { return this->rows(); }
     virtual size_t ncols() const { return this->cols(); }
+    virtual T get(int i, int j) const override
+    {
+      return (*this)(i,j);
+    }
+    virtual void put(int i, int j, const T& val) override
+    {
+      (*this)(i,j) = val;
+    }
 
     /// Persistent representation...
     virtual std::string dynamic_type_name() const { return type_id.type; }

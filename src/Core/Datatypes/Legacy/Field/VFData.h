@@ -54,8 +54,8 @@
   virtual void get_evalues(type *ptr, VMesh::size_type sz, VMesh::size_type offset) const; \
   virtual void set_evalues(const type *ptr, VMesh::size_type sz, VMesh::size_type offset); \
   virtual void set_all_values(const type &val); \
-  virtual void get_weighted_value(type &val, VMesh::index_type* idx, VMesh::weight_type* w, VMesh::size_type sz) const;  \
-  virtual void get_weighted_evalue(type &val, VMesh::index_type* idx, VMesh::weight_type* w, VMesh::size_type sz) const; \
+  virtual void get_weighted_value(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const;  \
+  virtual void get_weighted_evalue(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz) const; \
   virtual void get_values(type *ptr, VMesh::Node::array_type& nodes) const; \
   virtual void get_values(type *ptr, VMesh::Elem::array_type& elems) const; \
   virtual void set_values(const type *ptr, VMesh::Node::array_type& nodes); \

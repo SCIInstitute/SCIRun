@@ -211,11 +211,11 @@ public:
   { vfdata_->get_value(val,static_cast<VMesh::index_type>(idx));return (true); }  
 
   /// Functions for getting a weighted value
-  template<class T> inline void get_weighted_value(T& val, index_type* idx, weight_type* w, size_type sz) const
+  template<class T> inline void get_weighted_value(T& val, const index_type* idx, const weight_type* w, size_type sz) const
   { vfdata_->get_weighted_value(val,idx,w,sz); }
   template<class T> inline void get_weighted_value(T& val, index_array_type idx, weight_array_type w) const
   { vfdata_->get_weighted_value(val,&(idx[0]),&(w[0]),idx.size()); }
-  template<class T> inline void get_weighted_evalue(T& val, index_type* idx, weight_type* w, size_type sz) const
+  template<class T> inline void get_weighted_evalue(T& val, const index_type* idx, const weight_type* w, size_type sz) const
   { vfdata_->get_weighted_evalue(val,idx,w,sz); }
   template<class T> inline void get_weighted_evalue(T& val, index_array_type idx, weight_array_type w) const
   { vfdata_->get_weighted_value(val,&(idx[0]),&(w[0]),idx.size()); }

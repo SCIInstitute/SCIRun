@@ -28,6 +28,7 @@
 
 #include <Interface/Modules/Render/ViewScenePlatformCompatibility.h>
 #include <Core/Application/Preferences.h>
+#include <Core/Logging/Log.h>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -36,7 +37,7 @@ using namespace SCIRun::Core::Datatypes;
 //------------------------------------------------------------------------------
 ViewSceneDialog::ViewSceneDialog(const std::string& name, ModuleStateHandle state,
   QWidget* parent /* = 0 */)
-  : ModuleDialogGeneric(state, parent), shown_(false)
+  : ModuleDialogGeneric(state, parent), shown_(false), itemManager_(new ViewSceneItemManager)
 {
   setupUi(this);
   setWindowTitle(QString::fromStdString(name));
@@ -89,6 +90,7 @@ void ViewSceneDialog::closeEvent(QCloseEvent *evt)
 //------------------------------------------------------------------------------
 void ViewSceneDialog::moduleExecuted()
 {
+  itemManager_->removeAll();
   // Grab the geomData transient value.
   auto geomDataTransient = state_->getTransientValue("geomData");
   if (geomDataTransient && !geomDataTransient->empty())
@@ -106,6 +108,7 @@ void ViewSceneDialog::moduleExecuted()
       boost::shared_ptr<Core::Datatypes::GeometryObject> obj = *it;
       spire->handleGeomObject(obj);
       validObjects.push_back(obj->objectName);
+      itemManager_->addItem(QString::fromStdString(obj->objectName));
     }
     spire->gcInvalidObjects(validObjects);
   }
@@ -148,24 +151,56 @@ void ViewSceneDialog::autoViewClicked()
 void ViewSceneDialog::addToolBar() 
 {
   mToolBar = new QToolBar(this);
+
+  addMouseMenu();
+  addAutoViewButton();
+  addObjectToggleMenu();
+
+  glLayout->addWidget(mToolBar);
+}
+
+void ViewSceneDialog::addMouseMenu()
+{
   auto menu = new QComboBox(this);
   menu->addItem("Legacy Mouse Control");
   menu->addItem("New Mouse Control");
-
+  connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
+  menu->setCurrentIndex(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? 1 : 0);
   mToolBar->addWidget(menu);
   mToolBar->addSeparator();
+}
 
+void ViewSceneDialog::addAutoViewButton()
+{
   QPushButton* autoViewBtn = new QPushButton(this);
   autoViewBtn->setText("Auto View");
   autoViewBtn->setAutoDefault(false);
   autoViewBtn->setDefault(false);
-  mToolBar->addWidget(autoViewBtn);
   connect(autoViewBtn, SIGNAL(clicked(bool)), this, SLOT(autoViewClicked()));
+  mToolBar->addWidget(autoViewBtn);
+  mToolBar->addSeparator();
+}
 
-  glLayout->addWidget(mToolBar);
+class FixMacCheckBoxes : public QStyledItemDelegate
+{
+public:
+  void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+  {
+    QStyleOptionViewItem& refToNonConstOption = const_cast<QStyleOptionViewItem&>(option);
+    refToNonConstOption.showDecorationSelected = false;
+    //refToNonConstOption.state &= ~QStyle::State_HasFocus & ~QStyle::State_MouseOver;
 
-  connect(menu, SIGNAL(currentIndexChanged(int)),this, SLOT(menuMouseControlChanged(int)));
-  menu->setCurrentIndex(SCIRun::Core::Preferences::Instance().useNewViewSceneMouseControls ? 1 : 0);
+    QStyledItemDelegate::paint(painter, refToNonConstOption, index);
+  }
+};
+
+void ViewSceneDialog::addObjectToggleMenu()
+{
+  QComboBox* combo = new QComboBox();
+  combo->setItemDelegate(new FixMacCheckBoxes);
+  combo->setModel(itemManager_->model());
+  mToolBar->addWidget(combo);
+  mToolBar->addSeparator();
 }
 
 void ViewSceneDialog::showEvent(QShowEvent *evt)
@@ -175,5 +210,72 @@ void ViewSceneDialog::showEvent(QShowEvent *evt)
   {
     autoViewClicked();
     shown_ = true;
+  }
+}
+
+ViewSceneItemManager::ViewSceneItemManager() : model_(new QStandardItemModel(3,1))
+{
+  model_->setItem(0, 0, new QStandardItem(QString("Object Selection")));
+  connect(model_, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(slotChanged(const QModelIndex&, const QModelIndex&)));
+
+#if 0
+  //fill with dummy items for testing:
+  for (int r = 0; r < 3; ++r)
+  {
+    QStandardItem* item = new QStandardItem(QString("Item %0").arg(r));
+
+    item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+    item->setData(Qt::Unchecked, Qt::CheckStateRole);
+    items_.push_back(item);
+
+    model_->setItem(r+1, item);
+  }
+#endif
+}
+
+void ViewSceneItemManager::addItem(const QString& name)
+{
+  QStandardItem* item = new QStandardItem(name);
+
+  item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+  item->setData(Qt::Unchecked, Qt::CheckStateRole);
+  items_.push_back(item);
+
+  model_->appendRow(item);
+}
+
+void ViewSceneItemManager::removeItem(const QString& name)
+{
+  auto items = model_->findItems(name);
+  Q_FOREACH(QStandardItem* item, items)
+  {
+    model_->removeRow(item->row());
+  }
+  items_.erase(std::remove_if(items_.begin(), items_.end(), [&](QStandardItem* item) { return item->text() == name; } ), items_.end());
+}
+
+void ViewSceneItemManager::removeAll()
+{
+  if (model_->rowCount() > 1)
+  {
+    LOG_DEBUG("ViewScene items cleared" << std::endl);
+    model_->removeRows(1, model_->rowCount() - 1);
+    items_.clear();
+  }
+}
+
+void ViewSceneItemManager::slotChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight)
+{
+  auto index = topLeft.row() - 1;
+  QStandardItem* item = items_[index];
+  if (item->checkState() == Qt::Unchecked)
+  {
+    LOG_DEBUG("Item " << item->text().toStdString() << " Unchecked!" << std::endl);
+    Q_EMIT itemUnselected(item->text());
+  }
+  else if (item->checkState() == Qt::Checked)
+  {
+    LOG_DEBUG("Item " << item->text().toStdString() << " Checked!" << std::endl);
+    Q_EMIT itemSelected(item->text());
   }
 }

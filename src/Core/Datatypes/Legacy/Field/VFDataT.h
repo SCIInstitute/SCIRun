@@ -98,11 +98,11 @@ void VFDataT<FDATA,EFDATA,HFDATA>::set_all_values(const type &val) \
   for (size_type i=0; i < sz2; i++) efdata_[i] = tval; \
 } \
 template<class FDATA, class EFDATA, class HFDATA> \
-void VFDataT<FDATA,EFDATA,HFDATA>::get_weighted_value(type &val, VMesh::index_type* idx, VMesh::weight_type* w, VMesh::size_type sz ) const \
+void VFDataT<FDATA,EFDATA,HFDATA>::get_weighted_value(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz ) const \
 { typename FDATA::value_type tval = typename FDATA::value_type(0); for(size_type i=0; i<sz; i++) { TESTRANGE(idx[i],0,fdata_.size()) tval = tval + static_cast<typename FDATA::value_type>(w[i]*fdata_[idx[i]]); } val = CastFData<type>(tval); } \
 \
 template<class FDATA, class EFDATA, class HFDATA> \
-void VFDataT<FDATA,EFDATA,HFDATA>::get_weighted_evalue(type &val, VMesh::index_type* idx, VMesh::weight_type* w, VMesh::size_type sz ) const \
+void VFDataT<FDATA,EFDATA,HFDATA>::get_weighted_evalue(type &val, const VMesh::index_type* idx, const VMesh::weight_type* w, VMesh::size_type sz ) const \
 { typename EFDATA::value_type tval = typename EFDATA::value_type(0); for(size_type i=0; i<sz; i++) { TESTRANGE(idx[i],0,efdata_.size()) tval = tval + static_cast<typename EFDATA::value_type>(w[i]*efdata_[idx[i]]); } val = CastFData<type>(tval); } \
 \
 template<class FDATA, class EFDATA, class HFDATA> \
@@ -292,8 +292,8 @@ public:
   
 
   virtual void copy_weighted_value(VFData* fdata, 
-                                   VMesh::index_type* vidx, 
-                                   VMesh::weight_type* vw,
+                                   const VMesh::index_type* vidx, 
+                                   const VMesh::weight_type* vw,
                                    VMesh::size_type sz, 
                                    VMesh::index_type idx)
   {

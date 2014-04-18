@@ -77,7 +77,8 @@ namespace Engine {
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////Start: To be Pythonized/////////////////////////////
-    Networks::ModuleHandle addModule(const std::string& moduleName);
+    virtual Networks::ModuleHandle addModule(const Networks::ModuleLookupInfo& info) override;
+    Networks::ModuleHandle addModule(const std::string& name);
     void removeModule(const Networks::ModuleId& id);
     
     Networks::ModuleHandle duplicateModule(const Networks::ModuleHandle& module);
@@ -106,8 +107,11 @@ namespace Engine {
     boost::signals2::connection connectNetworkExecutionStarts(const ExecuteAllStartsSignalType::slot_type& subscriber);
     boost::signals2::connection connectNetworkExecutionFinished(const ExecuteAllFinishesSignalType::slot_type& subscriber);
 
-    virtual Networks::NetworkHandle getNetwork() const;
-    virtual void setNetwork(Networks::NetworkHandle nh); 
+    virtual void enableSignals() override;
+    virtual void disableSignals() override;
+
+    virtual Networks::NetworkHandle getNetwork() const override;
+    virtual void setNetwork(Networks::NetworkHandle nh) override; 
     Networks::NetworkGlobalSettings& getSettings();
 
     boost::shared_ptr<DisableDynamicPortSwitch> createDynamicPortSwitch();
@@ -137,6 +141,7 @@ namespace Engine {
     InvalidConnectionSignalType invalidConnection_;
 
     boost::shared_ptr<DynamicPortManager> dynamicPortManager_;
+    bool signalSwitch_;
   };
 
   typedef boost::shared_ptr<NetworkEditorController> NetworkEditorControllerHandle;

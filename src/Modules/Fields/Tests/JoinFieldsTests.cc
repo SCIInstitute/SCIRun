@@ -50,7 +50,7 @@ public:
   }
 };
 
-TEST_F(JoinFieldsModuleTests, ThrowsForNullInput)
+TEST_F(JoinFieldsModuleTests, DISABLED_ThrowsForNullInput)
 {
   auto cg = makeModule("JoinFields");
   FieldHandle nullField;
