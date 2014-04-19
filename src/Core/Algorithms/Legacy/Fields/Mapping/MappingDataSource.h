@@ -34,7 +34,7 @@
 
 #include <vector>
 
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {

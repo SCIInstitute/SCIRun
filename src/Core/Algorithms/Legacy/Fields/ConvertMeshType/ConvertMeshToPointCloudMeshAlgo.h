@@ -31,7 +31,7 @@
 #define CORE_ALGORITHMS_FIELDS_CONVERTMESHTYPE_CONVERTTOPOINTCLOUDMESH_H 1
 
 #include <Core/Algorithms/Base/AlgorithmBase.h>
-/// for Windows support
+// for Windows support
 #include <Core/Algorithms/Legacy/Fields/share.h>
 
 namespace SCIRun {
