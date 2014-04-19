@@ -120,6 +120,8 @@ namespace
     (*m)(1, 0) = 2;
     (*m)(0, 1) = 4;
     (*m)(1, 1) = 6;   
+    (*m)(0, 2) = 0;
+    (*m)(1, 2) = 0;
     
     return m;
   }
@@ -166,7 +168,47 @@ namespace
     return m;
   }
   
-   DenseMatrixHandle result_matrix2_index_matrix2_rows()  
+  DenseColumnMatrixHandle densecolumnmatrix()  
+  {
+    DenseColumnMatrixHandle m(boost::make_shared<DenseColumnMatrix>(10));
+
+    (*m)(0) = 6;
+    (*m)(1) = 8;
+    (*m)(2) = 3;
+    (*m)(3) = 5;
+    (*m)(4) = 0;
+    (*m)(5) = 2;
+    (*m)(6) = -3;
+    (*m)(7) = -1;    
+    (*m)(8) = -6;
+    (*m)(9) = -4;
+    
+    return m;
+  } 
+  
+  DenseMatrixHandle densecolumnmatrix_expectedoutput()  
+  {
+    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(2,1));
+
+    (*m)(0) = 8;
+    (*m)(1) = 5;
+        
+    return m;
+  } 
+  
+  DenseMatrixHandle densecolumnmatrix_expectedoutput2()  
+  {
+    DenseMatrixHandle m(boost::make_shared<DenseMatrix>(3,1));
+
+    (*m)(0) = 8;
+    (*m)(1) = 3;
+    (*m)(2) = 5;   
+    
+    return m;
+  } 
+  
+  
+  DenseMatrixHandle result_matrix2_index_matrix2_rows()  
   {
     DenseMatrixHandle m(boost::make_shared<DenseMatrix>(5, 2));
 
@@ -322,6 +364,8 @@ namespace
    
    return m;
  }
+
+
 
 }
 
@@ -809,3 +853,93 @@ TEST(SelectSubMatrixTests, InputMatrix_rowsandcolumns)
 	EXPECT_EQ((*expected_result)(i, j),(*result1)(i, j));
 }
 
+TEST(SelectSubMatrixTests, NOGUI_DenseColumnMatrixCols)
+{
+  SelectSubMatrixAlgorithm algo;
+  DenseColumnMatrixHandle m1(densecolumnmatrix());
+
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+ 
+  DenseMatrixHandle index_cols(index_matrix2());
+  
+  DenseMatrixHandle result1;
+   
+  try
+  {
+    result1 =  matrix_cast::as_dense(algo.run(m1,DenseMatrixHandle(),index_cols));
+  }
+  catch (...)
+  {
+  
+  }
+  
+  if (result1)
+  {
+    std::cout << "ERROR: This error message should not occur - SelectSubMatrix might seriously be broken (Gui input, cols only)." << std::endl;
+  } 
+}
+
+
+TEST(SelectSubMatrixTests, NOGUI_DenseColumnMatrixRows)
+{
+  SelectSubMatrixAlgorithm algo;
+  DenseColumnMatrixHandle m1(densecolumnmatrix());
+
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);
+ 
+  DenseMatrixHandle index_cols(index_matrix2());
+  
+  DenseMatrixHandle result1;
+   
+  try
+  {
+    result1 =  matrix_cast::as_dense(algo.run(m1,index_cols,DenseMatrixHandle()));
+  }
+  catch (...)
+  {
+  
+  }
+  
+  if (!result1)
+  {
+    std::cout << "ERROR: This error message should not occur - SelectSubMatrix might seriously be broken (Gui input, cols only)." << std::endl;
+  } 
+  
+  EXPECT_EQ(result1->ncols(), index_cols->ncols());
+  EXPECT_EQ(result1->nrows(), index_cols->nrows());
+  
+  DenseMatrixHandle expected_result(densecolumnmatrix_expectedoutput());
+  
+  for (int i = 0; i < result1->rows(); i++)
+      for (int j = 0; j < result1->cols(); j++)
+	EXPECT_EQ((*expected_result)(i, j),(*result1)(i, j));
+
+}
+
+TEST(SelectSubMatrixTests, GUI_DenseColumnMatrixRows)
+{
+  SelectSubMatrixAlgorithm algo;
+  DenseColumnMatrixHandle m1(densecolumnmatrix());
+   
+  int from=1, to=3; 
+
+  algo.set(SelectSubMatrixAlgorithm::columnCheckBox, false);
+  algo.set(SelectSubMatrixAlgorithm::rowCheckBox, true);   
+   
+  algo.set(SelectSubMatrixAlgorithm::rowStartSpinBox, from);
+  algo.set(SelectSubMatrixAlgorithm::rowEndSpinBox, to);
+  
+  DenseMatrixHandle result1 =  matrix_cast::as_dense(algo.run(m1,0,0)); 
+  
+  DenseMatrixHandle expected_result(densecolumnmatrix_expectedoutput2());
+
+  EXPECT_EQ(result1->ncols(), m1->ncols());
+  EXPECT_EQ(to-from+1, expected_result->nrows());
+  
+  for (int i = 0; i < result1->rows(); i++)
+   for (int j = 0; j < result1->cols(); j++)
+     EXPECT_EQ((*expected_result)(i, j),(*result1)(i, j));
+	
+}

@@ -64,11 +64,11 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(MatrixHandle& input_matrix
       int nr=rows->nrows(), nc=rows->ncols();
       if (nr==0) nr=1; if (nc==0) nc=1;
       sel_rows.resize(nr*nc);
-
+      
       for (int i=0; i < nr; i++) 
         for (int j=0; j < nc; j++) 
 	  {
-           sel_rows[count++] = static_cast<index_type>((* rows)(i,j)); 
+           sel_rows[count++] = static_cast<index_type>((* rows)(i,j));
 	  }
   
      }
@@ -78,7 +78,7 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(MatrixHandle& input_matrix
     if (cols)
      if (cols->nrows()>0 && cols->ncols()>0)
      {
-      int nr=cols->nrows(), nc=cols->ncols();
+      int nr=cols->nrows(), nc=cols->ncols();    
       if (nr==0) nr=1; if (nc==0) nc=1;
       sel_cols.resize(nr*nc);
       for (int i=0; i < nr; i++) 
@@ -96,7 +96,6 @@ MatrixHandle SelectSubMatrixAlgorithm::get_sub_matrix(MatrixHandle& input_matrix
 
 MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatrixHandle row_indices, DenseMatrixHandle col_indices) const
 {  
-        std::cout << "lll!" << std::endl;
   if (!input_matrix || input_matrix->nrows()==0 || input_matrix->ncols()==0)
   {
     remark(" No valid inputs: input matrix or row,column matrix contain NULL pointer ");
@@ -111,15 +110,11 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
   index_type col_start = get(columnStartSpinBox).getInt();
   index_type col_end = get(columnEndSpinBox).getInt();
   
-  row_select=true;
-  
   if ( !row_select && !col_select )  //pipe input through
    if ( !row_indices && !col_indices)
     { 
       if(!input_matrix) return input_matrix;
     }
-  
- if(row_select)  std::cout << "dfdfd!" << row_end << std::endl;  else std::cout << "no!" << row_end << std::endl; 
  
   if (row_indices || col_indices)
     {
@@ -155,7 +150,6 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
      col_end=input_matrix->ncols();
     }
  }   
-  std::cout << "vvvv!" << std::endl; 
   if ( row_start<0 || col_start<0 ||  row_end>input_matrix->nrows() || col_end>input_matrix->ncols()) 
     {
      remark(" Specified matrix indices from UI settings exceed matrix dimensions ");
@@ -164,26 +158,65 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, DenseMatri
     
   if (row_indices || col_indices) 
   {   
-     std::cout << "aaaaaa!" << std::endl; 
     sub_matrix=get_sub_matrix(input_matrix,row_indices,col_indices);
     if (!sub_matrix) return MatrixHandle(); 
   } 
   else  //GUI input only
-  {   
-    row_end=6733586;  
-    std::cout << "ja" << std::endl;
-    if(matrix_is::sparse(input_matrix))
+  {    
+     if(matrix_is::sparse(input_matrix))
      { 
-     std::cout << "1!" << std::endl;
        SparseRowMatrixHandle mat (new  SparseRowMatrix(matrix_cast::as_sparse(input_matrix)->block(row_start,col_start,row_end,col_end)));
        return mat;
      } else
      if(matrix_is::dense(input_matrix))
       {
-        std::cout << "!" << row_start << " " << col_start << " " << row_end << " " <<  col_end << std::endl;
         DenseMatrixHandle mat (new  DenseMatrix(matrix_cast::as_dense(input_matrix)->block(row_start,col_start,row_end,col_end)));
 	return mat;
       }  else
+      if (matrix_is::column(input_matrix))
+      {
+        if (input_matrix->ncols()!=1)
+        {
+         THROW_ALGORITHM_INPUT_ERROR("Input matrix is apparently not a column matrix! ");
+        }
+        if (input_matrix->nrows()==0)
+        {
+         THROW_ALGORITHM_INPUT_ERROR("Input matrix (column) does not contain any rows! ");
+        }
+        if (row_start<0 || row_end>=input_matrix->nrows())
+        {        
+           THROW_ALGORITHM_INPUT_ERROR("Gui row indeces exceed input matrix dimensions! ");	 
+        }
+	if (col_start<0 || col_end>=input_matrix->nrows())
+        {        
+           THROW_ALGORITHM_INPUT_ERROR("Gui row indeces exceed input matrix dimensions! ");	 
+        }
+
+	auto first_column = matrix_cast::as_column(input_matrix);
+
+        if (!first_column || first_column->nrows()<=0 || first_column->ncols()!=1)
+        {
+          THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix did not work! "); 
+        }
+
+	DenseMatrix mat(row_end-row_start+1,1);
+
+        for (int i = 0; i < row_end-row_start+1; i++)
+        {   	 
+         if(i>=0 && i<mat.nrows()) 
+         {
+          mat(i,0) = (*first_column).coeff(row_start+i); 
+         }
+         else
+	 {
+	   THROW_ALGORITHM_INPUT_ERROR("Index in column index matrix out of range! ");  
+	 }
+	}  
+	
+	DenseMatrixHandle  output(boost::make_shared<DenseMatrix>(mat));
+        return output;    
+	
+      } else
       {
         remark("This module needs row indices, or column indices or both from UI or input matrices");
         remark("Copying input matrix to output");
@@ -220,7 +253,7 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
 
   for (size_t r=0; r<cols.size(); r++)
   {
-    if (cols[r] >= static_cast<index_type>(n) || cols[r] < 0 || !IsFinite(cols[r]))
+     if (cols[r] >= static_cast<index_type>(n) || cols[r] < 0 || !IsFinite(cols[r]))
     {
       THROW_ALGORITHM_INPUT_ERROR("Selected column exceeds matrix dimensions");
     }
@@ -275,12 +308,12 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
 
   } else
   {
-   auto dense_input_matrix = matrix_cast::as_dense(input_matrix);
+   DenseMatrixHandle dense_input_matrix; 
+   DenseColumnMatrixHandle col_dense_input_matrix; 
 
-   if (!dense_input_matrix)
+   if (matrix_is::dense(input_matrix))
    {
-     THROW_ALGORITHM_INPUT_ERROR("Could not convert matrix into dense matrix");
-   }
+     dense_input_matrix = matrix_cast::as_dense(input_matrix);
    
    if (rows.size()>0 && cols.size()>0)
    {
@@ -318,6 +351,58 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
       DenseMatrixHandle  output(boost::make_shared<DenseMatrix>(mat));   
    
       return output;
+   }
+   } else
+   if (matrix_is::column(input_matrix)) //@Spencer this stuff needs to be tested in UnitTest
+   { 
+     if (input_matrix->ncols()!=1)
+     {
+      THROW_ALGORITHM_INPUT_ERROR("Input matrix is apparently not a column matrix! ");
+     }
+     if (input_matrix->nrows()==0)
+     {
+      THROW_ALGORITHM_INPUT_ERROR("Input matrix (column) does not contain any rows! ");
+     }
+     if (cols.size()!=0)
+     {
+      for (int i = 0; i < cols.size(); i++)
+        if (cols[0]!=0)
+	{
+           THROW_ALGORITHM_INPUT_ERROR("Column input matrix does contain bad indeces! ");
+	}
+     }
+     if (rows.size()<=0)
+     {
+       THROW_ALGORITHM_INPUT_ERROR("Rows input matrix does not contain any rows! ");
+     }
+       
+     auto first_column = matrix_cast::as_column(input_matrix);
+    
+     if (!first_column || first_column->nrows()<=0 || first_column->ncols()!=1)
+     {
+      THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix did not work! "); 
+     }
+     
+     DenseMatrix mat(rows.size(),1);
+    
+     for (int i = 0; i < rows.size(); i++)
+     {   
+       if(IsFinite(rows[i]) && rows[i]>0 && rows[i]<input_matrix->nrows()) 
+       {
+        mat(i,0) = (*first_column).coeff(rows[i]); 
+       }
+         else
+	  {
+	    THROW_ALGORITHM_INPUT_ERROR("Index in column index matrix out of range! ");  
+	  }      
+     }
+      
+     DenseMatrixHandle  output(boost::make_shared<DenseMatrix>(mat));
+     return output;
+ 
+   } else
+   {
+     THROW_ALGORITHM_INPUT_ERROR("Unknown input matrix type");
    }
       
   }   

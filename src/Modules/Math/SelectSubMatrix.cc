@@ -156,8 +156,14 @@ void SelectSubMatrixModule::execute()
   auto input_matrix = getRequiredInput(InputMatrix);
   auto rowindicies = getOptionalInput(RowIndicies);
   auto columnindicies = getOptionalInput(ColumnIndicies);
-  //auto param = get_state()->getValue(Variables::RowsOrColumns).getInt();
-  //algo().set(Variables::RowsOrColumns, param);
+  
+  algo().set(SelectSubMatrixAlgorithm::rowCheckBox, get_state()->getValue(SelectSubMatrixAlgorithm::rowCheckBox).getBool());
+  algo().set(SelectSubMatrixAlgorithm::columnCheckBox, get_state()->getValue(SelectSubMatrixAlgorithm::columnCheckBox).getBool());
+  algo().set(SelectSubMatrixAlgorithm::rowStartSpinBox, get_state()->getValue(SelectSubMatrixAlgorithm::rowStartSpinBox).getInt());
+  algo().set(SelectSubMatrixAlgorithm::rowEndSpinBox, get_state()->getValue(SelectSubMatrixAlgorithm::rowEndSpinBox).getInt());  
+  algo().set(SelectSubMatrixAlgorithm::columnStartSpinBox, get_state()->getValue(SelectSubMatrixAlgorithm::columnStartSpinBox).getInt());
+  algo().set(SelectSubMatrixAlgorithm::columnEndSpinBox, get_state()->getValue(SelectSubMatrixAlgorithm::columnEndSpinBox).getInt());  
+  
   auto output = algo().run_generic(make_input((InputMatrix, input_matrix)(RowIndicies, optionalAlgoInput(rowindicies))(ColumnIndicies, optionalAlgoInput(columnindicies))));
 
   sendOutputFromAlgorithm(ResultMatrix, output);
