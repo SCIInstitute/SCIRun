@@ -35,6 +35,7 @@ SET(Interface_Modules_Math_FORMS
   EvaluateLinearAlgebraUnary.ui
   ReportMatrixInfo.ui
   SolveLinearSystem.ui
+  ConvertMatrixType.ui
 )
 
 SET(Interface_Modules_Math_HEADERS
@@ -46,6 +47,7 @@ SET(Interface_Modules_Math_HEADERS
   ReportMatrixInfoDialog.h
   share.h
   SolveLinearSystemDialog.h
+  ConvertMatrixTypeDialog.h
 )
 
 SET(Interface_Modules_Math_SOURCES 
@@ -56,6 +58,7 @@ SET(Interface_Modules_Math_SOURCES
   EvaluateLinearAlgebraUnaryDialog.cc
   ReportMatrixInfoDialog.cc
   SolveLinearSystemDialog.cc
+  ConvertMatrixTypeDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Math_FORMS_HEADERS ${Interface_Modules_Math_FORMS})
