@@ -412,9 +412,8 @@ MatrixHandle SelectSubMatrixAlgorithm::run(MatrixHandle input_matrix, std::vecto
   return input_matrix;
 }
 
-AlgorithmInputName SelectSubMatrixAlgorithm::InputMatrix("InputMatrix");
-AlgorithmOutputName SelectSubMatrixAlgorithm::RowIndicies("RowIndicies");
-AlgorithmOutputName SelectSubMatrixAlgorithm::ColumnIndicies("ColumnIndicies");
+AlgorithmInputName SelectSubMatrixAlgorithm::RowIndicies("RowIndicies");
+AlgorithmInputName SelectSubMatrixAlgorithm::ColumnIndicies("ColumnIndicies");
 AlgorithmParameterName SelectSubMatrixAlgorithm::rowCheckBox("rowCheckBox");
 AlgorithmParameterName SelectSubMatrixAlgorithm::columnCheckBox("columnCheckBox");
 AlgorithmParameterName SelectSubMatrixAlgorithm::rowStartSpinBox("rowStartSpinBox");
@@ -424,7 +423,7 @@ AlgorithmParameterName SelectSubMatrixAlgorithm::rowEndSpinBox("rowEndSpinBox");
     
 AlgorithmOutput SelectSubMatrixAlgorithm::run_generic(const AlgorithmInput& input) const
 {
-  auto input_matrix = input.get<Matrix>(InputMatrix);
+  auto input_matrix = input.get<Matrix>(Variables::InputMatrix);
   auto rowindicies = input.get<DenseMatrix>(RowIndicies);
   auto columnindicies = input.get<DenseMatrix>(ColumnIndicies);
 
