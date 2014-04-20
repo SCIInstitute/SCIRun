@@ -20,7 +20,7 @@
       <string>Select range of rows:</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
    </item>
@@ -110,7 +110,7 @@
       <number>999999999</number>
      </property>
      <property name="value">
-      <number>6733586</number>
+      <number>0</number>
      </property>
     </widget>
    </item>
