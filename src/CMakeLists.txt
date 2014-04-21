@@ -367,10 +367,54 @@ CPM_AddModule("look_at"
   GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"
   GIT_TAG "1.0.0")
 
-# ++ MODULE: GL State
-CPM_AddModule("gl_state"
-  GIT_REPOSITORY "https://github.com/iauns/cpm-gl-state.git"
-  GIT_TAG "1.0.4")
+# ++ MODULE: Entity System
+CPM_AddModule("es"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-entity-system"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Entity system component serialization
+CPM_AddModule("es_cereal"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-es-cereal"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Cereal support for GLM.
+CPM_AddModule("cereal_glm"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-cereal-glm"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: ES Systems
+CPM_AddModule("es_systems"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-es-systems"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Async filesystem support
+CPM_AddModule("es_fs"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-es-fs"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: General transforms and components
+CPM_AddModule("es_general"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-es-general"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Entity System Rendering.
+CPM_AddModule("es_render"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-es-render"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
+# ++ MODULE: Acorn
+CPM_AddModule("es_acorn"
+  GIT_REPOSITORY "https://github.com/iauns/cpm-es-acorn"
+  GIT_TAG "origin/master"
+  USE_EXISTING_VER TRUE)
+
 
 CPM_Finish()
 
