@@ -46,8 +46,21 @@ varying vec4    fColor;
 void main( void )
 {
   vec3  invLightDir     = -uLightDirWorld;
-  vec3  worldSpaceNorm  = vec3(uObject * vec4(aNormal, 0.0));
+  vec3  normal          = normalize(aNormal);
+  vec3  worldSpaceNorm  = vec3(uObject * vec4(normal, 0.0));
   float diffuse         = max(0.0, dot(worldSpaceNorm, invLightDir));
+
+  // Note, the following is a hack due to legacy meshes still being supported.
+  // We light the object as if it was double sided. We choose the normal based
+  // on the normal that yields the largest diffuse component.
+  float diffuseInv  = max(0.0, dot(-worldSpaceNorm, invLightDir));
+
+  if (diffuse < diffuseInv)
+  {
+    diffuse = diffuseInv;
+    worldSpaceNorm = -worldSpaceNorm;
+  }
+
   vec3  reflection      = reflect(invLightDir, worldSpaceNorm);
   float spec            = max(0.0, dot(reflection, uCamViewVec));
 

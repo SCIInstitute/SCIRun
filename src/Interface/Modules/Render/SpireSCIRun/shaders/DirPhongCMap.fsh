@@ -56,6 +56,18 @@ void main()
   vec3  invLightDir = -uLightDirWorld;
   vec3  normal      = normalize(vNormal);
   float diffuse     = max(0.0, dot(normal, invLightDir));
+
+  // Note, the following is a hack due to legacy meshes still being supported.
+  // We light the object as if it was double sided. We choose the normal based
+  // on the normal that yields the largest diffuse component.
+  float diffuseInv  = max(0.0, dot(-normal, invLightDir));
+
+  if (diffuse < diffuseInv)
+  {
+    diffuse = diffuseInv;
+    normal = -normal;
+  }
+
   vec3  reflection  = reflect(invLightDir, normal);
   float spec        = max(0.0, dot(reflection, uCamViewVec));
 
