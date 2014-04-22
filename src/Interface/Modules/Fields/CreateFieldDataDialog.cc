@@ -39,24 +39,65 @@ typedef SCIRun::Modules::Fields::CreateFieldData CreateFieldDataModule;
 class TextEditSlotManager : public WidgetSlotManager
 {
 public:
-  TextEditSlotManager(ModuleStateHandle state, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
-      WidgetSlotManager(state), stateKey_(stateKey), textEdit_(textEdit) 
-      {
-      }
+  TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit) 
+  {
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+  }
   virtual void pull() override
   {
     auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
-    LOG_DEBUG("In new version of pull code: " << newValue.toStdString());
     if (newValue != textEdit_->toPlainText())
+    {
       textEdit_->setPlainText(newValue);
+      LOG_DEBUG("In new version of pull code: " << newValue.toStdString());
+    }
   }
-  virtual void push() override
+  virtual void pushImpl() override
   {
-    //TODO
+    LOG_DEBUG("In new version of push code: " << textEdit_->toPlainText().toStdString());
+    state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
   }
 private:
   AlgorithmParameterName stateKey_;
   QTextEdit* textEdit_;
+};
+
+class ComboBoxSlotManager : public WidgetSlotManager
+{
+public:
+  typedef boost::function<std::string(const QString&)> FromQStringConverter;
+  typedef boost::function<QString(const std::string&)> ToQStringConverter;
+  ComboBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QComboBox* comboBox, 
+    FromQStringConverter fromLabelConverter = [](const QString& s) { return s.toStdString(); },
+    ToQStringConverter toLabelConverter = [](const std::string& s) { return QString::fromStdString(s); }) : 
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), comboBox_(comboBox), fromLabelConverter_(fromLabelConverter), toLabelConverter_(toLabelConverter)
+      {
+        connect(comboBox, SIGNAL(activated(const QString&)), this, SLOT(push()));
+      }
+      virtual void pull() override
+      {
+        auto value = state_->getValue(stateKey_).getString();
+
+        LOG_DEBUG("In new version of pull code for combobox: " << value);
+        auto qstring = toLabelConverter_(value);
+        comboBox_->setCurrentIndex(comboBox_->findText(qstring));
+      }
+      virtual void pushImpl() override
+      {
+        auto label = fromLabelConverter_(comboBox_->currentText());
+        LOG_DEBUG("In new version of push code for combobox: " << label);
+
+        if (label != state_->getValue(stateKey_).getString())
+        {
+          state_->setValue(stateKey_, label);
+        }
+      }
+private:
+  AlgorithmParameterName stateKey_;
+  QComboBox* comboBox_;
+  FromQStringConverter fromLabelConverter_;
+  ToQStringConverter toLabelConverter_;
 };
 
 CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStateHandle state,
@@ -67,18 +108,17 @@ CreateFieldDataDialog::CreateFieldDataDialog(const std::string& name, ModuleStat
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(functionTextEdit_, SIGNAL(textChanged()), this, SLOT(push()));
   connect(fieldOutputDataComboBox_, SIGNAL(activated(const QString&)), this, SLOT(push()));
   connect(fieldOutputBasisComboBox_, SIGNAL(activated(const QString&)), this, SLOT(push()));
 
-  addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, CreateFieldDataModule::FunctionString, functionTextEdit_));
+  addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, CreateFieldDataModule::FunctionString, functionTextEdit_));
+  addWidgetSlotManager(boost::make_shared<ComboBoxSlotManager>(state_, *this, CreateFieldDataModule::FormatString, fieldOutputDataComboBox_));
 }
 
 void CreateFieldDataDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(CreateFieldDataModule::FunctionString, functionTextEdit_->toPlainText().toStdString());
 #ifdef SCIRUN4_CODE_TO_BE_ENABLED_LATER
     state_->setValue(CreateFieldDataModule::FormatString,
     state_->setValue(CreateFieldDataModule::BasisString,
@@ -89,10 +129,5 @@ void CreateFieldDataDialog::push()
 void CreateFieldDataDialog::pull()
 {
   pull_newVersionToReplaceOld();
-  //Pulling p(this);
-  //auto newValue = QString::fromStdString(state_->getValue(CreateFieldDataModule::FunctionString).getString());
-  //if (newValue != functionTextEdit_->toPlainText())
-  //  functionTextEdit_->setPlainText(newValue);
-  //
   //hook up format, basis later.
 }

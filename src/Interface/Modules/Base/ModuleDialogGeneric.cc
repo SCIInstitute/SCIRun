@@ -41,6 +41,7 @@ ModuleDialogGeneric::ModuleDialogGeneric(SCIRun::Dataflow::Networks::ModuleState
 
   if (state_)
   {
+    //TODO: replace with pull_newVersion
     state_->connect_state_changed([this]() { pull(); });
   }
 }
@@ -69,9 +70,16 @@ void ModuleDialogGeneric::pull_newVersionToReplaceOld()
     wsm->pull();
 }
 
-WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state) : state_(state) 
+WidgetSlotManager::WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog) : state_(state), dialog_(dialog)
 {
 }
+
 WidgetSlotManager::~WidgetSlotManager() 
 {
+}
+
+void WidgetSlotManager::push()
+{
+  if (!dialog_.isPulling())
+    pushImpl();
 }

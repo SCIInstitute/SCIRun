@@ -38,15 +38,21 @@
 namespace SCIRun {
 namespace Gui {
   
-  class SCISHARE WidgetSlotManager
+  class ModuleDialogGeneric;
+
+  class SCISHARE WidgetSlotManager : public QObject
   {
+    Q_OBJECT
   public:
-    explicit WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state);
+    WidgetSlotManager(SCIRun::Dataflow::Networks::ModuleStateHandle state, ModuleDialogGeneric& dialog);
     virtual ~WidgetSlotManager();
-    virtual void push() = 0;
+    virtual void pushImpl() = 0;
+  public Q_SLOTS:
+    void push();
     virtual void pull() = 0;
   protected:
     SCIRun::Dataflow::Networks::ModuleStateHandle state_;
+    ModuleDialogGeneric& dialog_;
   };
 
   typedef boost::shared_ptr<WidgetSlotManager> WidgetSlotManagerPtr;
@@ -56,6 +62,8 @@ namespace Gui {
     Q_OBJECT
   public:
     virtual ~ModuleDialogGeneric();
+    bool isPulling() const { return pulling_; } //yuck
+
     //TODO: input state hookup?
     //yeah: eventually replace int with generic dialog state object, but needs to be two-way (set/get)
     //virtual int moduleExecutionTime() = 0;
@@ -64,7 +72,7 @@ namespace Gui {
     virtual void moduleExecuted() {}
     //need a better name: read/updateUI
     virtual void pull() = 0;
-    virtual void pull_newVersionToReplaceOld();
+    void pull_newVersionToReplaceOld();
   Q_SIGNALS:
     void executionTimeChanged(int time);
     void executeButtonPressed();
