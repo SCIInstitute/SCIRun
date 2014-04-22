@@ -306,7 +306,7 @@ FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
     mesh_->get_derivate_weights(p[j],d[j],1);
     size_t pad_size = ( 3 - p[ j ].size() ) * d[ j ].size();
     
-    // TODO: replace with std::fill
+    /// @todo: replace with std::fill
     for (size_t k = 0; k < pad_size; k++ )
     {
       d[ j ].push_back( 0.0 );
@@ -315,7 +315,7 @@ FEMBuilder::create_numerical_integration(std::vector<VMesh::coords_type> &p,
 }
 
 
-//! build line of the local stiffness matrix
+/// build line of the local stiffness matrix
 
 bool
 FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
@@ -355,7 +355,7 @@ FEMBuilder::build_local_matrix(VMesh::Elem::index_type c_ind,
   }
   else
   {
-    // TODO: replace with std::fill
+    /// @todo: replace with std::fill
     for (int i=0; i<local_dimension; i++)
       l_stiff[i] = 0.0;
     
@@ -499,7 +499,7 @@ FEMBuilder::build_local_matrix_regular(VMesh::Elem::index_type c_ind,
         
         // Volume elements can return negative determinants if the order of elements
         // is put in a different order
-        // TODO: It seems to be that a negative determinant is not necessarily bad, 
+        /// @todo: It seems to be that a negative determinant is not necessarily bad, 
         // we should be more flexible on this point
         if (detJ <= 0.0) 
         {
@@ -643,7 +643,7 @@ FEMBuilder::setup()
   // Local degrees of freedom per element
   local_dimension = local_dimension_nodes + 
   local_dimension_add_nodes + 
-  local_dimension_derivatives; //!< degrees of freedom (dofs) of system
+  local_dimension_derivatives; ///< degrees of freedom (dofs) of system
   
   VMesh::Node::size_type mns;
   mesh_->size(mns);
@@ -722,11 +722,11 @@ FEMBuilder::parallel(int proc_num)
     }
   }
   
-  //! distributing dofs among processors
+  /// distributing dofs among processors
   const index_type start_gd = (global_dimension * proc_num)/numprocessors_;
   const index_type end_gd  = (global_dimension * (proc_num+1))/numprocessors_;
   
-  //! creating sparse matrix structure
+  /// creating sparse matrix structure
   std::vector<index_type> mycols;
   
   VMesh::Elem::array_type ca;
@@ -734,7 +734,7 @@ FEMBuilder::parallel(int proc_num)
   VMesh::Edge::array_type ea;
   std::vector<index_type> neib_dofs;
   
-  //! loop over system dofs for this thread
+  /// loop over system dofs for this thread
   int cnt = 0;
   size_type size_gd = end_gd-start_gd;
   auto updateFrequency = 2*size_gd / 100;
@@ -748,16 +748,16 @@ FEMBuilder::parallel(int proc_num)
       rows_[i] = mycols.size();
       
       neib_dofs.clear();
-      //! check for nodes
+      /// check for nodes
       if (i < global_dimension_nodes)
       {
-        //! get neighboring cells for node
+        /// get neighboring cells for node
         mesh_->get_elems(ca, i);
       }
       else if (i < global_dimension_nodes+global_dimension_add_nodes)
       {
-        //! check for additional nodes at edges
-        //! get neighboring cells for node
+        /// check for additional nodes at edges
+        /// get neighboring cells for node
         VMesh::Edge::index_type ii(i-global_dimension_nodes);
         mesh_->get_elems(ca,ii);
       }
@@ -770,7 +770,7 @@ FEMBuilder::parallel(int proc_num)
       
       for(size_t j = 0; j < ca.size(); j++)
       {
-        //! get neighboring nodes
+        /// get neighboring nodes
         mesh_->get_nodes(na, ca[j]);
         
         for(size_t k = 0; k < na.size(); k++) 
@@ -778,10 +778,10 @@ FEMBuilder::parallel(int proc_num)
           neib_dofs.push_back(static_cast<index_type>(na[k]));
         }
         
-        //! check for additional nodes at edges
+        /// check for additional nodes at edges
         if (global_dimension_add_nodes)
         {
-          //! get neighboring edges
+          /// get neighboring edges
           mesh_->get_edges(ea, ca[j]);
           
           for(size_t k = 0; k < ea.size(); k++)
@@ -819,7 +819,7 @@ FEMBuilder::parallel(int proc_num)
     success_[proc_num] = false;
   }
   
-  //! check point
+  /// check point
   barrier_.wait();
   
   // Bail out if one of the processes failed
@@ -865,7 +865,7 @@ FEMBuilder::parallel(int proc_num)
     success_[proc_num] = false;
   }	
   
-  //! check point
+  /// check point
   barrier_.wait();
   
   // Bail out if one of the processes failed
@@ -877,7 +877,7 @@ FEMBuilder::parallel(int proc_num)
   
   try
   {
-    //! updating global column by each of the processors
+    /// updating global column by each of the processors
     const index_type s = colidx_[proc_num];
     const size_t n = mycols.size();
     
@@ -896,7 +896,7 @@ FEMBuilder::parallel(int proc_num)
   }	
   
   
-  //! check point
+  /// check point
   barrier_.wait();
   
   // Bail out if one of the processes failed
@@ -908,7 +908,7 @@ FEMBuilder::parallel(int proc_num)
   
   try
   {	
-    //! the main thread makes the matrix
+    /// the main thread makes the matrix
     if (proc_num == 0)
     {
       ScopedTimeLogger s0("FEMBuilder::parallel 0 creating matrix");
@@ -926,7 +926,7 @@ FEMBuilder::parallel(int proc_num)
     success_[proc_num] = false;
   }	
   
-  //! check point
+  /// check point
   barrier_.wait();
   
   // Bail out if one of the processes failed
@@ -938,7 +938,7 @@ FEMBuilder::parallel(int proc_num)
   
   try
   {
-    //! zeroing in parallel
+    /// zeroing in parallel
     const index_type ns = colidx_[proc_num];
     const index_type ne = colidx_[proc_num+1];
     double* a = &(fematrix_->valuePtr()[ns]), *ae=&(fematrix_->valuePtr()[ne]);
@@ -950,10 +950,10 @@ FEMBuilder::parallel(int proc_num)
     
     create_numerical_integration(ni_points, ni_weights, ni_derivatives);
     
-    std::vector<double> lsml; //!< line of local stiffnes matrix
+    std::vector<double> lsml; ///< line of local stiffnes matrix
     lsml.resize(local_dimension);
     
-    //! loop over system dofs for this thread
+    /// loop over system dofs for this thread
     cnt = 0;
     ScopedTimeLogger loop1("FEMBuilder::parallel loop 2", proc_num == 0);
     size_gd = end_gd-start_gd;
@@ -961,14 +961,14 @@ FEMBuilder::parallel(int proc_num)
     {
       if (i < global_dimension_nodes)
       {
-        //! check for nodes
-        //! get neighboring cells for node
+        /// check for nodes
+        /// get neighboring cells for node
         mesh_->get_elems(ca,i);
       }
       else if (i < global_dimension_nodes + global_dimension_add_nodes)
       {
-        //! check for additional nodes at edges
-        //! get neighboring cells for additional nodes
+        /// check for additional nodes at edges
+        /// get neighboring cells for additional nodes
         VMesh::Edge::index_type ii(i-global_dimension_nodes);
         mesh_->get_elems(ca,ii);
       }
@@ -979,13 +979,13 @@ FEMBuilder::parallel(int proc_num)
         algo_->warning("BuildFEMatrix only supports linear basis functions.");
       }
       
-      //! loop over elements attributed elements
+      /// loop over elements attributed elements
       
       if (mesh_->is_regularmesh())
       {
         for (size_t j = 0; j < ca.size(); j++)
         {
-          mesh_->get_nodes(na, ca[j]); //!< get neighboring nodes
+          mesh_->get_nodes(na, ca[j]); ///< get neighboring nodes
           neib_dofs.resize(na.size());
           for(size_t k = 0; k < na.size(); k++)
           {
@@ -1007,15 +1007,15 @@ FEMBuilder::parallel(int proc_num)
         for (size_t j = 0; j < ca.size(); j++)
         {
           neib_dofs.clear();
-          mesh_->get_nodes(na, ca[j]); //!< get neighboring nodes
+          mesh_->get_nodes(na, ca[j]); ///< get neighboring nodes
           for(size_t k = 0; k < na.size(); k++)
           {
             neib_dofs.push_back(na[k]); // Must cast to (int) for SGI compiler :-(
           }
-          //! check for additional nodes at edges
+          /// check for additional nodes at edges
           if (global_dimension_add_nodes)
           {
-            mesh_->get_edges(ea, ca[j]); //!< get neighboring edges
+            mesh_->get_edges(ea, ca[j]); ///< get neighboring edges
             for(size_t k = 0; k < ea.size(); k++)
             {
               neib_dofs.push_back(global_dimension + ea[k]);
@@ -1169,7 +1169,7 @@ BuildFEMatrixAlgo::run(FieldHandle input, DenseMatrixHandle ctable, SparseRowMat
         for (size_type s=0; s < nconds; s++)
         {
           SparseRowMatrixHandle temp;
-          // TODO: can initialize array using std::fill
+          /// @todo: can initialize array using std::fill
           data[s] = 1.0;
           
           if (! builder.build_matrix(input, con, temp) )

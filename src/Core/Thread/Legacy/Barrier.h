@@ -28,16 +28,15 @@
 
 
 
-/*
- *  Barrier: Barrier synchronization primitive
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file   Barrier.h
+///@brief  Barrier synchronization primitive
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_Barrier_h
 #define Core_Thread_Barrier_h
@@ -50,13 +49,13 @@ class Barrier_private;
 
 /**************************************
  
- CLASS
+@class
  Barrier
 
  KEYWORDS
  Thread
 
- DESCRIPTION
+@details
  Barrier synchronization primitive.  Provides a single wait
  method to allow a set of threads to block at the barrier until all
  threads arrive.
@@ -72,20 +71,20 @@ class Barrier_private;
 class SCISHARE Barrier {
 public:
   //////////
-  // Create a barrier which will be used by a variable number
-  // of threads.   <tt>name</tt> should be a static string
-  // which describes the primitive for debugging purposes.
+  /// Create a barrier which will be used by a variable number
+  /// of threads.   <tt>name</tt> should be a static string
+  /// which describes the primitive for debugging purposes.
   explicit Barrier(const char* name);
     
   //////////
-  // Destroy the barrier
+  /// Destroy the barrier
   virtual ~Barrier();
     
   //////////
-  // This causes all of the threads to block at this method
-  // until all numThreads threads have called the method.
-  // After all threads have arrived, they are all allowed
-  // to return.
+  /// This causes all of the threads to block at this method
+  /// until all numThreads threads have called the method.
+  /// After all threads have arrived, they are all allowed
+  /// to return.
   void wait(int numThreads);
 
 protected:

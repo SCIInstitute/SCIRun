@@ -104,7 +104,7 @@ namespace Math {
     SolverInputs imatrices_;
     SCIRun::Core::Thread::Barrier barrier_;
     int numProcs_;
-    //! classes for communication
+    /// classes for communication
     std::vector<double> reduce1_;
     std::vector<double> reduce2_;
   };

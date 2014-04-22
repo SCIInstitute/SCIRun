@@ -73,17 +73,17 @@ run(FieldHandle input, std::vector<FieldHandle>& output)
   
   output.clear();
   
-  //! Check whether we have an input field
+  /// Check whether we have an input field
   if (input.get_rep() == 0)
   {
     error("No input field");
     algo_end(); return (false);
   }
 
-  //! Figure out what the input type and output type have to be
+  /// Figure out what the input type and output type have to be
   FieldInformation fi(input);
     
-  //! We do not yet support Quadratic and Cubic Meshes here
+  /// We do not yet support Quadratic and Cubic Meshes here
   if (fi.is_nonlinear())
   {
     error("This function has not yet been defined for non-linear elements.");

@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Core/Logging/ConsoleLogger.cc/
+
 #include <iostream>
 #include <Core/Logging/ConsoleLogger.h>
 

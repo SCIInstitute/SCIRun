@@ -30,13 +30,14 @@
 
 
 /*
- *  Timer.h: Implementation of portable timer utility classes
+ *@file  Timer.h
+ *@brief Implementation of portable timer utility classes
  *
- *  Written by:
+ *@author
  *   Steven G. Parker
  *   Department of Computer Science
  *   University of Utah
- *   Feb. 1994
+ *@date  Feb. 1994
  *
  */
 

@@ -30,14 +30,14 @@
 #ifndef CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTFIELDDATATYPE_H
 #define CORE_ALGORITHMS_FIELDS_FIELDDATA_CONVERTFIELDDATATYPE_H 1
 
-//! Datatypes that the algorithm uses
+// Datatypes that the algorithm uses
 #include <Core/Datatypes/Mesh.h>
 #include <Core/Datatypes/Field.h>
 
-//! Base class for algorithm
+// Base class for algorithm
 #include <Core/Algorithms/Util/AlgoBase.h>
 
-//! for Windows support
+// for Windows support
 #include <Core/Algorithms/Fields/share.h>
 
 namespace SCIRunAlgo {
@@ -47,10 +47,10 @@ using namespace SCIRun;
 class SCISHARE ConvertFieldDataTypeAlgo : public AlgoBase
 {
   public:
-    //! Set defaults
+    /// Set defaults
     ConvertFieldDataTypeAlgo()
     {
-      //! The output type
+      /// The output type
       add_option("datatype","double","char|unsigned char|short|unsigned short|int|unsigned int|float|double|Vector|Tensor");
     }
   

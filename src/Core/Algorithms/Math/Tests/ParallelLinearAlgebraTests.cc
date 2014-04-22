@@ -274,8 +274,8 @@ TEST(ParallelArithmeticTests, CanComputeMaxOfVector)
   EXPECT_EQ(1, max2);
 }
 
-//TODO FIX_UNIT_TESTS--Intern.
-//TODO: by intern
+/// @todo FIX_UNIT_TESTS--Intern.
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(),1);
@@ -300,7 +300,7 @@ TEST(ParallelArithmeticTests, CanTakeAbsoluteValueOfDiagonal)
   EXPECT_EQ(2,v1.data_[size-1]); 
 }
 
-//TODO: by intern
+/// @todo: by intern
 struct absdiag
 {
    absdiag(ParallelLinearAlgebraSharedData& data, ParallelLinearAlgebra::ParallelMatrix& m1, 
@@ -378,7 +378,7 @@ struct max
 
 TEST(ParallelArithmeticTests, CanComputeMaxOfVectorMulti)
 {
-  //TODO: multi thread
+  /// @todo: multi thread
   ParallelLinearAlgebraSharedData data(getDummySystem(), 2);
 
   ParallelLinearAlgebra::ParallelVector v1;
@@ -471,7 +471,7 @@ struct absthreshold_inv
   }
 };
 
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThresholdMulti)
 {
   const int NUM_THREADS = 2;
@@ -537,7 +537,7 @@ TEST(ParallelArithmeticTests, CanInvertElementsOfVectorWithAbsoluteValueThreshol
 }
 
 
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelLinearAlgebraTests, CanFillVectorWithOnes)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(),1);
@@ -555,7 +555,7 @@ TEST(ParallelLinearAlgebraTests, CanFillVectorWithOnes)
   }
 }
 
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanMultiplyMatrixByVector)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(),1);
@@ -638,7 +638,7 @@ TEST(ParallelArithmeticTests, CanMultiplyMatrixByVectorMulti)
   EXPECT_EQ(2,vR.data_[size-1]);
 }
 
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanSubtractVectors)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(),1);
@@ -821,7 +821,7 @@ TEST(ParallelArithmeticTests, CanCompute2NormMulti)
   EXPECT_NEAR(7.0711,v3Norm_Result,0.001);
 }
 
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWise)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(),1);
@@ -887,7 +887,7 @@ struct multVectors
     pla.mult(v1_,v2_,v3_); 
   }
 };
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(), 2);
@@ -915,7 +915,7 @@ TEST(ParallelArithmeticTests, CanMultiplyVectorsComponentWiseMulti)
 }
 
 
-//TODO: by intern
+/// @todo: by intern
 TEST(ParallelArithmeticTests, CanComputeDotProduct)
 {
   ParallelLinearAlgebraSharedData data(getDummySystem(),1);

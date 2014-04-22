@@ -29,7 +29,7 @@
 
 #include <Core/Algorithms/Fields/ResampleMesh/PadRegularMesh.h>
 
-//! For mapping matrices
+/// For mapping matrices
 #include <Core/Datatypes/Field.h>
 #include <Core/Datatypes/FieldInformation.h>
 

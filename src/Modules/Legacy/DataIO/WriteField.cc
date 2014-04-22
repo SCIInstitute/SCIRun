@@ -27,22 +27,21 @@
 */
 
 
-/*
- *  WriteField.cc: Save persistent representation of a field to a file
- *
- *  Written by:
- *   Elisha R. Hughes
- *   CVRTI
- *   University of Utah
- *   November 2004
-
- *  based on:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1994
- *
- */
+///
+/// @file  WriteField.cc
+/// @brief Save persistent representation of a field to a file
+/// 
+/// @author
+///    Elisha R. Hughes
+///    CVRTI
+///    University of Utah
+///   based on:
+///    Steven G. Parker
+///    Department of Computer Science
+///    University of Utah
+///    July 1994
+/// 
+/// @date  November 2004
 
 #include <Dataflow/Network/Ports/FieldPort.h>
 #include <Dataflow/Modules/DataIO/GenericWriter.h>

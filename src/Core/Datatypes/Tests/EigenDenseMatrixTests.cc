@@ -157,7 +157,7 @@ TEST(EigenDenseMatrixBinaryOperationTests, CanSubtract)
   EXPECT_EQ(m - m, Zero);
 }
 
-//TODO: compare to v4.
+/// @todo: compare to v4.
 TEST(EigenDenseMatrixBinaryOperationTests, WhatHappensWhenYouAddDifferentSizes)
 {
   DenseMatrix sum = matrix1() + matrixNonSquare();

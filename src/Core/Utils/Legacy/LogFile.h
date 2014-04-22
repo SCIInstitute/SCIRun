@@ -27,9 +27,9 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Core/Utils/Legacy/LogFile.h
 
-
-// LogFile.h
+///@file LogFile.h
 
 
 #ifndef CORE_UTIL_LOGFILE_H

@@ -28,16 +28,17 @@
 
 
 
-/*
- *  MusilRNG.cc: Musil random number generator
- *
- *  Written by:
- *   Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   November 1994
- *
- */
+///
+///@class MusilRNG
+///@brief Musil random number generator
+///
+///@author
+///       Steve Parker
+///       Department of Computer Science
+///       University of Utah
+///
+///@date  November 1994
+///
 
 #include <Core/Math/MusilRNG.h>
 

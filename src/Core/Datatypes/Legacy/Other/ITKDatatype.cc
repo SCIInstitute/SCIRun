@@ -26,15 +26,15 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-// ITKDatatype.cc 
-//
-//  Written by:
-//   Darby J Brown
-//   School of Computing
-//   University of Utah
-//   January 2003
-
+/*
+ *@file ITKDatatype.cc 
+ *
+ *@author
+ *   Darby J Brown
+ *   School of Computing
+ *   University of Utah
+ *@date January 2003
+ */
 
 #include <Core/Datatypes/ITKDatatype.h>
 

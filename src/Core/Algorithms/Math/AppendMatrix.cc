@@ -44,7 +44,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   DenseMatrixConstHandle lhsPtr = input.get<0>();
   DenseMatrixConstHandle rhsPtr = input.get<1>();
   if (!lhsPtr || !rhsPtr)
-    return Outputs(); //TODO: error
+    return Outputs(); /// @todo: error
 
   const DenseMatrix& lhs = *lhsPtr;
   const DenseMatrix& rhs = *rhsPtr;
@@ -52,7 +52,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   if (params == ROWS)
   {
     if (lhs.cols() != rhs.cols())
-      return Outputs(); //TODO: error
+      return Outputs(); /// @todo: error
 
     DenseMatrixHandle output(boost::make_shared<DenseMatrix>(lhs.rows() + rhs.rows(), lhs.cols()));
     for (int i = 0; i < lhs.rows(); ++i)
@@ -66,7 +66,7 @@ AppendMatrixAlgorithm::Outputs AppendMatrixAlgorithm::run(const AppendMatrixAlgo
   else // columns
   {
     if (lhs.rows() != rhs.rows())
-      return Outputs(); //TODO: error
+      return Outputs(); /// @todo: error
 
     DenseMatrixHandle output(boost::make_shared<DenseMatrix>(lhs.rows(), lhs.cols() + rhs.cols()));
     for (int i = 0; i < lhs.rows(); ++i)

@@ -25,6 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
+/// @todo Documentation Modules/Legacy/Fields/ConvertMeshToUnstructuredMesh.cc
 
 // Include the algorithm
 #include <Core/Algorithms/Fields/ConvertMeshType/ConvertMeshToUnstructuredMesh.h>
@@ -56,7 +57,7 @@ DECLARE_MAKER(ConvertMeshToUnstructuredMesh)
  ConvertMeshToUnstructuredMesh::ConvertMeshToUnstructuredMesh(GuiContext* context)
   : Module("ConvertMeshToUnstructuredMesh", context, Source, "ChangeMesh", "SCIRun")
 {
-  //! Forward errors to the module
+  /// Forward errors to the module
   algo_.set_progress_reporter(this);
 }
 

@@ -49,7 +49,7 @@ namespace SCIRun {
           }
           void run()
           {
-            //TODO: crashes on Mac
+            /// @todo: crashes on Mac
             if (shouldLog_)
               Core::Logging::Log::get("executor") << Core::Logging::DEBUG_LOG << "Module Executor: " << module_->get_id() << std::endl;
             auto exec = lookup_->lookupExecutable(module_->get_id());

@@ -32,20 +32,20 @@
 using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Thread;
 
-//! Only include this class if we included TriSurf Support
+/// Only include this class if we included TriSurf Support
 #if (SCIRUN_TRISURF_SUPPORT > 0)
 
 namespace SCIRun {
 
-//! This class is not exposed to the general interface and only the VMesh class
-//! is accessed by other classes.
+/// This class is not exposed to the general interface and only the VMesh class
+/// is accessed by other classes.
 template<class MESH>
 class VTriSurfMesh : public VUnstructuredMesh<MESH> {
 public:
 
   virtual bool is_trisurfmesh()        { return (true); }
 
-  //! constructor and destructor
+  /// constructor and destructor
   VTriSurfMesh(MESH* mesh) : VUnstructuredMesh<MESH>(mesh) 
   {
     DEBUG_CONSTRUCTOR("VTriSurfMesh")      
@@ -126,53 +126,53 @@ public:
 };
 
 
-//! Functions for creating the virtual interface for specific mesh types
-//! These are similar to compare maker and only serve to instantiate the class
+/// Functions for creating the virtual interface for specific mesh types
+/// These are similar to compare maker and only serve to instantiate the class
 
-//! Currently there are only 3 variations of this mesh available
-//! 1) linear interpolation
-//! 2) quadratic interpolation
-//! 3) cubic interpolation
+/// Currently there are only 3 variations of this mesh available
+/// 1) linear interpolation
+/// 2) quadratic interpolation
+/// 3) cubic interpolation
 
-//! Add the LINEAR virtual interface and the meshid for creating it 
+/// Add the LINEAR virtual interface and the meshid for creating it 
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVTriSurfMesh(TriSurfMesh<TriLinearLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriLinearLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID TriSurfMesh_MeshID1(
                   TriSurfMesh<TriLinearLgn<Point> >::type_name(-1),
                   TriSurfMesh<TriLinearLgn<Point> >::mesh_maker);
                   
                   
-//! Add the QUADRATIC virtual interface and the meshid for creating it                  
+/// Add the QUADRATIC virtual interface and the meshid for creating it                  
 #if (SCIRUN_QUADRATIC_SUPPORT > 0)
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVTriSurfMesh(TriSurfMesh<TriQuadraticLgn<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriQuadraticLgn<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID TriSurfMesh_MeshID2(TriSurfMesh<TriQuadraticLgn<Point> >::type_name(-1),
                   TriSurfMesh<TriQuadraticLgn<Point> >::mesh_maker);
 #endif
 
 
-//! Add the CUBIC virtual interface and the meshid for creating it                  
+/// Add the CUBIC virtual interface and the meshid for creating it                  
 #if (SCIRUN_CUBIC_SUPPORT > 0)
 
-//! Create virtual interface 
+/// Create virtual interface 
 VMesh* CreateVTriSurfMesh(TriSurfMesh<TriCubicHmt<Point> >* mesh)
 {
   return new VTriSurfMesh<TriSurfMesh<TriCubicHmt<Point> > >(mesh);
 }
 
-//! Register class maker, so we can instantiate it
+/// Register class maker, so we can instantiate it
 static MeshTypeID TriSurfMesh_MeshID3(TriSurfMesh<TriCubicHmt<Point> >::type_name(-1),
                   TriSurfMesh<TriCubicHmt<Point> >::mesh_maker);
                   
@@ -391,7 +391,7 @@ get_elems_pointer() const
    return (&(this->mesh_->faces_[0]));
 }
 
-// TODO: Fix this function so it does not need the vector conversion
+/// @todo: Fix this function so it does not need the vector conversion
 template <class MESH>
 void
 VTriSurfMesh<MESH>::insert_node_into_elem(VMesh::Elem::array_type& newelems, 

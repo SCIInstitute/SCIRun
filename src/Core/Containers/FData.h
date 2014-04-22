@@ -26,12 +26,12 @@
    DEALINGS IN THE SOFTWARE.
 */  
 
-//  
-//    File   : FData.h
-//    Author : Martin Cole
-//    Date   : Wed Apr 28 09:45:51 2004
-//    
-//    Taken from old LatVolField.h ... 
+///  
+///    @file   FData.h
+///    @author Martin Cole
+///    @date   Wed Apr 28 09:45:51 2004
+///    
+///    @brief  Taken from old LatVolField.h ... 
 
 
 #ifndef CORE_CONTAINERS_FDATA_H

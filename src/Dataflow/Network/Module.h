@@ -25,7 +25,7 @@
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
 */
-
+/// @todo Documentation Dataflow/Network/Module.h
 
 #ifndef DATAFLOW_NETWORK_MODULE_H
 #define DATAFLOW_NETWORK_MODULE_H 
@@ -86,7 +86,7 @@ namespace Networks {
     virtual std::vector<InputPortHandle> inputPorts() const;
     virtual std::vector<OutputPortHandle> outputPorts() const;
 
-    //TODO: execute signal here.
+    /// @todo: execute signal here.
     virtual void do_execute() throw(); //--C++11--will throw nothing
     virtual ModuleStateHandle get_state();
     virtual void set_state(ModuleStateHandle state);
@@ -123,7 +123,7 @@ namespace Networks {
 
     virtual bool hasDynamicPorts() const 
     {
-      return false; //TODO: need to examine HasPorts base classes
+      return false; /// @todo: need to examine HasPorts base classes
     }
 
     bool oport_connected(const PortId& id) const;
@@ -192,7 +192,7 @@ namespace Networks {
       Builder& setStateDefaults();
       ModuleHandle build();
 
-      //TODO: these don't quite belong here, think about extracting
+      /// @todo: these don't quite belong here, think about extracting
       PortId cloneInputPort(ModuleHandle module, const PortId& id);
       void removeInputPort(ModuleHandle module, const PortId& id);
 
@@ -207,7 +207,7 @@ namespace Networks {
       static SourceMaker source_maker_;
     };
 
-    //TODO: yuck
+    /// @todo: yuck
     static ModuleStateFactoryHandle defaultStateFactory_;
     static Core::Algorithms::AlgorithmFactoryHandle defaultAlgoFactory_;
 
@@ -392,7 +392,7 @@ namespace Modules
   public:
     static std::vector<SCIRun::Dataflow::Networks::InputPortDescription> inputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      //TODO: use move semantics
+      /// @todo: use move semantics
       auto ports = Has1InputPort<PortTypeTag0>::inputPortDescription(port0Name);
       ports.push_back(Has1InputPort<PortTypeTag1>::inputPortDescription(port1Name)[0]);
       return ports;
@@ -472,7 +472,7 @@ namespace Modules
   public:
     static std::vector<SCIRun::Dataflow::Networks::OutputPortDescription> outputPortDescription(const std::string& port0Name, const std::string& port1Name)
     {
-      //TODO: use move semantics
+      /// @todo: use move semantics
       auto ports = Has1OutputPort<PortTypeTag0>::outputPortDescription(port0Name);
       ports.push_back(Has1OutputPort<PortTypeTag1>::outputPortDescription(port1Name)[0]);
       return ports;
@@ -620,7 +620,7 @@ namespace Modules
 
 #define INITIALIZE_PORT(nameObj) do{ nameObj.id_.name = #nameObj; }while(0);
 
-  //TODO: make metafunc for Input/Output
+  /// @todo: make metafunc for Input/Output
 
   template <size_t numPorts, class ModuleType>
   struct IPortDescriber

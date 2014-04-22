@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/NetworkFwd.h
+
 
 #ifndef DATAFLOW_NETWORK_NETWORK_FWD_H
 #define DATAFLOW_NETWORK_NETWORK_FWD_H 
@@ -61,7 +63,7 @@ class ExecutableLookup;
 class ExecutableObject;
 class NetworkXML;
 struct ModulePositions;
-//TODO: rename this
+/// @todo: rename this
 struct NetworkFile;
 class NetworkGlobalSettings;
 class ModulePositionEditor;

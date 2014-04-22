@@ -26,6 +26,9 @@
  DEALINGS IN THE SOFTWARE.
  */
 
+/// @todo Documentation Core/Thread/ Barrier.cc/.h ConditionVariable.cc/.h
+///  Mutex.cc/.h Parallel.cc/.h 
+
 #include <Core/Thread/Barrier.h>
 
 using namespace SCIRun::Core::Thread;

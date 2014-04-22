@@ -28,16 +28,15 @@
 
 
 
-/*
- *  FutureValue: Delayed return values
- *
- *  Written by:
- *   Author: Steve Parker
- *   Department of Computer Science
- *   University of Utah
- *   Date: June 1997
- *
- */
+///
+///@file   FutureValue.h
+///@brief  Delayed return values
+///
+///@author Steve Parker
+///        Department of Computer Science
+///        University of Utah
+///@date   June 1997
+///
 
 #ifndef Core_Thread_FutureValue_h
 #define Core_Thread_FutureValue_h
@@ -48,13 +47,13 @@
 namespace SCIRun {
 /**************************************
  
-  CLASS
+@class
   FutureValue
    
   KEYWORDS
   Thread
    
-  DESCRIPTION
+@details
   Creates a single slot for some return value.  The <i>wait</i> method
   waits for a value to be sent from another thread via the <i>reply</i>
   method.  This is typically used to provide a simple means of returning
@@ -72,22 +71,22 @@ namespace SCIRun {
 template<class Item> class FutureValue {
 public:
   //////////
-  // Create the FutureValue object.  <i>name</i> should be a
-  // static string which describes the primitive for debugging
-  // purposes.
+  /// Create the FutureValue object.  <i>name</i> should be a
+  /// static string which describes the primitive for debugging
+  /// purposes.
   FutureValue(const char* name);
 
   //////////
-  // Destroy the object
+  /// Destroy the object
   ~FutureValue();
 
   //////////
-  // Wait until the reply is sent by anothe thread, then return
-  // that reply.
+  /// Wait until the reply is sent by anothe thread, then return
+  /// that reply.
   Item receive();
 
   //////////
-  // Send the reply to the waiting thread.
+  /// Send the reply to the waiting thread.
   void send(const Item& reply);
 
 private:

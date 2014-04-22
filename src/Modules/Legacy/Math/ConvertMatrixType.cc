@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  ConvertMatrixType: Unary matrix operations -- transpose, negate
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+///
+///@class ConvertMatrixType
+///@brief Unary matrix operations -- transpose, negate
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  June 1999
+///
 
 #include <Core/Datatypes/ColumnMatrix.h>
 #include <Core/Datatypes/DenseMatrix.h>

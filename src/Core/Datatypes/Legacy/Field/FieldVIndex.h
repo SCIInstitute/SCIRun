@@ -35,7 +35,7 @@
 
 namespace SCIRun {
 
-//! Base type for index types.
+/// Base type for index types.
 template <class T>
 class FieldVIndexBase {
 public:
@@ -44,7 +44,7 @@ public:
   FieldVIndexBase(T i) :
     index_(i) {}
 
-  //! Required interface for an Index.
+  /// Required interface for an Index.
   operator T const &() const { return index_; }
 
   inline FieldVIndexBase<T> operator+(const int) const;
@@ -176,7 +176,7 @@ inline FieldVIndexBase<T>& FieldVIndexBase<T>::operator-=(const FieldVIndexBase<
 }
 
 
-//! Distinct type for node index.
+/// Distinct type for node index.
 template <class T>
 struct VNodeIndex : public FieldVIndexBase<T> {
   VNodeIndex() :
@@ -185,7 +185,7 @@ struct VNodeIndex : public FieldVIndexBase<T> {
     FieldVIndexBase<T>(index) {}
 };
 
-//! Distinct type for additional lagrangian node.
+/// Distinct type for additional lagrangian node.
 template <class T>
 struct VENodeIndex : public FieldVIndexBase<T> {
   VENodeIndex() :
@@ -195,7 +195,7 @@ struct VENodeIndex : public FieldVIndexBase<T> {
 };
 
 
-//! Distinct type for edge index.
+/// Distinct type for edge index.
 template <class T>
 struct VEdgeIndex : public FieldVIndexBase<T> {
   VEdgeIndex() :
@@ -205,7 +205,7 @@ struct VEdgeIndex : public FieldVIndexBase<T> {
 };
 
 
-//! Distinct type for face index.
+/// Distinct type for face index.
 template <class T>
 struct VFaceIndex : public FieldVIndexBase<T> {
   VFaceIndex() :
@@ -214,7 +214,7 @@ struct VFaceIndex : public FieldVIndexBase<T> {
     FieldVIndexBase<T>(index) {}
 };
 
-//! Distinct type for cell index.
+/// Distinct type for cell index.
 template <class T>
 struct VCellIndex : public FieldVIndexBase<T> {
   VCellIndex() :
@@ -223,7 +223,7 @@ struct VCellIndex : public FieldVIndexBase<T> {
     FieldVIndexBase<T>(index) {}
 };
 
-//! Distinct type for elem index.
+/// Distinct type for elem index.
 template <class T>
 struct VElemIndex : public FieldVIndexBase<T> {
   VElemIndex() :
@@ -232,7 +232,7 @@ struct VElemIndex : public FieldVIndexBase<T> {
     FieldVIndexBase<T>(index) {}
 };
 
-//! Distinct type for elem index.
+/// Distinct type for elem index.
 template <class T>
 struct VDElemIndex : public FieldVIndexBase<T> {
   VDElemIndex() :

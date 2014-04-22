@@ -29,16 +29,16 @@
 
 
 
-/*
- *  IllegalValue.h: Generic exception for invalid values
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   July 1999
- *
- */
+///
+///@file  IllegalValue.h
+///@brief Generic exception for invalid values
+///
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  July 1999
+///
 
 #ifndef Core_Exceptions_IllegalValue_h
 #define Core_Exceptions_IllegalValue_h

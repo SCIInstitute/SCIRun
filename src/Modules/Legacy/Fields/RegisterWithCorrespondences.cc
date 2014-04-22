@@ -26,15 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Modules/Legacy/Fields/RegisterWithCorrespondences.cc
 
-/*
- *  RegisterWithCorrespondences.cc:
- *
- *  Written by:
- *   darrell
- *   TODAY'S DATE HERE
- *
- */
+///
+///@file  RegisterWithCorrespondences.cc
+///
+///@author
+///   darrell
+///  
+/// TODAY'S DATE HERE
+///
 
 #include <Dataflow/Network/Module.h>
 #include <Core/Datatypes/Field.h>

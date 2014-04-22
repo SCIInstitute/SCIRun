@@ -26,18 +26,16 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-
-
-/*
- *  DenseColMajMatrix.h:  DenseColMaj matrices
- *
- *  Written by:
- *   Steven G. Parker
- *   Department of Computer Science
- *   University of Utah
- *   October 1994
- *
- */
+///
+///@file  DenseColMajMatrix.h
+///@brief DenseColMaj matrices
+/// 
+///@author
+///       Steven G. Parker
+///       Department of Computer Science
+///       University of Utah
+///@date  October 1994
+/// 
 
 #ifndef CORE_DATATYPES_DENSECOLMAJMATRIX_H
 #define CORE_DATATYPES_DENSECOLMAJMATRIX_H 1
@@ -76,15 +74,15 @@ class DenseColMajMatrixGeneric : public Matrix<T>
 {
 
 public:
-  //! Constructors
+  /// Constructors
   DenseColMajMatrixGeneric();
   DenseColMajMatrixGeneric(size_type r, size_type c);
   DenseColMajMatrixGeneric(const DenseColMajMatrixGeneric&);
 
-  //! Destructor
+  /// Destructor
   virtual ~DenseColMajMatrixGeneric();
   
-  //! Public member functions
+  /// Public member functions
   virtual DenseColMajMatrixGeneric* clone() const;
   DenseColMajMatrixGeneric& operator=(const DenseColMajMatrixGeneric&);
   
@@ -96,7 +94,7 @@ public:
   virtual T*   get_data_pointer() const;
   virtual size_type get_data_size() const;
 
-  //! slow setters/getter for polymorphic operations
+  /// slow setters/getter for polymorphic operations
   virtual void    zero();
   virtual T  get(index_type r, index_type c) const;
   virtual void    put(index_type r, index_type c, T val);
@@ -125,13 +123,13 @@ public:
   T  sumOfRow(size_type);
   
 
-  //! fast accessors
+  /// fast accessors
   inline T &iget(index_type r, index_type c)
   {
     return dataptr_[c * this->nrows_ + r];
   }
 
-  //! fast accessors
+  /// fast accessors
   inline const T &iget(index_type r, index_type c) const
   {
     return dataptr_[c * this->nrows_ + r];
@@ -147,14 +145,14 @@ public:
     return iget(r, c);
   }
 
-  //! Throws an assertion if not square
+  /// Throws an assertion if not square
   T determinant();
 
   static DenseColMajMatrixGeneric* identity(size_type size);
 
   virtual void print(std::string&) const;
   
-  //! Persistent representation...
+  /// Persistent representation...
   virtual void io(Piostream&);
   static PersistentTypeID type_id;
   
@@ -189,7 +187,7 @@ DenseColMajMatrixGeneric<T>::compute_checksum()
   return (sum);
 }
 
-//! constructors
+/// constructors
 template <typename T>
 DenseColMajMatrixGeneric<T>::DenseColMajMatrixGeneric() :
 dataptr_(0)
@@ -231,7 +229,7 @@ DenseColMajMatrixGeneric<T>::get_data_size() const
 }
 
 
-//! destructor
+/// destructor
 template <typename T>
 DenseColMajMatrixGeneric<T>::~DenseColMajMatrixGeneric()
 {
@@ -241,7 +239,7 @@ DenseColMajMatrixGeneric<T>::~DenseColMajMatrixGeneric()
 }
 
 
-//! assignment operator
+/// assignment operator
 template <typename T>
 DenseColMajMatrixGeneric<T>&
 DenseColMajMatrixGeneric<T>::operator=(const DenseColMajMatrixGeneric& m)
@@ -376,7 +374,7 @@ DenseColMajMatrixGeneric<T>::submatrix(index_type r1, index_type c1,
   DenseColMajMatrixGeneric *mat = new DenseColMajMatrixGeneric(r2 - r1 + 1, c2 - c1 + 1);
   for (index_type i = c1; i <= c2; i++)
   {
-    // TODO: Test this.
+    /// @todo: Test this.
     memcpy(mat->dataptr_ + (i - c1) * (r2 - r1 + 1),
       dataptr_ + c1 * this->nrows_ + r1,
       (r2 - r1 + 1) * sizeof(double));

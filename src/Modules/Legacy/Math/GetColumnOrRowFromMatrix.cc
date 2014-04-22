@@ -27,16 +27,16 @@
 */
 
 
-/*
- *  GetColumnOrRowFromMatrix: Select a row or column of a matrix
- *
- *  Written by:
- *   David Weinstein
- *   Department of Computer Science
- *   University of Utah
- *   June 1999
- *
- */
+///
+///@class GetColumnOrRowFromMatrix
+///@brief Select a row or column of a matrix
+///
+///@author
+///   David Weinstein
+///   Department of Computer Science
+///   University of Utah
+///@date  June 1999
+///
 
 #include <Core/Datatypes/Matrix.h>
 #include <Core/Datatypes/ColumnMatrix.h>

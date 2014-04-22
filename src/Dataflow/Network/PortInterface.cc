@@ -26,6 +26,8 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+/// @todo Documentation Dataflow/Network/PortInterface.cc
+
 #include <iostream>
 #include <Dataflow/Network/PortInterface.h>
 #include <Dataflow/Network/ModuleDescription.h>
@@ -73,7 +75,7 @@ namespace
 
 
 
-//TODO: unit test
+/// @todo: unit test
 bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& port1, const PortDescriptionInterface& port2) const
 {
   if (isFullInputPort(port1) || isFullInputPort(port2))
@@ -94,7 +96,7 @@ bool PortConnectionDeterminer::canBeConnected(const PortDescriptionInterface& po
   if (isWildPort(port1) || isWildPort(port2))
   {
     //std::cout << "found wild port" << std::endl;
-    //TODO: trying out "wildcard" ports
+    /// @todo: trying out "wildcard" ports
     return true;
   }
   if (port1.get_typename() != port2.get_typename())

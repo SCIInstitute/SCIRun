@@ -26,7 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
-// Define drand48 function for WIN32 platform.
+///@brief Define drand48 function for WIN32 platform.
 
 #ifndef CORE_OS_RAND_H
 #define CORE_OS_RAND_H

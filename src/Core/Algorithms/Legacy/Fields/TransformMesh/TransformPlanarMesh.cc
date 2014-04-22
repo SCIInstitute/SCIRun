@@ -64,7 +64,7 @@ run(FieldHandle input, FieldHandle& output)
   VMesh* vmesh = output->vmesh();
   VMesh::size_type num_nodes = vmesh->num_nodes();
     
-  //! Get the first point along the line.
+  /// Get the first point along the line.
   if (num_nodes > 0) 
   {
     vmesh->get_center(p0,VMesh::Node::index_type(0));
@@ -85,14 +85,14 @@ run(FieldHandle input, FieldHandle& output)
     algo_end(); return (false);
   }
 
-  //! For a line assume that it is colinear.
+  /// For a line assume that it is colinear.
   if (vmesh->dimensionality() == 1)
   {
     axisVec = Vector(p1 - p0);
   } 
   else 
   {
-    //! For a surface assume that it is planar.
+    /// For a surface assume that it is planar.
 
     // Translate the mesh to the center of the view.
     const BBox bbox = vmesh->get_bounding_box();
@@ -131,31 +131,31 @@ run(FieldHandle input, FieldHandle& output)
   axisVec.safe_normalize();
 
   std::string axis = get_option("axis");
-  //! Rotate only if not in the -Z or +Z axis.
+  /// Rotate only if not in the -Z or +Z axis.
   if( axis != "z" || fabs( fabs( axisVec.z() ) - 1.0 ) > 1.0e-4 ) 
   {
     double theta = atan2( axisVec.y(), axisVec.x() );
     double phi   = acos( axisVec.z() / axisVec.length() );
 
-    //! Rotate the line into the xz plane.
+    /// Rotate the line into the xz plane.
     trans.pre_rotate( -theta, Vector(0,0,1) );
-    //! Rotate the line into the z axis.
+    /// Rotate the line into the z axis.
     trans.pre_rotate( -phi,   Vector(0,1,0) );
   }
 
   if( axis == "x" ) 
   {
-    //! Rotate the line into the x axis.
+    /// Rotate the line into the x axis.
     trans.pre_rotate( sign * M_PI/2.0, Vector(0,1,0));
   } 
   else if( axis == "y" ) 
   {
-    //! Rotate the line into the y axis.
+    /// Rotate the line into the y axis.
     trans.pre_rotate( sign * -M_PI/2.0, Vector(1,0,0));
   } 
   else if( invert ) 
   {
-    //! Rotate the line into the z axis.
+    /// Rotate the line into the z axis.
     trans.pre_rotate( M_PI, Vector(1,0,0));
   }
 

@@ -33,7 +33,7 @@
 
 namespace SCIRun {
 namespace State {
-  //TODO 
+  /// @todo 
   class SendScalarState //: public AbstractModuleState...
   {
   public:
