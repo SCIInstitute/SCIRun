@@ -42,6 +42,7 @@
 #include <Interface/Modules/Math/AppendMatrixDialog.h>
 #include <Interface/Modules/Math/SolveLinearSystemDialog.h>
 #include <Interface/Modules/Math/SelectSubMatrixDialog.h>
+#include <Interface/Modules/Math/ConvertMatrixTypeDialog.h>
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Interface/Modules/String/PrintDatatypeDialog.h>
 #include <Interface/Modules/Fields/CreateLatVolDialog.h>
@@ -150,6 +151,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new GetFieldsFromBundleDialog(moduleId, state, parentToUse_);
   if (moduleId.find("SplitFieldByDomain") != std::string::npos)
     return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
+  if (moduleId.find("ConvertMatrixType") != std::string::npos)
+    return new ConvertMatrixTypeDialog(moduleId, state, parentToUse_);  
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }

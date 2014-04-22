@@ -48,6 +48,7 @@
 #include <Core/Algorithms/Math/ReportMatrixInfo.h>
 #include <Core/Algorithms/Math/AppendMatrix.h>
 #include <Core/Algorithms/Math/SelectSubMatrix.h>
+#include <Core/Algorithms/Math/ConvertMatrixType.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraBinaryAlgo.h>
 #include <Core/Algorithms/Math/EvaluateLinearAlgebraUnaryAlgo.h>
 #include <Core/Algorithms/Field/ReportFieldInfoAlgorithm.h>
@@ -145,7 +146,9 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new ApplyMappingMatrixAlgo); 
   else if (moduleName == "SelectSubMatrix")
     h.reset(new SelectSubMatrixAlgorithm);   
-    
+  else if (moduleName == "ConvertMatrixType")
+    h.reset(new ConvertMatrixTypeAlgorithm);  
+     
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

@@ -68,6 +68,7 @@
 #include <Modules/Legacy/Fields/ApplyMappingMatrix.h>
 #include <Modules/Legacy/Math/SolveMinNormLeastSqSystem.h>
 #include <Modules/Math/SelectSubMatrix.h>
+#include <Modules/Math/ConvertMatrixType.h>
 #include <Modules/Fields/FieldToMesh.h>
 #include <Modules/Legacy/Bundle/GetFieldsFromBundle.h>
 #include <Modules/Legacy/Bundle/GetMatricesFromBundle.h>
@@ -202,6 +203,7 @@ namespace SCIRun {
 	  addModuleDesc<SelectSubMatrixModule>("SelectSubMatrix", "Math", "SCIRun", "in progress", "...");
 	  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
 	  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
+	  addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "in progress", "...");
 	}
 
         ModuleDescriptionMap descMap_;

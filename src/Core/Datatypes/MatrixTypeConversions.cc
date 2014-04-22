@@ -30,6 +30,7 @@
 #include <Core/Datatypes/DenseMatrix.h>
 #include <Core/Datatypes/SparseRowMatrix.h>
 #include <Core/Datatypes/DenseColumnMatrix.h>
+#include <Core/Datatypes/SparseRowMatrixFromMap.h>
 
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun;
@@ -88,4 +89,84 @@ DenseColumnMatrixHandle matrix_convert::to_column(const MatrixHandle& mh)
     return boost::make_shared<DenseColumnMatrix>(dense->col(0));
 
   return DenseColumnMatrixHandle();
+}
+
+DenseColumnMatrixHandle matrix_convert::to_column_md(const MatrixHandle& mh)
+{
+  auto col = matrix_cast::as_column(mh);
+  if (col)
+    return col;
+
+  auto dense = matrix_cast::as_dense(mh);
+  if (dense)
+    return boost::make_shared<DenseColumnMatrix>(dense->col(0));
+
+  auto sparse = matrix_cast::as_sparse(mh);
+  if (sparse)
+     {
+       DenseColumnMatrix dense_col(sparse->nrows());
+       for (Eigen::SparseVector<double>::InnerIterator it(sparse->row(0)); it; ++it)
+          dense_col(it.index())=it.value(); 
+   
+       return boost::make_shared<DenseColumnMatrix>(dense_col);
+     }
+          
+  return DenseColumnMatrixHandle();
+}
+
+DenseMatrixHandle matrix_convert::to_dense_md(const MatrixHandle& mh)
+{
+  auto dense = matrix_cast::as_dense(mh);
+  if (dense)
+    return dense;
+  
+  auto col = matrix_cast::as_column(mh);
+  if (col)
+    return boost::make_shared<DenseMatrix>(col->row(0));
+   
+  auto sparse = matrix_cast::as_sparse(mh);
+  if (sparse)
+    {
+     DenseMatrix dense_matrix(sparse->nrows(),sparse->ncols()); 
+     for (index_type k = 0; k < sparse->outerSize(); k++)
+     {
+      for (Eigen::SparseVector<double>::InnerIterator it(sparse->row(k)); it; ++it)
+        dense_matrix(k,it.index())=sparse->coeff(k,it.index());   
+     }
+     return boost::make_shared<DenseMatrix>(dense_matrix);
+    }
+   
+  return DenseMatrixHandle();
+}
+
+SparseRowMatrixHandle matrix_convert::to_sparse_md(const MatrixHandle& mh)
+{
+ auto sparse = matrix_cast::as_sparse(mh);
+ if (sparse)
+   return sparse;
+
+ auto col = matrix_cast::as_column(mh);
+ if (col)
+   {
+     SparseRowMatrixFromMap::Values data;
+     for (index_type i=0; i<col->nrows(); i++)
+       if (col->coeff(i,0)!=0)
+         data[i][0]=col->coeff(i,0);
+          
+     return SparseRowMatrixFromMap::make(col->nrows(), 1, data);
+   }
+
+ auto dense = matrix_cast::as_dense(mh);
+ if (dense)
+   {
+    SparseRowMatrixFromMap::Values data;  
+    for (index_type i=0; i<dense->nrows(); i++)
+      for (index_type j=0; j<dense->ncols(); j++) 
+        if (col->coeff(i,j)!=0)
+	  data[i][j]=col->coeff(i,j);
+	  
+     return SparseRowMatrixFromMap::make(dense->nrows(), dense->ncols(), data); 
+   }
+
+ return SparseRowMatrixHandle();
 }
