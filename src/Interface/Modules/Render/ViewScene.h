@@ -39,7 +39,6 @@
 #include <Modules/Basic/SendScalarModuleState.h>
 #include <Interface/Modules/Base/ModuleDialogGeneric.h>
 
-#include <spire/Interface.h>
 #include <Interface/Modules/Render/namespaces.h>
 
 #include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>

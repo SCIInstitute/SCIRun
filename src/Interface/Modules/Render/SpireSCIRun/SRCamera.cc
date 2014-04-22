@@ -49,8 +49,8 @@ SRCamera::SRCamera(SRInterface& iface) :
 {
   setAsPerspective();
 
-  spire::M44 cam;
-  cam[3] = (spire::V4(0.0f, 0.0f, 7.0f, 1.0f));
+  glm::mat4 cam;
+  cam[3] = (glm::vec4(0.0f, 0.0f, 7.0f, 1.0f));
 }
 
 //------------------------------------------------------------------------------
@@ -145,13 +145,13 @@ void SRCamera::doAutoView(const Core::Geometry::BBox& bbox)
 }
 
 //------------------------------------------------------------------------------
-spire::V2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
+glm::vec2 SRCamera::calculateScreenSpaceCoords(const glm::ivec2& mousePos)
 {
   float windowOriginX = 0.0f;
   float windowOriginY = 0.0f;
 
   // Transform incoming mouse coordinates into screen space.
-  spire::V2 mouseScreenSpace;
+  glm::vec2 mouseScreenSpace;
   mouseScreenSpace.x = 2.0f * (static_cast<float>(mousePos.x) - windowOriginX) 
       / static_cast<float>(mInterface.getScreenWidthPixels()) - 1.0f;
   mouseScreenSpace.y = 2.0f * (static_cast<float>(mousePos.y) - windowOriginY)

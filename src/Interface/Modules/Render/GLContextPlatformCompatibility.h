@@ -34,11 +34,11 @@
 //
 // Note: If GLEW is ever replaced, review the usefulness of this header.
 #ifdef _WIN32
-#  include <spire/Interface.h>
+//#  include <spire/Interface.h>
 #  include <QtOpenGL/QGLWidget>
 #else
 #  include <QtOpenGL/QGLWidget>
-#  include <spire/Interface.h>
+//#  include <spire/Interface.h>
 #endif
 
 #include <Interface/Modules/Render/namespaces.h>

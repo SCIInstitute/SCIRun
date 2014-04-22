@@ -35,7 +35,6 @@
 #include <tuple>
 
 #include <Interface/Modules/Render/namespaces.h>
-#include "spire/src/ShaderUniformStateManTemplates.h"
 
 namespace SCIRun {
 namespace Gui {
@@ -53,8 +52,8 @@ public:
   // Common transformations
   //----------------------------------------------------------------------------
 
-  static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToWorldTrafo()
-  {return std::make_pair("objToWorld", spire::UNIFORM_FLOAT_MAT4);}
+  // static std::tuple<const char*, spire::UNIFORM_TYPE> getObjectToWorldTrafo()
+  // {return std::make_pair("objToWorld", spire::UNIFORM_FLOAT_MAT4);}
 
 };
 

@@ -36,8 +36,6 @@
 
 #include <Interface/Modules/Render/namespaces.h>
 
-#include "spire/src/ShaderUniformStateManTemplates.h"
-
 namespace SCIRun {
 namespace Gui {
 
@@ -50,46 +48,46 @@ public:
   SRCommonUniforms()          {}
   virtual ~SRCommonUniforms() {}
   
-  //----------------------------------------------------------------------------
-  // Camera Uniforms (View)
-  //----------------------------------------------------------------------------
-
-  /// Inverse view to world matrix.
-  static std::string          getToCameraToProjectionName() {return "uProjIV";}
-  static spire::UNIFORM_TYPE  getToCameraToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
-
-  /// Projection matrix.
-  static std::string          getToProjectionName() {return "uProj";}
-  static spire::UNIFORM_TYPE  getToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
-
-  /// View to world.
-  static std::string          getCameraToWorldName() {return "uView";}
-  static spire::UNIFORM_TYPE  getCameraToWorldType() {return spire::UNIFORM_FLOAT_MAT4;}
-
-  /// Viewing vector for the camera (used in lighting calculations).
-  /// Depends on the projection matrix -- in world space.
-  static std::string          getCameraViewVecName() {return "uCamViewVec";}
-  static spire::UNIFORM_TYPE  getCameraViewVecType() {return spire::UNIFORM_FLOAT_VEC3;}
-
-  /// 'Up' vector for the camera -- in world space.
-  static std::string          getCameraUpVecName() {return "uCamUp";}
-  static spire::UNIFORM_TYPE  getCameraUpVecType() {return spire::UNIFORM_FLOAT_VEC3;}
-
-  //----------------------------------------------------------------------------
-  // Object and Combined Object/Camera Uniforms
-  //----------------------------------------------------------------------------
-  /// Object -> World -> Camera -> Projection
-  static std::string          getObjectToCameraToProjectionName() {return "uProjIVObject";}
-  static spire::UNIFORM_TYPE  getObjectToCameraToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
-
-  /// Object -> World to view transformation.
-  static std::string          getObjectToViewName() {return "uViewObject";}
-  static spire::UNIFORM_TYPE  getObjectToViewType() {return spire::UNIFORM_FLOAT_MAT4;}
-
-  /// Object -> World transformformation.
-  static std::string          getObjectName() {return "uObject";}
-  static spire::UNIFORM_TYPE  getObjectType() {return spire::UNIFORM_FLOAT_MAT4;}
-
+  // //----------------------------------------------------------------------------
+  // // Camera Uniforms (View)
+  // //----------------------------------------------------------------------------
+  //
+  // /// Inverse view to world matrix.
+  // static std::string          getToCameraToProjectionName() {return "uProjIV";}
+  // static spire::UNIFORM_TYPE  getToCameraToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
+  //
+  // /// Projection matrix.
+  // static std::string          getToProjectionName() {return "uProj";}
+  // static spire::UNIFORM_TYPE  getToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
+  //
+  // /// View to world.
+  // static std::string          getCameraToWorldName() {return "uView";}
+  // static spire::UNIFORM_TYPE  getCameraToWorldType() {return spire::UNIFORM_FLOAT_MAT4;}
+  //
+  // /// Viewing vector for the camera (used in lighting calculations).
+  // /// Depends on the projection matrix -- in world space.
+  // static std::string          getCameraViewVecName() {return "uCamViewVec";}
+  // static spire::UNIFORM_TYPE  getCameraViewVecType() {return spire::UNIFORM_FLOAT_VEC3;}
+  //
+  // /// 'Up' vector for the camera -- in world space.
+  // static std::string          getCameraUpVecName() {return "uCamUp";}
+  // static spire::UNIFORM_TYPE  getCameraUpVecType() {return spire::UNIFORM_FLOAT_VEC3;}
+  //
+  // //----------------------------------------------------------------------------
+  // // Object and Combined Object/Camera Uniforms
+  // //----------------------------------------------------------------------------
+  // /// Object -> World -> Camera -> Projection
+  // static std::string          getObjectToCameraToProjectionName() {return "uProjIVObject";}
+  // static spire::UNIFORM_TYPE  getObjectToCameraToProjectionType() {return spire::UNIFORM_FLOAT_MAT4;}
+  //
+  // /// Object -> World to view transformation.
+  // static std::string          getObjectToViewName() {return "uViewObject";}
+  // static spire::UNIFORM_TYPE  getObjectToViewType() {return spire::UNIFORM_FLOAT_MAT4;}
+  //
+  // /// Object -> World transformformation.
+  // static std::string          getObjectName() {return "uObject";}
+  // static spire::UNIFORM_TYPE  getObjectType() {return spire::UNIFORM_FLOAT_MAT4;}
+  //
 };
 
 } // namespace Gui

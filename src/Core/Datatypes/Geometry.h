@@ -35,19 +35,11 @@
 #include <vector>
 #include <Core/Datatypes/Datatype.h>
 #include <Core/GeometryPrimitives/BBox.h>
-#include <spire/Interface.h>
 #include <Core/Datatypes/share.h>
-
-/// The following include contains AbstractUniformStateItem which allows
-/// us to store uniforms to be passed, at a later time, to spire.
-#include <spire/src/ShaderUniformStateManTemplates.h>
-
 
 namespace SCIRun {
 namespace Core {
 namespace Datatypes {
-
-  namespace spire = CPM_SPIRE_NS;
 
   class SCISHARE GeometryObject : public Datatype
   {
@@ -101,32 +93,20 @@ namespace Datatypes {
     struct SpireSubPass
     {
       SpireSubPass(const std::string& name, const std::string& vbo, 
-                   const std::string& ibo, const std::string& program,
-                   spire::Interface::PRIMITIVE_TYPES primType) :
+                   const std::string& ibo, const std::string& program) :
           passName(name),
           vboName(vbo),
           iboName(ibo),
-          programName(program),
-          type(primType)
+          programName(program)
       {}
 
       std::string   passName;
       std::string   vboName;
       std::string   iboName;
       std::string   programName;
-      spire::Interface::PRIMITIVE_TYPES type;
 
       template <typename T>
-      void addUniform(const std::string& uniformName, T uniformData)
-      {
-        uniforms.push_back(
-            std::make_pair(uniformName, std::shared_ptr<spire::AbstractUniformStateItem>(
-                new spire::UniformStateItem<T>(uniformData))));
-      }
-
-      // Tuple containing the name of the uniform and its contents.
-      std::list<std::tuple<
-          std::string, std::shared_ptr<spire::AbstractUniformStateItem>>> uniforms;
+      void addUniform(const std::string& uniformName, T uniformData) {}
     };
 
     /// List of passes to setup.

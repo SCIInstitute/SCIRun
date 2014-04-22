@@ -30,10 +30,9 @@
 /// \date   August 2013
 
 #include <Interface/Modules/Render/namespaces.h>
-
 #include <Interface/Modules/Render/SpireSCIRun/SRUtil.h>
 
-#include "spire/src/Common.h"
+#include <glm/glm.hpp>
 
 namespace SCIRun {
 namespace Gui {
@@ -81,20 +80,20 @@ size_t buildNormalRenderingForVBO(std::shared_ptr<std::vector<uint8_t>> vboData,
   for (size_t inputVboPos = 0; inputVboPos + stride <= vboData->size();)
   {
     size_t inputOffset = inputVboPos + posOffset;
-    spire::V3 position;
+    glm::vec3 position;
     position.x = readFloat(&inputOffset);
     position.y = readFloat(&inputOffset);
     position.z = readFloat(&inputOffset);
 
     inputOffset = inputVboPos + normOffset;
-    spire::V3 normal;
+    glm::vec3 normal;
     normal.x = readFloat(&inputOffset);
     normal.y = readFloat(&inputOffset);
     normal.z = readFloat(&inputOffset);
 
     inputVboPos += stride;
 
-    spire::V3 distal = position + normal * normalLength;
+    glm::vec3 distal = position + normal * normalLength;
 
     // Write VBO
     writeFloat(rawOutVBO, &outVboPos, position.x);

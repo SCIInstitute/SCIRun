@@ -41,7 +41,6 @@ SET(Interface_Modules_Render_HEADERS
   SpireSCIRun/SRCommonUniforms.h
   SpireSCIRun/SRInterface.h
   SpireSCIRun/SRUtil.h
-  SpireSCIRun/SciBall.h
 )
 
 SET(Interface_Modules_Render_SOURCES 
@@ -52,7 +51,6 @@ SET(Interface_Modules_Render_SOURCES
   SpireSCIRun/SRCamera.cc
   SpireSCIRun/SRInterface.cc
   SpireSCIRun/SRUtil.cc
-  SpireSCIRun/SciBall.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Render_FORMS_HEADERS ${Interface_Modules_Render_FORMS})

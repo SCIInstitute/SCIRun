@@ -34,7 +34,6 @@
 
 #include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
 
-#include <spire/src/Common.h>
 #include <arc-look-at/ArcLookAt.hpp>
 
 namespace SCIRun {
@@ -51,10 +50,10 @@ public:
   // IV = Inverse view matrix
   // P  = Projection matrix
   // m  = multiplication
-  const spire::M44& getWorldToProjection() const  {return mPIV;}
-  const spire::M44& getWorldToView() const        {return mIV;}
-  const spire::M44& getViewToWorld() const        {return mV;}
-  const spire::M44& getViewToProjection() const   {return mP;}
+  const glm::mat4& getWorldToProjection() const  {return mPIV;}
+  const glm::mat4& getWorldToView() const        {return mIV;}
+  const glm::mat4& getViewToWorld() const        {return mV;}
+  const glm::mat4& getViewToProjection() const   {return mP;}
 
   /// Sets this camera to use a perspective projection transformation.
   void setAsPerspective();
@@ -80,7 +79,7 @@ public:
 
   /// Default camera settings
   /// @{
-  static float getDefaultFOVY()   {return 32.0f * (spire::PI / 180.0f);}
+  static float getDefaultFOVY()   {return 32.0f * (glm::pi<float>() / 180.0f);}
   static float getDefaultZNear()  {return 0.1f;}
   static float getDefaultZFar()   {return 100000.0f;}
   /// @}
@@ -88,12 +87,12 @@ public:
 private:
 
   void buildTransform();
-  spire::V2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
+  glm::vec2 calculateScreenSpaceCoords(const glm::ivec2& mousePos);
 
-  spire::M44            mPIV;         ///< Projection * Inverse View transformation.
-  spire::M44            mIV;          ///< Inverse view transformation.
-  spire::M44            mV;           ///< View matrix.
-  spire::M44            mP;           ///< Projection transformation.
+  glm::mat4             mPIV;         ///< Projection * Inverse View transformation.
+  glm::mat4             mIV;          ///< Inverse view transformation.
+  glm::mat4             mV;           ///< View matrix.
+  glm::mat4             mP;           ///< Projection transformation.
   size_t                mTrafoSeq;    ///< Current sequence of the view transform.
                                       ///< Helps us determine when a camera is 'dirty'.
 

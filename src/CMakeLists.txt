@@ -357,11 +357,6 @@ CPM_AddModule("gl_platform"
   GIT_REPOSITORY "https://github.com/iauns/cpm-gl-platform"
   GIT_TAG "1.3.5")
 
-# ++ MODULE: Spire
-CPM_AddModule("spire"
-  GIT_REPOSITORY "https://github.com/SCIInstitute/spire"
-  GIT_TAG "origin/master")
-
 # ++ MODULE: Arc-Look-At (Autoview Camera)
 CPM_AddModule("look_at"
   GIT_REPOSITORY "https://github.com/iauns/cpm-arc-look-at"

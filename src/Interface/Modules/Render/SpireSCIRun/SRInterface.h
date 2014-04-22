@@ -38,15 +38,17 @@
 #include <Core/Datatypes/Geometry.h>
 #include <boost/shared_ptr.hpp>
 
-#include "Interface/Modules/Render/GLContext.h"
+#include <Interface/Modules/Render/GLContext.h>
 #include <Interface/Modules/Render/namespaces.h>
+
+// CPM Modules
 #include <gl-state/GLState.hpp>
+#include <glm/glm.hpp>
 
 namespace SCIRun {
 namespace Gui {
 
 class SRCamera;
-class SciBall;
 
 // This class will be executing on a remote thread using boost lock free
 // structures. The view scene dialog on qt widgets only serve one purpose:

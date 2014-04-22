@@ -31,7 +31,6 @@
 
 #include <Interface/Modules/Render/namespaces.h>
 #include <Interface/Modules/Render/SpireSCIRun/SRInterface.h>
-#include <Interface/Modules/Render/SpireSCIRun/SciBall.h>
 #include <Interface/Modules/Render/SpireSCIRun/SRCamera.h>
 
 #include <Interface/Modules/Render/SpireSCIRun/SRCommonAttributes.h>

@@ -39,6 +39,8 @@
 
 #include <boost/foreach.hpp>
 
+#include <glm/glm.hpp>
+
 using namespace SCIRun::Modules::Visualization;
 using namespace SCIRun::Core::Datatypes;
 using namespace SCIRun::Dataflow::Networks;
@@ -254,7 +256,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass =
         GeometryObject::SpireSubPass("edgesPass", primVBOName, iboName,
-                                     "UniformColor", spire::Interface::LINES);
+                                     "UniformColor");
 
     //spire::GPUState gpuState;
     //gpuState.mLineWidth = 2.5f;
@@ -263,9 +265,9 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     bool edgeTransparency = state->getValue(ShowFieldModule::EdgeTransparency).getBool();
     // Add appropriate uniforms to the pass (in this case, uColor).
     if (edgeTransparency)
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
+      pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, 0.5f));
     else
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
+      pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
@@ -294,19 +296,19 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       }
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName, 
-                                       shaderToUse, spire::Interface::TRIANGLES);
+                                       shaderToUse);
 
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
       float transparency    = 1.0f;
       if (faceTransparency) transparency = 0.1f;
 
       // Add common uniforms.
-      pass.addUniform("uAmbientColor", spire::V4(0.01f, 0.01f, 0.01f, transparency));
+      pass.addUniform("uAmbientColor", glm::vec4(0.01f, 0.01f, 0.01f, transparency));
 
       if (!colorMap)
-        pass.addUniform("uDiffuseColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
+        pass.addUniform("uDiffuseColor", glm::vec4(meshRed, meshGreen, meshBlue, transparency));
 
-      pass.addUniform("uSpecularColor", spire::V4(1.0f, 1.0f, 1.0f, transparency));
+      pass.addUniform("uSpecularColor", glm::vec4(1.0f, 1.0f, 1.0f, transparency));
       pass.addUniform("uSpecularPower", 32.0f);
       geom->mPasses.emplace_back(pass);
     }
@@ -320,7 +322,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       // No normals present in the model, construct a uniform pass
       GeometryObject::SpireSubPass pass = 
           GeometryObject::SpireSubPass("facesPass", primVBOName, iboName,
-                                       shaderToUse, spire::Interface::TRIANGLES);
+                                       shaderToUse);
 
       // Apply misc user settings.
       bool faceTransparency = state->getValue(ShowFieldModule::FaceTransparency).getBool();
@@ -328,7 +330,7 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
       if (faceTransparency) transparency = 0.2f;
 
       if (!colorMap)
-        pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, transparency));
+        pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, transparency));
 
       geom->mPasses.emplace_back(pass);
     }
@@ -346,14 +348,14 @@ GeometryHandle ShowFieldModule::buildGeometryObject(
     /// \todo Find an appropriate place to put program names like UniformColor.
     GeometryObject::SpireSubPass pass = 
         GeometryObject::SpireSubPass("nodesPass", primVBOName, iboName,
-                                     "UniformColor", spire::Interface::POINTS);
+                                     "UniformColor");
 
     // Add appropriate uniforms to the pass (in this case, uColor).
     bool nodeTransparency = state->getValue(ShowFieldModule::NodeTransparency).getBool();
     if (nodeTransparency)
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 0.5f));
+      pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, 0.5f));
     else
-      pass.addUniform("uColor", spire::V4(meshRed, meshGreen, meshBlue, 1.0f));
+      pass.addUniform("uColor", glm::vec4(meshRed, meshGreen, meshBlue, 1.0f));
 
     geom->mPasses.emplace_back(pass);
   }
