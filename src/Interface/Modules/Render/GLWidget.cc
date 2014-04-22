@@ -42,11 +42,6 @@
 
 using namespace SCIRun::Gui;
 
-void logFunction(const std::string& str, spire::Interface::LOG_LEVEL level)
-{
-  std::cout << str;
-}
-
 //------------------------------------------------------------------------------
 GLWidget::GLWidget(QtGLContext* context) :
     QGLWidget(context),
@@ -65,9 +60,7 @@ GLWidget::GLWidget(QtGLContext* context) :
   shaderSearchDirs.push_back(shadersInBinDirectory.string());
 
   mGraphics = std::shared_ptr<SRInterface>(
-      new SRInterface(
-          std::dynamic_pointer_cast<spire::Context>(mContext),
-          shaderSearchDirs, logFunction));
+      new SRInterface(mContext, shaderSearchDirs));
   mTimer = new QTimer(this);
   connect(mTimer, SIGNAL(timeout()), this, SLOT(updateRenderer()));
   mTimer->start(35);

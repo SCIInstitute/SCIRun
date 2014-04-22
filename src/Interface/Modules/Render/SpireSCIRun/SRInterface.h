@@ -29,16 +29,17 @@
 /// \author James Hughes
 /// \date   February 2013
 
-#ifndef SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
-#define SPIRE_APPSPECIFIC_SCIRUN_SCIRUNINTERFACE_H
+#ifndef INTERFACE_MODULES_RENDER_SPIRESCIRUN_SRINTERFACE_H
+#define INTERFACE_MODULES_RENDER_SPIRESCIRUN_SRINTERFACE_H
 
 #include <cstdint>
+#include <memory>
 
 #include <Core/Datatypes/Geometry.h>
 #include <boost/shared_ptr.hpp>
 
+#include "Interface/Modules/Render/GLContext.h"
 #include <Interface/Modules/Render/namespaces.h>
-#include <spire/Interface.h>
 #include <gl-state/GLState.hpp>
 
 namespace SCIRun {
@@ -54,9 +55,8 @@ class SciBall;
 class SRInterface
 {
 public:
-  SRInterface(std::shared_ptr<spire::Context> context,
-              const std::vector<std::string>& shaderDirs,
-              spire::Interface::LogFunction logFP = spire::Interface::LogFunction());
+  SRInterface(std::shared_ptr<GLContext> context,
+              const std::vector<std::string>& shaderDirs);
   ~SRInterface();
 
   /// Call this whenever the window is resized. This will modify the viewport
@@ -126,7 +126,7 @@ private:
   class SRObject
   {
   public:
-    SRObject(const std::string& name, const spire::M44& objToWorld,
+    SRObject(const std::string& name, const glm::mat4& objToWorld,
              const Core::Geometry::BBox& bbox, boost::optional<std::string> colorMap) :
         mName(name),
         mObjectToWorld(objToWorld),
@@ -155,7 +155,7 @@ private:
     };
 
     std::string           mName;
-    spire::M44            mObjectToWorld;
+    glm::mat4             mObjectToWorld;
     std::list<SRPass>     mPasses;
     Core::Geometry::BBox  mBBox;          ///< Objects bounding box (calculated from VBO).
 
@@ -167,23 +167,22 @@ private:
 
   void generateColormaps();
 
-  std::shared_ptr<spire::Interface>           mSpire;
+  MouseMode                   mMouseMode;       ///< Current mouse mode.
 
-  MouseMode                 mMouseMode;       ///< Current mouse mode.
+  size_t                      mScreenWidth;     ///< Screen width in pixels.
+  size_t                      mScreenHeight;    ///< Screen height in pixels.
 
-  size_t                    mScreenWidth;     ///< Screen width in pixels.
-  size_t                    mScreenHeight;    ///< Screen height in pixels.
+  GLuint                      mRainbowCMap;     ///< Rainbow color map.
+  GLuint                      mGrayscaleCMap;   ///< Grayscale color map.
 
-  GLuint                    mRainbowCMap;     ///< Rainbow color map.
-  GLuint                    mGrayscaleCMap;   ///< Grayscale color map.
+  std::shared_ptr<GLContext>  mContext;         ///< Context to use for rendering.
+  std::unique_ptr<SRCamera>   mCamera;          ///< Primary camera.
+  std::vector<SRObject>       mSRObjects;       ///< All SCIRun objects.
+  Core::Geometry::BBox        mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
 
-  std::unique_ptr<SRCamera> mCamera;          ///< Primary camera.
-  std::vector<SRObject>     mSRObjects;       ///< All SCIRun objects.
-  Core::Geometry::BBox      mSceneBBox;       ///< Scene's AABB. Recomputed per-frame.
-
-  std::string               mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
-  std::string               mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
-  std::string               mArrowObjectName; ///< Object name for profile arrow.
+  std::string                 mArrowVBOName;    ///< VBO for one axis of the coordinate axes.
+  std::string                 mArrowIBOName;    ///< IBO for one axis of the coordinate axes.
+  std::string                 mArrowObjectName; ///< Object name for profile arrow.
 
 };
 

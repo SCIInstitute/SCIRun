@@ -38,14 +38,13 @@ namespace SCIRun {
 namespace Gui {
 
 //------------------------------------------------------------------------------
-SRCamera::SRCamera(SRInterface& iface, std::shared_ptr<spire::Interface> spire) :
+SRCamera::SRCamera(SRInterface& iface) :
     mTrafoSeq(0),
     mPerspective(true),
     mFOV(getDefaultFOVY()),
     mZNear(getDefaultZNear()),
     mZFar(getDefaultZFar()),
     mInterface(iface),
-    mSpire(spire),
     mArcLookAt(new CPM_LOOK_AT_NS::ArcLookAt())
 {
   setAsPerspective();
@@ -93,18 +92,6 @@ void SRCamera::buildTransform()
 void SRCamera::applyTransform()
 {
   buildTransform();
-
-  // Update appropriate uniforms.
-  mSpire->addGlobalUniform(SRCommonUniforms::getToCameraToProjectionName(), mPIV);
-  mSpire->addGlobalUniform(SRCommonUniforms::getToProjectionName(), mP);
-  mSpire->addGlobalUniform(SRCommonUniforms::getCameraToWorldName(), mV);
-
-  // Projection matrix is oriented down negative z. So we are looking down 
-  // negative z, which is -V3(mV[2].xyz()).
-  mSpire->addGlobalUniform(SRCommonUniforms::getCameraViewVecName(),
-                           -spire::V3(mV[2].xyz()));
-  mSpire->addGlobalUniform(SRCommonUniforms::getCameraUpVecName(),
-                            spire::V3(mV[1].xyz()));
 }
 
 //------------------------------------------------------------------------------
