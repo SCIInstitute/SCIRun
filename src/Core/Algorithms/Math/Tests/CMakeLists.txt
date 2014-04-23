@@ -37,6 +37,7 @@ SET(Algorithms_Math_Tests_SRCS
   SolveLinearSystemAlgoTestsParameterized.cc
   #AddKnownsToLinearSystemTests.cc
   SelectSubMatrixTests.cc
+  ConvertMatrixTypeTests.cc
 )
 
 #SET(Engine_Network_Tests_HEADERS

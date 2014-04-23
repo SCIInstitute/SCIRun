@@ -104,10 +104,10 @@ DenseColumnMatrixHandle matrix_convert::to_column_md(const MatrixHandle& mh)
   auto sparse = matrix_cast::as_sparse(mh);
   if (sparse)
      {
-       DenseColumnMatrix dense_col(sparse->nrows());
-       for (Eigen::SparseVector<double>::InnerIterator it(sparse->row(0)); it; ++it)
-          dense_col(it.index())=it.value(); 
-   
+       DenseColumnMatrix dense_col(DenseColumnMatrix::Zero(sparse->nrows()));
+       for (index_type i=0; i<sparse->nrows(); i++)
+           dense_col(i,0)=sparse->coeff(i,0);
+	 
        return boost::make_shared<DenseColumnMatrix>(dense_col);
      }
           
@@ -122,12 +122,21 @@ DenseMatrixHandle matrix_convert::to_dense_md(const MatrixHandle& mh)
   
   auto col = matrix_cast::as_column(mh);
   if (col)
-    return boost::make_shared<DenseMatrix>(col->row(0));
+    return boost::make_shared<DenseMatrix>(col->col(0));
    
   auto sparse = matrix_cast::as_sparse(mh);
   if (sparse)
     {
-     DenseMatrix dense_matrix(sparse->nrows(),sparse->ncols()); 
+     DenseMatrix dense_matrix;
+     try
+     {
+       dense_matrix = DenseMatrix::Zero(sparse->nrows(),sparse->ncols()); 
+     }
+     catch (...)
+     {
+      return DenseMatrixHandle();
+     }
+     
      for (index_type k = 0; k < sparse->outerSize(); k++)
      {
       for (Eigen::SparseVector<double>::InnerIterator it(sparse->row(k)); it; ++it)
@@ -162,9 +171,9 @@ SparseRowMatrixHandle matrix_convert::to_sparse_md(const MatrixHandle& mh)
     SparseRowMatrixFromMap::Values data;  
     for (index_type i=0; i<dense->nrows(); i++)
       for (index_type j=0; j<dense->ncols(); j++) 
-        if (col->coeff(i,j)!=0)
-	  data[i][j]=col->coeff(i,j);
-	  
+        if (dense->coeff(i,j)!=0)
+	   data[i][j]=dense->coeff(i,j);
+	   
      return SparseRowMatrixFromMap::make(dense->nrows(), dense->ncols(), data); 
    }
 

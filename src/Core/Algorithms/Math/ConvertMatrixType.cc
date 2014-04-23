@@ -83,11 +83,11 @@ MatrixHandle ConvertMatrixTypeAlgorithm::run(MatrixHandle input_matrix) const
   } else
   if (get(Convert2ColumnMatrix).getBool() && !matrix_is::column(input_matrix))
   {
-     if (input_matrix->ncols()!=1)
+  /*   if (input_matrix->ncols()!=1)
      {
        THROW_ALGORITHM_INPUT_ERROR("Input matrix needs to have a single column to be converted to column matrix type.");  
-     }
-     DenseColumnMatrixHandle output = matrix_convert::to_column(input_matrix);
+     }*/
+     DenseColumnMatrixHandle output = matrix_convert::to_column_md(input_matrix);
      if (!output) 
       {
        THROW_ALGORITHM_INPUT_ERROR("Conversion to column matrix failed.");    
