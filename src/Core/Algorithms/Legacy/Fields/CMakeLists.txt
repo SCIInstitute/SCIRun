@@ -55,6 +55,7 @@ SET(Core_Algorithms_Legacy_Fields_HEADERS
   #MeshData/GetMeshData.h
   FieldData/GetFieldData.h
   FieldData/MapFieldDataFromElemToNode.h
+  FieldData/MapFieldDataFromNodeToElem.h
 )
 
 SET(Core_Algorithms_Legacy_Fields_SRCS
@@ -154,7 +155,8 @@ SET(Core_Algorithms_Legacy_Fields_SRCS
   #TransformMesh/ProjectPointsOntoMesh.cc
   #TransformMesh/PolarProjectionTools.cc
   #TransformMesh/GeneratePolarProjectionImage.cc
-  #TracePoints/TracePoints.cc
+  #TracePoints/TracePoints.cc  
+  FieldData/MapFieldDataFromNodeToElem.cc
 )
 
 IF(WITH_TETGEN)

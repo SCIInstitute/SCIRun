@@ -27,7 +27,7 @@
 */
 
 #include <Core/Algorithms/Factory/HardCodedAlgorithmFactory.h>
-
+#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
 #include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromElemToNode.h>
 #include <Core/Algorithms/Legacy/Fields/MeshDerivatives/GetFieldBoundaryAlgo.h>
 #include <Core/Algorithms/Legacy/Fields/DistanceField/CalculateSignedDistanceField.h>
@@ -148,7 +148,11 @@ AlgorithmHandle HardCodedAlgorithmFactory::create(const std::string& moduleName,
     h.reset(new SelectSubMatrixAlgorithm);   
   else if (moduleName == "ConvertMatrixType")
     h.reset(new ConvertMatrixTypeAlgorithm);  
-     
+  else if (moduleName == "MapFieldDataFromElemToNode")
+    h.reset(new MapFieldDataFromElemToNodeAlgo);      
+  else if (moduleName == "MapFieldDataFromNodeToElem")
+    h.reset(new MapFieldDataFromNodeToElemAlgo);   
+    
   if (h && algoCollaborator)
   {
     h->setLogger(algoCollaborator->getLogger());

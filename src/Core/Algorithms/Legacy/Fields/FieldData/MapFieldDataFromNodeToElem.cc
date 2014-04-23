@@ -24,41 +24,57 @@
    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
    DEALINGS IN THE SOFTWARE.
+   Author            : Moritz Dannhauer
+   Last modification : March 22 2014 (ported from SCIRun4)
+   TODO: Nrrd aoutput
 */
-#include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
-#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
-#include <Core/Datatypes/Matrix.h>
-#include <Core/Datatypes/Legacy/Field/Field.h>
-#include <Core/Datatypes/DenseMatrix.h>
-#include <Core/Datatypes/Matrix.h>
 
-using namespace SCIRun::Modules::Fields;
+#include <Core/Algorithms/Legacy/Fields/FieldData/MapFieldDataFromNodeToElem.h>
+#include <Core/Datatypes/DenseMatrix.h>
+#include <Core/Datatypes/Legacy/Field/FieldInformation.h>
+#include <Core/Algorithms/Base/AlgorithmPreconditions.h>
+#include <Core/Algorithms/Base/AlgorithmVariableNames.h>
+#include <Core/GeometryPrimitives/Vector.h>
+#include <Core/Datatypes/Legacy/Field/Field.h>
+#include <Core/Datatypes/Legacy/Field/VField.h>
+#include <Core/Datatypes/Legacy/Field/VMesh.h>
+
 using namespace SCIRun::Core::Algorithms::Fields;
-using namespace SCIRun::Dataflow::Networks;
+using namespace SCIRun::Core::Geometry;
 using namespace SCIRun::Core::Datatypes;
+using namespace SCIRun::Core::Utility;
+using namespace SCIRun::Core::Algorithms;
+using namespace SCIRun::Core::Logging;
 using namespace SCIRun;
 
-MapFieldDataFromNodeToElemModule::MapFieldDataFromNodeToElemModule()
-  : Module(ModuleLookupInfo("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun"), true)
+
+MapFieldDataFromNodeToElemAlgo::MapFieldDataFromNodeToElemAlgo()
 {
-  INITIALIZE_PORT(InputField);
-  INITIALIZE_PORT(OutputField);
+  add_option(Method,"interpolate","average|min|max|sum|median|none");
 }
 
-void MapFieldDataFromNodeToElemModule::setStateDefaults()
+AlgorithmInputName MapFieldDataFromNodeToElemAlgo::InputField("InputField");
+AlgorithmOutputName MapFieldDataFromNodeToElemAlgo::OutputField("OutputField");
+AlgorithmParameterName MapFieldDataFromNodeToElemAlgo::Method("Method");
+
+AlgorithmOutput MapFieldDataFromNodeToElemAlgo::run_generic(const AlgorithmInput& input) const
 {
-  auto state = get_state();
-  state->setValue(MapFieldDataFromNodeToElemAlgo::Method, std::string("interpolate"));
+  auto input_field = input.get<Field>(InputField);
+  
+  FieldHandle output_field;
+ // output_field = run(input_field);
+  
+  AlgorithmOutput output;
+  output[OutputField] = output_field;
+
+  return output;
 }
 
-void MapFieldDataFromNodeToElemModule::execute()
-{ 
-  FieldHandle input = getRequiredInput(InputField);
-
-  //algo().set_option(MapFieldDataFromNodeToElemAlgo::Method, get_state()->getValue(MapFieldDataFromNodeToElemAlgo::Method).getString());
-  
-  auto output = algo().run_generic(make_input((InputField, input)));
-  
-  sendOutputFromAlgorithm(OutputField, output);
-
+//! Function call to convert data from Field into Matrix data
+FieldHandle MapFieldDataFromNodeToElemAlgo::run(FieldHandle input_field) const
+{   
+   FieldHandle output;
+ 
+   
+   return output;
 }

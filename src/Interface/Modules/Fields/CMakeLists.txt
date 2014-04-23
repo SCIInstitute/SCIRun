@@ -36,6 +36,7 @@ SET(Interface_Modules_Fields_FORMS
   InterfaceWithCleaverDialog.ui
   SetFieldDataDialog.ui
   MapFieldDataFromElemToNodeDialog.ui
+  MapFieldDataFromNodeToElemDialog.ui
 )
 
 SET(Interface_Modules_Fields_HEADERS
@@ -47,6 +48,7 @@ SET(Interface_Modules_Fields_HEADERS
   InterfaceWithCleaverDialog.h
   SetFieldDataDialog.h
   MapFieldDataFromElemToNodeDialog.h
+  MapFieldDataFromNodeToElemDialog.h
   share.h
 )
 
@@ -59,6 +61,7 @@ SET(Interface_Modules_Fields_SOURCES
   InterfaceWithCleaverDialog.cc
   SetFieldDataDialog.cc
   MapFieldDataFromElemToNodeDialog.cc
+  MapFieldDataFromNodeToElemDialog.cc
 )
 
 QT4_WRAP_UI(Interface_Modules_Fields_FORMS_HEADERS ${Interface_Modules_Fields_FORMS})

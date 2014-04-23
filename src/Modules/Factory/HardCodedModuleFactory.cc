@@ -26,6 +26,7 @@
    DEALINGS IN THE SOFTWARE.
 */
 
+
 #include <iostream>
 #include <boost/assign.hpp>
 #include <boost/foreach.hpp>
@@ -49,6 +50,7 @@
 #include <Modules/Fields/ReportFieldInfo.h>
 #include <Modules/Fields/InterfaceWithCleaver.h>
 #include <Modules/Legacy/Fields/MapFieldDataFromElemToNode.h>
+#include <Modules/Legacy/Fields/MapFieldDataFromNodeToElem.h>
 #include <Modules/Legacy/Fields/CreateLatVol.h>
 #include <Modules/Legacy/Fields/GetFieldBoundary.h>
 #include <Modules/Legacy/Fields/CalculateSignedDistanceToField.h>
@@ -204,6 +206,8 @@ namespace SCIRun {
 	  addModuleDesc<MapFieldDataFromElemToNodeModule>("MapFieldDataFromElemToNode", "ChangeFieldData", "SCIRun", "in progress", "...");
 	  addModuleDesc<ApplyMappingMatrixModule>("ApplyMappingMatrix", "ChangeFieldData", "SCIRun", "in progress", "...");
 	  addModuleDesc<ConvertMatrixTypeModule>("ConvertMatrixType", "Math", "SCIRun", "in progress", "...");
+	  addModuleDesc<MapFieldDataFromNodeToElemModule>("MapFieldDataFromNodeToElem", "ChangeFieldData", "SCIRun", "in progress", "...");
+
 	}
 
         ModuleDescriptionMap descMap_;

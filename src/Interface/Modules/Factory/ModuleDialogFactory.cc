@@ -53,6 +53,7 @@
 #include <Interface/Modules/Fields/SetFieldDataDialog.h>
 #include <Interface/Modules/Fields/InterfaceWithCleaverDialog.h>
 #include <Interface/Modules/Fields/MapFieldDataFromElemToNodeDialog.h>
+#include <Interface/Modules/Fields/MapFieldDataFromNodeToElemDialog.h>
 #include <Interface/Modules/FiniteElements/TDCSSimulatorDialog.h>
 #include <Interface/Modules/BrainStimulator/SetConductivitiesToTetMeshDialog.h>
 #include <Interface/Modules/BrainStimulator/ElectrodeCoilSetupDialog.h>
@@ -153,6 +154,8 @@ ModuleDialogGeneric* ModuleDialogFactory::makeDialog(const std::string& moduleId
     return new SplitFieldByDomainDialog(moduleId, state, parentToUse_);
   if (moduleId.find("ConvertMatrixType") != std::string::npos)
     return new ConvertMatrixTypeDialog(moduleId, state, parentToUse_);  
+  if (moduleId.find("MapFieldDataFromNodeToElem") != std::string::npos)
+    return new MapFieldDataFromNodeToElemDialog(moduleId, state, parentToUse_);  
   else
     return new ModuleDialogBasic(moduleId, parentToUse_);
 }
