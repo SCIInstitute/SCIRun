@@ -42,9 +42,10 @@ CreateLatVolDialog::CreateLatVolDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(xSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(ySizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
-  connect(zSizeSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  addSpinBoxManager(CreateLatVolModule::XSize, xSizeSpinBox_);
+  addSpinBoxManager(CreateLatVolModule::YSize, ySizeSpinBox_);
+  addSpinBoxManager(CreateLatVolModule::ZSize, zSizeSpinBox_);
+
   connect(elementSizeNormalizedButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(elementSizeOneButton_, SIGNAL(clicked()), this, SLOT(push()));
   connect(dataAtNodesButton_, SIGNAL(clicked()), this, SLOT(push()));
@@ -56,9 +57,6 @@ void CreateLatVolDialog::push()
 {
   if (!pulling_)
   {
-    state_->setValue(CreateLatVolModule::XSize, xSizeSpinBox_->value());
-    state_->setValue(CreateLatVolModule::YSize, ySizeSpinBox_->value());
-    state_->setValue(CreateLatVolModule::ZSize, zSizeSpinBox_->value());
     state_->setValue(CreateLatVolModule::ElementSizeNormalized, elementSizeNormalizedButton_->isChecked());
     state_->setValue(CreateLatVolModule::DataAtLocation, getDataAtLocation());
   }
@@ -79,15 +77,6 @@ std::string CreateLatVolDialog::getDataAtLocation() const
 void CreateLatVolDialog::pull()
 {
   Pulling p(this);
-  int newValue = state_->getValue(CreateLatVolModule::XSize).getInt();
-  if (newValue != xSizeSpinBox_->value())
-    xSizeSpinBox_->setValue(newValue);
-  newValue = state_->getValue(CreateLatVolModule::YSize).getInt();
-  if (newValue != ySizeSpinBox_->value())
-    ySizeSpinBox_->setValue(newValue);
-  newValue = state_->getValue(CreateLatVolModule::ZSize).getInt();
-  if (newValue != zSizeSpinBox_->value())
-    zSizeSpinBox_->setValue(newValue);
   elementSizeNormalizedButton_->setChecked(state_->getValue(CreateLatVolModule::ElementSizeNormalized).getBool());
   elementSizeOneButton_->setChecked(!elementSizeNormalizedButton_->isChecked());
 
@@ -95,4 +84,5 @@ void CreateLatVolDialog::pull()
   dataAtNodesButton_->setChecked(loc == "Nodes");
   dataAtCellsButton_->setChecked(loc == "Cells");
   dataAtNoneButton_->setChecked(loc == "None");
+  pull_newVersionToReplaceOld();
 }

@@ -152,23 +152,23 @@ class LineEditSlotManager : public WidgetSlotManager
 public:
   LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) : 
       WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit) 
-      {
-        connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
-      }
-      virtual void pull() override
-      {
-        auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
-        if (newValue != lineEdit_->text())
-        {
-          lineEdit_->setText(newValue);
-          LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
-        }
-      }
-      virtual void pushImpl() override
-      {
-        LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
-        state_->setValue(stateKey_, lineEdit_->text().toStdString());
-      }
+  {
+    connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    if (newValue != lineEdit_->text())
+    {
+      lineEdit_->setText(newValue);
+      LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
+    state_->setValue(stateKey_, lineEdit_->text().toStdString());
+  }
 private:
   AlgorithmParameterName stateKey_;
   QLineEdit* lineEdit_;
@@ -177,4 +177,36 @@ private:
 void ModuleDialogGeneric::addLineEditManager(const AlgorithmParameterName& stateKey, QLineEdit* lineEdit)
 {
   addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
+}
+
+class SpinBoxSlotManager : public WidgetSlotManager
+{
+public:
+  SpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QSpinBox* spinBox) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox) 
+  {
+    connect(spinBox_, SIGNAL(valueChanged(int)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).getInt();
+    if (newValue != spinBox_->value())
+    {
+      spinBox_->setValue(newValue);
+      LOG_DEBUG("In new version of pull code for SpinBox: " << newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for SpinBox: " << spinBox_->value());
+    state_->setValue(stateKey_, spinBox_->value());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QSpinBox* spinBox_;
+};
+
+void ModuleDialogGeneric::addSpinBoxManager(const AlgorithmParameterName& stateKey, QSpinBox* spinBox)
+{
+  addWidgetSlotManager(boost::make_shared<SpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
