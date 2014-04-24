@@ -161,6 +161,8 @@ namespace
 		(*m)(1,0) = std::numeric_limits<double>::quiet_NaN();
 		(*m)(2,0) = 3;
 		return m;
+        
+        // Look, I made a change!
 	}
 
     // HELPER METHODS
