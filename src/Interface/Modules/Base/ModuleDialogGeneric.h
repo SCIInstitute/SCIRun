@@ -76,6 +76,7 @@ namespace Gui {
     void addTextEditManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QTextEdit* textEdit);
     void addLineEditManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QLineEdit* lineEdit);
     void addSpinBoxManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QSpinBox* spinBox);
+    void addDoubleSpinBoxManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;

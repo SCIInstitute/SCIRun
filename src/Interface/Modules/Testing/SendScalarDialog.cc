@@ -28,7 +28,6 @@
 
 #include <Interface/Modules/Testing/SendScalarDialog.h>
 #include <Modules/Basic/SendScalar.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -43,21 +42,11 @@ SendScalarDialog::SendScalarDialog(const std::string& name, ModuleStateHandle st
   executeButton_->setEnabled(false);
   
   connect(executeButton_, SIGNAL(clicked()), this, SIGNAL(executeButtonPressed()));
-  connect(scalarValueToSend_, SIGNAL(textChanged(const QString&)), this, SLOT(pushScalarValueToState(const QString&)));
+  addDoubleSpinBoxManager(SendScalarModule::ValueToSend(), scalarValueToSend_);
   buttonBox->setVisible(false);
-}
-
-void SendScalarDialog::pushScalarValueToState(const QString& str) 
-{
-  if (!pulling_)
-  {
-    double value = str.toDouble();
-    state_->setValue(SendScalarModule::ValueToSend(), value);
-  }
 }
 
 void SendScalarDialog::pull()
 {
-  Pulling p(this);
-  scalarValueToSend_->setText(QString::number(state_->getValue(SendScalarModule::ValueToSend()).getDouble()));
+  pull_newVersionToReplaceOld();
 }

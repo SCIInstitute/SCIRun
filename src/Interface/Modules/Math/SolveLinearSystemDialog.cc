@@ -30,7 +30,6 @@
 #include <Core/Algorithms/Base/AlgorithmVariableNames.h>
 #include <Core/Logging/Log.h>
 #include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QtGui>
 #include <boost/bimap.hpp>
 
 using namespace SCIRun::Gui;
@@ -62,11 +61,11 @@ SolveLinearSystemDialog::SolveLinearSystemDialog(const std::string& name, Module
   setWindowTitle(QString::fromStdString(name));
   fixSize();
 
+  addSpinBoxManager(Variables::MaxIterations, maxIterationsSpinBox_);
+  addDoubleSpinBoxManager(Variables::TargetError, targetErrorSpinBox_);
   //TODO: clean these up...still getting circles of push/pull
   //TODO: need this connection ???
   connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), this, SLOT(pushParametersToState()));
-  connect(targetErrorLineEdit_, SIGNAL(editingFinished()), this, SLOT(pushParametersToState()));
-  connect(maxIterationsSpinBox_, SIGNAL(valueChanged(int)), this, SLOT(pushParametersToState()));
   connect(methodComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
   connect(preconditionerComboBox_, SIGNAL(activated(const QString&)), this, SLOT(pushParametersToState()));
 }
@@ -76,15 +75,6 @@ void SolveLinearSystemDialog::pushParametersToState()
   if (!pulling_)
   {
     //TODO: need pattern for this, to avoid silly recursion of push/pull.
-    int max = maxIterationsSpinBox_->value();
-    if (max != state_->getValue(Variables::MaxIterations).getInt())
-      state_->setValue(Variables::MaxIterations, max);
-
-    double error = targetErrorLineEdit_->text().toDouble();
-    if (error != state_->getValue(Variables::TargetError).getDouble())
-    {
-      state_->setValue(Variables::TargetError, error);
-    }
 
     {
       auto method = methodComboBox_->currentText().toStdString();
@@ -118,18 +108,12 @@ void SolveLinearSystemDialog::pushParametersToState()
 void SolveLinearSystemDialog::pull()
 {
   Pulling p(this);
-  auto iterations = state_->getValue(Variables::MaxIterations).getInt();
   
-  auto tolerance = state_->getValue(Variables::TargetError).getDouble();
-  maxIterationsSpinBox_->setValue(iterations);
-  targetErrorLineEdit_->setText(QString::number(tolerance));
-
   auto method = state_->getValue(Variables::Method).getString();
   
   auto it = impl_->solverNameLookup_.right.find(method);
   if (it != impl_->solverNameLookup_.right.end())
     methodComboBox_->setCurrentIndex(methodComboBox_->findText(QString::fromStdString(it->get_left())));
-  
 
   auto precond = state_->getValue(Variables::Preconditioner).getString();
   preconditionerComboBox_->setCurrentIndex((precond == "jacobi") ? 0 : 1);

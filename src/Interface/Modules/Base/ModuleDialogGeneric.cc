@@ -210,3 +210,35 @@ void ModuleDialogGeneric::addSpinBoxManager(const AlgorithmParameterName& stateK
 {
   addWidgetSlotManager(boost::make_shared<SpinBoxSlotManager>(state_, *this, stateKey, spinBox));
 }
+
+class DoubleSpinBoxSlotManager : public WidgetSlotManager
+{
+public:
+  DoubleSpinBoxSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox) : 
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), spinBox_(spinBox) 
+  {
+    connect(spinBox_, SIGNAL(valueChanged(double)), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = state_->getValue(stateKey_).getDouble();
+    if (newValue != spinBox_->value())
+    {
+      spinBox_->setValue(newValue);
+      LOG_DEBUG("In new version of pull code for DoubleSpinBox: " << newValue);
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for DoubleSpinBox: " << spinBox_->value());
+    state_->setValue(stateKey_, spinBox_->value());
+  }
+private:
+  AlgorithmParameterName stateKey_;
+  QDoubleSpinBox* spinBox_;
+};
+
+void ModuleDialogGeneric::addDoubleSpinBoxManager(const AlgorithmParameterName& stateKey, QDoubleSpinBox* spinBox)
+{
+  addWidgetSlotManager(boost::make_shared<DoubleSpinBoxSlotManager>(state_, *this, stateKey, spinBox));
+}
