@@ -119,24 +119,24 @@ class TextEditSlotManager : public WidgetSlotManager
 {
 public:
   TextEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QTextEdit* textEdit) : 
-      WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit) 
-      {
-        connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
-      }
-      virtual void pull() override
-      {
-        auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
-        if (newValue != textEdit_->toPlainText())
-        {
-          textEdit_->setPlainText(newValue);
-          LOG_DEBUG("In new version of pull code: " << newValue.toStdString());
-        }
-      }
-      virtual void pushImpl() override
-      {
-        LOG_DEBUG("In new version of push code: " << textEdit_->toPlainText().toStdString());
-        state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
-      }
+    WidgetSlotManager(state, dialog), stateKey_(stateKey), textEdit_(textEdit) 
+  {
+    connect(textEdit, SIGNAL(textChanged()), this, SLOT(push()));
+  }
+  virtual void pull() override
+  {
+    auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+    if (newValue != textEdit_->toPlainText())
+    {
+      textEdit_->setPlainText(newValue);
+      LOG_DEBUG("In new version of pull code for TextEdit: " << newValue.toStdString());
+    }
+  }
+  virtual void pushImpl() override
+  {
+    LOG_DEBUG("In new version of push code for TextEdit: " << textEdit_->toPlainText().toStdString());
+    state_->setValue(stateKey_, textEdit_->toPlainText().toStdString());
+  }
 private:
   AlgorithmParameterName stateKey_;
   QTextEdit* textEdit_;
@@ -145,4 +145,36 @@ private:
 void ModuleDialogGeneric::addTextEditManager(const AlgorithmParameterName& stateKey, QTextEdit* textEdit)
 {
   addWidgetSlotManager(boost::make_shared<TextEditSlotManager>(state_, *this, stateKey, textEdit));
+}
+
+class LineEditSlotManager : public WidgetSlotManager
+{
+public:
+  LineEditSlotManager(ModuleStateHandle state, ModuleDialogGeneric& dialog, const AlgorithmParameterName& stateKey, QLineEdit* lineEdit) : 
+      WidgetSlotManager(state, dialog), stateKey_(stateKey), lineEdit_(lineEdit) 
+      {
+        connect(lineEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(push()));
+      }
+      virtual void pull() override
+      {
+        auto newValue = QString::fromStdString(state_->getValue(stateKey_).getString());
+        if (newValue != lineEdit_->text())
+        {
+          lineEdit_->setText(newValue);
+          LOG_DEBUG("In new version of pull code for LineEdit: " << newValue.toStdString());
+        }
+      }
+      virtual void pushImpl() override
+      {
+        LOG_DEBUG("In new version of push code for LineEdit: " << lineEdit_->text().toStdString());
+        state_->setValue(stateKey_, lineEdit_->text().toStdString());
+      }
+private:
+  AlgorithmParameterName stateKey_;
+  QLineEdit* lineEdit_;
+};
+
+void ModuleDialogGeneric::addLineEditManager(const AlgorithmParameterName& stateKey, QLineEdit* lineEdit)
+{
+  addWidgetSlotManager(boost::make_shared<LineEditSlotManager>(state_, *this, stateKey, lineEdit));
 }

@@ -74,6 +74,7 @@ namespace Gui {
     
     void addComboBoxManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QComboBox* comboBox);
     void addTextEditManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QTextEdit* textEdit);
+    void addLineEditManager(const Core::Algorithms::AlgorithmParameterName& stateKey, QLineEdit* lineEdit);
   private:
     void addWidgetSlotManager(WidgetSlotManagerPtr ptr);
     std::vector<WidgetSlotManagerPtr> slotManagers_;

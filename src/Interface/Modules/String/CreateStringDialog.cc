@@ -28,8 +28,6 @@
 
 #include <Interface/Modules/String/CreateStringDialog.h>
 #include <Modules/String/CreateString.h>
-#include <Dataflow/Network/ModuleStateInterface.h>  //TODO: extract into intermediate
-#include <QFileDialog>
 
 using namespace SCIRun::Gui;
 using namespace SCIRun::Dataflow::Networks;
@@ -43,16 +41,11 @@ CreateStringDialog::CreateStringDialog(const std::string& name, ModuleStateHandl
   setWindowTitle(QString::fromStdString(name));
   fixSize();
   
-  connect(stringInput_, SIGNAL(textChanged(const QString&)), this, SLOT(pushStringToState(const QString&)));
   buttonBox->setVisible(false);
-}
-
-void CreateStringDialog::pushStringToState(const QString& str) 
-{
-  state_->setValue(CreateStringModule::InputString, str.toStdString());
+  addLineEditManager(CreateStringModule::InputString, stringInput_);
 }
 
 void CreateStringDialog::pull()
 {
-  stringInput_->setText(QString::fromStdString(state_->getValue(CreateStringModule::InputString).getString()));
+  pull_newVersionToReplaceOld();
 }
